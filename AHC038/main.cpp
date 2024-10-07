@@ -712,7 +712,7 @@ void Method3()
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
-    while (mCount < m && lastT < real_ansCount) {
+    while (mCount < m && _t < real_ansCount + 20) {
       // dir
       int nx = route[t][0];
       int ny = route[t][1];
@@ -827,13 +827,16 @@ void Method3()
         _t = lastT + 1;
         x = lastX;
         y = lastY;
+        //dir[_t] = 4;
         while (x != nx || y != ny) {
-          rep(i, V)
-          {
-            rot[_t][i] = 1;
-            tip[_t][i] = 0;
-            action[i] = 0;
-          }
+          //if (_t != keepT) {
+          //  rep(i, V)
+          //  {
+          //    rot[_t][i] = 1;
+          //    tip[_t][i] = 0;
+          //    action[i] = 0;
+          //  }
+          //}
           if (x < nx) {
             dir[_t] = 0;
             x++;
@@ -857,7 +860,7 @@ void Method3()
           }
         }
 
-        srep(i, 1, V)
+        srep(i, 0, V)
         {
           rot[_t][i] = rot[keepT][i];
           tip[_t][i] = tip[keepT][i];
@@ -883,7 +886,7 @@ void Method3()
   }
 
   if (mode != 0) {
-    cout << "Method2 loop = " << loop << endl;
+    cout << "Method3 loop = " << loop << endl;
   }
 }
 
@@ -909,8 +912,8 @@ ll Solve(int probNum)
 
   CopyToReal();
 
-  //Method2();
-  Method3();
+  Method2();
+  //Method3();
 
   CopyToAns();
 
