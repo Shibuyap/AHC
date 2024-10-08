@@ -81,7 +81,7 @@ const char rotChar[3] = { 'L', '.', 'R' };
 const char tipChar[2] = { '.', 'P' };
 const int BASE_DIR = 3;
 
-const double TL = 9.8;
+const double TL = 2.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -89,6 +89,8 @@ const int MAX_N = 30;
 const int MAX_M = 450;
 const int MAX_V = 15;
 const int MAX_T = 100005;
+
+const int ACTION_RATIO = 5;
 
 int n, m, v;
 int init_a[MAX_N][MAX_N];
@@ -104,6 +106,9 @@ int tip[MAX_T][MAX_V];
 int sx;
 int sy;
 int startT;
+int armCount;
+int leafs1;
+int Method;
 
 int real_V;
 int real_pa[MAX_V];
@@ -115,6 +120,9 @@ int real_tip[MAX_T][MAX_V];
 int real_sx;
 int real_sy;
 int real_startT;
+int real_armCount;
+int real_leafs1;
+int real_Method;
 
 int route[MAX_N * MAX_N * 3][2];
 
@@ -139,6 +147,9 @@ void CopyToReal()
   real_sx = sx;
   real_sy = sy;
   real_startT = startT;
+  real_armCount = armCount;
+  real_leafs1 = leafs1;
+  real_Method = Method;
 }
 
 void CopyToAns()
@@ -162,6 +173,14 @@ void CopyToAns()
   sx = real_sx;
   sy = real_sy;
   startT = real_startT;
+  armCount = real_armCount;
+  leafs1 = real_leafs1;
+  Method = real_Method;
+}
+
+void ResetTime()
+{
+  startTime = clock();
 }
 
 double GetNowTime()
@@ -315,6 +334,9 @@ void Initialize()
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
+    //if (V < 10) {
+    //  assert(false);
+    //}
     cout << V << endl;
     srep(i, 1, V)
     {
@@ -416,7 +438,7 @@ void Method1()
             nowRot[i] = nRot;
             tip[t][i] = 1;
             nowTip[i] = 1;
-            action[i] = 1;
+            action[i] = ACTION_RATIO;
             break;
           }
         }
@@ -427,7 +449,7 @@ void Method1()
             nowRot[i] = nRot;
             tip[t][i] = 1;
             nowTip[i] = 0;
-            action[i] = 1;
+            action[i] = ACTION_RATIO;
             mCount++;
             break;
           }
@@ -579,7 +601,7 @@ void Method2()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 1;
-              action[i] = 1;
+              action[i] = ACTION_RATIO;
               break;
             }
           }
@@ -590,7 +612,7 @@ void Method2()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 0;
-              action[i] = 1;
+              action[i] = ACTION_RATIO;
               mCount++;
               break;
             }
@@ -753,7 +775,7 @@ void Method3()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 1;
-              action[i] = 1;
+              action[i] = ACTION_RATIO;
               break;
             }
           }
@@ -764,7 +786,7 @@ void Method3()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 0;
-              action[i] = 1;
+              action[i] = ACTION_RATIO;
               mCount++;
               break;
             }
@@ -887,14 +909,17 @@ void Method3()
   }
 }
 
-void Method4()
+void Method4(double timeLimit)
 {
+  ResetTime();
+  Method = 4;
+
   real_startT = -1;
   int loop = 0;
   while (true) {
 
     double time = GetNowTime();
-    if (time > TL)break;
+    if (time > timeLimit)break;
 
     loop++;
 
@@ -915,7 +940,7 @@ void Method4()
     startT = randxor() % nn2;
     sx = route[startT][0];
     sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > TL * 0.75) {
+    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
       V = real_V;
       srep(i, 1, V)
       {
@@ -1075,7 +1100,7 @@ void Method4()
                   tmpNowRot[i] = (nowRot[i] + j) % 4;
                   tmpTip[i] = 1;
                   tmpNowTip[i] = 1;
-                  action[i] = 1;
+                  action[i] = ACTION_RATIO;
                   break;
                 }
               }
@@ -1090,7 +1115,7 @@ void Method4()
                   tmpNowRot[i] = (nowRot[i] + j) % 4;
                   tmpTip[i] = 1;
                   tmpNowTip[i] = 0;
-                  action[i] = 1;
+                  action[i] = ACTION_RATIO;
                   break;
                 }
               }
@@ -1267,23 +1292,25 @@ void Method4()
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
-      cout << real_ansCount << ' ' << le[1] << endl;
     }
   }
 
-  if (mode != 0) {
+  if (mode == 2) {
     cout << "Method4 loop = " << loop << " " << endl;
   }
 }
 
-void Method5()
+void Method5(double timeLimit)
 {
+  ResetTime();
+  Method = 5;
+
   real_startT = -1;
   int loop = 0;
   while (true) {
 
     double time = GetNowTime();
-    if (time > TL)break;
+    if (time > timeLimit)break;
 
     loop++;
 
@@ -1307,7 +1334,7 @@ void Method5()
     startT = randxor() % nn2;
     sx = route[startT][0];
     sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > TL * 0.75) {
+    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
       V = real_V;
       srep(i, 1, V)
       {
@@ -1481,7 +1508,7 @@ void Method5()
                       tmpNowRot[i] = (nowRot[i] + j) % 4;
                       tmpTip[i] = 1;
                       tmpNowTip[i] = 1;
-                      action[i] = 1;
+                      action[i] = ACTION_RATIO;
                       break;
                     }
                   }
@@ -1496,7 +1523,7 @@ void Method5()
                       tmpNowRot[i] = (nowRot[i] + j) % 4;
                       tmpTip[i] = 1;
                       tmpNowTip[i] = 0;
-                      action[i] = 1;
+                      action[i] = ACTION_RATIO;
                       break;
                     }
                   }
@@ -1684,19 +1711,22 @@ void Method5()
     }
   }
 
-  if (mode != 0) {
-    //cout << "Method5 loop = " << loop << " " << endl;
+  if (mode == 2) {
+    cout << "Method5 loop = " << loop << " " << endl;
   }
 }
 
-void Method6()
+void Method6(double timeLimit)
 {
+  ResetTime();
+  Method = 6;
+
   real_startT = -1;
   int loop = 0;
   while (true) {
 
     double time = GetNowTime();
-    if (time > TL)break;
+    if (time > timeLimit)break;
 
     loop++;
 
@@ -1723,7 +1753,7 @@ void Method6()
     startT = randxor() % nn2;
     sx = route[startT][0];
     sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > TL * 0.75) {
+    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
       V = real_V;
       srep(i, 1, V)
       {
@@ -1912,7 +1942,7 @@ void Method6()
                           tmpNowRot[i] = (nowRot[i] + j) % 4;
                           tmpTip[i] = 1;
                           tmpNowTip[i] = 1;
-                          action[i] = 1;
+                          action[i] = ACTION_RATIO;
                           break;
                         }
                       }
@@ -1927,7 +1957,7 @@ void Method6()
                           tmpNowRot[i] = (nowRot[i] + j) % 4;
                           tmpTip[i] = 1;
                           tmpNowTip[i] = 0;
-                          action[i] = 1;
+                          action[i] = ACTION_RATIO;
                           break;
                         }
                       }
@@ -2116,14 +2146,665 @@ void Method6()
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
-      cout << real_ansCount << ' ' << le[1] << endl;
+      //cout << real_ansCount << ' ' << le[1] << endl;
     }
   }
 
-  if (mode != 0) {
-    //cout << "Method6 loop = " << loop << " " << endl;
+  if (mode == 2) {
+    cout << "Method6 loop = " << loop << " " << endl;
   }
 }
+
+// 腕2本
+void Method7(double timeLimit)
+{
+  ResetTime();
+  Method = 7;
+
+  armCount = 1;
+  real_armCount = 1;
+
+  real_startT = -1;
+  int loop = 0;
+  while (true) {
+
+    double time = GetNowTime();
+    if (time > timeLimit)break;
+
+    loop++;
+
+    int nn2 = n * n * 2;
+
+    V = v;
+
+    armCount = 2;
+    leafs1 = randxor() % (V - 6) + 1;
+
+    srep(i, 1, V)
+    {
+      if (i == 1) {
+        pa[i] = 0;
+      }
+      else if (i == 2) {
+        pa[i] = 1;
+      }
+      else if (i == 3) {
+        pa[i] = 0;
+      }
+      else if (i == 4) {
+        pa[i] = 3;
+      }
+      else if (i < 5 + leafs1) {
+        pa[i] = 2;
+      }
+      else {
+        pa[i] = 4;
+      }
+      le[i] = randxor() % (n - 1) + 1;
+    }
+
+    startT = randxor() % nn2;
+    sx = route[startT][0];
+    sy = route[startT][1];
+    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
+      V = real_V;
+      srep(i, 1, V)
+      {
+        pa[i] = real_pa[i];
+        le[i] = real_le[i];
+      }
+      leafs1 = real_leafs1;
+      startT = real_startT;
+      sx = real_sx;
+      sy = real_sy;
+
+      int ra = randxor() % 2;
+      if (ra == 0) {
+        startT = randxor() % nn2;
+        sx = route[startT][0];
+        sy = route[startT][1];
+      }
+      else {
+        while (true) {
+          int raV = randxor() % (V - 2) + 2;
+          int newLe = randxor() % (n - 1) + 1;
+          if (newLe == le[raV])continue;
+          le[raV] = newLe;
+          break;
+        }
+      }
+    }
+
+    int t = startT;
+
+    int x = sx;
+    int y = sy;
+    int _t = 0;
+
+    int nowRot[MAX_V];
+    int nowTip[MAX_V];
+    rep(i, V)
+    {
+      nowRot[i] = 0;
+      nowTip[i] = 0;
+    }
+
+    int a[MAX_N][MAX_N];
+    int b[MAX_N][MAX_N];
+    int mCount = 0;
+    rep(i, n)
+    {
+      rep(j, n)
+      {
+        a[i][j] = init_a[i][j];
+        b[i][j] = init_b[i][j];
+        if (a[i][j] == 1 && b[i][j] == 1) {
+          mCount++;
+          a[i][j] = 0;
+          b[i][j] = 0;
+        }
+      }
+    }
+
+    int action[MAX_V] = {};
+    int lastT = -1;
+    int lastX = sx;
+    int lastY = sy;
+
+    int maxActionScore;
+    int maxAction;
+    int maxAction2;
+    int maxRot[MAX_V];
+    int maxTip[MAX_V];
+    int maxNowRot[MAX_V];
+    int maxNowTip[MAX_V];
+
+    int tmpRot[MAX_V];
+    int tmpTip[MAX_V];
+    int tmpNowRot[MAX_V];
+    int tmpNowTip[MAX_V];
+
+    int maxA[MAX_V][3];
+    int maxB[MAX_V][3];
+    int maxACount = 0;
+    int maxBCount = 0;
+    int keepA[MAX_V][3];
+    int keepB[MAX_V][3];
+    int keepACount = 0;
+    int keepBCount = 0;
+
+    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
+      // dir
+      int nx = route[(t + 1) % nn2][0];
+      int ny = route[(t + 1) % nn2][1];
+      dir[_t] = 4;
+      rep(i, 4)
+      {
+        if (nx == x + dx[i] && ny == y + dy[i])dir[_t] = i;
+      }
+
+      // rot, tip
+      rep(i, V)
+      {
+        rot[_t][i] = 1;
+        tip[_t][i] = 0;
+        action[i] = 0;
+      }
+
+
+      maxAction = -1;
+      maxAction2 = -1;
+      maxActionScore = -1;
+      rep(i, V)
+      {
+        maxRot[i] = 1;
+        maxTip[i] = 0;
+        maxNowRot[i] = nowRot[i];
+        maxNowTip[i] = nowTip[i];
+      }
+
+      srep(ii2, 0, 3)
+      {
+        int ii = ii2;
+        if (ii == 2) ii -= 3;
+        srep(jj2, 0, 3)
+        {
+          int jj = jj2;
+          if (jj == 2)jj -= 3;
+
+          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+          int nRot2 = (nRot1 + jj + 4) % 4;
+
+          srep(iii2, 0, 3)
+          {
+            int iii = iii2;
+            if (iii == 2) iii -= 3;
+            srep(jjj2, 0, 3)
+            {
+              int jjj = jjj2;
+              if (jjj == 2)jjj -= 3;
+
+              int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
+              int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
+
+              rep(i, V)
+              {
+                action[i] = 0;
+                tmpRot[i] = 1;
+                tmpTip[i] = 0;
+                tmpNowRot[i] = nowRot[i];
+                tmpNowTip[i] = nowTip[i];
+              }
+
+              keepACount = 0;
+              keepBCount = 0;
+
+              // このターン
+              srep(i, 5, 5 + leafs1)
+              {
+                srep(j, -1, 2)
+                {
+                  int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
+                  int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3];
+                  int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3];
+
+                  if (IsNG(nrx, nry))continue;
+
+                  if (nowTip[i] == 0) {
+                    if (a[nrx][nry] == 1) {
+                      keepA[keepACount][0] = nrx;
+                      keepA[keepACount][1] = nry;
+                      keepA[keepACount][2] = a[nrx][nry];
+                      keepACount++;
+                      a[nrx][nry] = 0;
+                      tmpRot[i] = j + 1;
+                      tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      tmpTip[i] = 1;
+                      tmpNowTip[i] = 1;
+                      action[i] = ACTION_RATIO;
+                      break;
+                    }
+                  }
+                  else {
+                    if (b[nrx][nry] == 1) {
+                      keepB[keepBCount][0] = nrx;
+                      keepB[keepBCount][1] = nry;
+                      keepB[keepBCount][2] = b[nrx][nry];
+                      keepBCount++;
+                      b[nrx][nry] = 0;
+                      tmpRot[i] = j + 1;
+                      tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      tmpTip[i] = 1;
+                      tmpNowTip[i] = 0;
+                      action[i] = ACTION_RATIO;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              // 次のターン
+              int nnx = route[(t + 2) % nn2][0];
+              int nny = route[(t + 2) % nn2][1];
+              srep(i, 5, 5 + leafs1)
+              {
+                if (action[i])continue;
+
+                srep(j, -1, 3)
+                {
+                  int nRot = (nRot4 + nowRot[i] + j + 4) % 4;
+                  int nnrx = nnx + le[i] * dx[nRot] + le[1] * dx[nRot2] + le[2] * dx[nRot4];
+                  int nnry = nny + le[i] * dy[nRot] + le[1] * dy[nRot2] + le[2] * dy[nRot4];
+
+                  if (IsNG(nnrx, nnry))continue;
+
+                  if (nowTip[i] == 0) {
+                    if (a[nnrx][nnry] == 1) {
+                      if (j == 2) {
+                        tmpRot[i] = 2;
+                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                      }
+                      else {
+                        tmpRot[i] = j + 1;
+                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      }
+                      action[i] = 1;
+                      break;
+                    }
+                  }
+                  else {
+                    if (b[nnrx][nnry] == 1) {
+                      if (j == 2) {
+                        tmpRot[i] = 2;
+                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                      }
+                      else {
+                        tmpRot[i] = j + 1;
+                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      }
+                      action[i] = 1;
+                      break;
+                    }
+                  }
+                }
+              }
+
+
+              int tmpActionScore = 0;
+              srep(i, 3, V)
+              {
+                tmpActionScore += action[i];
+              }
+
+              if (tmpActionScore > maxActionScore) {
+                maxAction = ii;
+                maxAction2 = iii;
+                maxActionScore = tmpActionScore;
+                rep(i, V)
+                {
+                  maxRot[i] = tmpRot[i];
+                  maxTip[i] = tmpTip[i];
+                  maxNowRot[i] = tmpNowRot[i];
+                  maxNowTip[i] = tmpNowTip[i];
+                }
+
+                maxACount = keepACount;
+                rep(i, keepACount)
+                {
+                  rep(j, 3)
+                  {
+                    maxA[i][j] = keepA[i][j];
+                  }
+                }
+                maxBCount = keepBCount;
+                rep(i, keepBCount)
+                {
+                  rep(j, 3)
+                  {
+                    maxB[i][j] = keepB[i][j];
+                  }
+                }
+              }
+
+
+              rep(i, keepACount)
+              {
+                a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
+              }
+              rep(i, keepBCount)
+              {
+                b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
+              }
+            }
+          }
+        }
+      }
+
+      srep(i, 5, 5 + leafs1)
+      {
+        rot[_t][i] = maxRot[i];
+        tip[_t][i] = maxTip[i];
+        nowRot[i] = maxNowRot[i];
+        nowTip[i] = maxNowTip[i];
+      }
+
+      rot[_t][1] = maxAction + 1;
+      nowRot[1] = (nowRot[1] + maxAction + 4) % 4;
+      rot[_t][2] = maxAction2 + 1;
+      nowRot[2] = (nowRot[2] + maxAction2 + 4) % 4;
+
+      mCount += maxBCount;
+      rep(i, maxACount)
+      {
+        a[maxA[i][0]][maxA[i][1]] = 0;
+      }
+      rep(i, maxBCount)
+      {
+        b[maxB[i][0]][maxB[i][1]] = 0;
+      }
+
+      int isAction = 0;
+      if (maxActionScore > 0) {
+        isAction = 1;
+      }
+
+      // 2本目の腕
+      maxAction = -1;
+      maxAction2 = -1;
+      maxActionScore = -1;
+      rep(i, V)
+      {
+        maxRot[i] = 1;
+        maxTip[i] = 0;
+        maxNowRot[i] = nowRot[i];
+        maxNowTip[i] = nowTip[i];
+      }
+
+      srep(ii2, 0, 3)
+      {
+        int ii = ii2;
+        if (ii == 2) ii -= 3;
+        srep(jj2, 0, 3)
+        {
+          int jj = jj2;
+          if (jj == 2)jj -= 3;
+
+          int nRot1 = (BASE_DIR + nowRot[3] + ii + 4) % 4;
+          int nRot2 = (nRot1 + jj + 4) % 4;
+
+          srep(iii2, 0, 3)
+          {
+            int iii = iii2;
+            if (iii == 2) iii -= 3;
+            srep(jjj2, 0, 3)
+            {
+              int jjj = jjj2;
+              if (jjj == 2)jjj -= 3;
+
+              int nRot3 = (nRot1 + nowRot[4] + iii + 4) % 4;
+              int nRot4 = (nRot2 + nowRot[4] + iii + jjj + 4) % 4;
+
+              rep(i, V)
+              {
+                action[i] = 0;
+                tmpRot[i] = 1;
+                tmpTip[i] = 0;
+                tmpNowRot[i] = nowRot[i];
+                tmpNowTip[i] = nowTip[i];
+              }
+
+              keepACount = 0;
+              keepBCount = 0;
+
+              // このターン
+              srep(i, 5 + leafs1, V)
+              {
+                srep(j, -1, 2)
+                {
+                  int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
+                  int nrx = nx + le[i] * dx[nRot] + le[3] * dx[nRot1] + le[4] * dx[nRot3];
+                  int nry = ny + le[i] * dy[nRot] + le[3] * dy[nRot1] + le[4] * dy[nRot3];
+
+                  if (IsNG(nrx, nry))continue;
+
+                  if (nowTip[i] == 0) {
+                    if (a[nrx][nry] == 1) {
+                      keepA[keepACount][0] = nrx;
+                      keepA[keepACount][1] = nry;
+                      keepA[keepACount][2] = a[nrx][nry];
+                      keepACount++;
+                      a[nrx][nry] = 0;
+                      tmpRot[i] = j + 1;
+                      tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      tmpTip[i] = 1;
+                      tmpNowTip[i] = 1;
+                      action[i] = ACTION_RATIO;
+                      break;
+                    }
+                  }
+                  else {
+                    if (b[nrx][nry] == 1) {
+                      keepB[keepBCount][0] = nrx;
+                      keepB[keepBCount][1] = nry;
+                      keepB[keepBCount][2] = b[nrx][nry];
+                      keepBCount++;
+                      b[nrx][nry] = 0;
+                      tmpRot[i] = j + 1;
+                      tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      tmpTip[i] = 1;
+                      tmpNowTip[i] = 0;
+                      action[i] = ACTION_RATIO;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              // 次のターン
+              int nnx = route[(t + 2) % nn2][0];
+              int nny = route[(t + 2) % nn2][1];
+              srep(i, 5 + leafs1, V)
+              {
+                if (action[i])continue;
+
+                srep(j, -1, 3)
+                {
+                  int nRot = (nRot4 + nowRot[i] + j + 4) % 4;
+                  int nnrx = nnx + le[i] * dx[nRot] + le[3] * dx[nRot2] + le[4] * dx[nRot4];
+                  int nnry = nny + le[i] * dy[nRot] + le[3] * dy[nRot2] + le[4] * dy[nRot4];
+
+                  if (IsNG(nnrx, nnry))continue;
+
+                  if (nowTip[i] == 0) {
+                    if (a[nnrx][nnry] == 1) {
+                      if (j == 2) {
+                        tmpRot[i] = 2;
+                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                      }
+                      else {
+                        tmpRot[i] = j + 1;
+                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      }
+                      action[i] = 1;
+                      break;
+                    }
+                  }
+                  else {
+                    if (b[nnrx][nnry] == 1) {
+                      if (j == 2) {
+                        tmpRot[i] = 2;
+                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                      }
+                      else {
+                        tmpRot[i] = j + 1;
+                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                      }
+                      action[i] = 1;
+                      break;
+                    }
+                  }
+                }
+              }
+
+
+              int tmpActionScore = 0;
+              srep(i, 5 + leafs1, V)
+              {
+                tmpActionScore += action[i];
+              }
+
+              if (tmpActionScore > maxActionScore) {
+                maxAction = ii;
+                maxAction2 = iii;
+                maxActionScore = tmpActionScore;
+                rep(i, V)
+                {
+                  maxRot[i] = tmpRot[i];
+                  maxTip[i] = tmpTip[i];
+                  maxNowRot[i] = tmpNowRot[i];
+                  maxNowTip[i] = tmpNowTip[i];
+                }
+
+                maxACount = keepACount;
+                rep(i, keepACount)
+                {
+                  rep(j, 3)
+                  {
+                    maxA[i][j] = keepA[i][j];
+                  }
+                }
+                maxBCount = keepBCount;
+                rep(i, keepBCount)
+                {
+                  rep(j, 3)
+                  {
+                    maxB[i][j] = keepB[i][j];
+                  }
+                }
+              }
+
+
+              rep(i, keepACount)
+              {
+                a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
+              }
+              rep(i, keepBCount)
+              {
+                b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
+              }
+            }
+          }
+        }
+      }
+
+      srep(i, 5 + leafs1, V)
+      {
+        rot[_t][i] = maxRot[i];
+        tip[_t][i] = maxTip[i];
+        nowRot[i] = maxNowRot[i];
+        nowTip[i] = maxNowTip[i];
+      }
+
+      rot[_t][3] = maxAction + 1;
+      nowRot[3] = (nowRot[3] + maxAction + 4) % 4;
+      rot[_t][4] = maxAction2 + 1;
+      nowRot[4] = (nowRot[4] + maxAction2 + 4) % 4;
+
+      mCount += maxBCount;
+      rep(i, maxACount)
+      {
+        a[maxA[i][0]][maxA[i][1]] = 0;
+      }
+      rep(i, maxBCount)
+      {
+        b[maxB[i][0]][maxB[i][1]] = 0;
+      }
+
+      if (maxActionScore > 0) {
+        isAction = 1;
+      }
+
+      if (isAction) {
+        int keepT = _t;
+        _t = lastT + 1;
+        x = lastX;
+        y = lastY;
+        while (x != nx || y != ny) {
+          if (x < nx) {
+            dir[_t] = 0;
+            x++;
+          }
+          else if (x > nx) {
+            dir[_t] = 2;
+            x--;
+          }
+          else if (y < ny) {
+            dir[_t] = 3;
+            y++;
+          }
+          else {
+            dir[_t] = 1;
+            y--;
+          }
+          if (x == nx && y == ny) {
+            break;
+          }
+          else {
+            _t++;
+          }
+        }
+
+        rep(i, V)
+        {
+          rot[_t][i] = rot[keepT][i];
+          tip[_t][i] = tip[keepT][i];
+        }
+
+        lastT = _t;
+        lastX = x;
+        lastY = y;
+        _t++;
+      }
+      else {
+        _t++;
+        x = nx;
+        y = ny;
+      }
+      t = (t + 1) % nn2;
+    }
+
+    ansCount = _t;
+    if (mCount == m && ansCount < real_ansCount) {
+      CopyToReal();
+      //cout << real_ansCount << ' ' << le[1] << endl;
+    }
+  }
+
+  if (mode == 2) {
+    cout << "Method7 loop = " << loop << " " << endl;
+  }
+}
+
 
 ll Solve(int probNum)
 {
@@ -2146,11 +2827,21 @@ ll Solve(int probNum)
 
   CopyToReal();
 
+
   //Method2();
   //Method3();
-  //Method4();
-  //Method5();
-  Method6();
+
+  if (v < 7) {
+    Method4(TL * 0.1);
+    Method5(TL * 0.45);
+    Method6(TL * 0.45);
+  }
+  else {
+    Method4(TL * 0.1);
+    Method5(TL * 0.3);
+    Method6(TL * 0.3);
+    Method7(TL * 0.3);
+  }
 
   CopyToAns();
 
@@ -2180,16 +2871,21 @@ int main()
   if (mode == 0) {
     Solve(0);
   }
-  else if (mode == 1) {
+  else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 0, 5)
     {
       ll score = Solve(i);
       sum += score;
-      //cout << score << endl;
-      cout << "num = " << i << ", ";
-      cout << "score = " << score << ", ";
-      cout << "sum = " << sum << endl;
+      cout << score << endl;
+      //cout << "num = " << setw(2) << i << ", ";
+      //cout << "score = " << setw(4) << score << ", ";
+      //cout << "sum = " << setw(5) << sum << ", ";
+      //cout << "N = " << setw(2) << n << ", ";
+      //cout << "M = " << setw(3) << m << ", ";
+      //cout << "V = " << setw(2) << v << ", ";
+      //cout << "Method = " << Method << ", ";
+      //cout << endl;
     }
   }
 
