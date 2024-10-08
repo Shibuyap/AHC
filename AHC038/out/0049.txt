@@ -1,63 +1,47 @@
 10
-0 8
-1 2
-2 4
-2 4
-2 1
-2 5
-2 5
-2 5
-2 9
-8 8
-R.LRR.L.RR.....PPP..
-RLRR.R.LRR...P....PP
-RLL..L.RR....P.PPP.P
-RLLLR..L.....P.P..P.
-R.RRR....R...PP.P...
-RRR...R..L...PP....P
-RLL..L.......PP....P
-RRR.R.LRR.....PPP..P
-R.RL.RRRR........P..
-DRRLR.R......PPPP...
-LLRL.R..L....PPP....
-L.L.RR..L.......P.P.
-LLR.L.L......P.P...P
-L.L..R.LR.....PPP...
-LRR.R..RRR...P..P...
-L.L.R....R....P..P.P
-LR....LR.....P.P....
-LLR..L.RR....P.P..P.
-LL...L...L......P...
-LL..L..L.....P.P...P
-LRL............PP...
-LLR.L.RRR......PP...
-LR.LLR.RR....P.P....
-LLRR...R......P..P..
-LRRR..R.........P...
-LLL.L.L......P..P...
-LRLL..LR.L...P......
-DLR...L......P....P.
-R.LLL..RL.......P...
-RL...........P...P..
-RR......L.....P.P...
-R.RLL...........P...
-RLR.LR.......P......
-RR...RRR......PP....
-RRRLLLR......PPP....
-RLLRRL.........PP..P
-RLR...RL........PP..
-RLLRR..RR........P..
-R...R...R....P....P.
-RRLRR.........P.....
-RL...........P......
-R.....RLL.....P.....
-RLL...R.........P...
-RRR....LL.......P...
-RRR...LRR.......P...
-DLR..............P..
-L.R..RR.............
-L.R....R.......PP...
-L.L....R.........P..
-L...................
-L........R..........
-LR.......R.........P
+0 5
+1 9
+2 3
+3 11
+3 8
+3 1
+3 7
+3 7
+3 2
+13 9
+D.LR.RLR.R.....PPP.P
+D.LR..LRLR......PPPP
+RLL..LLLR......PPPP.
+ULR.RR.LR.....PP.PPP
+LL....LL.......PPPP.
+RR.R.LR.LR.....PPPPP
+UR..R....R....P..P.P
+L.RL.RR.RL.....PPPPP
+.LL.L.L..L....P.P.PP
+UR.L.RL........PP.PP
+.RRR...R.L......PPPP
+LLLL..L.......PPP..P
+.R......R.....P..PP.
+D.RL..L..R......P.PP
+RRLL....RL.....P..PP
+U..L..LLL.......PPP.
+..LLL..RL.....P..PP.
+RRRLL..L.R....P..P.P
+R.LL.R..R.....PP..P.
+URRL..R........PPP..
+L.RL..L..L......P.PP
+ULL.L..L......P..P..
+U.LR.R..R......P..P.
+LR.L.R.........P...P
+.LR............P...P
+LLR..R...R.....PP..P
+DLLR...L.L.......P.P
+U..R..R........PP...
+L.L..R.........P....
+UR.L.R.........P..P.
+.RR..R.R.......P.P..
+RR.R..........P.....
+RRLL...............P
+D..L...............P
+R.R..............P..
+DRLR.L.........P....
