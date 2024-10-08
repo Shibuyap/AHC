@@ -368,28 +368,10 @@ void Output(ofstream& ofs)
   }
 }
 
-//初期位置(0, 0)
-//辺の長さは1~V - 1
-//行動できるときは行動する
-void Method1()
-{
-  int nn2 = n * n * 2;
-
-  int x = sx;
-  int y = sy;
-  int t = 0;
-
-  int nowRot[MAX_V];
-  int nowTip[MAX_V];
-  rep(i, V)
-  {
-    nowRot[i] = 3;
-    nowTip[i] = 0;
-  }
-
-  int a[MAX_N][MAX_N];
-  int b[MAX_N][MAX_N];
-  int mCount = 0;
+void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount) {
+  mCount = 0;
+  a.resize(n, vector<int>(n));
+  b.resize(n, vector<int>(n));
   rep(i, n)
   {
     rep(j, n)
@@ -403,6 +385,31 @@ void Method1()
       }
     }
   }
+}
+
+//初期位置(0, 0)
+//辺の長さは1~V - 1
+//行動できるときは行動する
+void Method1()
+{
+  int nn2 = n * n * 2;
+
+  int x = sx;
+  int y = sy;
+  int t = 0;
+
+  vector<int> nowRot(v);
+  vector<int> nowTip(v);
+  rep(i, V)
+  {
+    nowRot[i] = 3;
+    nowTip[i] = 0;
+  }
+
+  vector<vector<int>> a;
+  vector<vector<int>> b;
+  int mCount = 0;
+  CopyAB(a, b, mCount);
 
   int action[MAX_V] = {};
   while (mCount < m) {
@@ -543,30 +550,18 @@ void Method2()
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
     rep(i, V)
     {
       nowRot[i] = 3;
       nowTip[i] = 0;
     }
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     while (mCount < m && _t < real_ansCount) {
@@ -720,30 +715,18 @@ void Method3()
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
     rep(i, V)
     {
       nowRot[i] = 3;
       nowTip[i] = 0;
     }
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -919,6 +902,23 @@ void Method3()
   }
 }
 
+class RotTip {
+public:
+  vector<int> Rot;
+  vector<int> Tip;
+  vector<int> NowRot;
+  vector<int> NowTip;
+
+  RotTip() = delete;
+
+  RotTip(int v) {
+    Rot.resize(v);
+    Tip.resize(v);
+    NowRot.resize(v);
+    NowTip.resize(v);
+  }
+};
+
 //初期位置はランダム
 //関節一つ
 //辺の長さはランダム
@@ -989,30 +989,13 @@ void Method4(double timeLimit)
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
-    rep(i, V)
-    {
-      nowRot[i] = 0;
-      nowTip[i] = 0;
-    }
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -1021,15 +1004,9 @@ void Method4(double timeLimit)
 
     int maxActionScore;
     int maxAction;
-    int maxRot[MAX_V];
-    int maxTip[MAX_V];
-    int maxNowRot[MAX_V];
-    int maxNowTip[MAX_V];
+    RotTip maxRT(v);
 
-    int tmpRot[MAX_V];
-    int tmpTip[MAX_V];
-    int tmpNowRot[MAX_V];
-    int tmpNowTip[MAX_V];
+    RotTip tmpRT(v);
 
     int maxA[MAX_V][3];
     int maxB[MAX_V][3];
@@ -1063,10 +1040,10 @@ void Method4(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       srep(iii, 0, 3)
@@ -1084,10 +1061,10 @@ void Method4(double timeLimit)
           rep(i, V)
           {
             action[i] = 0;
-            tmpRot[i] = 1;
-            tmpTip[i] = 0;
-            tmpNowRot[i] = nowRot[i];
-            tmpNowTip[i] = nowTip[i];
+            tmpRT.Rot[i] = 1;
+            tmpRT.Tip[i] = 0;
+            tmpRT.NowRot[i] = nowRot[i];
+            tmpRT.NowTip[i] = nowTip[i];
           }
 
           keepACount = 0;
@@ -1111,10 +1088,10 @@ void Method4(double timeLimit)
                   keepA[keepACount][2] = a[nrx][nry];
                   keepACount++;
                   a[nrx][nry] = 0;
-                  tmpRot[i] = j + 1;
-                  tmpNowRot[i] = (nowRot[i] + j) % 4;
-                  tmpTip[i] = 1;
-                  tmpNowTip[i] = 1;
+                  tmpRT.Rot[i] = j + 1;
+                  tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                  tmpRT.Tip[i] = 1;
+                  tmpRT.NowTip[i] = 1;
                   action[i] = ACTION_RATIO;
                   break;
                 }
@@ -1126,10 +1103,10 @@ void Method4(double timeLimit)
                   keepB[keepBCount][2] = b[nrx][nry];
                   keepBCount++;
                   b[nrx][nry] = 0;
-                  tmpRot[i] = j + 1;
-                  tmpNowRot[i] = (nowRot[i] + j) % 4;
-                  tmpTip[i] = 1;
-                  tmpNowTip[i] = 0;
+                  tmpRT.Rot[i] = j + 1;
+                  tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                  tmpRT.Tip[i] = 1;
+                  tmpRT.NowTip[i] = 0;
                   action[i] = ACTION_RATIO;
                   break;
                 }
@@ -1155,12 +1132,12 @@ void Method4(double timeLimit)
               if (nowTip[i] == 0) {
                 if (a[nnrx][nnry] == 1) {
                   if (j == 2) {
-                    tmpRot[i] = 2;
-                    tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                    tmpRT.Rot[i] = 2;
+                    tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                   }
                   else {
-                    tmpRot[i] = j + 1;
-                    tmpNowRot[i] = (nowRot[i] + j) % 4;
+                    tmpRT.Rot[i] = j + 1;
+                    tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                   }
                   action[i] = 1;
                   break;
@@ -1169,12 +1146,12 @@ void Method4(double timeLimit)
               else {
                 if (b[nnrx][nnry] == 1) {
                   if (j == 2) {
-                    tmpRot[i] = 2;
-                    tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                    tmpRT.Rot[i] = 2;
+                    tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                   }
                   else {
-                    tmpRot[i] = j + 1;
-                    tmpNowRot[i] = (nowRot[i] + j) % 4;
+                    tmpRT.Rot[i] = j + 1;
+                    tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                   }
                   action[i] = 1;
                   break;
@@ -1192,13 +1169,7 @@ void Method4(double timeLimit)
           if (tmpActionScore > maxActionScore) {
             maxAction = ii;
             maxActionScore = tmpActionScore;
-            rep(i, V)
-            {
-              maxRot[i] = tmpRot[i];
-              maxTip[i] = tmpTip[i];
-              maxNowRot[i] = tmpNowRot[i];
-              maxNowTip[i] = tmpNowTip[i];
-            }
+            maxRT = tmpRT;
 
             maxACount = keepACount;
             rep(i, keepACount)
@@ -1231,10 +1202,10 @@ void Method4(double timeLimit)
 
       srep(i, 2, V)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       rot[_t][1] = maxAction + 1;
@@ -1388,30 +1359,13 @@ void Method5(double timeLimit)
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
-    rep(i, V)
-    {
-      nowRot[i] = 0;
-      nowTip[i] = 0;
-    }
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -1421,15 +1375,9 @@ void Method5(double timeLimit)
     int maxActionScore;
     int maxAction;
     int maxAction2;
-    int maxRot[MAX_V];
-    int maxTip[MAX_V];
-    int maxNowRot[MAX_V];
-    int maxNowTip[MAX_V];
+    RotTip maxRT(v);
 
-    int tmpRot[MAX_V];
-    int tmpTip[MAX_V];
-    int tmpNowRot[MAX_V];
-    int tmpNowTip[MAX_V];
+    RotTip tmpRT(v);
 
     int maxA[MAX_V][3];
     int maxB[MAX_V][3];
@@ -1464,10 +1412,10 @@ void Method5(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       srep(ii2, 0, 3)
@@ -1497,10 +1445,10 @@ void Method5(double timeLimit)
               rep(i, V)
               {
                 action[i] = 0;
-                tmpRot[i] = 1;
-                tmpTip[i] = 0;
-                tmpNowRot[i] = nowRot[i];
-                tmpNowTip[i] = nowTip[i];
+                tmpRT.Rot[i] = 1;
+                tmpRT.Tip[i] = 0;
+                tmpRT.NowRot[i] = nowRot[i];
+                tmpRT.NowTip[i] = nowTip[i];
               }
 
               keepACount = 0;
@@ -1524,10 +1472,10 @@ void Method5(double timeLimit)
                       keepA[keepACount][2] = a[nrx][nry];
                       keepACount++;
                       a[nrx][nry] = 0;
-                      tmpRot[i] = j + 1;
-                      tmpNowRot[i] = (nowRot[i] + j) % 4;
-                      tmpTip[i] = 1;
-                      tmpNowTip[i] = 1;
+                      tmpRT.Rot[i] = j + 1;
+                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                      tmpRT.Tip[i] = 1;
+                      tmpRT.NowTip[i] = 1;
                       action[i] = ACTION_RATIO;
                       break;
                     }
@@ -1539,10 +1487,10 @@ void Method5(double timeLimit)
                       keepB[keepBCount][2] = b[nrx][nry];
                       keepBCount++;
                       b[nrx][nry] = 0;
-                      tmpRot[i] = j + 1;
-                      tmpNowRot[i] = (nowRot[i] + j) % 4;
-                      tmpTip[i] = 1;
-                      tmpNowTip[i] = 0;
+                      tmpRT.Rot[i] = j + 1;
+                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                      tmpRT.Tip[i] = 1;
+                      tmpRT.NowTip[i] = 0;
                       action[i] = ACTION_RATIO;
                       break;
                     }
@@ -1568,12 +1516,12 @@ void Method5(double timeLimit)
                   if (nowTip[i] == 0) {
                     if (a[nnrx][nnry] == 1) {
                       if (j == 2) {
-                        tmpRot[i] = 2;
-                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                        tmpRT.Rot[i] = 2;
+                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                       }
                       else {
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                       }
                       action[i] = 1;
                       break;
@@ -1582,12 +1530,12 @@ void Method5(double timeLimit)
                   else {
                     if (b[nnrx][nnry] == 1) {
                       if (j == 2) {
-                        tmpRot[i] = 2;
-                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                        tmpRT.Rot[i] = 2;
+                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                       }
                       else {
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                       }
                       action[i] = 1;
                       break;
@@ -1607,13 +1555,7 @@ void Method5(double timeLimit)
                 maxAction = ii;
                 maxAction2 = iii;
                 maxActionScore = tmpActionScore;
-                rep(i, V)
-                {
-                  maxRot[i] = tmpRot[i];
-                  maxTip[i] = tmpTip[i];
-                  maxNowRot[i] = tmpNowRot[i];
-                  maxNowTip[i] = tmpNowTip[i];
-                }
+                maxRT = tmpRT;
 
                 maxACount = keepACount;
                 rep(i, keepACount)
@@ -1649,10 +1591,10 @@ void Method5(double timeLimit)
 
       srep(i, 3, V)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       rot[_t][1] = maxAction + 1;
@@ -1810,30 +1752,13 @@ void Method52(double timeLimit)
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
-    rep(i, V)
-    {
-      nowRot[i] = 0;
-      nowTip[i] = 0;
-    }
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -1845,15 +1770,9 @@ void Method52(double timeLimit)
     int maxActionScore;
     int maxAction;
     int maxAction2;
-    int maxRot[MAX_V];
-    int maxTip[MAX_V];
-    int maxNowRot[MAX_V];
-    int maxNowTip[MAX_V];
+    RotTip maxRT(v);
 
-    int tmpRot[MAX_V];
-    int tmpTip[MAX_V];
-    int tmpNowRot[MAX_V];
-    int tmpNowTip[MAX_V];
+    RotTip tmpRT(v);
 
     int maxA[MAX_V][3];
     int maxB[MAX_V][3];
@@ -1875,10 +1794,10 @@ void Method52(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       rep(ord, 5)
@@ -1922,10 +1841,10 @@ void Method52(double timeLimit)
                 rep(i, V)
                 {
                   action[i] = 0;
-                  tmpRot[i] = 1;
-                  tmpTip[i] = 0;
-                  tmpNowRot[i] = nowRot[i];
-                  tmpNowTip[i] = nowTip[i];
+                  tmpRT.Rot[i] = 1;
+                  tmpRT.Tip[i] = 0;
+                  tmpRT.NowRot[i] = nowRot[i];
+                  tmpRT.NowTip[i] = nowTip[i];
                 }
 
                 keepACount = 0;
@@ -1949,10 +1868,10 @@ void Method52(double timeLimit)
                         keepA[keepACount][2] = a[nrx][nry];
                         keepACount++;
                         a[nrx][nry] = 0;
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
-                        tmpTip[i] = 1;
-                        tmpNowTip[i] = 1;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Tip[i] = 1;
+                        tmpRT.NowTip[i] = 1;
                         action[i] = ACTION_RATIO;
                         break;
                       }
@@ -1964,63 +1883,16 @@ void Method52(double timeLimit)
                         keepB[keepBCount][2] = b[nrx][nry];
                         keepBCount++;
                         b[nrx][nry] = 0;
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
-                        tmpTip[i] = 1;
-                        tmpNowTip[i] = 0;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Tip[i] = 1;
+                        tmpRT.NowTip[i] = 0;
                         action[i] = ACTION_RATIO;
                         break;
                       }
                     }
                   }
                 }
-
-                // 次のターン
-                //int nnx = route[(t + 2) % nn2][0];
-                //int nny = route[(t + 2) % nn2][1];
-                //srep(i, 3, V)
-                //{
-                //  if (action[i])continue;
-
-                //  srep(j, -1, 3)
-                //  {
-                //    int nRot = (nRot4 + nowRot[i] + j + 4) % 4;
-                //    int nnrx = nnx + le[i] * dx[nRot] + le[1] * dx[nRot2] + le[2] * dx[nRot4];
-                //    int nnry = nny + le[i] * dy[nRot] + le[1] * dy[nRot2] + le[2] * dy[nRot4];
-
-                //    if (IsNG(nnrx, nnry))continue;
-
-                //    if (nowTip[i] == 0) {
-                //      if (a[nnrx][nnry] == 1) {
-                //        if (j == 2) {
-                //          tmpRot[i] = 2;
-                //          tmpNowRot[i] = (nowRot[i] + 1) % 4;
-                //        }
-                //        else {
-                //          tmpRot[i] = j + 1;
-                //          tmpNowRot[i] = (nowRot[i] + j) % 4;
-                //        }
-                //        action[i] = 1;
-                //        break;
-                //      }
-                //    }
-                //    else {
-                //      if (b[nnrx][nnry] == 1) {
-                //        if (j == 2) {
-                //          tmpRot[i] = 2;
-                //          tmpNowRot[i] = (nowRot[i] + 1) % 4;
-                //        }
-                //        else {
-                //          tmpRot[i] = j + 1;
-                //          tmpNowRot[i] = (nowRot[i] + j) % 4;
-                //        }
-                //        action[i] = 1;
-                //        break;
-                //      }
-                //    }
-                //  }
-                //}
-
 
                 int tmpActionScore = 0;
                 srep(i, 3, V)
@@ -2033,13 +1905,7 @@ void Method52(double timeLimit)
                   maxAction = ii;
                   maxAction2 = iii;
                   maxActionScore = tmpActionScore;
-                  rep(i, V)
-                  {
-                    maxRot[i] = tmpRot[i];
-                    maxTip[i] = tmpTip[i];
-                    maxNowRot[i] = tmpNowRot[i];
-                    maxNowTip[i] = tmpNowTip[i];
-                  }
+                  maxRT = tmpRT;
 
                   maxACount = keepACount;
                   rep(i, keepACount)
@@ -2077,10 +1943,10 @@ void Method52(double timeLimit)
 
       srep(i, 3, V)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       dir[_t] = maxDir;
@@ -2243,30 +2109,13 @@ void Method6(double timeLimit)
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
-    rep(i, V)
-    {
-      nowRot[i] = 0;
-      nowTip[i] = 0;
-    }
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -2277,15 +2126,9 @@ void Method6(double timeLimit)
     int maxAction;
     int maxAction2;
     int maxAction3;
-    int maxRot[MAX_V];
-    int maxTip[MAX_V];
-    int maxNowRot[MAX_V];
-    int maxNowTip[MAX_V];
+    RotTip maxRT(v);
 
-    int tmpRot[MAX_V];
-    int tmpTip[MAX_V];
-    int tmpNowRot[MAX_V];
-    int tmpNowTip[MAX_V];
+    RotTip tmpRT(v);
 
     int maxA[MAX_V][3];
     int maxB[MAX_V][3];
@@ -2321,10 +2164,10 @@ void Method6(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       srep(ii2, 0, 3)
@@ -2367,10 +2210,10 @@ void Method6(double timeLimit)
                   rep(i, V)
                   {
                     action[i] = 0;
-                    tmpRot[i] = 1;
-                    tmpTip[i] = 0;
-                    tmpNowRot[i] = nowRot[i];
-                    tmpNowTip[i] = nowTip[i];
+                    tmpRT.Rot[i] = 1;
+                    tmpRT.Tip[i] = 0;
+                    tmpRT.NowRot[i] = nowRot[i];
+                    tmpRT.NowTip[i] = nowTip[i];
                   }
 
                   keepACount = 0;
@@ -2394,10 +2237,10 @@ void Method6(double timeLimit)
                           keepA[keepACount][2] = a[nrx][nry];
                           keepACount++;
                           a[nrx][nry] = 0;
-                          tmpRot[i] = j + 1;
-                          tmpNowRot[i] = (nowRot[i] + j) % 4;
-                          tmpTip[i] = 1;
-                          tmpNowTip[i] = 1;
+                          tmpRT.Rot[i] = j + 1;
+                          tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                          tmpRT.Tip[i] = 1;
+                          tmpRT.NowTip[i] = 1;
                           action[i] = ACTION_RATIO;
                           break;
                         }
@@ -2409,10 +2252,10 @@ void Method6(double timeLimit)
                           keepB[keepBCount][2] = b[nrx][nry];
                           keepBCount++;
                           b[nrx][nry] = 0;
-                          tmpRot[i] = j + 1;
-                          tmpNowRot[i] = (nowRot[i] + j) % 4;
-                          tmpTip[i] = 1;
-                          tmpNowTip[i] = 0;
+                          tmpRT.Rot[i] = j + 1;
+                          tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                          tmpRT.Tip[i] = 1;
+                          tmpRT.NowTip[i] = 0;
                           action[i] = ACTION_RATIO;
                           break;
                         }
@@ -2438,12 +2281,12 @@ void Method6(double timeLimit)
                       if (nowTip[i] == 0) {
                         if (a[nnrx][nnry] == 1) {
                           if (j == 2) {
-                            tmpRot[i] = 2;
-                            tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                            tmpRT.Rot[i] = 2;
+                            tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                           }
                           else {
-                            tmpRot[i] = j + 1;
-                            tmpNowRot[i] = (nowRot[i] + j) % 4;
+                            tmpRT.Rot[i] = j + 1;
+                            tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                           }
                           action[i] = 1;
                           break;
@@ -2452,12 +2295,12 @@ void Method6(double timeLimit)
                       else {
                         if (b[nnrx][nnry] == 1) {
                           if (j == 2) {
-                            tmpRot[i] = 2;
-                            tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                            tmpRT.Rot[i] = 2;
+                            tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                           }
                           else {
-                            tmpRot[i] = j + 1;
-                            tmpNowRot[i] = (nowRot[i] + j) % 4;
+                            tmpRT.Rot[i] = j + 1;
+                            tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                           }
                           action[i] = 1;
                           break;
@@ -2477,13 +2320,7 @@ void Method6(double timeLimit)
                     maxAction2 = iii;
                     maxAction3 = iiii;
                     maxActionScore = tmpActionScore;
-                    rep(i, V)
-                    {
-                      maxRot[i] = tmpRot[i];
-                      maxTip[i] = tmpTip[i];
-                      maxNowRot[i] = tmpNowRot[i];
-                      maxNowTip[i] = tmpNowTip[i];
-                    }
+                    maxRT = tmpRT;
 
                     maxACount = keepACount;
                     rep(i, keepACount)
@@ -2522,10 +2359,10 @@ void Method6(double timeLimit)
 
       srep(i, 4, V)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       rot[_t][1] = maxAction + 1;
@@ -2688,30 +2525,13 @@ void Method62(double timeLimit)
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
-    rep(i, V)
-    {
-      nowRot[i] = 0;
-      nowTip[i] = 0;
-    }
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -2724,15 +2544,9 @@ void Method62(double timeLimit)
     int maxAction;
     int maxAction2;
     int maxAction3;
-    int maxRot[MAX_V];
-    int maxTip[MAX_V];
-    int maxNowRot[MAX_V];
-    int maxNowTip[MAX_V];
+    RotTip maxRT(v);
 
-    int tmpRot[MAX_V];
-    int tmpTip[MAX_V];
-    int tmpNowRot[MAX_V];
-    int tmpNowTip[MAX_V];
+    RotTip tmpRT(v);
 
     int maxA[MAX_V][3];
     int maxB[MAX_V][3];
@@ -2755,10 +2569,10 @@ void Method62(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       rep(ord, 5)
@@ -2816,10 +2630,10 @@ void Method62(double timeLimit)
                     rep(i, V)
                     {
                       action[i] = 0;
-                      tmpRot[i] = 1;
-                      tmpTip[i] = 0;
-                      tmpNowRot[i] = nowRot[i];
-                      tmpNowTip[i] = nowTip[i];
+                      tmpRT.Rot[i] = 1;
+                      tmpRT.Tip[i] = 0;
+                      tmpRT.NowRot[i] = nowRot[i];
+                      tmpRT.NowTip[i] = nowTip[i];
                     }
 
                     keepACount = 0;
@@ -2843,10 +2657,10 @@ void Method62(double timeLimit)
                             keepA[keepACount][2] = a[nrx][nry];
                             keepACount++;
                             a[nrx][nry] = 0;
-                            tmpRot[i] = j + 1;
-                            tmpNowRot[i] = (nowRot[i] + j) % 4;
-                            tmpTip[i] = 1;
-                            tmpNowTip[i] = 1;
+                            tmpRT.Rot[i] = j + 1;
+                            tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                            tmpRT.Tip[i] = 1;
+                            tmpRT.NowTip[i] = 1;
                             action[i] = ACTION_RATIO;
                             break;
                           }
@@ -2858,62 +2672,16 @@ void Method62(double timeLimit)
                             keepB[keepBCount][2] = b[nrx][nry];
                             keepBCount++;
                             b[nrx][nry] = 0;
-                            tmpRot[i] = j + 1;
-                            tmpNowRot[i] = (nowRot[i] + j) % 4;
-                            tmpTip[i] = 1;
-                            tmpNowTip[i] = 0;
+                            tmpRT.Rot[i] = j + 1;
+                            tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                            tmpRT.Tip[i] = 1;
+                            tmpRT.NowTip[i] = 0;
                             action[i] = ACTION_RATIO;
                             break;
                           }
                         }
                       }
                     }
-
-                    // 次のターン
-                    //int nnx = route[(t + 2) % nn2][0];
-                    //int nny = route[(t + 2) % nn2][1];
-                    //srep(i, 4, V)
-                    //{
-                    //  if (action[i])continue;
-
-                    //  srep(j, -1, 3)
-                    //  {
-                    //    int nRot = (nRot6 + nowRot[i] + j + 4) % 4;
-                    //    int nnrx = nnx + le[i] * dx[nRot] + le[1] * dx[nRot2] + le[2] * dx[nRot4] + le[3] * dx[nRot6];
-                    //    int nnry = nny + le[i] * dy[nRot] + le[1] * dy[nRot2] + le[2] * dy[nRot4] + le[3] * dy[nRot6];
-
-                    //    if (IsNG(nnrx, nnry))continue;
-
-                    //    if (nowTip[i] == 0) {
-                    //      if (a[nnrx][nnry] == 1) {
-                    //        if (j == 2) {
-                    //          tmpRot[i] = 2;
-                    //          tmpNowRot[i] = (nowRot[i] + 1) % 4;
-                    //        }
-                    //        else {
-                    //          tmpRot[i] = j + 1;
-                    //          tmpNowRot[i] = (nowRot[i] + j) % 4;
-                    //        }
-                    //        action[i] = 1;
-                    //        break;
-                    //      }
-                    //    }
-                    //    else {
-                    //      if (b[nnrx][nnry] == 1) {
-                    //        if (j == 2) {
-                    //          tmpRot[i] = 2;
-                    //          tmpNowRot[i] = (nowRot[i] + 1) % 4;
-                    //        }
-                    //        else {
-                    //          tmpRot[i] = j + 1;
-                    //          tmpNowRot[i] = (nowRot[i] + j) % 4;
-                    //        }
-                    //        action[i] = 1;
-                    //        break;
-                    //      }
-                    //    }
-                    //  }
-                    //}
 
                     int tmpActionScore = 0;
                     srep(i, 4, V)
@@ -2927,13 +2695,7 @@ void Method62(double timeLimit)
                       maxAction2 = iii;
                       maxAction3 = iiii;
                       maxActionScore = tmpActionScore;
-                      rep(i, V)
-                      {
-                        maxRot[i] = tmpRot[i];
-                        maxTip[i] = tmpTip[i];
-                        maxNowRot[i] = tmpNowRot[i];
-                        maxNowTip[i] = tmpNowTip[i];
-                      }
+                      maxRT = tmpRT;
 
                       maxACount = keepACount;
                       rep(i, keepACount)
@@ -2975,10 +2737,10 @@ void Method62(double timeLimit)
 
       srep(i, 4, V)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       dir[_t] = maxDir;
@@ -3158,30 +2920,13 @@ void Method7(double timeLimit)
     int y = sy;
     int _t = 0;
 
-    int nowRot[MAX_V];
-    int nowTip[MAX_V];
-    rep(i, V)
-    {
-      nowRot[i] = 0;
-      nowTip[i] = 0;
-    }
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
 
-    int a[MAX_N][MAX_N];
-    int b[MAX_N][MAX_N];
+    vector<vector<int>> a;
+    vector<vector<int>> b;
     int mCount = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        a[i][j] = init_a[i][j];
-        b[i][j] = init_b[i][j];
-        if (a[i][j] == 1 && b[i][j] == 1) {
-          mCount++;
-          a[i][j] = 0;
-          b[i][j] = 0;
-        }
-      }
-    }
+    CopyAB(a, b, mCount);
 
     int action[MAX_V] = {};
     int lastT = -1;
@@ -3191,15 +2936,9 @@ void Method7(double timeLimit)
     int maxActionScore;
     int maxAction;
     int maxAction2;
-    int maxRot[MAX_V];
-    int maxTip[MAX_V];
-    int maxNowRot[MAX_V];
-    int maxNowTip[MAX_V];
+    RotTip maxRT(v);
 
-    int tmpRot[MAX_V];
-    int tmpTip[MAX_V];
-    int tmpNowRot[MAX_V];
-    int tmpNowTip[MAX_V];
+    RotTip tmpRT(v);
 
     int maxA[MAX_V][3];
     int maxB[MAX_V][3];
@@ -3234,10 +2973,10 @@ void Method7(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       srep(ii2, 0, 3)
@@ -3267,10 +3006,10 @@ void Method7(double timeLimit)
               rep(i, V)
               {
                 action[i] = 0;
-                tmpRot[i] = 1;
-                tmpTip[i] = 0;
-                tmpNowRot[i] = nowRot[i];
-                tmpNowTip[i] = nowTip[i];
+                tmpRT.Rot[i] = 1;
+                tmpRT.Tip[i] = 0;
+                tmpRT.NowRot[i] = nowRot[i];
+                tmpRT.NowTip[i] = nowTip[i];
               }
 
               keepACount = 0;
@@ -3294,10 +3033,10 @@ void Method7(double timeLimit)
                       keepA[keepACount][2] = a[nrx][nry];
                       keepACount++;
                       a[nrx][nry] = 0;
-                      tmpRot[i] = j + 1;
-                      tmpNowRot[i] = (nowRot[i] + j) % 4;
-                      tmpTip[i] = 1;
-                      tmpNowTip[i] = 1;
+                      tmpRT.Rot[i] = j + 1;
+                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                      tmpRT.Tip[i] = 1;
+                      tmpRT.NowTip[i] = 1;
                       action[i] = ACTION_RATIO;
                       break;
                     }
@@ -3309,10 +3048,10 @@ void Method7(double timeLimit)
                       keepB[keepBCount][2] = b[nrx][nry];
                       keepBCount++;
                       b[nrx][nry] = 0;
-                      tmpRot[i] = j + 1;
-                      tmpNowRot[i] = (nowRot[i] + j) % 4;
-                      tmpTip[i] = 1;
-                      tmpNowTip[i] = 0;
+                      tmpRT.Rot[i] = j + 1;
+                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                      tmpRT.Tip[i] = 1;
+                      tmpRT.NowTip[i] = 0;
                       action[i] = ACTION_RATIO;
                       break;
                     }
@@ -3338,12 +3077,12 @@ void Method7(double timeLimit)
                   if (nowTip[i] == 0) {
                     if (a[nnrx][nnry] == 1) {
                       if (j == 2) {
-                        tmpRot[i] = 2;
-                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                        tmpRT.Rot[i] = 2;
+                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                       }
                       else {
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                       }
                       action[i] = 1;
                       break;
@@ -3352,12 +3091,12 @@ void Method7(double timeLimit)
                   else {
                     if (b[nnrx][nnry] == 1) {
                       if (j == 2) {
-                        tmpRot[i] = 2;
-                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                        tmpRT.Rot[i] = 2;
+                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                       }
                       else {
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                       }
                       action[i] = 1;
                       break;
@@ -3377,13 +3116,7 @@ void Method7(double timeLimit)
                 maxAction = ii;
                 maxAction2 = iii;
                 maxActionScore = tmpActionScore;
-                rep(i, V)
-                {
-                  maxRot[i] = tmpRot[i];
-                  maxTip[i] = tmpTip[i];
-                  maxNowRot[i] = tmpNowRot[i];
-                  maxNowTip[i] = tmpNowTip[i];
-                }
+                maxRT = tmpRT;
 
                 maxACount = keepACount;
                 rep(i, keepACount)
@@ -3419,10 +3152,10 @@ void Method7(double timeLimit)
 
       srep(i, 5, 5 + leafs1)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       rot[_t][1] = maxAction + 1;
@@ -3451,10 +3184,10 @@ void Method7(double timeLimit)
       maxActionScore = -1;
       rep(i, V)
       {
-        maxRot[i] = 1;
-        maxTip[i] = 0;
-        maxNowRot[i] = nowRot[i];
-        maxNowTip[i] = nowTip[i];
+        maxRT.Rot[i] = 1;
+        maxRT.Tip[i] = 0;
+        maxRT.NowRot[i] = nowRot[i];
+        maxRT.NowTip[i] = nowTip[i];
       }
 
       srep(ii2, 0, 3)
@@ -3484,10 +3217,10 @@ void Method7(double timeLimit)
               rep(i, V)
               {
                 action[i] = 0;
-                tmpRot[i] = 1;
-                tmpTip[i] = 0;
-                tmpNowRot[i] = nowRot[i];
-                tmpNowTip[i] = nowTip[i];
+                tmpRT.Rot[i] = 1;
+                tmpRT.Tip[i] = 0;
+                tmpRT.NowRot[i] = nowRot[i];
+                tmpRT.NowTip[i] = nowTip[i];
               }
 
               keepACount = 0;
@@ -3511,10 +3244,10 @@ void Method7(double timeLimit)
                       keepA[keepACount][2] = a[nrx][nry];
                       keepACount++;
                       a[nrx][nry] = 0;
-                      tmpRot[i] = j + 1;
-                      tmpNowRot[i] = (nowRot[i] + j) % 4;
-                      tmpTip[i] = 1;
-                      tmpNowTip[i] = 1;
+                      tmpRT.Rot[i] = j + 1;
+                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                      tmpRT.Tip[i] = 1;
+                      tmpRT.NowTip[i] = 1;
                       action[i] = ACTION_RATIO;
                       break;
                     }
@@ -3526,10 +3259,10 @@ void Method7(double timeLimit)
                       keepB[keepBCount][2] = b[nrx][nry];
                       keepBCount++;
                       b[nrx][nry] = 0;
-                      tmpRot[i] = j + 1;
-                      tmpNowRot[i] = (nowRot[i] + j) % 4;
-                      tmpTip[i] = 1;
-                      tmpNowTip[i] = 0;
+                      tmpRT.Rot[i] = j + 1;
+                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+                      tmpRT.Tip[i] = 1;
+                      tmpRT.NowTip[i] = 0;
                       action[i] = ACTION_RATIO;
                       break;
                     }
@@ -3555,12 +3288,12 @@ void Method7(double timeLimit)
                   if (nowTip[i] == 0) {
                     if (a[nnrx][nnry] == 1) {
                       if (j == 2) {
-                        tmpRot[i] = 2;
-                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                        tmpRT.Rot[i] = 2;
+                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                       }
                       else {
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                       }
                       action[i] = 1;
                       break;
@@ -3569,12 +3302,12 @@ void Method7(double timeLimit)
                   else {
                     if (b[nnrx][nnry] == 1) {
                       if (j == 2) {
-                        tmpRot[i] = 2;
-                        tmpNowRot[i] = (nowRot[i] + 1) % 4;
+                        tmpRT.Rot[i] = 2;
+                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
                       }
                       else {
-                        tmpRot[i] = j + 1;
-                        tmpNowRot[i] = (nowRot[i] + j) % 4;
+                        tmpRT.Rot[i] = j + 1;
+                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
                       }
                       action[i] = 1;
                       break;
@@ -3594,13 +3327,7 @@ void Method7(double timeLimit)
                 maxAction = ii;
                 maxAction2 = iii;
                 maxActionScore = tmpActionScore;
-                rep(i, V)
-                {
-                  maxRot[i] = tmpRot[i];
-                  maxTip[i] = tmpTip[i];
-                  maxNowRot[i] = tmpNowRot[i];
-                  maxNowTip[i] = tmpNowTip[i];
-                }
+                maxRT = tmpRT;
 
                 maxACount = keepACount;
                 rep(i, keepACount)
@@ -3636,10 +3363,10 @@ void Method7(double timeLimit)
 
       srep(i, 5 + leafs1, V)
       {
-        rot[_t][i] = maxRot[i];
-        tip[_t][i] = maxTip[i];
-        nowRot[i] = maxNowRot[i];
-        nowTip[i] = maxNowTip[i];
+        rot[_t][i] = maxRT.Rot[i];
+        tip[_t][i] = maxRT.Tip[i];
+        nowRot[i] = maxRT.NowRot[i];
+        nowTip[i] = maxRT.NowTip[i];
       }
 
       rot[_t][3] = maxAction + 1;
