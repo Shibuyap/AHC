@@ -440,7 +440,7 @@ void Method1()
   int mCount = 0;
   CopyAB(a, b, mCount);
 
-  int action[MAX_V] = {};
+  vector<int> action(v);
   while (mCount < m) {
     // dir
     int nx = route[t % nn2][0];
@@ -592,7 +592,7 @@ void Method2()
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     while (mCount < m && _t < real_ansCount) {
       int t = (_t + startT) % nn2;
 
@@ -757,7 +757,7 @@ void Method3()
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -997,6 +997,38 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
   }
 }
 
+bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
+  vector<vector<int>>& a, vector<vector<int>>& b,
+  RotTip& tmpRT, KeepAB& keepAB, vector<int>& action,
+  const int i, const int j, const int nrx, const int nry) {
+  if (nowTip[i] == 0) {
+    if (a[nrx][nry] == 1) {
+      keepAB.AddA(nrx, nry, a[nrx][nry]);
+      a[nrx][nry] = 0;
+      tmpRT.Rot[i] = j + 1;
+      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+      tmpRT.Tip[i] = 1;
+      tmpRT.NowTip[i] = 1;
+      action[i] = ACTION_RATIO;
+      return true;
+    }
+  }
+  else {
+    if (b[nrx][nry] == 1) {
+      keepAB.AddB(nrx, nry, b[nrx][nry]);
+      b[nrx][nry] = 0;
+      tmpRT.Rot[i] = j + 1;
+      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
+      tmpRT.Tip[i] = 1;
+      tmpRT.NowTip[i] = 0;
+      action[i] = ACTION_RATIO;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 //èâä˙à íuÇÕÉâÉìÉ_ÉÄ
 //ä÷êﬂàÍÇ¬
 //ï”ÇÃí∑Ç≥ÇÕÉâÉìÉ_ÉÄ
@@ -1075,7 +1107,7 @@ void Method4(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -1118,17 +1150,13 @@ void Method4(double timeLimit)
         maxRT.NowTip[i] = nowTip[i];
       }
 
-      srep(iii, 0, 3)
+      const vector<int> ordVec = { 0,1,-1 };
+      for (const auto ii : ordVec)
       {
-        int ii = iii;
-        if (ii == 2) ii -= 3;
-        srep(jjj, 0, 3)
+        for (const auto jj : ordVec)
         {
-          int jj = jjj;
-          if (jj == 2)jj -= 3;
-
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-          int nRot2 = (nRot1 + jj + 4) % 4;
+          int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
           rep(i, V)
           {
@@ -1152,30 +1180,8 @@ void Method4(double timeLimit)
 
               if (IsNG(nrx, nry))continue;
 
-              if (nowTip[i] == 0) {
-                if (a[nrx][nry] == 1) {
-                  keepAB.AddA(nrx, nry, a[nrx][nry]);
-                  a[nrx][nry] = 0;
-                  tmpRT.Rot[i] = j + 1;
-                  tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                  tmpRT.Tip[i] = 1;
-                  tmpRT.NowTip[i] = 1;
-                  action[i] = ACTION_RATIO;
-                  break;
-                }
-              }
-              else {
-                if (b[nrx][nry] == 1) {
-                  keepAB.AddB(nrx, nry, b[nrx][nry]);
-                  b[nrx][nry] = 0;
-                  tmpRT.Rot[i] = j + 1;
-                  tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                  tmpRT.Tip[i] = 1;
-                  tmpRT.NowTip[i] = 0;
-                  action[i] = ACTION_RATIO;
-                  break;
-                }
-              }
+              bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+              if (isCatch)break;
             }
           }
 
@@ -1379,7 +1385,7 @@ void Method5(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -1424,27 +1430,18 @@ void Method5(double timeLimit)
         maxRT.NowTip[i] = nowTip[i];
       }
 
-      srep(ii2, 0, 3)
+      const vector<int> ordVec = { 0,1,-1 };
+      for (const auto ii : ordVec)
       {
-        int ii = ii2;
-        if (ii == 2) ii -= 3;
-        srep(jj2, 0, 3)
+        for (const auto jj : ordVec)
         {
-          int jj = jj2;
-          if (jj == 2)jj -= 3;
-
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-          int nRot2 = (nRot1 + jj + 4) % 4;
+          int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-          srep(iii2, 0, 3)
+          for (const auto iii : ordVec)
           {
-            int iii = iii2;
-            if (iii == 2) iii -= 3;
-            srep(jjj2, 0, 3)
+            for (const auto jjj : ordVec)
             {
-              int jjj = jjj2;
-              if (jjj == 2)jjj -= 3;
-
               int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
@@ -1470,30 +1467,8 @@ void Method5(double timeLimit)
 
                   if (IsNG(nrx, nry))continue;
 
-                  if (nowTip[i] == 0) {
-                    if (a[nrx][nry] == 1) {
-                      keepAB.AddA(nrx, nry, a[nrx][nry]);
-                      a[nrx][nry] = 0;
-                      tmpRT.Rot[i] = j + 1;
-                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      tmpRT.Tip[i] = 1;
-                      tmpRT.NowTip[i] = 1;
-                      action[i] = ACTION_RATIO;
-                      break;
-                    }
-                  }
-                  else {
-                    if (b[nrx][nry] == 1) {
-                      keepAB.AddB(nrx, nry, b[nrx][nry]);
-                      b[nrx][nry] = 0;
-                      tmpRT.Rot[i] = j + 1;
-                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      tmpRT.Tip[i] = 1;
-                      tmpRT.NowTip[i] = 0;
-                      action[i] = ACTION_RATIO;
-                      break;
-                    }
-                  }
+                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                  if (isCatch)break;
                 }
               }
 
@@ -1705,7 +1680,7 @@ void Method52(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -1755,27 +1730,18 @@ void Method52(double timeLimit)
           action[i] = 0;
         }
 
-        srep(ii2, 0, 3)
+        const vector<int> ordVec = { 0,1,-1 };
+        for (const auto ii : ordVec)
         {
-          int ii = ii2;
-          if (ii == 2) ii -= 3;
-          srep(jj2, 0, 3)
+          for (const auto jj : ordVec)
           {
-            int jj = jj2;
-            if (jj == 2)jj -= 3;
-
             int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-            int nRot2 = (nRot1 + jj + 4) % 4;
+            int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-            srep(iii2, 0, 3)
+            for (const auto iii : ordVec)
             {
-              int iii = iii2;
-              if (iii == 2) iii -= 3;
-              srep(jjj2, 0, 3)
+              for (const auto jjj : ordVec)
               {
-                int jjj = jjj2;
-                if (jjj == 2)jjj -= 3;
-
                 int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
                 int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
@@ -1801,30 +1767,8 @@ void Method52(double timeLimit)
 
                     if (IsNG(nrx, nry))continue;
 
-                    if (nowTip[i] == 0) {
-                      if (a[nrx][nry] == 1) {
-                        keepAB.AddA(nrx, nry, a[nrx][nry]);
-                        a[nrx][nry] = 0;
-                        tmpRT.Rot[i] = j + 1;
-                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                        tmpRT.Tip[i] = 1;
-                        tmpRT.NowTip[i] = 1;
-                        action[i] = ACTION_RATIO;
-                        break;
-                      }
-                    }
-                    else {
-                      if (b[nrx][nry] == 1) {
-                        keepAB.AddB(nrx, nry, b[nrx][nry]);
-                        b[nrx][nry] = 0;
-                        tmpRT.Rot[i] = j + 1;
-                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                        tmpRT.Tip[i] = 1;
-                        tmpRT.NowTip[i] = 0;
-                        action[i] = ACTION_RATIO;
-                        break;
-                      }
-                    }
+                    bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                    if (isCatch)break;
                   }
                 }
 
@@ -1997,7 +1941,7 @@ void Method6(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -2103,30 +2047,8 @@ void Method6(double timeLimit)
 
                       if (IsNG(nrx, nry))continue;
 
-                      if (nowTip[i] == 0) {
-                        if (a[nrx][nry] == 1) {
-                          keepAB.AddA(nrx, nry, a[nrx][nry]);
-                          a[nrx][nry] = 0;
-                          tmpRT.Rot[i] = j + 1;
-                          tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                          tmpRT.Tip[i] = 1;
-                          tmpRT.NowTip[i] = 1;
-                          action[i] = ACTION_RATIO;
-                          break;
-                        }
-                      }
-                      else {
-                        if (b[nrx][nry] == 1) {
-                          keepAB.AddB(nrx, nry, b[nrx][nry]);
-                          b[nrx][nry] = 0;
-                          tmpRT.Rot[i] = j + 1;
-                          tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                          tmpRT.Tip[i] = 1;
-                          tmpRT.NowTip[i] = 0;
-                          action[i] = ACTION_RATIO;
-                          break;
-                        }
-                      }
+                      bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                      if (isCatch)break;
                     }
                   }
 
@@ -2345,7 +2267,7 @@ void Method62(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -2398,42 +2320,27 @@ void Method62(double timeLimit)
           action[i] = 0;
         }
 
-        srep(ii2, 0, 3)
+        const vector<int> ordVec = { 0,1,-1 };
+        for (const auto ii : ordVec)
         {
-          int ii = ii2;
-          if (ii == 2) ii -= 3;
-          srep(jj2, 0, 3)
+          for (const auto jj : ordVec)
           {
-            int jj = jj2;
-            if (jj == 2)jj -= 3;
-
             int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
             int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-            srep(iii2, 0, 3)
+            for (const auto iii : ordVec)
             {
-              int iii = iii2;
-              if (iii == 2) iii -= 3;
-              srep(jjj2, 0, 3)
+              for (const auto jjj : ordVec)
               {
-                int jjj = jjj2;
-                if (jjj == 2)jjj -= 3;
-
                 int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
                 int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
-                srep(iiii2, 0, 3)
+                for (const auto iiii : ordVec)
                 {
-                  int iiii = iiii2;
-                  if (iiii == 2) iiii -= 3;
-                  srep(jjjj2, 0, 3)
+                  for (const auto jjjj : ordVec)
                   {
-                    int jjjj = jjjj2;
-                    if (jjjj == 2)jjjj -= 3;
-
                     int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
                     int nRot6 = (nRot4 + nowRot[3] + iiii + jjjj + 4) % 4;
-
 
                     rep(i, V)
                     {
@@ -2457,30 +2364,8 @@ void Method62(double timeLimit)
 
                         if (IsNG(nrx, nry))continue;
 
-                        if (nowTip[i] == 0) {
-                          if (a[nrx][nry] == 1) {
-                            keepAB.AddA(nrx, nry, a[nrx][nry]);
-                            a[nrx][nry] = 0;
-                            tmpRT.Rot[i] = j + 1;
-                            tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                            tmpRT.Tip[i] = 1;
-                            tmpRT.NowTip[i] = 1;
-                            action[i] = ACTION_RATIO;
-                            break;
-                          }
-                        }
-                        else {
-                          if (b[nrx][nry] == 1) {
-                            keepAB.AddB(nrx, nry, b[nrx][nry]);
-                            b[nrx][nry] = 0;
-                            tmpRT.Rot[i] = j + 1;
-                            tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                            tmpRT.Tip[i] = 1;
-                            tmpRT.NowTip[i] = 0;
-                            action[i] = ACTION_RATIO;
-                            break;
-                          }
-                        }
+                        bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                        if (isCatch)break;
                       }
                     }
 
@@ -2674,7 +2559,7 @@ void Method7(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    int action[MAX_V] = {};
+    vector<int> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -2719,27 +2604,18 @@ void Method7(double timeLimit)
         maxRT.NowTip[i] = nowTip[i];
       }
 
-      srep(ii2, 0, 3)
+      const vector<int> ordVec = { 0,1,-1 };
+      for (const auto ii : ordVec)
       {
-        int ii = ii2;
-        if (ii == 2) ii -= 3;
-        srep(jj2, 0, 3)
+        for (const auto jj : ordVec)
         {
-          int jj = jj2;
-          if (jj == 2)jj -= 3;
-
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-          int nRot2 = (nRot1 + jj + 4) % 4;
+          int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-          srep(iii2, 0, 3)
+          for (const auto iii : ordVec)
           {
-            int iii = iii2;
-            if (iii == 2) iii -= 3;
-            srep(jjj2, 0, 3)
+            for (const auto jjj : ordVec)
             {
-              int jjj = jjj2;
-              if (jjj == 2)jjj -= 3;
-
               int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
@@ -2765,30 +2641,8 @@ void Method7(double timeLimit)
 
                   if (IsNG(nrx, nry))continue;
 
-                  if (nowTip[i] == 0) {
-                    if (a[nrx][nry] == 1) {
-                      keepAB.AddA(nrx, nry, a[nrx][nry]);
-                      a[nrx][nry] = 0;
-                      tmpRT.Rot[i] = j + 1;
-                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      tmpRT.Tip[i] = 1;
-                      tmpRT.NowTip[i] = 1;
-                      action[i] = ACTION_RATIO;
-                      break;
-                    }
-                  }
-                  else {
-                    if (b[nrx][nry] == 1) {
-                      keepAB.AddB(nrx, nry, b[nrx][nry]);
-                      b[nrx][nry] = 0;
-                      tmpRT.Rot[i] = j + 1;
-                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      tmpRT.Tip[i] = 1;
-                      tmpRT.NowTip[i] = 0;
-                      action[i] = ACTION_RATIO;
-                      break;
-                    }
-                  }
+                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                  if (isCatch)break;
                 }
               }
 
@@ -2892,27 +2746,17 @@ void Method7(double timeLimit)
         maxRT.NowTip[i] = nowTip[i];
       }
 
-      srep(ii2, 0, 3)
+      for (const auto ii : ordVec)
       {
-        int ii = ii2;
-        if (ii == 2) ii -= 3;
-        srep(jj2, 0, 3)
+        for (const auto jj : ordVec)
         {
-          int jj = jj2;
-          if (jj == 2)jj -= 3;
-
           int nRot1 = (BASE_DIR + nowRot[3] + ii + 4) % 4;
-          int nRot2 = (nRot1 + jj + 4) % 4;
+          int nRot2 = (BASE_DIR + nowRot[3] + ii + jj + 4) % 4;
 
-          srep(iii2, 0, 3)
+          for (const auto iii : ordVec)
           {
-            int iii = iii2;
-            if (iii == 2) iii -= 3;
-            srep(jjj2, 0, 3)
+            for (const auto jjj : ordVec)
             {
-              int jjj = jjj2;
-              if (jjj == 2)jjj -= 3;
-
               int nRot3 = (nRot1 + nowRot[4] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[4] + iii + jjj + 4) % 4;
 
@@ -2938,30 +2782,8 @@ void Method7(double timeLimit)
 
                   if (IsNG(nrx, nry))continue;
 
-                  if (nowTip[i] == 0) {
-                    if (a[nrx][nry] == 1) {
-                      keepAB.AddA(nrx, nry, a[nrx][nry]);
-                      a[nrx][nry] = 0;
-                      tmpRT.Rot[i] = j + 1;
-                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      tmpRT.Tip[i] = 1;
-                      tmpRT.NowTip[i] = 1;
-                      action[i] = ACTION_RATIO;
-                      break;
-                    }
-                  }
-                  else {
-                    if (b[nrx][nry] == 1) {
-                      keepAB.AddB(nrx, nry, b[nrx][nry]);
-                      b[nrx][nry] = 0;
-                      tmpRT.Rot[i] = j + 1;
-                      tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      tmpRT.Tip[i] = 1;
-                      tmpRT.NowTip[i] = 0;
-                      action[i] = ACTION_RATIO;
-                      break;
-                    }
-                  }
+                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                  if (isCatch)break;
                 }
               }
 
@@ -3121,9 +2943,9 @@ ll Solve(int probNum)
     Method62(TL * 0.45);
   }
   else {
-    Method4(TL * 0.1);
-    Method52(TL * 0.3);
-    Method62(TL * 0.3);
+    //Method4(TL * 0.1);
+    //Method52(TL * 0.3);
+    //Method62(TL * 0.3);
     Method7(TL * 0.3);
   }
 
