@@ -927,6 +927,76 @@ public:
   }
 };
 
+class KeepAB {
+public:
+  int KeepA[MAX_V][3];
+  int KeepB[MAX_V][3];
+  int KeepACount;
+  int KeepBCount;
+
+  KeepAB() {
+    KeepACount = 0;
+    KeepBCount = 0;
+  }
+
+  void AddA(int x, int y, int val) {
+    KeepA[KeepACount][0] = x;
+    KeepA[KeepACount][1] = y;
+    KeepA[KeepACount][2] = val;
+    KeepACount++;
+  }
+
+  void AddB(int x, int y, int val) {
+    KeepB[KeepBCount][0] = x;
+    KeepB[KeepBCount][1] = y;
+    KeepB[KeepBCount][2] = val;
+    KeepBCount++;
+  }
+
+  void Clear() {
+    KeepACount = 0;
+    KeepBCount = 0;
+  }
+
+  void Copy(const KeepAB& src) {
+    KeepACount = src.KeepACount;
+    rep(i, KeepACount) {
+      rep(j, 3) {
+        KeepA[i][j] = src.KeepA[i][j];
+      }
+    }
+    KeepBCount = src.KeepBCount;
+    rep(i, KeepBCount) {
+      rep(j, 3) {
+        KeepB[i][j] = src.KeepB[i][j];
+      }
+    }
+  }
+};
+
+void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vector<int>>& b) {
+  rep(i, keepAB.KeepACount)
+  {
+    a[keepAB.KeepA[i][0]][keepAB.KeepA[i][1]] = keepAB.KeepA[i][2];
+  }
+  rep(i, keepAB.KeepBCount)
+  {
+    b[keepAB.KeepB[i][0]][keepAB.KeepB[i][1]] = keepAB.KeepB[i][2];
+  }
+}
+
+void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, int& mCount) {
+  mCount += maxAB.KeepBCount;
+  rep(i, maxAB.KeepACount)
+  {
+    a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] = 0;
+  }
+  rep(i, maxAB.KeepBCount)
+  {
+    b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 0;
+  }
+}
+
 //初期位置はランダム
 //関節一つ
 //辺の長さはランダム
@@ -1016,14 +1086,8 @@ void Method4(double timeLimit)
 
     RotTip tmpRT(v);
 
-    int maxA[MAX_V][3];
-    int maxB[MAX_V][3];
-    int maxACount = 0;
-    int maxBCount = 0;
-    int keepA[MAX_V][3];
-    int keepB[MAX_V][3];
-    int keepACount = 0;
-    int keepBCount = 0;
+    KeepAB maxAB;
+    KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       // dir
@@ -1075,8 +1139,7 @@ void Method4(double timeLimit)
             tmpRT.NowTip[i] = nowTip[i];
           }
 
-          keepACount = 0;
-          keepBCount = 0;
+          keepAB.Clear();
 
           // このターン
           srep(i, 2, V)
@@ -1091,10 +1154,7 @@ void Method4(double timeLimit)
 
               if (nowTip[i] == 0) {
                 if (a[nrx][nry] == 1) {
-                  keepA[keepACount][0] = nrx;
-                  keepA[keepACount][1] = nry;
-                  keepA[keepACount][2] = a[nrx][nry];
-                  keepACount++;
+                  keepAB.AddA(nrx, nry, a[nrx][nry]);
                   a[nrx][nry] = 0;
                   tmpRT.Rot[i] = j + 1;
                   tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -1106,10 +1166,7 @@ void Method4(double timeLimit)
               }
               else {
                 if (b[nrx][nry] == 1) {
-                  keepB[keepBCount][0] = nrx;
-                  keepB[keepBCount][1] = nry;
-                  keepB[keepBCount][2] = b[nrx][nry];
-                  keepBCount++;
+                  keepAB.AddB(nrx, nry, b[nrx][nry]);
                   b[nrx][nry] = 0;
                   tmpRT.Rot[i] = j + 1;
                   tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -1179,32 +1236,10 @@ void Method4(double timeLimit)
             maxActionScore = tmpActionScore;
             maxRT = tmpRT;
 
-            maxACount = keepACount;
-            rep(i, keepACount)
-            {
-              rep(j, 3)
-              {
-                maxA[i][j] = keepA[i][j];
-              }
-            }
-            maxBCount = keepBCount;
-            rep(i, keepBCount)
-            {
-              rep(j, 3)
-              {
-                maxB[i][j] = keepB[i][j];
-              }
-            }
+            maxAB.Copy(keepAB);
           }
 
-          rep(i, keepACount)
-          {
-            a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-          }
-          rep(i, keepBCount)
-          {
-            b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-          }
+          RollBackFromKeepAB(keepAB, a, b);
         }
       }
 
@@ -1219,15 +1254,7 @@ void Method4(double timeLimit)
       rot[_t][1] = maxAction + 1;
       nowRot[1] = (nowRot[1] + maxAction + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
       if (maxActionScore > 0) {
@@ -1364,14 +1391,8 @@ void Method5(double timeLimit)
 
     RotTip tmpRT(v);
 
-    int maxA[MAX_V][3];
-    int maxB[MAX_V][3];
-    int maxACount = 0;
-    int maxBCount = 0;
-    int keepA[MAX_V][3];
-    int keepB[MAX_V][3];
-    int keepACount = 0;
-    int keepBCount = 0;
+    KeepAB maxAB;
+    KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       // dir
@@ -1436,8 +1457,7 @@ void Method5(double timeLimit)
                 tmpRT.NowTip[i] = nowTip[i];
               }
 
-              keepACount = 0;
-              keepBCount = 0;
+              keepAB.Clear();
 
               // このターン
               srep(i, 3, V)
@@ -1452,10 +1472,7 @@ void Method5(double timeLimit)
 
                   if (nowTip[i] == 0) {
                     if (a[nrx][nry] == 1) {
-                      keepA[keepACount][0] = nrx;
-                      keepA[keepACount][1] = nry;
-                      keepA[keepACount][2] = a[nrx][nry];
-                      keepACount++;
+                      keepAB.AddA(nrx, nry, a[nrx][nry]);
                       a[nrx][nry] = 0;
                       tmpRT.Rot[i] = j + 1;
                       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -1467,10 +1484,7 @@ void Method5(double timeLimit)
                   }
                   else {
                     if (b[nrx][nry] == 1) {
-                      keepB[keepBCount][0] = nrx;
-                      keepB[keepBCount][1] = nry;
-                      keepB[keepBCount][2] = b[nrx][nry];
-                      keepBCount++;
+                      keepAB.AddB(nrx, nry, b[nrx][nry]);
                       b[nrx][nry] = 0;
                       tmpRT.Rot[i] = j + 1;
                       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -1542,33 +1556,10 @@ void Method5(double timeLimit)
                 maxActionScore = tmpActionScore;
                 maxRT = tmpRT;
 
-                maxACount = keepACount;
-                rep(i, keepACount)
-                {
-                  rep(j, 3)
-                  {
-                    maxA[i][j] = keepA[i][j];
-                  }
-                }
-                maxBCount = keepBCount;
-                rep(i, keepBCount)
-                {
-                  rep(j, 3)
-                  {
-                    maxB[i][j] = keepB[i][j];
-                  }
-                }
+                maxAB.Copy(keepAB);
               }
 
-
-              rep(i, keepACount)
-              {
-                a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-              }
-              rep(i, keepBCount)
-              {
-                b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-              }
+              RollBackFromKeepAB(keepAB, a, b);
             }
           }
         }
@@ -1587,15 +1578,7 @@ void Method5(double timeLimit)
       rot[_t][2] = maxAction2 + 1;
       nowRot[2] = (nowRot[2] + maxAction2 + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
       if (maxActionScore > 0) {
@@ -1736,14 +1719,8 @@ void Method52(double timeLimit)
 
     RotTip tmpRT(v);
 
-    int maxA[MAX_V][3];
-    int maxB[MAX_V][3];
-    int maxACount = 0;
-    int maxBCount = 0;
-    int keepA[MAX_V][3];
-    int keepB[MAX_V][3];
-    int keepACount = 0;
-    int keepBCount = 0;
+    KeepAB maxAB;
+    KeepAB keepAB;
 
     int order[5] = { 0,1,2,3,4 };
 
@@ -1767,6 +1744,8 @@ void Method52(double timeLimit)
         dir[_t] = order[ord];
         int nx = x + dx[order[ord]];
         int ny = y + dy[order[ord]];
+
+        if (IsNG(nx, ny))continue;
 
         // rot, tip
         rep(i, V)
@@ -1809,8 +1788,7 @@ void Method52(double timeLimit)
                   tmpRT.NowTip[i] = nowTip[i];
                 }
 
-                keepACount = 0;
-                keepBCount = 0;
+                keepAB.Clear();
 
                 // このターン
                 srep(i, 3, V)
@@ -1825,10 +1803,7 @@ void Method52(double timeLimit)
 
                     if (nowTip[i] == 0) {
                       if (a[nrx][nry] == 1) {
-                        keepA[keepACount][0] = nrx;
-                        keepA[keepACount][1] = nry;
-                        keepA[keepACount][2] = a[nrx][nry];
-                        keepACount++;
+                        keepAB.AddA(nrx, nry, a[nrx][nry]);
                         a[nrx][nry] = 0;
                         tmpRT.Rot[i] = j + 1;
                         tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -1840,10 +1815,7 @@ void Method52(double timeLimit)
                     }
                     else {
                       if (b[nrx][nry] == 1) {
-                        keepB[keepBCount][0] = nrx;
-                        keepB[keepBCount][1] = nry;
-                        keepB[keepBCount][2] = b[nrx][nry];
-                        keepBCount++;
+                        keepAB.AddB(nrx, nry, b[nrx][nry]);
                         b[nrx][nry] = 0;
                         tmpRT.Rot[i] = j + 1;
                         tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -1869,33 +1841,10 @@ void Method52(double timeLimit)
                   maxActionScore = tmpActionScore;
                   maxRT = tmpRT;
 
-                  maxACount = keepACount;
-                  rep(i, keepACount)
-                  {
-                    rep(j, 3)
-                    {
-                      maxA[i][j] = keepA[i][j];
-                    }
-                  }
-                  maxBCount = keepBCount;
-                  rep(i, keepBCount)
-                  {
-                    rep(j, 3)
-                    {
-                      maxB[i][j] = keepB[i][j];
-                    }
-                  }
+                  maxAB.Copy(keepAB);
                 }
 
-
-                rep(i, keepACount)
-                {
-                  a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-                }
-                rep(i, keepBCount)
-                {
-                  b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-                }
+                RollBackFromKeepAB(keepAB, a, b);
               }
             }
           }
@@ -1917,15 +1866,7 @@ void Method52(double timeLimit)
       rot[_t][2] = maxAction2 + 1;
       nowRot[2] = (nowRot[2] + maxAction2 + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
       if (maxActionScore > 0) {
@@ -2069,14 +2010,8 @@ void Method6(double timeLimit)
 
     RotTip tmpRT(v);
 
-    int maxA[MAX_V][3];
-    int maxB[MAX_V][3];
-    int maxACount = 0;
-    int maxBCount = 0;
-    int keepA[MAX_V][3];
-    int keepB[MAX_V][3];
-    int keepACount = 0;
-    int keepBCount = 0;
+    KeepAB maxAB;
+    KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       // dir
@@ -2155,8 +2090,7 @@ void Method6(double timeLimit)
                     tmpRT.NowTip[i] = nowTip[i];
                   }
 
-                  keepACount = 0;
-                  keepBCount = 0;
+                  keepAB.Clear();
 
                   // このターン
                   srep(i, 4, V)
@@ -2171,10 +2105,7 @@ void Method6(double timeLimit)
 
                       if (nowTip[i] == 0) {
                         if (a[nrx][nry] == 1) {
-                          keepA[keepACount][0] = nrx;
-                          keepA[keepACount][1] = nry;
-                          keepA[keepACount][2] = a[nrx][nry];
-                          keepACount++;
+                          keepAB.AddA(nrx, nry, a[nrx][nry]);
                           a[nrx][nry] = 0;
                           tmpRT.Rot[i] = j + 1;
                           tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -2186,10 +2117,7 @@ void Method6(double timeLimit)
                       }
                       else {
                         if (b[nrx][nry] == 1) {
-                          keepB[keepBCount][0] = nrx;
-                          keepB[keepBCount][1] = nry;
-                          keepB[keepBCount][2] = b[nrx][nry];
-                          keepBCount++;
+                          keepAB.AddB(nrx, nry, b[nrx][nry]);
                           b[nrx][nry] = 0;
                           tmpRT.Rot[i] = j + 1;
                           tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -2261,34 +2189,10 @@ void Method6(double timeLimit)
                     maxActionScore = tmpActionScore;
                     maxRT = tmpRT;
 
-                    maxACount = keepACount;
-                    rep(i, keepACount)
-                    {
-                      rep(j, 3)
-                      {
-                        maxA[i][j] = keepA[i][j];
-                      }
-                    }
-                    maxBCount = keepBCount;
-                    rep(i, keepBCount)
-                    {
-                      rep(j, 3)
-                      {
-                        maxB[i][j] = keepB[i][j];
-                      }
-                    }
+                    maxAB.Copy(keepAB);
                   }
 
-
-                  rep(i, keepACount)
-                  {
-                    a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-                  }
-                  rep(i, keepBCount)
-                  {
-                    b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-                  }
-
+                  RollBackFromKeepAB(keepAB, a, b);
                 }
               }
             }
@@ -2311,15 +2215,7 @@ void Method6(double timeLimit)
       rot[_t][3] = maxAction3 + 1;
       nowRot[3] = (nowRot[3] + maxAction3 + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
       if (maxActionScore > 0) {
@@ -2464,14 +2360,8 @@ void Method62(double timeLimit)
 
     RotTip tmpRT(v);
 
-    int maxA[MAX_V][3];
-    int maxB[MAX_V][3];
-    int maxACount = 0;
-    int maxBCount = 0;
-    int keepA[MAX_V][3];
-    int keepB[MAX_V][3];
-    int keepACount = 0;
-    int keepBCount = 0;
+    KeepAB maxAB;
+    KeepAB keepAB;
 
     int order[5] = { 0,1,2,3,4 };
 
@@ -2497,6 +2387,8 @@ void Method62(double timeLimit)
         dir[_t] = order[ord];
         int nx = x + dx[order[ord]];
         int ny = y + dy[order[ord]];
+
+        if (IsNG(nx, ny))continue;
 
         // rot, tip
         rep(i, V)
@@ -2552,8 +2444,7 @@ void Method62(double timeLimit)
                       tmpRT.NowTip[i] = nowTip[i];
                     }
 
-                    keepACount = 0;
-                    keepBCount = 0;
+                    keepAB.Clear();
 
                     // このターン
                     srep(i, 4, V)
@@ -2568,10 +2459,7 @@ void Method62(double timeLimit)
 
                         if (nowTip[i] == 0) {
                           if (a[nrx][nry] == 1) {
-                            keepA[keepACount][0] = nrx;
-                            keepA[keepACount][1] = nry;
-                            keepA[keepACount][2] = a[nrx][nry];
-                            keepACount++;
+                            keepAB.AddA(nrx, nry, a[nrx][nry]);
                             a[nrx][nry] = 0;
                             tmpRT.Rot[i] = j + 1;
                             tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -2583,10 +2471,7 @@ void Method62(double timeLimit)
                         }
                         else {
                           if (b[nrx][nry] == 1) {
-                            keepB[keepBCount][0] = nrx;
-                            keepB[keepBCount][1] = nry;
-                            keepB[keepBCount][2] = b[nrx][nry];
-                            keepBCount++;
+                            keepAB.AddB(nrx, nry, b[nrx][nry]);
                             b[nrx][nry] = 0;
                             tmpRT.Rot[i] = j + 1;
                             tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -2613,34 +2498,10 @@ void Method62(double timeLimit)
                       maxActionScore = tmpActionScore;
                       maxRT = tmpRT;
 
-                      maxACount = keepACount;
-                      rep(i, keepACount)
-                      {
-                        rep(j, 3)
-                        {
-                          maxA[i][j] = keepA[i][j];
-                        }
-                      }
-                      maxBCount = keepBCount;
-                      rep(i, keepBCount)
-                      {
-                        rep(j, 3)
-                        {
-                          maxB[i][j] = keepB[i][j];
-                        }
-                      }
+                      maxAB.Copy(keepAB);
                     }
 
-
-                    rep(i, keepACount)
-                    {
-                      a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-                    }
-                    rep(i, keepBCount)
-                    {
-                      b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-                    }
-
+                    RollBackFromKeepAB(keepAB, a, b);
                   }
                 }
               }
@@ -2667,15 +2528,7 @@ void Method62(double timeLimit)
       rot[_t][3] = maxAction3 + 1;
       nowRot[3] = (nowRot[3] + maxAction3 + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
       if (maxActionScore > 0) {
@@ -2833,14 +2686,8 @@ void Method7(double timeLimit)
 
     RotTip tmpRT(v);
 
-    int maxA[MAX_V][3];
-    int maxB[MAX_V][3];
-    int maxACount = 0;
-    int maxBCount = 0;
-    int keepA[MAX_V][3];
-    int keepB[MAX_V][3];
-    int keepACount = 0;
-    int keepBCount = 0;
+    KeepAB maxAB;
+    KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       // dir
@@ -2905,8 +2752,7 @@ void Method7(double timeLimit)
                 tmpRT.NowTip[i] = nowTip[i];
               }
 
-              keepACount = 0;
-              keepBCount = 0;
+              keepAB.Clear();
 
               // このターン
               srep(i, 5, 5 + leafs1)
@@ -2921,10 +2767,7 @@ void Method7(double timeLimit)
 
                   if (nowTip[i] == 0) {
                     if (a[nrx][nry] == 1) {
-                      keepA[keepACount][0] = nrx;
-                      keepA[keepACount][1] = nry;
-                      keepA[keepACount][2] = a[nrx][nry];
-                      keepACount++;
+                      keepAB.AddA(nrx, nry, a[nrx][nry]);
                       a[nrx][nry] = 0;
                       tmpRT.Rot[i] = j + 1;
                       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -2936,10 +2779,7 @@ void Method7(double timeLimit)
                   }
                   else {
                     if (b[nrx][nry] == 1) {
-                      keepB[keepBCount][0] = nrx;
-                      keepB[keepBCount][1] = nry;
-                      keepB[keepBCount][2] = b[nrx][nry];
-                      keepBCount++;
+                      keepAB.AddB(nrx, nry, b[nrx][nry]);
                       b[nrx][nry] = 0;
                       tmpRT.Rot[i] = j + 1;
                       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -3011,33 +2851,10 @@ void Method7(double timeLimit)
                 maxActionScore = tmpActionScore;
                 maxRT = tmpRT;
 
-                maxACount = keepACount;
-                rep(i, keepACount)
-                {
-                  rep(j, 3)
-                  {
-                    maxA[i][j] = keepA[i][j];
-                  }
-                }
-                maxBCount = keepBCount;
-                rep(i, keepBCount)
-                {
-                  rep(j, 3)
-                  {
-                    maxB[i][j] = keepB[i][j];
-                  }
-                }
+                maxAB.Copy(keepAB);
               }
 
-
-              rep(i, keepACount)
-              {
-                a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-              }
-              rep(i, keepBCount)
-              {
-                b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-              }
+              RollBackFromKeepAB(keepAB, a, b);
             }
           }
         }
@@ -3056,15 +2873,7 @@ void Method7(double timeLimit)
       rot[_t][2] = maxAction2 + 1;
       nowRot[2] = (nowRot[2] + maxAction2 + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
       if (maxActionScore > 0) {
@@ -3116,8 +2925,7 @@ void Method7(double timeLimit)
                 tmpRT.NowTip[i] = nowTip[i];
               }
 
-              keepACount = 0;
-              keepBCount = 0;
+              keepAB.Clear();
 
               // このターン
               srep(i, 5 + leafs1, V)
@@ -3132,10 +2940,7 @@ void Method7(double timeLimit)
 
                   if (nowTip[i] == 0) {
                     if (a[nrx][nry] == 1) {
-                      keepA[keepACount][0] = nrx;
-                      keepA[keepACount][1] = nry;
-                      keepA[keepACount][2] = a[nrx][nry];
-                      keepACount++;
+                      keepAB.AddA(nrx, nry, a[nrx][nry]);
                       a[nrx][nry] = 0;
                       tmpRT.Rot[i] = j + 1;
                       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -3147,10 +2952,7 @@ void Method7(double timeLimit)
                   }
                   else {
                     if (b[nrx][nry] == 1) {
-                      keepB[keepBCount][0] = nrx;
-                      keepB[keepBCount][1] = nry;
-                      keepB[keepBCount][2] = b[nrx][nry];
-                      keepBCount++;
+                      keepAB.AddB(nrx, nry, b[nrx][nry]);
                       b[nrx][nry] = 0;
                       tmpRT.Rot[i] = j + 1;
                       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
@@ -3222,33 +3024,10 @@ void Method7(double timeLimit)
                 maxActionScore = tmpActionScore;
                 maxRT = tmpRT;
 
-                maxACount = keepACount;
-                rep(i, keepACount)
-                {
-                  rep(j, 3)
-                  {
-                    maxA[i][j] = keepA[i][j];
-                  }
-                }
-                maxBCount = keepBCount;
-                rep(i, keepBCount)
-                {
-                  rep(j, 3)
-                  {
-                    maxB[i][j] = keepB[i][j];
-                  }
-                }
+                maxAB.Copy(keepAB);
               }
 
-
-              rep(i, keepACount)
-              {
-                a[keepA[i][0]][keepA[i][1]] = keepA[i][2];
-              }
-              rep(i, keepBCount)
-              {
-                b[keepB[i][0]][keepB[i][1]] = keepB[i][2];
-              }
+              RollBackFromKeepAB(keepAB, a, b);
             }
           }
         }
@@ -3267,15 +3046,7 @@ void Method7(double timeLimit)
       rot[_t][4] = maxAction2 + 1;
       nowRot[4] = (nowRot[4] + maxAction2 + 4) % 4;
 
-      mCount += maxBCount;
-      rep(i, maxACount)
-      {
-        a[maxA[i][0]][maxA[i][1]] = 0;
-      }
-      rep(i, maxBCount)
-      {
-        b[maxB[i][0]][maxB[i][1]] = 0;
-      }
+      ReflectFromMaxAB(maxAB, a, b, mCount);
 
       if (maxActionScore > 0) {
         isAction = 1;
@@ -3400,7 +3171,7 @@ int main()
     randxor();
   }
 
-  mode = 1;
+  mode = 2;
 
   if (mode == 0) {
     Solve(0);
