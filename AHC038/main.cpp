@@ -368,7 +368,8 @@ void Output(ofstream& ofs)
   }
 }
 
-void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount) {
+void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
+{
   mCount = 0;
   a.resize(n, vector<int>(n));
   b.resize(n, vector<int>(n));
@@ -384,6 +385,34 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount) {
         b[i][j] = 0;
       }
     }
+  }
+}
+
+void UpdateDir(int& x, int& y, const int nx, const int ny, int& _t)
+{
+  while (x != nx || y != ny) {
+    if (x < nx) {
+      dir[_t] = 0;
+      x++;
+    }
+    else if (x > nx) {
+      dir[_t] = 2;
+      x--;
+    }
+    else if (y < ny) {
+      dir[_t] = 3;
+      y++;
+    }
+    else {
+      dir[_t] = 1;
+      y--;
+    }
+
+    if (x == nx && y == ny) {
+      break;
+    }
+
+    _t++;
   }
 }
 
@@ -847,30 +876,7 @@ void Method3()
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         srep(i, 0, V)
         {
@@ -902,7 +908,8 @@ void Method3()
   }
 }
 
-class RotTip {
+class RotTip
+{
 public:
   vector<int> Rot;
   vector<int> Tip;
@@ -911,7 +918,8 @@ public:
 
   RotTip() = delete;
 
-  RotTip(int v) {
+  RotTip(int v)
+  {
     Rot.resize(v);
     Tip.resize(v);
     NowRot.resize(v);
@@ -1231,30 +1239,7 @@ void Method4(double timeLimit)
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         rep(i, V)
         {
@@ -1622,30 +1607,7 @@ void Method5(double timeLimit)
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         rep(i, V)
         {
@@ -1978,30 +1940,7 @@ void Method52(double timeLimit)
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         rep(i, V)
         {
@@ -2392,30 +2331,7 @@ void Method6(double timeLimit)
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         rep(i, V)
         {
@@ -2774,30 +2690,7 @@ void Method62(double timeLimit)
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         rep(i, V)
         {
@@ -3393,30 +3286,7 @@ void Method7(double timeLimit)
         _t = lastT + 1;
         x = lastX;
         y = lastY;
-        while (x != nx || y != ny) {
-          if (x < nx) {
-            dir[_t] = 0;
-            x++;
-          }
-          else if (x > nx) {
-            dir[_t] = 2;
-            x--;
-          }
-          else if (y < ny) {
-            dir[_t] = 3;
-            y++;
-          }
-          else {
-            dir[_t] = 1;
-            y--;
-          }
-          if (x == nx && y == ny) {
-            break;
-          }
-          else {
-            _t++;
-          }
-        }
+        UpdateDir(x, y, nx, ny, _t);
 
         rep(i, V)
         {
