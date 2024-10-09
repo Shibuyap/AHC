@@ -420,6 +420,34 @@ void UpdateDir(int& x, int& y, const int nx, const int ny, int& _t)
   }
 }
 
+void UpdateTurn(const bool isAction, int& _t, int& lastT, int& lastX, int& lastY,
+  int& x, int& y, const int nx, const int ny)
+{
+  if (isAction) {
+    int keepT = _t;
+    _t = lastT + 1;
+    x = lastX;
+    y = lastY;
+    UpdateDir(x, y, nx, ny, _t);  // Dirの更新処理
+
+    rep(i, V)
+    {
+      rot[_t][i] = rot[keepT][i];
+      tip[_t][i] = tip[keepT][i];
+    }
+
+    lastT = _t;
+    lastX = x;
+    lastY = y;
+    _t++;
+  }
+  else {
+    _t++;
+    x = nx;
+    y = ny;
+  }
+}
+
 //初期位置(0, 0)
 //辺の長さは1~V - 1
 //行動できるときは行動する
@@ -882,7 +910,7 @@ void Method3()
         y = lastY;
         UpdateDir(x, y, nx, ny, _t);
 
-        srep(i, 0, V)
+        rep(i, V)
         {
           rot[_t][i] = rot[keepT][i];
           tip[_t][i] = tip[keepT][i];
@@ -1375,8 +1403,6 @@ void Method52(double timeLimit)
       }
     }
 
-    int t = startT;
-
     int x = sx;
     int y = sy;
     int _t = 0;
@@ -1595,8 +1621,6 @@ void Method62(double timeLimit)
         }
       }
     }
-
-    int t = startT;
 
     int x = sx;
     int y = sy;
