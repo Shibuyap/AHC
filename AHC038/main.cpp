@@ -292,6 +292,49 @@ int CalcScore()
   return ansCount;
 }
 
+// NGチェック
+bool IsValidAnswer() {
+  if (mode == 0) {
+    return true;
+  }
+
+  vector<vector<int>> a, b;
+  a.resize(n, vector<int>(n));
+  b.resize(n, vector<int>(n));
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      a[i][j] = init_a[i][j];
+      b[i][j] = init_b[i][j];
+    }
+  }
+
+  vector<int> nowRot(V);
+  vector<int> nowTip(V);
+  int x = sx;
+  int y = sy;
+
+  rep(t, ansCount) {
+    x = x + dx[dir[t]];
+    y = y + dy[dir[t]];
+    if (IsNG(x, y)) {
+      cout << "Out of Range: turn = " << t << ", x = " << x << ", y = " << y << endl;
+      return false;
+    }
+
+    srep(i, 1, V) {
+      nowRot[i] = (nowRot[i] + rot[t][i]) % 4;
+    }
+
+    rep(i, V) {
+      if (tip[t][i] == 1) {
+        // ここでアーム位置を計算
+      }
+    }
+  }
+}
+
 // 初期解生成
 void Initialize()
 {
@@ -903,29 +946,7 @@ void Method3()
         }
       }
 
-      if (isAction) {
-        int keepT = _t;
-        _t = lastT + 1;
-        x = lastX;
-        y = lastY;
-        UpdateDir(x, y, nx, ny, _t);
-
-        rep(i, V)
-        {
-          rot[_t][i] = rot[keepT][i];
-          tip[_t][i] = tip[keepT][i];
-        }
-
-        lastT = _t;
-        lastX = x;
-        lastY = y;
-        _t++;
-      }
-      else {
-        _t++;
-        x = nx;
-        y = ny;
-      }
+      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
       t = (t + 1) % nn2;
     }
 
@@ -1311,29 +1332,7 @@ void Method4(double timeLimit)
         isAction = 1;
       }
 
-      if (isAction) {
-        int keepT = _t;
-        _t = lastT + 1;
-        x = lastX;
-        y = lastY;
-        UpdateDir(x, y, nx, ny, _t);
-
-        rep(i, V)
-        {
-          rot[_t][i] = rot[keepT][i];
-          tip[_t][i] = tip[keepT][i];
-        }
-
-        lastT = _t;
-        lastX = x;
-        lastY = y;
-        _t++;
-      }
-      else {
-        _t++;
-        x = nx;
-        y = ny;
-      }
+      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
       t = (t + 1) % nn2;
     }
 
@@ -1530,29 +1529,7 @@ void Method52(double timeLimit)
       int nx = x + dx[maxDir];
       int ny = y + dy[maxDir];
 
-      if (isAction) {
-        int keepT = _t;
-        _t = lastT + 1;
-        x = lastX;
-        y = lastY;
-        UpdateDir(x, y, nx, ny, _t);
-
-        rep(i, V)
-        {
-          rot[_t][i] = rot[keepT][i];
-          tip[_t][i] = tip[keepT][i];
-        }
-
-        lastT = _t;
-        lastX = x;
-        lastY = y;
-        _t++;
-      }
-      else {
-        _t++;
-        x = nx;
-        y = ny;
-      }
+      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
     }
 
     ansCount = _t;
@@ -1759,29 +1736,7 @@ void Method62(double timeLimit)
       int nx = x + dx[maxDir];
       int ny = y + dy[maxDir];
 
-      if (isAction) {
-        int keepT = _t;
-        _t = lastT + 1;
-        x = lastX;
-        y = lastY;
-        UpdateDir(x, y, nx, ny, _t);
-
-        rep(i, V)
-        {
-          rot[_t][i] = rot[keepT][i];
-          tip[_t][i] = tip[keepT][i];
-        }
-
-        lastT = _t;
-        lastX = x;
-        lastY = y;
-        _t++;
-      }
-      else {
-        _t++;
-        x = nx;
-        y = ny;
-      }
+      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
     }
 
     ansCount = _t;
@@ -2165,29 +2120,7 @@ void Method7(double timeLimit)
         isAction = 1;
       }
 
-      if (isAction) {
-        int keepT = _t;
-        _t = lastT + 1;
-        x = lastX;
-        y = lastY;
-        UpdateDir(x, y, nx, ny, _t);
-
-        rep(i, V)
-        {
-          rot[_t][i] = rot[keepT][i];
-          tip[_t][i] = tip[keepT][i];
-        }
-
-        lastT = _t;
-        lastX = x;
-        lastY = y;
-        _t++;
-      }
-      else {
-        _t++;
-        x = nx;
-        y = ny;
-      }
+      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
       t = (t + 1) % nn2;
     }
 
@@ -2220,11 +2153,11 @@ int MakeLength(int ra)
   }
   else if (ra < 100) {
     ArmLengthMethod = 3;
-    length= randxor() % ((n - 1) * 3 / 4) + 1;
+    length = randxor() % ((n - 1) * 3 / 4) + 1;
   }
   else {
     ArmLengthMethod = 4;
-    length= randxor() % (n - 1) + 1;
+    length = randxor() % (n - 1) + 1;
   }
   return length;
 }
@@ -2361,18 +2294,18 @@ void Method100(double timeLimit)
 
     // 木作成
     switch (Method) {
-      case 4:
-        MakeTree4();
-        break;
-      case 52:
-        MakeTree5();
-        break;
-      case 62:
-        MakeTree6();
-        break;
-      case 7:
-        MakeTree7();
-        break;
+    case 4:
+      MakeTree4();
+      break;
+    case 52:
+      MakeTree5();
+      break;
+    case 62:
+      MakeTree6();
+      break;
+    case 7:
+      MakeTree7();
+      break;
     }
 
     // 初期位置作成
