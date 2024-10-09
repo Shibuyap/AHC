@@ -81,7 +81,10 @@ const char rotChar[3] = { 'L', '.', 'R' };
 const char tipChar[2] = { '.', 'P' };
 const int BASE_DIR = 3;
 
-const double TL = 2.8;
+int order[5] = { 0,1,2,3,4 };
+vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} };
+
+const double TL = 9.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -293,7 +296,8 @@ int CalcScore()
 }
 
 // NGチェック
-bool IsValidAnswer() {
+bool IsValidAnswer()
+{
   if (mode == 0) {
     return true;
   }
@@ -315,7 +319,8 @@ bool IsValidAnswer() {
   int x = sx;
   int y = sy;
 
-  rep(t, ansCount) {
+  rep(t, ansCount)
+  {
     x = x + dx[dir[t]];
     y = y + dy[dir[t]];
     if (IsNG(x, y)) {
@@ -323,11 +328,13 @@ bool IsValidAnswer() {
       return false;
     }
 
-    srep(i, 1, V) {
+    srep(i, 1, V)
+    {
       nowRot[i] = (nowRot[i] + rot[t][i]) % 4;
     }
 
-    rep(i, V) {
+    rep(i, V)
+    {
       if (tip[t][i] == 1) {
         // ここでアーム位置を計算
       }
@@ -779,6 +786,12 @@ void Method2()
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
+      if (mode == 2) {
+        cout << "loop = " << loop << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
     }
   }
 
@@ -953,6 +966,12 @@ void Method3()
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
+      if (mode == 2) {
+        cout << "loop = " << loop << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
     }
   }
 
@@ -1227,9 +1246,10 @@ void Method4(double timeLimit)
       maxActionScore = -1;
       maxRT.Initialize(nowRot, nowTip);
 
-      const vector<int> ordVec = { 0,1,-1 };
-      for (const auto ii : ordVec) {
-        for (const auto jj : ordVec) {
+      int ra[6];
+      rep(i, 6)ra[i] = randxor() % 6;
+      for (const auto ii : ordVec[ra[0]]) {
+        for (const auto jj : ordVec[ra[1]]) {
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
@@ -1339,6 +1359,12 @@ void Method4(double timeLimit)
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
+      if (mode == 2) {
+        cout << "loop = " << loop << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
     }
   }
 
@@ -1429,8 +1455,6 @@ void Method52(double timeLimit)
     KeepAB maxAB;
     KeepAB keepAB;
 
-    int order[5] = { 0,1,2,3,4 };
-
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       FisherYates(order, 5);
 
@@ -1454,14 +1478,15 @@ void Method52(double timeLimit)
           action[i] = 0;
         }
 
-        const vector<int> ordVec = { 0,1,-1 };
-        for (const auto ii : ordVec) {
-          for (const auto jj : ordVec) {
+        int ra[6];
+        rep(i, 6)ra[i] = randxor() % 6;
+        for (const auto ii : ordVec[ra[0]]) {
+          for (const auto jj : ordVec[ra[1]]) {
             int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
             int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-            for (const auto iii : ordVec) {
-              for (const auto jjj : ordVec) {
+            for (const auto iii : ordVec[ra[2]]) {
+              for (const auto jjj : ordVec[ra[3]]) {
                 int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
                 int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
@@ -1535,7 +1560,12 @@ void Method52(double timeLimit)
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
-      //cout << real_ansCount << ' ' << le[1] << endl;
+      if (mode == 2) {
+        cout << "loop = " << loop << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
     }
   }
 
@@ -1571,7 +1601,8 @@ void Method62(double timeLimit)
     startT = randxor() % nn2;
     sx = route[startT][0];
     sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
+    //if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
+    if (randxor() % 2 == 0 && loop > 1000) {
       V = real_V;
       srep(i, 1, V)
       {
@@ -1626,8 +1657,6 @@ void Method62(double timeLimit)
     KeepAB maxAB;
     KeepAB keepAB;
 
-    int order[5] = { 0,1,2,3,4 };
-
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       FisherYates(order, 5);
 
@@ -1652,19 +1681,20 @@ void Method62(double timeLimit)
           action[i] = 0;
         }
 
-        const vector<int> ordVec = { 0,1,-1 };
-        for (const auto ii : ordVec) {
-          for (const auto jj : ordVec) {
+        int ra[6];
+        rep(i, 6)ra[i] = randxor() % 6;
+        for (const auto ii : ordVec[ra[0]]) {
+          for (const auto jj : ordVec[ra[1]]) {
             int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
             int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-            for (const auto iii : ordVec) {
-              for (const auto jjj : ordVec) {
+            for (const auto iii : ordVec[ra[2]]) {
+              for (const auto jjj : ordVec[ra[3]]) {
                 int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
                 int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
-                for (const auto iiii : ordVec) {
-                  for (const auto jjjj : ordVec) {
+                for (const auto iiii : ordVec[ra[4]]) {
+                  for (const auto jjjj : ordVec[ra[5]]) {
                     int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
                     int nRot6 = (nRot4 + nowRot[3] + iiii + jjjj + 4) % 4;
 
@@ -1742,7 +1772,12 @@ void Method62(double timeLimit)
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
-      //cout << real_ansCount << ' ' << le[1] << endl;
+      if (mode == 2) {
+        cout << "loop = " << loop << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
     }
   }
 
@@ -1860,14 +1895,15 @@ void Method7(double timeLimit)
       maxActionScore = -1;
       maxRT.Initialize(nowRot, nowTip);
 
-      const vector<int> ordVec = { 0,1,-1 };
-      for (const auto ii : ordVec) {
-        for (const auto jj : ordVec) {
+      int ra[6];
+      rep(i, 6)ra[i] = randxor() % 6;
+      for (const auto ii : ordVec[ra[0]]) {
+        for (const auto jj : ordVec[ra[1]]) {
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-          for (const auto iii : ordVec) {
-            for (const auto jjj : ordVec) {
+          for (const auto iii : ordVec[ra[2]]) {
+            for (const auto jjj : ordVec[ra[3]]) {
               int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
@@ -1993,13 +2029,14 @@ void Method7(double timeLimit)
       maxActionScore = -1;
       maxRT.Initialize(nowRot, nowTip);
 
-      for (const auto ii : ordVec) {
-        for (const auto jj : ordVec) {
+      rep(i, 6)ra[i] = randxor() % 6;
+      for (const auto ii : ordVec[ra[0]]) {
+        for (const auto jj : ordVec[ra[1]]) {
           int nRot1 = (BASE_DIR + nowRot[3] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[3] + ii + jj + 4) % 4;
 
-          for (const auto iii : ordVec) {
-            for (const auto jjj : ordVec) {
+          for (const auto iii : ordVec[ra[2]]) {
+            for (const auto jjj : ordVec[ra[3]]) {
               int nRot3 = (nRot1 + nowRot[4] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[4] + iii + jjj + 4) % 4;
 
@@ -2127,7 +2164,12 @@ void Method7(double timeLimit)
     ansCount = _t;
     if (mCount == m && ansCount < real_ansCount) {
       CopyToReal();
-      //cout << real_ansCount << ' ' << le[1] << endl;
+      if (mode == 2) {
+        cout << "loop = " << loop << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
     }
   }
 
@@ -2294,18 +2336,18 @@ void Method100(double timeLimit)
 
     // 木作成
     switch (Method) {
-    case 4:
-      MakeTree4();
-      break;
-    case 52:
-      MakeTree5();
-      break;
-    case 62:
-      MakeTree6();
-      break;
-    case 7:
-      MakeTree7();
-      break;
+      case 4:
+        MakeTree4();
+        break;
+      case 52:
+        MakeTree5();
+        break;
+      case 62:
+        MakeTree6();
+        break;
+      case 7:
+        MakeTree7();
+        break;
     }
 
     // 初期位置作成
@@ -2338,9 +2380,6 @@ void Method100(double timeLimit)
     KeepAB maxAB;
     KeepAB keepAB;
 
-    int order[5] = { 0,1,2,3,4 };
-    const vector<int> ordVec = { 0,1,-1 };
-
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
       FisherYates(order, 5);
 
@@ -2372,10 +2411,8 @@ ll Solve(int probNum)
 
   CopyToReal();
 
-
   //Method2();
   //Method3();
-
   if (v < 7) {
     Method4(TL * 0.1);
     Method52(TL * 0.45);
@@ -2432,7 +2469,7 @@ int main()
     randxor();
   }
 
-  mode = 2;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
