@@ -80,11 +80,13 @@ const char dirChar[5] = { 'D', 'L', 'U', 'R', '.' };
 const char rotChar[3] = { 'L', '.', 'R' };
 const char tipChar[2] = { '.', 'P' };
 const int BASE_DIR = 3;
+const int ddx[9] = { -1, -1, -1, 0, 0, 0, 1, 1, 1 };
+const int ddy[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
 
 int order[5] = { 0,1,2,3,4 };
 vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} };
 
-const double TL = 9.8;
+const double TL = 2.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -115,7 +117,7 @@ int armCount;
 int leafs1;
 int Method;
 int ArmLengthMethod;
-int PCount[MAX_T];
+vector<int> PCount[100];
 
 int real_V;
 int real_pa[MAX_V];
@@ -131,7 +133,7 @@ int real_armCount;
 int real_leafs1;
 int real_Method;
 int real_ArmLengthMethod;
-int real_PCount[MAX_T];
+vector<int> real_PCount[100];
 
 int route[MAX_N * MAX_N * 3][2];
 
@@ -160,10 +162,8 @@ void CopyToReal()
   real_leafs1 = leafs1;
   real_Method = Method;
   real_ArmLengthMethod = ArmLengthMethod;
-  rep(i, ansCount)
-  {
-    real_PCount[i] = PCount[i];
-  }
+
+  real_PCount[Method] = PCount[Method];
 }
 
 void CopyToAns()
@@ -191,10 +191,8 @@ void CopyToAns()
   leafs1 = real_leafs1;
   Method = real_Method;
   ArmLengthMethod = real_ArmLengthMethod;
-  rep(i, ansCount)
-  {
-    PCount[i] = real_PCount[i];
-  }
+
+  PCount[Method] = real_PCount[Method];
 }
 
 void ResetTime()
@@ -220,6 +218,10 @@ void SetUp()
 {
   V = 0;
   ansCount = 0;
+  rep(i, 100) {
+    PCount[i].clear();
+    real_PCount[i].clear();
+  }
 }
 
 // 入力受け取り
@@ -354,48 +356,6 @@ bool IsValidAnswer()
   }
 }
 
-// 初期解生成
-void Initialize()
-{
-  V = v;
-  srep(i, 1, V)
-  {
-    pa[i] = 0;
-    le[i] = i;
-  }
-  sx = 0;
-  sy = 0;
-
-  {
-    int idx = 0;
-    rep(i, n)
-    {
-      if (i % 2 == 0) {
-        rep(j, n)
-        {
-          route[idx][0] = i;
-          route[idx][1] = j;
-          idx++;
-        }
-      }
-      else {
-        drep(j, n)
-        {
-          route[idx][0] = i;
-          route[idx][1] = j;
-          idx++;
-        }
-      }
-    }
-    drep(i, n * n)
-    {
-      route[idx][0] = route[i][0];
-      route[idx][1] = route[i][1];
-      idx++;
-    }
-  }
-}
-
 // 解答出力
 void Output(ofstream& ofs)
 {
@@ -456,6 +416,7 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
 
 void UpdateDir(int& x, int& y, const int nx, const int ny, int& _t)
 {
+  dir[_t] = 4;
   while (x != nx || y != ny) {
     if (x < nx) {
       dir[_t] = 0;
@@ -485,578 +446,12 @@ void UpdateDir(int& x, int& y, const int nx, const int ny, int& _t)
 void UpdateTurn(const bool isAction, int& _t, int& lastT, int& lastX, int& lastY,
   int& x, int& y, const int nx, const int ny)
 {
-  if (isAction) {
-    int keepT = _t;
-    _t = lastT + 1;
-    x = lastX;
-    y = lastY;
-    UpdateDir(x, y, nx, ny, _t);  // Dirの更新処理
-
-    rep(i, V)
-    {
-      rot[_t][i] = rot[keepT][i];
-      tip[_t][i] = tip[keepT][i];
-    }
-    PCount[_t] = PCount[keepT];
-
-    lastT = _t;
-    lastX = x;
-    lastY = y;
-    _t++;
-  }
-  else {
-    _t++;
-    x = nx;
-    y = ny;
-  }
-}
-
-//初期位置(0, 0)
-//辺の長さは1~V - 1
-//行動できるときは行動する
-void Method1()
-{
-  int nn2 = n * n * 2;
-
-  int x = sx;
-  int y = sy;
-  int t = 0;
-
-  vector<int> nowRot(v);
-  vector<int> nowTip(v);
-  rep(i, V)
-  {
-    nowRot[i] = 3;
-    nowTip[i] = 0;
-  }
-
-  vector<vector<int>> a;
-  vector<vector<int>> b;
-  int mCount = 0;
-  CopyAB(a, b, mCount);
-
-  vector<double> action(v);
-  while (mCount < m) {
-    // dir
-    int nx = route[t % nn2][0];
-    int ny = route[t % nn2][1];
-    dir[t] = 4;
-    rep(i, 4)
-    {
-      if (nx == x + dx[i] && ny == y + dy[i])dir[t] = i;
-    }
-
-    // rot, tip
-    rep(i, V)
-    {
-      rot[t][i] = 1;
-      tip[t][i] = 0;
-      action[i] = 0;
-    }
-
-    // このターン
-    srep(i, 1, V)
-    {
-      srep(j, -1, 2)
-      {
-        int nRot = (nowRot[i] + j + 4) % 4;
-        int nrx = nx + le[i] * dx[nRot];
-        int nry = ny + le[i] * dy[nRot];
-
-        if (IsNG(nrx, nry))continue;
-
-        if (nowTip[i] == 0) {
-          if (a[nrx][nry] == 1) {
-            a[nrx][nry] = 0;
-            rot[t][i] = j + 1;
-            nowRot[i] = nRot;
-            tip[t][i] = 1;
-            nowTip[i] = 1;
-            action[i] = ACTION_RATIO_A;
-            rep(k, 4)
-            {
-              int nkrx = nrx + dx[k];
-              int nkry = nry + dy[k];
-              if (IsNG(nkrx, nkry)) {
-                action[i] += POSITION_RATIO * 10;
-              }
-              else if (a[nkrx][nkry] == 0) {
-                action[i] += POSITION_RATIO;
-              }
-            }
-            break;
-          }
-        }
-        else {
-          if (b[nrx][nry] == 1) {
-            b[nrx][nry] = 0;
-            rot[t][i] = j + 1;
-            nowRot[i] = nRot;
-            tip[t][i] = 1;
-            nowTip[i] = 0;
-            action[i] = ACTION_RATIO_B;
-            mCount++;
-            rep(k, 4)
-            {
-              int nkrx = nrx + dx[k];
-              int nkry = nry + dy[k];
-              if (IsNG(nkrx, nkry)) {
-                action[i] += POSITION_RATIO * 10;
-              }
-              else if (b[nkrx][nkry] == 0) {
-                action[i] += POSITION_RATIO;
-              }
-            }
-            break;
-          }
-        }
-      }
-    }
-
-    // 次のターン
-    int nnx = route[(t + 1) % nn2][0];
-    int nny = route[(t + 1) % nn2][1];
-    srep(i, 1, V)
-    {
-      if (action[i] > 0.5)continue;
-
-      srep(j, -1, 3)
-      {
-        int nRot = (nowRot[i] + j + 4) % 4;
-        int nnrx = nnx + le[i] * dx[nRot];
-        int nnry = nny + le[i] * dy[nRot];
-
-        if (IsNG(nnrx, nnry))continue;
-
-        if (nowTip[i] == 0) {
-          if (a[nnrx][nnry] == 1) {
-            if (j == 2) {
-              rot[t][i] = 2;
-              nowRot[i] = (nowRot[i] + 1) % 4;
-            }
-            else {
-              rot[t][i] = j + 1;
-              nowRot[i] = nRot;
-            }
-            action[i] = 1;
-            break;
-          }
-        }
-        else {
-          if (b[nnrx][nnry] == 1) {
-            if (j == 2) {
-              rot[t][i] = 2;
-              nowRot[i] = (nowRot[i] + 1) % 4;
-            }
-            else {
-              rot[t][i] = j + 1;
-              nowRot[i] = nRot;
-            }
-            action[i] = 1;
-            break;
-          }
-        }
-      }
-    }
-
-    t++;
-    x = nx;
-    y = ny;
-  }
-
-  ansCount = t;
-}
-
-//初期位置はランダム
-//辺の長さはランダム
-//行動できるときは行動する
-void Method2()
-{
-  int loop = 0;
-  while (true) {
-
-    if (GetNowTime() > TL)break;
-
-    loop++;
-
-    int nn2 = n * n * 2;
-
-    V = v;
-    srep(i, 1, V)
-    {
-      pa[i] = 0;
-      le[i] = randxor() % (n - 1) + 1;
-    }
-
-    int startT = randxor() % nn2;
-    sx = route[startT][0];
-    sy = route[startT][1];
-
-    int x = sx;
-    int y = sy;
-    int _t = 0;
-
-    vector<int> nowRot(v);
-    vector<int> nowTip(v);
-    rep(i, V)
-    {
-      nowRot[i] = 3;
-      nowTip[i] = 0;
-    }
-
-    vector<vector<int>> a;
-    vector<vector<int>> b;
-    int mCount = 0;
-    CopyAB(a, b, mCount);
-
-    vector<double> action(v);
-    while (mCount < m && _t < real_ansCount) {
-      int t = (_t + startT) % nn2;
-
-      // dir
-      int nx = route[t][0];
-      int ny = route[t][1];
-      dir[_t] = 4;
-      rep(i, 4)
-      {
-        if (nx == x + dx[i] && ny == y + dy[i])dir[_t] = i;
-      }
-
-      // rot, tip
-      rep(i, V)
-      {
-        rot[_t][i] = 1;
-        tip[_t][i] = 0;
-        action[i] = 0;
-      }
-
-      // このターン
-      srep(i, 1, V)
-      {
-        srep(j, -1, 2)
-        {
-          int nRot = (nowRot[i] + j + 4) % 4;
-          int nrx = nx + le[i] * dx[nRot];
-          int nry = ny + le[i] * dy[nRot];
-
-          if (IsNG(nrx, nry))continue;
-
-          if (nowTip[i] == 0) {
-            if (a[nrx][nry] == 1) {
-              a[nrx][nry] = 0;
-              rot[_t][i] = j + 1;
-              nowRot[i] = nRot;
-              tip[_t][i] = 1;
-              nowTip[i] = 1;
-              action[i] = ACTION_RATIO_A;
-              rep(k, 4)
-              {
-                int nkrx = nrx + dx[k];
-                int nkry = nry + dy[k];
-                if (IsNG(nkrx, nkry)) {
-                  action[i] += POSITION_RATIO * 10;
-                }
-                else if (a[nkrx][nkry] == 0) {
-                  action[i] += POSITION_RATIO;
-                }
-              }
-              break;
-            }
-          }
-          else {
-            if (b[nrx][nry] == 1) {
-              b[nrx][nry] = 0;
-              rot[_t][i] = j + 1;
-              nowRot[i] = nRot;
-              tip[_t][i] = 1;
-              nowTip[i] = 0;
-              action[i] = ACTION_RATIO_B;
-              mCount++;
-              rep(k, 4)
-              {
-                int nkrx = nrx + dx[k];
-                int nkry = nry + dy[k];
-                if (IsNG(nkrx, nkry)) {
-                  action[i] += POSITION_RATIO * 10;
-                }
-                else if (b[nkrx][nkry] == 0) {
-                  action[i] += POSITION_RATIO;
-                }
-              }
-              break;
-            }
-          }
-        }
-      }
-
-      // 次のターン
-      int nnx = route[(t + 1) % nn2][0];
-      int nny = route[(t + 1) % nn2][1];
-      srep(i, 1, V)
-      {
-        if (action[i] > 0.5)continue;
-
-        srep(j, -1, 3)
-        {
-          int nRot = (nowRot[i] + j + 4) % 4;
-          int nnrx = nnx + le[i] * dx[nRot];
-          int nnry = nny + le[i] * dy[nRot];
-
-          if (IsNG(nnrx, nnry))continue;
-
-          if (nowTip[i] == 0) {
-            if (a[nnrx][nnry] == 1) {
-              if (j == 2) {
-                rot[_t][i] = 2;
-                nowRot[i] = (nowRot[i] + 1) % 4;
-              }
-              else {
-                rot[_t][i] = j + 1;
-                nowRot[i] = nRot;
-              }
-              action[i] = 1;
-              break;
-            }
-          }
-          else {
-            if (b[nnrx][nnry] == 1) {
-              if (j == 2) {
-                rot[_t][i] = 2;
-                nowRot[i] = (nowRot[i] + 1) % 4;
-              }
-              else {
-                rot[_t][i] = j + 1;
-                nowRot[i] = nRot;
-              }
-              action[i] = 1;
-              break;
-            }
-          }
-        }
-      }
-
-      _t++;
-      x = nx;
-      y = ny;
-    }
-
-    ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
-      CopyToReal();
-      if (mode == 2) {
-        cout << "loop = " << loop << ", score = " << real_ansCount;
-        cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
-        cout << endl;
-      }
-    }
-  }
-
-  if (mode != 0) {
-    //cout << "Method2 loop = " << loop << endl;
-  }
-}
-
-//初期位置はランダム
-//辺の長さはランダム
-//行動できるときは行動する
-//不要な移動はショートカットする
-void Method3()
-{
-  int loop = 0;
-  while (true) {
-
-    if (GetNowTime() > TL)break;
-
-    loop++;
-
-    int nn2 = n * n * 2;
-
-    V = v;
-    srep(i, 1, V)
-    {
-      pa[i] = 0;
-      le[i] = randxor() % (n - 1) + 1;
-    }
-
-    int startT = randxor() % nn2;
-    sx = route[startT][0];
-    sy = route[startT][1];
-
-    int t = startT;
-
-    int x = sx;
-    int y = sy;
-    int _t = 0;
-
-    vector<int> nowRot(v);
-    vector<int> nowTip(v);
-    rep(i, V)
-    {
-      nowRot[i] = 3;
-      nowTip[i] = 0;
-    }
-
-    vector<vector<int>> a;
-    vector<vector<int>> b;
-    int mCount = 0;
-    CopyAB(a, b, mCount);
-
-    vector<double> action(v);
-    int lastT = -1;
-    int lastX = sx;
-    int lastY = sy;
-    while (mCount < m && _t < real_ansCount + 20) {
-      // dir
-      int nx = route[(t + 1) % nn2][0];
-      int ny = route[(t + 1) % nn2][1];
-      dir[_t] = 4;
-      rep(i, 4)
-      {
-        if (nx == x + dx[i] && ny == y + dy[i])dir[_t] = i;
-      }
-
-      // rot, tip
-      rep(i, V)
-      {
-        rot[_t][i] = 1;
-        tip[_t][i] = 0;
-        action[i] = 0;
-      }
-
-      // このターン
-      srep(i, 1, V)
-      {
-        srep(j, -1, 2)
-        {
-          int nRot = (nowRot[i] + j + 4) % 4;
-          int nrx = nx + le[i] * dx[nRot];
-          int nry = ny + le[i] * dy[nRot];
-
-          if (IsNG(nrx, nry))continue;
-
-          if (nowTip[i] == 0) {
-            if (a[nrx][nry] == 1) {
-              a[nrx][nry] = 0;
-              rot[_t][i] = j + 1;
-              nowRot[i] = nRot;
-              tip[_t][i] = 1;
-              nowTip[i] = 1;
-              action[i] = ACTION_RATIO_A;
-              rep(k, 4)
-              {
-                int nkrx = nrx + dx[k];
-                int nkry = nry + dy[k];
-                if (IsNG(nkrx, nkry)) {
-                  action[i] += POSITION_RATIO * 10;
-                }
-                else if (a[nkrx][nkry] == 0) {
-                  action[i] += POSITION_RATIO;
-                }
-              }
-              break;
-            }
-          }
-          else {
-            if (b[nrx][nry] == 1) {
-              b[nrx][nry] = 0;
-              rot[_t][i] = j + 1;
-              nowRot[i] = nRot;
-              tip[_t][i] = 1;
-              nowTip[i] = 0;
-              action[i] = ACTION_RATIO_B;
-              mCount++;
-              rep(k, 4)
-              {
-                int nkrx = nrx + dx[k];
-                int nkry = nry + dy[k];
-                if (IsNG(nkrx, nkry)) {
-                  action[i] += POSITION_RATIO * 10;
-                }
-                else if (b[nkrx][nkry] == 0) {
-                  action[i] += POSITION_RATIO;
-                }
-              }
-              break;
-            }
-          }
-        }
-      }
-
-      // 次のターン
-      int nnx = route[(t + 2) % nn2][0];
-      int nny = route[(t + 2) % nn2][1];
-      srep(i, 1, V)
-      {
-        if (action[i] > 0.5)continue;
-
-        srep(j, -1, 3)
-        {
-          int nRot = (nowRot[i] + j + 4) % 4;
-          int nnrx = nnx + le[i] * dx[nRot];
-          int nnry = nny + le[i] * dy[nRot];
-
-          if (IsNG(nnrx, nnry))continue;
-
-          if (nowTip[i] == 0) {
-            if (a[nnrx][nnry] == 1) {
-              if (j == 2) {
-                rot[_t][i] = 2;
-                nowRot[i] = (nowRot[i] + 1) % 4;
-              }
-              else {
-                rot[_t][i] = j + 1;
-                nowRot[i] = nRot;
-              }
-              action[i] = 1;
-              break;
-            }
-          }
-          else {
-            if (b[nnrx][nnry] == 1) {
-              if (j == 2) {
-                rot[_t][i] = 2;
-                nowRot[i] = (nowRot[i] + 1) % 4;
-              }
-              else {
-                rot[_t][i] = j + 1;
-                nowRot[i] = nRot;
-              }
-              action[i] = 1;
-              break;
-            }
-          }
-        }
-      }
-
-      int isAction = 0;
-      rep(i, V)
-      {
-        if (action[i] > 0.5) {
-          isAction = 1;
-          break;
-        }
-      }
-
-      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
-      t = (t + 1) % nn2;
-    }
-
-    ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
-      CopyToReal();
-      if (mode == 2) {
-        cout << "loop = " << loop << ", score = " << real_ansCount;
-        cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
-        cout << endl;
-      }
-    }
-  }
-
-  if (mode != 0) {
-    //cout << "Method3 loop = " << loop << endl;
-  }
+  lastT = _t;
+  lastX = x;
+  lastY = y;
+  x = nx;
+  y = ny;
+  _t++;
 }
 
 class RotTip
@@ -1178,15 +573,21 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
   mCount += maxAB.KeepBCount;
   rep(i, maxAB.KeepACount)
   {
+    if (a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] == 0) {
+      assert(false);
+    }
     a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] = 0;
   }
   rep(i, maxAB.KeepBCount)
   {
+    if (b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] == 0) {
+      assert(false);
+    }
     b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 0;
   }
 }
 
-bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
+bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
   vector<vector<int>>& a, vector<vector<int>>& b,
   RotTip& tmpRT, KeepAB& keepAB, vector<double>& action,
   const int i, const int j, const int nrx, const int nry)
@@ -1241,1059 +642,6 @@ bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
   return false;
 }
 
-void MakeTree4();
-void MakeTree5();
-void MakeTree6();
-void MakeTree7();
-
-//初期位置はランダム
-//関節一つ
-//辺の長さはランダム
-//行動できるときは行動する
-//不要な移動はショートカットする
-void Method4(double timeLimit)
-{
-  ResetTime();
-  Method = 4;
-
-  real_startT = -1;
-  int loop = 0;
-  while (true) {
-
-    double time = GetNowTime();
-    if (time > timeLimit)break;
-
-    loop++;
-
-    int nn2 = n * n * 2;
-
-    MakeTree4();
-
-    startT = randxor() % nn2;
-    sx = route[startT][0];
-    sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
-      V = real_V;
-      srep(i, 1, V)
-      {
-        pa[i] = real_pa[i];
-        le[i] = real_le[i];
-      }
-      startT = real_startT;
-      sx = real_sx;
-      sy = real_sy;
-
-      int ra = randxor() % 2;
-      if (ra == 0) {
-        startT = randxor() % nn2;
-        sx = route[startT][0];
-        sy = route[startT][1];
-      }
-      else {
-        while (true) {
-          int raV = randxor() % (V - 2) + 2;
-          int newLe = randxor() % (n - 1) + 1;
-          if (newLe == le[raV])continue;
-          le[raV] = newLe;
-          break;
-        }
-      }
-    }
-
-    int t = startT;
-
-    int x = sx;
-    int y = sy;
-    int _t = 0;
-
-    vector<int> nowRot(v);
-    vector<int> nowTip(v);
-
-    vector<vector<int>> a;
-    vector<vector<int>> b;
-    int mCount = 0;
-    CopyAB(a, b, mCount);
-
-    vector<double> action(v);
-    int lastT = -1;
-    int lastX = sx;
-    int lastY = sy;
-
-    double maxActionScore;
-    RotTip maxRT(v);
-    RotTip tmpRT(v);
-
-    KeepAB maxAB;
-    KeepAB keepAB;
-
-    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
-      // dir
-      int nx = route[(t + 1) % nn2][0];
-      int ny = route[(t + 1) % nn2][1];
-      dir[_t] = 4;
-      rep(i, 4)
-      {
-        if (nx == x + dx[i] && ny == y + dy[i])dir[_t] = i;
-      }
-
-      // rot, tip
-      rep(i, V)
-      {
-        rot[_t][i] = 1;
-        tip[_t][i] = 0;
-        action[i] = 0;
-      }
-
-      maxActionScore = -1;
-      maxRT.Initialize(nowRot, nowTip);
-
-      int ra[6];
-      rep(i, 6)ra[i] = randxor() % 6;
-      for (const auto ii : ordVec[ra[0]]) {
-        for (const auto jj : ordVec[ra[1]]) {
-          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-          int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
-
-          tmpRT.Initialize(nowRot, nowTip);
-          tmpRT.Rot[1] = ii + 1;
-          tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-
-          rep(i, V)
-          {
-            action[i] = 0;
-          }
-
-          keepAB.Clear();
-
-          // このターン
-          srep(i, 2, V)
-          {
-            srep(j, -1, 2)
-            {
-              int nRot = (nRot1 + nowRot[i] + j + 4) % 4;
-              int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1];
-              int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1];
-
-              if (IsNG(nrx, nry))continue;
-
-              bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-              if (isCatch)break;
-            }
-          }
-
-          // 次のターン
-          int nnx = route[(t + 2) % nn2][0];
-          int nny = route[(t + 2) % nn2][1];
-          srep(i, 2, V)
-          {
-            if (action[i] > 0.5)continue;
-
-            srep(j, -1, 3)
-            {
-              int nRot = (nRot2 + nowRot[i] + j + 4) % 4;
-              int nnrx = nnx + le[i] * dx[nRot] + le[1] * dx[nRot2];
-              int nnry = nny + le[i] * dy[nRot] + le[1] * dy[nRot2];
-
-              if (IsNG(nnrx, nnry))continue;
-
-              if (nowTip[i] == 0) {
-                if (a[nnrx][nnry] == 1) {
-                  if (j == 2) {
-                    tmpRT.Rot[i] = 2;
-                    tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
-                  }
-                  else {
-                    tmpRT.Rot[i] = j + 1;
-                    tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                  }
-                  action[i] = 1;
-                  break;
-                }
-              }
-              else {
-                if (b[nnrx][nnry] == 1) {
-                  if (j == 2) {
-                    tmpRT.Rot[i] = 2;
-                    tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
-                  }
-                  else {
-                    tmpRT.Rot[i] = j + 1;
-                    tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                  }
-                  action[i] = 1;
-                  break;
-                }
-              }
-            }
-          }
-
-          double tmpActionScore = 0;
-          srep(i, 2, V)
-          {
-            tmpActionScore += action[i];
-          }
-
-          if (tmpActionScore > maxActionScore) {
-            maxActionScore = tmpActionScore;
-            maxRT = tmpRT;
-
-            maxAB.Copy(keepAB);
-          }
-
-          RollBackFromKeepAB(keepAB, a, b);
-        }
-      }
-
-      maxRT.Reflect(nowRot, nowTip, _t);
-
-      ReflectFromMaxAB(maxAB, a, b, mCount);
-
-      int isAction = 0;
-      if (maxActionScore > 0.5) {
-        isAction = 1;
-      }
-
-      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
-      t = (t + 1) % nn2;
-    }
-
-    ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
-      CopyToReal();
-      if (mode == 2) {
-        cout << "loop = " << loop << ", score = " << real_ansCount;
-        cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
-        cout << endl;
-      }
-    }
-  }
-
-  if (mode >= 2) {
-    cout << "Method4 loop = " << loop << " " << endl;
-  }
-}
-
-//初期位置はランダム
-//関節二つ
-//辺の長さはランダム
-//行動できるときは行動する
-//不要な移動はショートカットする
-// ランダムウォーク
-void Method52(double timeLimit)
-{
-  ResetTime();
-  Method = 52;
-
-  real_startT = -1;
-  int loop = 0;
-  while (true) {
-
-    double time = GetNowTime();
-    if (time > timeLimit)break;
-
-    loop++;
-
-    int nn2 = n * n * 2;
-
-    MakeTree5();
-    if (randxor() % 2) {
-      int st = randxor() % 3 + 1;
-      srep(i, 3, V)le[i] = i - 3 + st;
-    }
-
-    startT = randxor() % nn2;
-    sx = route[startT][0];
-    sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
-      V = real_V;
-      srep(i, 1, V)
-      {
-        pa[i] = real_pa[i];
-        le[i] = real_le[i];
-      }
-      startT = real_startT;
-      sx = real_sx;
-      sy = real_sy;
-
-      int ra = randxor() % 2;
-      if (ra == 0) {
-        startT = randxor() % nn2;
-        sx = route[startT][0];
-        sy = route[startT][1];
-      }
-      else {
-        while (true) {
-          int raV = randxor() % (V - 2) + 2;
-          int newLe = randxor() % (n - 1) + 1;
-          if (newLe == le[raV])continue;
-          le[raV] = newLe;
-          break;
-        }
-      }
-    }
-
-    int x = sx;
-    int y = sy;
-    int _t = 0;
-
-    vector<int> nowRot(v);
-    vector<int> nowTip(v);
-
-    vector<vector<int>> a;
-    vector<vector<int>> b;
-    int mCount = 0;
-    CopyAB(a, b, mCount);
-    PCount[0] = mCount * 2;
-
-    vector<double> action(v);
-    int lastT = -1;
-    int lastX = sx;
-    int lastY = sy;
-
-    int maxDir;
-
-    double maxActionScore;
-    RotTip maxRT(v);
-
-    RotTip tmpRT(v);
-
-    KeepAB maxAB;
-    KeepAB keepAB;
-
-    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
-      if (_t > 0) {
-        PCount[_t] = PCount[_t - 1];
-      }
-      FisherYates(order, 5);
-
-      maxDir = -1;
-      maxActionScore = -1;
-      maxRT.Initialize(nowRot, nowTip);
-
-      rep(ord, 5)
-      {
-        dir[_t] = order[ord];
-        int nx = x + dx[order[ord]];
-        int ny = y + dy[order[ord]];
-
-        if (IsNG(nx, ny))continue;
-
-        // rot, tip
-        rep(i, V)
-        {
-          rot[_t][i] = 1;
-          tip[_t][i] = 0;
-          action[i] = 0;
-        }
-
-        int ra[6];
-        rep(i, 6)ra[i] = randxor() % 6;
-        for (const auto ii : ordVec[ra[0]]) {
-          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-
-          for (const auto iii : ordVec[ra[2]]) {
-            int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
-
-            tmpRT.Initialize(nowRot, nowTip);
-            tmpRT.Rot[1] = ii + 1;
-            tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-            tmpRT.Rot[2] = iii + 1;
-            tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
-
-            rep(i, V)
-            {
-              action[i] = 0;
-            }
-
-            keepAB.Clear();
-
-            // このターン
-            srep(i, 3, V)
-            {
-              srep(j, -1, 2)
-              {
-                int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
-                int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3];
-                int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3];
-
-                if (IsNG(nrx, nry))continue;
-
-                bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                if (isCatch)break;
-              }
-            }
-
-            double tmpActionScore = 0;
-            srep(i, 3, V)
-            {
-              tmpActionScore += action[i];
-            }
-
-            if (tmpActionScore > maxActionScore) {
-              maxDir = order[ord];
-              maxActionScore = tmpActionScore;
-              maxRT = tmpRT;
-
-              maxAB.Copy(keepAB);
-            }
-
-            RollBackFromKeepAB(keepAB, a, b);
-          }
-        }
-      }
-
-      maxRT.Reflect(nowRot, nowTip, _t);
-
-      dir[_t] = maxDir;
-
-      ReflectFromMaxAB(maxAB, a, b, mCount);
-      PCount[_t] += maxAB.KeepACount + maxAB.KeepBCount;
-
-      int isAction = 0;
-      if (maxActionScore > 0.5) {
-        isAction = 1;
-      }
-
-      int nx = x + dx[maxDir];
-      int ny = y + dy[maxDir];
-
-      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
-
-      if (real_Method == 52) {
-        if (lastT >= 0 && PCount[lastT] < real_PCount[lastT] - 5) {
-          break;
-        }
-      }
-    }
-
-    ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
-      CopyToReal();
-      if (mode == 2) {
-        cout << "loop = " << loop << ", score = " << real_ansCount;
-        cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
-        cout << endl;
-      }
-    }
-  }
-
-  if (mode >= 2) {
-    cout << "Method52 loop = " << loop << " " << endl;
-  }
-}
-
-//初期位置はランダム
-//関節三つ
-//辺の長さはランダム
-//行動できるときは行動する
-//不要な移動はショートカットする
-// ランダムウォーク
-void Method62(double timeLimit)
-{
-  ResetTime();
-  Method = 62;
-
-  real_startT = -1;
-  int loop = 0;
-  while (true) {
-
-    double time = GetNowTime();
-    if (time > timeLimit)break;
-
-    loop++;
-
-    int nn2 = n * n * 2;
-
-    MakeTree6();
-    if (randxor() % 2) {
-      int st = randxor() % 3 + 1;
-      srep(i, 4, V)le[i] = i - 4 + st;
-    }
-
-    startT = randxor() % nn2;
-    sx = route[startT][0];
-    sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
-      V = real_V;
-      srep(i, 1, V)
-      {
-        pa[i] = real_pa[i];
-        le[i] = real_le[i];
-      }
-      startT = real_startT;
-      sx = real_sx;
-      sy = real_sy;
-
-      int ra = randxor() % 2;
-      if (ra == 0) {
-        startT = randxor() % nn2;
-        sx = route[startT][0];
-        sy = route[startT][1];
-      }
-      else {
-        while (true) {
-          int raV = randxor() % (V - 2) + 2;
-          int newLe = randxor() % (n - 1) + 1;
-          if (newLe == le[raV])continue;
-          le[raV] = newLe;
-          break;
-        }
-      }
-    }
-
-    int x = sx;
-    int y = sy;
-    int _t = 0;
-
-    vector<int> nowRot(v);
-    vector<int> nowTip(v);
-
-    vector<vector<int>> a;
-    vector<vector<int>> b;
-    int mCount = 0;
-    CopyAB(a, b, mCount);
-    PCount[0] = mCount * 2;
-
-    vector<double> action(v);
-    int lastT = -1;
-    int lastX = sx;
-    int lastY = sy;
-
-    int maxDir;
-
-    double maxActionScore;
-    RotTip maxRT(v);
-
-    RotTip tmpRT(v);
-
-    KeepAB maxAB;
-    KeepAB keepAB;
-
-    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
-      if (_t > 0) {
-        PCount[_t] = PCount[_t - 1];
-      }
-
-      FisherYates(order, 5);
-
-      maxDir = -1;
-      maxActionScore = -1;
-      maxRT.Initialize(nowRot, nowTip);
-
-      rep(ord, 5)
-      {
-        // dir
-        dir[_t] = order[ord];
-        int nx = x + dx[order[ord]];
-        int ny = y + dy[order[ord]];
-
-        if (IsNG(nx, ny))continue;
-
-        // rot, tip
-        rep(i, V)
-        {
-          rot[_t][i] = 1;
-          tip[_t][i] = 0;
-          action[i] = 0;
-        }
-
-        int ra[6];
-        rep(i, 6)ra[i] = randxor() % 6;
-        for (const auto ii : ordVec[ra[0]]) {
-          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-
-          for (const auto iii : ordVec[ra[2]]) {
-            int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
-
-            for (const auto iiii : ordVec[ra[4]]) {
-              int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
-
-              tmpRT.Initialize(nowRot, nowTip);
-              tmpRT.Rot[1] = ii + 1;
-              tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-              tmpRT.Rot[2] = iii + 1;
-              tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
-              tmpRT.Rot[3] = iiii + 1;
-              tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
-
-              rep(i, V)
-              {
-                action[i] = 0;
-              }
-
-              keepAB.Clear();
-
-              // このターン
-              srep(i, 4, V)
-              {
-                srep(j, -1, 2)
-                {
-                  int nRot = (nRot5 + nowRot[i] + j + 4) % 4;
-                  int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3] + le[3] * dx[nRot5];
-                  int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3] + le[3] * dy[nRot5];
-
-                  if (IsNG(nrx, nry))continue;
-
-                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                  if (isCatch)break;
-                }
-              }
-
-              double tmpActionScore = 0;
-              srep(i, 4, V)
-              {
-                tmpActionScore += action[i];
-              }
-
-              if (tmpActionScore > maxActionScore) {
-                maxDir = order[ord];
-                maxActionScore = tmpActionScore;
-                maxRT = tmpRT;
-
-                maxAB.Copy(keepAB);
-              }
-
-              RollBackFromKeepAB(keepAB, a, b);
-            }
-          }
-        }
-      }
-
-      maxRT.Reflect(nowRot, nowTip, _t);
-
-      dir[_t] = maxDir;
-
-      ReflectFromMaxAB(maxAB, a, b, mCount);
-      PCount[_t] += maxAB.KeepACount + maxAB.KeepBCount;
-
-      int isAction = 0;
-      if (maxActionScore > 0.5) {
-        isAction = 1;
-      }
-
-      int nx = x + dx[maxDir];
-      int ny = y + dy[maxDir];
-
-      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
-
-      if (real_Method == 62) {
-        if (lastT >= 0 && PCount[lastT] < real_PCount[lastT] - 5) {
-          break;
-        }
-      }
-    }
-
-    ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
-      CopyToReal();
-      if (mode == 2) {
-        cout << "loop = " << loop << ", score = " << real_ansCount;
-        cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
-        cout << endl;
-      }
-    }
-  }
-
-  if (mode >= 2) {
-    cout << "Method62 loop = " << loop << " " << endl;
-  }
-}
-
-//初期位置はランダム
-//関節二つ
-//腕二本
-//辺の長さはランダム
-//行動できるときは行動する
-//不要な移動はショートカットする
-void Method7(double timeLimit)
-{
-  ResetTime();
-  Method = 7;
-
-  armCount = 1;
-  real_armCount = 1;
-
-  real_startT = -1;
-  int loop = 0;
-  while (true) {
-
-    double time = GetNowTime();
-    if (time > timeLimit)break;
-
-    loop++;
-
-    int nn2 = n * n * 2;
-
-    V = v;
-
-    MakeTree7();
-
-    startT = randxor() % nn2;
-    sx = route[startT][0];
-    sy = route[startT][1];
-    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
-      V = real_V;
-      srep(i, 1, V)
-      {
-        pa[i] = real_pa[i];
-        le[i] = real_le[i];
-      }
-      leafs1 = real_leafs1;
-      startT = real_startT;
-      sx = real_sx;
-      sy = real_sy;
-
-      int ra = randxor() % 2;
-      if (ra == 0) {
-        startT = randxor() % nn2;
-        sx = route[startT][0];
-        sy = route[startT][1];
-      }
-      else {
-        while (true) {
-          int raV = randxor() % (V - 2) + 2;
-          int newLe = randxor() % (n - 1) + 1;
-          if (newLe == le[raV])continue;
-          le[raV] = newLe;
-          break;
-        }
-      }
-    }
-
-    int t = startT;
-
-    int x = sx;
-    int y = sy;
-    int _t = 0;
-
-    vector<int> nowRot(v);
-    vector<int> nowTip(v);
-
-    vector<vector<int>> a;
-    vector<vector<int>> b;
-    int mCount = 0;
-    CopyAB(a, b, mCount);
-
-    vector<double> action(v);
-    int lastT = -1;
-    int lastX = sx;
-    int lastY = sy;
-
-    double maxActionScore;
-    RotTip maxRT(v);
-
-    RotTip tmpRT(v);
-
-    KeepAB maxAB;
-    KeepAB keepAB;
-
-    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
-      // dir
-      int nx = route[(t + 1) % nn2][0];
-      int ny = route[(t + 1) % nn2][1];
-      dir[_t] = 4;
-      rep(i, 4)
-      {
-        if (nx == x + dx[i] && ny == y + dy[i])dir[_t] = i;
-      }
-
-      // rot, tip
-      rep(i, V)
-      {
-        rot[_t][i] = 1;
-        tip[_t][i] = 0;
-        action[i] = 0;
-      }
-
-      maxActionScore = -1;
-      maxRT.Initialize(nowRot, nowTip);
-
-      int ra[6];
-      rep(i, 6)ra[i] = randxor() % 6;
-      for (const auto ii : ordVec[ra[0]]) {
-        for (const auto jj : ordVec[ra[1]]) {
-          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-          int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
-
-          for (const auto iii : ordVec[ra[2]]) {
-            for (const auto jjj : ordVec[ra[3]]) {
-              int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
-              int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
-
-              tmpRT.Initialize(nowRot, nowTip);
-              tmpRT.Rot[1] = ii + 1;
-              tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-              tmpRT.Rot[2] = iii + 1;
-              tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
-
-              rep(i, V)
-              {
-                action[i] = 0;
-              }
-
-              keepAB.Clear();
-
-              // このターン
-              srep(i, 5, 5 + leafs1)
-              {
-                srep(j, -1, 2)
-                {
-                  int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
-                  int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3];
-                  int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3];
-
-                  if (IsNG(nrx, nry))continue;
-
-                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                  if (isCatch)break;
-                }
-              }
-
-              // 次のターン
-              int nnx = route[(t + 2) % nn2][0];
-              int nny = route[(t + 2) % nn2][1];
-              srep(i, 5, 5 + leafs1)
-              {
-                if (action[i] > 0.5)continue;
-
-                srep(j, -1, 3)
-                {
-                  int nRot = (nRot4 + nowRot[i] + j + 4) % 4;
-                  int nnrx = nnx + le[i] * dx[nRot] + le[1] * dx[nRot2] + le[2] * dx[nRot4];
-                  int nnry = nny + le[i] * dy[nRot] + le[1] * dy[nRot2] + le[2] * dy[nRot4];
-
-                  if (IsNG(nnrx, nnry))continue;
-
-                  if (nowTip[i] == 0) {
-                    if (a[nnrx][nnry] == 1) {
-                      if (j == 2) {
-                        tmpRT.Rot[i] = 2;
-                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
-                      }
-                      else {
-                        tmpRT.Rot[i] = j + 1;
-                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      }
-                      action[i] = 1;
-                      break;
-                    }
-                  }
-                  else {
-                    if (b[nnrx][nnry] == 1) {
-                      if (j == 2) {
-                        tmpRT.Rot[i] = 2;
-                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
-                      }
-                      else {
-                        tmpRT.Rot[i] = j + 1;
-                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      }
-                      action[i] = 1;
-                      break;
-                    }
-                  }
-                }
-              }
-
-
-              double tmpActionScore = 0;
-              srep(i, 3, V)
-              {
-                tmpActionScore += action[i];
-              }
-
-              if (tmpActionScore > maxActionScore) {
-                maxActionScore = tmpActionScore;
-                maxRT = tmpRT;
-
-                maxAB.Copy(keepAB);
-              }
-
-              RollBackFromKeepAB(keepAB, a, b);
-            }
-          }
-        }
-      }
-
-      srep(i, 1, 3)
-      {
-        rot[_t][i] = maxRT.Rot[i];
-        tip[_t][i] = maxRT.Tip[i];
-        nowRot[i] = maxRT.NowRot[i];
-        nowTip[i] = maxRT.NowTip[i];
-      }
-
-      srep(i, 5, 5 + leafs1)
-      {
-        rot[_t][i] = maxRT.Rot[i];
-        tip[_t][i] = maxRT.Tip[i];
-        nowRot[i] = maxRT.NowRot[i];
-        nowTip[i] = maxRT.NowTip[i];
-      }
-
-      ReflectFromMaxAB(maxAB, a, b, mCount);
-
-      int isAction = 0;
-      if (maxActionScore > 0.5) {
-        isAction = 1;
-      }
-
-      // 2本目の腕
-      maxActionScore = -1;
-      maxRT.Initialize(nowRot, nowTip);
-
-      rep(i, 6)ra[i] = randxor() % 6;
-      for (const auto ii : ordVec[ra[0]]) {
-        for (const auto jj : ordVec[ra[1]]) {
-          int nRot1 = (BASE_DIR + nowRot[3] + ii + 4) % 4;
-          int nRot2 = (BASE_DIR + nowRot[3] + ii + jj + 4) % 4;
-
-          for (const auto iii : ordVec[ra[2]]) {
-            for (const auto jjj : ordVec[ra[3]]) {
-              int nRot3 = (nRot1 + nowRot[4] + iii + 4) % 4;
-              int nRot4 = (nRot2 + nowRot[4] + iii + jjj + 4) % 4;
-
-              tmpRT.Initialize(nowRot, nowTip);
-              tmpRT.Rot[3] = ii + 1;
-              tmpRT.NowRot[3] = (nowRot[3] + ii) % 4;
-              tmpRT.Rot[4] = iii + 1;
-              tmpRT.NowRot[4] = (nowRot[4] + iii) % 4;
-
-              rep(i, V)
-              {
-                action[i] = 0;
-              }
-
-              keepAB.Clear();
-
-              // このターン
-              srep(i, 5 + leafs1, V)
-              {
-                srep(j, -1, 2)
-                {
-                  int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
-                  int nrx = nx + le[i] * dx[nRot] + le[3] * dx[nRot1] + le[4] * dx[nRot3];
-                  int nry = ny + le[i] * dy[nRot] + le[3] * dy[nRot1] + le[4] * dy[nRot3];
-
-                  if (IsNG(nrx, nry))continue;
-
-                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                  if (isCatch)break;
-                }
-              }
-
-              // 次のターン
-              int nnx = route[(t + 2) % nn2][0];
-              int nny = route[(t + 2) % nn2][1];
-              srep(i, 5 + leafs1, V)
-              {
-                if (action[i] > 0.5)continue;
-
-                srep(j, -1, 3)
-                {
-                  int nRot = (nRot4 + nowRot[i] + j + 4) % 4;
-                  int nnrx = nnx + le[i] * dx[nRot] + le[3] * dx[nRot2] + le[4] * dx[nRot4];
-                  int nnry = nny + le[i] * dy[nRot] + le[3] * dy[nRot2] + le[4] * dy[nRot4];
-
-                  if (IsNG(nnrx, nnry))continue;
-
-                  if (nowTip[i] == 0) {
-                    if (a[nnrx][nnry] == 1) {
-                      if (j == 2) {
-                        tmpRT.Rot[i] = 2;
-                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
-                      }
-                      else {
-                        tmpRT.Rot[i] = j + 1;
-                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      }
-                      action[i] = 1;
-                      break;
-                    }
-                  }
-                  else {
-                    if (b[nnrx][nnry] == 1) {
-                      if (j == 2) {
-                        tmpRT.Rot[i] = 2;
-                        tmpRT.NowRot[i] = (nowRot[i] + 1) % 4;
-                      }
-                      else {
-                        tmpRT.Rot[i] = j + 1;
-                        tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
-                      }
-                      action[i] = 1;
-                      break;
-                    }
-                  }
-                }
-              }
-
-
-              double tmpActionScore = 0;
-              srep(i, 5 + leafs1, V)
-              {
-                tmpActionScore += action[i];
-              }
-
-              if (tmpActionScore > maxActionScore) {
-                maxActionScore = tmpActionScore;
-                maxRT = tmpRT;
-
-                maxAB.Copy(keepAB);
-              }
-
-              RollBackFromKeepAB(keepAB, a, b);
-            }
-          }
-        }
-      }
-
-      srep(i, 3, 5)
-      {
-        rot[_t][i] = maxRT.Rot[i];
-        tip[_t][i] = maxRT.Tip[i];
-        nowRot[i] = maxRT.NowRot[i];
-        nowTip[i] = maxRT.NowTip[i];
-      }
-
-      srep(i, 5 + leafs1, V)
-      {
-        rot[_t][i] = maxRT.Rot[i];
-        tip[_t][i] = maxRT.Tip[i];
-        nowRot[i] = maxRT.NowRot[i];
-        nowTip[i] = maxRT.NowTip[i];
-      }
-
-      ReflectFromMaxAB(maxAB, a, b, mCount);
-
-      if (maxActionScore > 0.5) {
-        isAction = 1;
-      }
-
-      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
-      t = (t + 1) % nn2;
-    }
-
-    ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
-      CopyToReal();
-      if (mode == 2) {
-        cout << "loop = " << loop << ", score = " << real_ansCount;
-        cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
-        cout << endl;
-      }
-    }
-  }
-
-  if (mode >= 2) {
-    cout << "Method7 loop = " << loop << " " << endl;
-  }
-}
-
 int MakeLength(int ra)
 {
   int length = 1;
@@ -2335,6 +683,11 @@ void MakeTree4()
     }
     le[i] = MakeLength(ra);
   }
+
+  if (randxor() % 2) {
+    int st = randxor() % 2 + 1;
+    srep(i, 2, V)le[i] = i - 2 + st;
+  }
 }
 
 void MakeTree5()
@@ -2354,6 +707,11 @@ void MakeTree5()
       pa[i] = 2;
     }
     le[i] = MakeLength(ra);
+  }
+
+  if (randxor() % 2) {
+    int st = randxor() % 3 + 1;
+    srep(i, 3, V)le[i] = i - 3 + st;
   }
 }
 
@@ -2378,14 +736,18 @@ void MakeTree6()
     }
     le[i] = MakeLength(ra);
   }
+
+  if (randxor() % 2) {
+    int st = randxor() % 4 + 1;
+    srep(i, 4, V)le[i] = i - 4 + st;
+  }
 }
 
 void MakeTree7()
 {
   int ra = randxor() % 100;
   V = v;
-  armCount = 2;
-  leafs1 = randxor() % (V - 6) + 1;
+  armCount = 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -2395,18 +757,384 @@ void MakeTree7()
       pa[i] = 1;
     }
     else if (i == 3) {
-      pa[i] = 0;
+      pa[i] = 2;
     }
     else if (i == 4) {
       pa[i] = 3;
-    }
-    else if (i < 5 + leafs1) {
-      pa[i] = 2;
     }
     else {
       pa[i] = 4;
     }
     le[i] = MakeLength(ra);
+  }
+
+  if (randxor() % 2) {
+    int st = randxor() % 5 + 1;
+    srep(i, 5, V)le[i] = i - 5 + st;
+  }
+}
+
+int CalcNeedLength(const int prenrx, const int prenry) {
+  int needLength = 999;
+  if (prenrx < 0) {
+    needLength = 0 - prenrx;
+  }
+  else if (prenrx < n) {
+    needLength = 0;
+  }
+  else {
+    needLength = prenrx - (n - 1);
+  }
+  if (prenry < 0) {
+    needLength = min(needLength, 0 - prenry);
+  }
+  else if (prenrx < n) {
+    needLength = 0;
+  }
+  else {
+    needLength = min(needLength, prenry - (n - 1));
+  }
+
+  return needLength;
+}
+
+void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+
+
+  RotTip tmpRT(v);
+  vector<double> action(v);
+  KeepAB keepAB;
+
+  maxActionScore = -1;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      tmpRT.Initialize(nowRot, nowTip);
+      tmpRT.Rot[1] = ii + 1;
+      tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+
+      int prenrx = nx + le[1] * dx[nRot1];
+      int prenry = ny + le[1] * dy[nRot1];
+
+      int needLength = CalcNeedLength(prenrx, prenry);
+
+      rep(i, V)
+      {
+        action[i] = 0;
+      }
+
+      keepAB.Clear();
+
+      // このターン
+      srep(i, 2, V)
+      {
+        if (le[i] < needLength)continue;
+
+        srep(j, -1, 2)
+        {
+          int nRot2 = (nRot1 + nowRot[i] + j + 4) % 4;
+          int nrx = prenrx + le[i] * dx[nRot2];
+          int nry = prenry + le[i] * dy[nRot2];
+
+          if (IsNG(nrx, nry))continue;
+
+          bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+          if (isCatch)break;
+        }
+      }
+
+      double tmpActionScore = 0;
+      srep(i, 2, V)
+      {
+        tmpActionScore += action[i];
+      }
+
+      if (tmpActionScore > maxActionScore) {
+        maxDir = order[ord];
+        maxActionScore = tmpActionScore;
+        maxRT = tmpRT;
+
+        maxAB.Copy(keepAB);
+      }
+
+      RollBackFromKeepAB(keepAB, a, b);
+    }
+  }
+}
+
+void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+
+
+  RotTip tmpRT(v);
+  vector<double> action(v);
+  KeepAB keepAB;
+
+  maxActionScore = -1;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[2]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        tmpRT.Initialize(nowRot, nowTip);
+        tmpRT.Rot[1] = ii + 1;
+        tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+        tmpRT.Rot[2] = iii + 1;
+        tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+
+        int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2];
+        int prenry = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2];
+
+        int needLength = CalcNeedLength(prenrx, prenry);
+
+        rep(i, V)
+        {
+          action[i] = 0;
+        }
+
+        keepAB.Clear();
+
+        // このターン
+        srep(i, 3, V)
+        {
+          if (le[i] < needLength)continue;
+
+          srep(j, -1, 2)
+          {
+            int nRot3 = (nRot2 + nowRot[i] + j + 4) % 4;
+            int nrx = prenrx + le[i] * dx[nRot3];
+            int nry = prenry + le[i] * dy[nRot3];
+
+            if (IsNG(nrx, nry))continue;
+
+            bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+            if (isCatch)break;
+          }
+        }
+
+        double tmpActionScore = 0;
+        srep(i, 3, V)
+        {
+          tmpActionScore += action[i];
+        }
+
+        if (tmpActionScore > maxActionScore) {
+          maxDir = order[ord];
+          maxActionScore = tmpActionScore;
+          maxRT = tmpRT;
+
+          maxAB.Copy(keepAB);
+        }
+
+        RollBackFromKeepAB(keepAB, a, b);
+      }
+    }
+  }
+}
+
+void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+
+
+  RotTip tmpRT(v);
+  vector<double> action(v);
+  KeepAB keepAB;
+
+  maxActionScore = -1;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[2]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        for (const auto iiii : ordVec[ra[4]]) {
+          int nRot3 = (nRot2 + nowRot[3] + iiii + 4) % 4;
+
+          tmpRT.Initialize(nowRot, nowTip);
+          tmpRT.Rot[1] = ii + 1;
+          tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+          tmpRT.Rot[2] = iii + 1;
+          tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+          tmpRT.Rot[3] = iiii + 1;
+          tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+
+          int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3];
+          int prenry = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[3] * dy[nRot3];
+
+          int needLength = CalcNeedLength(prenrx, prenry);
+
+          rep(i, V)
+          {
+            action[i] = 0;
+          }
+
+          keepAB.Clear();
+
+          // このターン
+          srep(i, 4, V)
+          {
+            if (le[i] < needLength)continue;
+
+            srep(j, -1, 2)
+            {
+              int nRot4 = (nRot3 + nowRot[i] + j + 4) % 4;
+              int nrx = prenrx + le[i] * dx[nRot4];
+              int nry = prenry + le[i] * dy[nRot4];
+
+              if (IsNG(nrx, nry))continue;
+
+              bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+              if (isCatch)break;
+            }
+          }
+
+          double tmpActionScore = 0;
+          srep(i, 4, V)
+          {
+            tmpActionScore += action[i];
+          }
+
+          if (tmpActionScore > maxActionScore) {
+            maxDir = order[ord];
+            maxActionScore = tmpActionScore;
+            maxRT = tmpRT;
+
+            maxAB.Copy(keepAB);
+          }
+
+          RollBackFromKeepAB(keepAB, a, b);
+        }
+      }
+    }
+  }
+}
+
+void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+
+
+  RotTip tmpRT(v);
+  vector<double> action(v);
+  KeepAB keepAB;
+
+  maxActionScore = -1;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[2]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        for (const auto iiii : ordVec[ra[4]]) {
+          int nRot3 = (nRot2 + nowRot[3] + iiii + 4) % 4;
+
+          for (const auto iiiii : ordVec[ra[5]]) {
+            int nRot4 = (nRot3 + nowRot[4] + iiiii + 4) % 4;
+
+            tmpRT.Initialize(nowRot, nowTip);
+            tmpRT.Rot[1] = ii + 1;
+            tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+            tmpRT.Rot[2] = iii + 1;
+            tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+            tmpRT.Rot[3] = iiii + 1;
+            tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+            tmpRT.Rot[4] = iiiii + 1;
+            tmpRT.NowRot[4] = (nowRot[4] + iiiii) % 4;
+
+            int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3] + le[4] * dx[nRot4];
+            int prenry = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[3] * dy[nRot3] + le[4] * dy[nRot4];
+
+            int needLength = CalcNeedLength(prenrx, prenry);
+
+            rep(i, V)
+            {
+              action[i] = 0;
+            }
+
+            keepAB.Clear();
+
+            // このターン
+            srep(i, 5, V)
+            {
+              if (le[i] < needLength)continue;
+
+              srep(j, -1, 2)
+              {
+                int nRot5 = (nRot4 + nowRot[i] + j + 4) % 4;
+                int nrx = prenrx + le[i] * dx[nRot5];
+                int nry = prenry + le[i] * dy[nRot5];
+
+                if (IsNG(nrx, nry))continue;
+
+                bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                if (isCatch)break;
+              }
+            }
+
+            double tmpActionScore = 0;
+            srep(i, 5, V)
+            {
+              tmpActionScore += action[i];
+            }
+
+            if (tmpActionScore > maxActionScore) {
+              maxDir = order[ord];
+              maxActionScore = tmpActionScore;
+              maxRT = tmpRT;
+
+              maxAB.Copy(keepAB);
+            }
+
+            RollBackFromKeepAB(keepAB, a, b);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -2423,12 +1151,11 @@ void Method100(double timeLimit)
     if (time > timeLimit)break;
 
     // メソッド決定
-    int randMethod = randxor() % 100;
     if (v < 7) {
-      if (randMethod < 10) {
-        Method = 4;
+      if (time < timeLimit * 0.1) {
+        Method = 42;
       }
-      else if (randMethod < 55) {
+      else if (time < timeLimit * 0.55) {
         Method = 52;
       }
       else {
@@ -2436,34 +1163,36 @@ void Method100(double timeLimit)
       }
     }
     else {
-      if (randMethod < 10) {
-        Method = 4;
+      if (time < timeLimit * 0.1) {
+        Method = 42;
       }
-      else if (randMethod < 40) {
+      else if (time < timeLimit * 0.4) {
         Method = 52;
       }
-      else if (randMethod < 70) {
+      else if (time < timeLimit * 0.7) {
         Method = 62;
       }
       else {
-        Method = 7;
+        Method = 72;
       }
     }
 
+    loop[Method]++;
+
     // 木作成
     switch (Method) {
-      case 4:
-        MakeTree4();
-        break;
-      case 52:
-        MakeTree5();
-        break;
-      case 62:
-        MakeTree6();
-        break;
-      case 7:
-        MakeTree7();
-        break;
+    case 42:
+      MakeTree4();
+      break;
+    case 52:
+      MakeTree5();
+      break;
+    case 62:
+      MakeTree6();
+      break;
+    case 72:
+      MakeTree7();
+      break;
     }
 
     // 初期位置作成
@@ -2482,8 +1211,9 @@ void Method100(double timeLimit)
     vector<vector<int>> b;
     int mCount = 0;
     CopyAB(a, b, mCount);
+    PCount[Method].clear();
+    PCount[Method].push_back(mCount * 2);
 
-    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -2491,18 +1221,82 @@ void Method100(double timeLimit)
     int maxDir;
     double maxActionScore;
     RotTip maxRT(v);
-    RotTip tmpRT(v);
-
     KeepAB maxAB;
-    KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
+      if (_t > 0) {
+        PCount[Method].push_back(PCount[Method][_t - 1]);
+      }
+
       FisherYates(order, 5);
 
+      maxDir = -1;
       maxActionScore = -1;
+      maxRT.Initialize(nowRot, nowTip);
 
+      if (Method == 42) {
+        DecideBest42(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+      }
+      else if (Method == 52) {
+        DecideBest52(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+      }
+      else  if (Method == 62) {
+        DecideBest62(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+      }
+      else  if (Method == 72) {
+        DecideBest72(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+      }
+      else {
+        if (mode != 0) {
+          cout << "NG" << endl;
+        }
+      }
 
+      maxRT.Reflect(nowRot, nowTip, _t);
+
+      dir[_t] = maxDir;
+
+      ReflectFromMaxAB(maxAB, a, b, mCount);
+      PCount[Method][_t] += maxAB.KeepACount + maxAB.KeepBCount;
+
+      int isAction = 0;
+      if (maxActionScore > 10.5) {
+        isAction = 1;
+      }
+
+      int nx = x + dx[maxDir];
+      int ny = y + dy[maxDir];
+
+      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
+
+      if (Method == real_Method) {
+        if (real_PCount[Method].size() > 0 && lastT >= real_PCount[Method].size()) {
+          break;
+        }
+        if (lastT >= 0 && PCount[Method][lastT] < real_PCount[Method][lastT] - 5) {
+          break;
+        }
+      }
     }
+
+    ansCount = _t;
+    if (mCount == m && ansCount < real_ansCount) {
+      CopyToReal();
+      if (mode == 2) {
+        cout << "Method" << Method << ", " << "loop = " << loop[Method];
+        cout << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
+    }
+  }
+
+  if (mode >= 2) {
+    cout << "Method42 loop = " << loop[42] << " " << endl;
+    cout << "Method52 loop = " << loop[52] << " " << endl;
+    cout << "Method62 loop = " << loop[62] << " " << endl;
+    cout << "Method72 loop = " << loop[72] << " " << endl;
   }
 }
 
@@ -2520,26 +1314,12 @@ ll Solve(int probNum)
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // 初期解生成
-  Initialize();
-
-  Method1();
+  Method = 0;
+  ansCount = 99999;
 
   CopyToReal();
 
-  //Method2();
-  //Method3();
-  if (v < 7) {
-    Method4(TL * 0.1);
-    Method52(TL * 0.45);
-    Method62(TL * 0.45);
-  }
-  else {
-    Method4(TL * 0.1);
-    Method52(TL * 0.3);
-    Method62(TL * 0.3);
-    Method7(TL * 0.3);
-  }
+  Method100(TL);
 
   CopyToAns();
 
@@ -2594,7 +1374,7 @@ int main()
     randxor();
   }
 
-  mode = 1;
+  mode = 3;
 
   if (mode == 0) {
     Solve(0);
