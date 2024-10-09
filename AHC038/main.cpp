@@ -93,7 +93,9 @@ const int MAX_M = 450;
 const int MAX_V = 15;
 const int MAX_T = 100005;
 
-const int ACTION_RATIO = 5;
+const double ACTION_RATIO_A = 51.0;
+const double ACTION_RATIO_B = 50.0;
+const double POSITION_RATIO = 0.01;
 
 int n, m, v;
 int init_a[MAX_N][MAX_N];
@@ -113,6 +115,7 @@ int armCount;
 int leafs1;
 int Method;
 int ArmLengthMethod;
+int PCount[MAX_T];
 
 int real_V;
 int real_pa[MAX_V];
@@ -128,6 +131,7 @@ int real_armCount;
 int real_leafs1;
 int real_Method;
 int real_ArmLengthMethod;
+int real_PCount[MAX_T];
 
 int route[MAX_N * MAX_N * 3][2];
 
@@ -156,6 +160,10 @@ void CopyToReal()
   real_leafs1 = leafs1;
   real_Method = Method;
   real_ArmLengthMethod = ArmLengthMethod;
+  rep(i, ansCount)
+  {
+    real_PCount[i] = PCount[i];
+  }
 }
 
 void CopyToAns()
@@ -183,6 +191,10 @@ void CopyToAns()
   leafs1 = real_leafs1;
   Method = real_Method;
   ArmLengthMethod = real_ArmLengthMethod;
+  rep(i, ansCount)
+  {
+    PCount[i] = real_PCount[i];
+  }
 }
 
 void ResetTime()
@@ -485,6 +497,7 @@ void UpdateTurn(const bool isAction, int& _t, int& lastT, int& lastX, int& lastY
       rot[_t][i] = rot[keepT][i];
       tip[_t][i] = tip[keepT][i];
     }
+    PCount[_t] = PCount[keepT];
 
     lastT = _t;
     lastX = x;
@@ -522,7 +535,7 @@ void Method1()
   int mCount = 0;
   CopyAB(a, b, mCount);
 
-  vector<int> action(v);
+  vector<double> action(v);
   while (mCount < m) {
     // dir
     int nx = route[t % nn2][0];
@@ -559,7 +572,18 @@ void Method1()
             nowRot[i] = nRot;
             tip[t][i] = 1;
             nowTip[i] = 1;
-            action[i] = ACTION_RATIO;
+            action[i] = ACTION_RATIO_A;
+            rep(k, 4)
+            {
+              int nkrx = nrx + dx[k];
+              int nkry = nry + dy[k];
+              if (IsNG(nkrx, nkry)) {
+                action[i] += POSITION_RATIO * 10;
+              }
+              else if (a[nkrx][nkry] == 0) {
+                action[i] += POSITION_RATIO;
+              }
+            }
             break;
           }
         }
@@ -570,8 +594,19 @@ void Method1()
             nowRot[i] = nRot;
             tip[t][i] = 1;
             nowTip[i] = 0;
-            action[i] = ACTION_RATIO;
+            action[i] = ACTION_RATIO_B;
             mCount++;
+            rep(k, 4)
+            {
+              int nkrx = nrx + dx[k];
+              int nkry = nry + dy[k];
+              if (IsNG(nkrx, nkry)) {
+                action[i] += POSITION_RATIO * 10;
+              }
+              else if (b[nkrx][nkry] == 0) {
+                action[i] += POSITION_RATIO;
+              }
+            }
             break;
           }
         }
@@ -583,7 +618,7 @@ void Method1()
     int nny = route[(t + 1) % nn2][1];
     srep(i, 1, V)
     {
-      if (action[i])continue;
+      if (action[i] > 0.5)continue;
 
       srep(j, -1, 3)
       {
@@ -674,7 +709,7 @@ void Method2()
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    vector<int> action(v);
+    vector<double> action(v);
     while (mCount < m && _t < real_ansCount) {
       int t = (_t + startT) % nn2;
 
@@ -713,7 +748,18 @@ void Method2()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 1;
-              action[i] = ACTION_RATIO;
+              action[i] = ACTION_RATIO_A;
+              rep(k, 4)
+              {
+                int nkrx = nrx + dx[k];
+                int nkry = nry + dy[k];
+                if (IsNG(nkrx, nkry)) {
+                  action[i] += POSITION_RATIO * 10;
+                }
+                else if (a[nkrx][nkry] == 0) {
+                  action[i] += POSITION_RATIO;
+                }
+              }
               break;
             }
           }
@@ -724,8 +770,19 @@ void Method2()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 0;
-              action[i] = ACTION_RATIO;
+              action[i] = ACTION_RATIO_B;
               mCount++;
+              rep(k, 4)
+              {
+                int nkrx = nrx + dx[k];
+                int nkry = nry + dy[k];
+                if (IsNG(nkrx, nkry)) {
+                  action[i] += POSITION_RATIO * 10;
+                }
+                else if (b[nkrx][nkry] == 0) {
+                  action[i] += POSITION_RATIO;
+                }
+              }
               break;
             }
           }
@@ -737,7 +794,7 @@ void Method2()
       int nny = route[(t + 1) % nn2][1];
       srep(i, 1, V)
       {
-        if (action[i])continue;
+        if (action[i] > 0.5)continue;
 
         srep(j, -1, 3)
         {
@@ -845,7 +902,7 @@ void Method3()
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    vector<int> action(v);
+    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
@@ -885,7 +942,18 @@ void Method3()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 1;
-              action[i] = ACTION_RATIO;
+              action[i] = ACTION_RATIO_A;
+              rep(k, 4)
+              {
+                int nkrx = nrx + dx[k];
+                int nkry = nry + dy[k];
+                if (IsNG(nkrx, nkry)) {
+                  action[i] += POSITION_RATIO * 10;
+                }
+                else if (a[nkrx][nkry] == 0) {
+                  action[i] += POSITION_RATIO;
+                }
+              }
               break;
             }
           }
@@ -896,8 +964,19 @@ void Method3()
               nowRot[i] = nRot;
               tip[_t][i] = 1;
               nowTip[i] = 0;
-              action[i] = ACTION_RATIO;
+              action[i] = ACTION_RATIO_B;
               mCount++;
+              rep(k, 4)
+              {
+                int nkrx = nrx + dx[k];
+                int nkry = nry + dy[k];
+                if (IsNG(nkrx, nkry)) {
+                  action[i] += POSITION_RATIO * 10;
+                }
+                else if (b[nkrx][nkry] == 0) {
+                  action[i] += POSITION_RATIO;
+                }
+              }
               break;
             }
           }
@@ -909,7 +988,7 @@ void Method3()
       int nny = route[(t + 2) % nn2][1];
       srep(i, 1, V)
       {
-        if (action[i])continue;
+        if (action[i] > 0.5)continue;
 
         srep(j, -1, 3)
         {
@@ -953,7 +1032,7 @@ void Method3()
       int isAction = 0;
       rep(i, V)
       {
-        if (action[i] == 1) {
+        if (action[i] > 0.5) {
           isAction = 1;
           break;
         }
@@ -1109,7 +1188,7 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
 
 bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
   vector<vector<int>>& a, vector<vector<int>>& b,
-  RotTip& tmpRT, KeepAB& keepAB, vector<int>& action,
+  RotTip& tmpRT, KeepAB& keepAB, vector<double>& action,
   const int i, const int j, const int nrx, const int nry)
 {
   if (nowTip[i] == 0) {
@@ -1120,7 +1199,18 @@ bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 1;
-      action[i] = ACTION_RATIO;
+      action[i] = ACTION_RATIO_A;
+      rep(k, 4)
+      {
+        int nkrx = nrx + dx[k];
+        int nkry = nry + dy[k];
+        if (IsNG(nkrx, nkry)) {
+          action[i] += POSITION_RATIO * 10;
+        }
+        else if (a[nkrx][nkry] == 0) {
+          action[i] += POSITION_RATIO;
+        }
+      }
       return true;
     }
   }
@@ -1132,7 +1222,18 @@ bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 0;
-      action[i] = ACTION_RATIO;
+      action[i] = ACTION_RATIO_B;
+      rep(k, 4)
+      {
+        int nkrx = nrx + dx[k];
+        int nkry = nry + dy[k];
+        if (IsNG(nkrx, nkry)) {
+          action[i] += POSITION_RATIO * 10;
+        }
+        else if (b[nkrx][nkry] == 0) {
+          action[i] += POSITION_RATIO;
+        }
+      }
       return true;
     }
   }
@@ -1213,12 +1314,12 @@ void Method4(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    vector<int> action(v);
+    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
 
-    int maxActionScore;
+    double maxActionScore;
     RotTip maxRT(v);
     RotTip tmpRT(v);
 
@@ -1285,7 +1386,7 @@ void Method4(double timeLimit)
           int nny = route[(t + 2) % nn2][1];
           srep(i, 2, V)
           {
-            if (action[i])continue;
+            if (action[i] > 0.5)continue;
 
             srep(j, -1, 3)
             {
@@ -1326,7 +1427,7 @@ void Method4(double timeLimit)
             }
           }
 
-          int tmpActionScore = 0;
+          double tmpActionScore = 0;
           srep(i, 2, V)
           {
             tmpActionScore += action[i];
@@ -1348,7 +1449,7 @@ void Method4(double timeLimit)
       ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
-      if (maxActionScore > 0) {
+      if (maxActionScore > 0.5) {
         isAction = 1;
       }
 
@@ -1368,7 +1469,7 @@ void Method4(double timeLimit)
     }
   }
 
-  if (mode == 2) {
+  if (mode >= 2) {
     cout << "Method4 loop = " << loop << " " << endl;
   }
 }
@@ -1396,6 +1497,10 @@ void Method52(double timeLimit)
     int nn2 = n * n * 2;
 
     MakeTree5();
+    if (randxor() % 2) {
+      int st = randxor() % 3 + 1;
+      srep(i, 3, V)le[i] = i - 3 + st;
+    }
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -1439,15 +1544,16 @@ void Method52(double timeLimit)
     vector<vector<int>> b;
     int mCount = 0;
     CopyAB(a, b, mCount);
+    PCount[0] = mCount * 2;
 
-    vector<int> action(v);
+    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
 
     int maxDir;
 
-    int maxActionScore;
+    double maxActionScore;
     RotTip maxRT(v);
 
     RotTip tmpRT(v);
@@ -1456,6 +1562,9 @@ void Method52(double timeLimit)
     KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
+      if (_t > 0) {
+        PCount[_t] = PCount[_t - 1];
+      }
       FisherYates(order, 5);
 
       maxDir = -1;
@@ -1481,61 +1590,55 @@ void Method52(double timeLimit)
         int ra[6];
         rep(i, 6)ra[i] = randxor() % 6;
         for (const auto ii : ordVec[ra[0]]) {
-          for (const auto jj : ordVec[ra[1]]) {
-            int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-            int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
+          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
-            for (const auto iii : ordVec[ra[2]]) {
-              for (const auto jjj : ordVec[ra[3]]) {
-                int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
-                int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
+          for (const auto iii : ordVec[ra[2]]) {
+            int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
 
-                tmpRT.Initialize(nowRot, nowTip);
-                tmpRT.Rot[1] = ii + 1;
-                tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-                tmpRT.Rot[2] = iii + 1;
-                tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+            tmpRT.Initialize(nowRot, nowTip);
+            tmpRT.Rot[1] = ii + 1;
+            tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+            tmpRT.Rot[2] = iii + 1;
+            tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
 
-                rep(i, V)
-                {
-                  action[i] = 0;
-                }
+            rep(i, V)
+            {
+              action[i] = 0;
+            }
 
-                keepAB.Clear();
+            keepAB.Clear();
 
-                // このターン
-                srep(i, 3, V)
-                {
-                  srep(j, -1, 2)
-                  {
-                    int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
-                    int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3];
-                    int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3];
+            // このターン
+            srep(i, 3, V)
+            {
+              srep(j, -1, 2)
+              {
+                int nRot = (nRot3 + nowRot[i] + j + 4) % 4;
+                int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3];
+                int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3];
 
-                    if (IsNG(nrx, nry))continue;
+                if (IsNG(nrx, nry))continue;
 
-                    bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                    if (isCatch)break;
-                  }
-                }
-
-                int tmpActionScore = 0;
-                srep(i, 3, V)
-                {
-                  tmpActionScore += action[i];
-                }
-
-                if (tmpActionScore > maxActionScore) {
-                  maxDir = order[ord];
-                  maxActionScore = tmpActionScore;
-                  maxRT = tmpRT;
-
-                  maxAB.Copy(keepAB);
-                }
-
-                RollBackFromKeepAB(keepAB, a, b);
+                bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                if (isCatch)break;
               }
             }
+
+            double tmpActionScore = 0;
+            srep(i, 3, V)
+            {
+              tmpActionScore += action[i];
+            }
+
+            if (tmpActionScore > maxActionScore) {
+              maxDir = order[ord];
+              maxActionScore = tmpActionScore;
+              maxRT = tmpRT;
+
+              maxAB.Copy(keepAB);
+            }
+
+            RollBackFromKeepAB(keepAB, a, b);
           }
         }
       }
@@ -1545,9 +1648,10 @@ void Method52(double timeLimit)
       dir[_t] = maxDir;
 
       ReflectFromMaxAB(maxAB, a, b, mCount);
+      PCount[_t] += maxAB.KeepACount + maxAB.KeepBCount;
 
       int isAction = 0;
-      if (maxActionScore > 0) {
+      if (maxActionScore > 0.5) {
         isAction = 1;
       }
 
@@ -1555,6 +1659,12 @@ void Method52(double timeLimit)
       int ny = y + dy[maxDir];
 
       UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
+
+      if (real_Method == 52) {
+        if (lastT >= 0 && PCount[lastT] < real_PCount[lastT] - 5) {
+          break;
+        }
+      }
     }
 
     ansCount = _t;
@@ -1569,7 +1679,7 @@ void Method52(double timeLimit)
     }
   }
 
-  if (mode == 2) {
+  if (mode >= 2) {
     cout << "Method52 loop = " << loop << " " << endl;
   }
 }
@@ -1597,12 +1707,15 @@ void Method62(double timeLimit)
     int nn2 = n * n * 2;
 
     MakeTree6();
+    if (randxor() % 2) {
+      int st = randxor() % 3 + 1;
+      srep(i, 4, V)le[i] = i - 4 + st;
+    }
 
     startT = randxor() % nn2;
     sx = route[startT][0];
     sy = route[startT][1];
-    //if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
-    if (randxor() % 2 == 0 && loop > 1000) {
+    if (randxor() % 2 == 0 && real_startT != -1 && time > timeLimit * 0.75) {
       V = real_V;
       srep(i, 1, V)
       {
@@ -1641,15 +1754,16 @@ void Method62(double timeLimit)
     vector<vector<int>> b;
     int mCount = 0;
     CopyAB(a, b, mCount);
+    PCount[0] = mCount * 2;
 
-    vector<int> action(v);
+    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
 
     int maxDir;
 
-    int maxActionScore;
+    double maxActionScore;
     RotTip maxRT(v);
 
     RotTip tmpRT(v);
@@ -1658,6 +1772,10 @@ void Method62(double timeLimit)
     KeepAB keepAB;
 
     while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
+      if (_t > 0) {
+        PCount[_t] = PCount[_t - 1];
+      }
+
       FisherYates(order, 5);
 
       maxDir = -1;
@@ -1684,69 +1802,60 @@ void Method62(double timeLimit)
         int ra[6];
         rep(i, 6)ra[i] = randxor() % 6;
         for (const auto ii : ordVec[ra[0]]) {
-          for (const auto jj : ordVec[ra[1]]) {
-            int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
-            int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
+          int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
-            for (const auto iii : ordVec[ra[2]]) {
-              for (const auto jjj : ordVec[ra[3]]) {
-                int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
-                int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
+          for (const auto iii : ordVec[ra[2]]) {
+            int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
 
-                for (const auto iiii : ordVec[ra[4]]) {
-                  for (const auto jjjj : ordVec[ra[5]]) {
-                    int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
-                    int nRot6 = (nRot4 + nowRot[3] + iiii + jjjj + 4) % 4;
+            for (const auto iiii : ordVec[ra[4]]) {
+              int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
 
-                    tmpRT.Initialize(nowRot, nowTip);
-                    tmpRT.Rot[1] = ii + 1;
-                    tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-                    tmpRT.Rot[2] = iii + 1;
-                    tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
-                    tmpRT.Rot[3] = iiii + 1;
-                    tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+              tmpRT.Initialize(nowRot, nowTip);
+              tmpRT.Rot[1] = ii + 1;
+              tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+              tmpRT.Rot[2] = iii + 1;
+              tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+              tmpRT.Rot[3] = iiii + 1;
+              tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
 
-                    rep(i, V)
-                    {
-                      action[i] = 0;
-                    }
+              rep(i, V)
+              {
+                action[i] = 0;
+              }
 
-                    keepAB.Clear();
+              keepAB.Clear();
 
-                    // このターン
-                    srep(i, 4, V)
-                    {
-                      srep(j, -1, 2)
-                      {
-                        int nRot = (nRot5 + nowRot[i] + j + 4) % 4;
-                        int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3] + le[3] * dx[nRot5];
-                        int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3] + le[3] * dy[nRot5];
+              // このターン
+              srep(i, 4, V)
+              {
+                srep(j, -1, 2)
+                {
+                  int nRot = (nRot5 + nowRot[i] + j + 4) % 4;
+                  int nrx = nx + le[i] * dx[nRot] + le[1] * dx[nRot1] + le[2] * dx[nRot3] + le[3] * dx[nRot5];
+                  int nry = ny + le[i] * dy[nRot] + le[1] * dy[nRot1] + le[2] * dy[nRot3] + le[3] * dy[nRot5];
 
-                        if (IsNG(nrx, nry))continue;
+                  if (IsNG(nrx, nry))continue;
 
-                        bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                        if (isCatch)break;
-                      }
-                    }
-
-                    int tmpActionScore = 0;
-                    srep(i, 4, V)
-                    {
-                      tmpActionScore += action[i];
-                    }
-
-                    if (tmpActionScore > maxActionScore) {
-                      maxDir = order[ord];
-                      maxActionScore = tmpActionScore;
-                      maxRT = tmpRT;
-
-                      maxAB.Copy(keepAB);
-                    }
-
-                    RollBackFromKeepAB(keepAB, a, b);
-                  }
+                  bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+                  if (isCatch)break;
                 }
               }
+
+              double tmpActionScore = 0;
+              srep(i, 4, V)
+              {
+                tmpActionScore += action[i];
+              }
+
+              if (tmpActionScore > maxActionScore) {
+                maxDir = order[ord];
+                maxActionScore = tmpActionScore;
+                maxRT = tmpRT;
+
+                maxAB.Copy(keepAB);
+              }
+
+              RollBackFromKeepAB(keepAB, a, b);
             }
           }
         }
@@ -1757,9 +1866,10 @@ void Method62(double timeLimit)
       dir[_t] = maxDir;
 
       ReflectFromMaxAB(maxAB, a, b, mCount);
+      PCount[_t] += maxAB.KeepACount + maxAB.KeepBCount;
 
       int isAction = 0;
-      if (maxActionScore > 0) {
+      if (maxActionScore > 0.5) {
         isAction = 1;
       }
 
@@ -1767,6 +1877,12 @@ void Method62(double timeLimit)
       int ny = y + dy[maxDir];
 
       UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
+
+      if (real_Method == 62) {
+        if (lastT >= 0 && PCount[lastT] < real_PCount[lastT] - 5) {
+          break;
+        }
+      }
     }
 
     ansCount = _t;
@@ -1781,7 +1897,7 @@ void Method62(double timeLimit)
     }
   }
 
-  if (mode == 2) {
+  if (mode >= 2) {
     cout << "Method62 loop = " << loop << " " << endl;
   }
 }
@@ -1861,12 +1977,12 @@ void Method7(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    vector<int> action(v);
+    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
 
-    int maxActionScore;
+    double maxActionScore;
     RotTip maxRT(v);
 
     RotTip tmpRT(v);
@@ -1941,7 +2057,7 @@ void Method7(double timeLimit)
               int nny = route[(t + 2) % nn2][1];
               srep(i, 5, 5 + leafs1)
               {
-                if (action[i])continue;
+                if (action[i] > 0.5)continue;
 
                 srep(j, -1, 3)
                 {
@@ -1983,7 +2099,7 @@ void Method7(double timeLimit)
               }
 
 
-              int tmpActionScore = 0;
+              double tmpActionScore = 0;
               srep(i, 3, V)
               {
                 tmpActionScore += action[i];
@@ -2021,7 +2137,7 @@ void Method7(double timeLimit)
       ReflectFromMaxAB(maxAB, a, b, mCount);
 
       int isAction = 0;
-      if (maxActionScore > 0) {
+      if (maxActionScore > 0.5) {
         isAction = 1;
       }
 
@@ -2074,7 +2190,7 @@ void Method7(double timeLimit)
               int nny = route[(t + 2) % nn2][1];
               srep(i, 5 + leafs1, V)
               {
-                if (action[i])continue;
+                if (action[i] > 0.5)continue;
 
                 srep(j, -1, 3)
                 {
@@ -2116,7 +2232,7 @@ void Method7(double timeLimit)
               }
 
 
-              int tmpActionScore = 0;
+              double tmpActionScore = 0;
               srep(i, 5 + leafs1, V)
               {
                 tmpActionScore += action[i];
@@ -2153,7 +2269,7 @@ void Method7(double timeLimit)
 
       ReflectFromMaxAB(maxAB, a, b, mCount);
 
-      if (maxActionScore > 0) {
+      if (maxActionScore > 0.5) {
         isAction = 1;
       }
 
@@ -2173,7 +2289,7 @@ void Method7(double timeLimit)
     }
   }
 
-  if (mode == 2) {
+  if (mode >= 2) {
     cout << "Method7 loop = " << loop << " " << endl;
   }
 }
@@ -2367,13 +2483,13 @@ void Method100(double timeLimit)
     int mCount = 0;
     CopyAB(a, b, mCount);
 
-    vector<int> action(v);
+    vector<double> action(v);
     int lastT = -1;
     int lastX = sx;
     int lastY = sy;
 
     int maxDir;
-    int maxActionScore;
+    double maxActionScore;
     RotTip maxRT(v);
     RotTip tmpRT(v);
 
@@ -2448,12 +2564,21 @@ ll Solve(int probNum)
  ・腕の長さをランダムにしない
 
  ・枝刈り高速化
+   ・縦と横に分ける
+     ・盤外確定は枝刈り
 
  ・ビームサーチ化
 
  ・近傍探索
 
  ・アドホックな手法考える
+
+落ちているたこ焼きの取り順
+ ・孤立してるやつ
+ ・壁に近いやつ
+ ・腕は一直線に取った方がお得？
+
+一旦置くのアリ？
 
 リファクタ
 
@@ -2474,7 +2599,7 @@ int main()
   if (mode == 0) {
     Solve(0);
   }
-  else if (mode <= 2) {
+  else if (mode <= 100) {
     ll sum = 0;
     srep(i, 0, 100)
     {
