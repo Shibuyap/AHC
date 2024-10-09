@@ -81,7 +81,7 @@ const char rotChar[3] = { 'L', '.', 'R' };
 const char tipChar[2] = { '.', 'P' };
 const int BASE_DIR = 3;
 
-const double TL = 2.8;
+const double TL = 9.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -109,6 +109,7 @@ int startT;
 int armCount;
 int leafs1;
 int Method;
+int ArmLengthMethod;
 
 int real_V;
 int real_pa[MAX_V];
@@ -123,6 +124,7 @@ int real_startT;
 int real_armCount;
 int real_leafs1;
 int real_Method;
+int real_ArmLengthMethod;
 
 int route[MAX_N * MAX_N * 3][2];
 
@@ -150,6 +152,7 @@ void CopyToReal()
   real_armCount = armCount;
   real_leafs1 = leafs1;
   real_Method = Method;
+  real_ArmLengthMethod = ArmLengthMethod;
 }
 
 void CopyToAns()
@@ -176,6 +179,7 @@ void CopyToAns()
   armCount = real_armCount;
   leafs1 = real_leafs1;
   Method = real_Method;
+  ArmLengthMethod = real_ArmLengthMethod;
 }
 
 void ResetTime()
@@ -910,6 +914,9 @@ void Method3()
 
 class RotTip
 {
+private:
+  int m_V;
+
 public:
   vector<int> Rot;
   vector<int> Tip;
@@ -920,61 +927,84 @@ public:
 
   RotTip(int v)
   {
+    m_V = v;
     Rot.resize(v);
     Tip.resize(v);
     NowRot.resize(v);
     NowTip.resize(v);
   }
+
+  void Initialize(const vector<int>& nowRot, const vector<int>& nowTip)
+  {
+    rep(i, m_V)
+    {
+      Rot[i] = 1;
+      Tip[i] = 0;
+      NowRot[i] = nowRot[i];
+      NowTip[i] = nowTip[i];
+    }
+  }
 };
 
-class KeepAB {
+class KeepAB
+{
 public:
   int KeepA[MAX_V][3];
   int KeepB[MAX_V][3];
   int KeepACount;
   int KeepBCount;
 
-  KeepAB() {
+  KeepAB()
+  {
     KeepACount = 0;
     KeepBCount = 0;
   }
 
-  void AddA(int x, int y, int val) {
+  void AddA(int x, int y, int val)
+  {
     KeepA[KeepACount][0] = x;
     KeepA[KeepACount][1] = y;
     KeepA[KeepACount][2] = val;
     KeepACount++;
   }
 
-  void AddB(int x, int y, int val) {
+  void AddB(int x, int y, int val)
+  {
     KeepB[KeepBCount][0] = x;
     KeepB[KeepBCount][1] = y;
     KeepB[KeepBCount][2] = val;
     KeepBCount++;
   }
 
-  void Clear() {
+  void Clear()
+  {
     KeepACount = 0;
     KeepBCount = 0;
   }
 
-  void Copy(const KeepAB& src) {
+  void Copy(const KeepAB& src)
+  {
     KeepACount = src.KeepACount;
-    rep(i, KeepACount) {
-      rep(j, 3) {
+    rep(i, KeepACount)
+    {
+      rep(j, 3)
+      {
         KeepA[i][j] = src.KeepA[i][j];
       }
     }
     KeepBCount = src.KeepBCount;
-    rep(i, KeepBCount) {
-      rep(j, 3) {
+    rep(i, KeepBCount)
+    {
+      rep(j, 3)
+      {
         KeepB[i][j] = src.KeepB[i][j];
       }
     }
   }
 };
 
-void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vector<int>>& b) {
+void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vector<int>>& b)
+{
   rep(i, keepAB.KeepACount)
   {
     a[keepAB.KeepA[i][0]][keepAB.KeepA[i][1]] = keepAB.KeepA[i][2];
@@ -985,7 +1015,8 @@ void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vec
   }
 }
 
-void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, int& mCount) {
+void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
+{
   mCount += maxAB.KeepBCount;
   rep(i, maxAB.KeepACount)
   {
@@ -1000,7 +1031,8 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
 bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
   vector<vector<int>>& a, vector<vector<int>>& b,
   RotTip& tmpRT, KeepAB& keepAB, vector<int>& action,
-  const int i, const int j, const int nrx, const int nry) {
+  const int i, const int j, const int nrx, const int nry)
+{
   if (nowTip[i] == 0) {
     if (a[nrx][nry] == 1) {
       keepAB.AddA(nrx, nry, a[nrx][nry]);
@@ -1029,6 +1061,11 @@ bool CanCatch(vector<int>& nowRot, vector<int>& nowTip,
   return false;
 }
 
+void MakeTree4();
+void MakeTree5();
+void MakeTree6();
+void MakeTree7();
+
 //初期位置はランダム
 //関節一つ
 //辺の長さはランダム
@@ -1050,17 +1087,7 @@ void Method4(double timeLimit)
 
     int nn2 = n * n * 2;
 
-    V = v;
-    srep(i, 1, V)
-    {
-      if (i == 1) {
-        pa[i] = 0;
-      }
-      else {
-        pa[i] = 1;
-      }
-      le[i] = randxor() % (n - 1) + 1;
-    }
+    MakeTree4();
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -1142,29 +1169,18 @@ void Method4(double timeLimit)
 
       maxAction = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
       const vector<int> ordVec = { 0,1,-1 };
-      for (const auto ii : ordVec)
-      {
-        for (const auto jj : ordVec)
-        {
+      for (const auto ii : ordVec) {
+        for (const auto jj : ordVec) {
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
+          tmpRT.Initialize(nowRot, nowTip);
           rep(i, V)
           {
             action[i] = 0;
-            tmpRT.Rot[i] = 1;
-            tmpRT.Tip[i] = 0;
-            tmpRT.NowRot[i] = nowRot[i];
-            tmpRT.NowTip[i] = nowTip[i];
           }
 
           keepAB.Clear();
@@ -1325,20 +1341,7 @@ void Method5(double timeLimit)
 
     int nn2 = n * n * 2;
 
-    V = v;
-    srep(i, 1, V)
-    {
-      if (i == 1) {
-        pa[i] = 0;
-      }
-      else if (i == 2) {
-        pa[i] = 1;
-      }
-      else {
-        pa[i] = 2;
-      }
-      le[i] = randxor() % (n - 1) + 1;
-    }
+    MakeTree5();
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -1422,36 +1425,23 @@ void Method5(double timeLimit)
       maxAction = -1;
       maxAction2 = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
       const vector<int> ordVec = { 0,1,-1 };
-      for (const auto ii : ordVec)
-      {
-        for (const auto jj : ordVec)
-        {
+      for (const auto ii : ordVec) {
+        for (const auto jj : ordVec) {
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-          for (const auto iii : ordVec)
-          {
-            for (const auto jjj : ordVec)
-            {
+          for (const auto iii : ordVec) {
+            for (const auto jjj : ordVec) {
               int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
+              tmpRT.Initialize(nowRot, nowTip);
               rep(i, V)
               {
                 action[i] = 0;
-                tmpRT.Rot[i] = 1;
-                tmpRT.Tip[i] = 0;
-                tmpRT.NowRot[i] = nowRot[i];
-                tmpRT.NowTip[i] = nowTip[i];
               }
 
               keepAB.Clear();
@@ -1620,20 +1610,7 @@ void Method52(double timeLimit)
 
     int nn2 = n * n * 2;
 
-    V = v;
-    srep(i, 1, V)
-    {
-      if (i == 1) {
-        pa[i] = 0;
-      }
-      else if (i == 2) {
-        pa[i] = 1;
-      }
-      else {
-        pa[i] = 2;
-      }
-      le[i] = randxor() % (n - 1) + 1;
-    }
+    MakeTree5();
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -1706,13 +1683,7 @@ void Method52(double timeLimit)
       maxAction = -1;
       maxAction2 = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
       rep(ord, 5)
       {
@@ -1731,27 +1702,20 @@ void Method52(double timeLimit)
         }
 
         const vector<int> ordVec = { 0,1,-1 };
-        for (const auto ii : ordVec)
-        {
-          for (const auto jj : ordVec)
-          {
+        for (const auto ii : ordVec) {
+          for (const auto jj : ordVec) {
             int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
             int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-            for (const auto iii : ordVec)
-            {
-              for (const auto jjj : ordVec)
-              {
+            for (const auto iii : ordVec) {
+              for (const auto jjj : ordVec) {
                 int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
                 int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
+                tmpRT.Initialize(nowRot, nowTip);
                 rep(i, V)
                 {
                   action[i] = 0;
-                  tmpRT.Rot[i] = 1;
-                  tmpRT.Tip[i] = 0;
-                  tmpRT.NowRot[i] = nowRot[i];
-                  tmpRT.NowTip[i] = nowTip[i];
                 }
 
                 keepAB.Clear();
@@ -1878,23 +1842,7 @@ void Method6(double timeLimit)
 
     int nn2 = n * n * 2;
 
-    V = v;
-    srep(i, 1, V)
-    {
-      if (i == 1) {
-        pa[i] = 0;
-      }
-      else if (i == 2) {
-        pa[i] = 1;
-      }
-      else if (i == 3) {
-        pa[i] = 2;
-      }
-      else {
-        pa[i] = 3;
-      }
-      le[i] = randxor() % (n - 1) + 1;
-    }
+    MakeTree6();
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -1980,13 +1928,7 @@ void Method6(double timeLimit)
       maxAction2 = -1;
       maxAction3 = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
       srep(ii2, 0, 3)
       {
@@ -2024,14 +1966,10 @@ void Method6(double timeLimit)
                   int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
                   int nRot6 = (nRot4 + nowRot[3] + iiii + jjjj + 4) % 4;
 
-
+                  tmpRT.Initialize(nowRot, nowTip);
                   rep(i, V)
                   {
                     action[i] = 0;
-                    tmpRT.Rot[i] = 1;
-                    tmpRT.Tip[i] = 0;
-                    tmpRT.NowRot[i] = nowRot[i];
-                    tmpRT.NowTip[i] = nowTip[i];
                   }
 
                   keepAB.Clear();
@@ -2204,23 +2142,7 @@ void Method62(double timeLimit)
 
     int nn2 = n * n * 2;
 
-    V = v;
-    srep(i, 1, V)
-    {
-      if (i == 1) {
-        pa[i] = 0;
-      }
-      else if (i == 2) {
-        pa[i] = 1;
-      }
-      else if (i == 3) {
-        pa[i] = 2;
-      }
-      else {
-        pa[i] = 3;
-      }
-      le[i] = randxor() % (n - 1) + 1;
-    }
+    MakeTree6();
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -2295,13 +2217,7 @@ void Method62(double timeLimit)
       maxAction2 = -1;
       maxAction3 = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
       rep(ord, 5)
       {
@@ -2321,34 +2237,25 @@ void Method62(double timeLimit)
         }
 
         const vector<int> ordVec = { 0,1,-1 };
-        for (const auto ii : ordVec)
-        {
-          for (const auto jj : ordVec)
-          {
+        for (const auto ii : ordVec) {
+          for (const auto jj : ordVec) {
             int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
             int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-            for (const auto iii : ordVec)
-            {
-              for (const auto jjj : ordVec)
-              {
+            for (const auto iii : ordVec) {
+              for (const auto jjj : ordVec) {
                 int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
                 int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
-                for (const auto iiii : ordVec)
-                {
-                  for (const auto jjjj : ordVec)
-                  {
+                for (const auto iiii : ordVec) {
+                  for (const auto jjjj : ordVec) {
                     int nRot5 = (nRot3 + nowRot[3] + iiii + 4) % 4;
                     int nRot6 = (nRot4 + nowRot[3] + iiii + jjjj + 4) % 4;
 
+                    tmpRT.Initialize(nowRot, nowTip);
                     rep(i, V)
                     {
                       action[i] = 0;
-                      tmpRT.Rot[i] = 1;
-                      tmpRT.Tip[i] = 0;
-                      tmpRT.NowRot[i] = nowRot[i];
-                      tmpRT.NowTip[i] = nowTip[i];
                     }
 
                     keepAB.Clear();
@@ -2487,31 +2394,7 @@ void Method7(double timeLimit)
 
     V = v;
 
-    armCount = 2;
-    leafs1 = randxor() % (V - 6) + 1;
-
-    srep(i, 1, V)
-    {
-      if (i == 1) {
-        pa[i] = 0;
-      }
-      else if (i == 2) {
-        pa[i] = 1;
-      }
-      else if (i == 3) {
-        pa[i] = 0;
-      }
-      else if (i == 4) {
-        pa[i] = 3;
-      }
-      else if (i < 5 + leafs1) {
-        pa[i] = 2;
-      }
-      else {
-        pa[i] = 4;
-      }
-      le[i] = randxor() % (n - 1) + 1;
-    }
+    MakeTree7();
 
     startT = randxor() % nn2;
     sx = route[startT][0];
@@ -2596,36 +2479,23 @@ void Method7(double timeLimit)
       maxAction = -1;
       maxAction2 = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
       const vector<int> ordVec = { 0,1,-1 };
-      for (const auto ii : ordVec)
-      {
-        for (const auto jj : ordVec)
-        {
+      for (const auto ii : ordVec) {
+        for (const auto jj : ordVec) {
           int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[1] + ii + jj + 4) % 4;
 
-          for (const auto iii : ordVec)
-          {
-            for (const auto jjj : ordVec)
-            {
+          for (const auto iii : ordVec) {
+            for (const auto jjj : ordVec) {
               int nRot3 = (nRot1 + nowRot[2] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[2] + iii + jjj + 4) % 4;
 
+              tmpRT.Initialize(nowRot, nowTip);
               rep(i, V)
               {
                 action[i] = 0;
-                tmpRT.Rot[i] = 1;
-                tmpRT.Tip[i] = 0;
-                tmpRT.NowRot[i] = nowRot[i];
-                tmpRT.NowTip[i] = nowTip[i];
               }
 
               keepAB.Clear();
@@ -2738,35 +2608,22 @@ void Method7(double timeLimit)
       maxAction = -1;
       maxAction2 = -1;
       maxActionScore = -1;
-      rep(i, V)
-      {
-        maxRT.Rot[i] = 1;
-        maxRT.Tip[i] = 0;
-        maxRT.NowRot[i] = nowRot[i];
-        maxRT.NowTip[i] = nowTip[i];
-      }
+      maxRT.Initialize(nowRot, nowTip);
 
-      for (const auto ii : ordVec)
-      {
-        for (const auto jj : ordVec)
-        {
+      for (const auto ii : ordVec) {
+        for (const auto jj : ordVec) {
           int nRot1 = (BASE_DIR + nowRot[3] + ii + 4) % 4;
           int nRot2 = (BASE_DIR + nowRot[3] + ii + jj + 4) % 4;
 
-          for (const auto iii : ordVec)
-          {
-            for (const auto jjj : ordVec)
-            {
+          for (const auto iii : ordVec) {
+            for (const auto jjj : ordVec) {
               int nRot3 = (nRot1 + nowRot[4] + iii + 4) % 4;
               int nRot4 = (nRot2 + nowRot[4] + iii + jjj + 4) % 4;
 
+              tmpRT.Initialize(nowRot, nowTip);
               rep(i, V)
               {
                 action[i] = 0;
-                tmpRT.Rot[i] = 1;
-                tmpRT.Tip[i] = 0;
-                tmpRT.NowRot[i] = nowRot[i];
-                tmpRT.NowTip[i] = nowTip[i];
               }
 
               keepAB.Clear();
@@ -2912,7 +2769,35 @@ void Method7(double timeLimit)
   }
 }
 
-void MakeTree4() {
+int MakeLength(int ra)
+{
+  int length = 1;
+  if (ra < 30) {
+    ArmLengthMethod = 0;
+    length = randxor() % ((n - 1) * 1 / 3) + 1;
+  }
+  else if (ra < 60) {
+    ArmLengthMethod = 1;
+    length = randxor() % ((n - 1) * 1 / 2) + 1;
+  }
+  else if (ra < 80) {
+    ArmLengthMethod = 2;
+    length = randxor() % ((n - 1) * 2 / 3) + 1;
+  }
+  else if (ra < 100) {
+    ArmLengthMethod = 3;
+    length= randxor() % ((n - 1) * 3 / 4) + 1;
+  }
+  else {
+    ArmLengthMethod = 4;
+    length= randxor() % (n - 1) + 1;
+  }
+  return length;
+}
+
+void MakeTree4()
+{
+  int ra = randxor() % 100;
   V = v;
   armCount = 1;
   srep(i, 1, V)
@@ -2923,11 +2808,13 @@ void MakeTree4() {
     else {
       pa[i] = 1;
     }
-    le[i] = randxor() % (n - 1) + 1;
+    le[i] = MakeLength(ra);
   }
 }
 
-void MakeTree52() {
+void MakeTree5()
+{
+  int ra = randxor() % 100;
   V = v;
   armCount = 1;
   srep(i, 1, V)
@@ -2941,11 +2828,13 @@ void MakeTree52() {
     else {
       pa[i] = 2;
     }
-    le[i] = randxor() % (n - 1) + 1;
+    le[i] = MakeLength(ra);
   }
 }
 
-void MakeTree62() {
+void MakeTree6()
+{
+  int ra = randxor() % 100;
   V = v;
   armCount = 1;
   srep(i, 1, V)
@@ -2962,11 +2851,13 @@ void MakeTree62() {
     else {
       pa[i] = 3;
     }
-    le[i] = randxor() % (n - 1) + 1;
+    le[i] = MakeLength(ra);
   }
 }
 
-void MakeTree7() {
+void MakeTree7()
+{
+  int ra = randxor() % 100;
   V = v;
   armCount = 2;
   leafs1 = randxor() % (V - 6) + 1;
@@ -2990,11 +2881,12 @@ void MakeTree7() {
     else {
       pa[i] = 4;
     }
-    le[i] = randxor() % (n - 1) + 1;
+    le[i] = MakeLength(ra);
   }
 }
 
-void Method100(double timeLimit) {
+void Method100(double timeLimit)
+{
   ResetTime();
 
   real_startT = -1;
@@ -3035,18 +2927,18 @@ void Method100(double timeLimit) {
 
     // 木作成
     switch (Method) {
-    case 4:
-      MakeTree4();
-      break;
-    case 52:
-      MakeTree52();
-      break;
-    case 62:
-      MakeTree62();
-      break;
-    case 7:
-      MakeTree7();
-      break;
+      case 4:
+        MakeTree4();
+        break;
+      case 52:
+        MakeTree5();
+        break;
+      case 62:
+        MakeTree6();
+        break;
+      case 7:
+        MakeTree7();
+        break;
     }
 
     // 初期位置作成
@@ -3175,7 +3067,7 @@ int main()
     randxor();
   }
 
-  mode = 2;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
@@ -3197,6 +3089,7 @@ int main()
         cout << "M = " << setw(3) << m << ", ";
         cout << "V = " << setw(2) << v << ", ";
         cout << "Method = " << Method << ", ";
+        cout << "ArmLengthMethod = " << ArmLengthMethod << ", ";
         cout << endl;
       }
     }
