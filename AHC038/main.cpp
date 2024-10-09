@@ -2912,6 +2912,188 @@ void Method7(double timeLimit)
   }
 }
 
+void MakeTree4() {
+  V = v;
+  armCount = 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else {
+      pa[i] = 1;
+    }
+    le[i] = randxor() % (n - 1) + 1;
+  }
+}
+
+void MakeTree52() {
+  V = v;
+  armCount = 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else {
+      pa[i] = 2;
+    }
+    le[i] = randxor() % (n - 1) + 1;
+  }
+}
+
+void MakeTree62() {
+  V = v;
+  armCount = 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else if (i == 3) {
+      pa[i] = 2;
+    }
+    else {
+      pa[i] = 3;
+    }
+    le[i] = randxor() % (n - 1) + 1;
+  }
+}
+
+void MakeTree7() {
+  V = v;
+  armCount = 2;
+  leafs1 = randxor() % (V - 6) + 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else if (i == 3) {
+      pa[i] = 0;
+    }
+    else if (i == 4) {
+      pa[i] = 3;
+    }
+    else if (i < 5 + leafs1) {
+      pa[i] = 2;
+    }
+    else {
+      pa[i] = 4;
+    }
+    le[i] = randxor() % (n - 1) + 1;
+  }
+}
+
+void Method100(double timeLimit) {
+  ResetTime();
+
+  real_startT = -1;
+
+  int loop[100] = {};
+  int nn2 = n * n * 2;
+  while (true) {
+    double time = GetNowTime();
+    if (time > timeLimit)break;
+
+    // メソッド決定
+    int randMethod = randxor() % 100;
+    if (v < 7) {
+      if (randMethod < 10) {
+        Method = 4;
+      }
+      else if (randMethod < 55) {
+        Method = 52;
+      }
+      else {
+        Method = 62;
+      }
+    }
+    else {
+      if (randMethod < 10) {
+        Method = 4;
+      }
+      else if (randMethod < 40) {
+        Method = 52;
+      }
+      else if (randMethod < 70) {
+        Method = 62;
+      }
+      else {
+        Method = 7;
+      }
+    }
+
+    // 木作成
+    switch (Method) {
+    case 4:
+      MakeTree4();
+      break;
+    case 52:
+      MakeTree52();
+      break;
+    case 62:
+      MakeTree62();
+      break;
+    case 7:
+      MakeTree7();
+      break;
+    }
+
+    // 初期位置作成
+    sx = randxor() % n;
+    sy = randxor() % n;
+
+    // シミュレーション開始
+    int x = sx;
+    int y = sy;
+    int _t = 0;
+
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
+
+    vector<vector<int>> a;
+    vector<vector<int>> b;
+    int mCount = 0;
+    CopyAB(a, b, mCount);
+
+    vector<int> action(v);
+    int lastT = -1;
+    int lastX = sx;
+    int lastY = sy;
+
+    int maxDir;
+    int maxActionScore;
+    int maxAction;
+    int maxAction2;
+    RotTip maxRT(v);
+    RotTip tmpRT(v);
+
+    KeepAB maxAB;
+    KeepAB keepAB;
+
+    int order[5] = { 0,1,2,3,4 };
+    const vector<int> ordVec = { 0,1,-1 };
+
+    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
+      FisherYates(order, 5);
+
+      maxActionScore = -1;
+
+
+    }
+  }
+}
+
 ll Solve(int probNum)
 {
   startTime = clock();
@@ -2943,9 +3125,9 @@ ll Solve(int probNum)
     Method62(TL * 0.45);
   }
   else {
-    //Method4(TL * 0.1);
-    //Method52(TL * 0.3);
-    //Method62(TL * 0.3);
+    Method4(TL * 0.1);
+    Method52(TL * 0.3);
+    Method62(TL * 0.3);
     Method7(TL * 0.3);
   }
 
