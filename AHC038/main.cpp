@@ -798,6 +798,54 @@ int CalcNeedLength(const int prenrx, const int prenry) {
   return needLength;
 }
 
+void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
+  const int prenrx, const int prenry, const int needLength, const int prenRot, const int ordDir, const int startLeaf,
+  const vector<int>& nowRot, const vector<int>& nowTip,
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+
+
+  rep(i, V)
+  {
+    action[i] = 0;
+  }
+
+  keepAB.Clear();
+
+  // このターン
+  srep(i, startLeaf, V)
+  {
+    if (le[i] < needLength)continue;
+
+    srep(j, -1, 2)
+    {
+      int nRot = (prenRot + nowRot[i] + j + 4) % 4;
+      int nrx = prenrx + le[i] * dx[nRot];
+      int nry = prenry + le[i] * dy[nRot];
+
+      if (IsNG(nrx, nry))continue;
+
+      bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+      if (isCatch)break;
+    }
+  }
+
+  double tmpActionScore = 0;
+  srep(i, startLeaf, V)
+  {
+    tmpActionScore += action[i];
+  }
+
+  if (tmpActionScore > maxActionScore) {
+    maxDir = ordDir;
+    maxActionScore = tmpActionScore;
+    maxRT = tmpRT;
+
+    maxAB.Copy(keepAB);
+  }
+
+  RollBackFromKeepAB(keepAB, a, b);
+}
+
 void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
 
@@ -830,46 +878,8 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 
       int needLength = CalcNeedLength(prenrx, prenry);
 
-      rep(i, V)
-      {
-        action[i] = 0;
-      }
-
-      keepAB.Clear();
-
-      // このターン
-      srep(i, 2, V)
-      {
-        if (le[i] < needLength)continue;
-
-        srep(j, -1, 2)
-        {
-          int nRot2 = (nRot1 + nowRot[i] + j + 4) % 4;
-          int nrx = prenrx + le[i] * dx[nRot2];
-          int nry = prenry + le[i] * dy[nRot2];
-
-          if (IsNG(nrx, nry))continue;
-
-          bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-          if (isCatch)break;
-        }
-      }
-
-      double tmpActionScore = 0;
-      srep(i, 2, V)
-      {
-        tmpActionScore += action[i];
-      }
-
-      if (tmpActionScore > maxActionScore) {
-        maxDir = order[ord];
-        maxActionScore = tmpActionScore;
-        maxRT = tmpRT;
-
-        maxAB.Copy(keepAB);
-      }
-
-      RollBackFromKeepAB(keepAB, a, b);
+      DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot1, order[ord],
+        2, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
     }
   }
 }
@@ -911,46 +921,8 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 
         int needLength = CalcNeedLength(prenrx, prenry);
 
-        rep(i, V)
-        {
-          action[i] = 0;
-        }
-
-        keepAB.Clear();
-
-        // このターン
-        srep(i, 3, V)
-        {
-          if (le[i] < needLength)continue;
-
-          srep(j, -1, 2)
-          {
-            int nRot3 = (nRot2 + nowRot[i] + j + 4) % 4;
-            int nrx = prenrx + le[i] * dx[nRot3];
-            int nry = prenry + le[i] * dy[nRot3];
-
-            if (IsNG(nrx, nry))continue;
-
-            bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-            if (isCatch)break;
-          }
-        }
-
-        double tmpActionScore = 0;
-        srep(i, 3, V)
-        {
-          tmpActionScore += action[i];
-        }
-
-        if (tmpActionScore > maxActionScore) {
-          maxDir = order[ord];
-          maxActionScore = tmpActionScore;
-          maxRT = tmpRT;
-
-          maxAB.Copy(keepAB);
-        }
-
-        RollBackFromKeepAB(keepAB, a, b);
+        DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot2, order[ord],
+          3, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
       }
     }
   }
@@ -998,46 +970,8 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 
           int needLength = CalcNeedLength(prenrx, prenry);
 
-          rep(i, V)
-          {
-            action[i] = 0;
-          }
-
-          keepAB.Clear();
-
-          // このターン
-          srep(i, 4, V)
-          {
-            if (le[i] < needLength)continue;
-
-            srep(j, -1, 2)
-            {
-              int nRot4 = (nRot3 + nowRot[i] + j + 4) % 4;
-              int nrx = prenrx + le[i] * dx[nRot4];
-              int nry = prenry + le[i] * dy[nRot4];
-
-              if (IsNG(nrx, nry))continue;
-
-              bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-              if (isCatch)break;
-            }
-          }
-
-          double tmpActionScore = 0;
-          srep(i, 4, V)
-          {
-            tmpActionScore += action[i];
-          }
-
-          if (tmpActionScore > maxActionScore) {
-            maxDir = order[ord];
-            maxActionScore = tmpActionScore;
-            maxRT = tmpRT;
-
-            maxAB.Copy(keepAB);
-          }
-
-          RollBackFromKeepAB(keepAB, a, b);
+          DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot3, order[ord],
+            4, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
         }
       }
     }
@@ -1091,46 +1025,8 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
 
             int needLength = CalcNeedLength(prenrx, prenry);
 
-            rep(i, V)
-            {
-              action[i] = 0;
-            }
-
-            keepAB.Clear();
-
-            // このターン
-            srep(i, 5, V)
-            {
-              if (le[i] < needLength)continue;
-
-              srep(j, -1, 2)
-              {
-                int nRot5 = (nRot4 + nowRot[i] + j + 4) % 4;
-                int nrx = prenrx + le[i] * dx[nRot5];
-                int nry = prenry + le[i] * dy[nRot5];
-
-                if (IsNG(nrx, nry))continue;
-
-                bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
-                if (isCatch)break;
-              }
-            }
-
-            double tmpActionScore = 0;
-            srep(i, 5, V)
-            {
-              tmpActionScore += action[i];
-            }
-
-            if (tmpActionScore > maxActionScore) {
-              maxDir = order[ord];
-              maxActionScore = tmpActionScore;
-              maxRT = tmpRT;
-
-              maxAB.Copy(keepAB);
-            }
-
-            RollBackFromKeepAB(keepAB, a, b);
+            DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot4, order[ord],
+              5, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
           }
         }
       }
