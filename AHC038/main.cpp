@@ -104,6 +104,11 @@ int n, m, v;
 int init_a[MAX_N][MAX_N];
 int init_b[MAX_N][MAX_N];
 
+int aRow[MAX_N];
+int aColumn[MAX_N];
+int bRow[MAX_N];
+int bColumn[MAX_N];
+
 int V;
 int pa[MAX_V];
 int le[MAX_V];
@@ -403,6 +408,13 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
   b.resize(n, vector<int>(n));
   rep(i, n)
   {
+    aRow[i] = 0;
+    aColumn[i] = 0;
+    bRow[i] = 0;
+    bColumn[i] = 0;
+  }
+  rep(i, n)
+  {
     rep(j, n)
     {
       a[i][j] = init_a[i][j];
@@ -412,6 +424,10 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
         a[i][j] = 0;
         b[i][j] = 0;
       }
+      aRow[i] += a[i][j];
+      aColumn[j] += a[i][j];
+      bRow[i] += b[i][j];
+      bColumn[j] += b[i][j];
     }
   }
 }
@@ -530,10 +546,14 @@ void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vec
   rep(i, keepAB.KeepACount)
   {
     a[keepAB.KeepA[i][0]][keepAB.KeepA[i][1]] = keepAB.KeepA[i][2];
+    aRow[keepAB.KeepA[i][0]]++;
+    aColumn[keepAB.KeepA[i][1]]++;
   }
   rep(i, keepAB.KeepBCount)
   {
     b[keepAB.KeepB[i][0]][keepAB.KeepB[i][1]] = keepAB.KeepB[i][2];
+    bRow[keepAB.KeepB[i][0]]++;
+    bColumn[keepAB.KeepB[i][1]]++;
   }
 }
 
@@ -546,6 +566,8 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
       assert(false);
     }
     a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] = 0;
+    aRow[maxAB.KeepA[i][0]]--;
+    aColumn[maxAB.KeepA[i][1]]--;
   }
   rep(i, maxAB.KeepBCount)
   {
@@ -553,6 +575,31 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
       assert(false);
     }
     b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 0;
+    bRow[maxAB.KeepB[i][0]]--;
+    bColumn[maxAB.KeepB[i][1]]--;
+  }
+}
+
+void RollBackFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
+{
+  mCount -= maxAB.KeepBCount;
+  rep(i, maxAB.KeepACount)
+  {
+    if (a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] == 1) {
+      assert(false);
+    }
+    a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] = 1;
+    aRow[maxAB.KeepA[i][0]]++;
+    aColumn[maxAB.KeepA[i][1]]++;
+  }
+  rep(i, maxAB.KeepBCount)
+  {
+    if (b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] == 1) {
+      assert(false);
+    }
+    b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 1;
+    bRow[maxAB.KeepB[i][0]]++;
+    bColumn[maxAB.KeepB[i][1]]++;
   }
 }
 
@@ -584,22 +631,34 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
     if (a[nrx][nry] == 1) {
       keepAB.AddA(nrx, nry, a[nrx][nry]);
       a[nrx][nry] = 0;
+      aRow[nrx]--;
+      aColumn[nry]--;
       tmpRT.Rot[i] = j;
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 1;
       actionScore = ACTION_RATIO_A;
+
       rep(k, 4)
       {
-        int nkrx = nrx + dx[k];
-        int nkry = nry + dy[k];
-        if (IsNG(nkrx, nkry)) {
-          actionScore += POSITION_RATIO * 10;
-        }
-        else if (a[nkrx][nkry] == 0) {
-          actionScore += POSITION_RATIO;
+        srep(l, 1, 2)
+        {
+          int nkrx = nrx + dx[k] * l;
+          int nkry = nry + dy[k] * l;
+          if (IsNG(nkrx, nkry)) {
+            actionScore += POSITION_RATIO * 10;
+          }
+          else if (a[nkrx][nkry] == 0) {
+            actionScore += POSITION_RATIO;
+          }
+          else {
+            break;
+          }
         }
       }
+
+      //if (aRow[nrx] == 0)actionScore += POSITION_RATIO * 100;
+      //if (aColumn[nry] == 0)actionScore += POSITION_RATIO * 100;
       return true;
     }
   }
@@ -607,22 +666,34 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
     if (b[nrx][nry] == 1) {
       keepAB.AddB(nrx, nry, b[nrx][nry]);
       b[nrx][nry] = 0;
+      bRow[nrx]--;
+      bColumn[nry]--;
       tmpRT.Rot[i] = j;
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 0;
       actionScore = ACTION_RATIO_B;
+
       rep(k, 4)
       {
-        int nkrx = nrx + dx[k];
-        int nkry = nry + dy[k];
-        if (IsNG(nkrx, nkry)) {
-          actionScore += POSITION_RATIO * 10;
-        }
-        else if (b[nkrx][nkry] == 0) {
-          actionScore += POSITION_RATIO;
+        srep(l, 1, 2)
+        {
+          int nkrx = nrx + dx[k] * l;
+          int nkry = nry + dy[k] * l;
+          if (IsNG(nkrx, nkry)) {
+            actionScore += POSITION_RATIO * 10;
+          }
+          else if (b[nkrx][nkry] == 0) {
+            actionScore += POSITION_RATIO;
+          }
+          else {
+            break;
+          }
         }
       }
+
+      //if (bRow[nrx] == 0)actionScore += POSITION_RATIO * 100;
+      //if (bColumn[nry] == 0)actionScore += POSITION_RATIO * 100;
       return true;
     }
   }
@@ -801,6 +872,7 @@ int CalcMarginCount(const int leafCount, const RotTip& maxRT)
 
 int doMarginCount = 0;
 int doOneSetCount = 0;
+int doRowColumnCount = 0;
 double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
   const int prenrx, const int prenry, const int needLength, const int prenRot, const int startLeaf,
   const vector<int>& nowRot, const vector<int>& nowTip,
@@ -808,6 +880,13 @@ double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
 {
 
   doOneSetCount++;
+
+  if (prenrx < 0 || n <= prenrx || (aRow[prenrx] == 0 && bRow[prenrx] == 0)) {
+    if (prenry < 0 || n <= prenry || (aColumn[prenry] == 0 && bColumn[prenry] == 0)) {
+      doRowColumnCount++;
+      return 0;
+    }
+  }
 
   int margin = maxCand.maxMarginCount;
   double actionScore = 0;
@@ -1089,6 +1168,18 @@ bool UpdateTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& n
   return isOk;
 }
 
+void RollBackTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& nowTip, int& x, int& y, int& _t,
+  vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
+{
+  RollBackFromMaxAB(maxCand.maxAB, a, b, mCount);
+  PCount[Method].pop_back();
+
+  x -= dx[maxCand.maxDir];
+  y -= dy[maxCand.maxDir];
+  _t--;
+}
+
+
 void Method100(double timeLimit)
 {
   ResetTime();
@@ -1172,7 +1263,7 @@ void Method100(double timeLimit)
 
       FisherYates(order, 5);
 
-      int BEAM_WIDTH = 5;
+      int BEAM_WIDTH = 1;
       vector<MaxCandidate> maxCand(BEAM_WIDTH);
       rep(i, BEAM_WIDTH)
       {
@@ -1197,9 +1288,75 @@ void Method100(double timeLimit)
         }
       }
 
+      int isBeam = 0;
+      if (mCount > m / 2 && loop[Method] > 1000000) {
+        isBeam = 1;
+      }
+      if (isBeam == 0) {
+        bool isOk = UpdateTurn(maxCand[0], nowRot, nowTip, x, y, _t, a, b, mCount);
+        if (!isOk)break;
+      }
+      else {
+        bool isFinish = false;
+        double maxActionScore2 = -1;
+        int maxActionIndex = 0;
 
-      bool isOk = UpdateTurn(maxCand[0], nowRot, nowTip, x, y, _t, a, b, mCount);
-      if (!isOk)break;
+        rep(aespa, BEAM_WIDTH)
+        {
+          UpdateTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
+          if (mCount == m) {
+            isFinish = true;
+            break;
+          }
+
+          // 次のターン
+          if (_t > 0) {
+            PCount[Method].push_back(PCount[Method][_t - 1]);
+          }
+
+          FisherYates(order, 5);
+
+          int BEAM_WIDTH2 = 1;
+          vector<MaxCandidate> maxCand2(BEAM_WIDTH2);
+          rep(i, BEAM_WIDTH2)
+          {
+            maxCand2[i].maxRT.Initialize(nowRot, nowTip);
+          }
+
+          if (Method == 42) {
+            DecideBest42(x, y, nowRot, nowTip, maxCand2, a, b);
+          }
+          else if (Method == 52) {
+            DecideBest52(x, y, nowRot, nowTip, maxCand2, a, b);
+          }
+          else  if (Method == 62) {
+            DecideBest62(x, y, nowRot, nowTip, maxCand2, a, b);
+          }
+          else  if (Method == 72) {
+            DecideBest72(x, y, nowRot, nowTip, maxCand2, a, b);
+          }
+          else {
+            if (mode != 0) {
+              cout << "NG" << endl;
+            }
+          }
+
+          double tmpScore = maxCand[aespa].maxActionScore + maxCand2[0].maxActionScore;
+          if (tmpScore > maxActionScore2) {
+            maxActionScore2 = tmpScore;
+            maxActionIndex = aespa;
+          }
+
+          RollBackTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
+        }
+
+        if (isFinish) {
+          break;
+        }
+
+        bool isOk = UpdateTurn(maxCand[maxActionIndex], nowRot, nowTip, x, y, _t, a, b, mCount);
+        if (!isOk)break;
+      }
     }
 
     ansCount = _t;
@@ -1220,7 +1377,8 @@ void Method100(double timeLimit)
     cout << "Method52 loop = " << loop[52] << " " << endl;
     cout << "Method62 loop = " << loop[62] << " " << endl;
     cout << "Method72 loop = " << loop[72] << " " << endl;
-    cout << doMarginCount << " / " << doOneSetCount << endl;
+    cout << doRowColumnCount << " " << doMarginCount << " / " << doOneSetCount << endl;
+    doRowColumnCount = 0;
     doMarginCount = 0;
     doOneSetCount = 0;
   }
@@ -1266,6 +1424,7 @@ ll Solve(int probNum)
 /////////////////////////////////////////////////////////////////////////
 /*
  TODO
+ ・取り順と置き順すごい大事そう
 
  ・腕の長さをランダムにしない
 
