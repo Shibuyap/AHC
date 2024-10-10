@@ -416,46 +416,6 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
   }
 }
 
-void UpdateDir(int& x, int& y, const int nx, const int ny, int& _t)
-{
-  dir[_t] = 4;
-  while (x != nx || y != ny) {
-    if (x < nx) {
-      dir[_t] = 0;
-      x++;
-    }
-    else if (x > nx) {
-      dir[_t] = 2;
-      x--;
-    }
-    else if (y < ny) {
-      dir[_t] = 3;
-      y++;
-    }
-    else {
-      dir[_t] = 1;
-      y--;
-    }
-
-    if (x == nx && y == ny) {
-      break;
-    }
-
-    _t++;
-  }
-}
-
-void UpdateTurn(const bool isAction, int& _t, int& lastT, int& lastX, int& lastY,
-  int& x, int& y, const int nx, const int ny)
-{
-  lastT = _t;
-  lastX = x;
-  lastY = y;
-  x = nx;
-  y = ny;
-  _t++;
-}
-
 class RotTip
 {
 private:
@@ -893,7 +853,7 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
 }
 
 void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
 
 
@@ -901,7 +861,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
   vector<double> action(v);
   KeepAB keepAB;
 
-  maxActionScore = -1;
+  double maxActionScore = -1;
 
   rep(ord, 5)
   {
@@ -932,7 +892,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
 
 
@@ -940,7 +900,7 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
   vector<double> action(v);
   KeepAB keepAB;
 
-  maxActionScore = -1;
+  double maxActionScore = -1;
 
   rep(ord, 5)
   {
@@ -977,7 +937,7 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
 
 
@@ -985,7 +945,7 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
   vector<double> action(v);
   KeepAB keepAB;
 
-  maxActionScore = -1;
+  double maxActionScore = -1;
 
   rep(ord, 5)
   {
@@ -1028,7 +988,7 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
 
 
@@ -1036,7 +996,7 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
   vector<double> action(v);
   KeepAB keepAB;
 
-  maxActionScore = -1;
+  double maxActionScore = -1;
 
   rep(ord, 5)
   {
@@ -1160,16 +1120,11 @@ void Method100(double timeLimit)
     PCount[Method].clear();
     PCount[Method].push_back(mCount * 2);
 
-    int lastT = -1;
-    int lastX = sx;
-    int lastY = sy;
-
     int maxDir;
-    double maxActionScore;
     RotTip maxRT(v);
     KeepAB maxAB;
 
-    while (mCount < m && _t < real_ansCount + 20 && lastT < real_ansCount) {
+    while (mCount < m && _t < real_ansCount) {
       if (_t > 0) {
         PCount[Method].push_back(PCount[Method][_t - 1]);
       }
@@ -1177,20 +1132,19 @@ void Method100(double timeLimit)
       FisherYates(order, 5);
 
       maxDir = -1;
-      maxActionScore = -1;
       maxRT.Initialize(nowRot, nowTip);
 
       if (Method == 42) {
-        DecideBest42(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+        DecideBest42(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
       }
       else if (Method == 52) {
-        DecideBest52(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+        DecideBest52(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
       }
       else  if (Method == 62) {
-        DecideBest62(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+        DecideBest62(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
       }
       else  if (Method == 72) {
-        DecideBest72(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+        DecideBest72(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
       }
       else {
         if (mode != 0) {
@@ -1205,24 +1159,21 @@ void Method100(double timeLimit)
       ReflectFromMaxAB(maxAB, a, b, mCount);
       PCount[Method][_t] += maxAB.KeepACount + maxAB.KeepBCount;
 
-      int isAction = 0;
-      if (maxActionScore > 10.5) {
-        isAction = 1;
-      }
-
       int nx = x + dx[maxDir];
       int ny = y + dy[maxDir];
 
-      UpdateTurn(isAction, _t, lastT, lastX, lastY, x, y, nx, ny);
-
       if (Method == real_Method) {
-        if (real_PCount[Method].size() > 0 && lastT >= real_PCount[Method].size()) {
+        if (real_PCount[Method].size() > 0 && _t >= real_PCount[Method].size()) {
           break;
         }
-        if (lastT >= 0 && PCount[Method][lastT] < real_PCount[Method][lastT] - 5) {
+        if (PCount[Method][_t] < real_PCount[Method][_t] - 5) {
           break;
         }
       }
+
+      x = nx;
+      y = ny;
+      _t++;
     }
 
     ansCount = _t;
@@ -1323,7 +1274,7 @@ int main()
     randxor();
   }
 
-  mode = 1;
+  mode = 3;
 
   if (mode == 0) {
     Solve(0);
