@@ -860,7 +860,7 @@ void SetMaxCand(vector<MaxCandidate>& maxCand, const int ordDir, const double ac
 
   int idx = beamWidth - 1;
   while (idx > 0 && maxCand[idx].maxActionScore > maxCand[idx - 1].maxActionScore) {
-    swap(maxCand[idx], maxCand[idx]);
+    swap(maxCand[idx], maxCand[idx - 1]);
     idx--;
   }
 }
@@ -872,9 +872,6 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 
   RotTip tmpRT(v);
   KeepAB keepAB;
-
-  double maxActionScore = -1;
-  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -915,9 +912,6 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 
   RotTip tmpRT(v);
   KeepAB keepAB;
-
-  double maxActionScore = -1;
-  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -964,9 +958,6 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 
   RotTip tmpRT(v);
   KeepAB keepAB;
-
-  double maxActionScore = -1;
-  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -1019,9 +1010,6 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
 
   RotTip tmpRT(v);
   KeepAB keepAB;
-
-  double maxActionScore = -1;
-  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -1184,7 +1172,7 @@ void Method100(double timeLimit)
 
       FisherYates(order, 5);
 
-      int BEAM_WIDTH = 1;
+      int BEAM_WIDTH = 5;
       vector<MaxCandidate> maxCand(BEAM_WIDTH);
       rep(i, BEAM_WIDTH)
       {
