@@ -96,7 +96,7 @@ const int MAX_V = 15;
 const int MAX_T = 100005;
 
 const double ACTION_RATIO_A = 5003.0;
-const double ACTION_RATIO_B = 5003.0;
+const double ACTION_RATIO_B = 5002.0;
 const double ACTION_RATIO_BASE = 5000.0;
 const double POSITION_RATIO = 0.01;
 
@@ -607,6 +607,7 @@ class MaxCandidate
 {
 public:
   double maxActionScore;
+  int finishTurn;
   int maxMarginCount;
   int maxDir;
   RotTip maxRT;
@@ -615,6 +616,7 @@ public:
   MaxCandidate()
   {
     maxActionScore = -1;
+    finishTurn = 999;
     maxMarginCount = 999;
     maxDir =-1;
   }
@@ -1195,6 +1197,8 @@ bool UpdateTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& n
   y += dy[maxCand.maxDir];
   _t++;
 
+  PCount[Method].push_back(PCount[Method][_t - 1]);
+
   return isOk;
 }
 
@@ -1209,6 +1213,78 @@ void RollBackTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>&
   _t--;
 }
 
+MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& nowTip,
+  vector<vector<int>>& a, vector<vector<int>>& b, const int beamDepth, int& mCount)
+{
+  FisherYates(order, 5);
+
+  int BEAM_WIDTH = 3;
+  if (beamDepth == 0) {
+    BEAM_WIDTH = 1;
+  }
+
+  vector<MaxCandidate> maxCand(BEAM_WIDTH);
+  rep(i, BEAM_WIDTH)
+  {
+    maxCand[i].maxRT.Initialize(nowRot, nowTip);
+  }
+
+  if (Method == 42) {
+    DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else if (Method == 52) {
+    DecideBest52(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 62) {
+    DecideBest62(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 72) {
+    DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else {
+    if (mode != 0) {
+      cout << "NG" << endl;
+    }
+  }
+
+  if (mCount + maxCand[0].maxAB.KeepBCount == m) {
+    maxCand[0].finishTurn = 0;
+    return maxCand[0];
+  }
+
+  if (beamDepth == 0) {
+    return maxCand[0];
+  }
+
+
+  int minFinishTurn = 999;
+  double maxActionScore = -1;
+  int bestIndex = -1;
+  rep(aespa, BEAM_WIDTH)
+  {
+    UpdateTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
+
+    MaxCandidate tmpMaxCand = Beam(_t, x, y, nowRot, nowTip, a, b, beamDepth - 1, mCount);
+
+    RollBackTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
+
+    maxCand[aespa].finishTurn = min(tmpMaxCand.finishTurn + 1, 999);
+    maxCand[aespa].maxActionScore += tmpMaxCand.maxActionScore;
+
+    if (maxCand[aespa].finishTurn < minFinishTurn) {
+      minFinishTurn = maxCand[aespa].finishTurn;
+      maxActionScore = maxCand[aespa].maxActionScore;
+      bestIndex = aespa;
+    }
+    else if (maxCand[aespa].finishTurn == minFinishTurn && maxCand[aespa].maxActionScore > maxActionScore) {
+      minFinishTurn = maxCand[aespa].finishTurn;
+      maxActionScore = maxCand[aespa].maxActionScore;
+      bestIndex = aespa;
+    }
+  }
+
+  return maxCand[bestIndex];
+}
 
 void Method100(double timeLimit)
 {
@@ -1287,10 +1363,7 @@ void Method100(double timeLimit)
     PCount[Method].push_back(mCount * 2);
 
     while (mCount < m && _t < real_ansCount) {
-      if (_t > 0) {
-        PCount[Method].push_back(PCount[Method][_t - 1]);
-      }
-
+      //MaxCandidate maxCand =  Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
       FisherYates(order, 5);
 
       int BEAM_WIDTH = 1;
@@ -1318,75 +1391,8 @@ void Method100(double timeLimit)
         }
       }
 
-      int isBeam = 0;
-      if (mCount > m / 2 && loop[Method] > 1000000) {
-        isBeam = 1;
-      }
-      if (isBeam == 0) {
-        bool isOk = UpdateTurn(maxCand[0], nowRot, nowTip, x, y, _t, a, b, mCount);
-        if (!isOk)break;
-      }
-      else {
-        bool isFinish = false;
-        double maxActionScore2 = -1;
-        int maxActionIndex = 0;
-
-        rep(aespa, BEAM_WIDTH)
-        {
-          UpdateTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
-          if (mCount == m) {
-            isFinish = true;
-            break;
-          }
-
-          // 次のターン
-          if (_t > 0) {
-            PCount[Method].push_back(PCount[Method][_t - 1]);
-          }
-
-          FisherYates(order, 5);
-
-          int BEAM_WIDTH2 = 1;
-          vector<MaxCandidate> maxCand2(BEAM_WIDTH2);
-          rep(i, BEAM_WIDTH2)
-          {
-            maxCand2[i].maxRT.Initialize(nowRot, nowTip);
-          }
-
-          if (Method == 42) {
-            DecideBest42(x, y, nowRot, nowTip, maxCand2, a, b);
-          }
-          else if (Method == 52) {
-            DecideBest52(x, y, nowRot, nowTip, maxCand2, a, b);
-          }
-          else  if (Method == 62) {
-            DecideBest62(x, y, nowRot, nowTip, maxCand2, a, b);
-          }
-          else  if (Method == 72) {
-            DecideBest72(x, y, nowRot, nowTip, maxCand2, a, b);
-          }
-          else {
-            if (mode != 0) {
-              cout << "NG" << endl;
-            }
-          }
-
-          double tmpScore = maxCand[aespa].maxActionScore + maxCand2[0].maxActionScore;
-          if (tmpScore > maxActionScore2) {
-            maxActionScore2 = tmpScore;
-            maxActionIndex = aespa;
-          }
-
-          RollBackTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
-        }
-
-        if (isFinish) {
-          break;
-        }
-
-        bool isOk = UpdateTurn(maxCand[maxActionIndex], nowRot, nowTip, x, y, _t, a, b, mCount);
-        if (!isOk)break;
-      }
+      bool isOk = UpdateTurn(maxCand[0], nowRot, nowTip, x, y, _t, a, b, mCount);
+      if (!isOk)break;
     }
 
     ansCount = _t;
@@ -1411,6 +1417,43 @@ void Method100(double timeLimit)
     doRowColumnCount = 0;
     doMarginCount = 0;
     doOneSetCount = 0;
+  }
+
+  //　ベストな解に対してビームサーチ
+  {
+    CopyToAns();
+
+    // シミュレーション開始
+    int x = sx;
+    int y = sy;
+    int _t = 0;
+
+    vector<int> nowRot(v);
+    vector<int> nowTip(v);
+
+    vector<vector<int>> a;
+    vector<vector<int>> b;
+    int mCount = 0;
+    CopyAB(a, b, mCount);
+    PCount[Method].clear();
+    PCount[Method].push_back(mCount * 2);
+
+    while (mCount < m && _t < real_ansCount) {
+      MaxCandidate maxCand =  Beam(_t, x, y, nowRot, nowTip, a, b, 2, mCount);
+      UpdateTurn(maxCand, nowRot, nowTip, x, y, _t, a, b, mCount);
+    }
+
+    ansCount = _t;
+    if (mCount == m && ansCount < real_ansCount) {
+      CopyToReal();
+      if (mode == 2) {
+        cout << "Method" << Method << ", " << "loop = " << loop[Method];
+        cout << ", score = " << real_ansCount;
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+      }
+    }
   }
 }
 
@@ -1489,7 +1532,7 @@ int main()
     randxor();
   }
 
-  mode = 3;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
