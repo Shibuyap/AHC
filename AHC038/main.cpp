@@ -86,7 +86,7 @@ const int ddy[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
 int order[5] = { 0,1,2,3,4 };
 vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} };
 
-const double TL = 9.8;
+const double TL = 2.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -219,7 +219,8 @@ void SetUp()
 {
   V = 0;
   ansCount = 0;
-  rep(i, 100) {
+  rep(i, 100)
+  {
     PCount[i].clear();
     real_PCount[i].clear();
   }
@@ -373,7 +374,7 @@ void Output(ofstream& ofs)
     rep(i, ansCount)
     {
       cout << dirChar[dir[i]];
-      srep(j, 1, v)cout << rotChar[rot[i][j]];
+      srep(j, 1, v)cout << rotChar[rot[i][j] + 1]; // rotÇÕ-1Å`1ÇÃÇΩÇﬂí†êKçáÇÌÇπ
       rep(j, V)cout << tipChar[tip[i][j]];
       cout << endl;
     }
@@ -388,7 +389,7 @@ void Output(ofstream& ofs)
     rep(i, ansCount)
     {
       ofs << dirChar[dir[i]];
-      srep(j, 1, v)ofs << rotChar[rot[i][j]];
+      srep(j, 1, v)ofs << rotChar[rot[i][j] + 1]; // rotÇÕ-1Å`1ÇÃÇΩÇﬂí†êKçáÇÌÇπ
       rep(j, V)ofs << tipChar[tip[i][j]];
       ofs << endl;
     }
@@ -481,7 +482,7 @@ public:
   {
     rep(i, m_V)
     {
-      Rot[i] = 1;
+      Rot[i] = 0;
       Tip[i] = 0;
       NowRot[i] = nowRot[i];
       NowTip[i] = nowTip[i];
@@ -597,7 +598,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
     if (a[nrx][nry] == 1) {
       keepAB.AddA(nrx, nry, a[nrx][nry]);
       a[nrx][nry] = 0;
-      tmpRT.Rot[i] = j + 1;
+      tmpRT.Rot[i] = j;
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 1;
@@ -620,7 +621,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
     if (b[nrx][nry] == 1) {
       keepAB.AddB(nrx, nry, b[nrx][nry]);
       b[nrx][nry] = 0;
-      tmpRT.Rot[i] = j + 1;
+      tmpRT.Rot[i] = j;
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 0;
@@ -775,7 +776,8 @@ void MakeTree7()
   }
 }
 
-int CalcNeedLength(const int prenrx, const int prenry) {
+int CalcNeedLength(const int prenrx, const int prenry)
+{
   int needLength = 999;
   if (prenrx < 0) {
     needLength = 0 - prenrx;
@@ -804,7 +806,8 @@ int doOneSetCount = 0;
 void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
   const int prenrx, const int prenry, const int needLength, const int prenRot, const int ordDir, const int startLeaf,
   const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+{
 
   doOneSetCount++;
 
@@ -890,7 +893,8 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
 }
 
 void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+{
 
 
   RotTip tmpRT(v);
@@ -913,7 +917,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
       tmpRT.Initialize(nowRot, nowTip);
-      tmpRT.Rot[1] = ii + 1;
+      tmpRT.Rot[1] = ii;
       tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
 
       int prenrx = nx + le[1] * dx[nRot1];
@@ -928,7 +932,8 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+{
 
 
   RotTip tmpRT(v);
@@ -954,9 +959,9 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
         int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
 
         tmpRT.Initialize(nowRot, nowTip);
-        tmpRT.Rot[1] = ii + 1;
+        tmpRT.Rot[1] = ii;
         tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-        tmpRT.Rot[2] = iii + 1;
+        tmpRT.Rot[2] = iii;
         tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
 
         int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2];
@@ -972,7 +977,8 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+{
 
 
   RotTip tmpRT(v);
@@ -1001,11 +1007,11 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
           int nRot3 = (nRot2 + nowRot[3] + iiii + 4) % 4;
 
           tmpRT.Initialize(nowRot, nowTip);
-          tmpRT.Rot[1] = ii + 1;
+          tmpRT.Rot[1] = ii;
           tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-          tmpRT.Rot[2] = iii + 1;
+          tmpRT.Rot[2] = iii;
           tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
-          tmpRT.Rot[3] = iiii + 1;
+          tmpRT.Rot[3] = iiii;
           tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
 
           int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3];
@@ -1022,7 +1028,8 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
+  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+{
 
 
   RotTip tmpRT(v);
@@ -1054,13 +1061,13 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
             int nRot4 = (nRot3 + nowRot[4] + iiiii + 4) % 4;
 
             tmpRT.Initialize(nowRot, nowTip);
-            tmpRT.Rot[1] = ii + 1;
+            tmpRT.Rot[1] = ii;
             tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
-            tmpRT.Rot[2] = iii + 1;
+            tmpRT.Rot[2] = iii;
             tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
-            tmpRT.Rot[3] = iiii + 1;
+            tmpRT.Rot[3] = iiii;
             tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
-            tmpRT.Rot[4] = iiiii + 1;
+            tmpRT.Rot[4] = iiiii;
             tmpRT.NowRot[4] = (nowRot[4] + iiiii) % 4;
 
             int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3] + le[4] * dx[nRot4];
@@ -1120,18 +1127,18 @@ void Method100(double timeLimit)
 
     // ñÿçÏê¨
     switch (Method) {
-    case 42:
-      MakeTree4();
-      break;
-    case 52:
-      MakeTree5();
-      break;
-    case 62:
-      MakeTree6();
-      break;
-    case 72:
-      MakeTree7();
-      break;
+      case 42:
+        MakeTree4();
+        break;
+      case 52:
+        MakeTree5();
+        break;
+      case 62:
+        MakeTree6();
+        break;
+      case 72:
+        MakeTree7();
+        break;
     }
 
     // èâä˙à íuçÏê¨
