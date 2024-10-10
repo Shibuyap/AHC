@@ -96,7 +96,7 @@ const int MAX_V = 15;
 const int MAX_T = 100005;
 
 const double ACTION_RATIO_A = 5003.0;
-const double ACTION_RATIO_B = 5002.0;
+const double ACTION_RATIO_B = 5003.0;
 const double ACTION_RATIO_BASE = 5000.0;
 const double POSITION_RATIO = 0.01;
 
@@ -657,6 +657,27 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
         }
       }
 
+      //srep(l, 1, 10)
+      //{
+      //  int nkrx = nrx + l;
+      //  if (IsNG(nkrx, nry))break;
+      //  if (a[nkrx][nry] == 0)break;
+      //  nkrx = nrx - l;
+      //  if (IsNG(nkrx, nry))break;
+      //  if (a[nkrx][nry] == 0)break;
+      //  actionScore -= POSITION_RATIO * 3453;
+      //}
+      //srep(l, 1, 10)
+      //{
+      //  int nkry = nry + l;
+      //  if (IsNG(nrx, nkry))break;
+      //  if (a[nrx][nkry] == 0)break;
+      //  nkry = nry - l;
+      //  if (IsNG(nrx, nkry))break;
+      //  if (a[nrx][nkry] == 0)break;
+      //  actionScore -= POSITION_RATIO * 3453;
+      //}
+
       //if (aRow[nrx] == 0)actionScore += POSITION_RATIO * 100;
       //if (aColumn[nry] == 0)actionScore += POSITION_RATIO * 100;
       return true;
@@ -921,6 +942,15 @@ double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
       break;
     }
   }
+
+  // ˜r‚Ì•ûŒü‚ð‚È‚é‚×‚­‚»‚ë‚¦‚é
+  //if (margin >= 0) {
+  //  int cnt[4] = {};
+  //  srep(i, startLeaf, V)cnt[tmpRT.NowRot[i]]++;
+  //  int ma = -1;
+  //  rep(i, 4)ma = max(ma, cnt[i]);
+  //  actionScoreSum += ma * POSITION_RATIO * 100000;
+  //}
 
   RollBackFromKeepAB(keepAB, a, b);
 
