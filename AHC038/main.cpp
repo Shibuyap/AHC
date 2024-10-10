@@ -427,7 +427,14 @@ public:
   vector<int> NowRot;
   vector<int> NowTip;
 
-  RotTip() = delete;
+  RotTip()
+  {
+    m_V = v;
+    Rot.resize(v);
+    Tip.resize(v);
+    NowRot.resize(v);
+    NowTip.resize(v);
+  }
 
   RotTip(int v)
   {
@@ -449,7 +456,7 @@ public:
     }
   }
 
-  void Reflect(vector<int>& nowRot, vector<int>& nowTip, const int _t)
+  void Reflect(vector<int>& nowRot, vector<int>& nowTip, const int _t) const
   {
     rep(i, V)
     {
@@ -548,6 +555,23 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
     b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 0;
   }
 }
+
+class MaxCandidate
+{
+public:
+  double maxActionScore;
+  int maxMarginCount;
+  int maxDir;
+  RotTip maxRT;
+  KeepAB maxAB;
+
+  MaxCandidate()
+  {
+    maxActionScore = -1;
+    maxMarginCount = 999;
+    maxDir =-1;
+  }
+};
 
 bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
   vector<vector<int>>& a, vector<vector<int>>& b,
@@ -777,15 +801,15 @@ int CalcMarginCount(const int leafCount, const RotTip& maxRT)
 
 int doMarginCount = 0;
 int doOneSetCount = 0;
-void DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
-  const int prenrx, const int prenry, const int needLength, const int prenRot, const int ordDir, const int startLeaf,
-  const vector<int>& nowRot, const vector<int>& nowTip, int& maxMarginCount,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
+double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
+  const int prenrx, const int prenry, const int needLength, const int prenRot, const int startLeaf,
+  const vector<int>& nowRot, const vector<int>& nowTip,
+  const MaxCandidate& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
 {
 
   doOneSetCount++;
 
-  int margin = maxMarginCount;
+  int margin = maxCand.maxMarginCount;
   double actionScore = 0;
   double actionScoreSum = 0;
   keepAB.Clear();
@@ -819,20 +843,33 @@ void DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
     }
   }
 
-  if (actionScoreSum > maxActionScore) {
-    maxDir = ordDir;
-    maxActionScore = actionScoreSum;
-    maxRT = tmpRT;
-    maxAB.Copy(keepAB);
-    maxMarginCount = CalcMarginCount(V - startLeaf, maxRT);
-  }
-
   RollBackFromKeepAB(keepAB, a, b);
+
+  return actionScoreSum;
+}
+
+void SetMaxCand(vector<MaxCandidate>& maxCand, const int ordDir, const double actionScoreSum, const RotTip& tmpRT, const KeepAB& keepAB, const int startLeaf)
+{
+  int beamWidth = maxCand.size();
+
+  maxCand[beamWidth - 1].maxDir = ordDir;
+  maxCand[beamWidth - 1].maxActionScore = actionScoreSum;
+  maxCand[beamWidth - 1].maxRT = tmpRT;
+  maxCand[beamWidth - 1].maxAB.Copy(keepAB);
+  maxCand[beamWidth - 1].maxMarginCount = CalcMarginCount(V - startLeaf, maxCand[beamWidth - 1].maxRT);
+
+  int idx = beamWidth - 1;
+  while (idx > 0 && maxCand[idx].maxActionScore > maxCand[idx - 1].maxActionScore) {
+    swap(maxCand[idx], maxCand[idx]);
+    idx--;
+  }
 }
 
 void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
 {
+  int beamWidth = maxCand.size();
+
   RotTip tmpRT(v);
   KeepAB keepAB;
 
@@ -861,15 +898,21 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 
       int needLength = CalcNeedLength(prenrx, prenry);
 
-      DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot1, order[ord],
-        2, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
+      double actionScoreSum = DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot1,
+        2, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+      if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+        SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 2);
+      }
     }
   }
 }
 
 void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
 {
+  int beamWidth = maxCand.size();
+
   RotTip tmpRT(v);
   KeepAB keepAB;
 
@@ -903,16 +946,22 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 
         int needLength = CalcNeedLength(prenrx, prenry);
 
-        DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot2, order[ord],
-          3, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
+        double actionScoreSum = DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot2,
+          3, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+        if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+          SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 3);
+        }
       }
     }
   }
 }
 
 void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
 {
+  int beamWidth = maxCand.size();
+
   RotTip tmpRT(v);
   KeepAB keepAB;
 
@@ -951,8 +1000,12 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 
           int needLength = CalcNeedLength(prenrx, prenry);
 
-          DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot3, order[ord],
-            4, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
+          double actionScoreSum = DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot3,
+            4, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+          if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+            SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 4);
+          }
         }
       }
     }
@@ -960,8 +1013,10 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 }
 
 void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
-  int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
 {
+  int beamWidth = maxCand.size();
+
   RotTip tmpRT(v);
   KeepAB keepAB;
 
@@ -1005,13 +1060,45 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
 
             int needLength = CalcNeedLength(prenrx, prenry);
 
-            DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot4, order[ord],
-              5, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
+            double actionScoreSum = DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot4,
+              5, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+            if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+              SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 5);
+            }
           }
         }
       }
     }
   }
+}
+
+bool UpdateTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& nowTip, int& x, int& y, int& _t,
+  vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
+{
+  bool isOk = true;
+
+  maxCand.maxRT.Reflect(nowRot, nowTip, _t);
+
+  dir[_t] = maxCand.maxDir;
+
+  ReflectFromMaxAB(maxCand.maxAB, a, b, mCount);
+  PCount[Method][_t] += maxCand.maxAB.KeepACount + maxCand.maxAB.KeepBCount;
+
+  if (Method == real_Method) {
+    if (real_PCount[Method].size() > 0 && _t >= real_PCount[Method].size()) {
+      isOk = false;
+    }
+    else if (PCount[Method][_t] < real_PCount[Method][_t] - 5) {
+      isOk - false;
+    }
+  }
+
+  x += dx[maxCand.maxDir];
+  y += dy[maxCand.maxDir];
+  _t++;
+
+  return isOk;
 }
 
 void Method100(double timeLimit)
@@ -1097,22 +1184,24 @@ void Method100(double timeLimit)
 
       FisherYates(order, 5);
 
-      int maxDir = -1;
-      RotTip maxRT(v);
-      maxRT.Initialize(nowRot, nowTip);
-      KeepAB maxAB;
+      int BEAM_WIDTH = 1;
+      vector<MaxCandidate> maxCand(BEAM_WIDTH);
+      rep(i, BEAM_WIDTH)
+      {
+        maxCand[i].maxRT.Initialize(nowRot, nowTip);
+      }
 
       if (Method == 42) {
-        DecideBest42(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
+        DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
       }
       else if (Method == 52) {
-        DecideBest52(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
+        DecideBest52(x, y, nowRot, nowTip, maxCand, a, b);
       }
       else  if (Method == 62) {
-        DecideBest62(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
+        DecideBest62(x, y, nowRot, nowTip, maxCand, a, b);
       }
       else  if (Method == 72) {
-        DecideBest72(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
+        DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
       }
       else {
         if (mode != 0) {
@@ -1120,25 +1209,9 @@ void Method100(double timeLimit)
         }
       }
 
-      maxRT.Reflect(nowRot, nowTip, _t);
 
-      dir[_t] = maxDir;
-
-      ReflectFromMaxAB(maxAB, a, b, mCount);
-      PCount[Method][_t] += maxAB.KeepACount + maxAB.KeepBCount;
-
-      if (Method == real_Method) {
-        if (real_PCount[Method].size() > 0 && _t >= real_PCount[Method].size()) {
-          break;
-        }
-        if (PCount[Method][_t] < real_PCount[Method][_t] - 5) {
-          break;
-        }
-      }
-
-      x += dx[maxDir];
-      y += dy[maxDir];
-      _t++;
+      bool isOk = UpdateTurn(maxCand[0], nowRot, nowTip, x, y, _t, a, b, mCount);
+      if (!isOk)break;
     }
 
     ansCount = _t;
