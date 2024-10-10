@@ -551,9 +551,11 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
 
 bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
   vector<vector<int>>& a, vector<vector<int>>& b,
-  RotTip& tmpRT, KeepAB& keepAB, vector<double>& action,
+  RotTip& tmpRT, KeepAB& keepAB, double& actionScore,
   const int i, const int j, const int nrx, const int nry)
 {
+  actionScore = 0;
+
   if (nowTip[i] == 0) {
     if (a[nrx][nry] == 1) {
       keepAB.AddA(nrx, nry, a[nrx][nry]);
@@ -562,16 +564,16 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 1;
-      action[i] = ACTION_RATIO_A;
+      actionScore = ACTION_RATIO_A;
       rep(k, 4)
       {
         int nkrx = nrx + dx[k];
         int nkry = nry + dy[k];
         if (IsNG(nkrx, nkry)) {
-          action[i] += POSITION_RATIO * 10;
+          actionScore += POSITION_RATIO * 10;
         }
         else if (a[nkrx][nkry] == 0) {
-          action[i] += POSITION_RATIO;
+          actionScore += POSITION_RATIO;
         }
       }
       return true;
@@ -585,16 +587,16 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       tmpRT.NowRot[i] = (nowRot[i] + j) % 4;
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 0;
-      action[i] = ACTION_RATIO_B;
+      actionScore = ACTION_RATIO_B;
       rep(k, 4)
       {
         int nkrx = nrx + dx[k];
         int nkry = nry + dy[k];
         if (IsNG(nkrx, nkry)) {
-          action[i] += POSITION_RATIO * 10;
+          actionScore += POSITION_RATIO * 10;
         }
         else if (b[nkrx][nkry] == 0) {
-          action[i] += POSITION_RATIO;
+          actionScore += POSITION_RATIO;
         }
       }
       return true;
@@ -761,34 +763,33 @@ int CalcNeedLength(const int prenrx, const int prenry)
   return needLength;
 }
 
-int marginCount = 0;
+int CalcMarginCount(const int leafCount, const RotTip& maxRT)
+{
+  int marginCount = leafCount;
+  rep(i, V)
+  {
+    if (maxRT.Tip[i] == 1) {
+      marginCount--;
+    }
+  }
+  return marginCount;
+}
+
+int doMarginCount = 0;
 int doOneSetCount = 0;
-void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
+void DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
   const int prenrx, const int prenry, const int needLength, const int prenRot, const int ordDir, const int startLeaf,
-  const vector<int>& nowRot, const vector<int>& nowTip,
+  const vector<int>& nowRot, const vector<int>& nowTip, int& maxMarginCount,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore)
 {
 
   doOneSetCount++;
 
-  int leafCount = V - startLeaf;
-  int margin = leafCount;
-  {
-    double xxx = maxActionScore;
-    while (xxx >= ACTION_RATIO_BASE) {
-      margin--;
-      xxx -= ACTION_RATIO_BASE;
-    }
-  }
-
-  rep(i, V)
-  {
-    action[i] = 0;
-  }
-
+  int margin = maxMarginCount;
+  double actionScore = 0;
+  double actionScoreSum = 0;
   keepAB.Clear();
 
-  // Ç±ÇÃÉ^Å[Éì
   srep(i, startLeaf, V)
   {
     if (le[i] < needLength)continue;
@@ -802,51 +803,28 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
 
       if (IsNG(nrx, nry))continue;
 
-      isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+      isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, actionScore, i, j, nrx, nry);
       if (isCatch)break;
     }
+
+    actionScoreSum += actionScore;
 
     if (!isCatch) {
       margin--;
     }
 
     if (margin < 0) {
-      marginCount++;
+      doMarginCount++;
       break;
     }
   }
 
-  double tmpActionScore = 0;
-  srep(i, startLeaf, V)
-  {
-    tmpActionScore += action[i];
-  }
-
-  //if (margin >= 0) {
-  //  int xCount[MAX_N] = {};
-  //  int yCount[MAX_N] = {};
-  //  rep(i, keepAB.KeepACount) {
-  //    xCount[keepAB.KeepA[i][0]]++;
-  //    yCount[keepAB.KeepA[i][1]]++;
-  //  }
-  //  rep(i, keepAB.KeepBCount) {
-  //    xCount[keepAB.KeepB[i][0]]++;
-  //    yCount[keepAB.KeepB[i][1]]++;
-  //  }
-  //  int maxXYCount = 0;
-  //  rep(i, n) {
-  //    if (maxXYCount < xCount[i])maxXYCount = xCount[i];
-  //    if (maxXYCount < yCount[i])maxXYCount = yCount[i];
-  //  }
-  //  tmpActionScore += maxXYCount;
-  //}
-
-  if (tmpActionScore > maxActionScore) {
+  if (actionScoreSum > maxActionScore) {
     maxDir = ordDir;
-    maxActionScore = tmpActionScore;
+    maxActionScore = actionScoreSum;
     maxRT = tmpRT;
-
     maxAB.Copy(keepAB);
+    maxMarginCount = CalcMarginCount(V - startLeaf, maxRT);
   }
 
   RollBackFromKeepAB(keepAB, a, b);
@@ -855,13 +833,11 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
 void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
-
-
   RotTip tmpRT(v);
-  vector<double> action(v);
   KeepAB keepAB;
 
   double maxActionScore = -1;
+  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -885,8 +861,8 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 
       int needLength = CalcNeedLength(prenrx, prenry);
 
-      DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot1, order[ord],
-        2, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+      DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot1, order[ord],
+        2, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
     }
   }
 }
@@ -894,13 +870,11 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
 void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
-
-
   RotTip tmpRT(v);
-  vector<double> action(v);
   KeepAB keepAB;
 
   double maxActionScore = -1;
+  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -929,8 +903,8 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 
         int needLength = CalcNeedLength(prenrx, prenry);
 
-        DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot2, order[ord],
-          3, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+        DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot2, order[ord],
+          3, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
       }
     }
   }
@@ -939,13 +913,11 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
 void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
-
-
   RotTip tmpRT(v);
-  vector<double> action(v);
   KeepAB keepAB;
 
   double maxActionScore = -1;
+  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -979,8 +951,8 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 
           int needLength = CalcNeedLength(prenrx, prenry);
 
-          DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot3, order[ord],
-            4, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+          DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot3, order[ord],
+            4, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
         }
       }
     }
@@ -990,13 +962,11 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
 void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
-
-
   RotTip tmpRT(v);
-  vector<double> action(v);
   KeepAB keepAB;
 
   double maxActionScore = -1;
+  int maxMarginCount = 999;
 
   rep(ord, 5)
   {
@@ -1035,8 +1005,8 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
 
             int needLength = CalcNeedLength(prenrx, prenry);
 
-            DoOneSet(tmpRT, action, keepAB, prenrx, prenry, needLength, nRot4, order[ord],
-              5, nowRot, nowTip, maxDir, maxRT, maxAB, a, b, maxActionScore);
+            DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot4, order[ord],
+              5, nowRot, nowTip, maxMarginCount, maxDir, maxRT, maxAB, a, b, maxActionScore);
           }
         }
       }
@@ -1120,10 +1090,6 @@ void Method100(double timeLimit)
     PCount[Method].clear();
     PCount[Method].push_back(mCount * 2);
 
-    int maxDir;
-    RotTip maxRT(v);
-    KeepAB maxAB;
-
     while (mCount < m && _t < real_ansCount) {
       if (_t > 0) {
         PCount[Method].push_back(PCount[Method][_t - 1]);
@@ -1131,8 +1097,10 @@ void Method100(double timeLimit)
 
       FisherYates(order, 5);
 
-      maxDir = -1;
+      int maxDir = -1;
+      RotTip maxRT(v);
       maxRT.Initialize(nowRot, nowTip);
+      KeepAB maxAB;
 
       if (Method == 42) {
         DecideBest42(x, y, nowRot, nowTip, maxDir, maxRT, maxAB, a, b);
@@ -1159,9 +1127,6 @@ void Method100(double timeLimit)
       ReflectFromMaxAB(maxAB, a, b, mCount);
       PCount[Method][_t] += maxAB.KeepACount + maxAB.KeepBCount;
 
-      int nx = x + dx[maxDir];
-      int ny = y + dy[maxDir];
-
       if (Method == real_Method) {
         if (real_PCount[Method].size() > 0 && _t >= real_PCount[Method].size()) {
           break;
@@ -1171,8 +1136,8 @@ void Method100(double timeLimit)
         }
       }
 
-      x = nx;
-      y = ny;
+      x += dx[maxDir];
+      y += dy[maxDir];
       _t++;
     }
 
@@ -1194,8 +1159,8 @@ void Method100(double timeLimit)
     cout << "Method52 loop = " << loop[52] << " " << endl;
     cout << "Method62 loop = " << loop[62] << " " << endl;
     cout << "Method72 loop = " << loop[72] << " " << endl;
-    cout << marginCount << " / " << doOneSetCount << endl;
-    marginCount = 0;
+    cout << doMarginCount << " / " << doOneSetCount << endl;
+    doMarginCount = 0;
     doOneSetCount = 0;
   }
 }
