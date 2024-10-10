@@ -86,7 +86,7 @@ const int ddy[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
 int order[5] = { 0,1,2,3,4 };
 vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} };
 
-const double TL = 2.8;
+const double TL = 9.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -95,8 +95,9 @@ const int MAX_M = 450;
 const int MAX_V = 15;
 const int MAX_T = 100005;
 
-const double ACTION_RATIO_A = 51.0;
-const double ACTION_RATIO_B = 50.0;
+const double ACTION_RATIO_A = 5003.0;
+const double ACTION_RATIO_B = 5002.0;
+const double ACTION_RATIO_BASE = 5000.0;
 const double POSITION_RATIO = 0.01;
 
 int n, m, v;
@@ -798,11 +799,24 @@ int CalcNeedLength(const int prenrx, const int prenry) {
   return needLength;
 }
 
+int marginCount = 0;
+int doOneSetCount = 0;
 void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
   const int prenrx, const int prenry, const int needLength, const int prenRot, const int ordDir, const int startLeaf,
   const vector<int>& nowRot, const vector<int>& nowTip,
   int& maxDir, RotTip& maxRT, KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, double& maxActionScore) {
 
+  doOneSetCount++;
+
+  int leafCount = V - startLeaf;
+  int margin = leafCount;
+  {
+    double xxx = maxActionScore;
+    while (xxx >= ACTION_RATIO_BASE) {
+      margin--;
+      xxx -= ACTION_RATIO_BASE;
+    }
+  }
 
   rep(i, V)
   {
@@ -816,6 +830,7 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
   {
     if (le[i] < needLength)continue;
 
+    bool isCatch = false;
     srep(j, -1, 2)
     {
       int nRot = (prenRot + nowRot[i] + j + 4) % 4;
@@ -824,8 +839,17 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
 
       if (IsNG(nrx, nry))continue;
 
-      bool isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
+      isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, action, i, j, nrx, nry);
       if (isCatch)break;
+    }
+
+    if (!isCatch) {
+      margin--;
+    }
+
+    if (margin < 0) {
+      marginCount++;
+      break;
     }
   }
 
@@ -834,6 +858,25 @@ void DoOneSet(RotTip& tmpRT, vector<double>& action, KeepAB& keepAB,
   {
     tmpActionScore += action[i];
   }
+
+  //if (margin >= 0) {
+  //  int xCount[MAX_N] = {};
+  //  int yCount[MAX_N] = {};
+  //  rep(i, keepAB.KeepACount) {
+  //    xCount[keepAB.KeepA[i][0]]++;
+  //    yCount[keepAB.KeepA[i][1]]++;
+  //  }
+  //  rep(i, keepAB.KeepBCount) {
+  //    xCount[keepAB.KeepB[i][0]]++;
+  //    yCount[keepAB.KeepB[i][1]]++;
+  //  }
+  //  int maxXYCount = 0;
+  //  rep(i, n) {
+  //    if (maxXYCount < xCount[i])maxXYCount = xCount[i];
+  //    if (maxXYCount < yCount[i])maxXYCount = yCount[i];
+  //  }
+  //  tmpActionScore += maxXYCount;
+  //}
 
   if (tmpActionScore > maxActionScore) {
     maxDir = ordDir;
@@ -1193,6 +1236,9 @@ void Method100(double timeLimit)
     cout << "Method52 loop = " << loop[52] << " " << endl;
     cout << "Method62 loop = " << loop[62] << " " << endl;
     cout << "Method72 loop = " << loop[72] << " " << endl;
+    cout << marginCount << " / " << doOneSetCount << endl;
+    marginCount = 0;
+    doOneSetCount = 0;
   }
 }
 
@@ -1270,7 +1316,7 @@ int main()
     randxor();
   }
 
-  mode = 3;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
