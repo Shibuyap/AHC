@@ -945,15 +945,6 @@ double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
     }
   }
 
-  // 腕の方向をなるべくそろえる
-  //if (margin >= 0) {
-  //  int cnt[4] = {};
-  //  srep(i, startLeaf, V)cnt[tmpRT.NowRot[i]]++;
-  //  int ma = -1;
-  //  rep(i, 4)ma = max(ma, cnt[i]);
-  //  actionScoreSum += ma * POSITION_RATIO * 100000;
-  //}
-
   RollBackFromKeepAB(keepAB, a, b);
 
   return actionScoreSum;
@@ -1189,7 +1180,7 @@ bool UpdateTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& n
       isOk = false;
     }
     else if (PCount[Method][_t] < real_PCount[Method][_t] - 5) {
-      isOk - false;
+      isOk = false;
     }
   }
 
@@ -1202,7 +1193,7 @@ bool UpdateTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& n
   return isOk;
 }
 
-void RollBackTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& nowTip, int& x, int& y, int& _t,
+void RollBackTurn(const MaxCandidate& maxCand, int& x, int& y, int& _t,
   vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
 {
   RollBackFromMaxAB(maxCand.maxAB, a, b, mCount);
@@ -1256,17 +1247,30 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
     return maxCand[0];
   }
 
+  auto keepNowRot2 = nowRot;
+  auto keepNowTip2 = nowTip;
+
 
   int minFinishTurn = 999;
   double maxActionScore = -1;
   int bestIndex = -1;
   rep(aespa, BEAM_WIDTH)
   {
+    auto keepNowRot = nowRot;
+    auto keepNowTip = nowTip;
     UpdateTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
 
     MaxCandidate tmpMaxCand = Beam(_t, x, y, nowRot, nowTip, a, b, beamDepth - 1, mCount);
 
-    RollBackTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
+    nowRot = keepNowRot;
+    nowTip = keepNowTip;
+    RollBackTurn(maxCand[aespa], x, y, _t, a, b, mCount);
+    if (keepNowRot != nowRot) {
+      cout << "NG nowRot" << endl;
+    }
+    if (keepNowTip != nowTip) {
+      cout << "NG nowTip" << endl;
+    }
 
     maxCand[aespa].finishTurn = min(tmpMaxCand.finishTurn + 1, 999);
     maxCand[aespa].maxActionScore += tmpMaxCand.maxActionScore;
@@ -1281,6 +1285,13 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
       maxActionScore = maxCand[aespa].maxActionScore;
       bestIndex = aespa;
     }
+  }
+
+  if (keepNowRot2 != nowRot) {
+    cout << "NG nowRot" << endl;
+  }
+  if (keepNowTip2 != nowTip) {
+    cout << "NG nowTip" << endl;
   }
 
   return maxCand[bestIndex];
@@ -1362,36 +1373,66 @@ void Method100(double timeLimit)
     PCount[Method].clear();
     PCount[Method].push_back(mCount * 2);
 
+    int walkCount = 0;
     while (mCount < m && _t < real_ansCount) {
-      //MaxCandidate maxCand =  Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
-      FisherYates(order, 5);
+      int xx = x;
+      int yy = y;
+      int tt = _t;
+      int mCount2 = mCount;
 
-      int BEAM_WIDTH = 1;
-      vector<MaxCandidate> maxCand(BEAM_WIDTH);
-      rep(i, BEAM_WIDTH)
-      {
-        maxCand[i].maxRT.Initialize(nowRot, nowTip);
+      MaxCandidate maxCand =  Beam(_t, x, y, nowRot, nowTip, a, b, 4, mCount);
+
+      if (xx != x) {
+        cout << "NG x" << endl;
+      }
+      if (yy != yy) {
+        cout << "NG y" << endl;
+      }
+      if (tt != _t) {
+        cout << "NG t" << endl;
+      }
+      if (mCount2 != mCount) {
+        cout << "NG mCOunt" << endl;
       }
 
-      if (Method == 42) {
-        DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
-      }
-      else if (Method == 52) {
-        DecideBest52(x, y, nowRot, nowTip, maxCand, a, b);
-      }
-      else  if (Method == 62) {
-        DecideBest62(x, y, nowRot, nowTip, maxCand, a, b);
-      }
-      else  if (Method == 72) {
-        DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
+      //FisherYates(order, 5);
+
+      //int BEAM_WIDTH = 1;
+      //vector<MaxCandidate> maxCand(BEAM_WIDTH);
+      //rep(i, BEAM_WIDTH)
+      //{
+      //  maxCand[i].maxRT.Initialize(nowRot, nowTip);
+      //}
+
+      //if (Method == 42) {
+      //  DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
+      //}
+      //else if (Method == 52) {
+      //  DecideBest52(x, y, nowRot, nowTip, maxCand, a, b);
+      //}
+      //else  if (Method == 62) {
+      //  DecideBest62(x, y, nowRot, nowTip, maxCand, a, b);
+      //}
+      //else  if (Method == 72) {
+      //  DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
+      //}
+      //else {
+      //  if (mode != 0) {
+      //    cout << "NG" << endl;
+      //  }
+      //}
+
+      if (maxCand.maxAB.KeepACount == 0 && maxCand.maxAB.KeepBCount == 0) {
+        walkCount++;
       }
       else {
-        if (mode != 0) {
-          cout << "NG" << endl;
-        }
+        walkCount = 0;
+      }
+      if (walkCount == 10) {
+        break;
       }
 
-      bool isOk = UpdateTurn(maxCand[0], nowRot, nowTip, x, y, _t, a, b, mCount);
+      bool isOk = UpdateTurn(maxCand, nowRot, nowTip, x, y, _t, a, b, mCount);
       if (!isOk)break;
     }
 
@@ -1422,6 +1463,11 @@ void Method100(double timeLimit)
   //　ベストな解に対してビームサーチ
   {
     CopyToAns();
+
+    if (Method == 0) {
+      cout << "Miss" << endl;
+      return;
+    }
 
     // シミュレーション開始
     int x = sx;
@@ -1532,7 +1578,7 @@ int main()
     randxor();
   }
 
-  mode = 1;
+  mode = 3;
 
   if (mode == 0) {
     Solve(0);
