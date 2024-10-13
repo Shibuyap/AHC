@@ -86,7 +86,7 @@ const int ddy[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
 int order[5] = { 0,1,2,3,4 };
 vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} };
 
-const double TL = 2.8;
+const double TL = 9992.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -118,8 +118,6 @@ int rot[MAX_T][MAX_V];
 int tip[MAX_T][MAX_V];
 int sx;
 int sy;
-int startT;
-int armCount;
 int leafs1;
 int Method;
 int ArmLengthMethod;
@@ -134,8 +132,6 @@ int real_rot[MAX_T][MAX_V];
 int real_tip[MAX_T][MAX_V];
 int real_sx;
 int real_sy;
-int real_startT;
-int real_armCount;
 int real_leafs1;
 int real_Method;
 int real_ArmLengthMethod;
@@ -163,8 +159,6 @@ void CopyToReal()
   }
   real_sx = sx;
   real_sy = sy;
-  real_startT = startT;
-  real_armCount = armCount;
   real_leafs1 = leafs1;
   real_Method = Method;
   real_ArmLengthMethod = ArmLengthMethod;
@@ -192,8 +186,6 @@ void CopyToAns()
   }
   sx = real_sx;
   sy = real_sy;
-  startT = real_startT;
-  armCount = real_armCount;
   leafs1 = real_leafs1;
   Method = real_Method;
   ArmLengthMethod = real_ArmLengthMethod;
@@ -367,9 +359,9 @@ bool IsValidAnswer()
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    //if (V < 10) {
-    //  assert(false);
-    //}
+    if (ansCount < 100) {
+      assert(false);
+    }
     cout << V << endl;
     srep(i, 1, V)
     {
@@ -618,7 +610,7 @@ public:
     maxActionScore = -1;
     finishTurn = 999;
     maxMarginCount = 999;
-    maxDir =-1;
+    maxDir = -1;
   }
 };
 
@@ -754,7 +746,6 @@ void MakeTree4()
 {
   int ra = randxor() % 100;
   V = v;
-  armCount = 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -776,7 +767,6 @@ void MakeTree5()
 {
   int ra = randxor() % 100;
   V = v;
-  armCount = 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -801,7 +791,6 @@ void MakeTree6()
 {
   int ra = randxor() % 100;
   V = v;
-  armCount = 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -829,7 +818,6 @@ void MakeTree7()
 {
   int ra = randxor() % 100;
   V = v;
-  armCount = 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -843,6 +831,36 @@ void MakeTree7()
     }
     else if (i == 4) {
       pa[i] = 3;
+    }
+    else {
+      pa[i] = 4;
+    }
+    le[i] = MakeLength(ra);
+  }
+
+  if (randxor() % 2) {
+    int st = randxor() % 5 + 1;
+    srep(i, 5, V)le[i] = i - 5 + st;
+  }
+}
+
+void MakeTree26()
+{
+  int ra = randxor() % 100;
+  V = v;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else if (i == 3) {
+      pa[i] = 2;
+    }
+    else if (i == 4) {
+      pa[i] = 2;
     }
     else {
       pa[i] = 4;
@@ -1301,8 +1319,6 @@ void Method100(double timeLimit)
 {
   ResetTime();
 
-  real_startT = -1;
-
   int loop[100] = {};
   int nn2 = n * n * 2;
   while (true) {
@@ -1340,18 +1356,18 @@ void Method100(double timeLimit)
 
     // –Øì¬
     switch (Method) {
-      case 42:
-        MakeTree4();
-        break;
-      case 52:
-        MakeTree5();
-        break;
-      case 62:
-        MakeTree6();
-        break;
-      case 72:
-        MakeTree7();
-        break;
+    case 42:
+      MakeTree4();
+      break;
+    case 52:
+      MakeTree5();
+      break;
+    case 62:
+      MakeTree6();
+      break;
+    case 72:
+      MakeTree7();
+      break;
     }
 
     // ‰ŠúˆÊ’uì¬
@@ -1380,7 +1396,7 @@ void Method100(double timeLimit)
       int tt = _t;
       int mCount2 = mCount;
 
-      MaxCandidate maxCand =  Beam(_t, x, y, nowRot, nowTip, a, b, 4, mCount);
+      MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
 
       if (xx != x) {
         cout << "NG x" << endl;
@@ -1485,7 +1501,7 @@ void Method100(double timeLimit)
     PCount[Method].push_back(mCount * 2);
 
     while (mCount < m && _t < real_ansCount) {
-      MaxCandidate maxCand =  Beam(_t, x, y, nowRot, nowTip, a, b, 2, mCount);
+      MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 2, mCount);
       UpdateTurn(maxCand, nowRot, nowTip, x, y, _t, a, b, mCount);
     }
 
@@ -1578,7 +1594,7 @@ int main()
     randxor();
   }
 
-  mode = 3;
+  mode = 2;
 
   if (mode == 0) {
     Solve(0);
@@ -1587,7 +1603,7 @@ int main()
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(i);
+      ll score = Solve(8);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
