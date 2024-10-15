@@ -86,7 +86,7 @@ const int ddy[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
 int order[5] = { 0,1,2,3,4 };
 vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} };
 
-const double TL = 9992.8;
+const double TL = 2.8;
 int mode;
 clock_t startTime, endTime;
 
@@ -95,10 +95,10 @@ const int MAX_M = 450;
 const int MAX_V = 15;
 const int MAX_T = 100005;
 
-const double ACTION_RATIO_A = 5003.0;
-const double ACTION_RATIO_B = 5002.0;
-const double ACTION_RATIO_BASE = 5000.0;
-const double POSITION_RATIO = 0.01;
+const double ACTION_RATIO_A = 50005.0;
+const double ACTION_RATIO_B = 50004.0;
+const double ACTION_RATIO_BASE = 50000.0;
+const double POSITION_RATIO = 1.01;
 
 int n, m, v;
 int init_a[MAX_N][MAX_N];
@@ -126,7 +126,8 @@ vector<int> PCount[100];
 int real_V;
 int real_pa[MAX_V];
 int real_le[MAX_V];
-int real_ansCount;
+int real_ansCount[100];
+int real_real_ansCount;
 int real_dir[MAX_T];
 int real_rot[MAX_T][MAX_V];
 int real_tip[MAX_T][MAX_V];
@@ -139,6 +140,10 @@ vector<int> real_PCount[100];
 
 int route[MAX_N * MAX_N * 3][2];
 
+double heavyX;
+double heavyY;
+
+
 void CopyToReal()
 {
   real_V = V;
@@ -147,7 +152,8 @@ void CopyToReal()
     real_pa[i] = pa[i];
     real_le[i] = le[i];
   }
-  real_ansCount = ansCount;
+
+  real_real_ansCount = ansCount;
   rep(i, ansCount)
   {
     real_dir[i] = dir[i];
@@ -164,6 +170,7 @@ void CopyToReal()
   real_ArmLengthMethod = ArmLengthMethod;
 
   real_PCount[Method] = PCount[Method];
+  real_ansCount[Method] = ansCount;
 }
 
 void CopyToAns()
@@ -174,7 +181,7 @@ void CopyToAns()
     pa[i] = real_pa[i];
     le[i] = real_le[i];
   }
-  ansCount = real_ansCount;
+  ansCount = real_real_ansCount;
   rep(i, ansCount)
   {
     dir[i] = real_dir[i];
@@ -191,6 +198,12 @@ void CopyToAns()
   ArmLengthMethod = real_ArmLengthMethod;
 
   PCount[Method] = real_PCount[Method];
+  //ansCount = real_ansCount[Method];
+}
+
+void CopyToRealPCount() {
+  real_ansCount[Method] = ansCount;
+  real_PCount[Method] = PCount[Method];
 }
 
 void ResetTime()
@@ -220,6 +233,7 @@ void SetUp()
   {
     PCount[i].clear();
     real_PCount[i].clear();
+    real_ansCount[i] = 999;
   }
 }
 
@@ -359,9 +373,9 @@ bool IsValidAnswer()
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    if (ansCount < 100) {
-      assert(false);
-    }
+    //if (ansCount < 100) {
+    //  assert(false);
+    //}
     cout << V << endl;
     srep(i, 1, V)
     {
@@ -396,6 +410,8 @@ void Output(ofstream& ofs)
 void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
 {
   mCount = 0;
+  heavyX = 0;
+  heavyY = 0;
   a.resize(n, vector<int>(n));
   b.resize(n, vector<int>(n));
   rep(i, n)
@@ -420,8 +436,14 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
       aColumn[j] += a[i][j];
       bRow[i] += b[i][j];
       bColumn[j] += b[i][j];
+
+      heavyX += a[i][j] * i + b[i][j] * i;
+      heavyY += a[i][j] * j + b[i][j] * j;
     }
   }
+
+  heavyX /= 2.0 * (m - mCount);
+  heavyY /= 2.0 * (m - mCount);
 }
 
 class RotTip
@@ -632,6 +654,9 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 1;
       actionScore = ACTION_RATIO_A;
+      actionScore += abs(heavyX - nrx);
+      actionScore += abs(heavyY - nry);
+      //actionScore += 10 * (20 - le[i]);
 
       rep(k, 4)
       {
@@ -640,7 +665,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
           int nkrx = nrx + dx[k] * l;
           int nkry = nry + dy[k] * l;
           if (IsNG(nkrx, nkry)) {
-            actionScore += POSITION_RATIO * 10;
+            actionScore += POSITION_RATIO;
           }
           else if (a[nkrx][nkry] == 0) {
             actionScore += POSITION_RATIO;
@@ -688,6 +713,9 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       tmpRT.Tip[i] = 1;
       tmpRT.NowTip[i] = 0;
       actionScore = ACTION_RATIO_B;
+      actionScore += abs(heavyX - nrx);
+      actionScore += abs(heavyY - nry);
+      //actionScore += 10 * (20 - le[i]);
 
       rep(k, 4)
       {
@@ -696,7 +724,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
           int nkrx = nrx + dx[k] * l;
           int nkry = nry + dy[k] * l;
           if (IsNG(nkrx, nkry)) {
-            actionScore += POSITION_RATIO * 10;
+            actionScore += POSITION_RATIO;
           }
           else if (b[nkrx][nkry] == 0) {
             actionScore += POSITION_RATIO;
@@ -742,7 +770,7 @@ int MakeLength(int ra)
   return length;
 }
 
-void MakeTree4()
+void MakeTree1()
 {
   int ra = randxor() % 100;
   V = v;
@@ -763,7 +791,7 @@ void MakeTree4()
   }
 }
 
-void MakeTree5()
+void MakeTree2()
 {
   int ra = randxor() % 100;
   V = v;
@@ -784,6 +812,10 @@ void MakeTree5()
   if (randxor() % 2) {
     int st = randxor() % 3 + 1;
     srep(i, 3, V)le[i] = i - 3 + st;
+    //if (le[V - 1] < n - 1 && V >= 5 && randxor() % 2 == 0) {
+    //  int st2 = randxor() % (V - 4) + 4;
+    //  srep(i, st2, V)le[i]++;
+    //}
   }
 }
 
@@ -811,10 +843,14 @@ void MakeTree6()
   if (randxor() % 2) {
     int st = randxor() % 4 + 1;
     srep(i, 4, V)le[i] = i - 4 + st;
+    //if (le[V - 1] < n - 1 && V >= 6 && randxor() % 2 == 0) {
+    //  int st2 = randxor() % (V - 5) + 5;
+    //  srep(i, st2, V)le[i]++;
+    //}
   }
 }
 
-void MakeTree7()
+void MakeTree4()
 {
   int ra = randxor() % 100;
   V = v;
@@ -841,10 +877,14 @@ void MakeTree7()
   if (randxor() % 2) {
     int st = randxor() % 5 + 1;
     srep(i, 5, V)le[i] = i - 5 + st;
+    //if (le[V - 1] < n - 1 && V >= 7 && randxor() % 2 == 0) {
+    //  int st2 = randxor() % (V - 6) + 6;
+    //  srep(i, st2, V)le[i]++;
+    //}
   }
 }
 
-void MakeTree26()
+void MakeTree5()
 {
   int ra = randxor() % 100;
   V = v;
@@ -860,7 +900,81 @@ void MakeTree26()
       pa[i] = 2;
     }
     else if (i == 4) {
+      pa[i] = 3;
+    }
+    else if (i == 5) {
+      pa[i] = 4;
+    }
+    else {
+      pa[i] = 5;
+    }
+    le[i] = MakeLength(ra);
+  }
+
+  if (randxor() % 2) {
+    int st = randxor() % 5 + 1;
+    srep(i, 6, V)le[i] = i - 6 + st;
+    //if (le[V - 1] < n - 1 && V >= 8 && randxor() % 2 == 0) {
+    //  int st2 = randxor() % (V - 7) + 7;
+    //  srep(i, st2, V)le[i]++;
+    //}
+  }
+}
+
+void MakeTree22()
+{
+  int ra = randxor() % 100;
+  V = v;
+  leafs1 = randxor() % (V - 6) + 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else if (i == 3) {
+      pa[i] = 1;
+    }
+    else if (i < 4 + leafs1) {
       pa[i] = 2;
+    }
+    else {
+      pa[i] = 3;
+    }
+    le[i] = MakeLength(ra);
+  }
+
+  if (randxor() % 2) {
+    int st = randxor() % 4 + 1;
+    srep(i, 4, 4 + leafs1)le[i] = i - 4 + st;
+    st = randxor() % 4 + 1;
+    srep(i, 4 + leafs1, V)le[i] = i - (4 + leafs1) + st;
+  }
+}
+
+void MakeTree32()
+{
+  int ra = randxor() % 100;
+  V = v;
+  leafs1 = randxor() % (V - 7) + 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else if (i == 3) {
+      pa[i] = 2;
+    }
+    else if (i == 4) {
+      pa[i] = 2;
+    }
+    else if (i < 5 + leafs1) {
+      pa[i] = 3;
     }
     else {
       pa[i] = 4;
@@ -870,7 +984,48 @@ void MakeTree26()
 
   if (randxor() % 2) {
     int st = randxor() % 5 + 1;
-    srep(i, 5, V)le[i] = i - 5 + st;
+    srep(i, 5, 5 + leafs1)le[i] = i - 5 + st;
+    st = randxor() % 5 + 1;
+    srep(i, 5 + leafs1, V)le[i] = i - (5 + leafs1) + st;
+  }
+}
+
+void MakeTree42()
+{
+  int ra = randxor() % 100;
+  V = v;
+  leafs1 = randxor() % (V - 8) + 1;
+  srep(i, 1, V)
+  {
+    if (i == 1) {
+      pa[i] = 0;
+    }
+    else if (i == 2) {
+      pa[i] = 1;
+    }
+    else if (i == 3) {
+      pa[i] = 2;
+    }
+    else if (i == 4) {
+      pa[i] = 3;
+    }
+    else if (i == 5) {
+      pa[i] = 3;
+    }
+    else if (i < 6 + leafs1) {
+      pa[i] = 4;
+    }
+    else {
+      pa[i] = 5;
+    }
+    le[i] = MakeLength(ra);
+  }
+
+  if (randxor() % 2) {
+    int st = randxor() % 5 + 1;
+    srep(i, 6, 6 + leafs1)le[i] = i - 6 + st;
+    st = randxor() % 5 + 1;
+    srep(i, 6 + leafs1, V)le[i] = i - (6 + leafs1) + st;
   }
 }
 
@@ -960,6 +1115,97 @@ double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
     if (margin < 0) {
       doMarginCount++;
       break;
+    }
+  }
+
+  RollBackFromKeepAB(keepAB, a, b);
+
+  return actionScoreSum;
+}
+
+double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
+  const int prenrx1, const int prenry1, const int needLength1, const int prenRot1,
+  const int prenrx2, const int prenry2, const int needLength2, const int prenRot2,
+  const int startLeaf, const vector<int>& nowRot, const vector<int>& nowTip,
+  const MaxCandidate& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
+{
+
+  doOneSetCount++;
+
+  if (prenrx1 < 0 || n <= prenrx1 || (aRow[prenrx1] == 0 && bRow[prenrx1] == 0)) {
+    if (prenry1 < 0 || n <= prenry1 || (aColumn[prenry1] == 0 && bColumn[prenry1] == 0)) {
+      doRowColumnCount++;
+      return 0;
+    }
+  }
+
+  if (prenrx2 < 0 || n <= prenrx2 || (aRow[prenrx2] == 0 && bRow[prenrx2] == 0)) {
+    if (prenry2 < 0 || n <= prenry2 || (aColumn[prenry2] == 0 && bColumn[prenry2] == 0)) {
+      doRowColumnCount++;
+      return 0;
+    }
+  }
+
+  int margin = maxCand.maxMarginCount;
+  double actionScore = 0;
+  double actionScoreSum = 0;
+  keepAB.Clear();
+
+  srep(i, startLeaf, startLeaf + leafs1)
+  {
+    if (le[i] < needLength1)continue;
+
+    bool isCatch = false;
+    srep(j, -1, 2)
+    {
+      int nRot = (prenRot1 + nowRot[i] + j + 4) % 4;
+      int nrx = prenrx1 + le[i] * dx[nRot];
+      int nry = prenry1 + le[i] * dy[nRot];
+
+      if (IsNG(nrx, nry))continue;
+
+      isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, actionScore, i, j, nrx, nry);
+      if (isCatch)break;
+    }
+
+    actionScoreSum += actionScore;
+
+    if (!isCatch) {
+      margin--;
+    }
+
+    if (margin < 0) {
+      doMarginCount++;
+      break;
+    }
+  }
+
+  srep(i, startLeaf + leafs1, V)
+  {
+    if (margin < 0) {
+      doMarginCount++;
+      break;
+    }
+
+    if (le[i] < needLength2)continue;
+
+    bool isCatch = false;
+    srep(j, -1, 2)
+    {
+      int nRot = (prenRot2 + nowRot[i] + j + 4) % 4;
+      int nrx = prenrx2 + le[i] * dx[nRot];
+      int nry = prenry2 + le[i] * dy[nRot];
+
+      if (IsNG(nrx, nry))continue;
+
+      isCatch = CanCatch(nowRot, nowTip, a, b, tmpRT, keepAB, actionScore, i, j, nrx, nry);
+      if (isCatch)break;
+    }
+
+    actionScoreSum += actionScore;
+
+    if (!isCatch) {
+      margin--;
     }
   }
 
@@ -1181,6 +1427,260 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
   }
 }
 
+void DecideBest82(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
+{
+  int beamWidth = maxCand.size();
+
+  RotTip tmpRT(v);
+  KeepAB keepAB;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[1]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        for (const auto iiii : ordVec[ra[2]]) {
+          int nRot3 = (nRot2 + nowRot[3] + iiii + 4) % 4;
+
+          for (const auto iiiii : ordVec[ra[3]]) {
+            int nRot4 = (nRot3 + nowRot[4] + iiiii + 4) % 4;
+
+            for (const auto iiiiii : ordVec[ra[4]]) {
+              int nRot5 = (nRot4 + nowRot[5] + iiiiii + 4) % 4;
+
+              tmpRT.Initialize(nowRot, nowTip);
+              tmpRT.Rot[1] = ii;
+              tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+              tmpRT.Rot[2] = iii;
+              tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+              tmpRT.Rot[3] = iiii;
+              tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+              tmpRT.Rot[4] = iiiii;
+              tmpRT.NowRot[4] = (nowRot[4] + iiiii) % 4;
+              tmpRT.Rot[5] = iiiiii;
+              tmpRT.NowRot[5] = (nowRot[5] + iiiiii) % 4;
+
+              int prenrx = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3] + le[4] * dx[nRot4] + le[5] * dx[nRot5];
+              int prenry = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[3] * dy[nRot3] + le[4] * dy[nRot4] + le[5] * dy[nRot5];
+
+              int needLength = CalcNeedLength(prenrx, prenry);
+
+              double actionScoreSum = DoOneSet(tmpRT, keepAB, prenrx, prenry, needLength, nRot5,
+                6, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+              if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+                SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 6);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+void DecideBest53(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
+{
+  int beamWidth = maxCand.size();
+
+  RotTip tmpRT(v);
+  KeepAB keepAB;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[2]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        for (const auto iiii : ordVec[ra[4]]) {
+          int nRot3 = (nRot1 + nowRot[3] + iiii + 4) % 4;
+
+          tmpRT.Initialize(nowRot, nowTip);
+          tmpRT.Rot[1] = ii;
+          tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+          tmpRT.Rot[2] = iii;
+          tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+          tmpRT.Rot[3] = iiii;
+          tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+
+          int prenrx1 = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2];
+          int prenry1 = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2];
+          int prenrx2 = nx + le[1] * dx[nRot1] + le[3] * dx[nRot3];
+          int prenry2 = ny + le[1] * dy[nRot1] + le[3] * dy[nRot3];
+
+          int needLength1 = CalcNeedLength(prenrx1, prenry1);
+          int needLength2 = CalcNeedLength(prenrx2, prenry2);
+
+          double actionScoreSum = DoOneSet2(tmpRT, keepAB,
+            prenrx1, prenry1, needLength1, nRot2,
+            prenrx2, prenry2, needLength2, nRot3,
+            4, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+          if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+            SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 4);
+          }
+        }
+      }
+    }
+  }
+}
+
+void DecideBest63(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
+{
+  int beamWidth = maxCand.size();
+
+  RotTip tmpRT(v);
+  KeepAB keepAB;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[2]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        for (const auto iiii : ordVec[ra[4]]) {
+          int nRot3 = (nRot2 + nowRot[3] + iiii + 4) % 4;
+
+          for (const auto iiiii : ordVec[ra[5]]) {
+            int nRot4 = (nRot2 + nowRot[4] + iiiii + 4) % 4;
+
+            tmpRT.Initialize(nowRot, nowTip);
+            tmpRT.Rot[1] = ii;
+            tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+            tmpRT.Rot[2] = iii;
+            tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+            tmpRT.Rot[3] = iiii;
+            tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+            tmpRT.Rot[4] = iiiii;
+            tmpRT.NowRot[4] = (nowRot[4] + iiiii) % 4;
+
+            int prenrx1 = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3];
+            int prenry1 = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[3] * dy[nRot3];
+            int prenrx2 = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[4] * dx[nRot4];
+            int prenry2 = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[4] * dy[nRot4];
+
+            int needLength1 = CalcNeedLength(prenrx1, prenry1);
+            int needLength2 = CalcNeedLength(prenrx2, prenry2);
+
+            double actionScoreSum = DoOneSet2(tmpRT, keepAB,
+              prenrx1, prenry1, needLength1, nRot3,
+              prenrx2, prenry2, needLength2, nRot4,
+              5, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+            if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+              SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 5);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void DecideBest73(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
+{
+  int beamWidth = maxCand.size();
+
+  RotTip tmpRT(v);
+  KeepAB keepAB;
+
+  rep(ord, 5)
+  {
+    // dir
+    int nx = x + dx[order[ord]];
+    int ny = y + dy[order[ord]];
+
+    if (IsNG(nx, ny))continue;
+
+    int ra[6];
+    rep(i, 6)ra[i] = randxor() % 6;
+    for (const auto ii : ordVec[ra[0]]) {
+      int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
+
+      for (const auto iii : ordVec[ra[1]]) {
+        int nRot2 = (nRot1 + nowRot[2] + iii + 4) % 4;
+
+        for (const auto iiii : ordVec[ra[2]]) {
+          int nRot3 = (nRot2 + nowRot[3] + iiii + 4) % 4;
+
+          for (const auto iiiii : ordVec[ra[3]]) {
+            int nRot4 = (nRot3 + nowRot[4] + iiiii + 4) % 4;
+
+            for (const auto iiiiii : ordVec[ra[4]]) {
+              int nRot5 = (nRot3 + nowRot[5] + iiiiii + 4) % 4;
+
+              tmpRT.Initialize(nowRot, nowTip);
+              tmpRT.Rot[1] = ii;
+              tmpRT.NowRot[1] = (nowRot[1] + ii) % 4;
+              tmpRT.Rot[2] = iii;
+              tmpRT.NowRot[2] = (nowRot[2] + iii) % 4;
+              tmpRT.Rot[3] = iiii;
+              tmpRT.NowRot[3] = (nowRot[3] + iiii) % 4;
+              tmpRT.Rot[4] = iiiii;
+              tmpRT.NowRot[4] = (nowRot[4] + iiiii) % 4;
+              tmpRT.Rot[5] = iiiiii;
+              tmpRT.NowRot[5] = (nowRot[5] + iiiiii) % 4;
+
+              int prenrx1 = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3] + le[4] * dx[nRot4];
+              int prenry1 = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[3] * dy[nRot3] + le[4] * dy[nRot4];
+              int prenrx2 = nx + le[1] * dx[nRot1] + le[2] * dx[nRot2] + le[3] * dx[nRot3] + le[5] * dx[nRot5];
+              int prenry2 = ny + le[1] * dy[nRot1] + le[2] * dy[nRot2] + le[3] * dy[nRot3] + le[5] * dy[nRot5];
+
+              int needLength1 = CalcNeedLength(prenrx1, prenry1);
+              int needLength2 = CalcNeedLength(prenrx2, prenry2);
+
+              double actionScoreSum = DoOneSet2(tmpRT, keepAB,
+                prenrx1, prenry1, needLength1, nRot4,
+                prenrx2, prenry2, needLength2, nRot5,
+                6, nowRot, nowTip, maxCand[beamWidth - 1], a, b);
+
+              if (actionScoreSum > maxCand[beamWidth - 1].maxActionScore) {
+                SetMaxCand(maxCand, order[ord], actionScoreSum, tmpRT, keepAB, 6);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 bool UpdateTurn(const MaxCandidate& maxCand, vector<int>& nowRot, vector<int>& nowTip, int& x, int& y, int& _t,
   vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
 {
@@ -1250,6 +1750,18 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   else  if (Method == 72) {
     DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
   }
+  else  if (Method == 82) {
+    DecideBest82(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 53) {
+    DecideBest53(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 63) {
+    DecideBest63(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 73) {
+    DecideBest73(x, y, nowRot, nowTip, maxCand, a, b);
+  }
   else {
     if (mode != 0) {
       cout << "NG" << endl;
@@ -1283,12 +1795,6 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
     nowRot = keepNowRot;
     nowTip = keepNowTip;
     RollBackTurn(maxCand[aespa], x, y, _t, a, b, mCount);
-    if (keepNowRot != nowRot) {
-      cout << "NG nowRot" << endl;
-    }
-    if (keepNowTip != nowTip) {
-      cout << "NG nowTip" << endl;
-    }
 
     maxCand[aespa].finishTurn = min(tmpMaxCand.finishTurn + 1, 999);
     maxCand[aespa].maxActionScore += tmpMaxCand.maxActionScore;
@@ -1305,17 +1811,10 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
     }
   }
 
-  if (keepNowRot2 != nowRot) {
-    cout << "NG nowRot" << endl;
-  }
-  if (keepNowTip2 != nowTip) {
-    cout << "NG nowTip" << endl;
-  }
-
   return maxCand[bestIndex];
 }
 
-void Method100(double timeLimit)
+void Method100(double timeLimit, int probNum, ofstream& ofs)
 {
   ResetTime();
 
@@ -1327,10 +1826,11 @@ void Method100(double timeLimit)
 
     // メソッド決定
     if (v < 7) {
-      if (time < timeLimit * 0.1) {
+      int ra = randxor() % 100;
+      if (ra < 20) {
         Method = 42;
       }
-      else if (time < timeLimit * 0.55) {
+      else if (ra < 60) {
         Method = 52;
       }
       else {
@@ -1338,41 +1838,78 @@ void Method100(double timeLimit)
       }
     }
     else {
-      if (time < timeLimit * 0.1) {
-        Method = 42;
-      }
-      else if (time < timeLimit * 0.4) {
+      int ra = randxor() % 100;
+      if (ra < 40) {
         Method = 52;
       }
-      else if (time < timeLimit * 0.7) {
+      else if (ra < 60) {
         Method = 62;
       }
-      else {
+      else if (ra < 80) {
         Method = 72;
       }
+      else {
+        Method = 82;
+      }
     }
+
+
+    //if (v >= 8) {
+    //  Method = 73;
+    //}
+
+    if (time > timeLimit * 0.5) {
+      Method = real_Method;
+    }
+
 
     loop[Method]++;
 
     // 木作成
     switch (Method) {
     case 42:
-      MakeTree4();
+      MakeTree1();
       break;
     case 52:
-      MakeTree5();
+      MakeTree2();
       break;
     case 62:
       MakeTree6();
       break;
     case 72:
-      MakeTree7();
+      MakeTree4();
+      break;
+    case 82:
+      MakeTree5();
+      break;
+    case 53:
+      MakeTree22();
+      break;
+    case 63:
+      MakeTree32();
+      break;
+    case 73:
+      MakeTree42();
       break;
     }
 
     // 初期位置作成
     sx = randxor() % n;
     sy = randxor() % n;
+
+    while (sx < 3 || n - 3 <= sx) {
+      sx = randxor() % n;
+    }
+    while (sy < 3 || n - 3 <= sy) {
+      sy = randxor() % n;
+    }
+
+    if (randxor() % 2 && Method == real_Method && real_ansCount[Method] < 999) {
+      rep(i, v) {
+        pa[i] = real_pa[i];
+        le[i] = real_le[i];
+      }
+    }
 
     // シミュレーション開始
     int x = sx;
@@ -1390,26 +1927,13 @@ void Method100(double timeLimit)
     PCount[Method].push_back(mCount * 2);
 
     int walkCount = 0;
-    while (mCount < m && _t < real_ansCount) {
+    while (mCount < m && _t < real_ansCount[Method] && _t < real_real_ansCount + 2) {
       int xx = x;
       int yy = y;
       int tt = _t;
       int mCount2 = mCount;
 
       MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
-
-      if (xx != x) {
-        cout << "NG x" << endl;
-      }
-      if (yy != yy) {
-        cout << "NG y" << endl;
-      }
-      if (tt != _t) {
-        cout << "NG t" << endl;
-      }
-      if (mCount2 != mCount) {
-        cout << "NG mCOunt" << endl;
-      }
 
       //FisherYates(order, 5);
 
@@ -1453,11 +1977,27 @@ void Method100(double timeLimit)
     }
 
     ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
+    if (mCount == m && ansCount <= real_real_ansCount) {
       CopyToReal();
       if (mode == 2) {
         cout << "Method" << Method << ", " << "loop = " << loop[Method];
-        cout << ", score = " << real_ansCount;
+        cout << ", score = " << real_ansCount[Method];
+        cout << ", sx = " << sx << ", sy = " << sy;
+        srep(i, 1, V)cout << ", " << le[i];
+        cout << endl;
+
+        if (ofs.is_open()) {
+          ofs.close();
+        }
+        OpenOfs(probNum, ofs);
+        Output(ofs);
+      }
+    }
+    else if (mCount == m && ansCount <= real_ansCount[Method]) {
+      CopyToRealPCount();
+      if (mode == 2) {
+        cout << "Method" << Method << ", " << "loop = " << loop[Method];
+        cout << ", score = " << real_ansCount[Method];
         cout << ", sx = " << sx << ", sy = " << sy;
         srep(i, 1, V)cout << ", " << le[i];
         cout << endl;
@@ -1465,11 +2005,15 @@ void Method100(double timeLimit)
     }
   }
 
-  if (mode >= 2) {
+  if (mode == 2) {
     cout << "Method42 loop = " << loop[42] << " " << endl;
     cout << "Method52 loop = " << loop[52] << " " << endl;
+    cout << "Method53 loop = " << loop[53] << " " << endl;
     cout << "Method62 loop = " << loop[62] << " " << endl;
+    cout << "Method63 loop = " << loop[63] << " " << endl;
     cout << "Method72 loop = " << loop[72] << " " << endl;
+    cout << "Method73 loop = " << loop[73] << " " << endl;
+    cout << "Method82 loop = " << loop[82] << " " << endl;
     cout << doRowColumnCount << " " << doMarginCount << " / " << doOneSetCount << endl;
     doRowColumnCount = 0;
     doMarginCount = 0;
@@ -1477,12 +2021,20 @@ void Method100(double timeLimit)
   }
 
   //　ベストな解に対してビームサーチ
+  ResetTime();
+  int karina = 0;
+  while (true)
   {
+    karina++;
+
     CopyToAns();
 
-    if (Method == 0) {
-      cout << "Miss" << endl;
-      return;
+
+    if (mode != 0) {
+      if (Method == 0) {
+        cout << "Miss" << endl;
+        return;
+      }
     }
 
     // シミュレーション開始
@@ -1500,17 +2052,30 @@ void Method100(double timeLimit)
     PCount[Method].clear();
     PCount[Method].push_back(mCount * 2);
 
-    while (mCount < m && _t < real_ansCount) {
-      MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 2, mCount);
-      UpdateTurn(maxCand, nowRot, nowTip, x, y, _t, a, b, mCount);
+    while (mCount < m && _t < real_real_ansCount) {
+      MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, karina, mCount);
+      bool isOk = UpdateTurn(maxCand, nowRot, nowTip, x, y, _t, a, b, mCount);
+      if (!isOk)break;
+
+      double time = GetNowTime();
+      if (time > 0.1)break;
     }
 
+    double time = GetNowTime();
+    if (time > 0.1)break;
+    if (mode == 2) {
+      cout << karina << ' ' << _t << ' ' << real_real_ansCount << endl;
+    }
     ansCount = _t;
-    if (mCount == m && ansCount < real_ansCount) {
+    if (mCount == m && ansCount < real_real_ansCount) {
+      if (mode != 0) {
+        cout << "OK" << karina << ' ' << real_real_ansCount << ' ' << ansCount << endl;
+      }
+
       CopyToReal();
       if (mode == 2) {
         cout << "Method" << Method << ", " << "loop = " << loop[Method];
-        cout << ", score = " << real_ansCount;
+        cout << ", score = " << real_ansCount[Method];
         cout << ", sx = " << sx << ", sy = " << sy;
         srep(i, 1, V)cout << ", " << le[i];
         cout << endl;
@@ -1538,11 +2103,15 @@ ll Solve(int probNum)
 
   CopyToReal();
 
-  Method100(TL);
+  Method100(TL, probNum, ofs);
 
   CopyToAns();
 
   // 解答を出力
+  if (ofs.is_open()) {
+    ofs.close();
+  }
+  OpenOfs(probNum, ofs);
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -1603,7 +2172,7 @@ int main()
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(8);
+      ll score = Solve(i);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
@@ -1617,6 +2186,7 @@ int main()
         cout << "V = " << setw(2) << v << ", ";
         cout << "Method = " << Method << ", ";
         cout << "ArmLengthMethod = " << ArmLengthMethod << ", ";
+        srep(i, 1, V)cout << ", " << le[i];
         cout << endl;
       }
     }

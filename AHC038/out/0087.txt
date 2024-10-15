@@ -1,93 +1,95 @@
 9
-0 9
-1 4
-2 3
-3 1
-3 2
-3 3
+0 5
+1 2
+2 9
 3 4
-3 5
-14 2
-UL.R.........PPPPP
-DRR.L.LLL....PPPPP
-ULL.LRLLL....PPPPP
-.R.LRRLLL....PPPPP
-RL.RLLR.L....PPPPP
-UR....LLR....PPPPP
-DLL.L..R.....PPPPP
-.RLRRR.LR....PPPPP
-.L.LL..LL....PPPPP
-DR.LL..LL....PPPPP
-LLL.L..LR....PPPPP
-DRLRLLLRL....PPPPP
-U.LLLL.LL....PPPPP
-D.LLLLLLR....PPPPP
-DLLLLL.RL....PPPPP
-DR.RLL.LL....PPPPP
-RL.LLR..L....PPPPP
-.R.L.LL......PPPPP
-RLLL..LR.....PPPPP
-DRRL.LRLR....PPPPP
-RLLRRLLLL....PPPPP
-LR..R........PPPPP
-DL.RLLLLR....PPPPP
-LRLR..LLL....PPPPP
-ULRR..LRR....PPPPP
-RRLLRLLLL....PPPPP
-ULRL..RRL....PPPPP
-RRRRLR.......PPPP.
-DLLRLLL......PPPP.
-DRLR....L....PPP.P
-DL.RLL..R....PPPPP
-L.LL.R.L......PPPP
-..L...RR.....PPPPP
-RLR.L..RL....P.PPP
-.R.L.RRL.....PPPP.
-UL.RRRL......PPP.P
-URR..L........PPP.
-DL.L.........P....
-LRLRL.L.R....P.PPP
-U..RLR..R....PP..P
-LRRL..L......P.P..
-U.LR.LL......PPP.P
-ULR..L........P...
-RR.LL.RL.....P.PP.
-..RRLL.L.....PP.P.
-.L..L...L....PP.PP
-RR....R.R......PPP
-RLLL..R........P..
-RLL.L........PPP..
-RRRRL..R.....PP.P.
-RR.L.R.......PP.P.
-RLR.R........PPPPP
-R.R.RLLL.....PPPP.
-R..LL........PPPP.
-U..R.RLL......PPP.
-U.LR.R.L......PPP.
-RLLLLRL......PPP..
-DRRLLL.......PP...
-R.RRL..R.....P..PP
-L.....LLR....P.PPP
-UR..R.L......P.P..
-UL.L...L.....P.PP.
-DLRLL..L.....P..PP
-L.RR...R......P.P.
-LRR..R.R......P.P.
-RRRL.R.R......P.P.
-UL.L.RL......PPP..
-..L....R.......PP.
-.R.R....L......P.P
-URLL.R........P...
-.RRR.R........P...
-RL.R...L........P.
-U.RL.L..R.....P..P
-LLRL..L........P..
-U..L.RL.......PP..
-R.R...R.R......P.P
-DR....R........P..
-L.L..L........P...
-L.LR.........P....
-RR................
-DRL...R........P..
-.LR............P..
-DL.L....R........P
+4 1
+4 2
+4 3
+4 4
+17 12
+RLLRRL.L......PPPP
+DRR.RRL.L.....PPPP
+RLL.LR.RL.....PPPP
+ULLL..RRL.....PPPP
+U.RR....R.....PPPP
+D.RR.LL.L.....PPPP
+DRLLLLLR......PPPP
+RLRRR..L......PPPP
+UR.RLLL.......PPPP
+LRRL.RR.L.....PPPP
+ULLR.LL.R.....PPPP
+LRLLR.........PPPP
+DLL..L.L......PPPP
+DRL.RLL.......PPPP
+LLLRL..LL.....PPPP
+.LRLRLLRL.....PPPP
+UR..L.........PPPP
+L.RR.LL.L.....PPPP
+.RR.LRRRR.....PPPP
+L.LRLRRR......PPPP
+LLRR.L.LL.....PPPP
+ULLRLRRLR.....PPPP
+URRLRLL.L.....PPPP
+R.LL.RRLR.....PPPP
+U.RR.LLLL.....PPPP
+.LL.LLR.......PPPP
+D.LLR...L.....PPPP
+..RRL..LL.....PPPP
+LR.RRL.LL.....PPPP
+..L..R.LR.....PPPP
+LLRRRLL.R.....PPPP
+L..RRRL.R.....PPPP
+...LL.RLL.....PPPP
+URRL.L.LL.....PPPP
+DLRL.R.RR.....PPPP
+URR..LLLR.....PPPP
+URR.LLL.L.....PPPP
+RR.RLR.LL.....PPPP
+LR.R.RR.R.....PPPP
+LLRR.RL.......PPPP
+LL..RLRLR.....PPPP
+R..L.R..R.....PPPP
+U..R.LLLL.....PPPP
+R.RRLLRRR.....PPPP
+U.LLLLLRL.....PPPP
+.RLRRLR.......PPPP
+URRRLLR.L.....PPPP
+RLL.R.L.L.....PPPP
+R.LLL..L......PPPP
+URR.RL.LR.....PPPP
+DRRR.L.R......PPPP
+UL.R.L.LL.....PPPP
+DRLR..RL......PPPP
+.RLL...L......PPPP
+ULRL.L..L.....P.PP
+U.R.L.R........PPP
+..LRL..R......PPP.
+.RLLRRLL......PPP.
+LLRR.RLR......PPP.
+.LR.LR........P.PP
+R..LL.LR.......PP.
+DR.R.RLLR.....PPPP
+DR.R.R..L.....P..P
+RL............P...
+..RL..LR.......PP.
+RLLRL..LR.....P.PP
+R.RLLRRRR.....PPPP
+DR.L...RL......PPP
+R.R.LR.LL.....P.PP
+DL.L...L......P.P.
+.R..R.L........PP.
+URRL.L..L.....PP.P
+LR.RRL........PP..
+LL..L..L......P.P.
+DRRL.R........P...
+ULLRRR........PP..
+DRLLRL........PP..
+URR...L........P..
+L..LLR........P...
+.LRRL..........P..
+.RRL.R........P...
+RLRLR...L........P
+..R.L............P
+RLLL.L........P...
+L.LRLR........P...
