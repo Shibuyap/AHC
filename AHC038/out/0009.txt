@@ -1,47 +1,44 @@
 15
 0 3
 1 3
+2 2
+2 3
+2 4
+2 5
+2 6
+2 7
+2 8
+2 9
 2 10
-3 2
-4 5
-5 1
-5 2
-5 3
-5 4
-5 5
-5 6
-5 7
-5 8
-5 9
-16 16
-ULLLLL..L.RRR........P.PPPPPP.
-...RLLR.LR...RL......P.PPPPPPP
-R.RLRRL.LLL.RRL......P.PPP.PPP
-D...LL..L.R.LL.......P.PPP.PPP
-U..LRRL.R..R.L.......PPP..P.P.
-R..RRRLR...L.RL......PPP..P.PP
-RLL.LLL.L.L.L........P.P.P.PPP
-.RR.RRL.R.R.R........P.P.P.PPP
-RR.L...RL..LR.........PP.PPP.P
-.L.R.......RL.........PP.PPP.P
-..L.R.R.R...L.R......P.PP..P.P
-.RLR.L.....RRRL.......P.P.PPPP
-LLR...RL...L.L.......PP...P.P.
-.LLRL....L..............P.....
-.LRR.L....LRR........P...PPP..
-U.LRRR.R.RR..R........PPPP..P.
-URL......L..R........PP.P..P..
-ULR..R.....R.R..........P.P.P.
-L.RLRLRRL............PPP..P..P
-DLL.LR...................P....
-R.RR.LRR....L........PPP.P.P..
-DRL.LR.L.L..L.........P.P..P.P
-R.LLR....................P....
-U..LLL....LR.L...........PP.P.
-RRLLRL..L............P.P......
-U...LL.L.L..R.........P.P..P..
-LRL..L......LL.............PP.
-RR..L......L..............P...
-UL..RR....................P...
-..RL.LR..............P........
-D.......L..............P......
+2 11
+2 12
+2 13
+8 12
+.RR.LLLLL.........PPPPPP.P.P..
+LRR.R...RR.R..L....P.P.PP.PP.P
+LRR.LL.LLR........PPPPPPP.P...
+DRR.RL.L.LR........PPPPPPP....
+.LLRL..L..R...R...PP.PPP.P..PP
+DLL.L...L.L.R.....PP...P.PPPP.
+L.R.....RR...........P.PP.P.P.
+L.LL.L.LR.RL......P.P.PPPPP...
+.R....L..RL..L.......P..PPP.P.
+.LR.LLL...R.L......PPP...PPP..
+DR.RR.R.L.R.......PP.P.P.P.P..
+L.......R.L..L......P..P.P..P.
+D.LL.R.L...L......P.P.P..PP...
+LRL........LL...........P.PPP.
+LLLL.RR....L......P.PP....P...
+.RR......L..R.....P..P..P..P..
+DL....R.....R.L......P.....P.P
+LRRL.......RL.....P.......PP..
+LR.........R..R...........P..P
+LLL......R........P.....P.....
+URL........L..R...........P..P
+ULL.......R.............PP....
+L.L.........L..............P..
+L..........L..............P...
+D.R...........R..............P
+RR......L..............P......
+L.R...L..............P........
+RRL....R..............P.......

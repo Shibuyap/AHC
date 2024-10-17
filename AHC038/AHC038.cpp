@@ -30,6 +30,7 @@
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -88,7 +89,19 @@ vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} 
 
 const double TL = 2.8;
 int mode;
-clock_t startTime, endTime;
+std::chrono::steady_clock::time_point startTime, endTime;
+
+void ResetTime()
+{
+  startTime = std::chrono::steady_clock::now();
+}
+
+double GetNowTime()
+{
+  auto endTime = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = endTime - startTime;
+  return elapsed.count();
+}
 
 const int MAX_N = 30;
 const int MAX_M = 450;
@@ -201,21 +214,10 @@ void CopyToAns()
   //ansCount = real_ansCount[Method];
 }
 
-void CopyToRealPCount() {
+void CopyToRealPCount()
+{
   real_ansCount[Method] = ansCount;
   real_PCount[Method] = PCount[Method];
-}
-
-void ResetTime()
-{
-  startTime = clock();
-}
-
-double GetNowTime()
-{
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  return nowTime;
 }
 
 bool IsNG(int x, int y)
@@ -240,17 +242,9 @@ void SetUp()
 // 入力受け取り
 void Input(int problemNum)
 {
-  string fileNameIfs = "./in/";
-  string strNum;
-  rep(i, 4)
-  {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  ifstream ifs(oss.str());
 
   // 標準入力する
   if (!ifs.is_open()) {
@@ -302,17 +296,9 @@ void Input(int problemNum)
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    rep(i, 4)
-    {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofs.open(fileNameOfs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    ofs.open(oss.str());
   }
 }
 
@@ -373,9 +359,6 @@ bool IsValidAnswer()
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    //if (ansCount < 100) {
-    //  assert(false);
-    //}
     cout << V << endl;
     srep(i, 1, V)
     {
@@ -1814,6 +1797,114 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   return maxCand[bestIndex];
 }
 
+void Beam2_Internal(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& nowTip,
+  vector<vector<int>>& a, vector<vector<int>>& b, const int beamDepth, int& mCount, const int beamWidth, vector<MaxCandidate>& maxCand)
+{
+  FisherYates(order, 5);
+
+  if (Method == 42) {
+    DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else if (Method == 52) {
+    DecideBest52(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 62) {
+    DecideBest62(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 72) {
+    DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 82) {
+    DecideBest82(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 53) {
+    DecideBest53(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 63) {
+    DecideBest63(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else  if (Method == 73) {
+    DecideBest73(x, y, nowRot, nowTip, maxCand, a, b);
+  }
+  else {
+    if (mode != 0) {
+      cout << "NG" << endl;
+    }
+  }
+}
+
+MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& nowTip,
+  vector<vector<int>>& a, vector<vector<int>>& b, const int beamDepth, int& mCount)
+{
+  int BEAM_WIDTH = 30;
+
+  vector<MaxCandidate> maxCand(BEAM_WIDTH);
+  rep(i, BEAM_WIDTH)
+  {
+    maxCand[i].maxRT.Initialize(nowRot, nowTip);
+  }
+
+  rep(winter, beamDepth)
+  {
+    if (winter == 0) {
+      Beam2_Internal(_t, x, y, nowRot, nowTip, a, b, 0, mCount, BEAM_WIDTH, maxCand);
+    }
+    else {
+      vector<MaxCandidate> maxCand2(BEAM_WIDTH);
+      rep(i, BEAM_WIDTH)
+      {
+        maxCand2[i].maxRT.Initialize(nowRot, nowTip);
+      }
+
+      rep(aespa, BEAM_WIDTH)
+      {
+        auto keepNowRot = nowRot;
+        auto keepNowTip = nowTip;
+        UpdateTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
+
+        vector<MaxCandidate> tmpCand(BEAM_WIDTH);
+        rep(i, BEAM_WIDTH)
+        {
+          tmpCand[i].maxRT.Initialize(nowRot, nowTip);
+        }
+
+        Beam2_Internal(_t, x, y, nowRot, nowTip, a, b, 0, mCount, BEAM_WIDTH, tmpCand);
+
+        nowRot = keepNowRot;
+        nowTip = keepNowTip;
+        RollBackTurn(maxCand[aespa], x, y, _t, a, b, mCount);
+
+        rep(i, BEAM_WIDTH)
+        {
+          if (tmpCand[i].finishTurn < maxCand2[BEAM_WIDTH - 1].finishTurn) {
+            maxCand2[BEAM_WIDTH - 1] = tmpCand[i];
+          }
+          else if (tmpCand[i].finishTurn == maxCand2[BEAM_WIDTH - 1].finishTurn && tmpCand[i].maxActionScore > maxCand2[BEAM_WIDTH - 1].maxActionScore) {
+            maxCand2[BEAM_WIDTH - 1] = tmpCand[i];
+          }
+
+          dsrep(j, 1, BEAM_WIDTH)
+          {
+            if (maxCand2[j].finishTurn < maxCand2[j - 1].finishTurn) {
+              swap(maxCand2[j], maxCand2[j - 1]);
+            }
+            else if (maxCand2[j].finishTurn == maxCand2[j - 1].finishTurn && maxCand2[j].maxActionScore > maxCand2[j - 1].maxActionScore) {
+              swap(maxCand2[j], maxCand2[j - 1]);
+            }
+            else {
+              break;
+            }
+          }
+        }
+      }
+
+      maxCand = maxCand2;
+    }
+  }
+
+  return maxCand[0];
+}
+
 void Method100(double timeLimit, int probNum, ofstream& ofs)
 {
   ResetTime();
@@ -1867,30 +1958,30 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
     // 木作成
     switch (Method) {
-    case 42:
-      MakeTree1();
-      break;
-    case 52:
-      MakeTree2();
-      break;
-    case 62:
-      MakeTree6();
-      break;
-    case 72:
-      MakeTree4();
-      break;
-    case 82:
-      MakeTree5();
-      break;
-    case 53:
-      MakeTree22();
-      break;
-    case 63:
-      MakeTree32();
-      break;
-    case 73:
-      MakeTree42();
-      break;
+      case 42:
+        MakeTree1();
+        break;
+      case 52:
+        MakeTree2();
+        break;
+      case 62:
+        MakeTree6();
+        break;
+      case 72:
+        MakeTree4();
+        break;
+      case 82:
+        MakeTree5();
+        break;
+      case 53:
+        MakeTree22();
+        break;
+      case 63:
+        MakeTree32();
+        break;
+      case 73:
+        MakeTree42();
+        break;
     }
 
     // 初期位置作成
@@ -1905,7 +1996,8 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     }
 
     if (randxor() % 2 && Method == real_Method && real_ansCount[Method] < 999) {
-      rep(i, v) {
+      rep(i, v)
+      {
         pa[i] = real_pa[i];
         le[i] = real_le[i];
       }
@@ -1933,7 +2025,8 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
       int tt = _t;
       int mCount2 = mCount;
 
-      MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
+      //MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
+      MaxCandidate maxCand = Beam2(_t, x, y, nowRot, nowTip, a, b, 3, mCount);
 
       //FisherYates(order, 5);
 
@@ -2023,8 +2116,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
   //　ベストな解に対してビームサーチ
   ResetTime();
   int karina = 0;
-  while (true)
-  {
+  while (true) {
     karina++;
 
     CopyToAns();
@@ -2086,7 +2178,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
 ll Solve(int probNum)
 {
-  startTime = clock();
+  ResetTime();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
