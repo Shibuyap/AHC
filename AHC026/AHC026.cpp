@@ -99,10 +99,12 @@ const int MAX_N = 30;
 
 const int n = 200;
 const int m = 10;
-int b[m][n / m];
+int b[m][n];
+int bCount[m];
 int c[n][2];
-int init_b[m][n / m];
+int init_b[m][n];
 int init_c[n][2];
+int init_bCount[m];
 
 int ansScore;
 int ans[5100][2];
@@ -172,6 +174,11 @@ void Input(int problemNum)
   {
     rep(j, 2) { init_c[i][j] = c[i][j]; }
   }
+  rep(i, m)
+  {
+    bCount[i] = n / m;
+    init_bCount[i] = bCount[i];
+  }
 }
 
 // 出力ファイルストリームオープン
@@ -204,10 +211,19 @@ void Output(ofstream& ofs)
   }
 }
 
-// ナイーブな解法
+// 1列ずつソートしていく
 void Method1()
 {
+  rep(i, m)
+  {
+    // 一旦すべて取り出す
+    while (bCount[i] > 0) {
+      int num = b[i][]
+    }
 
+    // 戻す
+
+  }
 }
 
 ll Solve(int probNum)
