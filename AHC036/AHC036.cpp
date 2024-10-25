@@ -30,6 +30,7 @@
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -191,17 +192,9 @@ void InitRoutes()
 // “ü—ÍŽó‚¯Žæ‚è
 void Input(int problemNum)
 {
-  string fileNameIfs = "./in/";
-  string strNum;
-  rep(i, 4)
-  {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  ifstream ifs(oss.str());
 
   // •W€“ü—Í‚·‚é
   if (!ifs.is_open()) {
@@ -249,17 +242,9 @@ void Input(int problemNum)
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    rep(i, 4)
-    {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofs.open(fileNameOfs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    ofs.open(oss.str());
   }
 }
 
