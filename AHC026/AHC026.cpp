@@ -108,7 +108,7 @@ int init_bCount[m];
 
 int ansScore;
 int ans[5100][2];
-int ansSize = 0;
+int ansSize;
 
 int best_ansScore;
 
@@ -192,9 +192,55 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // スコア計算
-ll CalcScore()
+int CalcScore()
 {
-  ll res = 0;
+  int tmp_b[m][n];
+  int tmp_c[n][2];
+  int tmp_bCount[m];
+
+  int cnt = 0;
+  rep(i, m)
+  {
+    rep(j, n / m) {
+      tmp_b[i][j] = init_b[i][j];
+    }
+  }
+  rep(i, n)
+  {
+    rep(j, 2) {
+      tmp_c[i][j] = init_c[i][j];
+    }
+  }
+  rep(i, m) {
+    tmp_bCount[i] = init_bCount[i];
+  }
+
+  int res = 10000;
+  rep(i, ansSize)
+  {
+    int num = ans[i][0];
+    int x = tmp_c[num][0];
+    int y = tmp_c[num][1];
+    int nx = ans[i][1];
+    if (nx == -1) {
+      tmp_bCount[x]--;
+      cnt++;
+    }
+    else {
+      res--;
+      rep(j, tmp_bCount[x] - y)
+      {
+        int num2 = tmp_b[x][y + j];
+        tmp_c[num2][0] = nx;
+        tmp_c[num2][1] = tmp_bCount[nx];
+        tmp_b[nx][tmp_bCount[nx]] = num2;
+        tmp_bCount[nx]++;
+        res--;
+      }
+      tmp_bCount[x] = y;
+    }
+  }
+  if (cnt != n) return -1;
   return res;
 }
 
@@ -211,18 +257,146 @@ void Output(ofstream& ofs)
   }
 }
 
+int GetNum(int x) {
+  if (bCount[x] == 0) {
+    return -1;
+  }
+  return b[x][bCount[x] - 1];
+}
+
+void CarryOut(int& carryOutCount) {
+  int x = c[carryOutCount][0];
+  bCount[x]--;
+
+  ans[ansSize][0] = carryOutCount;
+  ans[ansSize][1] = -1;
+  ansSize++;
+  carryOutCount++;
+}
+
+void Move(int x, int nx, int y)
+{
+  int num = b[x][y];
+  ans[ansSize][0] = num;
+  ans[ansSize][1] = nx;
+  ansSize++;
+
+  rep(j, bCount[x] - y)
+  {
+    int num2 = b[x][y + j];
+    b[nx][bCount[nx]] = b[x][y + j];
+    c[num2][0] = nx;
+    c[num2][1] = bCount[nx];
+    bCount[nx]++;
+  }
+  bCount[x] = y;
+}
+
 // 1列ずつソートしていく
 void Method1()
 {
-  rep(i, m)
-  {
-    // 一旦すべて取り出す
-    while (bCount[i] > 0) {
-      int num = b[i][]
+  ansSize = 0;
+  int carryOutCount = 0;
+
+  while (carryOutCount < n) {
+    rep(i, m)
+    {
+      // 一旦すべて取り出す
+      while (bCount[i] > 0) {
+        int num = GetNum(i);
+
+        if (num == carryOutCount) {
+          CarryOut(carryOutCount);
+          continue;
+        }
+
+        int idx = -1;
+        int idxNum = -1;
+        rep(j, m) {
+          if (j == i)continue;
+
+          int jNum = GetNum(j);
+
+          if (idx == -1) {
+            idx = j;
+            idxNum = jNum;
+          }
+          else {
+            if (idxNum == -1) {
+              if (jNum > num) {
+                idx = j;
+                idxNum = jNum;
+              }
+            }
+            else if (idxNum < num) {
+              if (jNum == -1 || jNum > num) {
+                idx = j;
+                idxNum = jNum;
+              }
+              else if (jNum > idxNum) {
+                idx = j;
+                idxNum = jNum;
+              }
+            }
+            else {
+              if (jNum > num && jNum < idxNum) {
+                idx = j;
+                idxNum = jNum;
+              }
+            }
+          }
+        }
+
+        Move(i, idx, bCount[i] - 1);
+      }
+
+      // 戻す
+      int now = 999;
+      while (true) {
+        int ma = -1;
+        int idx = -1;
+        rep(j, m) {
+          if (j == i)continue;
+          if (bCount[j] == 0)continue;
+
+          int jNum = GetNum(j);
+          if (jNum < now && ma < jNum) {
+            ma = jNum;
+            idx = j;
+          }
+        }
+
+        if (idx == -1)break;
+
+        int y = bCount[idx] - 1;
+        while (y > 0) {
+          int num = b[idx][y];
+          int nextNum = b[idx][y - 1];
+          if (num < nextNum && nextNum < now) {
+            y--;
+          }
+          else {
+            break;
+          }
+        }
+
+        Move(idx, i, y);
+        now = GetNum(i);
+      }
+
+      // 運び出せる箱があるか確認
+      while (true) {
+        int ok = 0;
+        rep(j, m) {
+          if (GetNum(j) == carryOutCount) {
+            CarryOut(carryOutCount);
+            ok = 1;
+            break;
+          }
+        }
+        if (ok == 0)break;
+      }
     }
-
-    // 戻す
-
   }
 }
 
