@@ -36,6 +36,83 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
+class UnionFind
+{
+public:
+  const int MAX_UF = 1000006;
+
+  int N;                // 頂点数
+  vector<int> Par;      // 親
+  vector<int> Rank;     // 木の深さ
+  vector<int> Count;    // 属する頂点の個数(親のみ正しい)
+
+  // 初期化
+  void Initialize()
+  {
+    for (int i = 0; i < N; i++) {
+      Par[i]  = i;
+      Rank[i] = 0;
+      Count[i]  = 1;
+    }
+  }
+
+  UnionFind(int n)
+  {
+    N = n;
+    Par.resize(N);
+    Rank.resize(N);
+    Count.resize(N);
+
+    Initialize();
+  }
+
+  UnionFind()
+  {
+    UnionFind(MAX_UF);
+  }
+
+  // 木の根を求める
+  int Find(int x)
+  {
+    if (Par[x] == x) {
+      return x;
+    }
+    else {
+      return Par[x] = Find(Par[x]);
+    }
+  }
+
+  // xとyの属する集合を併合
+  void Unite(int x, int y)
+  {
+    x = Find(x);
+    y = Find(y);
+    if (x == y) return;
+
+    if (Rank[x] < Rank[y]) {
+      Par[x] = y;
+      Count[y] += Count[x];
+    }
+    else {
+      Par[y] = x;
+      Count[x] += Count[y];
+      if (Rank[x] == Rank[y]) Rank[x]++;
+    }
+  }
+
+  // xとyが同じ集合に属するか否か
+  bool IsSame(int x, int y)
+  {
+    return Find(x) == Find(y);
+  }
+
+  // xの属する集合のサイズ
+  int GetCount(int x)
+  {
+    return Count[Find(x)];
+  }
+};
+
 // 乱数
 static uint32_t randxor()
 {
@@ -53,12 +130,14 @@ static uint32_t randxor()
 }
 
 // 0以上1未満の実数をとる乱数
-static double rand01() {
+static double rand01()
+{
   return (randxor() + 0.5) * (1.0 / UINT_MAX);
 }
 
 // l以上r未満の実数をとる乱数
-static double randUniform(double l, double r) {
+static double randUniform(double l, double r)
+{
   return l + (r - l) * rand01();
 }
 
@@ -103,7 +182,7 @@ double GetNowTime()
 
 double minCostRatio = 1.1;
 double maxCostRatio = 2.9;
-int repeat = 160;
+int repeat = 50;
 
 const int n = 400;
 const int m = 1995;
@@ -130,19 +209,27 @@ void CopyToAns()
 void SetUp()
 {
   ansScore = 0;
+  randomDistances.clear();
 }
 
-int GetDistance(int i, int j) {
+int GetDistance(int i, int j)
+{
   return round(sqrt((x[i] - x[j]) * (x[i] - x[j]) + (y[i] - y[j]) * (y[i] - y[j])));
 }
 
-// 入力受け取り
-void Input(int problemNum)
+// 入力ファイルストリームオープン
+void OpenIfs(int problemNum, ifstream& ifs)
 {
-  std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
-  ifstream ifs(oss.str());
+  if (mode != 0) {
+    std::ostringstream oss;
+    oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+    ifs.open(oss.str());
+  }
+}
 
+// 入力受け取り
+void Input(int problemNum, ifstream& ifs)
+{
   if (!ifs.is_open()) {
     // 標準入力
     rep(i, n) cin >> x[i] >> y[i];
@@ -154,7 +241,8 @@ void Input(int problemNum)
     rep(i, m) ifs >> u[i] >> v[i];
   }
 
-  rep(i, m) {
+  rep(i, m)
+  {
     distances[i] = GetDistance(u[i], v[i]);
   }
 }
@@ -189,9 +277,11 @@ void Output(ofstream& ofs)
 
 void Prepare()
 {
-  rep(_, repeat) {
+  rep(_, repeat)
+  {
     vector<P> tmpVec(m);
-    rep(i, m) {
+    rep(i, m)
+    {
       tmpVec[i] = make_pair(round(randUniform(minCostRatio, maxCostRatio) * distances[i]), i);
     }
     sort(tmpVec.begin(), tmpVec.end());
@@ -199,10 +289,69 @@ void Prepare()
   }
 }
 
-// ナイーブな解法
-void Method1()
+int Kruskal(UnionFind uf, int start, int caseNumber)
 {
+  for (auto p : randomDistances[caseNumber]) {
+    int cost = p.first;
+    int idx = p.second;
+    if (start < idx) {
+      uf.Unite(u[idx], v[idx]);
+      if (uf.IsSame(u[start], v[start])) {
+        return cost;
+      }
+    }
+  }
+  return -1;
+}
 
+bool MonteCarlo(UnionFind uf, int start)
+{
+  int sum_costs = 0;
+  rep(i, repeat)
+  {
+    sum_costs += Kruskal(uf, start, i);
+    if (i == 0 && sum_costs == -1) {
+      return true;
+    }
+  }
+  return repeat * distances[start] < sum_costs;
+}
+
+// ナイーブな解法
+void Method1(ifstream& ifs, ofstream& ofs)
+{
+  Prepare();
+
+  UnionFind uf(n);
+
+  rep(i, m)
+  {
+    if (mode == 0) {
+      cin >> distances[i];
+    }
+    else {
+      ifs >> distances[i];
+    }
+
+    if (!uf.IsSame(u[i], v[i]) && MonteCarlo(uf, i)) {
+      uf.Unite(u[i], v[i]);
+      if (mode == 0) {
+        cout << 1 << endl << flush;
+      }
+      else {
+        ofs << 1 << endl;
+      }
+    }
+    else {
+      if (mode == 0) {
+        cout << 0 << endl << flush;
+      }
+      else {
+        ofs << 0 << endl;
+      }
+    }
+
+  }
 }
 
 ll Solve(int probNum)
@@ -212,18 +361,26 @@ ll Solve(int probNum)
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
+  // 入力ファイルストリームオープン
+  ifstream ifs;
+  OpenIfs(probNum, ifs);
+
   // 入力受け取り
-  Input(probNum);
+  Input(probNum, ifs);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
   // 初期解生成
-  Method1();
+  Method1(ifs, ofs);
 
   // 解答を出力
   Output(ofs);
+
+  if (ifs.is_open()) {
+    ifs.close();
+  }
 
   if (ofs.is_open()) {
     ofs.close();
