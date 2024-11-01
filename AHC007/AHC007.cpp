@@ -44,7 +44,6 @@ public:
   int N;                // 頂点数
   vector<int> Par;      // 親
   vector<int> Rank;     // 木の深さ
-  vector<int> Count;    // 属する頂点の個数(親のみ正しい)
 
   // 初期化
   void Initialize()
@@ -52,7 +51,6 @@ public:
     for (int i = 0; i < N; i++) {
       Par[i]  = i;
       Rank[i] = 0;
-      Count[i]  = 1;
     }
   }
 
@@ -61,7 +59,6 @@ public:
     N = n;
     Par.resize(N);
     Rank.resize(N);
-    Count.resize(N);
 
     Initialize();
   }
@@ -91,11 +88,9 @@ public:
 
     if (Rank[x] < Rank[y]) {
       Par[x] = y;
-      Count[y] += Count[x];
     }
     else {
       Par[y] = x;
-      Count[x] += Count[y];
       if (Rank[x] == Rank[y]) Rank[x]++;
     }
   }
@@ -104,12 +99,6 @@ public:
   bool IsSame(int x, int y)
   {
     return Find(x) == Find(y);
-  }
-
-  // xの属する集合のサイズ
-  int GetCount(int x)
-  {
-    return Count[Find(x)];
   }
 };
 
@@ -191,24 +180,9 @@ int u[m], v[m];
 int distances[m];
 vector<vector<P>> randomDistances;
 
-int ansScore;
-
-int best_ansScore;
-
-void CopyToBest()
-{
-  best_ansScore = ansScore;
-}
-
-void CopyToAns()
-{
-  ansScore = best_ansScore;
-}
-
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  ansScore = 0;
   randomDistances.clear();
 }
 
@@ -291,6 +265,8 @@ void Prepare()
 
 int Kruskal(UnionFind uf, int start, int caseNumber)
 {
+  // ここの時点ではu[start]とv[start]は繋がっていない
+
   for (auto p : randomDistances[caseNumber]) {
     int cost = p.first;
     int idx = p.second;
@@ -301,16 +277,21 @@ int Kruskal(UnionFind uf, int start, int caseNumber)
       }
     }
   }
+
+  // 辺startを採用しないと連結にならない
   return -1;
 }
 
 bool MonteCarlo(UnionFind uf, int start)
 {
+  // ここに来た時点でu[start]とv[start]は繋がっていない
+
   int sum_costs = 0;
   rep(i, repeat)
   {
     sum_costs += Kruskal(uf, start, i);
     if (i == 0 && sum_costs == -1) {
+      // 辺startを採用しないと連結にならない
       return true;
     }
   }
@@ -350,7 +331,6 @@ void Method1(ifstream& ifs, ofstream& ofs)
         ofs << 0 << endl;
       }
     }
-
   }
 }
 
