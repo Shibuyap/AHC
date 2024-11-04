@@ -264,15 +264,47 @@ void MoveOneTurn(Problem& prob, int turn, int from, const vector<int>& idx) {
   prob.ans.emplace_back(turn, -1);
 }
 
-void DecideIdx(const Problem& prob, vector<int>& idx, const vector<P> minIs, int from, int k) {
+void DecideIdx(const Problem& prob, vector<int>& idx, const vector<P>& minIs, int from, int k) {
   int bb = prob.b[from][k];
   int id = 1;
   while (id + 1 < m && minIs[id].first < bb)id++;
   idx[k] = minIs[id].second;
 }
 
-int PlayOut() {
-  return 0;
+int PlayOut(Problem prob, int _turn, int _k, vector<int> _idx, vector<P> _minIs, int _from) {
+  int turnY = prob.c[_turn].y;
+  //dsrep(k, turnY + 1, _k) {
+  //  DecideIdx(prob, _idx, _minIs, _from, k);
+  //}
+  srep(k, _k + 1, prob.b[_from].size()) {
+    DecideIdx(prob, _idx, _minIs, _from, k);
+  }
+  MoveOneTurn(prob, _turn, _from, _idx);
+
+  srep(turn, _turn + 1, n) {
+    vector<P> minIs(m);
+    rep(i, m) {
+      int minI = INT_INF;
+      rep(j, prob.b[i].size()) {
+        minI = min(minI, prob.b[i][j]);
+      }
+      minIs[i] = P(minI, i);
+    }
+
+    sort(minIs.begin(), minIs.end());
+
+    int from = minIs[0].second;
+    int turnY = prob.c[turn].y;
+
+    vector<int> idx(prob.b[from].size(), -1);
+    srep(k, turnY + 1, prob.b[from].size()) {
+      DecideIdx(prob, idx, minIs, from, k);
+    }
+
+    MoveOneTurn(prob, turn, from, idx);
+  }
+
+  return CalcScore(prob.ans);
 }
 
 // kotatsugameさんの貪欲
@@ -296,9 +328,68 @@ Problem Method2() {
     int from = minIs[0].second;
     int turnY = prob.c[turn].y;
 
+    vector<int> keepIdx(prob.b[from].size(), -1);
+    srep(k, turnY + 1, prob.b[from].size()) {
+      DecideIdx(prob, keepIdx, minIs, from, k);
+    }
+
     vector<int> idx(prob.b[from].size(), -1);
     srep(k, turnY + 1, prob.b[from].size()) {
-      DecideIdx(prob, idx, minIs, from, k);
+      int maxScore = -1;
+      int maxId = -1;
+
+      // 1つだけ決めてプレイアウト
+      srep(l, 1, m) {
+        idx[k] = minIs[l].second;
+        int tmpScore = PlayOut(prob, turn, k, idx, minIs, from);
+        if (tmpScore > maxScore) {
+          maxScore = tmpScore;
+          maxId = minIs[l].second;
+        }
+      }
+
+      idx[k] = maxId;
+    }
+
+    int score = PlayOut(prob, turn, prob.b[from].size() - 1, idx, minIs, from);
+    //int score = PlayOut(prob, turn, turnY + 1, idx, minIs, from);
+
+    // ランダムに変えてみる
+    if (prob.b[from].size() - (turnY + 1) > 0) {
+      rep(aespa, 50) {
+        int randomK = randxor() % (prob.b[from].size() - (turnY + 1)) + turnY + 1;
+        int randomIdx = randxor() % (m - 1) + 1;
+        int keep = idx[randomK];
+        idx[randomK] = minIs[randomIdx].second;
+
+        int tmpScore = PlayOut(prob, turn, prob.b[from].size() - 1, idx, minIs, from);
+        //int tmpScore = PlayOut(prob, turn, turnY + 1, idx, minIs, from);
+        if (tmpScore >= score) {
+          score = tmpScore;
+        }
+        else {
+          idx[randomK] = keep;
+        }
+      }
+    }
+
+    // に変えてみる
+    if (prob.b[from].size() - (turnY + 1) > 0) {
+      rep(aespa, 50) {
+        int randomK = randxor() % (prob.b[from].size() - (turnY + 1)) + turnY + 1;
+        int randomIdx = randxor() % (m - 1) + 1;
+        int keep = idx[randomK];
+        idx[randomK] = minIs[randomIdx].second;
+
+        int tmpScore = PlayOut(prob, turn, prob.b[from].size() - 1, idx, minIs, from);
+        //int tmpScore = PlayOut(prob, turn, turnY + 1, idx, minIs, from);
+        if (tmpScore >= score) {
+          score = tmpScore;
+        }
+        else {
+          idx[randomK] = keep;
+        }
+      }
     }
 
     MoveOneTurn(prob, turn, from, idx);
