@@ -103,13 +103,15 @@ const int MAX_N = 30;
 
 const int n = 200;
 const int m = 10;
-vector<int> b[m];
-vector<Point> c;
 
 vector<int> init_b[m];
 vector<Point> init_c;
 
-vector<P> ans;
+struct Problem {
+  vector<int> b[m];
+  vector<Point> c;
+  vector<P> ans;
+};
 
 void CopyToBest()
 {
@@ -122,12 +124,9 @@ void CopyToAns()
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  ans.clear();
   rep(i, m) {
-    b[i].clear();
     init_b[i].clear();
   }
-  c.clear();
   init_c.clear();
 }
 
@@ -139,9 +138,9 @@ void Input(int problemNum)
   ifstream ifs(oss.str());
 
   rep(i, m) {
-    b[i].resize(n / m);
+    init_b[i].resize(n / m);
   }
-  c.resize(n);
+  init_c.resize(n);
 
   // 標準入力する
   if (!ifs.is_open()) {
@@ -151,8 +150,8 @@ void Input(int problemNum)
     {
       rep(j, n / m)
       {
-        cin >> b[i][j];
-        b[i][j]--;
+        cin >> init_b[i][j];
+        init_b[i][j]--;
       }
     }
   }
@@ -164,23 +163,18 @@ void Input(int problemNum)
     {
       rep(j, n / m)
       {
-        ifs >> b[i][j];
-        b[i][j]--;
+        ifs >> init_b[i][j];
+        init_b[i][j]--;
       }
     }
   }
 
-  rep(i, m)
-  {
-    init_b[i] = b[i];
-  }
   rep(i, m) {
     rep(j, n / m) {
-      c[b[i][j]].x = i;
-      c[b[i][j]].y = j;
+      init_c[init_b[i][j]].x = i;
+      init_c[init_b[i][j]].y = j;
     }
   }
-  init_c = c;
 }
 
 // 出力ファイルストリームオープン
@@ -194,7 +188,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // スコア計算
-int CalcScore()
+int CalcScore(const vector<P>& ans)
 {
   vector<int> tmp_b[m];
   vector<Point> tmp_c = init_c;
@@ -234,7 +228,7 @@ int CalcScore()
 }
 
 // 解答出力
-void Output(ofstream& ofs)
+void Output(ofstream& ofs, const vector<P>& ans)
 {
   if (mode == 0) {
     // 標準出力
@@ -246,58 +240,71 @@ void Output(ofstream& ofs)
   }
 }
 
-int GetNum(int x) {
-  if (b[x].empty()) {
-    return -1;
+void MoveOneTurn(Problem& prob, int turn, int from, const vector<int>& idx) {
+  int turnY = prob.c[turn].y;
+
+  for (int k = prob.b[from].size() - 1; k > turnY;) {
+    int to = idx[k];
+    while (idx[k - 1] == to)k--;
+
+    srep(l, k, prob.b[from].size()) {
+      int num = prob.b[from][l];
+      prob.c[num].x = to;
+      prob.c[num].y = prob.b[to].size();
+      prob.b[to].push_back(num);
+    }
+
+    prob.ans.emplace_back(prob.b[from][k], to);
+    prob.b[from].resize(k);
+
+    k--;
   }
-  return b[x].back();
+
+  prob.b[from].pop_back();
+  prob.ans.emplace_back(turn, -1);
+}
+
+void DecideIdx(const Problem& prob, vector<int>& idx, const vector<P> minIs, int from, int k) {
+  int bb = prob.b[from][k];
+  int id = 1;
+  while (id + 1 < m && minIs[id].first < bb)id++;
+  idx[k] = minIs[id].second;
+}
+
+int PlayOut() {
+  return 0;
 }
 
 // kotatsugameさんの貪欲
-void Method2() {
+Problem Method2() {
+  Problem prob;
+  rep(i, m)prob.b[i] = init_b[i];
+  prob.c = init_c;
+
   rep(turn, n) {
-    P minIs[m];
+    vector<P> minIs(m);
     rep(i, m) {
       int minI = INT_INF;
-      rep(j, b[i].size()) {
-        minI = min(minI, b[i][j]);
+      rep(j, prob.b[i].size()) {
+        minI = min(minI, prob.b[i][j]);
       }
       minIs[i] = P(minI, i);
     }
 
-    sort(minIs, minIs + m);
+    sort(minIs.begin(), minIs.end());
 
     int from = minIs[0].second;
-    int turnY = c[turn].y;
+    int turnY = prob.c[turn].y;
 
-    vector<int> idx(b[from].size(), -1);
-    srep(k, turnY + 1, b[from].size()) {
-      int bb = b[from][k];
-      int id = 1;
-      while (id + 1 < m && minIs[id].first < bb)id++;
-      idx[k] = minIs[id].second;
+    vector<int> idx(prob.b[from].size(), -1);
+    srep(k, turnY + 1, prob.b[from].size()) {
+      DecideIdx(prob, idx, minIs, from, k);
     }
 
-    for (int k = b[from].size() - 1; k > turnY;) {
-      int to = idx[k];
-      while (idx[k - 1] == to)k--;
-
-      srep(l, k, b[from].size()) {
-        int num = b[from][l];
-        c[num].x = to;
-        c[num].y = b[to].size();
-        b[to].push_back(num);
-      }
-
-      ans.emplace_back(b[from][k], to);
-      b[from].resize(k);
-
-      k--;
-    }
-
-    b[from].pop_back();
-    ans.emplace_back(turn, -1);
+    MoveOneTurn(prob, turn, from, idx);
   }
+
+  return prob;
 }
 
 ll Solve(int probNum)
@@ -315,10 +322,10 @@ ll Solve(int probNum)
   OpenOfs(probNum, ofs);
 
   // 初期解生成
-  Method2();
+  auto problem = Method2();
 
   // 解答を出力
-  Output(ofs);
+  Output(ofs, problem.ans);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -326,7 +333,7 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = CalcScore(problem.ans);
   }
   return score;
 }
