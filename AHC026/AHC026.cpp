@@ -31,8 +31,8 @@
 // ループの簡略化マクロ
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
+#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
 
 using namespace std;
 
@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t randxor()
+static uint32_t rand_xor()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,13 +58,13 @@ static uint32_t randxor()
 }
 
 // 0以上1未満の小数を返す乱数関数
-static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+static double rand_01() { return (rand_xor() + 0.5) * (1.0 / UINT_MAX); }
 
 // 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
-void FisherYates(int* data, int n)
+void fisher_yates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = randxor() % (i + 1);
+    int j = rand_xor() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -76,54 +76,54 @@ std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-const ll INF = 1001001001001001001;   // 非常に大きな値（オーバーフローに注意）
-const int INT_INF = 1001001001;       // int型の非常に大きな値
+const ll INF = 1001001001001001001; // 非常に大きな値（オーバーフローに注意）
+const int INT_INF = 1001001001;     // int型の非常に大きな値
 
 // 移動方向の配列（使用されていない）
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8;  // 時間制限（Time Limit）
-int mode;         // 実行モード
-std::chrono::steady_clock::time_point startTime, endTime;  // 時間計測用
+double TL = 1.8; // 時間制限（Time Limit）
+int mode;        // 実行モード
+std::chrono::steady_clock::time_point start_time, end_time; // 時間計測用
 
 // 時間計測をリセットする関数
-void ResetTime()
+void reset_time()
 {
-  startTime = std::chrono::steady_clock::now();
+  start_time = std::chrono::steady_clock::now();
 }
 
 // 現在の経過時間を取得する関数
-double GetNowTime()
+double get_now_time()
 {
-  auto endTime = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTime - startTime;
+  auto end_time = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = end_time - start_time;
   return elapsed.count();
 }
 
 // 箱の位置を表す構造体
 struct Point {
-  int x;  // 山の番号
-  int y;  // 山の中での高さ（下からの位置）
+  int x; // 山の番号
+  int y; // 山の中での高さ（下からの位置）
 };
 
-const int MAX_N = 30;  // 使用されていない
+const int MAX_N = 30; // 使用されていない
 
-const int n = 200;  // 箱の総数
-const int m = 10;   // 山の総数
+const int n = 200; // 箱の総数
+const int m = 10;  // 山の総数
 
 vector<int> init_stacks[m];   // 初期状態の各山に積まれた箱の番号リスト
 vector<Point> init_positions; // 初期状態の各箱の位置情報
 
 // 問題の状態を表す構造体
 struct Problem {
-  vector<int> stacks[m];      // 現在の各山の状態
-  vector<Point> positions;    // 現在の各箱の位置
-  vector<P> ans;              // 操作列の記録（解答）
+  vector<int> stacks[m];    // 現在の各山の状態
+  vector<Point> positions;  // 現在の各箱の位置
+  vector<P> ans;            // 操作列の記録（解答）
 };
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
-void SetUp()
+void set_up()
 {
   rep(i, m) {
     init_stacks[i].clear();
@@ -132,16 +132,16 @@ void SetUp()
 }
 
 // 入力を受け取る関数
-void Input(int problemNum)
+void input(int problem_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
   ifstream ifs(oss.str());
 
   rep(i, m) {
-    init_stacks[i].resize(n / m);  // 各山のサイズを設定
+    init_stacks[i].resize(n / m); // 各山のサイズを設定
   }
-  init_positions.resize(n);  // 箱の位置情報のサイズを設定
+  init_positions.resize(n); // 箱の位置情報のサイズを設定
 
   // 標準入力から受け取る場合
   if (!ifs.is_open()) {
@@ -152,7 +152,7 @@ void Input(int problemNum)
       rep(j, n / m)
       {
         cin >> init_stacks[i][j];
-        init_stacks[i][j]--;  // 0-indexedに変換
+        init_stacks[i][j]--; // 0-indexedに変換
       }
     }
   }
@@ -165,7 +165,7 @@ void Input(int problemNum)
       rep(j, n / m)
       {
         ifs >> init_stacks[i][j];
-        init_stacks[i][j]--;  // 0-indexedに変換
+        init_stacks[i][j]--; // 0-indexedに変換
       }
     }
   }
@@ -173,41 +173,41 @@ void Input(int problemNum)
   // 各箱の位置情報を設定
   rep(i, m) {
     rep(j, n / m) {
-      init_positions[init_stacks[i][j]].x = i;  // 山の番号
-      init_positions[init_stacks[i][j]].y = j;  // 高さ
+      init_positions[init_stacks[i][j]].x = i; // 山の番号
+      init_positions[init_stacks[i][j]].y = j; // 高さ
     }
   }
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs)
+void open_ofs(int problem_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
     ofs.open(oss.str());
   }
 }
 
 // スコアを計算する関数
-int CalcScore(const vector<P>& ans)
+int calc_score(const vector<P>& ans)
 {
-  vector<int> tmp_stacks[m];          // 一時的な山の状態
-  vector<Point> tmp_positions = init_positions;  // 一時的な箱の位置情報
+  vector<int> tmp_stacks[m];                     // 一時的な山の状態
+  vector<Point> tmp_positions = init_positions; // 一時的な箱の位置情報
 
-  int cnt = 0;  // 運び出した箱の数
+  int cnt = 0; // 運び出した箱の数
   rep(i, m)
   {
-    tmp_stacks[i] = init_stacks[i];  // 初期状態をコピー
+    tmp_stacks[i] = init_stacks[i]; // 初期状態をコピー
   }
 
-  int res = 10000;  // 初期スコア
+  int res = 10000; // 初期スコア
   rep(i, ans.size())
   {
-    int num = ans[i].first;       // 操作する箱の番号
-    int x = tmp_positions[num].x; // 箱の現在の山の番号
-    int y = tmp_positions[num].y; // 箱の現在の高さ
-    int nx = ans[i].second;       // 移動先の山の番号
+    int num = ans[i].first;         // 操作する箱の番号
+    int x = tmp_positions[num].x;   // 箱の現在の山の番号
+    int y = tmp_positions[num].y;   // 箱の現在の高さ
+    int nx = ans[i].second;         // 移動先の山の番号
     if (nx == -1) {
       // 操作2：箱を運び出す
       tmp_stacks[x].pop_back();
@@ -221,19 +221,19 @@ int CalcScore(const vector<P>& ans)
       rep(j, tmp_stacks[x].size() - y)
       {
         int num2 = tmp_stacks[x][y + j];
-        tmp_positions[num2].x = nx;                 // 箱の新しい山の番号を設定
-        tmp_positions[num2].y = tmp_stacks[nx].size(); // 新しい高さを設定
-        tmp_stacks[nx].push_back(num2);             // 移動先の山に箱を追加
+        tmp_positions[num2].x = nx;                     // 箱の新しい山の番号を設定
+        tmp_positions[num2].y = tmp_stacks[nx].size();  // 新しい高さを設定
+        tmp_stacks[nx].push_back(num2);                 // 移動先の山に箱を追加
       }
-      tmp_stacks[x].resize(y);  // 元の山から移動した分を削除
+      tmp_stacks[x].resize(y); // 元の山から移動した分を削除
     }
   }
-  if (cnt != n) return -1;  // 全ての箱を運び出せなかった場合
+  if (cnt != n) return -1; // 全ての箱を運び出せなかった場合
   return res;
 }
 
 // 解答を出力する関数
-void Output(ofstream& ofs, const vector<P>& ans)
+void output(ofstream& ofs, const vector<P>& ans)
 {
   if (mode == 0) {
     // 標準出力に出力
@@ -246,187 +246,191 @@ void Output(ofstream& ofs, const vector<P>& ans)
 }
 
 // 1ターンでの操作を実行する関数
-void ExecuteTurn(Problem& problem, int current_box, int from_stack, const vector<int>& move_targets) {
-  int current_y = problem.positions[current_box].y;  // 現在のターンで運び出す箱の高さ
+void execute_turn(Problem& problem, int current_box, int from_stack, const vector<int>& move_targets)
+{
+  int current_y = problem.positions[current_box].y; // 現在のターンで運び出す箱の高さ
 
   // 運び出す箱の上にある箱を移動
   for (int k = problem.stacks[from_stack].size() - 1; k > current_y;) {
-    int to_stack = move_targets[k];  // 移動先の山
-    while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--;  // 同じ移動先の箱をまとめる
+    int to_stack = move_targets[k];                            // 移動先の山
+    while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--; // 同じ移動先の箱をまとめる
 
     // 箱を移動
     srep(l, k, problem.stacks[from_stack].size()) {
       int num = problem.stacks[from_stack][l];
-      problem.positions[num].x = to_stack;                   // 新しい山の番号
+      problem.positions[num].x = to_stack;                    // 新しい山の番号
       problem.positions[num].y = problem.stacks[to_stack].size(); // 新しい高さ
-      problem.stacks[to_stack].push_back(num);               // 移動先の山に追加
+      problem.stacks[to_stack].push_back(num);                // 移動先の山に追加
     }
 
     // 操作を記録
     problem.ans.emplace_back(problem.stacks[from_stack][k], to_stack);
-    problem.stacks[from_stack].resize(k);  // 元の山から削除
+    problem.stacks[from_stack].resize(k); // 元の山から削除
 
     k--;
   }
 
   // 現在のターンの箱を運び出す
   problem.stacks[from_stack].pop_back();
-  problem.ans.emplace_back(current_box, -1);  // 操作を記録
+  problem.ans.emplace_back(current_box, -1); // 操作を記録
 }
 
 // 箱の移動先を決定する関数
-void DecideMoveDestination(const Problem& problem, vector<int>& move_targets, const vector<P>& min_box_per_stack, int from_stack, int position) {
-  int bb = problem.stacks[from_stack][position];  // 移動する箱の番号
+void decide_move_destination(const Problem& problem, vector<int>& move_targets, const vector<P>& min_box_per_stack, int from_stack, int position)
+{
+  int box_num = problem.stacks[from_stack][position]; // 移動する箱の番号
   int id = 1;
-  while (id + 1 < m && min_box_per_stack[id].first < bb) id++;
-  move_targets[position] = min_box_per_stack[id].second;  // 移動先の山の番号を設定
+  while (id + 1 < m && min_box_per_stack[id].first < box_num) id++;
+  move_targets[position] = min_box_per_stack[id].second; // 移動先の山の番号を設定
 }
 
 // 残りの操作をシミュレーションする関数（プレイアウト）
-int SimulateRemainingMoves(Problem problem, int current_box, int position, vector<int> move_targets, vector<P> min_box_per_stack, int from_stack) {
+int simulate_remaining_moves(Problem problem, int current_box, int position, vector<int> move_targets, vector<P> min_box_per_stack, int from_stack)
+{
   int current_y = problem.positions[current_box].y;
   // 移動先を決定
   srep(i, position + 1, problem.stacks[from_stack].size()) {
-    DecideMoveDestination(problem, move_targets, min_box_per_stack, from_stack, i);
+    decide_move_destination(problem, move_targets, min_box_per_stack, from_stack, i);
   }
   // 1ターン分の操作を実行
-  ExecuteTurn(problem, current_box, from_stack, move_targets);
+  execute_turn(problem, current_box, from_stack, move_targets);
 
   // 残りのターンを順次実行
   srep(turn, current_box + 1, n) {
     vector<P> min_boxes_in_stacks(m);
     rep(i, m) {
-      int minI = INT_INF;
+      int min_i = INT_INF;
       rep(j, problem.stacks[i].size()) {
-        minI = min(minI, problem.stacks[i][j]);  // 各山の最小の箱の番号を取得
+        min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
-      min_boxes_in_stacks[i] = P(minI, i);
+      min_boxes_in_stacks[i] = P(min_i, i);
     }
 
-    sort(min_boxes_in_stacks.begin(), min_boxes_in_stacks.end());  // 最小の箱の番号でソート
+    sort(min_boxes_in_stacks.begin(), min_boxes_in_stacks.end()); // 最小の箱の番号でソート
 
-    int next_from_stack = min_boxes_in_stacks[0].second;  // 次に操作する山
+    int next_from_stack = min_boxes_in_stacks[0].second; // 次に操作する山
     int next_y = problem.positions[turn].y;
 
     vector<int> next_move_targets(problem.stacks[next_from_stack].size(), -1);
     // 箱の移動先を決定
     srep(k, next_y + 1, problem.stacks[next_from_stack].size()) {
-      DecideMoveDestination(problem, next_move_targets, min_boxes_in_stacks, next_from_stack, k);
+      decide_move_destination(problem, next_move_targets, min_boxes_in_stacks, next_from_stack, k);
     }
 
     // 1ターン分の操作を実行
-    ExecuteTurn(problem, turn, next_from_stack, next_move_targets);
+    execute_turn(problem, turn, next_from_stack, next_move_targets);
   }
 
-  return CalcScore(problem.ans);  // スコアを計算して返す
+  return calc_score(problem.ans); // スコアを計算して返す
 }
 
 // Greedyな解法を実装した関数
-Problem GreedySolution() {
+Problem greedy_solution()
+{
   Problem problem;
-  rep(i, m) problem.stacks[i] = init_stacks[i];  // 初期状態をコピー
+  rep(i, m) problem.stacks[i] = init_stacks[i]; // 初期状態をコピー
   problem.positions = init_positions;
 
-  rep(current_box, n) {  // 各ターン（各箱）について
+  rep(current_box, n) { // 各ターン（各箱）について
     vector<P> min_box_per_stack(m);
     rep(i, m) {
-      int minI = INT_INF;
+      int min_i = INT_INF;
       rep(j, problem.stacks[i].size()) {
-        minI = min(minI, problem.stacks[i][j]);  // 各山の最小の箱の番号を取得
+        min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
-      min_box_per_stack[i] = P(minI, i);
+      min_box_per_stack[i] = P(min_i, i);
     }
 
-    sort(min_box_per_stack.begin(), min_box_per_stack.end());  // 最小の箱の番号でソート
+    sort(min_box_per_stack.begin(), min_box_per_stack.end()); // 最小の箱の番号でソート
 
-    int from_stack = min_box_per_stack[0].second;  // 現在のターンで操作する山
+    int from_stack = min_box_per_stack[0].second; // 現在のターンで操作する山
     int current_y = problem.positions[current_box].y;
 
     vector<int> move_targets(problem.stacks[from_stack].size(), -1);
 
     // 各箱について最適な移動先を探索
     srep(position, current_y + 1, problem.stacks[from_stack].size()) {
-      int maxScore = -1;
-      int maxId = -1;
+      int max_score = -1;
+      int max_id = -1;
 
       // 各可能な移動先についてプレイアウト
       srep(l, 1, m) {
         move_targets[position] = min_box_per_stack[l].second;
-        int tmpScore = SimulateRemainingMoves(problem, current_box, position, move_targets, min_box_per_stack, from_stack);
-        if (tmpScore > maxScore) {
-          maxScore = tmpScore;
-          maxId = min_box_per_stack[l].second;
+        int tmp_score = simulate_remaining_moves(problem, current_box, position, move_targets, min_box_per_stack, from_stack);
+        if (tmp_score > max_score) {
+          max_score = tmp_score;
+          max_id = min_box_per_stack[l].second;
         }
       }
 
-      move_targets[position] = maxId;  // 最良の移動先を設定
+      move_targets[position] = max_id; // 最良の移動先を設定
     }
 
     // 現在のスコアを計算
-    int score = SimulateRemainingMoves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
+    int score = simulate_remaining_moves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
 
     // ランダムに移動先を変更して探索（焼きなまし的な手法）
-    if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && GetNowTime() < TL) {
+    if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && get_now_time() < TL) {
       rep(iteration, 500) {
-        int randomPosition = randxor() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
-        int keep = move_targets[randomPosition];
+        int random_position = rand_xor() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
+        int keep = move_targets[random_position];
 
-        if (randxor() % 2 == 0) {
+        if (rand_xor() % 2 == 0) {
           // ランダムに移動先を変更
-          int randomIdx = randxor() % (m - 1) + 1;
-          move_targets[randomPosition] = min_box_per_stack[randomIdx].second;
+          int random_idx = rand_xor() % (m - 1) + 1;
+          move_targets[random_position] = min_box_per_stack[random_idx].second;
         }
         else {
           // 上下の箱の移動先に合わせる
-          int randomDir = -1;
-          if (randomPosition == current_y + 1) {
-            randomDir = 1;
+          int random_dir = -1;
+          if (random_position == current_y + 1) {
+            random_dir = 1;
           }
-          else if (randomPosition != current_y + 1 && randomPosition != problem.stacks[from_stack].size() - 1) {
-            if (randxor() % 2 == 0) {
-              randomDir = 1;
+          else if (random_position != current_y + 1 && random_position != problem.stacks[from_stack].size() - 1) {
+            if (rand_xor() % 2 == 0) {
+              random_dir = 1;
             }
           }
-          move_targets[randomPosition] = move_targets[randomPosition + randomDir];
+          move_targets[random_position] = move_targets[random_position + random_dir];
         }
 
-        int tmpScore = SimulateRemainingMoves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
-        if (tmpScore >= score) {
-          score = tmpScore;
+        int tmp_score = simulate_remaining_moves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
+        if (tmp_score >= score) {
+          score = tmp_score;
         }
         else {
-          move_targets[randomPosition] = keep;  // 改善しなければ元に戻す
+          move_targets[random_position] = keep; // 改善しなければ元に戻す
         }
       }
     }
 
     // 決定した移動先で操作を実行
-    ExecuteTurn(problem, current_box, from_stack, move_targets);
+    execute_turn(problem, current_box, from_stack, move_targets);
   }
 
   return problem;
 }
 
 // 問題を解く関数
-ll Solve(int probNum)
+ll solve(int problem_num)
 {
-  ResetTime();  // 時間計測をリセット
+  reset_time(); // 時間計測をリセット
 
   // 内部状態を初期化
-  SetUp();
+  set_up();
 
   // 入力を受け取る
-  Input(probNum);
+  input(problem_num);
 
   // 出力ファイルストリームを開く
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  open_ofs(problem_num, ofs);
 
   // 初期解を生成
-  auto problem = GreedySolution();
+  auto problem = greedy_solution();
 
   // 解答を出力
-  Output(ofs, problem.ans);
+  output(ofs, problem.ans);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -434,34 +438,32 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore(problem.ans);  // スコアを計算
+    score = calc_score(problem.ans); // スコアを計算
   }
   return score;
 }
 
 ////////////////////////////////////////////////////////////////////
-/*
-メモ
-
-*/
+// メモ
 ////////////////////////////////////////////////////////////////////
+
 int main()
 {
-  srand((unsigned)time(NULL));  // 乱数の種を設定
+  srand((unsigned)time(NULL)); // 乱数の種を設定
   while (rand() % 100) {
-    randxor();  // 乱数を進めておく
+    rand_xor(); // 乱数を進めておく
   }
 
-  mode = 2;  // 実行モードの設定
+  mode = 2; // 実行モードの設定
 
   if (mode == 0) {
-    Solve(0);  // 単一のケースを解く
+    solve(0); // 単一のケースを解く
   }
   else {
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(i);  // 複数のケースを解く
+      ll score = solve(i); // 複数のケースを解く
       sum += score;
       if (mode == 1) {
         cout << score << endl;
