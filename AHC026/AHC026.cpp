@@ -255,54 +255,48 @@ int GetNum(int x) {
 
 // kotatsugame‚³‚ñ‚ÌæÃ—~
 void Method2() {
-  rep(v, n) {
-    P mini[m];
+  rep(turn, n) {
+    P minIs[m];
     rep(i, m) {
-      int mn = INT_INF;
+      int minI = INT_INF;
       rep(j, b[i].size()) {
-        mn = min(mn, b[i][j]);
+        minI = min(minI, b[i][j]);
       }
-      mini[i] = P(mn, i);
+      minIs[i] = P(minI, i);
     }
 
-    sort(mini, mini + m);
+    sort(minIs, minIs + m);
 
-    int minI = mini[0].second;
-    vector<int> cummini;
-    {
-      int t = INT_INF;
-      drep(j, b[minI].size()) {
-        if (t > b[minI][j]) {
-          t = b[minI][j];
-          cummini.push_back(j);
-        }
-      }
-    }
+    int from = minIs[0].second;
+    int turnY = c[turn].y;
 
-    vector<int> idx(b[minI].size(), -1);
-    srep(k, cummini.back() + 1, b[minI].size()) {
-      int bb = b[minI][k];
+    vector<int> idx(b[from].size(), -1);
+    srep(k, turnY + 1, b[from].size()) {
+      int bb = b[from][k];
       int id = 1;
-      while (id + 1 < m && mini[id].first < bb)id++;
-      idx[k] = mini[id].second;
+      while (id + 1 < m && minIs[id].first < bb)id++;
+      idx[k] = minIs[id].second;
     }
-    for (int k = b[minI].size() - 1; k > cummini.back();) {
-      int to = idx[k];
-      int l = k - 1;
-      while (idx[l] == to)l--;
 
-      srep(r, l + 1, b[minI].size()) {
-        b[to].push_back(b[minI][r]);
+    for (int k = b[from].size() - 1; k > turnY;) {
+      int to = idx[k];
+      while (idx[k - 1] == to)k--;
+
+      srep(l, k, b[from].size()) {
+        int num = b[from][l];
+        c[num].x = to;
+        c[num].y = b[to].size();
+        b[to].push_back(num);
       }
 
-      ans.emplace_back(b[minI][l + 1], to);
-      b[minI].resize(l + 1);
+      ans.emplace_back(b[from][k], to);
+      b[from].resize(k);
 
-      k = l;
+      k--;
     }
 
-    b[minI].pop_back();
-    ans.emplace_back(v, -1);
+    b[from].pop_back();
+    ans.emplace_back(turn, -1);
   }
 }
 
@@ -332,7 +326,7 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    //score = CalcScore();
+    score = CalcScore();
   }
   return score;
 }
