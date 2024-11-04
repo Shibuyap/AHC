@@ -273,9 +273,6 @@ void DecideIdx(const Problem& prob, vector<int>& idx, const vector<P>& minIs, in
 
 int PlayOut(Problem prob, int _turn, int _k, vector<int> _idx, vector<P> _minIs, int _from) {
   int turnY = prob.c[_turn].y;
-  //dsrep(k, turnY + 1, _k) {
-  //  DecideIdx(prob, _idx, _minIs, _from, k);
-  //}
   srep(k, _k + 1, prob.b[_from].size()) {
     DecideIdx(prob, _idx, _minIs, _from, k);
   }
@@ -352,37 +349,33 @@ Problem Method2() {
     }
 
     int score = PlayOut(prob, turn, prob.b[from].size() - 1, idx, minIs, from);
-    //int score = PlayOut(prob, turn, turnY + 1, idx, minIs, from);
 
-    // ƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚Ä‚Ý‚é
-    if (prob.b[from].size() - (turnY + 1) > 0) {
-      rep(aespa, 50) {
+
+    if (prob.b[from].size() - (turnY + 1) >= 2 && GetNowTime() < TL) {
+      rep(aespa, 500) {
         int randomK = randxor() % (prob.b[from].size() - (turnY + 1)) + turnY + 1;
-        int randomIdx = randxor() % (m - 1) + 1;
         int keep = idx[randomK];
-        idx[randomK] = minIs[randomIdx].second;
 
-        int tmpScore = PlayOut(prob, turn, prob.b[from].size() - 1, idx, minIs, from);
-        //int tmpScore = PlayOut(prob, turn, turnY + 1, idx, minIs, from);
-        if (tmpScore >= score) {
-          score = tmpScore;
+        if (randxor() % 2 == 0) {
+          // ƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚Ä‚Ý‚é
+          int randomIdx = randxor() % (m - 1) + 1;
+          idx[randomK] = minIs[randomIdx].second;
         }
         else {
-          idx[randomK] = keep;
+          // ã‰º‚É‡‚í‚¹‚Ä‚Ý‚é
+          int randomDir = -1;
+          if (randomK == turnY + 1) {
+            randomDir = 1;
+          }
+          else if (randomK != turnY + 1 && randomK != prob.b[from].size() - 1) {
+            if (randxor() % 2 == 0) {
+              randomDir = 1;
+            }
+          }
+          idx[randomK] = idx[randomK + randomDir];
         }
-      }
-    }
-
-    // ‚É•Ï‚¦‚Ä‚Ý‚é
-    if (prob.b[from].size() - (turnY + 1) > 0) {
-      rep(aespa, 50) {
-        int randomK = randxor() % (prob.b[from].size() - (turnY + 1)) + turnY + 1;
-        int randomIdx = randxor() % (m - 1) + 1;
-        int keep = idx[randomK];
-        idx[randomK] = minIs[randomIdx].second;
 
         int tmpScore = PlayOut(prob, turn, prob.b[from].size() - 1, idx, minIs, from);
-        //int tmpScore = PlayOut(prob, turn, turnY + 1, idx, minIs, from);
         if (tmpScore >= score) {
           score = tmpScore;
         }
