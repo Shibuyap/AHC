@@ -94,38 +94,41 @@ double GetNowTime()
   return elapsed.count();
 }
 
+struct Point {
+  int x;
+  int y;
+};
 
 const int MAX_N = 30;
 
 const int n = 200;
 const int m = 10;
-int b[m][n];
-int bCount[m];
-int c[n][2];
-int init_b[m][n];
-int init_c[n][2];
-int init_bCount[m];
+vector<int> b[m];
+vector<Point> c;
 
-int ansScore;
-int ans[5100][2];
-int ansSize;
+vector<int> init_b[m];
+vector<Point> init_c;
 
-int best_ansScore;
+vector<P> ans;
 
 void CopyToBest()
 {
-  best_ansScore = ansScore;
 }
 
 void CopyToAns()
 {
-  ansScore = best_ansScore;
 }
 
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  ansScore = 0;
+  ans.clear();
+  rep(i, m) {
+    b[i].clear();
+    init_b[i].clear();
+  }
+  c.clear();
+  init_c.clear();
 }
 
 // 入力受け取り
@@ -134,6 +137,11 @@ void Input(int problemNum)
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());
+
+  rep(i, m) {
+    b[i].resize(n / m);
+  }
+  c.resize(n);
 
   // 標準入力する
   if (!ifs.is_open()) {
@@ -145,8 +153,6 @@ void Input(int problemNum)
       {
         cin >> b[i][j];
         b[i][j]--;
-        c[b[i][j]][0] = i;
-        c[b[i][j]][1] = j;
       }
     }
   }
@@ -160,25 +166,21 @@ void Input(int problemNum)
       {
         ifs >> b[i][j];
         b[i][j]--;
-        c[b[i][j]][0] = i;
-        c[b[i][j]][1] = j;
       }
     }
   }
 
   rep(i, m)
   {
-    rep(j, n / m) { init_b[i][j] = b[i][j]; }
+    init_b[i] = b[i];
   }
-  rep(i, n)
-  {
-    rep(j, 2) { init_c[i][j] = c[i][j]; }
+  rep(i, m) {
+    rep(j, n / m) {
+      c[b[i][j]].x = i;
+      c[b[i][j]].y = j;
+    }
   }
-  rep(i, m)
-  {
-    bCount[i] = n / m;
-    init_bCount[i] = bCount[i];
-  }
+  init_c = c;
 }
 
 // 出力ファイルストリームオープン
@@ -194,50 +196,37 @@ void OpenOfs(int probNum, ofstream& ofs)
 // スコア計算
 int CalcScore()
 {
-  int tmp_b[m][n];
-  int tmp_c[n][2];
-  int tmp_bCount[m];
+  vector<int> tmp_b[m];
+  vector<Point> tmp_c = init_c;
 
   int cnt = 0;
   rep(i, m)
   {
-    rep(j, n / m) {
-      tmp_b[i][j] = init_b[i][j];
-    }
-  }
-  rep(i, n)
-  {
-    rep(j, 2) {
-      tmp_c[i][j] = init_c[i][j];
-    }
-  }
-  rep(i, m) {
-    tmp_bCount[i] = init_bCount[i];
+    tmp_b[i] = init_b[i];
   }
 
   int res = 10000;
-  rep(i, ansSize)
+  rep(i, ans.size())
   {
-    int num = ans[i][0];
-    int x = tmp_c[num][0];
-    int y = tmp_c[num][1];
-    int nx = ans[i][1];
+    int num = ans[i].first;
+    int x = tmp_c[num].x;
+    int y = tmp_c[num].y;
+    int nx = ans[i].second;
     if (nx == -1) {
-      tmp_bCount[x]--;
+      tmp_b[x].pop_back();
       cnt++;
     }
     else {
       res--;
-      rep(j, tmp_bCount[x] - y)
+      rep(j, tmp_b[x].size() - y)
       {
         int num2 = tmp_b[x][y + j];
-        tmp_c[num2][0] = nx;
-        tmp_c[num2][1] = tmp_bCount[nx];
-        tmp_b[nx][tmp_bCount[nx]] = num2;
-        tmp_bCount[nx]++;
+        tmp_c[num2].x = nx;
+        tmp_c[num2].y = tmp_b[nx].size();
+        tmp_b[nx].push_back(num2);
         res--;
       }
-      tmp_bCount[x] = y;
+      tmp_b[x].resize(y);
     }
   }
   if (cnt != n) return -1;
@@ -249,154 +238,71 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
-    rep(i, ansSize) { cout << ans[i][0] + 1 << ' ' << ans[i][1] + 1 << endl; }
+    rep(i, ans.size()) { cout << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
   }
   else {
     // ファイル出力
-    rep(i, ansSize) { ofs << ans[i][0] + 1 << ' ' << ans[i][1] + 1 << endl; }
+    rep(i, ans.size()) { ofs << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
   }
 }
 
 int GetNum(int x) {
-  if (bCount[x] == 0) {
+  if (b[x].empty()) {
     return -1;
   }
-  return b[x][bCount[x] - 1];
+  return b[x].back();
 }
 
-void CarryOut(int& carryOutCount) {
-  int x = c[carryOutCount][0];
-  bCount[x]--;
+// kotatsugameさんの貪欲
+void Method2() {
+  rep(v, n) {
+    P mini[m];
+    rep(i, m) {
+      int mn = INT_INF;
+      rep(j, b[i].size()) {
+        mn = min(mn, b[i][j]);
+      }
+      mini[i] = P(mn, i);
+    }
 
-  ans[ansSize][0] = carryOutCount;
-  ans[ansSize][1] = -1;
-  ansSize++;
-  carryOutCount++;
-}
+    sort(mini, mini + m);
 
-void Move(int x, int nx, int y)
-{
-  int num = b[x][y];
-  ans[ansSize][0] = num;
-  ans[ansSize][1] = nx;
-  ansSize++;
-
-  rep(j, bCount[x] - y)
-  {
-    int num2 = b[x][y + j];
-    b[nx][bCount[nx]] = b[x][y + j];
-    c[num2][0] = nx;
-    c[num2][1] = bCount[nx];
-    bCount[nx]++;
-  }
-  bCount[x] = y;
-}
-
-// 1列ずつソートしていく
-void Method1()
-{
-  ansSize = 0;
-  int carryOutCount = 0;
-
-  while (carryOutCount < n) {
-    rep(i, m)
+    int minI = mini[0].second;
+    vector<int> cummini;
     {
-      // 一旦すべて取り出す
-      while (bCount[i] > 0) {
-        int num = GetNum(i);
-
-        if (num == carryOutCount) {
-          CarryOut(carryOutCount);
-          continue;
+      int t = INT_INF;
+      drep(j, b[minI].size()) {
+        if (t > b[minI][j]) {
+          t = b[minI][j];
+          cummini.push_back(j);
         }
-
-        int idx = -1;
-        int idxNum = -1;
-        rep(j, m) {
-          if (j == i)continue;
-
-          int jNum = GetNum(j);
-
-          if (idx == -1) {
-            idx = j;
-            idxNum = jNum;
-          }
-          else {
-            if (idxNum == -1) {
-              if (jNum > num) {
-                idx = j;
-                idxNum = jNum;
-              }
-            }
-            else if (idxNum < num) {
-              if (jNum == -1 || jNum > num) {
-                idx = j;
-                idxNum = jNum;
-              }
-              else if (jNum > idxNum) {
-                idx = j;
-                idxNum = jNum;
-              }
-            }
-            else {
-              if (jNum > num && jNum < idxNum) {
-                idx = j;
-                idxNum = jNum;
-              }
-            }
-          }
-        }
-
-        Move(i, idx, bCount[i] - 1);
-      }
-
-      // 戻す
-      int now = 999;
-      while (true) {
-        int ma = -1;
-        int idx = -1;
-        rep(j, m) {
-          if (j == i)continue;
-          if (bCount[j] == 0)continue;
-
-          int jNum = GetNum(j);
-          if (jNum < now && ma < jNum) {
-            ma = jNum;
-            idx = j;
-          }
-        }
-
-        if (idx == -1)break;
-
-        int y = bCount[idx] - 1;
-        while (y > 0) {
-          int num = b[idx][y];
-          int nextNum = b[idx][y - 1];
-          if (num < nextNum && nextNum < now) {
-            y--;
-          }
-          else {
-            break;
-          }
-        }
-
-        Move(idx, i, y);
-        now = GetNum(i);
-      }
-
-      // 運び出せる箱があるか確認
-      while (true) {
-        int ok = 0;
-        rep(j, m) {
-          if (GetNum(j) == carryOutCount) {
-            CarryOut(carryOutCount);
-            ok = 1;
-            break;
-          }
-        }
-        if (ok == 0)break;
       }
     }
+
+    vector<int> idx(b[minI].size(), -1);
+    srep(k, cummini.back() + 1, b[minI].size()) {
+      int bb = b[minI][k];
+      int id = 1;
+      while (id + 1 < m && mini[id].first < bb)id++;
+      idx[k] = mini[id].second;
+    }
+    for (int k = b[minI].size() - 1; k > cummini.back();) {
+      int to = idx[k];
+      int l = k - 1;
+      while (idx[l] == to)l--;
+
+      srep(r, l + 1, b[minI].size()) {
+        b[to].push_back(b[minI][r]);
+      }
+
+      ans.emplace_back(b[minI][l + 1], to);
+      b[minI].resize(l + 1);
+
+      k = l;
+    }
+
+    b[minI].pop_back();
+    ans.emplace_back(v, -1);
   }
 }
 
@@ -415,7 +321,7 @@ ll Solve(int probNum)
   OpenOfs(probNum, ofs);
 
   // 初期解生成
-  Method1();
+  Method2();
 
   // 解答を出力
   Output(ofs);
@@ -426,7 +332,7 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    //score = CalcScore();
   }
   return score;
 }
