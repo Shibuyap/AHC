@@ -53,7 +53,16 @@ static uint32_t randxor()
 }
 
 // 0以上1未満の小数をとる乱数
-static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+static double rand01()
+{
+  return (randxor() + 0.5) * (1.0 / UINT_MAX);
+}
+
+// l以上r未満の実数をとる乱数
+static double randUniform(double l, double r)
+{
+  return l + (r - l) * rand01();
+}
 
 // 配列シャッフル
 void FisherYates(int* data, int n)

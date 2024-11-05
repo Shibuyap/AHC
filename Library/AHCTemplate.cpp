@@ -27,17 +27,22 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+// ループの簡略化マクロ
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
+#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
+
 using namespace std;
+
+// 型定義のエイリアス
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// 乱数
-static uint32_t randxor()
+// 乱数生成（XorShift法による擬似乱数生成器）
+static uint32_t rand_xor()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -52,45 +57,54 @@ static uint32_t randxor()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0以上1未満の小数をとる乱数
-static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+// 0以上1未満の実数を返す乱数関数
+static double rand_01() { return (rand_xor() + 0.5) * (1.0 / UINT_MAX); }
 
-// 配列シャッフル
-void FisherYates(int* data, int n)
+// l以上r未満の実数をとる乱数
+static double rand_uniform(double l, double r)
+{
+  return l + (r - l) * rand_01();
+}
+
+// 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
+void fisher_yates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = randxor() % (i + 1);
+    int j = rand_xor() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// 配列シャッフル
+// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-
+// 非常に大きな値
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
+// 移動方向の配列
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8;
-int mode;
-std::chrono::steady_clock::time_point startTime, endTime;
+double TL = 1.8; // 時間制限（Time Limit）
+int mode;        // 実行モード
+std::chrono::steady_clock::time_point start_time, end_time; // 時間計測用
 
-void ResetTime()
+// 時間計測をリセットする関数
+void reset_time()
 {
-  startTime = std::chrono::steady_clock::now();
+  start_time = std::chrono::steady_clock::now();
 }
 
-double GetNowTime()
+// 現在の経過時間を取得する関数
+double get_now_time()
 {
-  auto endTime = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTime - startTime;
+  auto end_time = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = end_time - start_time;
   return elapsed.count();
 }
 
@@ -113,13 +127,13 @@ void CopyToAns()
   ansScore = best_ansScore;
 }
 
-// 複数ケース回すときに内部状態を初期値に戻す
+// 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
   ansScore = 0;
 }
 
-// 入力受け取り
+// 入力を受け取る関数
 void Input(int problemNum)
 {
   std::ostringstream oss;
@@ -134,7 +148,7 @@ void Input(int problemNum)
   }
 }
 
-// 出力ファイルストリームオープン
+// 出力ファイルストリームを開く関数
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -144,14 +158,14 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// スコア計算
+// スコアを計算する関数
 ll CalcScore()
 {
   ll res = 0;
   return res;
 }
 
-// 解答出力
+// 解答を出力する関数
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
@@ -168,19 +182,20 @@ void Method1()
 
 }
 
-ll Solve(int probNum)
+// 問題を解く関数
+ll Solve(int problem_num)
 {
-  ResetTime();
+  reset_time();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(problem_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(problem_num, ofs);
 
   // 初期解生成
   Method1();
@@ -209,7 +224,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    rand_xor();
   }
 
   mode = 2;
