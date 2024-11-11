@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t rand_xor()
+static uint32_t RandXor()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,13 +58,13 @@ static uint32_t rand_xor()
 }
 
 // 0以上1未満の小数を返す乱数関数
-static double rand_01() { return (rand_xor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
 
 // 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
-void fisher_yates(int* data, int n)
+void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = rand_xor() % (i + 1);
+    int j = RandXor() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -85,24 +85,25 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8; // 時間制限（Time Limit）
 int mode;        // 実行モード
-std::chrono::steady_clock::time_point start_time, end_time; // 時間計測用
+std::chrono::steady_clock::time_point startTimeClock, endTimeClock; // 時間計測用
 
 // 時間計測をリセットする関数
-void reset_time()
+void ResetTime()
 {
-  start_time = std::chrono::steady_clock::now();
+  startTimeClock = std::chrono::steady_clock::now();
 }
 
 // 現在の経過時間を取得する関数
-double get_now_time()
+double GetNowTime()
 {
-  auto end_time = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = end_time - start_time;
+  auto endTimeClock = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
   return elapsed.count();
 }
 
 // 箱の位置を表す構造体
-struct Point {
+struct Point
+{
   int x; // 山の番号
   int y; // 山の中での高さ（下からの位置）
 };
@@ -116,7 +117,8 @@ vector<int> init_stacks[m];   // 初期状態の各山に積まれた箱の番号リスト
 vector<Point> init_positions; // 初期状態の各箱の位置情報
 
 // 問題の状態を表す構造体
-struct Problem {
+struct Problem
+{
   vector<int> stacks[m];    // 現在の各山の状態
   vector<Point> positions;  // 現在の各箱の位置
   vector<P> ans;            // 操作列の記録（解答）
@@ -125,7 +127,8 @@ struct Problem {
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void set_up()
 {
-  rep(i, m) {
+  rep(i, m)
+  {
     init_stacks[i].clear();
   }
   init_positions.clear();
@@ -138,7 +141,8 @@ void input(int problem_num)
   oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
   ifstream ifs(oss.str());
 
-  rep(i, m) {
+  rep(i, m)
+  {
     init_stacks[i].resize(n / m); // 各山のサイズを設定
   }
   init_positions.resize(n); // 箱の位置情報のサイズを設定
@@ -171,8 +175,10 @@ void input(int problem_num)
   }
 
   // 各箱の位置情報を設定
-  rep(i, m) {
-    rep(j, n / m) {
+  rep(i, m)
+  {
+    rep(j, n / m)
+    {
       init_positions[init_stacks[i][j]].x = i; // 山の番号
       init_positions[init_stacks[i][j]].y = j; // 高さ
     }
@@ -256,7 +262,8 @@ void execute_turn(Problem& problem, int current_box, int from_stack, const vecto
     while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--; // 同じ移動先の箱をまとめる
 
     // 箱を移動
-    srep(l, k, problem.stacks[from_stack].size()) {
+    srep(l, k, problem.stacks[from_stack].size())
+    {
       int num = problem.stacks[from_stack][l];
       problem.positions[num].x = to_stack;                    // 新しい山の番号
       problem.positions[num].y = problem.stacks[to_stack].size(); // 新しい高さ
@@ -289,18 +296,22 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 {
   int current_y = problem.positions[current_box].y;
   // 移動先を決定
-  srep(i, position + 1, problem.stacks[from_stack].size()) {
+  srep(i, position + 1, problem.stacks[from_stack].size())
+  {
     decide_move_destination(problem, move_targets, min_box_per_stack, from_stack, i);
   }
   // 1ターン分の操作を実行
   execute_turn(problem, current_box, from_stack, move_targets);
 
   // 残りのターンを順次実行
-  srep(turn, current_box + 1, n) {
+  srep(turn, current_box + 1, n)
+  {
     vector<P> min_boxes_in_stacks(m);
-    rep(i, m) {
+    rep(i, m)
+    {
       int min_i = INT_INF;
-      rep(j, problem.stacks[i].size()) {
+      rep(j, problem.stacks[i].size())
+      {
         min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
       min_boxes_in_stacks[i] = P(min_i, i);
@@ -313,7 +324,8 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 
     vector<int> next_move_targets(problem.stacks[next_from_stack].size(), -1);
     // 箱の移動先を決定
-    srep(k, next_y + 1, problem.stacks[next_from_stack].size()) {
+    srep(k, next_y + 1, problem.stacks[next_from_stack].size())
+    {
       decide_move_destination(problem, next_move_targets, min_boxes_in_stacks, next_from_stack, k);
     }
 
@@ -331,11 +343,14 @@ Problem greedy_solution()
   rep(i, m) problem.stacks[i] = init_stacks[i]; // 初期状態をコピー
   problem.positions = init_positions;
 
-  rep(current_box, n) { // 各ターン（各箱）について
+  rep(current_box, n)
+  { // 各ターン（各箱）について
     vector<P> min_box_per_stack(m);
-    rep(i, m) {
+    rep(i, m)
+    {
       int min_i = INT_INF;
-      rep(j, problem.stacks[i].size()) {
+      rep(j, problem.stacks[i].size())
+      {
         min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
       min_box_per_stack[i] = P(min_i, i);
@@ -349,12 +364,14 @@ Problem greedy_solution()
     vector<int> move_targets(problem.stacks[from_stack].size(), -1);
 
     // 各箱について最適な移動先を探索
-    srep(position, current_y + 1, problem.stacks[from_stack].size()) {
+    srep(position, current_y + 1, problem.stacks[from_stack].size())
+    {
       int max_score = -1;
       int max_id = -1;
 
       // 各可能な移動先についてプレイアウト
-      srep(l, 1, m) {
+      srep(l, 1, m)
+      {
         move_targets[position] = min_box_per_stack[l].second;
         int tmp_score = simulate_remaining_moves(problem, current_box, position, move_targets, min_box_per_stack, from_stack);
         if (tmp_score > max_score) {
@@ -370,14 +387,15 @@ Problem greedy_solution()
     int score = simulate_remaining_moves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
 
     // ランダムに移動先を変更して探索（焼きなまし的な手法）
-    if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && get_now_time() < TL) {
-      rep(iteration, 500) {
-        int random_position = rand_xor() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
+    if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && GetNowTime() < TL) {
+      rep(iteration, 500)
+      {
+        int random_position = RandXor() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
         int keep = move_targets[random_position];
 
-        if (rand_xor() % 2 == 0) {
+        if (RandXor() % 2 == 0) {
           // ランダムに移動先を変更
-          int random_idx = rand_xor() % (m - 1) + 1;
+          int random_idx = RandXor() % (m - 1) + 1;
           move_targets[random_position] = min_box_per_stack[random_idx].second;
         }
         else {
@@ -387,7 +405,7 @@ Problem greedy_solution()
             random_dir = 1;
           }
           else if (random_position != current_y + 1 && random_position != problem.stacks[from_stack].size() - 1) {
-            if (rand_xor() % 2 == 0) {
+            if (RandXor() % 2 == 0) {
               random_dir = 1;
             }
           }
@@ -414,7 +432,7 @@ Problem greedy_solution()
 // 問題を解く関数
 ll solve(int problem_num)
 {
-  reset_time(); // 時間計測をリセット
+  ResetTime(); // 時間計測をリセット
 
   // 内部状態を初期化
   set_up();
@@ -451,7 +469,7 @@ int main()
 {
   srand((unsigned)time(NULL)); // 乱数の種を設定
   while (rand() % 100) {
-    rand_xor(); // 乱数を進めておく
+    RandXor(); // 乱数を進めておく
   }
 
   mode = 2; // 実行モードの設定

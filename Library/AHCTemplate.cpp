@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t rand_xor()
+static uint32_t RandXor()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,19 +58,19 @@ static uint32_t rand_xor()
 }
 
 // 0以上1未満の実数を返す乱数関数
-static double rand_01() { return (rand_xor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
 
 // l以上r未満の実数をとる乱数
-static double rand_uniform(double l, double r)
+static double RandUniform(double l, double r)
 {
-  return l + (r - l) * rand_01();
+  return l + (r - l) * Rand01();
 }
 
 // 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
-void fisher_yates(int* data, int n)
+void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = rand_xor() % (i + 1);
+    int j = RandXor() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -92,19 +92,19 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8; // 時間制限（Time Limit）
 int mode;        // 実行モード
-std::chrono::steady_clock::time_point start_time, end_time; // 時間計測用
+std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
 
 // 時間計測をリセットする関数
-void reset_time()
+void ResetTime()
 {
-  start_time = std::chrono::steady_clock::now();
+  startTimeClock = std::chrono::steady_clock::now();
 }
 
 // 現在の経過時間を取得する関数
-double get_now_time()
+double GetNowTime()
 {
-  auto end_time = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = end_time - start_time;
+  auto endTimeClock = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
   return elapsed.count();
 }
 
@@ -185,7 +185,7 @@ void Method1()
 // 問題を解く関数
 ll Solve(int problem_num)
 {
-  reset_time();
+  ResetTime();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -224,7 +224,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    rand_xor();
+    RandXor();
   }
 
   mode = 2;
@@ -245,6 +245,7 @@ int main()
         cout << "num = " << setw(2) << i << ", ";
         cout << "score = " << setw(4) << score << ", ";
         cout << "sum = " << setw(5) << sum << ", ";
+        cout << "time = " << setw(5) << GetNowTime() << ", ";
         cout << endl;
       }
     }
