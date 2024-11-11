@@ -625,10 +625,10 @@ void Method3() {
 
     int tmpScore = ansScore;
     if (f[rax][ray] == 0) {
-      tmpScore += block[rax][ray] - 1;
+      tmpScore += block[rax][ray];
     }
     else {
-      tmpScore += -block[rax][ray] + 1;
+      tmpScore += -block[rax][ray];
     }
 
     const double progressRatio = nowTime / TL;  // 進捗。開始時が0.0、終了時が1.0
@@ -752,7 +752,6 @@ void Method3() {
 
           }
         }
-
 
         if (x == -1) {
           int nx = sx;
@@ -881,7 +880,7 @@ int main()
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 35, 36)
     {
       ll score = Solve(i);
       sum += score;
