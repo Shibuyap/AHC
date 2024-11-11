@@ -29,27 +29,29 @@
 #include <vector>
 
 // ループの簡略化マクロ
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
+#define rep(i, n) for (int i = 0; i < (n); ++i)          // iを0からn未満まで増加させるループ
+#define srep(i, s, t) for (int i = s; i < t; ++i)        // iをsからt未満まで増加させるループ
+#define drep(i, n) for (int i = (n)-1; i >= 0; --i)      // iをn-1から0まで減少させるループ
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)  // iをt-1からsまで減少させるループ
 
 using namespace std;
 
 // 型定義のエイリアス
-typedef long long int ll;
-typedef pair<int, int> P;
-typedef pair<P, P> PP;
+typedef long long int ll;     // 長い型名を短くする
+typedef pair<int, int> P;     // 整数ペアの型定義
+typedef pair<P, P> PP;        // 整数ペアのペアの型定義
 
 // 乱数生成（XorShift法による擬似乱数生成器）
 static uint32_t RandXor()
 {
+  // 初期値の設定（シード値）
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
   static uint32_t w = 88675123;
   uint32_t t;
 
+  // XorShiftアルゴリズムによる乱数生成
   t = x ^ (x << 11);
   x = y;
   y = z;
@@ -77,65 +79,66 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
-std::random_device seed_gen;
-std::mt19937 engine(seed_gen());
+// ランダムデバイスとメルセンヌ・ツイスタの初期化（現在は未使用）
+// std::random_device seed_gen;
+// std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 非常に大きな値
+// 非常に大きな値の定義（オーバーフロー防止用）
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
+// 移動方向の配列（上下左右の移動を表す）
+const int dx[4] = { -1, 0, 1, 0 };  // x方向の変化
+const int dy[4] = { 0, -1, 0, 1 };  // y方向の変化
 
 double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
+int mode;        // 実行モード（0: 標準入出力、1: スコア表示、2: 詳細表示）
 std::chrono::steady_clock::time_point startTimeClock, endTimeClock; // 時間計測用
 
 // 時間計測をリセットする関数
 void ResetTime()
 {
-  startTimeClock = std::chrono::steady_clock::now();
+  startTimeClock = std::chrono::steady_clock::now();  // 現在の時間を記録
 }
 
 // 現在の経過時間を取得する関数
 double GetNowTime()
 {
-  auto endTimeClock = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
-  return elapsed.count();
+  auto endTimeClock = std::chrono::steady_clock::now();  // 現在の時間を取得
+  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;  // 経過時間を計算
+  return elapsed.count();  // 経過時間を秒単位で返す
 }
 
-// 二次元座標
+// 二次元座標を表す構造体
 struct Point
 {
 public:
   int x;
   int y;
 
-  Point() { x = 0; y = 0; }
-  Point(int _x, int _y) { x = _x; y = _y; }
+  Point() { x = 0; y = 0; }                  // デフォルトコンストラクタ
+  Point(int _x, int _y) { x = _x; y = _y; }  // 座標を指定するコンストラクタ
 };
 
-const int MAX_N = 30;
+const int MAX_N = 30;  // 未使用の定数（今後の拡張用？）
 
-const int n = 5000;
+const int n = 5000;    // 魚の数（サバとイワシそれぞれの数）
 
-vector<Point> saba, iwashi;
+vector<Point> saba, iwashi;  // サバとイワシの座標を格納するベクター
 
-vector<Point> ans;
+vector<Point> ans;  // 出力するポリゴンの頂点座標を格納するベクター
 
-int ansScore;
+int ansScore;       // 現在のスコア
+int best_ansScore;  // 最良のスコア（未使用？）
 
-int best_ansScore;
-
+// 現在の解答を最良の解答として保存する関数（未使用）
 void CopyToBest()
 {
   best_ansScore = ansScore;
 }
 
+// 最良の解答を現在の解答として設定する関数（未使用）
 void CopyToAns()
 {
   ansScore = best_ansScore;
@@ -144,35 +147,35 @@ void CopyToAns()
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
-  ansScore = 0;
-  ans.clear();
-  saba.clear();
-  iwashi.clear();
+  ansScore = 0;   // スコアの初期化
+  ans.clear();    // 解答の初期化
+  saba.clear();   // サバの座標の初期化
+  iwashi.clear(); // イワシの座標の初期化
 }
 
 // 入力を受け取る関数
 void Input(int problemNum)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
-  ifstream ifs(oss.str());
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";  // 入力ファイルのパスを作成
+  ifstream ifs(oss.str());  // ファイルストリームを開く
 
-  saba.resize(n);
-  iwashi.resize(n);
+  saba.resize(n);    // サバのベクターをリサイズ
+  iwashi.resize(n);  // イワシのベクターをリサイズ
 
   if (!ifs.is_open()) {
-    // 標準入力
+    // 標準入力からの読み込み
     int _n;
-    cin >> _n;
-    rep(i, n)cin >> saba[i].x >> saba[i].y;
-    rep(i, n)cin >> iwashi[i].x >> iwashi[i].y;
+    cin >> _n;  // 魚の数（未使用）
+    rep(i, n) cin >> saba[i].x >> saba[i].y;     // サバの座標を読み込む
+    rep(i, n) cin >> iwashi[i].x >> iwashi[i].y; // イワシの座標を読み込む
   }
   else {
-    // ファイル入力
+    // ファイルからの読み込み
     int _n;
-    ifs >> _n;
-    rep(i, n)ifs >> saba[i].x >> saba[i].y;
-    rep(i, n)ifs >> iwashi[i].x >> iwashi[i].y;
+    ifs >> _n;  // 魚の数（未使用）
+    rep(i, n) ifs >> saba[i].x >> saba[i].y;     // サバの座標を読み込む
+    rep(i, n) ifs >> iwashi[i].x >> iwashi[i].y; // イワシの座標を読み込む
   }
 }
 
@@ -180,6 +183,7 @@ void Input(int problemNum)
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
+    // モードが0以外の場合、出力ファイルを作成
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
     ofs.open(oss.str());
@@ -189,104 +193,119 @@ void OpenOfs(int probNum, ofstream& ofs)
 // スコアを計算する関数
 ll CalcScore()
 {
-  ll res = ansScore + 1;
-  return res;
+  ll res = ansScore + 1;  // 問題文の得点計算式に基づく（max(0, a - b + 1)）
+  return res;             // スコアを返す
 }
 
 // 解答を出力する関数
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    // 標準出力
-    cout << ans.size() << endl;
-    for (auto p : ans)cout << p.x << ' ' << p.y << endl;
+    // 標準出力に出力
+    cout << ans.size() << endl;  // ポリゴンの頂点数を出力
+    for (auto p : ans) cout << p.x << ' ' << p.y << endl;  // 各頂点の座標を出力
   }
   else {
-    // ファイル出力
-    ofs << ans.size() << endl;
-    for (auto p : ans)ofs << p.x << ' ' << p.y << endl;
+    // ファイルに出力
+    ofs << ans.size() << endl;  // ポリゴンの頂点数を出力
+    for (auto p : ans) ofs << p.x << ' ' << p.y << endl;  // 各頂点の座標を出力
   }
 }
 
+// ポリゴンの辺の総和が制約を満たしているか確認する関数
 bool IsLengthOK(vector<Point> vp)
 {
   int len = 0;
+  // 各辺の長さを計算
   rep(i, vp.size() - 1)
   {
-    len += abs(vp[i + 1].x - vp[i].x);
-    len += abs(vp[i + 1].y - vp[i].y);
+    len += abs(vp[i + 1].x - vp[i].x);  // x座標の差の絶対値を加算
+    len += abs(vp[i + 1].y - vp[i].y);  // y座標の差の絶対値を加算
   }
 
+  // 最後の頂点と最初の頂点を結ぶ辺の長さを加算
   len += abs(vp[0].x - vp.back().x);
   len += abs(vp[0].y - vp.back().y);
 
+  // 総和が400,000以下であればtrueを返す
   return len <= 400000;
 }
 
-const int bSize = 20;
+const int bSize = 20;  // グリッドの分割数（20×20のグリッド）
+
+// 座標がグリッドの範囲外かを確認する関数
 bool IsNG(int x, int y)
 {
-  if (x < 0 || bSize <= x || y < 0 || bSize <= y)return true;
-  return false;
+  if (x < 0 || bSize <= x || y < 0 || bSize <= y) return true;  // 範囲外ならtrue
+  return false;  // 範囲内ならfalse
 }
 
+// 解法のメイン部分を実装する関数
 void Method3()
 {
-  int block[bSize][bSize];
-  rep(i, bSize)rep(j, bSize)block[i][j] = 0;
+  int block[bSize][bSize];  // 各グリッドセルのスコアを格納する配列
+  rep(i, bSize) rep(j, bSize) block[i][j] = 0;  // 初期化
+
+  // サバとイワシの位置から、各セルのスコアを計算
   rep(i, n)
   {
     {
+      // サバの座標をセルに割り当て、スコアを加算
       int xx = saba[i].x / (100000 / bSize);
-      xx = min(xx, bSize - 1);
+      xx = min(xx, bSize - 1);  // 最大値を超えないように調整
       int yy = saba[i].y / (100000 / bSize);
       yy = min(yy, bSize - 1);
 
-      block[xx][yy]++;
+      block[xx][yy]++;  // サバがいるセルのスコアを+1
     }
 
     {
+      // イワシの座標をセルに割り当て、スコアを減算
       int xx = iwashi[i].x / (100000 / bSize);
       xx = min(xx, bSize - 1);
       int yy = iwashi[i].y / (100000 / bSize);
       yy = min(yy, bSize - 1);
 
-      block[xx][yy]--;
+      block[xx][yy]--;  // イワシがいるセルのスコアを-1
     }
   }
 
-  int xx1, yy1, xx2, yy2;
+  int xx1, yy1, xx2, yy2;  // 最良の矩形領域の座標を格納する変数
 
-  ansScore = 0;
-  int loop1 = 0;
+  ansScore = 0;  // スコアの初期化
+  int loop1 = 0;  // ループ回数のカウンタ
   while (true) {
     if (loop1 % 100 == 0) {
-      if (GetNowTime() > TL / 2)break;
+      if (GetNowTime() > TL / 2) break;  // 時間制限の半分を過ぎたらループを抜ける
     }
     loop1++;
+    // ランダムに矩形領域を選択
     int x1 = RandXor() % bSize;
     int x2 = RandXor() % bSize;
     int y1 = RandXor() % bSize;
     int y2 = RandXor() % bSize;
-    if (x1 > x2)swap(x1, x2);
-    if (y1 > y2)swap(y1, y2);
+    if (x1 > x2) swap(x1, x2);  // x1とx2を小さい順に並べ替え
+    if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
 
-    int cnt = 0;
+    int cnt = 0;  // 選択した領域のスコア
     srep(i, x1, x2 + 1)
     {
       srep(j, y1, y2 + 1)
       {
-        cnt += block[i][j];
+        cnt += block[i][j];  // 選択したセルのスコアを合計
       }
     }
 
     if (cnt > ansScore) {
+      // スコアが改善された場合、解答を更新
       ansScore = cnt;
       ans.clear();
+      // 矩形の四隅の座標を計算し、解答に追加
       ans.emplace_back(x1 * (100000 / bSize), y1 * (100000 / bSize));
       ans.emplace_back((x2 + 1) * (100000 / bSize), y1 * (100000 / bSize));
       ans.emplace_back((x2 + 1) * (100000 / bSize), (y2 + 1) * (100000 / bSize));
       ans.emplace_back(x1 * (100000 / bSize), (y2 + 1) * (100000 / bSize));
+      // 最良の矩形領域のインデックスを保存
       xx1 = x1;
       yy1 = y1;
       xx2 = x2;
@@ -294,80 +313,82 @@ void Method3()
     }
   }
 
-  int f[bSize + 2][bSize + 2];
+  int f[bSize + 2][bSize + 2];  // 領域の状態を保持する配列（+2は番兵用）
   rep(i, bSize + 2)
   {
     rep(j, bSize + 2)
     {
-      f[i][j] = 0;
+      f[i][j] = 0;  // 初期化
     }
   }
 
+  // 最良の矩形領域をf配列に設定
   srep(i, xx1, xx2 + 1)
   {
     srep(j, yy1, yy2 + 1)
     {
-      f[i + 1][j + 1] = 1;
+      f[i + 1][j + 1] = 1;  // 選択した領域を1とする
     }
   }
 
-  int haba[bSize + 2][bSize + 2];
-  queue<P> que;
+  int haba[bSize + 2][bSize + 2];  // 幅優先探索用の配列
+  queue<P> que;  // 幅優先探索のためのキュー
 
-  double nowTime = GetNowTime();
-  const double START_TEMP = 100.0;
-  const double END_TEMP = 0.1;
-  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / TL;
+  double nowTime = GetNowTime();  // 現在の経過時間
+  const double START_TEMP = 100.0;  // 焼きなまし法の開始温度
+  const double END_TEMP = 0.1;      // 焼きなまし法の終了温度
+  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / TL;  // 現在の温度
 
-  int loop2 = 0;
+  int loop2 = 0;  // ループ回数のカウンタ
   while (true) {
     if (loop2 % 1 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > TL)break;
+      if (nowTime > TL) break;  // 時間制限を過ぎたらループを抜ける
     }
     loop2++;
 
-    int rax = RandXor() % bSize;
-    int ray = RandXor() % bSize;
+    int rax = RandXor() % bSize;  // ランダムなセルのxインデックス
+    int ray = RandXor() % bSize;  // ランダムなセルのyインデックス
 
-    int ng = 1;
+    int ng = 1;  // 変更が可能かどうかのフラグ
     rep(i, 4)
     {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
-      if (IsNG(nx, ny))continue;
-      if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;
+      if (IsNG(nx, ny)) continue;  // 範囲外は無視
+      if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // 隣接セルが異なる状態なら変更可能
     }
 
-    if (ng)continue;
+    if (ng) continue;  // 変更不可なら次のループへ
 
     int tmpScore = ansScore;
     if (f[rax + 1][ray + 1] == 0) {
-      tmpScore += block[rax][ray];
+      tmpScore += block[rax][ray];  // セルを追加した場合のスコア
     }
     else {
-      tmpScore += -block[rax][ray];
+      tmpScore += -block[rax][ray];  // セルを削除した場合のスコア
     }
 
-    const double progressRatio = nowTime / TL;  // 進捗。開始時が0.0、終了時が1.0
-    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+    const double progressRatio = nowTime / TL;  // 進捗率（0.0～1.0）
+    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;  // 温度の更新
 
-    double diff = tmpScore - ansScore;
-    double prob = exp(diff / temp);
-    f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];
-    int upd = 0;
+    double diff = tmpScore - ansScore;  // スコアの差分
+    double prob = exp(diff / temp);     // 焼きなまし法の採用確率
+    f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // 状態を反転
+    int upd = 0;  // 解答を更新するかどうかのフラグ
     if (prob > Rand01()) {
-      // 幅優先
-      rep(i, bSize + 2)rep(j, bSize + 2)haba[i][j] = 0;
+      // 解答を更新する場合の処理
+      // 幅優先探索で連結成分の数を確認
+      rep(i, bSize + 2) rep(j, bSize + 2) haba[i][j] = 0;  // 初期化
       int now = 1;
       upd = 1;
       srep(i, 1, bSize + 1)
       {
         srep(j, 1, bSize + 1)
         {
-          if (haba[i][j] != 0)continue;
+          if (haba[i][j] != 0) continue;  // 既に探索済みならスキップ
           if (now == 3) {
-            upd = 0;
+            upd = 0;  // 連結成分が2つを超える場合は更新不可
             break;
           }
 
@@ -381,7 +402,7 @@ void Method3()
             {
               int nx = x + dx[k];
               int ny = y + dy[k];
-              if (IsNG(nx - 1, ny - 1))continue;
+              if (IsNG(nx - 1, ny - 1)) continue;
               if (haba[nx][ny] == 0 && f[nx][ny] == f[i][j]) {
                 haba[nx][ny] = now;
                 que.push(P(nx, ny));
@@ -391,18 +412,19 @@ void Method3()
 
           now++;
         }
-        if (upd == 0)break;
+        if (upd == 0) break;
       }
-      if (now > 3)upd = 0;
+      if (now > 3) upd = 0;  // 連結成分が3つ以上なら更新不可
     }
 
     if (upd) {
-      auto ans2 = ans;
+      auto ans2 = ans;  // 現在の解答を一時保存
 
       ans.clear();
 
       int sx = -1, sy = -1;
       int befx = -1, befy = -1;
+      // 境界の始点を探す
       srep(i, 1, bSize + 1)
       {
         srep(j, 1, bSize + 1)
@@ -417,14 +439,15 @@ void Method3()
       }
 
       if (sx == -1) {
-        assert(false);
+        assert(false);  // 始点が見つからない場合はエラー
       }
 
-      vector<P> vp;
+      vector<P> vp;  // ポリゴンの頂点を格納
       vp.emplace_back(sx, sy);
       while (true) {
         int x = -1, y = -1;
 
+        // 境界をたどる（周囲4方向を確認）
         if (x == -1) {
           int nx = sx - 1;
           int ny = sy;
@@ -469,10 +492,10 @@ void Method3()
           }
         }
 
-        if (x == vp[0].first && y == vp[0].second)break;
+        if (x == vp[0].first && y == vp[0].second) break;  // 始点に戻ったらループ終了
 
         if (x == -1) {
-          assert(false);
+          assert(false);  // 次の点が見つからない場合はエラー
           for (auto p : vp) cout << p.first << ' ' << p.second << endl;
           cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
           srep(i, 1, bSize + 1)
@@ -489,33 +512,35 @@ void Method3()
         befy = sy;
         sx = x;
         sy = y;
-        vp.emplace_back(sx, sy);
+        vp.emplace_back(sx, sy);  // 頂点を追加
       }
 
       for (auto p : vp) {
+        // グリッドのインデックスを実座標に変換
         int x = (p.first - 1) * (100000 / bSize);
         int y = (p.second - 1) * (100000 / bSize);
-        ans.emplace_back(x, y);
+        ans.emplace_back(x, y);  // ポリゴンの頂点として追加
       }
 
       if (IsLengthOK(ans)) {
-        upd = 1;
+        upd = 1;  // 制約を満たしていれば更新
       }
       else {
-        upd = 0;
-        ans = ans2;
+        upd = 0;  // 制約を満たしていなければ更新しない
+        ans = ans2;  // 元の解答に戻す
       }
     }
 
     if (upd) {
-      ansScore = tmpScore;
+      ansScore = tmpScore;  // スコアを更新
     }
     else {
-      f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];
+      f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // 状態を元に戻す
     }
   }
 
   if (mode != 0) {
+    // デバッグ用の出力
     cout << "loop1 = " << loop1 << ", ";
     cout << "loop2 = " << loop2 << ", ";
     cout << endl;
@@ -533,33 +558,28 @@ void Method3()
 // 問題を解く関数
 ll Solve(int problem_num)
 {
-  ResetTime();
+  ResetTime();  // 時間計測のリセット
 
-  // 複数ケース回すときに内部状態を初期値に戻す
-  SetUp();
+  SetUp();  // 内部状態の初期化
 
-  // 入力受け取り
-  Input(problem_num);
+  Input(problem_num);  // 入力の受け取り
 
-  // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(problem_num, ofs);
+  OpenOfs(problem_num, ofs);  // 出力ファイルストリームのオープン
 
-  // 初期解生成
-  Method3();
+  Method3();  // 解法の実行
 
-  // 解答を出力
-  Output(ofs);
+  Output(ofs);  // 解答の出力
 
   if (ofs.is_open()) {
-    ofs.close();
+    ofs.close();  // 出力ファイルストリームのクローズ
   }
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = CalcScore();  // スコアの計算
   }
-  return score;
+  return score;  // スコアを返す
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -570,24 +590,24 @@ ll Solve(int problem_num)
 /////////////////////////////////////////////////////////////////////////
 int main()
 {
-  srand((unsigned)time(NULL));
+  srand((unsigned)time(NULL));  // 乱数のシードを設定
   while (rand() % 100) {
-    RandXor();
+    RandXor();  // 乱数のウォームアップ
   }
 
-  mode = 2;
+  mode = 2;  // 実行モードの設定（0: 標準入出力、1: スコア表示、2: 詳細表示）
 
   if (mode == 0) {
-    Solve(0);
+    Solve(0);  // 問題番号0を解く
   }
   else {
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(i);
-      sum += score;
+      ll score = Solve(i);  // 問題番号iを解く
+      sum += score;         // スコアの合計を更新
       if (mode == 1) {
-        cout << score << endl;
+        cout << score << endl;  // スコアを出力
       }
       else {
         cout << "num = " << setw(2) << i << ", ";
