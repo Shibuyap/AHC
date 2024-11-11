@@ -192,43 +192,6 @@ void Output(ofstream& ofs)
   }
 }
 
-// ナイーブな解法
-void Method1()
-{
-  ans.emplace_back(10000 + 0, 50000 + 0);
-  ans.emplace_back(50000 + 20000, 50000 + 0);
-  ans.emplace_back(50000 + 20000, 50000 + 5000);
-  ans.emplace_back(50000 + 15000, 50000 + 5000);
-  ans.emplace_back(50000 + 15000, 50000 + 10000);
-  ans.emplace_back(50000 + 10000, 50000 + 10000);
-  ans.emplace_back(50000 + 10000, 50000 + 7500);
-  ans.emplace_back(50000 + 5000, 50000 + 7500);
-  ans.emplace_back(50000 + 5000, 50000 + 10000);
-  ans.emplace_back(10000 + 0, 50000 + 10000);
-}
-
-bool Intersecting(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4)
-{
-  if (x2 < x3 || x4 < x1) {
-    return false;
-  }
-
-  if (y2 < y3 || y4 < y1) {
-    return false;
-  }
-
-  return true;
-}
-
-bool Inside(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4)
-{
-  if (x3 < x1 && x2 < x4 && y3 < y1 && y2 < y4) {
-    return true;
-  }
-
-  return false;
-}
-
 bool IsLengthOK(vector<P> vp)
 {
   int len = 0;
@@ -242,273 +205,6 @@ bool IsLengthOK(vector<P> vp)
   len += abs(vp[0].second - vp.back().second);
 
   return len <= 400000;
-}
-
-void Method2()
-{
-  int xx1, yy1, xx2, yy2;
-
-  int length = 0;
-  ansScore = 0;
-  int loop = 0;
-  while (true) {
-    if (loop % 100 == 0) {
-      if (get_now_time() > TL / 2)break;
-    }
-    loop++;
-    int x1 = rand_xor() % 100000;
-    int x2 = rand_xor() % 100000;
-    int y1 = rand_xor() % 100000;
-    int y2 = rand_xor() % 100000;
-    while (x1 == x2)x2 = rand_xor() % 100000;
-    while (y1 == y2)y2 = rand_xor() % 100000;
-    if (x1 > x2)swap(x1, x2);
-    if (y1 > y2)swap(y1, y2);
-
-    int cnt = 0;
-    rep(i, n)
-    {
-      if (x1 <= init_x1[i] && init_x1[i] <= x2 && y1 <= init_y1[i] && init_y1[i] <= y2)cnt += 1;
-      if (x1 <= init_x2[i] && init_x2[i] <= x2 && y1 <= init_y2[i] && init_y2[i] <= y2)cnt -= 1;
-    }
-
-    if (cnt > ansScore) {
-      ansScore = cnt;
-      ans.clear();
-      ans.emplace_back(x1, y1);
-      ans.emplace_back(x2, y1);
-      ans.emplace_back(x2, y2);
-      ans.emplace_back(x1, y2);
-      length = (x2 - x1 + y2 - y1) * 2;
-
-      xx1 = x1;
-      yy1 = y1;
-      xx2 = x2;
-      yy2 = y2;
-    }
-  }
-
-  int f1[5000], f2[5000];
-  rep(i, n)
-  {
-    f1[i] = 0;
-    f2[i] = 0;
-    if (xx1 <= init_x1[i] && init_x1[i] <= xx2 && yy1 <= init_y1[i] && init_y1[i] <= yy2) {
-      f1[i] = 1;
-    }
-    if (xx1 <= init_x2[i] && init_x2[i] <= xx2 && yy1 <= init_y2[i] && init_y2[i] <= yy2) {
-      f2[i] = 1;
-    }
-  }
-
-  int x11, x12, y11, y12, x21, x22, y21, y22;
-  int max1 = -1;
-  int max2 = -1;
-
-  int baseScore = ansScore;
-
-  while (true) {
-    if (loop % 100 == 0) {
-      if (get_now_time() > TL)break;
-    }
-    loop++;
-    int x1 = rand_xor() % 100000;
-    int x2 = rand_xor() % 100000;
-    int y1 = rand_xor() % 100000;
-    int y2 = rand_xor() % 100000;
-    while (x1 == x2)x2 = rand_xor() % 100000;
-    while (y1 == y2)y2 = rand_xor() % 100000;
-    if (x1 > x2)swap(x1, x2);
-    if (y1 > y2)swap(y1, y2);
-
-    int cnt1 = 0;
-    int cnt2 = 0;
-    rep(i, n)
-    {
-      if (f1[i] == 0) {
-        if (x1 <= init_x1[i] && init_x1[i] <= x2 && y1 <= init_y1[i] && init_y1[i] <= y2) {
-          cnt1++;
-        }
-      }
-      if (f2[i] == 0) {
-        if (x1 <= init_x2[i] && init_x2[i] <= x2 && y1 <= init_y2[i] && init_y2[i] <= y2) {
-          cnt1--;
-        }
-      }
-
-      if (f1[i] == 1) {
-        if (x1 <= init_x1[i] && init_x1[i] <= x2 && y1 <= init_y1[i] && init_y1[i] <= y2) {
-          cnt2--;
-        }
-      }
-      if (f2[i] == 1) {
-        if (x1 <= init_x2[i] && init_x2[i] <= x2 && y1 <= init_y2[i] && init_y2[i] <= y2) {
-          cnt2++;
-        }
-      }
-
-      if (Intersecting(x1, x2, y1, y2, xx1, xx2, yy1, yy2)) {
-        cnt1 = -111;
-      }
-
-      int keep = cnt1;
-      cnt1 = -111;
-      if (xx1 < x1 && x2 < xx2) {
-        cnt1 = keep;
-      }
-      if (yy1 < y1 && y2 < yy2) {
-        cnt1 = keep;
-      }
-
-      if (!Inside(x1, x2, y1, y2, xx1, xx2, yy1, yy2)) {
-        cnt2 = -111;
-      }
-
-      if (cnt1 > max1) {
-        max1 = cnt1;
-        x11 = x1;
-        x12 = x2;
-        y11 = y1;
-        y12 = y2;
-      }
-
-      if (cnt2 > max2) {
-        max2 = cnt2;
-        x21 = x1;
-        x22 = x2;
-        y21 = y1;
-        y22 = y2;
-      }
-
-      if (baseScore + cnt2 > ansScore) {
-        x21 = x1;
-        x22 = x2;
-        y21 = y1;
-        y22 = y2;
-
-        vector<P> ans2 = ans;
-
-        ans.clear();
-        ans.emplace_back(xx1, yy1);
-        ans.emplace_back(xx1, y21);
-        ans.emplace_back(x22, y21);
-        ans.emplace_back(x22, y22);
-        ans.emplace_back(x21, y22);
-        ans.emplace_back(x21, y21 + 1);
-        ans.emplace_back(xx1, y21 + 1);
-        ans.emplace_back(xx1, yy2);
-        ans.emplace_back(xx2, yy2);
-        ans.emplace_back(xx2, yy1);
-
-        if (IsLengthOK(ans)) {
-          ansScore = baseScore + max2;
-        }
-        else {
-          ans = ans2;
-        }
-      }
-
-      if (baseScore + cnt1 > ansScore) {
-        x11 = x1;
-        x12 = x2;
-        y11 = y1;
-        y12 = y2;
-
-        if (xx1 <= x12 && x11 <= xx2) {
-          if (y12 < yy1) {
-            vector<P> ans2 = ans;
-
-            ans.clear();
-            ans.emplace_back(xx1, yy1);
-            ans.emplace_back(xx1, yy2);
-            ans.emplace_back(xx2, yy2);
-            ans.emplace_back(xx2, yy1);
-            ans.emplace_back(x12, yy1);
-            ans.emplace_back(x12, y11);
-            ans.emplace_back(x11, y11);
-            ans.emplace_back(x11, y12);
-            ans.emplace_back(x12 - 1, y12);
-            ans.emplace_back(x12 - 1, yy1);
-
-            if (IsLengthOK(ans) && ansScore < baseScore + max1) {
-              ansScore = baseScore + max1;
-            }
-            else {
-              ans = ans2;
-            }
-          }
-          else {
-            vector<P> ans2 = ans;
-
-            ans.clear();
-            ans.emplace_back(xx1, yy1);
-            ans.emplace_back(xx1, yy2);
-            ans.emplace_back(x11, yy2);
-            ans.emplace_back(x11, y12);
-            ans.emplace_back(x12, y12);
-            ans.emplace_back(x12, y11);
-            ans.emplace_back(x11 + 1, y11);
-            ans.emplace_back(x11 + 1, yy2);
-            ans.emplace_back(xx2, yy2);
-            ans.emplace_back(xx2, yy1);
-
-            if (IsLengthOK(ans) && ansScore < baseScore + max1) {
-              ansScore = baseScore + max1;
-            }
-            else {
-              ans = ans2;
-            }
-          }
-        }
-        else {
-          if (x12 < xx1) {
-            vector<P> ans2 = ans;
-
-            ans.clear();
-            ans.emplace_back(xx1, yy1);
-            ans.emplace_back(xx1, y11);
-            ans.emplace_back(x11, y11);
-            ans.emplace_back(x11, y12);
-            ans.emplace_back(x12, y12);
-            ans.emplace_back(x12, y11 + 1);
-            ans.emplace_back(xx1, y11 + 1);
-            ans.emplace_back(xx1, yy2);
-            ans.emplace_back(xx2, yy2);
-            ans.emplace_back(xx2, yy1);
-
-            if (IsLengthOK(ans) && ansScore < baseScore + max1) {
-              ansScore = baseScore + max1;
-            }
-            else {
-              ans = ans2;
-            }
-          }
-          else {
-            vector<P> ans2 = ans;
-
-            ans.clear();
-            ans.emplace_back(xx1, yy1);
-            ans.emplace_back(xx1, yy2);
-            ans.emplace_back(xx2, yy2);
-            ans.emplace_back(xx2, y12);
-            ans.emplace_back(x12, y12);
-            ans.emplace_back(x12, y11);
-            ans.emplace_back(x11, y11);
-            ans.emplace_back(x11, y12 - 1);
-            ans.emplace_back(xx2, y12 - 1);
-            ans.emplace_back(xx2, yy1);
-
-            if (IsLengthOK(ans) && ansScore < baseScore + max1) {
-              ansScore = baseScore + max1;
-            }
-            else {
-              ans = ans2;
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 const int bSize = 20;
@@ -599,7 +295,7 @@ void Method3()
   queue<P> que;
 
   double nowTime = get_now_time();
-  double start_temp = 208.0;
+  double start_temp = 100.0;
   double end_temp = 0.1;
   double temp = start_temp + (end_temp - start_temp) * nowTime / TL;
 
@@ -878,7 +574,6 @@ void Method3()
 
     if (upd) {
       ansScore = tmpScore;
-
     }
     else {
       f[rax][ray] = 1 - f[rax][ray];
@@ -916,8 +611,6 @@ ll Solve(int problem_num)
   OpenOfs(problem_num, ofs);
 
   // 初期解生成
-  //Method1();
-  //Method2();
   Method3();
 
   // 解答を出力
@@ -956,7 +649,7 @@ int main()
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(45);
+      ll score = Solve(i);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
