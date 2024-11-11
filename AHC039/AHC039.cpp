@@ -115,8 +115,6 @@ const int n = 5000;
 int init_x1[5000], init_y1[5000];
 int init_x2[5000], init_y2[5000];
 
-
-
 vector<P> ans;
 
 int ansScore;
@@ -209,7 +207,8 @@ void Method1()
   ans.emplace_back(10000 + 0, 50000 + 10000);
 }
 
-bool Intersecting(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4) {
+bool Intersecting(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4)
+{
   if (x2 < x3 || x4 < x1) {
     return false;
   }
@@ -221,7 +220,8 @@ bool Intersecting(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4
   return true;
 }
 
-bool Inside(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4) {
+bool Inside(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4)
+{
   if (x3 < x1 && x2 < x4 && y3 < y1 && y2 < y4) {
     return true;
   }
@@ -229,9 +229,11 @@ bool Inside(int x1, int x2, int y1, int y2, int x3, int x4, int y3, int y4) {
   return false;
 }
 
-bool IsLengthOK(vector<P> vp) {
+bool IsLengthOK(vector<P> vp)
+{
   int len = 0;
-  rep(i, vp.size() - 1) {
+  rep(i, vp.size() - 1)
+  {
     len += abs(vp[i + 1].first - vp[i].first);
     len += abs(vp[i + 1].second - vp[i].second);
   }
@@ -264,7 +266,8 @@ void Method2()
     if (y1 > y2)swap(y1, y2);
 
     int cnt = 0;
-    rep(i, n) {
+    rep(i, n)
+    {
       if (x1 <= init_x1[i] && init_x1[i] <= x2 && y1 <= init_y1[i] && init_y1[i] <= y2)cnt += 1;
       if (x1 <= init_x2[i] && init_x2[i] <= x2 && y1 <= init_y2[i] && init_y2[i] <= y2)cnt -= 1;
     }
@@ -286,7 +289,8 @@ void Method2()
   }
 
   int f1[5000], f2[5000];
-  rep(i, n) {
+  rep(i, n)
+  {
     f1[i] = 0;
     f2[i] = 0;
     if (xx1 <= init_x1[i] && init_x1[i] <= xx2 && yy1 <= init_y1[i] && init_y1[i] <= yy2) {
@@ -319,7 +323,8 @@ void Method2()
 
     int cnt1 = 0;
     int cnt2 = 0;
-    rep(i, n) {
+    rep(i, n)
+    {
       if (f1[i] == 0) {
         if (x1 <= init_x1[i] && init_x1[i] <= x2 && y1 <= init_y1[i] && init_y1[i] <= y2) {
           cnt1++;
@@ -507,18 +512,19 @@ void Method2()
 }
 
 const int bSize = 20;
-bool IsNG(int x, int y) {
+bool IsNG(int x, int y)
+{
   if (x < 0 || bSize <= x || y < 0 || bSize <= y)return true;
   return false;
 }
 
-
-
-void Method3() {
+void Method3()
+{
 
   int block[bSize][bSize];
   rep(i, bSize)rep(j, bSize)block[i][j] = 0;
-  rep(i, n) {
+  rep(i, n)
+  {
     {
       int xx = init_x1[i] / (100000 / bSize);
       xx = min(xx, bSize - 1);
@@ -541,12 +547,12 @@ void Method3() {
   int xx1, yy1, xx2, yy2;
 
   ansScore = 0;
-  int loop = 0;
+  int loop1 = 0;
   while (true) {
-    if (loop % 100 == 0) {
+    if (loop1 % 100 == 0) {
       if (get_now_time() > TL / 2)break;
     }
-    loop++;
+    loop1++;
     int x1 = rand_xor() % bSize;
     int x2 = rand_xor() % bSize;
     int y1 = rand_xor() % bSize;
@@ -555,8 +561,10 @@ void Method3() {
     if (y1 > y2)swap(y1, y2);
 
     int cnt = 0;
-    srep(i, x1, x2 + 1) {
-      srep(j, y1, y2 + 1) {
+    srep(i, x1, x2 + 1)
+    {
+      srep(j, y1, y2 + 1)
+      {
         cnt += block[i][j];
       }
     }
@@ -579,8 +587,10 @@ void Method3() {
 
   rep(i, bSize)rep(j, bSize)f[i][j] = 0;
 
-  srep(i, xx1, xx2 + 1) {
-    srep(j, yy1, yy2 + 1) {
+  srep(i, xx1, xx2 + 1)
+  {
+    srep(j, yy1, yy2 + 1)
+    {
       f[i][j] = 1;
     }
   }
@@ -593,19 +603,21 @@ void Method3() {
   double end_temp = 0.1;
   double temp = start_temp + (end_temp - start_temp) * nowTime / TL;
 
+  int loop2 = 0;
   while (true) {
-    if (loop % 100 == 0) {
+    if (loop2 % 1 == 0) {
       nowTime = get_now_time();
       if (nowTime > TL)break;
     }
-    loop++;
+    loop2++;
 
     int rax = rand_xor() % bSize;
     int ray = rand_xor() % bSize;
 
     int ng = 1;
     if (f[rax][ray] == 0) {
-      rep(i, 4) {
+      rep(i, 4)
+      {
         int nx = rax + dx[i];
         int ny = ray + dy[i];
         if (IsNG(nx, ny))continue;
@@ -613,7 +625,8 @@ void Method3() {
       }
     }
     else {
-      rep(i, 4) {
+      rep(i, 4)
+      {
         int nx = rax + dx[i];
         int ny = ray + dy[i];
         if (IsNG(nx, ny))continue;
@@ -643,8 +656,10 @@ void Method3() {
       rep(i, bSize)rep(j, bSize)haba[i][j] = 0;
       int now = 1;
       upd = 1;
-      rep(i, bSize) {
-        rep(j, bSize) {
+      rep(i, bSize)
+      {
+        rep(j, bSize)
+        {
           if (haba[i][j] != 0)continue;
           if (now == 3) {
             upd = 0;
@@ -657,7 +672,8 @@ void Method3() {
             int x = que.front().first;
             int y = que.front().second;
             que.pop();
-            rep(k, 4) {
+            rep(k, 4)
+            {
               int nx = x + dx[k];
               int ny = y + dy[k];
               if (IsNG(nx, ny))continue;
@@ -680,28 +696,34 @@ void Method3() {
 
       ans.clear();
 
-      int sx, sy;
-      int befx, befy;
-      rep(i, bSize) {
-        srep(j, 1, bSize) {
-          if (f[i][j] == 1 && f[i][j - 1] == 0) {
-            sx = i;
-            sy = j;
-            befx = i + 1;
-            befy = j;
+      int sx = -1, sy = -1;
+      int befx = -1, befy = -1;
+      rep(i, bSize)
+      {
+        rep(j, bSize)
+        {
+          if (j == 0) {
+            if (f[i][j] == 1) {
+              sx = i;
+              sy = j;
+              befx = i + 1;
+              befy = j;
+            }
+          }
+          else {
+            if (f[i][j] == 1 && f[i][j - 1] == 0) {
+              sx = i;
+              sy = j;
+              befx = i + 1;
+              befy = j;
+            }
           }
         }
       }
 
-      //rep(i, bSize) {
-      //  rep(j, bSize) {
-      //    cout << f[i][j];
-      //  }
-      //  cout << endl;
-      //}
-
-      int xxx;
-      //cin >> xxx;
+      if (sx == -1) {
+        assert(false);
+      }
 
       vector<P> vp;
       vp.emplace_back(sx, sy);
@@ -719,6 +741,12 @@ void Method3() {
           if (!(nx == befx && ny == befy) && nx >= 0) {
             if (ny == 0) {
               if (f[nx][ny] == 1) {
+                x = nx;
+                y = ny;
+              }
+            }
+            else if (ny == bSize) {
+              if (f[nx][ny - 1] == 1) {
                 x = nx;
                 y = ny;
               }
@@ -743,6 +771,12 @@ void Method3() {
                 y = ny;
               }
             }
+            else if (ny == bSize) {
+              if (f[nx - 1][ny - 1] == 1) {
+                x = nx;
+                y = ny;
+              }
+            }
             else {
               if (f[nx - 1][ny - 1] != f[nx - 1][ny]) {
                 x = nx;
@@ -759,6 +793,12 @@ void Method3() {
           if (!(nx == befx && ny == befy) && ny >= 0) {
             if (nx == 0) {
               if (f[nx][ny] == 1) {
+                x = nx;
+                y = ny;
+              }
+            }
+            else if (nx == bSize) {
+              if (f[nx - 1][ny] == 1) {
                 x = nx;
                 y = ny;
               }
@@ -782,6 +822,12 @@ void Method3() {
                 y = ny;
               }
             }
+            else if (nx == bSize) {
+              if (f[nx - 1][ny - 1] == 1) {
+                x = nx;
+                y = ny;
+              }
+            }
             else {
               if (f[nx - 1][ny - 1] != f[nx][ny - 1]) {
                 x = nx;
@@ -793,6 +839,20 @@ void Method3() {
         }
 
         if (x == vp[0].first && y == vp[0].second)break;
+
+        if (x == -1) {
+          assert(false);
+          for (auto p : vp) cout << p.first << ' ' << p.second << endl;
+          cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
+          rep(i, bSize)
+          {
+            rep(j, bSize)
+            {
+              cout << f[i][j];
+            }
+            cout << endl;
+          }
+        }
 
         befx = sx;
         befy = sy;
@@ -822,6 +882,20 @@ void Method3() {
     }
     else {
       f[rax][ray] = 1 - f[rax][ray];
+    }
+  }
+
+  if (mode != 0) {
+    cout << "loop1 = " << loop1 << ", ";
+    cout << "loop2 = " << loop2 << ", ";
+    cout << endl;
+    rep(i, bSize)
+    {
+      rep(j, bSize)
+      {
+        cout << f[i][j];
+      }
+      cout << endl;
     }
   }
 }
@@ -880,9 +954,9 @@ int main()
   }
   else {
     ll sum = 0;
-    srep(i, 35, 36)
+    srep(i, 0, 100)
     {
-      ll score = Solve(i);
+      ll score = Solve(45);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
@@ -891,6 +965,7 @@ int main()
         cout << "num = " << setw(2) << i << ", ";
         cout << "score = " << setw(4) << score << ", ";
         cout << "sum = " << setw(5) << sum << ", ";
+        cout << "time = " << setw(5) << get_now_time() << ", ";
         cout << endl;
       }
     }
