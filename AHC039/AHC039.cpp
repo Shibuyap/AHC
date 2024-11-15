@@ -132,22 +132,41 @@ vector<Point> ans;  // 出力するポリゴンの頂点座標を格納するベクター
 int ansScore;       // 現在のスコア
 int best_ansScore;  // 最良のスコア（未使用？）
 
+int f[510][510];
+int best_f[510][510];
+
 // 現在の解答を最良の解答として保存する関数（未使用）
-void CopyToBest()
+void CopyToBest(int blockSize)
 {
   best_ansScore = ansScore;
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
+      best_f[i][j] = f[i][j];
+    }
+  }
 }
 
 // 最良の解答を現在の解答として設定する関数（未使用）
-void CopyToAns()
+void CopyToAns(int blockSize)
 {
   ansScore = best_ansScore;
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
+      f[i][j] = best_f[i][j];
+    }
+  }
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
   ansScore = 0;   // スコアの初期化
+  rep(i, 510)rep(j, 510)best_f[i][j] = 0;
+
   ans.clear();    // 解答の初期化
   saba.clear();   // サバの座標の初期化
   iwashi.clear(); // イワシの座標の初期化
@@ -232,45 +251,44 @@ bool IsLengthOK(vector<Point> vp)
 }
 
 // 座標がグリッドの範囲外かを確認する関数
-bool IsNG(int x, int y, int bSize)
+bool IsNG(int x, int y, int blockSize)
 {
-  if (x < 0 || bSize <= x || y < 0 || bSize <= y) return true;  // 範囲外ならtrue
+  if (x < 0 || blockSize <= x || y < 0 || blockSize <= y) return true;  // 範囲外ならtrue
   return false;  // 範囲内ならfalse
 }
 
 int block[510][510];  // 各グリッドセルのスコアを格納する配列
-void InitBlock(const int bSize)
+void InitBlock(const int blockSize)
 {
-  rep(i, bSize) rep(j, bSize) block[i][j] = 0;  // 初期化
+  rep(i, blockSize) rep(j, blockSize) block[i][j] = 0;  // 初期化
 
   // サバとイワシの位置から、各セルのスコアを計算
   rep(i, n)
   {
     {
       // サバの座標をセルに割り当て、スコアを加算
-      int xx = saba[i].x / (100000 / bSize);
-      xx = min(xx, bSize - 1);  // 最大値を超えないように調整
-      int yy = saba[i].y / (100000 / bSize);
-      yy = min(yy, bSize - 1);
+      int xx = saba[i].x / (100000 / blockSize);
+      xx = min(xx, blockSize - 1);  // 最大値を超えないように調整
+      int yy = saba[i].y / (100000 / blockSize);
+      yy = min(yy, blockSize - 1);
 
       block[xx][yy]++;  // サバがいるセルのスコアを+1
     }
 
     {
       // イワシの座標をセルに割り当て、スコアを減算
-      int xx = iwashi[i].x / (100000 / bSize);
-      xx = min(xx, bSize - 1);
-      int yy = iwashi[i].y / (100000 / bSize);
-      yy = min(yy, bSize - 1);
+      int xx = iwashi[i].x / (100000 / blockSize);
+      xx = min(xx, blockSize - 1);
+      int yy = iwashi[i].y / (100000 / blockSize);
+      yy = min(yy, blockSize - 1);
 
       block[xx][yy]--;  // イワシがいるセルのスコアを-1
     }
   }
 }
 
-int f[510][510];  // 領域の状態を保持する配列（+2は番兵用）
 int haba[510][510];  // 幅優先探索用の配列
-void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, const int bSize, int& loop2, double timeLimit)
+void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, const int blockSize, int& loop2, double timeLimit)
 {
   queue<P> que;  // 幅優先探索のためのキュー
 
@@ -286,15 +304,15 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     }
     loop2++;
 
-    int rax = RandXor() % bSize;  // ランダムなセルのxインデックス
-    int ray = RandXor() % bSize;  // ランダムなセルのyインデックス
+    int rax = RandXor() % blockSize;  // ランダムなセルのxインデックス
+    int ray = RandXor() % blockSize;  // ランダムなセルのyインデックス
 
     int ng = 1;  // 変更が可能かどうかのフラグ
     rep(i, 4)
     {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
-      if (IsNG(nx, ny, bSize)) continue;  // 範囲外は無視
+      if (IsNG(nx, ny, blockSize)) continue;  // 範囲外は無視
       if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // 隣接セルが異なる状態なら変更可能
     }
 
@@ -318,12 +336,12 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     if (prob > Rand01()) {
       // 解答を更新する場合の処理
       // 幅優先探索で連結成分の数を確認
-      rep(i, bSize + 2) rep(j, bSize + 2) haba[i][j] = 0;  // 初期化
+      rep(i, blockSize + 2) rep(j, blockSize + 2) haba[i][j] = 0;  // 初期化
       int now = 1;
       upd = 1;
-      srep(i, 1, bSize + 1)
+      srep(i, 1, blockSize + 1)
       {
-        srep(j, 1, bSize + 1)
+        srep(j, 1, blockSize + 1)
         {
           if (haba[i][j] != 0) continue;  // 既に探索済みならスキップ
           if (now == 3) {
@@ -341,7 +359,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
             {
               int nx = x + dx[k];
               int ny = y + dy[k];
-              if (IsNG(nx - 1, ny - 1, bSize)) continue;
+              if (IsNG(nx - 1, ny - 1, blockSize)) continue;
               if (haba[nx][ny] == 0 && f[nx][ny] == f[i][j]) {
                 haba[nx][ny] = now;
                 que.push(P(nx, ny));
@@ -364,9 +382,9 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       int sx = -1, sy = -1;
       int befx = -1, befy = -1;
       // 境界の始点を探す
-      srep(i, 1, bSize + 1)
+      srep(i, 1, blockSize + 1)
       {
-        srep(j, 1, bSize + 1)
+        srep(j, 1, blockSize + 1)
         {
           if (f[i][j] == 1 && f[i][j - 1] == 0) {
             sx = i;
@@ -437,9 +455,9 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
           assert(false);  // 次の点が見つからない場合はエラー
           for (auto p : vp) cout << p.first << ' ' << p.second << endl;
           cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
-          srep(i, 1, bSize + 1)
+          srep(i, 1, blockSize + 1)
           {
-            srep(j, 1, bSize + 1)
+            srep(j, 1, blockSize + 1)
             {
               cout << f[i][j];
             }
@@ -456,8 +474,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
 
       for (auto p : vp) {
         // グリッドのインデックスを実座標に変換
-        int x = (p.first - 1) * (100000 / bSize);
-        int y = (p.second - 1) * (100000 / bSize);
+        int x = (p.first - 1) * (100000 / blockSize);
+        int y = (p.second - 1) * (100000 / blockSize);
         ans.emplace_back(x, y);  // ポリゴンの頂点として追加
       }
 
@@ -472,20 +490,25 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
 
     if (upd) {
       ansScore = tmpScore;  // スコアを更新
+      if (ansScore > best_ansScore) {
+        CopyToBest(blockSize);
+      }
     }
     else {
       f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // 状態を元に戻す
     }
   }
+
+  CopyToAns(blockSize);
 }
 
 // 解法のメイン部分を実装する関数
 int ff[510][510];
 void Method3()
 {
-  const int bSize = 20;  // グリッドの分割数（20×20のグリッド）
+  const int blockSize = 20;  // グリッドの分割数（20×20のグリッド）
 
-  InitBlock(bSize);
+  InitBlock(blockSize);
 
   int xx1, yy1, xx2, yy2;  // 最良の矩形領域の座標を格納する変数
 
@@ -497,10 +520,10 @@ void Method3()
     }
     loop1++;
     // ランダムに矩形領域を選択
-    int x1 = RandXor() % bSize;
-    int x2 = RandXor() % bSize;
-    int y1 = RandXor() % bSize;
-    int y2 = RandXor() % bSize;
+    int x1 = RandXor() % blockSize;
+    int x2 = RandXor() % blockSize;
+    int y1 = RandXor() % blockSize;
+    int y2 = RandXor() % blockSize;
     if (x1 > x2) swap(x1, x2);  // x1とx2を小さい順に並べ替え
     if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
 
@@ -518,10 +541,10 @@ void Method3()
       ansScore = cnt;
       ans.clear();
       // 矩形の四隅の座標を計算し、解答に追加
-      ans.emplace_back(x1 * (100000 / bSize), y1 * (100000 / bSize));
-      ans.emplace_back((x2 + 1) * (100000 / bSize), y1 * (100000 / bSize));
-      ans.emplace_back((x2 + 1) * (100000 / bSize), (y2 + 1) * (100000 / bSize));
-      ans.emplace_back(x1 * (100000 / bSize), (y2 + 1) * (100000 / bSize));
+      ans.emplace_back(x1 * (100000 / blockSize), y1 * (100000 / blockSize));
+      ans.emplace_back((x2 + 1) * (100000 / blockSize), y1 * (100000 / blockSize));
+      ans.emplace_back((x2 + 1) * (100000 / blockSize), (y2 + 1) * (100000 / blockSize));
+      ans.emplace_back(x1 * (100000 / blockSize), (y2 + 1) * (100000 / blockSize));
       // 最良の矩形領域のインデックスを保存
       xx1 = x1;
       yy1 = y1;
@@ -531,9 +554,9 @@ void Method3()
   }
 
 
-  rep(i, bSize + 2)
+  rep(i, blockSize + 2)
   {
-    rep(j, bSize + 2)
+    rep(j, blockSize + 2)
     {
       f[i][j] = 0;  // 初期化
     }
@@ -548,28 +571,30 @@ void Method3()
     }
   }
 
+  CopyToBest(blockSize);
+
   int loop2 = 0;
-  Method3_SA(xx1, xx2, yy1, yy2, bSize, loop2, TL * 0.75);
+  Method3_SA(xx1, xx2, yy1, yy2, blockSize, loop2, TL * 0.75);
 
   int loop3 = 0;
-  int bSize40 = 40;
-  rep(i, bSize + 2)
+  int blockSize40 = 40;
+  rep(i, blockSize + 2)
   {
-    rep(j, bSize + 2)
+    rep(j, blockSize + 2)
     {
       ff[i][j] = f[i][j];
     }
   }
-  rep(i, bSize40 + 2)
+  rep(i, blockSize40 + 2)
   {
-    rep(j, bSize40 + 2)
+    rep(j, blockSize40 + 2)
     {
       f[i][j] = 0;
     }
   }
-  rep(i, bSize + 2)
+  rep(i, blockSize + 2)
   {
-    rep(j, bSize + 2)
+    rep(j, blockSize + 2)
     {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;
@@ -579,39 +604,43 @@ void Method3()
       }
     }
   }
-  InitBlock(bSize40);
-  Method3_SA(xx1, xx2, yy1, yy2, bSize40, loop3, TL * 1.0);
+  CopyToBest(blockSize40);
+
+  InitBlock(blockSize40);
+  Method3_SA(xx1, xx2, yy1, yy2, blockSize40, loop3, TL * 1.0);
 
   int loop4 = 0;
-  int bSize80 = 80;
-  //rep(i, bSize40 + 2)
-  //{
-  //  rep(j, bSize40 + 2)
-  //  {
-  //    ff[i][j] = f[i][j];
-  //  }
-  //}
-  //rep(i, bSize80 + 2)
-  //{
-  //  rep(j, bSize80 + 2)
-  //  {
-  //    f[i][j] = 0;
-  //  }
-  //}
-  //rep(i, bSize40 + 2)
-  //{
-  //  rep(j, bSize40 + 2)
-  //  {
-  //    if (ff[i][j] == 1) {
-  //      f[i * 2 - 1][j * 2 - 1] = 1;
-  //      f[i * 2 - 1][j * 2] = 1;
-  //      f[i * 2][j * 2 - 1] = 1;
-  //      f[i * 2][j * 2] = 1;
-  //    }
-  //  }
-  //}
-  //InitBlock(bSize80);
-  //Method3_SA(xx1, xx2, yy1, yy2, bSize80, loop4, TL);
+  int blockSize80 = 80;
+  rep(i, blockSize40 + 2)
+  {
+    rep(j, blockSize40 + 2)
+    {
+      ff[i][j] = f[i][j];
+    }
+  }
+  rep(i, blockSize80 + 2)
+  {
+    rep(j, blockSize80 + 2)
+    {
+      f[i][j] = 0;
+    }
+  }
+  rep(i, blockSize40 + 2)
+  {
+    rep(j, blockSize40 + 2)
+    {
+      if (ff[i][j] == 1) {
+        f[i * 2 - 1][j * 2 - 1] = 1;
+        f[i * 2 - 1][j * 2] = 1;
+        f[i * 2][j * 2 - 1] = 1;
+        f[i * 2][j * 2] = 1;
+      }
+    }
+  }
+  CopyToBest(blockSize80);
+
+  InitBlock(blockSize80);
+  Method3_SA(xx1, xx2, yy1, yy2, blockSize80, loop4, TL);
 
 
   if (mode != 0) {
@@ -619,10 +648,11 @@ void Method3()
     cout << "loop1 = " << loop1 << ", ";
     cout << "loop2 = " << loop2 << ", ";
     cout << "loop3 = " << loop3 << ", ";
+    cout << "loop4 = " << loop4 << ", ";
     cout << endl;
-    srep(i, 1, bSize80 + 1)
+    srep(i, 1, blockSize80 + 1)
     {
-      srep(j, 1, bSize80 + 1)
+      srep(j, 1, blockSize80 + 1)
       {
         cout << f[i][j];
       }
