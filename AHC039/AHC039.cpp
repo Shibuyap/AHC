@@ -231,19 +231,16 @@ bool IsLengthOK(vector<Point> vp)
   return len <= 400000;
 }
 
-const int bSize = 20;  // グリッドの分割数（20×20のグリッド）
-
 // 座標がグリッドの範囲外かを確認する関数
-bool IsNG(int x, int y)
+bool IsNG(int x, int y, int bSize)
 {
   if (x < 0 || bSize <= x || y < 0 || bSize <= y) return true;  // 範囲外ならtrue
   return false;  // 範囲内ならfalse
 }
 
-// 解法のメイン部分を実装する関数
-void Method3()
+int block[510][510];  // 各グリッドセルのスコアを格納する配列
+void InitBlock(const int bSize)
 {
-  int block[bSize][bSize];  // 各グリッドセルのスコアを格納する配列
   rep(i, bSize) rep(j, bSize) block[i][j] = 0;  // 初期化
 
   // サバとイワシの位置から、各セルのスコアを計算
@@ -269,81 +266,23 @@ void Method3()
       block[xx][yy]--;  // イワシがいるセルのスコアを-1
     }
   }
+}
 
-  int xx1, yy1, xx2, yy2;  // 最良の矩形領域の座標を格納する変数
-
-  ansScore = 0;  // スコアの初期化
-  int loop1 = 0;  // ループ回数のカウンタ
-  while (true) {
-    if (loop1 % 100 == 0) {
-      if (GetNowTime() > TL / 2) break;  // 時間制限の半分を過ぎたらループを抜ける
-    }
-    loop1++;
-    // ランダムに矩形領域を選択
-    int x1 = RandXor() % bSize;
-    int x2 = RandXor() % bSize;
-    int y1 = RandXor() % bSize;
-    int y2 = RandXor() % bSize;
-    if (x1 > x2) swap(x1, x2);  // x1とx2を小さい順に並べ替え
-    if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
-
-    int cnt = 0;  // 選択した領域のスコア
-    srep(i, x1, x2 + 1)
-    {
-      srep(j, y1, y2 + 1)
-      {
-        cnt += block[i][j];  // 選択したセルのスコアを合計
-      }
-    }
-
-    if (cnt > ansScore) {
-      // スコアが改善された場合、解答を更新
-      ansScore = cnt;
-      ans.clear();
-      // 矩形の四隅の座標を計算し、解答に追加
-      ans.emplace_back(x1 * (100000 / bSize), y1 * (100000 / bSize));
-      ans.emplace_back((x2 + 1) * (100000 / bSize), y1 * (100000 / bSize));
-      ans.emplace_back((x2 + 1) * (100000 / bSize), (y2 + 1) * (100000 / bSize));
-      ans.emplace_back(x1 * (100000 / bSize), (y2 + 1) * (100000 / bSize));
-      // 最良の矩形領域のインデックスを保存
-      xx1 = x1;
-      yy1 = y1;
-      xx2 = x2;
-      yy2 = y2;
-    }
-  }
-
-  int f[bSize + 2][bSize + 2];  // 領域の状態を保持する配列（+2は番兵用）
-  rep(i, bSize + 2)
-  {
-    rep(j, bSize + 2)
-    {
-      f[i][j] = 0;  // 初期化
-    }
-  }
-
-  // 最良の矩形領域をf配列に設定
-  srep(i, xx1, xx2 + 1)
-  {
-    srep(j, yy1, yy2 + 1)
-    {
-      f[i + 1][j + 1] = 1;  // 選択した領域を1とする
-    }
-  }
-
-  int haba[bSize + 2][bSize + 2];  // 幅優先探索用の配列
+int f[510][510];  // 領域の状態を保持する配列（+2は番兵用）
+int haba[510][510];  // 幅優先探索用の配列
+void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, const int bSize, int& loop2, double timeLimit)
+{
   queue<P> que;  // 幅優先探索のためのキュー
 
   double nowTime = GetNowTime();  // 現在の経過時間
-  const double START_TEMP = 100.0;  // 焼きなまし法の開始温度
+  const double START_TEMP = 200.0;  // 焼きなまし法の開始温度
   const double END_TEMP = 0.1;      // 焼きなまし法の終了温度
-  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / TL;  // 現在の温度
+  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / timeLimit;  // 現在の温度
 
-  int loop2 = 0;  // ループ回数のカウンタ
   while (true) {
     if (loop2 % 1 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > TL) break;  // 時間制限を過ぎたらループを抜ける
+      if (nowTime > timeLimit) break;  // 時間制限を過ぎたらループを抜ける
     }
     loop2++;
 
@@ -355,7 +294,7 @@ void Method3()
     {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
-      if (IsNG(nx, ny)) continue;  // 範囲外は無視
+      if (IsNG(nx, ny, bSize)) continue;  // 範囲外は無視
       if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // 隣接セルが異なる状態なら変更可能
     }
 
@@ -402,7 +341,7 @@ void Method3()
             {
               int nx = x + dx[k];
               int ny = y + dy[k];
-              if (IsNG(nx - 1, ny - 1)) continue;
+              if (IsNG(nx - 1, ny - 1, bSize)) continue;
               if (haba[nx][ny] == 0 && f[nx][ny] == f[i][j]) {
                 haba[nx][ny] = now;
                 que.push(P(nx, ny));
@@ -538,15 +477,152 @@ void Method3()
       f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // 状態を元に戻す
     }
   }
+}
+
+// 解法のメイン部分を実装する関数
+int ff[510][510];
+void Method3()
+{
+  const int bSize = 20;  // グリッドの分割数（20×20のグリッド）
+
+  InitBlock(bSize);
+
+  int xx1, yy1, xx2, yy2;  // 最良の矩形領域の座標を格納する変数
+
+  ansScore = 0;  // スコアの初期化
+  int loop1 = 0;  // ループ回数のカウンタ
+  while (true) {
+    if (loop1 % 100 == 0) {
+      if (GetNowTime() > TL * 0.25) break;  // 時間制限の半分を過ぎたらループを抜ける
+    }
+    loop1++;
+    // ランダムに矩形領域を選択
+    int x1 = RandXor() % bSize;
+    int x2 = RandXor() % bSize;
+    int y1 = RandXor() % bSize;
+    int y2 = RandXor() % bSize;
+    if (x1 > x2) swap(x1, x2);  // x1とx2を小さい順に並べ替え
+    if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
+
+    int cnt = 0;  // 選択した領域のスコア
+    srep(i, x1, x2 + 1)
+    {
+      srep(j, y1, y2 + 1)
+      {
+        cnt += block[i][j];  // 選択したセルのスコアを合計
+      }
+    }
+
+    if (cnt > ansScore) {
+      // スコアが改善された場合、解答を更新
+      ansScore = cnt;
+      ans.clear();
+      // 矩形の四隅の座標を計算し、解答に追加
+      ans.emplace_back(x1 * (100000 / bSize), y1 * (100000 / bSize));
+      ans.emplace_back((x2 + 1) * (100000 / bSize), y1 * (100000 / bSize));
+      ans.emplace_back((x2 + 1) * (100000 / bSize), (y2 + 1) * (100000 / bSize));
+      ans.emplace_back(x1 * (100000 / bSize), (y2 + 1) * (100000 / bSize));
+      // 最良の矩形領域のインデックスを保存
+      xx1 = x1;
+      yy1 = y1;
+      xx2 = x2;
+      yy2 = y2;
+    }
+  }
+
+
+  rep(i, bSize + 2)
+  {
+    rep(j, bSize + 2)
+    {
+      f[i][j] = 0;  // 初期化
+    }
+  }
+
+  // 最良の矩形領域をf配列に設定
+  srep(i, xx1, xx2 + 1)
+  {
+    srep(j, yy1, yy2 + 1)
+    {
+      f[i + 1][j + 1] = 1;  // 選択した領域を1とする
+    }
+  }
+
+  int loop2 = 0;
+  Method3_SA(xx1, xx2, yy1, yy2, bSize, loop2, TL * 0.75);
+
+  int loop3 = 0;
+  int bSize40 = 40;
+  rep(i, bSize + 2)
+  {
+    rep(j, bSize + 2)
+    {
+      ff[i][j] = f[i][j];
+    }
+  }
+  rep(i, bSize40 + 2)
+  {
+    rep(j, bSize40 + 2)
+    {
+      f[i][j] = 0;
+    }
+  }
+  rep(i, bSize + 2)
+  {
+    rep(j, bSize + 2)
+    {
+      if (ff[i][j] == 1) {
+        f[i * 2 - 1][j * 2 - 1] = 1;
+        f[i * 2 - 1][j * 2] = 1;
+        f[i * 2][j * 2 - 1] = 1;
+        f[i * 2][j * 2] = 1;
+      }
+    }
+  }
+  InitBlock(bSize40);
+  Method3_SA(xx1, xx2, yy1, yy2, bSize40, loop3, TL * 1.0);
+
+  int loop4 = 0;
+  int bSize80 = 80;
+  //rep(i, bSize40 + 2)
+  //{
+  //  rep(j, bSize40 + 2)
+  //  {
+  //    ff[i][j] = f[i][j];
+  //  }
+  //}
+  //rep(i, bSize80 + 2)
+  //{
+  //  rep(j, bSize80 + 2)
+  //  {
+  //    f[i][j] = 0;
+  //  }
+  //}
+  //rep(i, bSize40 + 2)
+  //{
+  //  rep(j, bSize40 + 2)
+  //  {
+  //    if (ff[i][j] == 1) {
+  //      f[i * 2 - 1][j * 2 - 1] = 1;
+  //      f[i * 2 - 1][j * 2] = 1;
+  //      f[i * 2][j * 2 - 1] = 1;
+  //      f[i * 2][j * 2] = 1;
+  //    }
+  //  }
+  //}
+  //InitBlock(bSize80);
+  //Method3_SA(xx1, xx2, yy1, yy2, bSize80, loop4, TL);
+
 
   if (mode != 0) {
     // デバッグ用の出力
     cout << "loop1 = " << loop1 << ", ";
     cout << "loop2 = " << loop2 << ", ";
+    cout << "loop3 = " << loop3 << ", ";
     cout << endl;
-    srep(i, 1, bSize + 1)
+    srep(i, 1, bSize80 + 1)
     {
-      srep(j, 1, bSize + 1)
+      srep(j, 1, bSize80 + 1)
       {
         cout << f[i][j];
       }
