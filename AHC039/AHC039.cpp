@@ -516,7 +516,7 @@ void Method3()
   int loop1 = 0;  // ループ回数のカウンタ
   while (true) {
     if (loop1 % 100 == 0) {
-      if (GetNowTime() > TL * 0.25) break;  // 時間制限の半分を過ぎたらループを抜ける
+      if (GetNowTime() > TL * 0.1) break;  // 時間制限の半分を過ぎたらループを抜ける
     }
     loop1++;
     // ランダムに矩形領域を選択
