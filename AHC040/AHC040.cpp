@@ -310,7 +310,7 @@ vector<Column> Method2_Shoki2() {
   while (true) {
     if (loop % 100 == 0) {
       auto nowTime = GetNowTime();
-      if (nowTime > TL / 3) {
+      if (nowTime > TL / 30) {
         break;
       }
     }
@@ -354,6 +354,75 @@ vector<Column> Method2_Shoki2() {
     }
   }
 
+  while (true) {
+    if (loop % 100 == 0) {
+      auto nowTime = GetNowTime();
+      if (nowTime > TL / 30 * 2) {
+        break;
+      }
+    }
+
+    loop++;
+
+    int widSum = 0;
+    int heiSum = 0;
+
+    int widLimit = RandXor() % 1000000 + 200000;
+
+    int now = 0;
+    int last = -1;
+    int maxHeight = 0;
+
+    int beforeNow = INF;
+    int beforeLast = -1;
+    int beforeMaxHeight = 0;
+    rep(i, n) {
+      int wid = w[i];
+      int hei = h[i];
+      if (tmp[i].rot == 1) {
+        wid = h[i];
+        hei = w[i];
+      }
+
+      if (now < widLimit * 0.9 && beforeNow + wid <= widLimit) {
+        tmp[i].base = beforeLast;
+        beforeLast = i;
+        beforeNow += wid;
+        widSum = max(widSum, beforeNow);
+        if (hei > beforeMaxHeight) {
+          heiSum += hei - beforeMaxHeight;
+          beforeMaxHeight = hei;
+        }
+      }
+      else if (now + wid <= widLimit) {
+        tmp[i].base = last;
+        last = i;
+        now += wid;
+        maxHeight = max(maxHeight, hei);
+      }
+      else {
+        beforeLast = last;
+        beforeMaxHeight = maxHeight;
+        beforeNow = now;
+
+        tmp[i].base = -1;
+        last = i;
+        widSum = max(widSum, now);
+        now = wid;
+        heiSum += maxHeight;
+        maxHeight = hei;
+      }
+    }
+
+    widSum = max(widSum, now);
+    heiSum += maxHeight;
+
+    if (widSum + heiSum < bestScore) {
+      bestScore = widSum + heiSum;
+      best = tmp;
+    }
+  }
+
   return best;
 }
 
@@ -364,12 +433,13 @@ void Method2(ofstream& ofs) {
   vector<Column> tmp(n);
 
   rep(aespa, t) {
+    int raMode = RandXor() % 2;
     if (aespa == 0) {
       tmp = Method2_Shoki2();
     }
     else {
       tmp = best;
-      if (RandXor() % 2 == 0) {
+      if (raMode == 0) {
         int ra = RandXor() % n;
         tmp[ra].rot = 1 - tmp[ra].rot;
       }
@@ -425,6 +495,9 @@ void Method2(ofstream& ofs) {
 
     int tmpScore = ww + hh;
     if (tmpScore < bestScore) {
+      if (mode != 0 && aespa > 0) {
+        //cout << "turn = " << aespa + 1 << ", raMode = " << raMode << endl;
+      }
       bestScore = tmpScore;
       best = tmp;
     }
@@ -697,6 +770,16 @@ int main() {
 
   if (mode == 0) {
     Solve(0);
+  }
+  else if (mode == 3) {
+    rep(_, 10) {
+      ll sum = 0;
+      srep(i, 0, 100) {
+        ll score = Solve(i);
+        sum += score;
+      }
+      cout << sum << endl;
+    }
   }
   else {
     ll sum = 0;
