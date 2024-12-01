@@ -116,6 +116,12 @@ struct Column {
   int base;
 };
 
+struct Score {
+  int score;
+  int ww;
+  int hh;
+};
+
 const int MAX_N = 100;
 const int MAX_T = 400;
 
@@ -126,7 +132,7 @@ int W[MAX_N], H[MAX_N];
 int dW[MAX_T], dH[MAX_T];
 
 int queryCount;
-int tScore[MAX_T];
+Score tScore[MAX_T];
 
 void CopyToBest() {
 }
@@ -179,12 +185,15 @@ void OpenOfs(int probNum, ofstream& ofs) {
   }
 }
 
-int CalcTScore() {
-  int score = INF;
+Score CalcTScore() {
+  Score res;
+  res.score = INF;
   rep(i, queryCount) {
-    score = min(score, tScore[i]);
+    if (tScore[i].score < res.score) {
+      res = tScore[i];
+    }
   }
-  return score;
+  return res;
 }
 
 int cs_use[MAX_N] = {};
@@ -289,7 +298,10 @@ void Print(const vector<Column>& columns, int& ww, int& hh, ofstream& ofs) {
     hh += dH[queryCount];
   }
 
-  tScore[queryCount] = ww + hh;
+
+  tScore[queryCount].hh = hh;
+  tScore[queryCount].ww = ww;
+  tScore[queryCount].score = hh + ww;
   queryCount++;
 }
 
@@ -763,10 +775,11 @@ ll Solve(int problem_num) {
     ofs.close();
   }
 
-  ll score = 0;
+  int score = 0;
   if (mode != 0) {
-    int ww, hh;
-    score = CalcTScore();
+    Score sc = CalcTScore();
+    cout << "ww = " << sc.ww << ", hh = " << sc.hh << ", score = " << sc.score << endl;
+    score = sc.score;
   }
   return score;
 }
