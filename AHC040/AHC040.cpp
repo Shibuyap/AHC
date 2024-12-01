@@ -304,60 +304,6 @@ void Print(const vector<Column>& columns, int& ww, int& hh, ofstream& ofs) {
   queryCount++;
 }
 
-// ナイーブな解法
-void Method1(ofstream& ofs) {
-  Column best[100];
-  int bestScore = INT_INF;
-  int turn = -1;
-  rep(aespa, t - 1) {
-    Column tmp[100];
-    rep(i, n) {
-      tmp[i].piece = i;
-      tmp[i].rot = 0;
-      tmp[i].dir = 0;
-      if (i < 5) {
-        tmp[i].base = -1;
-      }
-      else if (i % 5 == 0) {
-        int ra = RandXor() % 5;
-        tmp[i].base = (i / 5 - 1) * 5 + ra;
-      }
-      else {
-        tmp[i].base = tmp[i - 1].base;
-      }
-    }
-
-    cout << n << endl;
-    rep(i, n) {
-      cout << tmp[i].piece << ' ' << tmp[i].rot << ' ' << (tmp[i].dir == 0 ? 'U' : 'L') << ' ' << tmp[i].base << endl;
-    }
-    fflush(stdout);
-
-    int ww, hh;
-    cin >> ww >> hh;
-    cerr << aespa << ' ' << ww << ' ' << hh << ' ' << ww + hh << endl;
-    if (ww + hh < bestScore) {
-      turn = aespa;
-      bestScore = ww + hh;
-      rep(i, n) {
-        best[i] = tmp[i];
-      }
-    }
-  }
-
-  {
-    cout << n << endl;
-    rep(i, n) {
-      cout << best[i].piece << ' ' << best[i].rot << ' ' << (best[i].dir == 0 ? 'U' : 'L') << ' ' << best[i].base << endl;
-    }
-    fflush(stdout);
-
-    int ww, hh;
-    cin >> ww >> hh;
-    cerr << "turn = " << turn << endl;
-  }
-}
-
 void Method2(ofstream& ofs) {
   vector<Column> best(n);
   int bestScore = INT_INF;
