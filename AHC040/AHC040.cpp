@@ -354,10 +354,12 @@ vector<Column> Method2_Shoki2() {
     }
   }
 
+  int keepRot[MAX_N];
+  int keepRotCount = 0;
   while (true) {
     if (loop % 100 == 0) {
       auto nowTime = GetNowTime();
-      if (nowTime > TL / 30 * 2) {
+      if (nowTime > TL / 30 * 25) {
         break;
       }
     }
@@ -376,7 +378,17 @@ vector<Column> Method2_Shoki2() {
     int beforeNow = INF;
     int beforeLast = -1;
     int beforeMaxHeight = 0;
+
+    int isRandomRot = RandXor() % 10;
+
+    keepRotCount = 0;
     rep(i, n) {
+      if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
+        tmp[i].rot = 1 - tmp[i].rot;
+        keepRot[keepRotCount] = i;
+        keepRotCount++;
+      }
+
       int wid = w[i];
       int hei = h[i];
       if (tmp[i].rot == 1) {
@@ -420,6 +432,11 @@ vector<Column> Method2_Shoki2() {
     if (widSum + heiSum < bestScore) {
       bestScore = widSum + heiSum;
       best = tmp;
+    }
+
+    rep(i, keepRotCount) {
+      int ii = keepRot[i];
+      tmp[ii].rot = 1 - tmp[ii].rot;
     }
   }
 
