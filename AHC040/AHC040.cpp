@@ -266,16 +266,6 @@ int CalcScore(const vector<Column>& columns, bool cheat, int& ww, int& hh) {
   return score;
 }
 
-// 解答を出力する関数
-void Output(ofstream& ofs) {
-  if (mode == 0) {
-    // 標準出力
-  }
-  else {
-    // ファイル出力
-  }
-}
-
 void Print(const vector<Column>& columns, int& ww, int& hh, ofstream& ofs) {
   ww = 0;
   hh = 0;
@@ -627,9 +617,6 @@ ll Solve(int problem_num) {
   // 初期解生成
   Method2(ofs);
   //Yamanobori(ofs);
-
-  // 解答を出力
-  Output(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
