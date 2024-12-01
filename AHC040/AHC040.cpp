@@ -82,8 +82,7 @@ std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
 // îÒèÌÇ…ëÂÇ´Ç»íl
-const ll INF = 1001001001001001001;
-const int INT_INF = 1001001001;
+const int INF = 1001001001;
 
 // à⁄ìÆï˚å¸ÇÃîzóÒ
 const int dx[4] = { -1, 0, 1, 0 };
@@ -181,7 +180,7 @@ void OpenOfs(int probNum, ofstream& ofs) {
 }
 
 int CalcTScore() {
-  int score = INT_INF;
+  int score = INF;
   rep(i, queryCount) {
     score = min(score, tScore[i]);
   }
@@ -294,27 +293,79 @@ void Print(const vector<Column>& columns, int& ww, int& hh, ofstream& ofs) {
   queryCount++;
 }
 
+vector<Column> Method2_Shoki2() {
+  vector<Column> best(n);
+  int bestScore = INF;
+
+  vector<Column> tmp(n);
+  rep(i, n) {
+    tmp[i].piece = i;
+    tmp[i].rot = 0;
+    if (w[i] > h[i]) tmp[i].rot = 1;
+    tmp[i].dir = 0;
+    tmp[i].base = i - 1;
+  }
+
+  int loop = 0;
+  while (true) {
+    if (loop % 100 == 0) {
+      auto nowTime = GetNowTime();
+      if (nowTime > TL / 3) {
+        break;
+      }
+    }
+
+    loop++;
+
+    int widSum = 0;
+    int heiSum = 0;
+
+    int widLimit = RandXor() % 1000000 + 200000;
+    int now = 0;
+    int maxHeight = 0;
+    rep(i, n) {
+      int wid = w[i];
+      int hei = h[i];
+      if (tmp[i].rot == 1) {
+        wid = h[i];
+        hei = w[i];
+      }
+
+      if (now + wid <= widLimit) {
+        tmp[i].base = i - 1;
+        now += wid;
+        maxHeight = max(maxHeight, hei);
+      }
+      else {
+        tmp[i].base = -1;
+        widSum = max(widSum, now);
+        now = wid;
+        heiSum += maxHeight;
+        maxHeight = hei;
+      }
+    }
+
+    widSum = max(widSum, now);
+    heiSum += maxHeight;
+
+    if (widSum + heiSum < bestScore) {
+      bestScore = widSum + heiSum;
+      best = tmp;
+    }
+  }
+
+  return best;
+}
+
 void Method2(ofstream& ofs) {
   vector<Column> best(n);
-  int bestScore = INT_INF;
+  int bestScore = INF;
 
-  int width = sqrt(n * 2);
+  vector<Column> tmp(n);
 
   rep(aespa, t) {
-    vector<Column> tmp(n);
     if (aespa == 0) {
-      rep(i, n) {
-        tmp[i].piece = i;
-        tmp[i].rot = 0;
-        if (w[i] > h[i]) tmp[i].rot = 1;
-        tmp[i].dir = 0;
-        if (i % width == 0) {
-          tmp[i].base = -1;
-        }
-        else {
-          tmp[i].base = i - 1;
-        }
-      }
+      tmp = Method2_Shoki2();
     }
     else {
       tmp = best;
@@ -386,10 +437,10 @@ int nowSum[MAX_N * 2 + MAX_T];
 int keisoku[MAX_N * 2 + MAX_T];
 void Yamanobori(ofstream& ofs) {
   vector<Column> best(n);
-  int bestScore = INT_INF;
+  int bestScore = INF;
 
   vector<Column> tmp(n);
-  int tmpScore = INT_INF;
+  int tmpScore = INF;
   int loop = 0;
 
   double nowTime = GetNowTime();  // åªç›ÇÃåoâﬂéûä‘
@@ -625,7 +676,7 @@ ll Solve(int problem_num) {
   ll score = 0;
   if (mode != 0) {
     int ww, hh;
-    score = CalcScore(bestbest, true, ww, hh);
+    score = CalcTScore();
   }
   return score;
 }
