@@ -592,7 +592,7 @@ int main() {
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100) {
+    srep(i, 0, 5) {
       ll score = Solve(i);
       sum += score;
       if (mode == 1) {
