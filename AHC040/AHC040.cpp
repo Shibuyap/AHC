@@ -305,7 +305,176 @@ void Print(const vector<Column>& columns, int& ww, int& hh, ofstream& ofs) {
   queryCount++;
 }
 
+int bestsCount;
+vector<Column> bests[MAX_T];
+int bestScores[MAX_T];
+
+void Method2_Shoki2_Internal1(vector<Column>& tmp, vector<Column>& best, int& bestScore) {
+  int widSum = 0;
+  int heiSum = 0;
+
+  int widLimit = RandXor() % 1000000 + 200000;
+  int now = 0;
+  int maxHeight = 0;
+  rep(i, n) {
+    int wid = w[i];
+    int hei = h[i];
+    if (tmp[i].rot == 1) {
+      wid = h[i];
+      hei = w[i];
+    }
+
+    if (now + wid <= widLimit) {
+      tmp[i].base = i - 1;
+      now += wid;
+      maxHeight = max(maxHeight, hei);
+    }
+    else {
+      tmp[i].base = -1;
+      widSum = max(widSum, now);
+      now = wid;
+      heiSum += maxHeight;
+      maxHeight = hei;
+    }
+  }
+
+  widSum = max(widSum, now);
+  heiSum += maxHeight;
+
+  {
+    int tmpScore = widSum + heiSum;
+    if (bestsCount < t / 2) {
+      bests[bestsCount] = tmp;
+      bestScores[bestsCount] = tmpScore;
+      bestsCount++;
+    }
+    else if (tmpScore < bestScores[bestsCount - 1]) {
+      bests[bestsCount - 1] = tmp;
+      bestScores[bestsCount - 1] = tmpScore;
+    }
+    int now = bestsCount - 1;
+    while (now >= 1) {
+      if (bestScores[now] < bestScores[now - 1]) {
+        swap(bests[now], bests[now - 1]);
+        swap(bestScores[now], bestScores[now - 1]);
+        now--;
+      }
+      else {
+        break;
+      }
+    }
+  }
+
+  if (widSum + heiSum < bestScore) {
+    bestScore = widSum + heiSum;
+    best = tmp;
+  }
+}
+
+int keepRot[MAX_N];
+int keepRotCount = 0;
+void Method2_Shoki2_Internal2(vector<Column>& tmp, vector<Column>& best, int& bestScore) {
+  int widSum = 0;
+  int heiSum = 0;
+
+  int widLimit = RandXor() % 1000000 + 200000;
+
+  int now = 0;
+  int last = -1;
+  int maxHeight = 0;
+
+  int beforeNow = INF;
+  int beforeLast = -1;
+  int beforeMaxHeight = 0;
+
+  int isRandomRot = RandXor() % 10;
+
+  keepRotCount = 0;
+  rep(i, n) {
+    if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
+      tmp[i].rot = 1 - tmp[i].rot;
+      keepRot[keepRotCount] = i;
+      keepRotCount++;
+    }
+
+    int wid = w[i];
+    int hei = h[i];
+    if (tmp[i].rot == 1) {
+      wid = h[i];
+      hei = w[i];
+    }
+
+    if (now < widLimit * 0.9 && beforeNow + wid <= widLimit) {
+      tmp[i].base = beforeLast;
+      beforeLast = i;
+      beforeNow += wid;
+      widSum = max(widSum, beforeNow);
+      if (hei > beforeMaxHeight) {
+        heiSum += hei - beforeMaxHeight;
+        beforeMaxHeight = hei;
+      }
+    }
+    else if (now + wid <= widLimit) {
+      tmp[i].base = last;
+      last = i;
+      now += wid;
+      maxHeight = max(maxHeight, hei);
+    }
+    else {
+      beforeLast = last;
+      beforeMaxHeight = maxHeight;
+      beforeNow = now;
+
+      tmp[i].base = -1;
+      last = i;
+      widSum = max(widSum, now);
+      now = wid;
+      heiSum += maxHeight;
+      maxHeight = hei;
+    }
+  }
+
+  widSum = max(widSum, now);
+  heiSum += maxHeight;
+
+  {
+    int tmpScore = widSum + heiSum;
+    if (bestsCount < t / 2) {
+      bests[bestsCount] = tmp;
+      bestScores[bestsCount] = tmpScore;
+      bestsCount++;
+    }
+    else if (tmpScore < bestScores[bestsCount - 1]) {
+      bests[bestsCount - 1] = tmp;
+      bestScores[bestsCount - 1] = tmpScore;
+    }
+    int now = bestsCount - 1;
+    while (now >= 1) {
+      if (bestScores[now] < bestScores[now - 1]) {
+        swap(bests[now], bests[now - 1]);
+        swap(bestScores[now], bestScores[now - 1]);
+        now--;
+      }
+      else {
+        break;
+      }
+    }
+  }
+
+  if (widSum + heiSum < bestScore) {
+    bestScore = widSum + heiSum;
+    best = tmp;
+  }
+
+  rep(i, keepRotCount) {
+    int ii = keepRot[i];
+    tmp[ii].rot = 1 - tmp[ii].rot;
+  }
+}
+
 vector<Column> Method2_Shoki2() {
+  bestsCount = 0;
+
   vector<Column> best(n);
   int bestScore = INF;
 
@@ -329,45 +498,9 @@ vector<Column> Method2_Shoki2() {
 
     loop++;
 
-    int widSum = 0;
-    int heiSum = 0;
-
-    int widLimit = RandXor() % 1000000 + 200000;
-    int now = 0;
-    int maxHeight = 0;
-    rep(i, n) {
-      int wid = w[i];
-      int hei = h[i];
-      if (tmp[i].rot == 1) {
-        wid = h[i];
-        hei = w[i];
-      }
-
-      if (now + wid <= widLimit) {
-        tmp[i].base = i - 1;
-        now += wid;
-        maxHeight = max(maxHeight, hei);
-      }
-      else {
-        tmp[i].base = -1;
-        widSum = max(widSum, now);
-        now = wid;
-        heiSum += maxHeight;
-        maxHeight = hei;
-      }
-    }
-
-    widSum = max(widSum, now);
-    heiSum += maxHeight;
-
-    if (widSum + heiSum < bestScore) {
-      bestScore = widSum + heiSum;
-      best = tmp;
-    }
+    Method2_Shoki2_Internal1(tmp, best, bestScore);
   }
 
-  int keepRot[MAX_N];
-  int keepRotCount = 0;
   while (true) {
     if (loop % 100 == 0) {
       auto nowTime = GetNowTime();
@@ -378,155 +511,93 @@ vector<Column> Method2_Shoki2() {
 
     loop++;
 
-    int widSum = 0;
-    int heiSum = 0;
-
-    int widLimit = RandXor() % 1000000 + 200000;
-
-    int now = 0;
-    int last = -1;
-    int maxHeight = 0;
-
-    int beforeNow = INF;
-    int beforeLast = -1;
-    int beforeMaxHeight = 0;
-
-    int isRandomRot = RandXor() % 10;
-
-    keepRotCount = 0;
-    rep(i, n) {
-      if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
-        tmp[i].rot = 1 - tmp[i].rot;
-        keepRot[keepRotCount] = i;
-        keepRotCount++;
-      }
-
-      int wid = w[i];
-      int hei = h[i];
-      if (tmp[i].rot == 1) {
-        wid = h[i];
-        hei = w[i];
-      }
-
-      if (now < widLimit * 0.9 && beforeNow + wid <= widLimit) {
-        tmp[i].base = beforeLast;
-        beforeLast = i;
-        beforeNow += wid;
-        widSum = max(widSum, beforeNow);
-        if (hei > beforeMaxHeight) {
-          heiSum += hei - beforeMaxHeight;
-          beforeMaxHeight = hei;
-        }
-      }
-      else if (now + wid <= widLimit) {
-        tmp[i].base = last;
-        last = i;
-        now += wid;
-        maxHeight = max(maxHeight, hei);
-      }
-      else {
-        beforeLast = last;
-        beforeMaxHeight = maxHeight;
-        beforeNow = now;
-
-        tmp[i].base = -1;
-        last = i;
-        widSum = max(widSum, now);
-        now = wid;
-        heiSum += maxHeight;
-        maxHeight = hei;
-      }
-    }
-
-    widSum = max(widSum, now);
-    heiSum += maxHeight;
-
-    if (widSum + heiSum < bestScore) {
-      bestScore = widSum + heiSum;
-      best = tmp;
-    }
-
-    rep(i, keepRotCount) {
-      int ii = keepRot[i];
-      tmp[ii].rot = 1 - tmp[ii].rot;
-    }
+    Method2_Shoki2_Internal2(tmp, best, bestScore);
   }
 
   return best;
 }
 
 void Method2(ofstream& ofs) {
+
   vector<Column> best(n);
   int bestScore = INF;
 
   vector<Column> tmp(n);
 
-  rep(aespa, t) {
+  tmp = Method2_Shoki2();
+
+  rep(aespa, bestsCount) {
+    tmp = bests[aespa];
+    int ww, hh;
+    Print(tmp, ww, hh, ofs);
+
+    int tmpScore = ww + hh;
+    if (tmpScore < bestScore) {
+      bestScore = tmpScore;
+      best = tmp;
+    }
+  }
+
+  srep(aespa, bestsCount, t) {
     int raMode = RandXor() % 2;
-    if (aespa == 0) {
-      tmp = Method2_Shoki2();
+
+    tmp = best;
+    if (raMode == 0) {
+      int ra = RandXor() % n;
+      tmp[ra].rot = 1 - tmp[ra].rot;
     }
     else {
-      tmp = best;
-      if (raMode == 0) {
-        int ra = RandXor() % n;
-        tmp[ra].rot = 1 - tmp[ra].rot;
+      vector<vector<Column>> vvc;
+      vector<Column> vc;
+      for (auto col : best) {
+        if (col.base == -1 && !vc.empty()) {
+          vvc.push_back(vc);
+          vc.clear();
+        }
+        vc.push_back(col);
       }
-      else {
-        vector<vector<Column>> vvc;
-        vector<Column> vc;
-        for (auto col : best) {
-          if (col.base == -1 && !vc.empty()) {
-            vvc.push_back(vc);
-            vc.clear();
-          }
-          vc.push_back(col);
-        }
-        vvc.push_back(vc);
-        if (vvc.size() >= 2) {
-          while (true) {
-            int ra1 = RandXor() % (vvc.size() - 1);
-            int ra2 = RandXor() % 2;
-            if (ra2 == 0) {
-              if (vvc[ra1].size() >= 2) {
-                vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
-                vvc[ra1].pop_back();
-                break;
-              }
+      vvc.push_back(vc);
+      if (vvc.size() >= 2) {
+        while (true) {
+          int ra1 = RandXor() % (vvc.size() - 1);
+          int ra2 = RandXor() % 2;
+          if (ra2 == 0) {
+            if (vvc[ra1].size() >= 2) {
+              vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
+              vvc[ra1].pop_back();
+              break;
             }
-            else {
-              if (vvc[ra1 + 1].size() >= 2) {
-                vvc[ra1].push_back(vvc[ra1 + 1][0]);
-                vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
-                break;
-              }
+          }
+          else {
+            if (vvc[ra1 + 1].size() >= 2) {
+              vvc[ra1].push_back(vvc[ra1 + 1][0]);
+              vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
+              break;
             }
           }
         }
-        tmp.clear();
-        rep(i, vvc.size()) {
-          rep(j, vvc[i].size()) {
-            Column col = vvc[i][j];
-            if (j == 0) {
-              col.base = -1;
-            }
-            else {
-              col.base = vvc[i][j - 1].piece;
-            }
-            tmp.push_back(col);
+      }
+      tmp.clear();
+      rep(i, vvc.size()) {
+        rep(j, vvc[i].size()) {
+          Column col = vvc[i][j];
+          if (j == 0) {
+            col.base = -1;
           }
+          else {
+            col.base = vvc[i][j - 1].piece;
+          }
+          tmp.push_back(col);
         }
       }
     }
+
 
     int ww, hh;
     Print(tmp, ww, hh, ofs);
 
     int tmpScore = ww + hh;
     if (tmpScore < bestScore) {
-      if (mode != 0 && aespa > 0) {
-        //cout << "turn = " << aespa + 1 << ", raMode = " << raMode << endl;
-      }
       bestScore = tmpScore;
       best = tmp;
     }
@@ -592,7 +663,7 @@ int main() {
   }
   else {
     ll sum = 0;
-    srep(i, 0, 5) {
+    srep(i, 0, 100) {
       ll score = Solve(i);
       sum += score;
       if (mode == 1) {
