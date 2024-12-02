@@ -310,7 +310,7 @@ int bestsCount;
 vector<Piece> bests[MAX_T];
 int bestScores[MAX_T];
 
-void Method2_Shoki2_Internal1(vector<Piece>& tmp) {
+void Method1_Shoki1_Internal1(vector<Piece>& tmp) {
   int widSum = 0;
   int heiSum = 0;
 
@@ -369,7 +369,7 @@ void Method2_Shoki2_Internal1(vector<Piece>& tmp) {
 
 int keepRot[MAX_N];
 int keepRotCount = 0;
-void Method2_Shoki2_Internal2(vector<Piece>& tmp) {
+void Method1_Shoki1_Internal2(vector<Piece>& tmp) {
   int widSum = 0;
   int heiSum = 0;
 
@@ -463,7 +463,7 @@ void Method2_Shoki2_Internal2(vector<Piece>& tmp) {
   }
 }
 
-void Method2_Shoki2() {
+void Method1_Shoki1() {
   bestsCount = 0;
 
   vector<Piece> tmp(n);
@@ -486,7 +486,7 @@ void Method2_Shoki2() {
 
     loop++;
 
-    Method2_Shoki2_Internal1(tmp);
+    Method1_Shoki1_Internal1(tmp);
   }
 
   while (true) {
@@ -499,18 +499,18 @@ void Method2_Shoki2() {
 
     loop++;
 
-    Method2_Shoki2_Internal2(tmp);
+    Method1_Shoki1_Internal2(tmp);
   }
 }
 
-void Method2(ofstream& ofs) {
+void Method1(ofstream& ofs) {
 
   vector<Piece> best(n);
   int bestScore = INF;
 
   vector<Piece> tmp(n);
 
-  Method2_Shoki2();
+  Method1_Shoki1();
 
   rep(aespa, bestsCount) {
     tmp = bests[aespa];
@@ -598,19 +598,19 @@ ll Solve(int problem_num) {
   OpenOfs(problem_num, ofs);
 
   // èâä˙âê∂ê¨
-  Method2(ofs);
+  Method1(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
   }
 
-  int score = 0;
+  Score score;
+  score.score = 0;
   if (mode != 0) {
-    Score sc = CalcTScore();
-    cout << "ww = " << sc.ww << ", hh = " << sc.hh << ", score = " << sc.score << endl;
-    score = sc.score;
+    score = CalcTScore();
+    cout << "ww = " << score.ww << ", hh = " << score.hh << ", score = " << score.score << endl;
   }
-  return score;
+  return score.score;
 }
 
 /////////////////////////////////////////////////////////////////////////
