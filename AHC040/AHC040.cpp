@@ -263,7 +263,7 @@ public:
 };
 
 class Board {
-private:
+public:
   Row rows[MAX_N];
   int sz;
   int maxWidth;
@@ -804,6 +804,7 @@ void InitializePieces() {
 }
 
 int sizeRank[MAX_N];
+int sizeSize[MAX_N];
 void InitializeSizeRank() {
   vector<P> vp;
   rep(i, n) {
@@ -812,6 +813,7 @@ void InitializeSizeRank() {
   sort(vp.begin(), vp.end());
   rep(i, n) {
     sizeRank[vp[i].second] = i;
+    sizeSize[vp[i].second] = vp[i].first;
   }
 }
 
@@ -940,7 +942,7 @@ void Method2_Shoki1_Internal3() {
       piece.rot = 1 - piece.rot;
     }
 
-    if (isUsePiece2_1 < 50 && sizeRank[i] < 10) {
+    if (isUsePiece2_1 < 50 && (sizeRank[i] < 10 || sizeSize[i] < MAX_HEIGHT / 2)) {
       if (row.sz > 0 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.1) {
         int ok = 1;
         if (RandXor() % 25 > isUsePiece2_1) {
@@ -952,7 +954,7 @@ void Method2_Shoki1_Internal3() {
         }
       }
     }
-    else if (isUsePiece2_1 < 100 && sizeRank[i] < 10) {
+    else if (isUsePiece2_1 < 100 && (sizeRank[i] < 10 || sizeSize[i] < MAX_HEIGHT / 2)) {
       if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.0) {
         int ok = 1;
         if (RandXor() % 2 == 0) {
@@ -960,6 +962,65 @@ void Method2_Shoki1_Internal3() {
         }
         if (ok) {
           row.addPiece(row.sz - 1, piece);
+          continue;
+        }
+      }
+
+      if (row.sz >= 2) {
+        int isAdd = 0;
+        rep(j, row.sz - 1) {
+          if (row.blocks[j].count() == 1 && row.blocks[j].height() + piece.height() < MAX_HEIGHT * 1.0 && piece.width() < row.blocks[j].width()) {
+            int ok = 1;
+            if (RandXor() % 2 == 0) {
+              ok = 0;
+            }
+            if (ok) {
+              row.addPiece(j, piece);
+              isAdd = 1;
+              break;
+            }
+          }
+        }
+        if (isAdd) {
+          continue;
+        }
+      }
+    }
+    else if (isUsePiece2_1 < 150 && (sizeRank[i] < 10 || sizeSize[i] < MAX_HEIGHT / 2)) {
+      if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.0) {
+        int ok = 1;
+        if (RandXor() % 2 == 0) {
+          ok = 0;
+        }
+        if (ok) {
+          row.addPiece(row.sz - 1, piece);
+          continue;
+        }
+      }
+
+      if (board.sz >= 1) {
+        int isAdd = 0;
+        int nowWidth = 0;
+        rep(j, board.rows[board.sz - 1].sz - 1) {
+          if (nowWidth < row.sumWidth) {
+            nowWidth += board.rows[board.sz - 1].blocks[j].width();
+            continue;
+          }
+          if (board.rows[board.sz - 1].blocks[j].count() == 1
+            && board.rows[board.sz - 1].blocks[j].height() + piece.height() < MAX_HEIGHT * 1.0
+            && piece.width() < board.rows[board.sz - 1].blocks[j].width()) {
+            int ok = 1;
+            if (RandXor() % 2 == 0) {
+              ok = 0;
+            }
+            if (ok) {
+              board.rows[board.sz - 1].addPiece(j, piece);
+              isAdd = 1;
+              break;
+            }
+          }
+        }
+        if (isAdd) {
           continue;
         }
       }
