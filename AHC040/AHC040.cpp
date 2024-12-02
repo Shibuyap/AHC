@@ -383,6 +383,13 @@ void Input(int problemNum) {
     h[i] = max(MIN_HEIGHT, h[i]);
     h[i] = min(MAX_HEIGHT, h[i]);
   }
+
+  if (mode == 4) {
+    rep(i, n) {
+      w[i] = W[i];
+      h[i] = H[i];
+    }
+  }
 }
 
 // 出力ファイルストリームを開く関数
