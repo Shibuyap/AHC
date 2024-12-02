@@ -88,7 +88,7 @@ const int INF = 1001001001;
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 2.8;                                       // 時間制限（Time Limit）
+double TL = 12.8;                                       // 時間制限（Time Limit）
 int mode;                                              // 実行モード
 std::chrono::steady_clock::time_point startTimeClock;  // 時間計測用
 
@@ -375,6 +375,9 @@ void Input(int problemNum) {
     rep(i, n) {
       ifs >> W[i] >> H[i];
     }
+    rep(i, t) {
+      ifs >> dW[i] >> dH[i];
+    }
   }
 
   rep(i, n) {
@@ -385,9 +388,13 @@ void Input(int problemNum) {
   }
 
   if (mode == 4) {
-    rep(i, n) {
-      w[i] = W[i];
-      h[i] = H[i];
+    //rep(i, n) {
+    //  w[i] = W[i];
+    //  h[i] = H[i];
+    //}
+    rep(i, t) {
+      dW[i] = 0;
+      dH[i] = 0;
     }
   }
 }
@@ -1212,6 +1219,161 @@ void Method2(ofstream& ofs) {
   }
 }
 
+bool ff[MAX_N * 2 + MAX_T][MAX_N * 2];
+int nowSum[MAX_N * 2 + MAX_T];
+int keisoku[MAX_N * 2 + MAX_T];
+void Yamanobori(ofstream& ofs) {
+  int originH[MAX_N], originW[MAX_N];
+  rep(i, n) {
+    originH[i] = h[i];
+    originW[i] = w[i];
+  }
+
+
+  rep(i, n * 2 + t) {
+    rep(j, n * 2) {
+      ff[i][j] = false;
+    }
+  }
+  rep(i, n * 2) {
+    ff[i][i] = true;
+  }
+
+  rep(i, n * 2 + t) {
+    nowSum[i] = 0;
+    nowSum[i] = 0;
+    keisoku[i] = 0;
+    keisoku[i] = 0;
+  }
+
+
+  rep(i, n) {
+    nowSum[i * 2] = h[i];
+    nowSum[i * 2 + 1] = w[i];
+    keisoku[i * 2] = h[i];
+    keisoku[i * 2 + 1] = w[i];
+  }
+
+  int TT = t;
+  rep(aespa, TT) {
+    vector<Piece> cols;
+    rep(i, n) {
+      if (RandXor() % 2 == 0) {
+        Piece col;
+        col.num = i;
+        col.rot = RandXor() % 2;
+        col.dir = 0;
+        col.base = -1;
+        cols.push_back(col);
+      }
+    }
+    if (cols.size() == 0) {
+      Piece col;
+      col.num = RandXor() % n;
+      col.rot = RandXor() % 2;
+      col.dir = 0;
+      col.base = -1;
+      cols.push_back(col);
+    }
+
+    Score score = Print(cols, ofs);
+
+    keisoku[n * 2 + aespa] = score.hh;
+    for (auto col : cols) {
+      int num = col.num * 2;
+      if (col.rot == 1)num++;
+      ff[n * 2 + aespa][num] = true;
+      if (col.rot == 0) {
+        nowSum[n * 2 + aespa] += h[col.num];
+      }
+      else {
+        nowSum[n * 2 + aespa] += w[col.num];
+      }
+    }
+  }
+
+  double timeLimit = TL / 3;
+  int loop = 0;
+  double nowTime = GetNowTime();  // 現在の経過時間
+  const double START_TEMP = 200.0;  // 焼きなまし法の開始温度
+  const double END_TEMP = 0.1;      // 焼きなまし法の終了温度
+  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / timeLimit;  // 現在の温度
+
+  while (true) {
+    if (loop % 100 == 0) {
+      auto nowTime = GetNowTime();
+      if (nowTime > timeLimit) {
+        break;
+      }
+    }
+    loop++;
+
+    int raP = RandXor() % (n * 2);
+    int diffSize = RandXor() % 3;
+    int raDiff = RandXor() % 2001 - 1000;
+    if (diffSize == 1) {
+      raDiff = RandXor() % 201 - 100;
+    }
+    else if (diffSize == 2) {
+      raDiff = RandXor() % 21 - 10;
+    }
+
+    if (raP % 2 == 0) {
+      if (h[raP / 2] + raDiff < 10000)continue;
+      if (h[raP / 2] + raDiff > 100000)continue;
+    }
+    else {
+      if (w[raP / 2] + raDiff < 10000)continue;
+      if (w[raP / 2] + raDiff > 100000)continue;
+    }
+    int beforeDiffSum = 0;
+    int afterDiffSum = 0;
+
+    //beforeDiffSum += abs(keisoku[raP] - nowSum[raP]);
+    //nowSum[raP] += raDiff;
+    //afterDiffSum += abs(keisoku[raP] - nowSum[raP]);
+    srep(aespa, n * 2, n * 2 + TT) {
+      if (ff[aespa][raP]) {
+        beforeDiffSum += abs(keisoku[aespa] - nowSum[aespa]);
+        nowSum[aespa] += raDiff;
+        afterDiffSum += abs(keisoku[aespa] - nowSum[aespa]);
+      }
+    }
+
+    const double progressRatio = nowTime / timeLimit;  // 進捗率（0.0～1.0）
+    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio * progressRatio * progressRatio;  // 温度の更新
+    double diff = beforeDiffSum - afterDiffSum;  // スコアの差分
+    double prob = exp(diff / temp);     // 焼きなまし法の採用確率
+
+    if (prob > Rand01()) {
+      if (raP % 2 == 0) {
+        h[raP / 2] += raDiff;
+      }
+      else {
+        w[raP / 2] += raDiff;
+      }
+    }
+    else {
+      nowSum[raP] -= raDiff;
+      srep(aespa, n * 2, n * 2 + TT) {
+        if (ff[aespa][raP]) {
+          nowSum[aespa] -= raDiff;
+        }
+      }
+    }
+  }
+
+  int diffSum1 = 0, diffSum2 = 0;
+  cout << "loop = " << loop << ", t = " << t / 2 << endl;
+  cout << "元 最終 正解" << endl;
+  rep(i, n) {
+    cout << originH[i] << ' ' << h[i] << ' ' << H[i] << endl;
+    diffSum1 += abs(originH[i] - H[i]);
+    diffSum2 += abs(h[i] - H[i]);
+  }
+  cout << diffSum1 << "  " << diffSum2 << endl;
+}
+
 // 問題を解く関数
 ll Solve(int problem_num) {
   ResetTime();
@@ -1229,7 +1391,8 @@ ll Solve(int problem_num) {
   // 初期解生成
   InitializePieces();
   InitializeSizeRank();
-  Method2(ofs);
+  Yamanobori(ofs);
+  //Method2(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -1273,7 +1436,7 @@ int main() {
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100) {
+    srep(i, 5, 6) {
       ll score = Solve(i);
       sum += score;
       if (mode == 1) {
