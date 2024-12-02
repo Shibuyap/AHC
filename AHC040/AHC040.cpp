@@ -111,6 +111,10 @@ bool isCrossing(double l1, double r1, double l2, double r2) {
 
 const int MAX_N = 100;
 const int MAX_T = 400;
+const int MAX_WIDTH = 100000;
+const int MIN_WIDTH = 10000;
+const int MAX_HEIGHT = 100000;
+const int MIN_HEIGHT = 10000;
 
 int n, t, sigma;
 int w[MAX_N], h[MAX_N];
@@ -241,6 +245,14 @@ public:
     blocks[sz - 1].SetBase(base);
   }
 
+  void addPiece(int index, const Piece& piece) {
+    int beforeWidth = blocks[index].width();
+    blocks[index].piece2 = piece;
+    blocks[index].piece2.base = blocks[index].piece1.base;
+    sumWidth += blocks[index].width() - beforeWidth;
+    maxHeight = max(maxHeight, blocks[index].height());
+  }
+
   int GetSumWidth() const {
     return sumWidth;
   }
@@ -366,10 +378,10 @@ void Input(int problemNum) {
   }
 
   rep(i, n) {
-    w[i] = max(10000, w[i]);
-    w[i] = min(100000, w[i]);
-    h[i] = max(10000, h[i]);
-    h[i] = min(100000, h[i]);
+    w[i] = max(MIN_WIDTH, w[i]);
+    w[i] = min(MAX_WIDTH, w[i]);
+    h[i] = max(MIN_HEIGHT, h[i]);
+    h[i] = min(MAX_HEIGHT, h[i]);
   }
 }
 
@@ -791,6 +803,18 @@ void InitializePieces() {
   }
 }
 
+int sizeRank[MAX_N];
+void InitializeSizeRank() {
+  vector<P> vp;
+  rep(i, n) {
+    vp.emplace_back(max(w[i], h[i]), i);
+  }
+  sort(vp.begin(), vp.end());
+  rep(i, n) {
+    sizeRank[vp[i].second] = i;
+  }
+}
+
 Block block;
 Row row;
 Board board;
@@ -889,10 +913,120 @@ void Method2_Shoki1_Internal2() {
   }
 }
 
+void Method2_Shoki1_Internal3() {
+  block.clear();
+  row.clear();
+  board.clear();
+  Piece piece;
+
+  int widLimit = RandXor() % 1000000 + 200000;
+
+  int isRandomRot = RandXor() % 10;
+
+  int isUsePiece2_1 = RandXor() % 200;
+
+  int bestsLimit = t / 2;
+  int ng = 0;
+
+  rep(i, n) {
+    if (bestsCount2 == bestsLimit && board.score() + row.maxHeight >= bests2[bestsCount2 - 1].score()) {
+      ng = 1;
+      break;
+    }
+
+    piece = initialPieces[i];
+
+    if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
+      piece.rot = 1 - piece.rot;
+    }
+
+    if (isUsePiece2_1 < 50 && sizeRank[i] < 10) {
+      if (row.sz > 0 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.1) {
+        int ok = 1;
+        if (RandXor() % 25 > isUsePiece2_1) {
+          ok = 0;
+        }
+        if (ok) {
+          row.addPiece(row.sz - 1, piece);
+          continue;
+        }
+      }
+    }
+    else if (isUsePiece2_1 < 100 && sizeRank[i] < 10) {
+      if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.0) {
+        int ok = 1;
+        if (RandXor() % 2 == 0) {
+          ok = 0;
+        }
+        if (ok) {
+          row.addPiece(row.sz - 1, piece);
+          continue;
+        }
+      }
+
+      if (row.sz >= 2) {
+        int isAdd = 0;
+        rep(j, row.sz - 1) {
+          if (row.blocks[j].count() == 1 && row.blocks[j].height() + piece.height() < MAX_HEIGHT * 1.0 && piece.width() < row.blocks[j].width()) {
+            int ok = 1;
+            if (RandXor() % 2 == 0) {
+              ok = 0;
+            }
+            if (ok) {
+              row.addPiece(j, piece);
+              isAdd = 1;
+              break;
+            }
+          }
+        }
+        if (isAdd) {
+          continue;
+        }
+      }
+    }
+
+    block.piece1 = piece;
+    if (row.GetSumWidth() < widLimit * 0.9 && board.count() >= 1 && board.back().GetSumWidth() + block.piece1.width() <= widLimit) {
+      board.Add(board.count() - 1, block);
+    }
+    else if (row.GetSumWidth() + block.piece1.width() <= widLimit) {
+      row.add(block);
+    }
+    else {
+      board.Add(row);
+      row.clear();
+      row.add(block);
+    }
+  }
+
+  if (ng) {
+    return;
+  }
+
+  board.Add(row);
+
+  // bests更新
+  if (bestsCount2 < t / 2) {
+    bests2[bestsCount2] = board;
+    bestsCount2++;
+  }
+  else if (board.score() < bests2[bestsCount2 - 1].score()) {
+    bests2[bestsCount2 - 1] = board;
+  }
+  int now = bestsCount2 - 1;
+  while (now >= 1) {
+    if (bests2[now].score() < bests2[now - 1].score()) {
+      swap(bests2[now], bests2[now - 1]);
+      now--;
+    }
+    else {
+      break;
+    }
+  }
+}
+
 
 void Method2_Shoki1() {
-  InitializePieces();
-
   bestsCount2 = 0;
 
   int loop = 0;
@@ -919,7 +1053,12 @@ void Method2_Shoki1() {
 
     loop++;
 
-    Method2_Shoki1_Internal2();
+    //Method2_Shoki1_Internal2();
+    Method2_Shoki1_Internal3();
+  }
+
+  if (mode != 0) {
+    cout << "loop = " << loop << endl;
   }
 }
 
@@ -929,76 +1068,79 @@ void Method2(ofstream& ofs) {
 
   Method2_Shoki1();
 
-  rep(aespa, bestsCount2) {
+  int aespa = 0;
+  while (aespa < bestsCount2) {
     Score score = Print(bests2[aespa].CreateQuery(), ofs);
     if (score.score < bestScore) {
       bestScore = score.score;
       best = bests2[aespa];
     }
+    aespa++;
   }
 
   vector<Piece> bestPieces = best.CreateQuery();
-  vector<Piece> tmp;
+  vector<Piece> tmp = bestPieces;
 
-  srep(aespa, bestsCount2, t) {
-    int raMode = RandXor() % 2;
+  int loop = 0;
+  double startTime = GetNowTime();
+  double nowTime = GetNowTime();  // 現在の経過時間
+  const double START_TEMP = 0.0;  // 焼きなまし法の開始温度
+  const double END_TEMP = 200000.0;      // 焼きなまし法の終了温度
+  const double timeLimit = TL - startTime;
+  double temp = START_TEMP;  // 現在の温度
+  while (aespa < t) {
+    loop++;
+    if (loop % 100 == 0) {
+      nowTime = GetNowTime();
+    }
 
-    tmp = bestPieces;
+    int raMode = RandXor() % 3;
+
+    if (RandXor() % 2 == 0) {
+      tmp = bestPieces;
+    }
+
     if (raMode == 0) {
       int ra = RandXor() % n;
       tmp[ra].rot = 1 - tmp[ra].rot;
     }
+    else if (raMode == 1) {
+      int ra = RandXor() % n;
+      int ra2 = RandXor() % (ra + 1) - 1;
+      if (tmp[ra].base == ra2)continue;
+      tmp[ra].base = ra2;
+    }
     else {
-      vector<vector<Piece>> vvc;
-      vector<Piece> vc;
-      for (auto col : bestPieces) {
-        if (col.base == -1 && !vc.empty()) {
-          vvc.push_back(vc);
-          vc.clear();
-        }
-        vc.push_back(col);
-      }
-      vvc.push_back(vc);
-      if (vvc.size() >= 2) {
-        while (true) {
-          int ra1 = RandXor() % (vvc.size() - 1);
-          int ra2 = RandXor() % 2;
-          if (ra2 == 0) {
-            if (vvc[ra1].size() >= 2) {
-              vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
-              vvc[ra1].pop_back();
-              break;
-            }
-          }
-          else {
-            if (vvc[ra1 + 1].size() >= 2) {
-              vvc[ra1].push_back(vvc[ra1 + 1][0]);
-              vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
-              break;
-            }
-          }
-        }
-      }
-      tmp.clear();
-      rep(i, vvc.size()) {
-        rep(j, vvc[i].size()) {
-          Piece col = vvc[i][j];
-          if (j == 0) {
-            col.base = -1;
-          }
-          else {
-            col.base = vvc[i][j - 1].num;
-          }
-          tmp.push_back(col);
-        }
+      int ra = RandXor() % n;
+      tmp[ra].dir = 1 - tmp[ra].dir;
+      if (RandXor() % 2 == 0) {
+        int ra2 = RandXor() % (ra + 1) - 1;
+        tmp[ra].base = ra2;
       }
     }
 
-    Score score = Print(tmp, ofs);
-    if (score.score < bestScore) {
-      bestScore = score.score;
-      bestPieces = tmp;
+    auto preScore = CalcScore(tmp, false);
+
+    // だんだん温度が上がる焼きなまし
+    const double progressRatio = (nowTime - startTime) / timeLimit;  // 進捗率（0.0～1.0）
+    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio * progressRatio * progressRatio;  // 温度の更新
+    double diff = bestScore - preScore.score - 100000;  // スコアの差分
+    double prob = exp(diff / temp);     // 焼きなまし法の採用確率
+    if (preScore.score < bestScore || prob > Rand01() || nowTime > TL) {
+      Score score = Print(tmp, ofs);
+      if (score.score < bestScore) {
+        if (mode != 0) {
+          cout << raMode << ' ' << diff << ' ' << temp << ' ' << prob << ' ' << nowTime << endl;
+        }
+        bestScore = score.score;
+        bestPieces = tmp;
+      }
+      aespa++;
     }
+  }
+
+  if (mode != 0) {
+    cout << "aespa loop = " << loop << endl;
   }
 }
 
@@ -1017,6 +1159,8 @@ ll Solve(int problem_num) {
   OpenOfs(problem_num, ofs);
 
   // 初期解生成
+  InitializePieces();
+  InitializeSizeRank();
   Method2(ofs);
 
   if (ofs.is_open()) {
