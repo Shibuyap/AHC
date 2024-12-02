@@ -199,43 +199,46 @@ public:
 };
 
 class Row {
-private:
-  vector<Block> blocks;
+public:
+  Block blocks[MAX_N];
+  int sz;
   int sumWidth;
   int maxHeight;
 
 public:
   Row() {
+    sz = 0;
     sumWidth = 0;
     maxHeight = 0;
   }
 
   int count() const {
-    return blocks.size();
+    return sz;
   }
 
   void clear() {
-    blocks.clear();
+    sz = 0;
     sumWidth = 0;
     maxHeight = 0;
   }
 
   void add(const Block& block) {
-    blocks.emplace_back(block);
+    blocks[sz] = block;
+    sz++;
     sumWidth += block.width();
     maxHeight = max(maxHeight, block.height());
 
     int base;
-    if (blocks.size() == 1) {
+    if (sz == 1) {
       base = -1;
     }
     else {
-      base = blocks[count() - 2].piece1.num;
-      if (blocks[count() - 2].count() == 2 && blocks[count() - 2].piece2.width() > blocks[count() - 2].piece1.width()) {
-        base = blocks[count() - 2].piece2.num;
+      base = blocks[sz - 2].piece1.num;
+      if (blocks[sz - 2].count() == 2 && blocks[sz - 2].piece2.width() > blocks[sz - 2].piece1.width()) {
+        base = blocks[sz - 2].piece2.num;
       }
     }
-    blocks.back().SetBase(base);
+    blocks[sz - 1].SetBase(base);
   }
 
   int GetSumWidth() const {
@@ -245,26 +248,30 @@ public:
   int GetMaxHeight() const {
     return maxHeight;
   }
-
-  const vector<Block>& GetBlocks() {
-    return blocks;
-  }
 };
 
 class Board {
 private:
-  vector<Row> rows;
+  Row rows[MAX_N];
+  int sz;
   int maxWidth;
   int sumHeight;
 
 public:
   Board() {
+    sz = 0;
+    maxWidth = 0;
+    sumHeight = 0;
+  }
+
+  void clear() {
+    sz = 0;
     maxWidth = 0;
     sumHeight = 0;
   }
 
   int count() const {
-    return rows.size();
+    return sz;
   }
 
   // ※厳密なスコアではない
@@ -273,9 +280,17 @@ public:
   }
 
   void Add(const Row& row) {
-    rows.emplace_back(row);
+    rows[sz] = row;
+    sz++;
     maxWidth = max(maxWidth, row.GetSumWidth());
     sumHeight += row.GetMaxHeight();
+  }
+
+  void Add(int index, const Block& block) {
+    int beforeMaxHeight = rows[index].GetMaxHeight();
+    rows[index].add(block);
+    maxWidth = max(maxWidth, rows[index].GetSumWidth());
+    sumHeight += rows[index].GetMaxHeight() - beforeMaxHeight;
   }
 
   int GetMaxWidth() const {
@@ -288,18 +303,22 @@ public:
 
   vector<Piece> CreateQuery() const {
     vector<Piece> pieces;
-    for (auto row : rows) {
-      for (auto block : row.GetBlocks()) {
-        if (block.count() >= 1) {
-          pieces.push_back(block.piece1);
+    rep(i, sz) {
+      rep(j, rows[i].sz) {
+        if (rows[i].blocks[j].count() >= 1) {
+          pieces.push_back(rows[i].blocks[j].piece1);
         }
-        if (block.count() >= 2) {
-          pieces.push_back(block.piece2);
+        if (rows[i].blocks[j].count() >= 2) {
+          pieces.push_back(rows[i].blocks[j].piece2);
         }
       }
     }
     sort(pieces.begin(), pieces.end());
     return pieces;
+  }
+
+  Row& back() {
+    return rows[sz - 1];
   }
 };
 
@@ -484,333 +503,63 @@ Score Print(const vector<Piece>& pieces, ofstream& ofs) {
   return score;
 }
 
-//int bestsCount;
-//vector<Piece> bests[MAX_T];
-//int bestScores[MAX_T];
-//
-//void Method1_Shoki1_Internal1(vector<Piece>& tmp) {
-//  int widSum = 0;
-//  int heiSum = 0;
-//
-//  int widLimit = RandXor() % 1000000 + 200000;
-//  int now = 0;
-//  int maxHeight = 0;
-//  rep(i, n) {
-//    int wid = w[i];
-//    int hei = h[i];
-//    if (tmp[i].rot == 1) {
-//      wid = h[i];
-//      hei = w[i];
-//    }
-//
-//    if (now + wid <= widLimit) {
-//      tmp[i].base = i - 1;
-//      now += wid;
-//      maxHeight = max(maxHeight, hei);
-//    }
-//    else {
-//      tmp[i].base = -1;
-//      widSum = max(widSum, now);
-//      now = wid;
-//      heiSum += maxHeight;
-//      maxHeight = hei;
-//    }
-//  }
-//
-//  widSum = max(widSum, now);
-//  heiSum += maxHeight;
-//
-//  {
-//    int tmpScore = widSum + heiSum;
-//    if (bestsCount < t / 2) {
-//      bests[bestsCount] = tmp;
-//      bestScores[bestsCount] = tmpScore;
-//      bestsCount++;
-//    }
-//    else if (tmpScore < bestScores[bestsCount - 1]) {
-//      bests[bestsCount - 1] = tmp;
-//      bestScores[bestsCount - 1] = tmpScore;
-//    }
-//    int now = bestsCount - 1;
-//    while (now >= 1) {
-//      if (bestScores[now] < bestScores[now - 1]) {
-//        swap(bests[now], bests[now - 1]);
-//        swap(bestScores[now], bestScores[now - 1]);
-//        now--;
-//      }
-//      else {
-//        break;
-//      }
-//    }
-//  }
-//}
-
-//int keepRot[MAX_N];
-//int keepRotCount = 0;
-//void Method1_Shoki1_Internal2(vector<Piece>& tmp) {
-//  int widSum = 0;
-//  int heiSum = 0;
-//
-//  int widLimit = RandXor() % 1000000 + 200000;
-//
-//  int now = 0;
-//  int last = -1;
-//  int maxHeight = 0;
-//
-//  int beforeNow = INF;
-//  int beforeLast = -1;
-//  int beforeMaxHeight = 0;
-//
-//  int isRandomRot = RandXor() % 10;
-//
-//  keepRotCount = 0;
-//  rep(i, n) {
-//    if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
-//      tmp[i].rot = 1 - tmp[i].rot;
-//      keepRot[keepRotCount] = i;
-//      keepRotCount++;
-//    }
-//
-//    int wid = w[i];
-//    int hei = h[i];
-//    if (tmp[i].rot == 1) {
-//      wid = h[i];
-//      hei = w[i];
-//    }
-//
-//    if (now < widLimit * 0.9 && beforeNow + wid <= widLimit) {
-//      tmp[i].base = beforeLast;
-//      beforeLast = i;
-//      beforeNow += wid;
-//      widSum = max(widSum, beforeNow);
-//      if (hei > beforeMaxHeight) {
-//        heiSum += hei - beforeMaxHeight;
-//        beforeMaxHeight = hei;
-//      }
-//    }
-//    else if (now + wid <= widLimit) {
-//      tmp[i].base = last;
-//      last = i;
-//      now += wid;
-//      maxHeight = max(maxHeight, hei);
-//    }
-//    else {
-//      beforeLast = last;
-//      beforeMaxHeight = maxHeight;
-//      beforeNow = now;
-//
-//      tmp[i].base = -1;
-//      last = i;
-//      widSum = max(widSum, now);
-//      now = wid;
-//      heiSum += maxHeight;
-//      maxHeight = hei;
-//    }
-//  }
-//
-//  widSum = max(widSum, now);
-//  heiSum += maxHeight;
-//
-//  {
-//    int tmpScore = widSum + heiSum;
-//    if (bestsCount < t / 2) {
-//      bests[bestsCount] = tmp;
-//      bestScores[bestsCount] = tmpScore;
-//      bestsCount++;
-//    }
-//    else if (tmpScore < bestScores[bestsCount - 1]) {
-//      bests[bestsCount - 1] = tmp;
-//      bestScores[bestsCount - 1] = tmpScore;
-//    }
-//    int now = bestsCount - 1;
-//    while (now >= 1) {
-//      if (bestScores[now] < bestScores[now - 1]) {
-//        swap(bests[now], bests[now - 1]);
-//        swap(bestScores[now], bestScores[now - 1]);
-//        now--;
-//      }
-//      else {
-//        break;
-//      }
-//    }
-//  }
-//
-//  rep(i, keepRotCount) {
-//    int ii = keepRot[i];
-//    tmp[ii].rot = 1 - tmp[ii].rot;
-//  }
-//}
-
-//void Method1_Shoki1() {
-//  bestsCount = 0;
-//
-//  vector<Piece> tmp(n);
-//  rep(i, n) {
-//    tmp[i].num = i;
-//    tmp[i].rot = 0;
-//    if (w[i] > h[i]) tmp[i].rot = 1;
-//    tmp[i].dir = 0;
-//    tmp[i].base = i - 1;
-//  }
-//
-//  int loop = 0;
-//  while (true) {
-//    if (loop % 100 == 0) {
-//      auto nowTime = GetNowTime();
-//      if (nowTime > TL / 30) {
-//        break;
-//      }
-//    }
-//
-//    loop++;
-//
-//    Method1_Shoki1_Internal1(tmp);
-//  }
-//
-//  while (true) {
-//    if (loop % 100 == 0) {
-//      auto nowTime = GetNowTime();
-//      if (nowTime > TL / 30 * 25) {
-//        break;
-//      }
-//    }
-//
-//    loop++;
-//
-//    Method1_Shoki1_Internal2(tmp);
-//  }
-//}
-
-//void Method1(ofstream& ofs) {
-//  vector<Piece> best(n);
-//  int bestScore = INF;
-//
-//  vector<Piece> tmp(n);
-//
-//  Method1_Shoki1();
-//
-//  rep(aespa, bestsCount) {
-//    tmp = bests[aespa];
-//    Score score = Print(tmp, ofs);
-//    if (score.score < bestScore) {
-//      bestScore = score.score;
-//      best = tmp;
-//    }
-//  }
-//
-//  srep(aespa, bestsCount, t) {
-//    int raMode = RandXor() % 2;
-//
-//    tmp = best;
-//    if (raMode == 0) {
-//      int ra = RandXor() % n;
-//      tmp[ra].rot = 1 - tmp[ra].rot;
-//    }
-//    else {
-//      vector<vector<Piece>> vvc;
-//      vector<Piece> vc;
-//      for (auto col : best) {
-//        if (col.base == -1 && !vc.empty()) {
-//          vvc.push_back(vc);
-//          vc.clear();
-//        }
-//        vc.push_back(col);
-//      }
-//      vvc.push_back(vc);
-//      if (vvc.size() >= 2) {
-//        while (true) {
-//          int ra1 = RandXor() % (vvc.size() - 1);
-//          int ra2 = RandXor() % 2;
-//          if (ra2 == 0) {
-//            if (vvc[ra1].size() >= 2) {
-//              vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
-//              vvc[ra1].pop_back();
-//              break;
-//            }
-//          }
-//          else {
-//            if (vvc[ra1 + 1].size() >= 2) {
-//              vvc[ra1].push_back(vvc[ra1 + 1][0]);
-//              vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
-//              break;
-//            }
-//          }
-//        }
-//      }
-//      tmp.clear();
-//      rep(i, vvc.size()) {
-//        rep(j, vvc[i].size()) {
-//          Piece col = vvc[i][j];
-//          if (j == 0) {
-//            col.base = -1;
-//          }
-//          else {
-//            col.base = vvc[i][j - 1].num;
-//          }
-//          tmp.push_back(col);
-//        }
-//      }
-//    }
-//
-//    Score score = Print(tmp, ofs);
-//    if (score.score < bestScore) {
-//      bestScore = score.score;
-//      best = tmp;
-//    }
-//  }
-//}
-
-vector<Piece> initialPieces;
-void InitializePieces() {
-  initialPieces.resize(n);
-  rep(i, n) {
-    initialPieces[i].num = i;
-    initialPieces[i].rot = 0;
-    if (w[i] > h[i]) initialPieces[i].rot = 1;
-    initialPieces[i].dir = 0;
-    initialPieces[i].base = i - 1;
-  }
-}
-
 int bestsCount;
-Board bests[MAX_T];
-void Method1_Shoki1_Internal1() {
-  Block block;
-  Row row;
-  Board board;
+vector<Piece> bests[MAX_T];
+int bestScores[MAX_T];
+
+void Method1_Shoki1_Internal1(vector<Piece>& tmp) {
+  int widSum = 0;
+  int heiSum = 0;
 
   int widLimit = RandXor() % 1000000 + 200000;
-
+  int now = 0;
+  int maxHeight = 0;
   rep(i, n) {
-    block.piece1 = initialPieces[i];
-    if (row.GetSumWidth() + block.piece1.width() <= widLimit) {
-      row.add(block);
+    int wid = w[i];
+    int hei = h[i];
+    if (tmp[i].rot == 1) {
+      wid = h[i];
+      hei = w[i];
+    }
+
+    if (now + wid <= widLimit) {
+      tmp[i].base = i - 1;
+      now += wid;
+      maxHeight = max(maxHeight, hei);
     }
     else {
-      board.Add(row);
-      row.clear();
-      row.add(block);
+      tmp[i].base = -1;
+      widSum = max(widSum, now);
+      now = wid;
+      heiSum += maxHeight;
+      maxHeight = hei;
     }
   }
 
-  board.Add(row);
+  widSum = max(widSum, now);
+  heiSum += maxHeight;
 
-  // bests更新
-  if (bestsCount < t / 2) {
-    bests[bestsCount] = board;
-    bestsCount++;
-  }
-  else if (board.score() < bests[bestsCount - 1].score()) {
-    bests[bestsCount - 1] = board;
-  }
-  int now = bestsCount - 1;
-  while (now >= 1) {
-    if (bests[now].score() < bests[now - 1].score()) {
-      swap(bests[now], bests[now - 1]);
-      now--;
+  {
+    int tmpScore = widSum + heiSum;
+    if (bestsCount < t / 2) {
+      bests[bestsCount] = tmp;
+      bestScores[bestsCount] = tmpScore;
+      bestsCount++;
     }
-    else {
-      break;
+    else if (tmpScore < bestScores[bestsCount - 1]) {
+      bests[bestsCount - 1] = tmp;
+      bestScores[bestsCount - 1] = tmpScore;
+    }
+    int now = bestsCount - 1;
+    while (now >= 1) {
+      if (bestScores[now] < bestScores[now - 1]) {
+        swap(bests[now], bests[now - 1]);
+        swap(bestScores[now], bestScores[now - 1]);
+        now--;
+      }
+      else {
+        break;
+      }
     }
   }
 }
@@ -818,10 +567,6 @@ void Method1_Shoki1_Internal1() {
 int keepRot[MAX_N];
 int keepRotCount = 0;
 void Method1_Shoki1_Internal2(vector<Piece>& tmp) {
-  Block block;
-  Row row;
-  Board board;
-
   int widSum = 0;
   int heiSum = 0;
 
@@ -885,19 +630,22 @@ void Method1_Shoki1_Internal2(vector<Piece>& tmp) {
   widSum = max(widSum, now);
   heiSum += maxHeight;
 
-  // bests更新
   {
+    int tmpScore = widSum + heiSum;
     if (bestsCount < t / 2) {
-      bests[bestsCount] = board;
+      bests[bestsCount] = tmp;
+      bestScores[bestsCount] = tmpScore;
       bestsCount++;
     }
-    else if (board.score() < bests[bestsCount - 1].score()) {
-      bests[bestsCount - 1] = board;
+    else if (tmpScore < bestScores[bestsCount - 1]) {
+      bests[bestsCount - 1] = tmp;
+      bestScores[bestsCount - 1] = tmpScore;
     }
     int now = bestsCount - 1;
     while (now >= 1) {
-      if (bests[now].score() < bests[now - 1].score()) {
+      if (bestScores[now] < bestScores[now - 1]) {
         swap(bests[now], bests[now - 1]);
+        swap(bestScores[now], bestScores[now - 1]);
         now--;
       }
       else {
@@ -912,11 +660,17 @@ void Method1_Shoki1_Internal2(vector<Piece>& tmp) {
   }
 }
 
-
 void Method1_Shoki1() {
-  InitializePieces();
-
   bestsCount = 0;
+
+  vector<Piece> tmp(n);
+  rep(i, n) {
+    tmp[i].num = i;
+    tmp[i].rot = 0;
+    if (w[i] > h[i]) tmp[i].rot = 1;
+    tmp[i].dir = 0;
+    tmp[i].base = i - 1;
+  }
 
   int loop = 0;
   while (true) {
@@ -929,101 +683,324 @@ void Method1_Shoki1() {
 
     loop++;
 
-    Method1_Shoki1_Internal1();
+    Method1_Shoki1_Internal1(tmp);
   }
 
-  //while (true) {
-  //  if (loop % 100 == 0) {
-  //    auto nowTime = GetNowTime();
-  //    if (nowTime > TL / 30 * 25) {
-  //      break;
-  //    }
-  //  }
+  while (true) {
+    if (loop % 100 == 0) {
+      auto nowTime = GetNowTime();
+      if (nowTime > TL / 30 * 25) {
+        break;
+      }
+    }
 
-  //  loop++;
+    loop++;
 
-  //  Method1_Shoki1_Internal2();
-  //}
+    Method1_Shoki1_Internal2(tmp);
+  }
 }
 
-void Method2(ofstream& ofs) {
-  Board best;
+void Method1(ofstream& ofs) {
+  vector<Piece> best(n);
   int bestScore = INF;
 
-  Board tmp;
+  vector<Piece> tmp(n);
 
   Method1_Shoki1();
 
   rep(aespa, bestsCount) {
-    Score score = Print(bests[aespa].CreateQuery(), ofs);
+    tmp = bests[aespa];
+    Score score = Print(tmp, ofs);
     if (score.score < bestScore) {
       bestScore = score.score;
       best = tmp;
     }
   }
 
-  //srep(aespa, bestsCount, t) {
-  //  int raMode = RandXor() % 2;
+  srep(aespa, bestsCount, t) {
+    int raMode = RandXor() % 2;
 
-  //  tmp = best;
-  //  if (raMode == 0) {
-  //    int ra = RandXor() % n;
-  //    tmp[ra].rot = 1 - tmp[ra].rot;
-  //  }
-  //  else {
-  //    vector<vector<Piece>> vvc;
-  //    vector<Piece> vc;
-  //    for (auto col : best) {
-  //      if (col.base == -1 && !vc.empty()) {
-  //        vvc.push_back(vc);
-  //        vc.clear();
-  //      }
-  //      vc.push_back(col);
-  //    }
-  //    vvc.push_back(vc);
-  //    if (vvc.size() >= 2) {
-  //      while (true) {
-  //        int ra1 = RandXor() % (vvc.size() - 1);
-  //        int ra2 = RandXor() % 2;
-  //        if (ra2 == 0) {
-  //          if (vvc[ra1].size() >= 2) {
-  //            vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
-  //            vvc[ra1].pop_back();
-  //            break;
-  //          }
-  //        }
-  //        else {
-  //          if (vvc[ra1 + 1].size() >= 2) {
-  //            vvc[ra1].push_back(vvc[ra1 + 1][0]);
-  //            vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
-  //            break;
-  //          }
-  //        }
-  //      }
-  //    }
-  //    tmp.clear();
-  //    rep(i, vvc.size()) {
-  //      rep(j, vvc[i].size()) {
-  //        Piece col = vvc[i][j];
-  //        if (j == 0) {
-  //          col.base = -1;
-  //        }
-  //        else {
-  //          col.base = vvc[i][j - 1].num;
-  //        }
-  //        tmp.push_back(col);
-  //      }
-  //    }
-  //  }
+    tmp = best;
+    if (raMode == 0) {
+      int ra = RandXor() % n;
+      tmp[ra].rot = 1 - tmp[ra].rot;
+    }
+    else {
+      vector<vector<Piece>> vvc;
+      vector<Piece> vc;
+      for (auto col : best) {
+        if (col.base == -1 && !vc.empty()) {
+          vvc.push_back(vc);
+          vc.clear();
+        }
+        vc.push_back(col);
+      }
+      vvc.push_back(vc);
+      if (vvc.size() >= 2) {
+        while (true) {
+          int ra1 = RandXor() % (vvc.size() - 1);
+          int ra2 = RandXor() % 2;
+          if (ra2 == 0) {
+            if (vvc[ra1].size() >= 2) {
+              vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
+              vvc[ra1].pop_back();
+              break;
+            }
+          }
+          else {
+            if (vvc[ra1 + 1].size() >= 2) {
+              vvc[ra1].push_back(vvc[ra1 + 1][0]);
+              vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
+              break;
+            }
+          }
+        }
+      }
+      tmp.clear();
+      rep(i, vvc.size()) {
+        rep(j, vvc[i].size()) {
+          Piece col = vvc[i][j];
+          if (j == 0) {
+            col.base = -1;
+          }
+          else {
+            col.base = vvc[i][j - 1].num;
+          }
+          tmp.push_back(col);
+        }
+      }
+    }
 
-  //  Score score = Print(tmp, ofs);
-  //  if (score.score < bestScore) {
-  //    bestScore = score.score;
-  //    best = tmp;
-  //  }
-  //}
+    Score score = Print(tmp, ofs);
+    if (score.score < bestScore) {
+      bestScore = score.score;
+      best = tmp;
+    }
+  }
 }
 
+vector<Piece> initialPieces;
+void InitializePieces() {
+  initialPieces.resize(n);
+  rep(i, n) {
+    initialPieces[i].num = i;
+    initialPieces[i].rot = 0;
+    if (w[i] > h[i]) initialPieces[i].rot = 1;
+    initialPieces[i].dir = 0;
+    initialPieces[i].base = i - 1;
+  }
+}
+
+Block block;
+Row row;
+Board board;
+
+int bestsCount2;
+Board bests2[MAX_T];
+void Method2_Shoki1_Internal1() {
+  block.clear();
+  row.clear();
+  board.clear();
+
+  int widLimit = RandXor() % 1000000 + 200000;
+
+  rep(i, n) {
+    block.piece1 = initialPieces[i];
+    if (row.GetSumWidth() + block.piece1.width() <= widLimit) {
+      row.add(block);
+    }
+    else {
+      board.Add(row);
+      row.clear();
+      row.add(block);
+    }
+  }
+
+  board.Add(row);
+
+  // bests更新
+  if (bestsCount2 < t / 2) {
+    bests2[bestsCount2] = board;
+    bestsCount2++;
+  }
+  else if (board.score() < bests2[bestsCount2 - 1].score()) {
+    bests2[bestsCount2 - 1] = board;
+  }
+  int now = bestsCount2 - 1;
+  while (now >= 1) {
+    if (bests2[now].score() < bests2[now - 1].score()) {
+      swap(bests2[now], bests2[now - 1]);
+      now--;
+    }
+    else {
+      break;
+    }
+  }
+}
+
+void Method2_Shoki1_Internal2() {
+  block.clear();
+  row.clear();
+  board.clear();
+
+  int widLimit = RandXor() % 1000000 + 200000;
+
+  int isRandomRot = RandXor() % 10;
+
+  rep(i, n) {
+    block.piece1 = initialPieces[i];
+
+    if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
+      block.piece1.rot = 1 - block.piece1.rot;
+    }
+
+    if (row.GetSumWidth() < widLimit * 0.9 && board.count() >= 1 && board.back().GetSumWidth() + block.piece1.width() <= widLimit) {
+      board.Add(board.count() - 1, block);
+    }
+    else if (row.GetSumWidth() + block.piece1.width() <= widLimit) {
+      row.add(block);
+    }
+    else {
+      board.Add(row);
+      row.clear();
+      row.add(block);
+    }
+  }
+
+  board.Add(row);
+
+  // bests更新
+  if (bestsCount2 < t / 2) {
+    bests2[bestsCount2] = board;
+    bestsCount2++;
+  }
+  else if (board.score() < bests2[bestsCount2 - 1].score()) {
+    bests2[bestsCount2 - 1] = board;
+  }
+  int now = bestsCount2 - 1;
+  while (now >= 1) {
+    if (bests2[now].score() < bests2[now - 1].score()) {
+      swap(bests2[now], bests2[now - 1]);
+      now--;
+    }
+    else {
+      break;
+    }
+  }
+}
+
+
+void Method2_Shoki1() {
+  InitializePieces();
+
+  bestsCount2 = 0;
+
+  int loop = 0;
+  while (true) {
+    if (loop % 100 == 0) {
+      auto nowTime = GetNowTime();
+      if (nowTime > TL / 30) {
+        break;
+      }
+    }
+
+    loop++;
+
+    Method2_Shoki1_Internal1();
+  }
+
+  while (true) {
+    if (loop % 100 == 0) {
+      auto nowTime = GetNowTime();
+      if (nowTime > TL / 30 * 25) {
+        break;
+      }
+    }
+
+    loop++;
+
+    Method2_Shoki1_Internal2();
+  }
+}
+
+void Method2(ofstream& ofs) {
+  Board best;
+  int bestScore = INF;
+
+  Method2_Shoki1();
+
+  rep(aespa, bestsCount2) {
+    Score score = Print(bests2[aespa].CreateQuery(), ofs);
+    if (score.score < bestScore) {
+      bestScore = score.score;
+      best = bests2[aespa];
+    }
+  }
+
+  vector<Piece> bestPieces = best.CreateQuery();
+  vector<Piece> tmp;
+
+  srep(aespa, bestsCount2, t) {
+    int raMode = RandXor() % 2;
+
+    tmp = bestPieces;
+    if (raMode == 0) {
+      int ra = RandXor() % n;
+      tmp[ra].rot = 1 - tmp[ra].rot;
+    }
+    else {
+      vector<vector<Piece>> vvc;
+      vector<Piece> vc;
+      for (auto col : bestPieces) {
+        if (col.base == -1 && !vc.empty()) {
+          vvc.push_back(vc);
+          vc.clear();
+        }
+        vc.push_back(col);
+      }
+      vvc.push_back(vc);
+      if (vvc.size() >= 2) {
+        while (true) {
+          int ra1 = RandXor() % (vvc.size() - 1);
+          int ra2 = RandXor() % 2;
+          if (ra2 == 0) {
+            if (vvc[ra1].size() >= 2) {
+              vvc[ra1 + 1].insert(vvc[ra1 + 1].begin(), vvc[ra1].back());
+              vvc[ra1].pop_back();
+              break;
+            }
+          }
+          else {
+            if (vvc[ra1 + 1].size() >= 2) {
+              vvc[ra1].push_back(vvc[ra1 + 1][0]);
+              vvc[ra1 + 1].erase(vvc[ra1 + 1].begin());
+              break;
+            }
+          }
+        }
+      }
+      tmp.clear();
+      rep(i, vvc.size()) {
+        rep(j, vvc[i].size()) {
+          Piece col = vvc[i][j];
+          if (j == 0) {
+            col.base = -1;
+          }
+          else {
+            col.base = vvc[i][j - 1].num;
+          }
+          tmp.push_back(col);
+        }
+      }
+    }
+
+    Score score = Print(tmp, ofs);
+    if (score.score < bestScore) {
+      bestScore = score.score;
+      bestPieces = tmp;
+    }
+  }
+}
 
 // 問題を解く関数
 ll Solve(int problem_num) {
