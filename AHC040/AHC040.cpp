@@ -109,8 +109,8 @@ bool isCrossing(double l1, double r1, double l2, double r2) {
   return (std::max(l1, l2) < std::min(r1, r2));
 }
 
-struct Column {
-  int piece;
+struct Piece {
+  int num;
   int rot;
   int dir;
   int base;
@@ -132,7 +132,7 @@ int W[MAX_N], H[MAX_N];
 int dW[MAX_T], dH[MAX_T];
 
 int queryCount;
-Score tScore[MAX_T];
+Score tScores[MAX_T];
 
 void CopyToBest() {
 }
@@ -186,28 +186,28 @@ void OpenOfs(int probNum, ofstream& ofs) {
 }
 
 Score CalcTScore() {
-  Score res;
-  res.score = INF;
+  Score score;
+  score.score = INF;
   rep(i, queryCount) {
-    if (tScore[i].score < res.score) {
-      res = tScore[i];
+    if (tScores[i].score < score.score) {
+      score = tScores[i];
     }
   }
-  return res;
+  return score;
 }
 
 int cs_use[MAX_N] = {};
 int cs_up[MAX_N], cs_down[MAX_N], cs_left[MAX_N], cs_right[MAX_N];
 // スコアを計算する関数
-int CalcScore(const vector<Column>& columns, bool cheat, int& ww, int& hh) {
+int CalcScore(const vector<Piece>& pieces, bool cheat, int& ww, int& hh) {
   rep(i, MAX_N) {
     cs_up[i] = -1;
     cs_down[i] = -1;
     cs_left[i] = -1;
     cs_right[i] = -1;
   }
-  for (auto col : columns) {
-    int num = col.piece;
+  for (auto col : pieces) {
+    int num = col.num;
     int wid = w[num];
     int hei = h[num];
     if (mode != 0 && cheat == true) {
@@ -274,42 +274,42 @@ int CalcScore(const vector<Column>& columns, bool cheat, int& ww, int& hh) {
   return score;
 }
 
-void Print(const vector<Column>& columns, int& ww, int& hh, ofstream& ofs) {
+void Print(const vector<Piece>& pieces, int& ww, int& hh, ofstream& ofs) {
   ww = 0;
   hh = 0;
 
   if (mode == 0) {
-    cout << columns.size() << endl;
-    rep(i, columns.size()) {
-      cout << columns[i].piece << ' ' << columns[i].rot << ' ' << (columns[i].dir == 0 ? 'U' : 'L') << ' ' << columns[i].base << endl;
+    cout << pieces.size() << endl;
+    rep(i, pieces.size()) {
+      cout << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
     fflush(stdout);
 
     cin >> ww >> hh;
   }
   else {
-    ofs << columns.size() << endl;
-    rep(i, columns.size()) {
-      ofs << columns[i].piece << ' ' << columns[i].rot << ' ' << (columns[i].dir == 0 ? 'U' : 'L') << ' ' << columns[i].base << endl;
+    ofs << pieces.size() << endl;
+    rep(i, pieces.size()) {
+      ofs << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
 
-    CalcScore(columns, true, ww, hh);
+    CalcScore(pieces, true, ww, hh);
     ww += dW[queryCount];
     hh += dH[queryCount];
   }
 
 
-  tScore[queryCount].hh = hh;
-  tScore[queryCount].ww = ww;
-  tScore[queryCount].score = hh + ww;
+  tScores[queryCount].hh = hh;
+  tScores[queryCount].ww = ww;
+  tScores[queryCount].score = hh + ww;
   queryCount++;
 }
 
 int bestsCount;
-vector<Column> bests[MAX_T];
+vector<Piece> bests[MAX_T];
 int bestScores[MAX_T];
 
-void Method2_Shoki2_Internal1(vector<Column>& tmp, vector<Column>& best, int& bestScore) {
+void Method2_Shoki2_Internal1(vector<Piece>& tmp) {
   int widSum = 0;
   int heiSum = 0;
 
@@ -364,16 +364,11 @@ void Method2_Shoki2_Internal1(vector<Column>& tmp, vector<Column>& best, int& be
       }
     }
   }
-
-  if (widSum + heiSum < bestScore) {
-    bestScore = widSum + heiSum;
-    best = tmp;
-  }
 }
 
 int keepRot[MAX_N];
 int keepRotCount = 0;
-void Method2_Shoki2_Internal2(vector<Column>& tmp, vector<Column>& best, int& bestScore) {
+void Method2_Shoki2_Internal2(vector<Piece>& tmp) {
   int widSum = 0;
   int heiSum = 0;
 
@@ -461,26 +456,18 @@ void Method2_Shoki2_Internal2(vector<Column>& tmp, vector<Column>& best, int& be
     }
   }
 
-  if (widSum + heiSum < bestScore) {
-    bestScore = widSum + heiSum;
-    best = tmp;
-  }
-
   rep(i, keepRotCount) {
     int ii = keepRot[i];
     tmp[ii].rot = 1 - tmp[ii].rot;
   }
 }
 
-vector<Column> Method2_Shoki2() {
+void Method2_Shoki2() {
   bestsCount = 0;
 
-  vector<Column> best(n);
-  int bestScore = INF;
-
-  vector<Column> tmp(n);
+  vector<Piece> tmp(n);
   rep(i, n) {
-    tmp[i].piece = i;
+    tmp[i].num = i;
     tmp[i].rot = 0;
     if (w[i] > h[i]) tmp[i].rot = 1;
     tmp[i].dir = 0;
@@ -498,7 +485,7 @@ vector<Column> Method2_Shoki2() {
 
     loop++;
 
-    Method2_Shoki2_Internal1(tmp, best, bestScore);
+    Method2_Shoki2_Internal1(tmp);
   }
 
   while (true) {
@@ -511,20 +498,18 @@ vector<Column> Method2_Shoki2() {
 
     loop++;
 
-    Method2_Shoki2_Internal2(tmp, best, bestScore);
+    Method2_Shoki2_Internal2(tmp);
   }
-
-  return best;
 }
 
 void Method2(ofstream& ofs) {
 
-  vector<Column> best(n);
+  vector<Piece> best(n);
   int bestScore = INF;
 
-  vector<Column> tmp(n);
+  vector<Piece> tmp(n);
 
-  tmp = Method2_Shoki2();
+  Method2_Shoki2();
 
   rep(aespa, bestsCount) {
     tmp = bests[aespa];
@@ -547,8 +532,8 @@ void Method2(ofstream& ofs) {
       tmp[ra].rot = 1 - tmp[ra].rot;
     }
     else {
-      vector<vector<Column>> vvc;
-      vector<Column> vc;
+      vector<vector<Piece>> vvc;
+      vector<Piece> vc;
       for (auto col : best) {
         if (col.base == -1 && !vc.empty()) {
           vvc.push_back(vc);
@@ -580,12 +565,12 @@ void Method2(ofstream& ofs) {
       tmp.clear();
       rep(i, vvc.size()) {
         rep(j, vvc[i].size()) {
-          Column col = vvc[i][j];
+          Piece col = vvc[i][j];
           if (j == 0) {
             col.base = -1;
           }
           else {
-            col.base = vvc[i][j - 1].piece;
+            col.base = vvc[i][j - 1].num;
           }
           tmp.push_back(col);
         }
