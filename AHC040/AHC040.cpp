@@ -114,6 +114,92 @@ struct Piece {
   int rot;
   int dir;
   int base;
+
+  int width() {
+    if (rot == 1) {
+      return h[num];
+    }
+    return w[num];
+  }
+
+  int height() {
+    if (rot == 1) {
+      return w[num];
+    }
+    return h[num];
+  }
+};
+
+struct Block {
+  Piece piece1;
+  Piece piece2;
+
+  Block() {
+    piece1.num = -1;
+    piece2.num = -1;
+  }
+
+  int count() {
+    if (piece1.num == -1) {
+      return 0;
+    }
+    else if (piece2.num == -1) {
+      return 1;
+    }
+    return 2;
+  }
+
+  int width() {
+    int cnt = count();
+    if (cnt == 0) {
+      return 0;
+    }
+    else if (cnt == 1) {
+      return piece1.width();
+    }
+    return max(piece1.width(), piece2.width());
+  }
+
+  int height() {
+    int cnt = count();
+    if (cnt == 0) {
+      return 0;
+    }
+    else if (cnt == 1) {
+      return piece1.height();
+    }
+    return piece1.height() + piece2.height();
+  }
+};
+
+struct Row {
+  vector<Block> blocks;
+  int sumWidth;
+  int maxHeight;
+
+  Row() {
+    maxHeight = 0;
+    sumWidth = 0;
+  }
+
+  int count() {
+    return blocks.size();
+  }
+};
+
+struct Board {
+  vector<Row> rows;
+  int maxWidth;
+  int sumHeight;
+
+  Board() {
+    maxWidth = 0;
+    sumHeight = 0;
+  }
+
+  int count() {
+    return rows.size();
+  }
 };
 
 struct Score {
@@ -504,7 +590,6 @@ void Method1_Shoki1() {
 }
 
 void Method1(ofstream& ofs) {
-
   vector<Piece> best(n);
   int bestScore = INF;
 
