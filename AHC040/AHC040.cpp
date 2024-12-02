@@ -199,7 +199,7 @@ Score CalcTScore() {
 int cs_use[MAX_N] = {};
 int cs_up[MAX_N], cs_down[MAX_N], cs_left[MAX_N], cs_right[MAX_N];
 // スコアを計算する関数
-int CalcScore(const vector<Piece>& pieces, bool cheat, int& ww, int& hh) {
+Score CalcScore(const vector<Piece>& pieces, bool cheat) {
   rep(i, MAX_N) {
     cs_up[i] = -1;
     cs_down[i] = -1;
@@ -261,22 +261,22 @@ int CalcScore(const vector<Piece>& pieces, bool cheat, int& ww, int& hh) {
     }
   }
 
-  ww = maxRight;
-  hh = maxDown;
+  Score score;
 
-  int score = maxDown + maxRight;
+  score.ww = maxRight;
+  score.hh = maxDown;
+  score.score = maxDown + maxRight;
   rep(i, n) {
     if (cs_use[i] == 0) {
-      score += w[i] + h[i];
+      score.score += w[i] + h[i];
     }
   }
 
   return score;
 }
 
-void Print(const vector<Piece>& pieces, int& ww, int& hh, ofstream& ofs) {
-  ww = 0;
-  hh = 0;
+Score Print(const vector<Piece>& pieces, ofstream& ofs) {
+  Score score;
 
   if (mode == 0) {
     cout << pieces.size() << endl;
@@ -285,7 +285,8 @@ void Print(const vector<Piece>& pieces, int& ww, int& hh, ofstream& ofs) {
     }
     fflush(stdout);
 
-    cin >> ww >> hh;
+    cin >> score.ww >> score.hh;
+    score.score = score.ww + score.hh;
   }
   else {
     ofs << pieces.size() << endl;
@@ -293,16 +294,16 @@ void Print(const vector<Piece>& pieces, int& ww, int& hh, ofstream& ofs) {
       ofs << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
 
-    CalcScore(pieces, true, ww, hh);
-    ww += dW[queryCount];
-    hh += dH[queryCount];
+    score = CalcScore(pieces, true);
+    score.ww += dW[queryCount];
+    score.hh += dH[queryCount];
+    score.score = score.ww + score.hh;
   }
 
-
-  tScores[queryCount].hh = hh;
-  tScores[queryCount].ww = ww;
-  tScores[queryCount].score = hh + ww;
+  tScores[queryCount] = score;
   queryCount++;
+
+  return score;
 }
 
 int bestsCount;
@@ -513,12 +514,9 @@ void Method2(ofstream& ofs) {
 
   rep(aespa, bestsCount) {
     tmp = bests[aespa];
-    int ww, hh;
-    Print(tmp, ww, hh, ofs);
-
-    int tmpScore = ww + hh;
-    if (tmpScore < bestScore) {
-      bestScore = tmpScore;
+    Score score = Print(tmp, ofs);
+    if (score.score < bestScore) {
+      bestScore = score.score;
       best = tmp;
     }
   }
@@ -577,13 +575,9 @@ void Method2(ofstream& ofs) {
       }
     }
 
-
-    int ww, hh;
-    Print(tmp, ww, hh, ofs);
-
-    int tmpScore = ww + hh;
-    if (tmpScore < bestScore) {
-      bestScore = tmpScore;
+    Score score = Print(tmp, ofs);
+    if (score.score < bestScore) {
+      bestScore = score.score;
       best = tmp;
     }
   }
