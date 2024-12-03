@@ -268,6 +268,13 @@ public:
     blocks[sz - 1].SetBase(base);
   }
 
+  void rotateBack()
+  {
+    sumWidth -= blocks[sz - 1].width();
+    sumWidth += blocks[sz - 1].height();
+    blocks[sz - 1].piece1.rot = 1 - blocks[sz - 1].piece1.rot;
+  }
+
   void addPiece(int index, const Piece& piece)
   {
     int beforeWidth = blocks[index].width();
@@ -437,10 +444,11 @@ void Input(int problemNum)
   }
 
   if (mode == 4) {
-    //rep(i, n) {
-    //  w[i] = W[i];
-    //  h[i] = H[i];
-    //}
+    rep(i, n)
+    {
+      w[i] = W[i];
+      h[i] = H[i];
+    }
     rep(i, t)
     {
       dW[i] = 0;
@@ -591,6 +599,7 @@ Score Print(const vector<Piece>& pieces, ofstream& ofs)
 
     cin >> score.ww >> score.hh;
     score.score = score.ww + score.hh;
+    tScores[queryCount] = score;
   }
   else {
     ofs << pieces.size() << endl;
@@ -600,12 +609,12 @@ Score Print(const vector<Piece>& pieces, ofstream& ofs)
     }
 
     score = CalcScore(pieces, true);
+    tScores[queryCount] = score;
     score.ww += dW[queryCount];
     score.hh += dH[queryCount];
     score.score = score.ww + score.hh;
   }
 
-  tScores[queryCount] = score;
   queryCount++;
 
   return score;
@@ -936,8 +945,11 @@ Board board;
 
 int bestsCount2;
 Board bests2[MAX_T];
+int FIRST_ROUND = MAX_T;
 void Method2_Shoki1_Internal1()
 {
+  FIRST_ROUND = t / 2;
+
   block.clear();
   row.clear();
   board.clear();
@@ -960,7 +972,7 @@ void Method2_Shoki1_Internal1()
   board.Add(row);
 
   // bests更新
-  if (bestsCount2 < t / 2) {
+  if (bestsCount2 < FIRST_ROUND) {
     bests2[bestsCount2] = board;
     bestsCount2++;
   }
@@ -979,74 +991,32 @@ void Method2_Shoki1_Internal1()
   }
 }
 
-void Method2_Shoki1_Internal2()
+void Method2_Shoki1_Internal3(double progressRatio)
 {
-  block.clear();
-  row.clear();
-  board.clear();
+  FIRST_ROUND = t / 2;
 
-  int widLimit = RandXor() % 1000000 + 200000;
-
-  int isRandomRot = RandXor() % 10;
-
-  rep(i, n)
-  {
-    block.piece1 = initialPieces[i];
-
-    if (isRandomRot >= 1 && RandXor() % n <= isRandomRot) {
-      block.piece1.rot = 1 - block.piece1.rot;
-    }
-
-    if (row.GetSumWidth() < widLimit * 0.9 && board.count() >= 1 && board.back().GetSumWidth() + block.piece1.width() <= widLimit) {
-      board.Add(board.count() - 1, block);
-    }
-    else if (row.GetSumWidth() + block.piece1.width() <= widLimit) {
-      row.add(block);
-    }
-    else {
-      board.Add(row);
-      row.clear();
-      row.add(block);
-    }
-  }
-
-  board.Add(row);
-
-  // bests更新
-  if (bestsCount2 < t / 2) {
-    bests2[bestsCount2] = board;
-    bestsCount2++;
-  }
-  else if (board.score() < bests2[bestsCount2 - 1].score()) {
-    bests2[bestsCount2 - 1] = board;
-  }
-  int now = bestsCount2 - 1;
-  while (now >= 1) {
-    if (bests2[now].score() < bests2[now - 1].score()) {
-      swap(bests2[now], bests2[now - 1]);
-      now--;
-    }
-    else {
-      break;
-    }
-  }
-}
-
-void Method2_Shoki1_Internal3()
-{
   block.clear();
   row.clear();
   board.clear();
   Piece piece;
 
   int widLimit = RandXor() % 1000000 + 200000;
+  if (progressRatio > 0.5) {
+    widLimit = RandXor() % 200000 - 100000 + bests2[0].GetMaxWidth();
+  }
 
   int isRandomRot = RandXor() % 10;
 
   int isUsePiece2_1 = RandXor() % 200;
 
+  double maxRatio = 0.9 + Rand01() * 0.2;
+
   int bestsLimit = t / 2;
   int ng = 0;
+
+  int useSizeRank = RandXor() % 10 + 5;
+
+  int isLie = RandXor() % 100;
 
   rep(i, n)
   {
@@ -1061,8 +1031,8 @@ void Method2_Shoki1_Internal3()
       piece.rot = 1 - piece.rot;
     }
 
-    if (isUsePiece2_1 < 50 && (sizeRank[i] < 10 || sizeSize[i] < MAX_HEIGHT / 2)) {
-      if (row.sz > 0 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.1) {
+    if (isUsePiece2_1 < 50 && (sizeRank[i] < useSizeRank || sizeSize[i] < MAX_HEIGHT * maxRatio / 2)) {
+      if (row.sz > 0 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * maxRatio) {
         int ok = 1;
         if (RandXor() % 25 > isUsePiece2_1) {
           ok = 0;
@@ -1073,8 +1043,8 @@ void Method2_Shoki1_Internal3()
         }
       }
     }
-    else if (isUsePiece2_1 < 100 && (sizeRank[i] < 10 || sizeSize[i] < MAX_HEIGHT / 2)) {
-      if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.0) {
+    else if (isUsePiece2_1 < 100 && (sizeRank[i] < useSizeRank || sizeSize[i] < MAX_HEIGHT * maxRatio / 2)) {
+      if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * maxRatio) {
         int ok = 1;
         if (RandXor() % 2 == 0) {
           ok = 0;
@@ -1089,7 +1059,7 @@ void Method2_Shoki1_Internal3()
         int isAdd = 0;
         rep(j, row.sz - 1)
         {
-          if (row.blocks[j].count() == 1 && row.blocks[j].height() + piece.height() < MAX_HEIGHT * 1.0 && piece.width() < row.blocks[j].width()) {
+          if (row.blocks[j].count() == 1 && row.blocks[j].height() + piece.height() < MAX_HEIGHT * maxRatio && piece.width() < row.blocks[j].width()) {
             int ok = 1;
             if (RandXor() % 2 == 0) {
               ok = 0;
@@ -1106,8 +1076,8 @@ void Method2_Shoki1_Internal3()
         }
       }
     }
-    else if (isUsePiece2_1 < 150 && (sizeRank[i] < 10 || sizeSize[i] < MAX_HEIGHT / 2)) {
-      if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * 1.0) {
+    else if (isUsePiece2_1 < 150 && (sizeRank[i] < useSizeRank || sizeSize[i] < MAX_HEIGHT * maxRatio / 2)) {
+      if (row.sz >= 1 && row.blocks[row.sz - 1].count() == 1 && row.blocks[row.sz - 1].height() + piece.height() < MAX_HEIGHT * maxRatio) {
         int ok = 1;
         if (RandXor() % 2 == 0) {
           ok = 0;
@@ -1128,7 +1098,7 @@ void Method2_Shoki1_Internal3()
             continue;
           }
           if (board.rows[board.sz - 1].blocks[j].count() == 1
-            && board.rows[board.sz - 1].blocks[j].height() + piece.height() < MAX_HEIGHT * 1.0
+            && board.rows[board.sz - 1].blocks[j].height() + piece.height() < MAX_HEIGHT * maxRatio
             && piece.width() < board.rows[board.sz - 1].blocks[j].width()) {
             int ok = 1;
             if (RandXor() % 2 == 0) {
@@ -1150,7 +1120,7 @@ void Method2_Shoki1_Internal3()
         int isAdd = 0;
         rep(j, row.sz - 1)
         {
-          if (row.blocks[j].count() == 1 && row.blocks[j].height() + piece.height() < MAX_HEIGHT * 1.0 && piece.width() < row.blocks[j].width()) {
+          if (row.blocks[j].count() == 1 && row.blocks[j].height() + piece.height() < MAX_HEIGHT * maxRatio && piece.width() < row.blocks[j].width()) {
             int ok = 1;
             if (RandXor() % 2 == 0) {
               ok = 0;
@@ -1164,6 +1134,21 @@ void Method2_Shoki1_Internal3()
         }
         if (isAdd) {
           continue;
+        }
+      }
+    }
+
+    if (isLie < 100) {
+      if (row.sz > 0 && row.blocks[row.sz - 1].count() == 1) {
+        int height = max(row.blocks[row.sz - 1].height(), piece.height());
+        int newHeight = max(row.blocks[row.sz - 1].width(), piece.width());
+        if (abs(row.blocks[row.sz - 1].height() - piece.height()) < 20000 && 70000 < newHeight && newHeight < MAX_HEIGHT * 1.5) {
+          if (RandXor() % 50 < isLie) {
+            row.rotateBack();
+            piece.rot = 1 - piece.rot;
+            row.addPiece(row.sz - 1, piece);
+            continue;
+          }
         }
       }
     }
@@ -1189,7 +1174,7 @@ void Method2_Shoki1_Internal3()
   board.Add(row);
 
   // bests更新
-  if (bestsCount2 < t / 2) {
+  if (bestsCount2 < FIRST_ROUND) {
     bests2[bestsCount2] = board;
     bestsCount2++;
   }
@@ -1227,21 +1212,23 @@ void Method2_Shoki1()
     Method2_Shoki1_Internal1();
   }
 
+  double proglessRatio = 0.0;
+  double timeLimit =  TL / 30 * 25;
   while (true) {
     if (loop % 100 == 0) {
       auto nowTime = GetNowTime();
-      if (nowTime > TL / 30 * 25) {
+      proglessRatio = nowTime / timeLimit;
+      if (nowTime > timeLimit) {
         break;
       }
     }
 
     loop++;
 
-    //Method2_Shoki1_Internal2();
-    Method2_Shoki1_Internal3();
+    Method2_Shoki1_Internal3(proglessRatio);
   }
 
-  if (mode != 0) {
+  if (mode >= 2) {
     cout << "loop = " << loop << endl;
   }
 }
@@ -1314,10 +1301,15 @@ void Method2(ofstream& ofs)
     }
   }
 
-  cout << "karina = " << karina << endl;
+  if (mode >= 2) {
+    cout << "karina = " << karina << endl;
+  }
+
+  sort(answers.begin(), answers.end());
 
   int aespa = 0;
-  while (aespa < bestsCount2) {
+  int SECOND_ROUND = t / 2;
+  while (aespa < SECOND_ROUND) {
     answers[aespa].score = Print(answers[aespa].pieces, ofs).score;
     aespa++;
   }
@@ -1378,7 +1370,7 @@ void Method2(ofstream& ofs)
     if (preScore.score < answers[raQ].score || prob > Rand01() || nowTime > TL) {
       Score score = Print(answers[raQ].pieces, ofs);
       if (score.score < answers[raQ].score) {
-        if (mode != 0) {
+        if (mode >= 2) {
           cout << raQ << ' ' << raMode << ' ' << diff << ' ' << temp << ' ' << prob << ' ' << nowTime << endl;
         }
         answers[raQ].score = score.score;
@@ -1388,7 +1380,7 @@ void Method2(ofstream& ofs)
     }
   }
 
-  if (mode != 0) {
+  if (mode >= 2) {
     cout << "aespa loop = " << loop << endl;
   }
 }
@@ -1398,7 +1390,7 @@ int sum[MAX_T * 2];
 int measure[MAX_T * 2];
 void Yamanobori(ofstream& ofs)
 {
-  int TT = t;
+  int TT = t / 3;
 
   int originH[MAX_N], originW[MAX_N];
   rep(i, n)
@@ -1439,10 +1431,12 @@ void Yamanobori(ofstream& ofs)
       }
     }
 
-    Score score = Print(cols, ofs);
+    Score score1 = Print(cols, ofs);
+    Score score2 = Print(cols, ofs);
+    Score score3 = Print(cols, ofs);
 
-    measure[aespa * 2] = score.hh;
-    measure[aespa * 2 + 1] = score.ww;
+    measure[aespa * 2] = (score1.hh + score2.hh + score3.hh) / 3;
+    measure[aespa * 2 + 1] = (score1.ww + score2.ww + score3.ww) / 3;
     bool head = true;
     for (auto col : cols) {
       if (head) {
@@ -1575,16 +1569,18 @@ void Yamanobori(ofstream& ofs)
     }
   }
 
-  int diffSum1 = 0, diffSum2 = 0;
-  //cout << "元 最終 正解" << endl;
-  rep(i, 5)
-  {
-    cout << originH[i] << ' ' << h[i] << ' ' << H[i] << endl;
-    diffSum1 += abs(originH[i] - H[i]);
-    diffSum2 += abs(h[i] - H[i]);
+  if (mode >= 2) {
+    int diffSum1 = 0, diffSum2 = 0;
+    //cout << "元 最終 正解" << endl;
+    rep(i, n)
+    {
+      cout << originH[i] << ' ' << h[i] << ' ' << H[i] << endl;
+      diffSum1 += abs(originH[i] - H[i]);
+      diffSum2 += abs(h[i] - H[i]);
+    }
+    cout << "loop = " << loop << ", t = " << TT << ' ';
+    cout << diffSum1 << "  " << diffSum2 << endl;
   }
-  cout << "loop = " << loop << ", t = " << TT << ' ';
-  cout << diffSum1 << "  " << diffSum2 << endl;
 }
 
 // 問題を解く関数
@@ -1612,10 +1608,8 @@ ll Solve(int problem_num)
     ofs.close();
   }
 
-  Score score;
-  score.score = 0;
-  if (mode != 0) {
-    score = CalcTScore();
+  Score score = CalcTScore();
+  if (mode >= 2) {
     cout << "ww = " << score.ww << ", hh = " << score.hh << ", score = " << score.score << endl;
   }
   return score.score;
@@ -1634,7 +1628,7 @@ int main()
     RandXor();
   }
 
-  mode = 2;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
