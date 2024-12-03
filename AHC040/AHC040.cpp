@@ -1154,10 +1154,10 @@ void Method2_Shoki1_Internal3(double progressRatio)
     }
 
     block.piece1 = piece;
-    if (row.GetSumWidth() < widLimit * 0.9 && board.count() >= 1 && board.back().GetSumWidth() + block.piece1.width() <= widLimit) {
+    if (row.GetSumWidth() < widLimit * 0.9 && board.count() >= 1 && board.back().GetSumWidth() + block.piece1.width() <= widLimit && RandXor() % 4 != 0) {
       board.Add(board.count() - 1, block);
     }
-    else if (row.GetSumWidth() + block.piece1.width() <= widLimit) {
+    else if (row.GetSumWidth() + block.piece1.width() <= widLimit && RandXor() % (n) != 0) {
       row.add(block);
     }
     else {
@@ -1326,7 +1326,7 @@ void Method2(ofstream& ofs)
 
   int raQ = 0;
   vector<Piece> keep = answers[raQ].pieces;
-  int raQCount = min(bestsCount2, 10);
+  int raQCount = min(bestsCount2, 3);
   while (aespa < t) {
     loop++;
     if (loop % 100 == 0) {
@@ -1662,6 +1662,7 @@ int main()
         cout << endl;
       }
     }
+    cout << "sum = " << sum << endl;
   }
 
   return 0;
