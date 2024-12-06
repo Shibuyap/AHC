@@ -899,8 +899,8 @@ void RefineAndPrintSolutions(ofstream& ofs)
   }
 
   int improvementStepCount = 0;
-  double timeLimit = TL * 25 / 30;
-  while (false) {
+  double timeLimit = TL * 27 / 30;
+  while (true) {
     improvementStepCount++;
     if (improvementStepCount % 100 == 0) {
       auto currentElapsedTime = GetNowTime();
@@ -1055,7 +1055,7 @@ int main()
     RandXor();
   }
 
-  executionMode = 1;
+  executionMode = 4;
 
   if (executionMode == 0) {
     ExecuteSolution(0);
