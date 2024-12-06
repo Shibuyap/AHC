@@ -889,17 +889,39 @@ void RefineAndPrintSolutions(ofstream& ofs)
 {
   BuildInitialMethod2Layouts();
 
-  vector<Ans> solutionCandidates;
+  vector<Layout> layouts;
   rep(i, candidateLayoutCount)
   {
-    Ans ans;
-    ans.pieces = candidateLayouts[i].CreateQuery();
-    ans.score = EvaluateScore(ans.pieces, false).score;
-    solutionCandidates.push_back(ans);
+    layouts.push_back(candidateLayouts[i]);
   }
 
   int improvementStepCount = 0;
   double timeLimit = TL * 27 / 30;
+
+  Layout keepLayout;
+  while (false) {
+    improvementStepCount++;
+    if (improvementStepCount % 100 == 0) {
+      auto currentElapsedTime = GetNowTime();
+      if (currentElapsedTime > timeLimit) {
+        break;
+      }
+    }
+
+    /*  Ç±Ç±ÇèëÇ≠ */
+  }
+
+
+  vector<Ans> solutionCandidates;
+  rep(i, layouts.size())
+  {
+    Ans ans;
+    ans.pieces = layouts[i].CreateQuery();
+    ans.score = EvaluateScore(ans.pieces, false).score;
+    solutionCandidates.push_back(ans);
+  }
+
+
 
   Ans keepAns;
   while (false) {
