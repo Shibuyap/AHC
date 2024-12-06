@@ -900,7 +900,9 @@ void RefineAndPrintSolutions(ofstream& ofs)
 
   int improvementStepCount = 0;
   double timeLimit = TL * 27 / 30;
-  while (true) {
+
+  Ans keepAns;
+  while (false) {
     improvementStepCount++;
     if (improvementStepCount % 100 == 0) {
       auto currentElapsedTime = GetNowTime();
@@ -910,7 +912,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
     }
 
     int randomCandidateIndex = RandXor() % candidateLayoutCount;
-    int randomModificationMode = RandXor() % 3;
+    int randomModificationMode = RandXor() % 4;
     int randomPieceIndex = RandXor() % n;
     RectanglePiece keep = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex];
 
@@ -922,12 +924,70 @@ void RefineAndPrintSolutions(ofstream& ofs)
       if (solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base == newBaseIndex)continue;
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
     }
-    else {
+    else if (randomModificationMode == 2) {
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir;
       if (RandXor() % 2 == 0) {
         int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
         solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
       }
+    }
+    else if (randomModificationMode == 3) {
+      keepAns = solutionCandidates[randomCandidateIndex];
+
+      int randomPieceIndex2 = RandXor() % n;
+      while (randomPieceIndex2 == randomPieceIndex) {
+        randomPieceIndex2 = RandXor() % n;
+      }
+      if (randomPieceIndex2 < randomPieceIndex) {
+        swap(randomPieceIndex, randomPieceIndex2);
+      }
+
+      if (solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex2].base == randomPieceIndex) {
+        continue;
+      }
+
+      // 1ÇÕ2ÇÃçsÇÃ1î‘ëO
+      int base1 = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex2].base;
+      while (base1 > randomCandidateIndex) {
+        base1 = solutionCandidates[randomCandidateIndex].pieces[base1].base;
+      }
+      if (base1 == randomCandidateIndex) {
+        continue;
+      }
+
+      // 2ÇÕ1ÇÃçsÇÃ1î‘å„ÇÎ
+      int base2_1 =  randomCandidateIndex;
+      int base2_21 =  -2;
+      int base2_22 =  -2;
+      srep(i, randomCandidateIndex + 1, randomPieceIndex2)
+      {
+        if (solutionCandidates[randomCandidateIndex].pieces[i].base == base2_1) {
+          if (base2_21 == -2) {
+            base2_21 = i;
+          }
+          else {
+            base2_22 = i;
+          }
+        }
+        else if (solutionCandidates[randomCandidateIndex].pieces[i].base == base2_21) {
+          base2_1 = base2_21;
+          base2_21 = i;
+          base2_22 = -2;
+        }
+        else if (solutionCandidates[randomCandidateIndex].pieces[i].base == base2_22) {
+          base2_1 = base2_22;
+          base2_21 = i;
+          base2_22 = -2;
+        }
+      }
+
+      int base2 = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base;
+      if (base2_21 != -2) {
+        base2 = base2_21;
+      }
+
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = base1;
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex2].base = base2;
     }
 
     auto preScore = EvaluateScore(solutionCandidates[randomCandidateIndex].pieces, false);
@@ -936,7 +996,12 @@ void RefineAndPrintSolutions(ofstream& ofs)
       solutionCandidates[randomCandidateIndex].score = preScore.score;
     }
     else {
-      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex] = keep;
+      if (randomModificationMode == 3) {
+        solutionCandidates[randomCandidateIndex] = keepAns;
+      }
+      else {
+        solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex] = keep;
+      }
     }
   }
 
@@ -1055,7 +1120,7 @@ int main()
     RandXor();
   }
 
-  executionMode = 4;
+  executionMode = 2;
 
   if (executionMode == 0) {
     ExecuteSolution(0);
