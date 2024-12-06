@@ -417,24 +417,24 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
     cs_max_right[i] = -1;
   }
 
-  RectanglePiece col;
+  RectanglePiece currentRectPiece;
   rep(i, sz)
   {
-    col = pieces[i];
-    int num = col.num;
-    int wid = w[num];
-    int hei = h[num];
+    currentRectPiece = pieces[i];
+    int num = currentRectPiece.num;
+    int currentWidth = w[num];
+    int currentHeight = h[num];
     if (executionMode != 0 && cheat == true) {
-      wid = W[num];
-      hei = H[num];
+      currentWidth = W[num];
+      currentHeight = H[num];
     }
-    if (col.rot == 1) swap(wid, hei);
-    if (col.dir == 0) {
+    if (currentRectPiece.rot == 1) swap(currentWidth, currentHeight);
+    if (currentRectPiece.dir == 0) {
       cs_left[num] = 0;
-      if (col.base != -1) {
-        cs_left[num] = cs_right[col.base];
+      if (currentRectPiece.base != -1) {
+        cs_left[num] = cs_right[currentRectPiece.base];
       }
-      cs_right[num] = cs_left[num] + wid;
+      cs_right[num] = cs_left[num] + currentWidth;
 
       cs_up[num] = 0;
       drep(j, num)
@@ -446,14 +446,14 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
         }
         if (cs_max_down[j] <= cs_up[num])break;
       }
-      cs_down[num] = cs_up[num] + hei;
+      cs_down[num] = cs_up[num] + currentHeight;
     }
     else {
       cs_up[num] = 0;
-      if (col.base != -1) {
-        cs_up[num] = cs_down[col.base];
+      if (currentRectPiece.base != -1) {
+        cs_up[num] = cs_down[currentRectPiece.base];
       }
-      cs_down[num] = cs_up[num] + hei;
+      cs_down[num] = cs_up[num] + currentHeight;
 
       cs_left[num] = 0;
       drep(j, num)
@@ -465,17 +465,17 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
         }
         if (cs_max_right[j] <= cs_left[num])break;
       }
-      cs_right[num] = cs_left[num] + wid;
+      cs_right[num] = cs_left[num] + currentWidth;
     }
 
     cs_max_down[num] = cs_down[num];
     cs_max_right[num] = cs_right[num];
     if (i > 0) {
-      int befNum = pieces[i - 1].num;
-      srep(j, befNum + 1, num + 1)
+      int previousNum = pieces[i - 1].num;
+      srep(j, previousNum + 1, num + 1)
       {
-        cs_max_down[j] = max(cs_max_down[j], cs_max_down[befNum]);
-        cs_max_right[j] = max(cs_max_right[j], cs_max_right[befNum]);
+        cs_max_down[j] = max(cs_max_down[j], cs_max_down[previousNum]);
+        cs_max_right[j] = max(cs_max_right[j], cs_max_right[previousNum]);
       }
     }
 
@@ -491,23 +491,23 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
     }
   }
 
-  ScoreStruct score;
-  score.ww = maxRight;
-  score.hh = maxDown;
-  score.score = maxDown + maxRight;
+  ScoreStruct scoreResult;
+  scoreResult.ww = maxRight;
+  scoreResult.hh = maxDown;
+  scoreResult.score = maxDown + maxRight;
   rep(i, n)
   {
     if (cs_use[i] == 0) {
-      score.score += w[i] + h[i];
+      scoreResult.score += w[i] + h[i];
     }
   }
 
-  return score;
+  return scoreResult;
 }
 
 ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream& ofs)
 {
-  ScoreStruct score;
+  ScoreStruct resultScore;
 
   if (executionMode == 0) {
     cout << pieces.size() << endl;
@@ -517,9 +517,9 @@ ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream
     }
     fflush(stdout);
 
-    cin >> score.ww >> score.hh;
-    score.score = score.ww + score.hh;
-    tScores[queryCounter] = score;
+    cin >> resultScore.ww >> resultScore.hh;
+    resultScore.score = resultScore.ww + resultScore.hh;
+    tScores[queryCounter] = resultScore;
   }
   else {
     ofs << "# " << pieces.size() << endl;
@@ -534,16 +534,16 @@ ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream
       ofs << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
 
-    score = EvaluateScore(pieces, true);
-    tScores[queryCounter] = score;
-    score.ww += dW[queryCounter];
-    score.hh += dH[queryCounter];
-    score.score = score.ww + score.hh;
+    resultScore = EvaluateScore(pieces, true);
+    tScores[queryCounter] = resultScore;
+    resultScore.ww += dW[queryCounter];
+    resultScore.hh += dH[queryCounter];
+    resultScore.score = resultScore.ww + resultScore.hh;
   }
 
   queryCounter++;
 
-  return score;
+  return resultScore;
 }
 
 vector<RectanglePiece> basePieces;
@@ -564,16 +564,16 @@ int pieceSizeOrder[MAX_N];
 int pieceLargestDimension[MAX_N];
 void SetupPieceSizeOrder()
 {
-  vector<P> vp;
+  vector<P> pieceDimensionIndexPairs;
   rep(i, n)
   {
-    vp.emplace_back(max(w[i], h[i]), i);
+    pieceDimensionIndexPairs.emplace_back(max(w[i], h[i]), i);
   }
-  sort(vp.begin(), vp.end());
+  sort(pieceDimensionIndexPairs.begin(), pieceDimensionIndexPairs.end());
   rep(i, n)
   {
-    pieceSizeOrder[vp[i].second] = i;
-    pieceLargestDimension[vp[i].second] = vp[i].first;
+    pieceSizeOrder[pieceDimensionIndexPairs[i].second] = i;
+    pieceLargestDimension[pieceDimensionIndexPairs[i].second] = pieceDimensionIndexPairs[i].first;
   }
 }
 
@@ -665,13 +665,17 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
       piece.rot = 1 - piece.rot;
     }
 
+    // Ç±Ç±Ç≈isPlacementAllowedÇópÇ¢Çƒâ¬ì«ê´å¸è„
+    // ëSÇƒÇÃokïœêîÇisPlacementAllowedÇ…ïœçX
+    int isPlacementAllowed = 1;
+
     if (secondStackingThreshold < 50 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
       if (currentShelf.sz > 0 && currentShelf.blocks[currentShelf.sz - 1].count() == 1 && currentShelf.blocks[currentShelf.sz - 1].height() + piece.height() < MAX_HEIGHT * heightRatioLimit) {
-        int ok = 1;
+        isPlacementAllowed = 1;
         if (RandXor() % 25 > secondStackingThreshold) {
-          ok = 0;
+          isPlacementAllowed = 0;
         }
-        if (ok) {
+        if (isPlacementAllowed) {
           currentShelf.addPiece(currentShelf.sz - 1, piece);
           continue;
         }
@@ -679,29 +683,31 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
     }
     else if (secondStackingThreshold < 100 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
       if (currentShelf.sz >= 1 && currentShelf.blocks[currentShelf.sz - 1].count() == 1 && currentShelf.blocks[currentShelf.sz - 1].height() + piece.height() < MAX_HEIGHT * heightRatioLimit) {
-        int ok = 1;
+        isPlacementAllowed = 1;
         if (RandXor() % 2 == 0) {
-          ok = 0;
+          isPlacementAllowed = 0;
         }
-        if (ok) {
+        if (isPlacementAllowed) {
           currentShelf.addPiece(currentShelf.sz - 1, piece);
           continue;
         }
       }
 
-      if (currentShelf.sz >= 2) {
+      {
         int isAdd = 0;
-        rep(j, currentShelf.sz - 1)
-        {
-          if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
-            int ok = 1;
-            if (RandXor() % 2 == 0) {
-              ok = 0;
-            }
-            if (ok) {
-              currentShelf.addPiece(j, piece);
-              isAdd = 1;
-              break;
+        if (currentShelf.sz >= 2) {
+          rep(j, currentShelf.sz - 1)
+          {
+            if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
+              isPlacementAllowed = 1;
+              if (RandXor() % 2 == 0) {
+                isPlacementAllowed = 0;
+              }
+              if (isPlacementAllowed) {
+                currentShelf.addPiece(j, piece);
+                isAdd = 1;
+                break;
+              }
             }
           }
         }
@@ -712,62 +718,64 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
     }
     else if (secondStackingThreshold < 150 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
       if (currentShelf.sz >= 1 && currentShelf.blocks[currentShelf.sz - 1].count() == 1 && currentShelf.blocks[currentShelf.sz - 1].height() + piece.height() < MAX_HEIGHT * heightRatioLimit) {
-        int ok = 1;
+        isPlacementAllowed = 1;
         if (RandXor() % 2 == 0) {
-          ok = 0;
+          isPlacementAllowed = 0;
         }
-        if (ok) {
+        if (isPlacementAllowed) {
           currentShelf.addPiece(currentShelf.sz - 1, piece);
           continue;
         }
       }
 
-      if (currentLayout.sz >= 1) {
+      {
         int isAdd = 0;
-        int accumulatedWidth = 0;
-        rep(j, currentLayout.shelves[currentLayout.sz - 1].sz - 1)
-        {
-          if (accumulatedWidth < currentShelf.sumWidth) {
-            accumulatedWidth += currentLayout.shelves[currentLayout.sz - 1].blocks[j].width();
+        if (currentLayout.sz >= 1) {
+          int accumulatedWidth = 0;
+          rep(j, currentLayout.shelves[currentLayout.sz - 1].sz - 1)
+          {
+            if (accumulatedWidth < currentShelf.sumWidth) {
+              accumulatedWidth += currentLayout.shelves[currentLayout.sz - 1].blocks[j].width();
+              continue;
+            }
+            if (currentLayout.shelves[currentLayout.sz - 1].blocks[j].count() == 1
+              && currentLayout.shelves[currentLayout.sz - 1].blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit
+              && piece.width() < currentLayout.shelves[currentLayout.sz - 1].blocks[j].width()) {
+              isPlacementAllowed = 1;
+              if (RandXor() % 2 == 0) {
+                isPlacementAllowed = 0;
+              }
+              if (isPlacementAllowed) {
+                currentLayout.shelves[currentLayout.sz - 1].addPiece(j, piece);
+                isAdd = 1;
+                break;
+              }
+            }
+          }
+          if (isAdd) {
             continue;
           }
-          if (currentLayout.shelves[currentLayout.sz - 1].blocks[j].count() == 1
-            && currentLayout.shelves[currentLayout.sz - 1].blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit
-            && piece.width() < currentLayout.shelves[currentLayout.sz - 1].blocks[j].width()) {
-            int ok = 1;
-            if (RandXor() % 2 == 0) {
-              ok = 0;
-            }
-            if (ok) {
-              currentLayout.shelves[currentLayout.sz - 1].addPiece(j, piece);
-              isAdd = 1;
-              break;
-            }
-          }
         }
-        if (isAdd) {
-          continue;
-        }
-      }
 
-      if (currentShelf.sz >= 2) {
-        int isAdd = 0;
-        rep(j, currentShelf.sz - 1)
-        {
-          if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
-            int ok = 1;
-            if (RandXor() % 2 == 0) {
-              ok = 0;
-            }
-            if (ok) {
-              currentShelf.addPiece(j, piece);
-              isAdd = 1;
-              break;
+        if (currentShelf.sz >= 2) {
+          isAdd = 0;
+          rep(j, currentShelf.sz - 1)
+          {
+            if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
+              isPlacementAllowed = 1;
+              if (RandXor() % 2 == 0) {
+                isPlacementAllowed = 0;
+              }
+              if (isPlacementAllowed) {
+                currentShelf.addPiece(j, piece);
+                isAdd = 1;
+                break;
+              }
             }
           }
-        }
-        if (isAdd) {
-          continue;
+          if (isAdd) {
+            continue;
+          }
         }
       }
     }
@@ -777,6 +785,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
         int heightVal = max(currentShelf.blocks[currentShelf.sz - 1].height(), piece.height());
         int newHeight = max(currentShelf.blocks[currentShelf.sz - 1].width(), piece.width());
         if (abs(currentShelf.blocks[currentShelf.sz - 1].height() - piece.height()) < 20000 && 70000 < newHeight && newHeight < MAX_HEIGHT * 1.5) {
+          isPlacementAllowed = 1;
           if (RandXor() % 50 < lyingConditionThreshold) {
             currentShelf.rotateBack();
             piece.rot = 1 - piece.rot;
@@ -830,16 +839,16 @@ void BuildInitialMethod2Layouts()
 {
   candidateLayoutCount = 0;
 
-  int loopCount = 0;
+  int processingLoopCount = 0;
   while (true) {
-    if (loopCount % 100 == 0) {
+    if (processingLoopCount % 100 == 0) {
       auto currentElapsedTime = GetNowTime();
       if (currentElapsedTime > TL / 30) {
         break;
       }
     }
 
-    loopCount++;
+    processingLoopCount++;
 
     BuildInitialMethod2LayoutsPhase1();
   }
@@ -847,7 +856,7 @@ void BuildInitialMethod2Layouts()
   double progressRatio = 0.0;
   double timeLimit = TL / 30 * 25;
   while (true) {
-    if (loopCount % 100 == 0) {
+    if (processingLoopCount % 100 == 0) {
       auto currentElapsedTime = GetNowTime();
       progressRatio = currentElapsedTime / timeLimit;
       if (currentElapsedTime > timeLimit) {
@@ -855,13 +864,13 @@ void BuildInitialMethod2Layouts()
       }
     }
 
-    loopCount++;
+    processingLoopCount++;
 
     UpdateMethod2LayoutsPhase(progressRatio);
   }
 
   if (executionMode >= 2) {
-    cout << "loop = " << loopCount << endl;
+    cout << "loop = " << processingLoopCount << endl;
   }
 }
 
@@ -889,128 +898,128 @@ void RefineAndPrintSolutions(ofstream& ofs)
     solutionCandidates.push_back(ans);
   }
 
-  int improvementIteration = 0;
+  int improvementStepCount = 0;
   double timeLimit = TL * 25 / 30;
   while (false) {
-    improvementIteration++;
-    if (improvementIteration % 100 == 0) {
+    improvementStepCount++;
+    if (improvementStepCount % 100 == 0) {
       auto currentElapsedTime = GetNowTime();
       if (currentElapsedTime > timeLimit) {
         break;
       }
     }
 
-    int raQ = RandXor() % candidateLayoutCount;
-    int randomMode = RandXor() % 3;
-    int ra = RandXor() % n;
-    RectanglePiece keep = solutionCandidates[raQ].pieces[ra];
+    int randomCandidateIndex = RandXor() % candidateLayoutCount;
+    int randomModificationMode = RandXor() % 3;
+    int randomPieceIndex = RandXor() % n;
+    RectanglePiece keep = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex];
 
-    if (randomMode == 0) {
-      solutionCandidates[raQ].pieces[ra].rot = 1 - solutionCandidates[raQ].pieces[ra].rot;
+    if (randomModificationMode == 0) {
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot;
     }
-    else if (randomMode == 1) {
-      int ra2 = RandXor() % (ra + 1) - 1;
-      if (solutionCandidates[raQ].pieces[ra].base == ra2)continue;
-      solutionCandidates[raQ].pieces[ra].base = ra2;
+    else if (randomModificationMode == 1) {
+      int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+      if (solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base == newBaseIndex)continue;
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
     }
     else {
-      solutionCandidates[raQ].pieces[ra].dir = 1 - solutionCandidates[raQ].pieces[ra].dir;
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir;
       if (RandXor() % 2 == 0) {
-        int ra2 = RandXor() % (ra + 1) - 1;
-        solutionCandidates[raQ].pieces[ra].base = ra2;
+        int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+        solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
       }
     }
 
-    auto preScore = EvaluateScore(solutionCandidates[raQ].pieces, false);
+    auto preScore = EvaluateScore(solutionCandidates[randomCandidateIndex].pieces, false);
 
-    if (preScore.score <= solutionCandidates[raQ].score) {
-      solutionCandidates[raQ].score = preScore.score;
+    if (preScore.score <= solutionCandidates[randomCandidateIndex].score) {
+      solutionCandidates[randomCandidateIndex].score = preScore.score;
     }
     else {
-      solutionCandidates[raQ].pieces[ra] = keep;
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex] = keep;
     }
   }
 
   if (executionMode >= 2) {
-    cout << "improvementIteration = " << improvementIteration << endl;
+    cout << "improvementStepCount = " << improvementStepCount << endl;
   }
 
   sort(solutionCandidates.begin(), solutionCandidates.end());
 
-  int iterationCounter = 0;
+  int printedSolutionCount = 0;
   int SECOND_ROUND = t / 2;
-  while (iterationCounter < SECOND_ROUND) {
-    solutionCandidates[iterationCounter].score = PrintFinalArrangement(solutionCandidates[iterationCounter].pieces, ofs).score;
-    iterationCounter++;
+  while (printedSolutionCount < SECOND_ROUND) {
+    solutionCandidates[printedSolutionCount].score = PrintFinalArrangement(solutionCandidates[printedSolutionCount].pieces, ofs).score;
+    printedSolutionCount++;
   }
 
   sort(solutionCandidates.begin(), solutionCandidates.end());
 
-  int loopCount = 0;
+  int mainLoopCounter = 0;
   double startTime = GetNowTime();
   double currentElapsedTime = GetNowTime();
   const double START_TEMP = 0.0;
   const double END_TEMP = 200000.0;
   timeLimit = TL - startTime;
-  double temp = START_TEMP;
+  double currentTemperature = START_TEMP;
 
-  int raQ = 0;
-  vector<RectanglePiece> keep = solutionCandidates[raQ].pieces;
+  int randomCandidateIndex = 0;
+  vector<RectanglePiece> keep = solutionCandidates[randomCandidateIndex].pieces;
   int raQCount = min(candidateLayoutCount, 3);
-  int outputIteration = iterationCounter;
+  int outputIteration = printedSolutionCount;
   while (outputIteration < t) {
-    loopCount++;
-    if (loopCount % 100 == 0) {
+    mainLoopCounter++;
+    if (mainLoopCounter % 100 == 0) {
       currentElapsedTime = GetNowTime();
     }
 
-    int randomMode = RandXor() % 3;
+    int randomModificationMode = RandXor() % 3;
 
     if (RandXor() % 2 == 0) {
-      solutionCandidates[raQ].pieces = keep;
-      raQ = RandXor() % raQCount;
-      keep = solutionCandidates[raQ].pieces;
+      solutionCandidates[randomCandidateIndex].pieces = keep;
+      randomCandidateIndex = RandXor() % raQCount;
+      keep = solutionCandidates[randomCandidateIndex].pieces;
     }
 
-    int ra = RandXor() % n;
-    if (randomMode == 0) {
-      solutionCandidates[raQ].pieces[ra].rot = 1 - solutionCandidates[raQ].pieces[ra].rot;
+    int randomPieceIndex = RandXor() % n;
+    if (randomModificationMode == 0) {
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot;
     }
-    else if (randomMode == 1) {
-      int ra2 = RandXor() % (ra + 1) - 1;
-      if (solutionCandidates[raQ].pieces[ra].base == ra2)continue;
-      solutionCandidates[raQ].pieces[ra].base = ra2;
+    else if (randomModificationMode == 1) {
+      int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+      if (solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base == newBaseIndex)continue;
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
     }
     else {
-      solutionCandidates[raQ].pieces[ra].dir = 1 - solutionCandidates[raQ].pieces[ra].dir;
+      solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir;
       if (RandXor() % 2 == 0) {
-        int ra2 = RandXor() % (ra + 1) - 1;
-        solutionCandidates[raQ].pieces[ra].base = ra2;
+        int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+        solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
       }
     }
 
-    auto preScore = EvaluateScore(solutionCandidates[raQ].pieces, false);
+    auto preScore = EvaluateScore(solutionCandidates[randomCandidateIndex].pieces, false);
 
     double progressRatio = (currentElapsedTime - startTime) / timeLimit;
-    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio * progressRatio * progressRatio;
-    double diff = solutionCandidates[raQ].score - preScore.score - 100000;
-    double prob = exp(diff / temp);
+    currentTemperature = START_TEMP + (END_TEMP - START_TEMP) * progressRatio * progressRatio * progressRatio;
+    double scoreDifference = solutionCandidates[randomCandidateIndex].score - preScore.score - 100000;
+    double acceptanceProbability = exp(scoreDifference / currentTemperature);
 
-    if (preScore.score < solutionCandidates[raQ].score || prob > Rand01() || currentElapsedTime > TL) {
-      ScoreStruct score = PrintFinalArrangement(solutionCandidates[raQ].pieces, ofs);
-      if (score.score < solutionCandidates[raQ].score) {
+    if (preScore.score < solutionCandidates[randomCandidateIndex].score || acceptanceProbability > Rand01() || currentElapsedTime > TL) {
+      ScoreStruct score = PrintFinalArrangement(solutionCandidates[randomCandidateIndex].pieces, ofs);
+      if (score.score < solutionCandidates[randomCandidateIndex].score) {
         if (executionMode >= 2) {
-          cout << raQ << ' ' << randomMode << ' ' << diff << ' ' << temp << ' ' << prob << ' ' << currentElapsedTime << endl;
+          cout << randomCandidateIndex << ' ' << randomModificationMode << ' ' << scoreDifference << ' ' << currentTemperature << ' ' << acceptanceProbability << ' ' << currentElapsedTime << endl;
         }
-        solutionCandidates[raQ].score = score.score;
-        keep = solutionCandidates[raQ].pieces;
+        solutionCandidates[randomCandidateIndex].score = score.score;
+        keep = solutionCandidates[randomCandidateIndex].pieces;
       }
       outputIteration++;
     }
   }
 
   if (executionMode >= 2) {
-    cout << "aespa loop = " << loopCount << endl;
+    cout << "finalOutputLoopCount = " << mainLoopCounter << endl;
   }
 }
 
@@ -1054,33 +1063,33 @@ int main()
   else if (executionMode == 3) {
     rep(_, 10)
     {
-      ll sumVal = 0;
+      ll totalScoreSum = 0;
       srep(i, 0, 100)
       {
         ll score = ExecuteSolution(i);
-        sumVal += score;
+        totalScoreSum += score;
       }
-      cout << sumVal << endl;
+      cout << totalScoreSum << endl;
     }
   }
   else {
-    ll sumVal = 0;
+    ll totalScoreSum = 0;
     srep(i, 0, 100)
     {
       ll score = ExecuteSolution(i);
-      sumVal += score;
+      totalScoreSum += score;
       if (executionMode == 1) {
         cout << score << endl;
       }
       else {
         cout << "num = " << setw(2) << i << ", ";
         cout << "score = " << setw(4) << score << ", ";
-        cout << "sum = " << setw(5) << sumVal << ", ";
+        cout << "sum = " << setw(5) << totalScoreSum << ", ";
         cout << "time = " << setw(5) << GetNowTime() << ", ";
         cout << endl;
       }
     }
-    cout << "sum = " << sumVal << endl;
+    cout << "sum = " << totalScoreSum << endl;
   }
 
   return 0;
