@@ -181,6 +181,28 @@ public:
     piece1.base = baseIndex;
     piece2.base = baseIndex;
   }
+
+  RectanglePiece& Get(int index) {
+    if (index == 0) {
+      return piece1;
+    }
+    return piece2;
+  }
+
+  int GetBaseNum() {
+    if (count() == 1) {
+      return piece1.num;
+    }
+    if (piece1.width() >= piece2.width()) {
+      return piece1.num;
+    }
+    return piece2.num;
+  }
+
+  bool operator<(const StackUnit& other) const
+  {
+    return piece1.num < other.piece1.num;
+  }
 };
 
 class Shelf
@@ -587,7 +609,7 @@ int INITIAL_ROUND_LIMIT = MAX_T;
 
 void BuildInitialMethod2LayoutsPhase1()
 {
-  INITIAL_ROUND_LIMIT = t / 2;
+  INITIAL_ROUND_LIMIT = t / 3;
 
   currentStackUnit.clear();
   currentShelf.clear();
@@ -631,7 +653,7 @@ void BuildInitialMethod2LayoutsPhase1()
 
 void UpdateMethod2LayoutsPhase(double progressRatio)
 {
-  INITIAL_ROUND_LIMIT = t / 2;
+  INITIAL_ROUND_LIMIT = t / 3;
 
   currentStackUnit.clear();
   currentShelf.clear();
@@ -854,7 +876,7 @@ void BuildInitialMethod2Layouts()
   }
 
   double progressRatio = 0.0;
-  double timeLimit = TL / 30 * 25;
+  double timeLimit = TL / 30 * 15;
   while (true) {
     if (processingLoopCount % 100 == 0) {
       auto currentElapsedTime = GetNowTime();
@@ -885,6 +907,124 @@ struct Ans
   }
 };
 
+int c_i[MAX_N], c_j[MAX_N], c_k[MAX_N], c_l[MAX_N];
+int c_need[MAX_N];
+int c_width[MAX_N];
+int c_sum[MAX_N + 10];
+int c_count[MAX_N + 10];
+bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight) {
+
+  rep(i, layout.sz) {
+    rep(j, layout.shelves[i].sz) {
+      if (layout.shelves[i].blocks[j].count() == 1) {
+        int num = layout.shelves[i].blocks[j].piece1.num;
+        c_i[num] = i;
+        c_j[num] = j;
+        c_k[num] = 0;
+        c_l[num] = -1;
+        c_width[num] = layout.shelves[i].blocks[j].piece1.width();
+      }
+      else {
+        int num1 = layout.shelves[i].blocks[j].piece1.num;
+        int num2 = layout.shelves[i].blocks[j].piece2.num;
+        c_i[num1] = i;
+        c_j[num1] = j;
+        c_k[num1] = 0;
+        c_l[num1] = num2;
+        c_i[num2] = i;
+        c_j[num2] = j;
+        c_k[num2] = 1;
+        c_l[num2] = num1;
+        c_width[num1] = layout.shelves[i].blocks[j].piece1.width();
+        c_width[num2] = layout.shelves[i].blocks[j].piece2.width();
+      }
+    }
+  }
+
+  rep(i, layout.sz + 2) {
+    c_sum[i] = 0;
+    c_count[i] = 0;
+  }
+
+  rep(i, n) {
+    int ii = c_i[i];
+    int jj = c_j[i];
+    int kk = c_k[i];
+    if (kk == 0) {
+      if (c_sum[ii + 1] > c_sum[ii]) {
+        return false;
+      }
+
+      if (c_l[i] != -1) {
+        int num2 = c_l[i];
+        c_need[num2] = c_sum[ii];
+      }
+
+      c_sum[ii] += c_width[i];
+
+      c_count[ii]++;
+    }
+    else {
+      int num1 = c_l[i];
+      if (c_sum[ii + 1] > c_need[i]) {
+        return false;
+      }
+      if (c_count[ii] - 1 > jj) {
+        if (c_width[num1] < c_width[i]) {
+          return false;
+        }
+      }
+
+      c_sum[ii] += max(0, c_width[i] - c_width[num1]);
+    }
+
+    int iii = ii;
+    while (iii > 0) {
+      if (c_sum[iii] > c_sum[iii - 1]) {
+        c_sum[iii - 1] = c_sum[iii];
+        iii--;
+      }
+      else {
+        break;
+      }
+    }
+  }
+
+  maxWidth = 0;
+  sumHeight = 0;
+  rep(i, layout.sz) {
+    maxWidth = max(maxWidth, c_sum[i]);
+    int maxHeight = 0;
+    rep(j, layout.shelves[i].sz) {
+      maxHeight = max(maxHeight, layout.shelves[i].blocks[j].height());
+    }
+    sumHeight += maxHeight;
+  }
+
+  return true;
+}
+
+bool SortLayout(Layout& layout) {
+  rep(i, layout.sz) {
+    sort(layout.shelves[i].blocks, layout.shelves[i].blocks + layout.shelves[i].sz);
+    rep(j, layout.shelves[i].sz) {
+      if (j == 0) {
+        layout.shelves[i].blocks[j].SetBase(-1);
+      }
+      else {
+        int num = layout.shelves[i].blocks[j - 1].piece1.num;
+        if (layout.shelves[i].blocks[j - 1].piece2.num != -1 && layout.shelves[i].blocks[j - 1].piece2.num == layout.shelves[i].blocks[j - 1].piece1.num + 1) {
+          if (layout.shelves[i].blocks[j - 1].piece2.width() > layout.shelves[i].blocks[j - 1].piece1.width()) {
+            num = layout.shelves[i].blocks[j - 1].piece2.num;
+          }
+        }
+        layout.shelves[i].blocks[j].SetBase(num);
+      }
+    }
+  }
+  return true;
+}
+
 void RefineAndPrintSolutions(ofstream& ofs)
 {
   BuildInitialMethod2Layouts();
@@ -898,35 +1038,183 @@ void RefineAndPrintSolutions(ofstream& ofs)
   int improvementStepCount = 0;
   double timeLimit = TL * 27 / 30;
 
-  Layout keepLayout;
-  while (false) {
-    improvementStepCount++;
-    if (improvementStepCount % 100 == 0) {
-      auto currentElapsedTime = GetNowTime();
-      if (currentElapsedTime > timeLimit) {
-        break;
+  {
+    Layout keep;
+    Layout tmp;
+    while (true) {
+      improvementStepCount++;
+      if (improvementStepCount % 100 == 0) {
+        auto currentElapsedTime = GetNowTime();
+        if (currentElapsedTime > timeLimit) {
+          break;
+        }
+      }
+
+      /*  ここを書く */
+      /*
+      全部Uだから、、、
+
+      1. Xを1段下の末尾に置く
+
+      2. Xを1段上の先頭に置く
+
+      3. Xの縦横を変更する
+
+      4. スワップ
+
+      ブロックごと動かした方が楽そう
+      */
+
+      int layoutNum = RandXor() % layouts.size();
+      keep = layouts[layoutNum];
+      int beforeScore = keep.score();
+
+      int raMode = RandXor() % 4;
+      tmp.clear();
+
+      int raNum1 = RandXor() % n;
+      int raNum2 = RandXor() % n;
+      while (raNum1 == raNum2) {
+        raNum2 = RandXor() % n;
+      }
+      if (raNum1 > raNum2) {
+        swap(raNum1, raNum2);
+      }
+
+      int sz = 0;
+      int ng = 1;
+      if (raMode == 0) {
+        rep(i, keep.sz) {
+          rep(j, keep.shelves[i].sz) {
+            int num = keep.shelves[i].blocks[j].piece1.num;
+            if (num == raNum1) {
+              if (i == 0) {
+                ng = 2;
+                break;
+              }
+              tmp.shelves[i - 1].add(keep.shelves[i].blocks[j]);
+              sz = max(sz, i);
+              ng = 0;
+            }
+            else {
+              if (sz <= i) {
+                tmp.shelves[i].clear();
+              }
+              tmp.shelves[i].add(keep.shelves[i].blocks[j]);
+              sz = max(sz, i + 1);
+            }
+          }
+          if (ng == 2) {
+            break;
+          }
+        }
+      }
+      else if (raMode == 1) {
+        rep(i, keep.sz) {
+          rep(j, keep.shelves[i].sz) {
+            int num = keep.shelves[i].blocks[j].piece1.num;
+            if (sz <= i) {
+              tmp.shelves[i].clear();
+            }
+            if (num == raNum1) {
+              if (sz <= i + 1) {
+                tmp.shelves[i + 1].clear();
+              }
+              tmp.shelves[i + 1].add(keep.shelves[i].blocks[j]);
+              sz = max(sz, i + 2);
+              ng = 0;
+            }
+            else {
+              tmp.shelves[i].add(keep.shelves[i].blocks[j]);
+              sz = max(sz, i + 1);
+            }
+          }
+        }
+      }
+      else if (raMode == 2) {
+        rep(i, keep.sz) {
+          rep(j, keep.shelves[i].sz) {
+            if (sz <= i) {
+              tmp.shelves[i].clear();
+            }
+            tmp.shelves[i].add(keep.shelves[i].blocks[j]);
+            sz = max(sz, i + 1);
+
+            int num = keep.shelves[i].blocks[j].piece1.num;
+            if (num == raNum1) {
+              tmp.shelves[i].blocks[tmp.shelves[i].sz - 1].piece1.rot = 1 - tmp.shelves[i].blocks[tmp.shelves[i].sz - 1].piece1.rot;
+              ng = 0;
+            }
+          }
+        }
+      }
+      else if (raMode == 3) {
+        int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1;
+
+        rep(i, keep.sz) {
+          rep(j, keep.shelves[i].sz) {
+            if (sz <= i) {
+              tmp.shelves[i].clear();
+            }
+            tmp.shelves[i].add(keep.shelves[i].blocks[j]);
+            sz = max(sz, i + 1);
+
+            if (keep.shelves[i].blocks[j].piece1.num == raNum1) {
+              ii1 = i;
+              jj1 = j;
+            }
+            if (keep.shelves[i].blocks[j].piece1.num == raNum2) {
+              ii2 = i;
+              jj2 = j;
+            }
+          }
+        }
+
+        if (ii1 == -1 || ii2 == -1 || ii1 == ii2) {
+          ng = 2;
+        }
+        else {
+          swap(tmp.shelves[ii1].blocks[jj1], tmp.shelves[ii2].blocks[jj2]);
+          ng = 0;
+        }
+      }
+
+      if (ng != 0) {
+        continue;
+      }
+
+      tmp.sz = sz;
+
+      SortLayout(tmp);
+
+      int maxWidth = 0;
+      int sumHeight = 0;
+      bool res = CheckLayout(tmp, maxWidth, sumHeight);
+      if (res) {
+        if (maxWidth + sumHeight <= keep.score()) {
+          //if (maxWidth + sumHeight < keep.score()) {
+          //  cout << "OK " << raMode << " " << maxWidth << ' ' << sumHeight << endl;
+          //}
+          tmp.maxWidth = maxWidth;
+          tmp.sumHeight = sumHeight;
+          layouts[layoutNum] = tmp;
+        }
+        else {
+          ;
+        }
       }
     }
-
-    /*  ここを書く */
-    /*
-    全部Uだから、、、
-
-    1. Xを1段下の末尾に置く
-
-    2. Xを1段上の先頭に置く
-
-    3. Xの縦横を変更する
-
-    4. スワップ
-
-
-
-    */
   }
 
 
   vector<Ans> solutionCandidates;
+  rep(i, candidateLayoutCount)
+  {
+    Ans ans;
+    ans.pieces = candidateLayouts[i].CreateQuery();
+    ans.score = EvaluateScore(ans.pieces, false).score;
+    solutionCandidates.push_back(ans);
+  }
   rep(i, layouts.size())
   {
     Ans ans;
@@ -934,8 +1222,6 @@ void RefineAndPrintSolutions(ofstream& ofs)
     ans.score = EvaluateScore(ans.pieces, false).score;
     solutionCandidates.push_back(ans);
   }
-
-
 
   Ans keepAns;
   while (false) {
@@ -947,7 +1233,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
       }
     }
 
-    int randomCandidateIndex = RandXor() % candidateLayoutCount;
+    int randomCandidateIndex = RandXor() % min(7, 5);
     int randomModificationMode = RandXor() % 4;
     int randomPieceIndex = RandXor() % n;
     RectanglePiece keep = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex];
@@ -992,9 +1278,9 @@ void RefineAndPrintSolutions(ofstream& ofs)
       }
 
       // 2は1の行の1番後ろ
-      int base2_1 =  randomCandidateIndex;
-      int base2_21 =  -2;
-      int base2_22 =  -2;
+      int base2_1 = randomCandidateIndex;
+      int base2_21 = -2;
+      int base2_22 = -2;
       srep(i, randomCandidateIndex + 1, randomPieceIndex2)
       {
         if (solutionCandidates[randomCandidateIndex].pieces[i].base == base2_1) {
@@ -1045,16 +1331,14 @@ void RefineAndPrintSolutions(ofstream& ofs)
     cout << "improvementStepCount = " << improvementStepCount << endl;
   }
 
-  sort(solutionCandidates.begin(), solutionCandidates.end());
-
   int printedSolutionCount = 0;
-  int SECOND_ROUND = t / 2;
-  while (printedSolutionCount < SECOND_ROUND) {
+  while (printedSolutionCount < solutionCandidates.size()) {
     solutionCandidates[printedSolutionCount].score = PrintFinalArrangement(solutionCandidates[printedSolutionCount].pieces, ofs).score;
     printedSolutionCount++;
   }
 
   sort(solutionCandidates.begin(), solutionCandidates.end());
+  int ansSize = solutionCandidates.size();
 
   int mainLoopCounter = 0;
   double startTime = GetNowTime();
@@ -1066,7 +1350,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
 
   int randomCandidateIndex = 0;
   vector<RectanglePiece> keep = solutionCandidates[randomCandidateIndex].pieces;
-  int raQCount = min(candidateLayoutCount, 3);
+  int raQCount = min(ansSize, 5);
   int outputIteration = printedSolutionCount;
   while (outputIteration < t) {
     mainLoopCounter++;
@@ -1156,7 +1440,7 @@ int main()
     RandXor();
   }
 
-  executionMode = 2;
+  executionMode = 1;
 
   if (executionMode == 0) {
     ExecuteSolution(0);
