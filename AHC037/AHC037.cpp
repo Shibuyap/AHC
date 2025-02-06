@@ -359,7 +359,7 @@ int main()
     randxor();
   }
 
-  mode = 2;
+  mode = 0;
 
   if (mode == 0) {
     Solve(0);

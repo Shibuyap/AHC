@@ -36,7 +36,8 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor() {
+  static uint32_t randxor()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -54,7 +55,8 @@ namespace /* 乱数ライブラリ */
   static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
 
   // 配列シャッフル
-  void FisherYates(int* data, int n) {
+  void FisherYates(int* data, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = randxor() % (i + 1);
       int swa = data[i];
@@ -90,28 +92,35 @@ int real_ans[100000][2];
 int real_ansSize;
 int real_ansScore;
 
-double GetNowTime() {
+double GetNowTime()
+{
   endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
 }
 
-void InitH() {
-  rep(i, n) {
+void InitH()
+{
+  rep(i, n)
+  {
     rep(j, n) { h[i][j] = baseH[i][j]; }
   }
 }
 
-void CopyToAns() {
+void CopyToAns()
+{
   ansSize = real_ansSize;
-  rep(i, ansSize) {
+  rep(i, ansSize)
+  {
     rep(j, 2) { ans[i][j] = real_ans[i][j]; }
   }
 }
 
-void CopyToReal() {
+void CopyToReal()
+{
   real_ansSize = ansSize;
-  rep(i, ansSize) {
+  rep(i, ansSize)
+  {
     rep(j, 2) { real_ans[i][j] = ans[i][j]; }
   }
 }
@@ -120,10 +129,12 @@ void CopyToReal() {
 void SetUp() { ansSize = 0; }
 
 // 入力受け取り
-void Input(int problemNum) {
+void Input(int problemNum)
+{
   string fileNameIfs = "./in/";
   string strNum;
-  rep(i, 4) {
+  rep(i, 4)
+  {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
@@ -136,7 +147,8 @@ void Input(int problemNum) {
   if (!ifs.is_open()) {
     int nn;
     cin >> nn;
-    rep(i, n) {
+    rep(i, n)
+    {
       rep(j, n) { cin >> h[i][j]; }
     }
   }
@@ -144,22 +156,26 @@ void Input(int problemNum) {
   else {
     int nn;
     ifs >> nn;
-    rep(i, n) {
+    rep(i, n)
+    {
       rep(j, n) { ifs >> h[i][j]; }
     }
   }
 
-  rep(i, n) {
+  rep(i, n)
+  {
     rep(j, n) { baseH[i][j] = h[i][j]; }
   }
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs) {
+void OpenOfs(int probNum, ofstream& ofs)
+{
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4) {
+    rep(i, 4)
+    {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
     }
@@ -170,10 +186,12 @@ void OpenOfs(int probNum, ofstream& ofs) {
   }
 }
 
-int CalcCost() {
+int CalcCost()
+{
   int d = 0;
   int sum = 0;
-  rep(i, ansSize) {
+  rep(i, ansSize)
+  {
     if (ans[i][0] < 4) {
       sum += 100 + d;
     }
@@ -186,17 +204,21 @@ int CalcCost() {
 }
 
 // スコア計算
-ll CalcScore() {
+ll CalcScore()
+{
   ll base = 0;
-  rep(i, n) {
+  rep(i, n)
+  {
     rep(j, n) { base += abs(baseH[i][j]); }
   }
   ll res = round(1e9 * base / CalcCost());
   return res;
 }
 
-bool IsOK(int x) {
-  rep(j, n) {
+bool IsOK(int x)
+{
+  rep(j, n)
+  {
     if (h[x][j] != 0) {
       return false;
     }
@@ -205,7 +227,8 @@ bool IsOK(int x) {
 }
 
 // 初期解生成
-void Initialize() {
+void Initialize()
+{
   int x = 0, y = 0;
   int d = 0;
   int dir = 1;
@@ -341,7 +364,8 @@ void Initialize() {
   real_ansScore = CalcScore();
 }
 
-void GetLoad(int x, int y, int diff, int& d) {
+void GetLoad(int x, int y, int diff, int& d)
+{
   ans[ansSize][0] = 4;
   ans[ansSize][1] = diff;
   ansSize++;
@@ -349,7 +373,8 @@ void GetLoad(int x, int y, int diff, int& d) {
   h[x][y] -= diff;
 }
 
-void PutLoad(int x, int y, int diff, int& d) {
+void PutLoad(int x, int y, int diff, int& d)
+{
   ans[ansSize][0] = 4;
   ans[ansSize][1] = -diff;
   ansSize++;
@@ -357,27 +382,33 @@ void PutLoad(int x, int y, int diff, int& d) {
   h[x][y] += diff;
 }
 
-void Up() {
+void Up()
+{
   ans[ansSize][0] = 0;
   ansSize++;
 }
-void Down() {
+void Down()
+{
   ans[ansSize][0] = 2;
   ansSize++;
 }
-void Left() {
+void Left()
+{
   ans[ansSize][0] = 1;
   ansSize++;
 }
-void Right() {
+void Right()
+{
   ans[ansSize][0] = 3;
   ansSize++;
 }
 
 vector<P> route;
-void InitRoute1() {
+void InitRoute1()
+{
   route.clear();
-  rep(i, n) {
+  rep(i, n)
+  {
     if (i % 2 == 0) {
       rep(j, n) { route.emplace_back(i, j); }
     }
@@ -387,9 +418,11 @@ void InitRoute1() {
   }
 }
 
-void InitRoute2() {
+void InitRoute2()
+{
   route.clear();
-  rep(j, n) {
+  rep(j, n)
+  {
     if (j % 2 == 0) {
       rep(i, n) { route.emplace_back(i, j); }
     }
@@ -399,7 +432,8 @@ void InitRoute2() {
   }
 }
 
-void InitRoute3() {
+void InitRoute3()
+{
   route.clear();
   int ra = randxor() % 9 + 1;
   int a[n][n];
@@ -407,7 +441,8 @@ void InitRoute3() {
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  rep(i, ra) {
+  rep(i, ra)
+  {
     while (y < n - 1 - i) {
       y++;
       route.emplace_back(x, y);
@@ -476,7 +511,8 @@ void InitRoute3() {
   }
 }
 
-void InitRoute4() {
+void InitRoute4()
+{
   route.clear();
   int ra = randxor() % 9 + 1;
   int a[n][n];
@@ -484,7 +520,8 @@ void InitRoute4() {
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  rep(i, ra) {
+  rep(i, ra)
+  {
     while (y < n - 1 - i) {
       y++;
       route.emplace_back(x, y);
@@ -558,14 +595,17 @@ void InitRoute4() {
   }
 }
 
-struct Amount {
+struct Amount
+{
   int idx;
   int d;
 };
 
 vector<Amount> spot[n][n];
-void Method1(int ikichi1 = 300, int ikichi2 = 300) {
-  rep(i, n) {
+void Method1(int ikichi1 = 300, int ikichi2 = 300)
+{
+  rep(i, n)
+  {
     rep(j, n) { spot[i][j].clear(); }
   }
   InitH();
@@ -609,7 +649,8 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300) {
   }
 
   int d = 0;
-  rep(i, route.size()) {
+  rep(i, route.size())
+  {
     int x = route[i].first;
     int y = route[i].second;
     if (spot[x][y].size() > 0) {
@@ -726,7 +767,8 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300) {
     }
   }
 
-  drep(i, route.size()) {
+  drep(i, route.size())
+  {
     int x = route[i].first;
     int y = route[i].second;
     if (spot[x][y].size() > 0) {
@@ -797,7 +839,8 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300) {
 
     if (d == 0) {
       int ok = 1;
-      drep(j, i + 1) {
+      drep(j, i + 1)
+      {
         int x = route[j].first;
         int y = route[j].second;
         if (h[x][y] != 0) {
@@ -866,9 +909,11 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300) {
 }
 
 // 解答出力
-void Output(ofstream& ofs) {
+void Output(ofstream& ofs)
+{
   if (mode == 0) {
-    rep(i, ansSize) {
+    rep(i, ansSize)
+    {
       if (ans[i][0] < 4) {
         cout << dc[ans[i][0]] << endl;
       }
@@ -879,7 +924,8 @@ void Output(ofstream& ofs) {
     }
   }
   else {
-    rep(i, ansSize) {
+    rep(i, ansSize)
+    {
       if (ans[i][0] < 4) {
         ofs << dc[ans[i][0]] << endl;
       }
@@ -891,7 +937,8 @@ void Output(ofstream& ofs) {
   }
 }
 
-ll Solve(int probNum) {
+ll Solve(int probNum)
+{
   startTime = clock();
 
   // 複数ケース回すときに内部状態を初期値に戻す
@@ -952,7 +999,8 @@ ll Solve(int probNum) {
   return score;
 }
 
-int main() {
+int main()
+{
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     randxor();
@@ -965,7 +1013,8 @@ int main() {
   }
   else if (mode == 1) {
     ll sum = 0;
-    srep(i, 0, 150) {
+    srep(i, 0, 150)
+    {
       ll score = Solve(i);
       sum += score;
       cout << "num = " << i << ", ";
