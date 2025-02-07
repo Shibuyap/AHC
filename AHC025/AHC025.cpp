@@ -3403,7 +3403,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
     int lastI = 1001001;
     drep(ii, N)
     {
-      int i = items[i];
+      int i = items[ii];
       if (ans[i] == xg) {
         lastX = i;
         lastI = ii;
@@ -3423,7 +3423,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
     int lastI = 1001001;
     drep(ii, N)
     {
-      int i = items[i];
+      int i = items[ii];
       if (ans[i] == yg) {
         lastY = i;
         lastI = ii;

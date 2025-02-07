@@ -108,8 +108,7 @@ double GetNowTime()
   return elapsed.count();
 }
 
-
-const int MAX_N = 30;
+//const int MAX_N = 30;
 
 int n;
 
@@ -125,6 +124,12 @@ void CopyToBest()
 void CopyToAns()
 {
   ansScore = best_ansScore;
+}
+
+bool IsNG(int x, int y)
+{
+  //if (x < 0 || n <= x || y < 0 || n <= y)return true;
+  return false;
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
@@ -182,8 +187,79 @@ void Method1()
 
 }
 
+// ハイパーパラメータ
+struct Hypers
+{
+  double StartTemp;
+  double EndTemp;
+  double MultipleValue;
+  int Partition;
+};
+
+void SimulatedAnnealing(Hypers hypers)
+{
+  CopyToBest();
+
+  double nowTime = GetNowTime();
+  const double START_TEMP = hypers.StartTemp;
+  const double END_TEMP = hypers.EndTemp;
+
+
+  int loop = 0;
+  while (true) {
+    loop++;
+
+    if (loop % 100 == 0) {
+      nowTime = GetNowTime();
+      if (nowTime > TL) break;
+    }
+
+    // 戻す
+    //if (ansScore * 1.2 < best_ansScore) {
+    //  CopyToAns();
+    //}
+
+    double progressRatio = nowTime / TL;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+
+    int raMode = RandXor() % 100;
+    if (raMode < hypers.Partition) {
+      // 近傍解作成
+
+      // スコア計算
+      double tmpScore = CalcScore();
+
+      // 焼きなまし
+      double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
+      double prob = exp(diffScore / temp);
+      if (prob > Rand01()) {
+        // 採用
+        ansScore = tmpScore;
+
+        // Best解よりもいいか
+        if (ansScore > best_ansScore) {
+          CopyToBest();
+        }
+      }
+      else {
+        // 元に戻す
+      }
+    }
+    else if (raMode < 100) {
+
+    }
+  }
+
+  if (mode != 0 && mode != 3) {
+    cout << loop << endl;
+  }
+
+  CopyToAns();
+}
+
+
 // 問題を解く関数
-ll Solve(int problem_num)
+ll Solve(int problem_num, Hypers hypers)
 {
   ResetTime();
 
@@ -199,6 +275,9 @@ ll Solve(int problem_num)
 
   // 初期解生成
   Method1();
+
+  // 焼きなまし
+  //SimulatedAnnealing(hypers);
 
   // 解答を出力
   Output(ofs);
@@ -229,14 +308,20 @@ int main()
 
   mode = 2;
 
+  Hypers HYPERS;
+  HYPERS.StartTemp = 2048.0;
+  HYPERS.EndTemp = 0.0;
+  HYPERS.MultipleValue = 1.0;
+  HYPERS.Partition = 50;
+
   if (mode == 0) {
-    Solve(0);
+    Solve(0, HYPERS);
   }
-  else {
+  else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 0, 15)
     {
-      ll score = Solve(i);
+      ll score = Solve(i, HYPERS);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
@@ -248,6 +333,47 @@ int main()
         cout << "time = " << setw(5) << GetNowTime() << ", ";
         cout << endl;
       }
+    }
+  }
+  else if (mode == 3) {
+    int loop = 0;
+    Hypers bestHypers;
+    ll bestSumScore = 0;
+
+    while (true) {
+      Hypers hypers;
+      hypers.StartTemp = pow(2.0, Rand01() * 20);
+      hypers.EndTemp = 0.0;
+      hypers.MultipleValue = pow(2.0, Rand01() * 20);
+      hypers.Partition = RandXor() % 101;
+
+      ll sum = 0;
+      srep(i, 0, 15)
+      {
+        ll score = Solve(i, hypers);
+        sum += score;
+
+        // シード0が悪ければ打ち切り
+        if (i == 0 && score < 0) {
+          break;
+        }
+      }
+
+      cout
+        << "Loop = " << loop
+        << ", Sum = " << sum
+        << ", StartTemp = " << hypers.StartTemp
+        << ", EndTemp = " << hypers.EndTemp
+        << ", MultipleValue = " << hypers.MultipleValue
+        << ", Partition1 = " << hypers.Partition
+        << endl;
+
+      if (sum > bestSumScore) {
+        bestSumScore = sum;
+        bestHypers = hypers;
+      }
+
+      loop++;
     }
   }
 
