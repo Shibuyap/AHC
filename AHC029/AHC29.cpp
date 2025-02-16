@@ -141,7 +141,9 @@ struct Solver
     cards = judge.read_initial_cards();
     projects = judge.read_projects();
     for (turn = 0; turn < t; ++turn) {
-      auto [use_card_i, use_target] = select_action();
+      auto p = select_action();
+      int use_card_i = p.first;
+      int use_target = p.second;
       const Card& use_card = cards[use_card_i];
       if (use_card.t == CardType::INVEST) {
         invest_level++;

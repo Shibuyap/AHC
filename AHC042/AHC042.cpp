@@ -136,7 +136,8 @@ void CopyToAns()
 }
 
 
-bool IsNG(int x, int y) {
+bool IsNG(int x, int y)
+{
   if (x < 1 || n < x || y < 1 || n < y)return true;
   return false;
 }
@@ -160,10 +161,12 @@ void Input(int problemNum)
     // 標準入力
     int nn;
     cin >> nn;
-    rep(i, n) {
+    rep(i, n)
+    {
       string s;
       cin >> s;
-      rep(j, n) {
+      rep(j, n)
+      {
         a[i + 1][j + 1] = 0;
         if (s[j] == 'x') {
           a[i + 1][j + 1] = 1;
@@ -178,10 +181,12 @@ void Input(int problemNum)
     // ファイル入力
     int nn;
     ifs >> nn;
-    rep(i, n) {
+    rep(i, n)
+    {
       string s;
       ifs >> s;
-      rep(j, n) {
+      rep(j, n)
+      {
         a[i + 1][j + 1] = 0;
         if (s[j] == 'x') {
           a[i + 1][j + 1] = 1;
@@ -193,8 +198,10 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, n + 2) {
-    rep(j, n + 2) {
+  rep(i, n + 2)
+  {
+    rep(j, n + 2)
+    {
       init_a[i][j] = a[i][j];
     }
   }
@@ -234,8 +241,10 @@ void Output(ofstream& ofs)
   }
 }
 
-void MoveU(int j, bool isClean) {
-  rep(i, n) {
+void MoveU(int j, bool isClean)
+{
+  rep(i, n)
+  {
     a[i][j] = a[i + 1][j];
   }
   if (isClean) {
@@ -247,8 +256,10 @@ void MoveU(int j, bool isClean) {
   a[n + 1][j] = 0;
 }
 
-void MoveL(int i, bool isClean) {
-  rep(j, n) {
+void MoveL(int i, bool isClean)
+{
+  rep(j, n)
+  {
     a[i][j] = a[i][j + 1];
   }
   if (isClean) {
@@ -260,7 +271,8 @@ void MoveL(int i, bool isClean) {
   a[i][n + 1] = 0;
 }
 
-void MoveD(int j, bool isClean) {
+void MoveD(int j, bool isClean)
+{
   for (int i = n + 1; i >= 2; i--) {
     a[i][j] = a[i - 1][j];
   }
@@ -273,7 +285,8 @@ void MoveD(int j, bool isClean) {
   a[0][j] = 0;
 }
 
-void MoveR(int i, bool isClean) {
+void MoveR(int i, bool isClean)
+{
   for (int j = n + 1; j >= 2; j--) {
     a[i][j] = a[i][j - 1];
   }
@@ -286,18 +299,23 @@ void MoveR(int i, bool isClean) {
   a[i][0] = 0;
 }
 
-int Method2_CalcScore(int dir, int num) {
+int Method2_CalcScore(int dir, int num)
+{
   int score = 0;
   queue<P> que;
   int f[n + 2][n + 2];
-  srep(i, 1, n + 1) {
-    srep(j, 1, n + 1) {
+  srep(i, 1, n + 1)
+  {
+    srep(j, 1, n + 1)
+    {
       if (a[i][j] == 1) {
         while (que.size()) {
           que.pop();
         }
-        rep(k, n + 2) {
-          rep(l, n + 2) {
+        rep(k, n + 2)
+        {
+          rep(l, n + 2)
+          {
             f[k][l] = 99999;
           }
         }
@@ -312,7 +330,8 @@ int Method2_CalcScore(int dir, int num) {
             dist = f[x][y] + 1;
             break;
           }
-          rep(k, 4) {
+          rep(k, 4)
+          {
             int nx = x + dx[k];
             int ny = y + dy[k];
             if (IsNG(nx, ny))continue;
@@ -337,10 +356,9 @@ int Method2_CalcScore(int dir, int num) {
   return score;
 }
 
-
-
 // BFS
-void Method2() {
+void Method2()
+{
   int outerLoop = 0;
 
   while (outerLoop == 0) {
@@ -367,7 +385,8 @@ void Method2() {
       int cost = 99999;
 
       // U
-      srep(j, 1, n + 1) {
+      srep(j, 1, n + 1)
+      {
         if (a[1][j] == 2) {
           continue;
         }
@@ -383,7 +402,8 @@ void Method2() {
       }
 
       // L
-      srep(i, 1, n + 1) {
+      srep(i, 1, n + 1)
+      {
         if (a[i][1] == 2) {
           continue;
         }
@@ -399,7 +419,8 @@ void Method2() {
       }
 
       // D
-      srep(j, 1, n + 1) {
+      srep(j, 1, n + 1)
+      {
         if (a[n][j] == 2) {
           continue;
         }
@@ -415,7 +436,8 @@ void Method2() {
       }
 
       // R
-      srep(i, 1, n + 1) {
+      srep(i, 1, n + 1)
+      {
         if (a[i][n] == 2) {
           continue;
         }
@@ -460,23 +482,25 @@ void Method2() {
   }
 
   CopyToAns();
-  if (mode != 0) {
-    cout << "OuterLoop = " << outerLoop << endl;
-  }
 }
 
-void InitA() {
-  rep(i, n + 2) {
-    rep(j, n + 2) {
+void InitA()
+{
+  rep(i, n + 2)
+  {
+    rep(j, n + 2)
+    {
       a[i][j] = init_a[i][j];
     }
   }
 }
 
-int Sim() {
+int Sim()
+{
   InitA();
   int cnt = 0;
-  rep(i, ans.size()) {
+  rep(i, ans.size())
+  {
     int dir = ans[i].first;
     int num = ans[i].second;
     if (dir == 0) {
@@ -527,11 +551,13 @@ int Sim() {
   return ans.size();
 }
 
-int Sim2(vector<P>& ans2) {
+int Sim2(vector<P>& ans2, bool oniCheck)
+{
   ans2.clear();
   InitA();
   int cnt = 0;
-  rep(i, ans.size()) {
+  rep(i, ans.size())
+  {
     int dir = ans[i].first;
     int num = ans[i].second;
     if (dir == 0) {
@@ -542,14 +568,17 @@ int Sim2(vector<P>& ans2) {
         return -1;
       }
 
-      int oni = 0;
-      srep(i, 1, n + 1) {
-        if (a[i][num] == 1) {
-          oni = 1;
-          break;
+      if (oniCheck) {
+        int oni = 0;
+        srep(i, 1, n + 1)
+        {
+          if (a[i][num] == 1) {
+            oni = 1;
+            break;
+          }
         }
+        if (oni == 0)continue;
       }
-      if (oni == 0)continue;
 
       MoveU(num, true);
       ans2.push_back(ans[i]);
@@ -562,14 +591,17 @@ int Sim2(vector<P>& ans2) {
         return -1;
       }
 
-      int oni = 0;
-      srep(j, 1, n + 1) {
-        if (a[num][j] == 1) {
-          oni = 1;
-          break;
+      if (oniCheck) {
+        int oni = 0;
+        srep(j, 1, n + 1)
+        {
+          if (a[num][j] == 1) {
+            oni = 1;
+            break;
+          }
         }
+        if (oni == 0)continue;
       }
-      if (oni == 0)continue;
 
       MoveL(num, true);
       ans2.push_back(ans[i]);
@@ -582,14 +614,17 @@ int Sim2(vector<P>& ans2) {
         return -1;
       }
 
-      int oni = 0;
-      srep(i, 1, n + 1) {
-        if (a[i][num] == 1) {
-          oni = 1;
-          break;
+      if (oniCheck) {
+        int oni = 0;
+        srep(i, 1, n + 1)
+        {
+          if (a[i][num] == 1) {
+            oni = 1;
+            break;
+          }
         }
+        if (oni == 0)continue;
       }
-      if (oni == 0)continue;
 
       MoveD(num, true);
       ans2.push_back(ans[i]);
@@ -602,14 +637,17 @@ int Sim2(vector<P>& ans2) {
         return -1;
       }
 
-      int oni = 0;
-      srep(j, 1, n + 1) {
-        if (a[num][j] == 1) {
-          oni = 1;
-          break;
+      if (oniCheck) {
+        int oni = 0;
+        srep(j, 1, n + 1)
+        {
+          if (a[num][j] == 1) {
+            oni = 1;
+            break;
+          }
         }
+        if (oni == 0)continue;
       }
-      if (oni == 0)continue;
 
       MoveR(num, true);
       ans2.push_back(ans[i]);
@@ -619,15 +657,21 @@ int Sim2(vector<P>& ans2) {
     }
   }
 
-  srep(i, 1, n + 1) {
-    srep(j, 1, n + 1) {
+  srep(i, 1, n + 1)
+  {
+    //if (ans2.size() >= ansScore + 5)break;
+    srep(j, 1, n + 1)
+    {
+      //if (ans2.size() >= ansScore + 5)break;
+
       if (a[i][j] == 1) {
         int dir = -1;
         int cost = 999;
 
         // U
         int ok = 1;
-        srep(k, 1, i) {
+        srep(k, 1, i)
+        {
           if (a[k][j] != 0) {
             ok = 0;
             break;
@@ -642,7 +686,8 @@ int Sim2(vector<P>& ans2) {
 
         // L
         ok = 1;
-        srep(k, 1, j) {
+        srep(k, 1, j)
+        {
           if (a[i][k] != 0) {
             ok = 0;
             break;
@@ -657,7 +702,8 @@ int Sim2(vector<P>& ans2) {
 
         // D
         ok = 1;
-        srep(k, i + 1, n + 1) {
+        srep(k, i + 1, n + 1)
+        {
           if (a[k][j] != 0) {
             ok = 0;
             break;
@@ -672,7 +718,8 @@ int Sim2(vector<P>& ans2) {
 
         // R
         ok = 1;
-        srep(k, j + 1, n + 1) {
+        srep(k, j + 1, n + 1)
+        {
           if (a[i][k] != 0) {
             ok = 0;
             break;
@@ -692,25 +739,29 @@ int Sim2(vector<P>& ans2) {
         cnt++;
 
         if (dir == 0) {
-          rep(k, cost) {
+          rep(k, cost)
+          {
             ans2.push_back(P(dir, j));
             MoveU(j, true);
           }
         }
         else if (dir == 1) {
-          rep(k, cost) {
+          rep(k, cost)
+          {
             ans2.push_back(P(dir, i));
             MoveL(i, true);
           }
         }
         else if (dir == 2) {
-          rep(k, cost) {
+          rep(k, cost)
+          {
             ans2.push_back(P(dir, j));
             MoveD(j, true);
           }
         }
         else if (dir == 3) {
-          rep(k, cost) {
+          rep(k, cost)
+          {
             ans2.push_back(P(dir, i));
             MoveR(i, true);
           }
@@ -726,15 +777,25 @@ int Sim2(vector<P>& ans2) {
   return ans2.size();
 }
 
+struct Haiparas
+{
+  double StartTemp;
+  double EndTemp;
+  double MultipleValue;
+  int Partition1;
+  double SimPartition;
+};
 
-void Mountain() {
+void Mountain(Haiparas haiparas)
+{
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = 24.0;
-  const double END_TEMP = 0.0;
+  const double START_TEMP = haiparas.StartTemp;
+  const double END_TEMP = haiparas.EndTemp;
 
   int loop = 0;
+  int loop2 = 0;
   vector<P> ans2;
   while (true) {
     loop++;
@@ -752,7 +813,7 @@ void Mountain() {
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
     int raMode = RandXor() % 100;
-    if (raMode < 50) {
+    if (raMode < haiparas.Partition1) {
       // swap
       int ra1 = RandXor() % ans.size();
       int ra2 = RandXor() % ans.size();
@@ -761,14 +822,14 @@ void Mountain() {
       }
       swap(ans[ra1], ans[ra2]);
 
-      if (RandXor() % 2 == 0) {
+      if (Rand01() < haiparas.SimPartition) {
         int res = Sim();
         if (res == -1) {
           swap(ans[ra1], ans[ra2]);
         }
         else {
+          loop2++;
           while (ans.size() > res) {
-            //cout << loop << ' ' << GetNowTime() << ' ' << ans.size() << endl;
             ans.pop_back();
           }
           ansScore = CalcScore();
@@ -778,15 +839,17 @@ void Mountain() {
         }
       }
       else {
-        int res = Sim2(ans2);
+        bool oniCheck = !(Rand01() < haiparas.SimPartition);
+        int res = Sim2(ans2, true);
         if (res == -1) {
           swap(ans[ra1], ans[ra2]);
         }
         else {
-          double diffScore = ((double)ans.size() - ans2.size()) * ((double)ans.size() - ans2.size()) * ((double)ans.size() - ans2.size()) * 1216.7;
+          double diffScore = ((double)ans.size() - ans2.size()) * haiparas.MultipleValue;
           double prob = exp(diffScore / temp);
 
           if (prob > Rand01()) {
+            loop2++;
             // 採用
             ans = ans2;
             ansScore = CalcScore();
@@ -802,59 +865,6 @@ void Mountain() {
         }
       }
     }
-    else if (raMode < 75) {
-      int ra1 = RandXor() % (ans.size() - 1);
-      srep(i, ra1, ans.size() - 1) {
-        swap(ans[i], ans[i + 1]);
-      }
-
-
-      if (RandXor() % 2 == 0) {
-        int res = Sim();
-        if (res == -1) {
-          for (int i = ans.size() - 2; i >= ra1; i--) {
-            swap(ans[i], ans[i + 1]);
-          }
-        }
-        else {
-          while (ans.size() > res) {
-            //cout << loop << ' ' << GetNowTime() << ' ' << ans.size() << endl;
-            ans.pop_back();
-          }
-          ansScore = CalcScore();
-          if (ansScore > best_ansScore) {
-            CopyToBest();
-          }
-        }
-      }
-      else {
-        int res = Sim2(ans2);
-        if (res == -1) {
-          for (int i = ans.size() - 2; i >= ra1; i--) {
-            swap(ans[i], ans[i + 1]);
-          }
-        }
-        else {
-          double diffScore = ((double)ans.size() - ans2.size()) * ((double)ans.size() - ans2.size()) * ((double)ans.size() - ans2.size()) * 1126.7;
-          double prob = exp(diffScore / temp);
-
-          if (prob > Rand01()) {
-            // 採用
-            ans = ans2;
-            ansScore = CalcScore();
-            if (ansScore > best_ansScore) {
-              CopyToBest();
-            }
-          }
-          else {
-            // 元に戻す
-            for (int i = ans.size() - 2; i >= ra1; i--) {
-              swap(ans[i], ans[i + 1]);
-            }
-          }
-        }
-      }
-    }
     else {
       int ra1 = RandXor() % (ans.size() - 1);
       int raDir = RandXor() % 4;
@@ -863,14 +873,14 @@ void Mountain() {
       ans[ra1] = P(raDir, raNum);
 
 
-      if (RandXor() % 2 == 0) {
+      if (Rand01() < haiparas.SimPartition) {
         int res = Sim();
         if (res == -1) {
           ans[ra1] = keep;
         }
         else {
+          loop2++;
           while (ans.size() > res) {
-            //cout << loop << ' ' << GetNowTime() << ' ' << ans.size() << endl;
             ans.pop_back();
           }
           ansScore = CalcScore();
@@ -880,15 +890,17 @@ void Mountain() {
         }
       }
       else {
-        int res = Sim2(ans2);
+        bool oniCheck = !(Rand01() < haiparas.SimPartition);
+        int res = Sim2(ans2, true);
         if (res == -1) {
           ans[ra1] = keep;
         }
         else {
-          double diffScore = ((double)ans.size() - ans2.size()) * ((double)ans.size() - ans2.size()) * ((double)ans.size() - ans2.size()) * 1216.7;
+          double diffScore = ((double)ans.size() - ans2.size()) * haiparas.MultipleValue;
           double prob = exp(diffScore / temp);
 
           if (prob > Rand01()) {
+            loop2++;
             // 採用
             ans = ans2;
             ansScore = CalcScore();
@@ -905,15 +917,15 @@ void Mountain() {
     }
   }
 
-  if (mode != 0) {
-    cout << loop << endl;
+  if (mode != 0 && mode != 3) {
+    cout << loop << " " << loop2 << endl;
   }
 
   CopyToAns();
 }
 
 // 問題を解く関数
-ll Solve(int problem_num)
+ll Solve(int problem_num, Haiparas haiparas)
 {
   ResetTime();
 
@@ -930,7 +942,7 @@ ll Solve(int problem_num)
   // 初期解生成
   Method2();
 
-  Mountain();
+  Mountain(haiparas);
 
   // 解答を出力
   Output(ofs);
@@ -961,14 +973,21 @@ int main()
 
   mode = 2;
 
+  Haiparas HAIPARAS;
+  HAIPARAS.StartTemp = 302.535;
+  HAIPARAS.EndTemp = 0.0;
+  HAIPARAS.MultipleValue = 826.94;
+  HAIPARAS.Partition1 = 94;
+  HAIPARAS.SimPartition = 0.540721;
+
   if (mode == 0) {
-    Solve(0);
+    Solve(0, HAIPARAS);
   }
-  else {
+  else if (mode <= 2) {
     ll sum = 0;
     srep(i, 0, 15)
     {
-      ll score = Solve(i);
+      ll score = Solve(i, HAIPARAS);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
@@ -980,6 +999,47 @@ int main()
         cout << "time = " << setw(5) << GetNowTime() << ", ";
         cout << endl;
       }
+    }
+  }
+  else if (mode == 3) {
+    int loop = 0;
+    Haiparas bestHaiparas;
+    ll bestSumScore = 0;
+
+    while (true) {
+      Haiparas haiparas;
+      haiparas.StartTemp = pow(2.0, Rand01() * 10);
+      haiparas.EndTemp = 0.0;
+      haiparas.MultipleValue = pow(2.0, Rand01() * 10);
+      haiparas.Partition1 = RandXor() % 101;
+      haiparas.SimPartition = Rand01();
+
+      ll sum = 0;
+      srep(i, 0, 15)
+      {
+        ll score = Solve(i, haiparas);
+        sum += score;
+        if (i == 0 && score < 3120) {
+          break;
+        }
+      }
+
+      cout
+        << "Loop = " << loop
+        << ", Sum = " << sum
+        << ", StartTemp = " << haiparas.StartTemp
+        << ", EndTemp = " << haiparas.EndTemp
+        << ", MultipleValue = " << haiparas.MultipleValue
+        << ", Partition1 = " << haiparas.Partition1
+        << ", SimPartition = " << haiparas.SimPartition
+        << endl;
+
+      if (sum > bestSumScore) {
+        bestSumScore = sum;
+        bestHaiparas = haiparas;
+      }
+
+      loop++;
     }
   }
 
