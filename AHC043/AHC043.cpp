@@ -160,8 +160,7 @@ std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
 // 非常に大きな値
-const ll INF = 1001001001001001001;
-const int INT_INF = 1001001001;
+const int INF = 1001001001;
 
 // 移動方向の配列
 const int dx[4] = { -1, 0, 1, 0 };
@@ -212,6 +211,32 @@ int ansScore;
 
 int best_ansScore;
 
+int board[n][n];
+int turn = 0;
+int money = 0;
+void ClearBoard()
+{
+  turn = 0;
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      board[i][j] = -1;
+    }
+  }
+}
+
+void Action(int num, int x, int y)
+{
+  ans[turn].num =num;
+  ans[turn].x = x;
+  ans[turn].y = y;
+  if (num != -1) {
+    board[x][y] = num;
+  }
+  turn++;
+}
+
 void CopyToBest()
 {
   best_ansScore = ansScore;
@@ -241,6 +266,8 @@ void SetUp()
   {
     ans[i].num = -1;
   }
+
+  ClearBoard();
 }
 
 // 入力を受け取る関数
@@ -303,9 +330,9 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // スコアを計算する関数
-ll CalcScore()
+int CalcScore()
 {
-  ll res = 0;
+  int res = ansScore;
   return res;
 }
 
@@ -402,6 +429,18 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
   return ekiMap.Count - beforeCount;
 }
 
+struct Edge
+{
+  int from;
+  int to;
+  int cost;
+
+  bool operator<(const Edge& other) const
+  {
+    return cost < other.cost;
+  }
+};
+
 // ナイーブな解法
 void Method1()
 {
@@ -482,15 +521,150 @@ void Method1()
     cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
   }
 
-  rep(i, ekiMap.StationCount)
+  vector<int> nums, oks;
+  vector<vector<int>> as, bs;
+  rep(i, m)
   {
-    ans[i].num = 1;
-    ans[i].x = ekiMap.Stations[i][0];
-    ans[i].y = ekiMap.Stations[i][1];
+    if (ekiMap.ACount[i] > 0 && ekiMap.BCount[i]) {
+      nums.push_back(i);
+      oks.push_back(0);
+      vector<int> aa, bb;
+      rep(j, ekiMap.StationCount)
+      {
+        if (abs(sx[i] - ekiMap.Stations[j][0]) + abs(sy[i] - ekiMap.Stations[j][1])) {
+          aa.push_back(j);
+        }
+        if (abs(tx[i] - ekiMap.Stations[j][0]) + abs(ty[i] - ekiMap.Stations[j][1])) {
+          bb.push_back(j);
+        }
+      }
+      as.push_back(aa);
+      bs.push_back(bb);
+    }
   }
 
   // クラスカル法
+  int money = k;
+  int income = 0;
   UnionFind uf(ekiMap.StationCount);
+  vector<Edge> es;
+  rep(i, ekiMap.StationCount)
+  {
+    srep(j, i + 1, ekiMap.StationCount)
+    {
+      Edge e;
+      e.from = i;
+      e.to = j;
+      e.cost = max(0, abs(ekiMap.Stations[i][0] - ekiMap.Stations[j][0]) + abs(ekiMap.Stations[i][1] - ekiMap.Stations[j][1]) - 1);
+      es.push_back(e);
+    }
+  }
+  sort(es.begin(), es.end());
+  for (auto e : es) {
+    if (!uf.IsSame(e.from, e.to)) {
+
+      int ssx = ekiMap.Stations[e.from][0];
+      int ssy = ekiMap.Stations[e.from][1];
+      int ttx = ekiMap.Stations[e.to][0];
+      int tty = ekiMap.Stations[e.to][1];
+
+      // BFSで線路つなぐ
+      {
+        int f[n][n];
+        int f2[n][n];
+        rep(i, n)
+        {
+          rep(j, n)
+          {
+            f[i][j] = INF;
+            f2[i][j] = -1;
+          }
+        }
+        queue<P> que;
+        que.push(P(ssx, ssy));
+        f[ssx][ssy] = 0;
+        while (que.size()) {
+          int x = que.front().first;
+          int y = que.front().second;
+          que.pop();
+          if (x == ttx && y == tty)break;
+          rep(i, 4)
+          {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if (IsNG(nx, ny))continue;
+            if (f[nx][ny] > f[x][y] + 1) {
+              f[nx][ny] = f[x][y] + 1;
+              f2[nx][ny] = (i + 2) % 4;
+              que.push(P(nx, ny));
+            }
+          }
+        }
+        if (f[ttx][tty] == INF) {
+          cerr << "NG:BFS" << endl;
+        }
+        vector<P> route;
+        int x = ttx;
+        int y = tty;
+        while (x != ssx || y != ssy) {
+          route.push_back(P(x, y));
+          int nx = x + dx[f2[x][y]];
+          int ny = y + dy[f2[x][y]];
+          x = nx;
+          y = ny;
+        }
+        route.push_back(P(x, y));
+
+        srep(i, 1, route.size() - 1)
+        {
+
+        }
+      }
+
+      if (board[ssx][ssy] != 0) {
+        while (money < 5000 && turn < T) {
+          Action(-1, 0, 0);
+          money +=income;
+        }
+        if (turn >= T) break;
+        Action(0, ssx, ssy);
+        money -= 5000;
+        money += income;
+      }
+
+      if (board[ttx][tty] != 0) {
+        while (money < 5000 && turn < T) {
+          Action(-1, 0, 0);
+          money +=income;
+        }
+        if (turn >= T) break;
+        Action(0, ttx, tty);
+        money -= 5000;
+        money += income;
+      }
+
+      uf.Unite(e.from, e.to);
+      rep(i, nums.size())
+      {
+        if (oks[i])continue;
+        rep(j, as[i].size())
+        {
+          rep(k, bs[i].size())
+          {
+            if (uf.IsSame(as[i][j], bs[i][k])) {
+              oks[i] = 1;
+              income += abs(sx[nums[i]] - tx[nums[i]]) + abs(sy[nums[i]] - ty[nums[i]]);
+              break;
+            }
+          }
+          if (oks[i])break;
+        }
+      }
+    }
+    if (turn >= T) break;
+  }
+
+  ansScore = money;
 }
 
 // ハイパーパラメータ
