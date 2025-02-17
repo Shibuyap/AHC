@@ -14,7 +14,7 @@ void SimulatedAnnealing()
 
   int loop = 0;
   while (true) {
-    if (loop % 10 == 0) {
+    if (loop % 100 == 0) {
       nowTime = GetNowTime();
       if (nowTime > TL / 2) break;
     }

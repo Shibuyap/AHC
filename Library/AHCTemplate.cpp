@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ƒ‹[ƒv‚ÌŠÈ—ª‰»ƒ}ƒNƒ
+// ãƒ«ãƒ¼ãƒ—ã®ç°¡ç•¥åŒ–ãƒã‚¯ãƒ­
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -36,12 +36,12 @@
 
 using namespace std;
 
-// Œ^’è‹`‚ÌƒGƒCƒŠƒAƒX
+// å‹å®šç¾©ã®ã‚¨ã‚¤ãƒªã‚¢ã‚¹
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// —”¶¬iXorShift–@‚É‚æ‚é‹[——”¶¬Šíj
+// ä¹±æ•°ç”Ÿæˆï¼ˆXorShiftæ³•ã«ã‚ˆã‚‹æ“¬ä¼¼ä¹±æ•°ç”Ÿæˆå™¨ï¼‰
 static uint32_t RandXor()
 {
   static uint32_t x = 123456789;
@@ -57,16 +57,16 @@ static uint32_t RandXor()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0ˆÈã1–¢–‚ÌÀ”‚ğ•Ô‚·—”ŠÖ”
+// 0ä»¥ä¸Š1æœªæº€ã®å®Ÿæ•°ã‚’è¿”ã™ä¹±æ•°é–¢æ•°
 static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
 
-// lˆÈãr–¢–‚ÌÀ”‚ğ‚Æ‚é—”
+// lä»¥ä¸Šræœªæº€ã®å®Ÿæ•°ã‚’ã¨ã‚‹ä¹±æ•°
 static double RandUniform(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
 
-// ”z—ñ‚ğƒVƒƒƒbƒtƒ‹‚·‚éŠÖ”iFisher-YatesƒAƒ‹ƒSƒŠƒYƒ€j
+// é…åˆ—ã‚’ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã™ã‚‹é–¢æ•°ï¼ˆFisher-Yatesã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ï¼‰
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
@@ -77,30 +77,30 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^‚Ì‰Šú‰»ig—p‚³‚ê‚Ä‚¢‚È‚¢j
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿ã®åˆæœŸåŒ–ï¼ˆä½¿ç”¨ã•ã‚Œã¦ã„ãªã„ï¼‰
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// ”ñí‚É‘å‚«‚È’l
+// éå¸¸ã«å¤§ããªå€¤
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// ˆÚ“®•ûŒü‚Ì”z—ñ
+// ç§»å‹•æ–¹å‘ã®é…åˆ—
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8; // ŠÔ§ŒÀiTime Limitj
-int mode;        // Àsƒ‚[ƒh
-std::chrono::steady_clock::time_point startTimeClock; // ŠÔŒv‘ª—p
+double TL = 1.8; // æ™‚é–“åˆ¶é™ï¼ˆTime Limitï¼‰
+int mode;        // å®Ÿè¡Œãƒ¢ãƒ¼ãƒ‰
+std::chrono::steady_clock::time_point startTimeClock; // æ™‚é–“è¨ˆæ¸¬ç”¨
 
-// ŠÔŒv‘ª‚ğƒŠƒZƒbƒg‚·‚éŠÖ”
+// æ™‚é–“è¨ˆæ¸¬ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// Œ»İ‚ÌŒo‰ßŠÔ‚ğæ“¾‚·‚éŠÖ”
+// ç¾åœ¨ã®çµŒéæ™‚é–“ã‚’å–å¾—ã™ã‚‹é–¢æ•°
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -132,13 +132,13 @@ bool IsNG(int x, int y)
   return false;
 }
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void SetUp()
 {
   ansScore = 0;
 }
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void Input(int problemNum)
 {
   std::ostringstream oss;
@@ -146,14 +146,14 @@ void Input(int problemNum)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -163,31 +163,31 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 ll CalcScore()
 {
   ll res = 0;
   return res;
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   }
 }
 
-// ƒiƒC[ƒu‚È‰ğ–@
+// ãƒŠã‚¤ãƒ¼ãƒ–ãªè§£æ³•
 void Method1()
 {
 
 }
 
-// ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^
+// ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 struct Hypers
 {
   double StartTemp;
@@ -214,7 +214,7 @@ void SimulatedAnnealing(Hypers hypers)
       if (nowTime > TL) break;
     }
 
-    // –ß‚·
+    // æˆ»ã™
     //if (ansScore * 1.2 < best_ansScore) {
     //  CopyToAns();
     //}
@@ -224,25 +224,25 @@ void SimulatedAnnealing(Hypers hypers)
 
     int raMode = RandXor() % 100;
     if (raMode < hypers.Partition) {
-      // ‹ß–T‰ğì¬
+      // è¿‘å‚è§£ä½œæˆ
 
-      // ƒXƒRƒAŒvZ
+      // ã‚¹ã‚³ã‚¢è¨ˆç®—
       double tmpScore = CalcScore();
 
-      // Ä‚«‚È‚Ü‚µ
+      // ç„¼ããªã¾ã—
       double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
       double prob = exp(diffScore / temp);
       if (prob > Rand01()) {
-        // Ì—p
+        // æ¡ç”¨
         ansScore = tmpScore;
 
-        // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+        // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
         if (ansScore > best_ansScore) {
           CopyToBest();
         }
       }
       else {
-        // Œ³‚É–ß‚·
+        // å…ƒã«æˆ»ã™
       }
     }
     else if (raMode < 100) {
@@ -258,28 +258,28 @@ void SimulatedAnnealing(Hypers hypers)
 }
 
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll Solve(int problem_num, Hypers hypers)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(problem_num, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Method1();
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   //SimulatedAnnealing(hypers);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -295,7 +295,7 @@ ll Solve(int problem_num, Hypers hypers)
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////
@@ -353,7 +353,7 @@ int main()
         ll score = Solve(i, hypers);
         sum += score;
 
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
+        // ã‚·ãƒ¼ãƒ‰0ãŒæ‚ªã‘ã‚Œã°æ‰“ã¡åˆ‡ã‚Š
         if (i == 0 && score < 0) {
           break;
         }
