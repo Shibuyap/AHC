@@ -28,6 +28,83 @@
 #include <utility>
 #include <vector>
 
+class UnionFind
+{
+public:
+  const int MAX_UF = 1000006;
+
+  int N;              // 頂点数
+  vector<int> Par;    // 親
+  vector<int> Rank;   // 木の深さ
+  vector<int> Count;  // 属する頂点の個数(親のみ正しい)
+
+  // 初期化
+  void Initialize()
+  {
+    for (int i = 0; i < N; i++) {
+      Par[i]   = i;
+      Rank[i]  = 0;
+      Count[i] = 1;
+    }
+  }
+
+  UnionFind(int n)
+  {
+    N = n;
+    Par.resize(N);
+    Rank.resize(N);
+    Count.resize(N);
+
+    Initialize();
+  }
+
+  UnionFind()
+  {
+    UnionFind(MAX_UF);
+  }
+
+  // 木の根を求める
+  int Find(int x)
+  {
+    if (Par[x] == x) {
+      return x;
+    }
+    else {
+      return Par[x] = Find(Par[x]);
+    }
+  }
+
+  // xとyの属する集合を併合
+  void Unite(int x, int y)
+  {
+    x = Find(x);
+    y = Find(y);
+    if (x == y) return;
+
+    if (Rank[x] < Rank[y]) {
+      Par[x] = y;
+      Count[y] += Count[x];
+    }
+    else {
+      Par[y] = x;
+      Count[x] += Count[y];
+      if (Rank[x] == Rank[y]) Rank[x]++;
+    }
+  }
+
+  // xとyが同じ集合に属するか否か
+  bool IsSame(int x, int y)
+  {
+    return Find(x) == Find(y);
+  }
+
+  // xの属する集合のサイズ
+  int GetCount(int x)
+  {
+    return Count[Find(x)];
+  }
+};
+
 // ループの簡略化マクロ
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
@@ -411,6 +488,9 @@ void Method1()
     ans[i].x = ekiMap.Stations[i][0];
     ans[i].y = ekiMap.Stations[i][1];
   }
+
+  // クラスカル法
+  UnionFind uf(ekiMap.StationCount);
 }
 
 // ハイパーパラメータ
