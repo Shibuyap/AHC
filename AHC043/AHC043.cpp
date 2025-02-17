@@ -111,7 +111,6 @@ double GetNowTime()
   return elapsed.count();
 }
 
-
 const int MAX_M = 1600;
 
 const int n = 50;
@@ -122,6 +121,15 @@ const int T = 800;
 vector<int> sx, sy, tx, ty;
 int a[n][n];
 int b[n][n];
+
+struct Turn
+{
+  int num;
+  int x;
+  int y;
+};
+
+Turn ans[T];
 
 int ansScore;
 
@@ -137,6 +145,12 @@ void CopyToAns()
   ansScore = best_ansScore;
 }
 
+bool IsNG(int x, int y)
+{
+  if (x < 0 || n <= x || y < 0 || n <= y)return true;
+  return false;
+}
+
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
@@ -145,6 +159,11 @@ void SetUp()
   sy.clear();
   tx.clear();
   ty.clear();
+
+  rep(i, T)
+  {
+    ans[i].num = -1;
+  }
 }
 
 // 入力を受け取る関数
@@ -218,20 +237,93 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
+    rep(i, T)
+    {
+      if (ans[i].num == -1) {
+        cout << ans[i].num << endl;
+      }
+      else {
+        cout << ans[i].num << ' ' << ans[i].x << ' ' << ans[i].y << endl;
+      }
+    }
   }
   else {
     // ファイル出力
+    rep(i, T)
+    {
+      if (ans[i].num == -1) {
+        ofs << ans[i].num << endl;
+      }
+      else {
+        ofs << ans[i].num << ' ' << ans[i].x << ' ' << ans[i].y << endl;
+      }
+    }
   }
 }
 
 struct EkiMap
 {
-  int AFlags[MAX_M] = {};
-  int BFlags[MAX_M] = {};
+  int ACount[MAX_M] = {};
+  int BCount[MAX_M] = {};
   int Count = 0;
   int Stations[50][2];
   int StationCount = 10;
 };
+
+int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
+{
+  int beforeCount = ekiMap.Count;
+
+  int bx = ekiMap.Stations[index][0];
+  int by = ekiMap.Stations[index][1];
+
+  rep(i, 13)
+  {
+    int nx = bx + ex[i];
+    int ny = by + ey[i];
+    if (IsNG(nx, ny))continue;
+    if (a[nx][ny] != -1) {
+      int num = a[nx][ny];
+      ekiMap.ACount[num]--;
+      if (ekiMap.ACount[num] == 0 && ekiMap.BCount[num] > 0) {
+        ekiMap.Count--;
+      }
+    }
+    if (b[nx][ny] != -1) {
+      int num = b[nx][ny];
+      ekiMap.BCount[num]--;
+      if (ekiMap.BCount[num] == 0 && ekiMap.ACount[num] > 0) {
+        ekiMap.Count--;
+      }
+    }
+  }
+
+  ekiMap.Stations[index][0] = x;
+  ekiMap.Stations[index][1] = y;
+
+  rep(i, 13)
+  {
+    int nx = x + ex[i];
+    int ny = y + ey[i];
+    if (IsNG(nx, ny))continue;
+    if (a[nx][ny] != -1) {
+      int num = a[nx][ny];
+      ekiMap.ACount[num]++;
+      if (ekiMap.ACount[num] == 1 && ekiMap.BCount[num] > 0) {
+        ekiMap.Count++;
+      }
+    }
+    if (b[nx][ny] != -1) {
+      int num = b[nx][ny];
+      ekiMap.BCount[num]++;
+      if (ekiMap.BCount[num] == 1 && ekiMap.ACount[num] > 0) {
+        ekiMap.Count++;
+      }
+    }
+  }
+
+  return ekiMap.Count - beforeCount;
+}
 
 // ナイーブな解法
 void Method1()
@@ -239,6 +331,7 @@ void Method1()
   EkiMap ekiMap;
   EkiMap best_ekiMap;
 
+  // 初期解
   rep(i, ekiMap.StationCount)
   {
     int x = RandXor() % n;
@@ -250,12 +343,27 @@ void Method1()
     {
       int nx = x + ex[j];
       int ny = y + ey[j];
+      if (IsNG(nx, ny))continue;
+      if (a[nx][ny] != -1) {
+        int num = a[nx][ny];
+        ekiMap.ACount[num]++;
+        if (ekiMap.ACount[num] == 1 && ekiMap.BCount[num] > 0) {
+          ekiMap.Count++;
+        }
+      }
+      if (b[nx][ny] != -1) {
+        int num = b[nx][ny];
+        ekiMap.BCount[num]++;
+        if (ekiMap.BCount[num] == 1 && ekiMap.ACount[num] > 0) {
+          ekiMap.Count++;
+        }
+      }
     }
   }
-
+  best_ekiMap = ekiMap;
 
   double nowTime = GetNowTime();
-  const double START_TEMP = 2048.0;
+  const double START_TEMP = 2.0;
   const double END_TEMP = 0.1;
 
   int loop = 0;
@@ -266,9 +374,14 @@ void Method1()
     }
     loop++;
 
+    int raIndex = RandXor() % ekiMap.StationCount;
+    int rax = RandXor() % n;
+    int ray = RandXor() % n;
 
+    int keepx = ekiMap.Stations[raIndex][0];
+    int keepy = ekiMap.Stations[raIndex][1];
 
-    double diffScore = 0;
+    double diffScore = MoveOneStation(ekiMap, raIndex, rax, ray) * 1234.5;
 
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -276,15 +389,103 @@ void Method1()
 
     if (prob > Rand01()) {
       // 採用
+      if (ekiMap.Count > best_ekiMap.Count) {
+        best_ekiMap = ekiMap;
+      }
     }
     else {
       // 元に戻す
+      MoveOneStation(ekiMap, raIndex, keepx, keepy);
     }
+  }
+
+  ekiMap = best_ekiMap;
+
+  if (mode != 0) {
+    cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
+  }
+
+  rep(i, ekiMap.StationCount)
+  {
+    ans[i].num = 1;
+    ans[i].x = ekiMap.Stations[i][0];
+    ans[i].y = ekiMap.Stations[i][1];
   }
 }
 
+// ハイパーパラメータ
+struct Hypers
+{
+  double StartTemp;
+  double EndTemp;
+  double MultipleValue;
+  int Partition;
+};
+
+void SimulatedAnnealing(Hypers hypers)
+{
+  CopyToBest();
+
+  double nowTime = GetNowTime();
+  const double START_TEMP = hypers.StartTemp;
+  const double END_TEMP = hypers.EndTemp;
+
+
+  int loop = 0;
+  while (true) {
+    loop++;
+
+    if (loop % 100 == 0) {
+      nowTime = GetNowTime();
+      if (nowTime > TL) break;
+    }
+
+    // 戻す
+    //if (ansScore * 1.2 < best_ansScore) {
+    //  CopyToAns();
+    //}
+
+    double progressRatio = nowTime / TL;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+
+    int raMode = RandXor() % 100;
+    if (raMode < hypers.Partition) {
+      // 近傍解作成
+
+      // スコア計算
+      double tmpScore = CalcScore();
+
+      // 焼きなまし
+      double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
+      double prob = exp(diffScore / temp);
+      if (prob > Rand01()) {
+        // 採用
+        ansScore = tmpScore;
+
+        // Best解よりもいいか
+        if (ansScore > best_ansScore) {
+          CopyToBest();
+        }
+      }
+      else {
+        // 元に戻す
+      }
+    }
+    else if (raMode < 100) {
+
+    }
+  }
+
+  if (mode != 0 && mode != 3) {
+    cout << loop << endl;
+  }
+
+  CopyToAns();
+}
+
+
 // 問題を解く関数
-ll Solve(int problem_num)
+ll Solve(int problem_num, Hypers hypers)
 {
   ResetTime();
 
@@ -300,6 +501,9 @@ ll Solve(int problem_num)
 
   // 初期解生成
   Method1();
+
+  // 焼きなまし
+  //SimulatedAnnealing(hypers);
 
   // 解答を出力
   Output(ofs);
@@ -330,25 +534,73 @@ int main()
 
   mode = 2;
 
+  Hypers HYPERS;
+  HYPERS.StartTemp = 2048.0;
+  HYPERS.EndTemp = 0.0;
+  HYPERS.MultipleValue = 1.0;
+  HYPERS.Partition = 50;
+
   if (mode == 0) {
-    Solve(0);
+    Solve(0, HYPERS);
   }
-  else {
+  else if (mode <= 2) {
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(i);
+      ll score = Solve(i, HYPERS);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
       }
       else {
         cout << "num = " << setw(2) << i << ", ";
+        cout << "M = " << setw(4) << m << ", ";
         cout << "score = " << setw(4) << score << ", ";
         cout << "sum = " << setw(5) << sum << ", ";
         cout << "time = " << setw(5) << GetNowTime() << ", ";
         cout << endl;
       }
+    }
+  }
+  else if (mode == 3) {
+    int loop = 0;
+    Hypers bestHypers;
+    ll bestSumScore = 0;
+
+    while (true) {
+      Hypers hypers;
+      hypers.StartTemp = pow(2.0, Rand01() * 20);
+      hypers.EndTemp = 0.0;
+      hypers.MultipleValue = pow(2.0, Rand01() * 20);
+      hypers.Partition = RandXor() % 101;
+
+      ll sum = 0;
+      srep(i, 0, 15)
+      {
+        ll score = Solve(i, hypers);
+        sum += score;
+
+        // シード0が悪ければ打ち切り
+        if (i == 0 && score < 0) {
+          break;
+        }
+      }
+
+      cout
+        << "Loop = " << loop
+        << ", Sum = " << sum
+        << ", StartTemp = " << hypers.StartTemp
+        << ", EndTemp = " << hypers.EndTemp
+        << ", MultipleValue = " << hypers.MultipleValue
+        << ", Partition1 = " << hypers.Partition
+        << endl;
+
+      if (sum > bestSumScore) {
+        bestSumScore = sum;
+        bestHypers = hypers;
+      }
+
+      loop++;
     }
   }
 
