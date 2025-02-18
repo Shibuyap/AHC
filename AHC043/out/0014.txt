@@ -1,1600 +1,1600 @@
 # income = 0
-0 40 44
+0 8 9
 # income = 0
-0 40 48
+0 12 15
 # income = 0
-1 40 47
+1 12 14
 # income = 0
-1 40 46
+1 12 13
 # income = 0
-1 40 45
+1 12 12
 # income = 0
--1
+1 12 11
 # income = 0
--1
+5 12 10
 # income = 0
--1
+2 11 10
 # income = 0
--1
+2 10 10
 # income = 0
--1
+2 9 10
 # income = 0
+3 8 10
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
+# income = 18
 -1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
+# income = 18
 -1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
+# income = 18
 -1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
--1
-# income = 0
+# income = 18
 -1
-# income = 0
--1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
+0 8 5
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
+1 8 6
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
+1 8 7
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
 -1
-# income = 0
+# income = 18
+1 8 8
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+0 35 21
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 34 21
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+6 33 21
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 33 22
+# income = 37
 -1
-# income = 0
+# income = 37
+1 33 23
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+4 33 24
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 32 24
+# income = 37
 -1
-# income = 0
+# income = 37
+6 31 24
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 31 25
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 31 26
+# income = 37
 -1
-# income = 0
+# income = 37
+4 31 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 30 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 29 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 28 27
+# income = 37
 -1
-# income = 0
+# income = 37
+2 27 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 26 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 25 27
+# income = 37
 -1
-# income = 0
+# income = 37
+2 24 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 23 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 22 27
+# income = 37
 -1
-# income = 0
+# income = 37
+2 21 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 20 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 19 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 18 27
+# income = 37
 -1
-# income = 0
+# income = 37
+2 17 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 16 27
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+3 15 27
+# income = 37
 -1
-# income = 0
+# income = 37
+1 15 26
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 15 25
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+5 15 24
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 14 24
+# income = 37
 -1
-# income = 0
+# income = 37
+2 13 24
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+3 12 24
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 12 23
+# income = 37
 -1
-# income = 0
+# income = 37
+1 12 22
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 12 21
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+6 12 20
+# income = 37
 -1
-# income = 0
+# income = 37
+2 13 20
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+4 14 20
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+5 14 19
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+2 13 19
+# income = 37
 -1
-# income = 0
+# income = 37
+3 12 19
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 12 18
+# income = 37
 -1
-# income = 0
+# income = 37
 -1
-# income = 0
+# income = 37
+1 12 17
+# income = 37
 -1
-# income = 0
+# income = 37
+1 12 16
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
 -1
-# income = 0
+# income = 100
+0 15 25
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
+0 42 29
+# income = 120
+2 41 29
+# income = 120
+6 40 29
+# income = 120
+1 40 30
+# income = 120
+4 40 31
+# income = 120
+2 39 31
+# income = 120
+2 38 31
+# income = 120
+2 37 31
+# income = 120
+2 36 31
+# income = 120
+2 35 31
+# income = 120
+2 34 31
+# income = 120
+2 33 31
+# income = 120
+2 32 31
+# income = 120
+2 31 31
+# income = 120
+3 30 31
+# income = 120
+1 30 30
+# income = 120
+1 30 29
+# income = 120
+6 30 28
+# income = 120
+4 31 28
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
 -1
-# income = 0
+# income = 120
+0 31 27
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
 -1
-# income = 0
+# income = 140
+0 16 13
+# income = 140
+2 15 13
+# income = 140
+2 14 13
+# income = 140
+6 13 13
+# income = 140
+1 13 14
+# income = 140
+4 13 15
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
 -1
-# income = 0
+# income = 223
+0 18 27
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
+0 37 28
+# income = 255
+2 38 28
+# income = 255
+5 39 28
+# income = 255
+1 39 29
+# income = 255
+1 39 30
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
-# income = 0
+# income = 255
 -1
+# income = 255
+0 39 31

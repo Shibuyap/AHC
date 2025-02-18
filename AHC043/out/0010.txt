@@ -1,1600 +1,1600 @@
 # income = 0
-0 32 11
+0 26 33
 # income = 0
-0 18 32
+0 31 14
 # income = 0
-6 18 31
+2 30 14
 # income = 0
-2 19 31
+2 29 14
 # income = 0
-2 20 31
+2 28 14
 # income = 0
-2 21 31
+6 27 14
 # income = 0
-2 22 31
+1 27 15
 # income = 0
-2 23 31
+1 27 16
 # income = 0
-2 24 31
+1 27 17
 # income = 0
-2 25 31
+1 27 18
 # income = 0
-2 26 31
+1 27 19
 # income = 0
-2 27 31
+1 27 20
 # income = 0
-2 28 31
+3 27 21
 # income = 0
-2 29 31
+2 28 21
 # income = 0
-2 30 31
+5 29 21
 # income = 0
-4 31 31
+1 29 22
 # income = 0
-1 31 30
+1 29 23
 # income = 0
-1 31 29
+1 29 24
 # income = 0
-1 31 28
+3 29 25
+# income = 0
+2 30 25
+# income = 0
+5 31 25
+# income = 0
+1 31 26
 # income = 0
 1 31 27
 # income = 0
-6 31 26
+1 31 28
 # income = 0
-2 32 26
+1 31 29
 # income = 0
-2 33 26
+1 31 30
 # income = 0
-2 34 26
+1 31 31
 # income = 0
-4 35 26
-# income = 0
-5 35 25
-# income = 0
-2 34 25
-# income = 0
-2 33 25
-# income = 0
-3 32 25
-# income = 0
-1 32 24
-# income = 0
-1 32 23
-# income = 0
-1 32 22
-# income = 0
-1 32 21
-# income = 0
-1 32 20
-# income = 0
-1 32 19
-# income = 0
-1 32 18
-# income = 0
-1 32 17
-# income = 0
-1 32 16
-# income = 0
-1 32 15
-# income = 0
-1 32 14
-# income = 0
-1 32 13
-# income = 0
-1 32 12
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
--1
-# income = 38
-0 19 4
-# income = 38
--1
-# income = 38
-2 20 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-2 21 4
-# income = 38
--1
-# income = 38
-2 22 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-2 23 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-2 24 4
-# income = 38
--1
-# income = 38
-2 25 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-2 26 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-2 27 4
-# income = 38
--1
-# income = 38
-2 28 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-2 29 4
-# income = 38
--1
-# income = 38
-2 30 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-5 31 4
-# income = 38
--1
-# income = 38
--1
-# income = 38
-1 31 5
-# income = 38
--1
-# income = 38
-1 31 6
-# income = 38
--1
-# income = 38
--1
-# income = 38
-1 31 7
-# income = 38
--1
-# income = 38
--1
-# income = 38
-1 31 8
-# income = 38
--1
-# income = 38
-1 31 9
-# income = 38
--1
-# income = 38
--1
-# income = 38
-1 31 10
-# income = 38
--1
-# income = 38
--1
-# income = 38
-3 31 11
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
--1
-# income = 69
-0 10 34
-# income = 69
--1
-# income = 69
-1 10 33
-# income = 69
-6 10 32
-# income = 69
--1
-# income = 69
-2 11 32
-# income = 69
-2 12 32
-# income = 69
--1
-# income = 69
-2 13 32
-# income = 69
-2 14 32
-# income = 69
--1
-# income = 69
-2 15 32
-# income = 69
-2 16 32
-# income = 69
-2 17 32
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
--1
-# income = 108
-0 45 5
-# income = 108
-2 44 5
-# income = 108
-2 43 5
-# income = 108
-2 42 5
-# income = 108
-2 41 5
-# income = 108
-2 40 5
-# income = 108
-2 39 5
-# income = 108
-2 38 5
-# income = 108
-2 37 5
-# income = 108
-2 36 5
-# income = 108
-2 35 5
-# income = 108
-2 34 5
-# income = 108
-2 33 5
-# income = 108
-6 32 5
-# income = 108
-1 32 6
-# income = 108
-1 32 7
-# income = 108
-1 32 8
-# income = 108
-1 32 9
-# income = 108
-1 32 10
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
--1
-# income = 222
-0 31 31
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
--1
-# income = 244
-0 32 35
-# income = 244
-3 31 35
-# income = 244
-1 31 34
-# income = 244
-1 31 33
-# income = 244
 1 31 32
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
--1
-# income = 303
-0 6 6
-# income = 303
-1 6 5
-# income = 303
-6 6 4
-# income = 303
-2 7 4
-# income = 303
-2 8 4
-# income = 303
-2 9 4
-# income = 303
-2 10 4
-# income = 303
-2 11 4
-# income = 303
-2 12 4
-# income = 303
-2 13 4
-# income = 303
-2 14 4
-# income = 303
-2 15 4
-# income = 303
-2 16 4
-# income = 303
-2 17 4
-# income = 303
-2 18 4
-# income = 345
--1
-# income = 345
--1
-# income = 345
--1
-# income = 345
--1
-# income = 345
--1
-# income = 345
--1
-# income = 345
-0 26 42
-# income = 345
-1 26 41
-# income = 345
-1 26 40
-# income = 345
-1 26 39
-# income = 345
-1 26 38
-# income = 345
-1 26 37
-# income = 345
-6 26 36
-# income = 345
-2 27 36
-# income = 345
-2 28 36
-# income = 345
-2 29 36
-# income = 345
+# income = 0
+1 31 33
+# income = 0
+1 31 34
+# income = 0
+1 31 35
+# income = 0
+4 31 36
+# income = 0
 2 30 36
-# income = 345
-2 31 36
-# income = 345
-4 32 36
-# income = 467
+# income = 0
+2 29 36
+# income = 0
+2 28 36
+# income = 0
+2 27 36
+# income = 0
+2 26 36
+# income = 0
+2 25 36
+# income = 0
+3 24 36
+# income = 0
+1 24 35
+# income = 0
+1 24 34
+# income = 0
+6 24 33
+# income = 0
+2 25 33
+# income = 47
 -1
-# income = 467
+# income = 47
 -1
-# income = 467
+# income = 47
 -1
-# income = 467
-0 35 26
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
 -1
-# income = 545
+# income = 47
+0 24 36
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
 -1
-# income = 545
+# income = 75
+0 44 9
+# income = 75
+2 43 9
+# income = 75
+2 42 9
+# income = 75
 -1
-# income = 545
+# income = 75
+2 41 9
+# income = 75
+2 40 9
+# income = 75
+2 39 9
+# income = 75
 -1
-# income = 545
+# income = 75
+2 38 9
+# income = 75
+2 37 9
+# income = 75
+2 36 9
+# income = 75
 -1
-# income = 545
+# income = 75
+2 35 9
+# income = 75
+2 34 9
+# income = 75
+2 33 9
+# income = 75
 -1
-# income = 545
+# income = 75
+6 32 9
+# income = 75
+1 32 10
+# income = 75
+4 32 11
+# income = 75
 -1
-# income = 545
+# income = 75
+6 31 11
+# income = 75
+1 31 12
+# income = 75
+1 31 13
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
 -1
-# income = 545
+# income = 169
+0 6 22
+# income = 169
+1 6 23
+# income = 169
+1 6 24
+# income = 169
+1 6 25
+# income = 169
+1 6 26
+# income = 169
+1 6 27
+# income = 169
+1 6 28
+# income = 169
+1 6 29
+# income = 169
+1 6 30
+# income = 169
+1 6 31
+# income = 169
+1 6 32
+# income = 169
+1 6 33
+# income = 169
+1 6 34
+# income = 169
+1 6 35
+# income = 169
+1 6 36
+# income = 169
+1 6 37
+# income = 169
+3 6 38
+# income = 169
+2 7 38
+# income = 169
+2 8 38
+# income = 169
+2 9 38
+# income = 169
+4 10 38
+# income = 169
+1 10 37
+# income = 169
+1 10 36
+# income = 169
+1 10 35
+# income = 169
+6 10 34
+# income = 169
+2 11 34
+# income = 169
+2 12 34
+# income = 169
+2 13 34
+# income = 169
+2 14 34
+# income = 169
+2 15 34
+# income = 169
+2 16 34
+# income = 169
+5 17 34
+# income = 169
+3 17 35
+# income = 169
+5 18 35
+# income = 169
+3 18 36
+# income = 169
+2 19 36
+# income = 169
+2 20 36
+# income = 169
+2 21 36
+# income = 169
+2 22 36
+# income = 169
+2 23 36
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
 -1
-# income = 545
+# income = 232
+0 31 30
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
 -1
-# income = 545
+# income = 297
+0 47 27
+# income = 297
+2 46 27
+# income = 297
+2 45 27
+# income = 297
+2 44 27
+# income = 297
+2 43 27
+# income = 297
+2 42 27
+# income = 297
+2 41 27
+# income = 297
+6 40 27
+# income = 297
+1 40 28
+# income = 297
+1 40 29
+# income = 297
+1 40 30
+# income = 297
+4 40 31
+# income = 297
+3 39 31
+# income = 297
+5 39 30
+# income = 297
+2 38 30
+# income = 297
+2 37 30
+# income = 297
+2 36 30
+# income = 297
+2 35 30
+# income = 297
+2 34 30
+# income = 297
+2 33 30
+# income = 297
+2 32 30
+# income = 366
 -1
-# income = 545
+# income = 366
 -1
-# income = 545
+# income = 366
+0 18 35
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
 -1
-# income = 545
+# income = 456
+0 14 34
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
 -1
-# income = 545
+# income = 519
+0 47 7
+# income = 519
+2 46 7
+# income = 519
+2 45 7
+# income = 519
+6 44 7
+# income = 519
+1 44 8
+# income = 599
 -1
-# income = 545
+# income = 599
 -1
-# income = 545
+# income = 599
 -1
-# income = 545
+# income = 599
 -1
-# income = 545
+# income = 599
+0 16 42
+# income = 599
+2 15 42
+# income = 599
+2 14 42
+# income = 599
+2 13 42
+# income = 599
+2 12 42
+# income = 599
+2 11 42
+# income = 599
+3 10 42
+# income = 599
+1 10 41
+# income = 599
+1 10 40
+# income = 599
+1 10 39
+# income = 599
+0 10 38
+# income = 831
 -1
-# income = 545
+# income = 831
 -1
-# income = 545
+# income = 831
 -1
-# income = 545
+# income = 831
 -1
-# income = 545
+# income = 831
 -1
-# income = 545
+# income = 831
+0 20 45
+# income = 831
+1 20 44
+# income = 831
+1 20 43
+# income = 831
+5 20 42
+# income = 831
+2 19 42
+# income = 831
+2 18 42
+# income = 831
+2 17 42
+# income = 939
+0 32 11
+# income = 1037
 -1
-# income = 545
+# income = 1037
 -1
-# income = 545
+# income = 1037
 -1
-# income = 545
+# income = 1037
 -1
-# income = 545
+# income = 1037
+0 4 16
+# income = 1037
+2 5 16
+# income = 1037
+5 6 16
+# income = 1037
+1 6 17
+# income = 1037
+1 6 18
+# income = 1037
+1 6 19
+# income = 1037
+1 6 20
+# income = 1037
+1 6 21
+# income = 1166
+0 29 25
+# income = 1235
 -1
-# income = 545
+# income = 1235
+0 44 13
+# income = 1235
+1 44 12
+# income = 1235
+1 44 11
+# income = 1235
+1 44 10
+# income = 1306
+0 11 11
+# income = 1306
+2 10 11
+# income = 1306
+2 9 11
+# income = 1306
+2 8 11
+# income = 1306
+2 7 11
+# income = 1306
+2 6 11
+# income = 1306
+2 5 11
+# income = 1306
+6 4 11
+# income = 1306
+1 4 12
+# income = 1306
+1 4 13
+# income = 1306
+1 4 14
+# income = 1306
+1 4 15
+# income = 1362
+0 39 31
+# income = 1443
+0 31 36
+# income = 1506
+0 18 32
+# income = 1506
+1 18 33
+# income = 1506
+1 18 34
+# income = 1565
+0 27 21
+# income = 1622
 -1
-# income = 545
+# income = 1622
+0 6 3
+# income = 1622
+2 7 3
+# income = 1622
+2 8 3
+# income = 1622
+2 9 3
+# income = 1622
+2 10 3
+# income = 1622
+5 11 3
+# income = 1622
+1 11 4
+# income = 1622
+1 11 5
+# income = 1622
+1 11 6
+# income = 1622
+1 11 7
+# income = 1622
+1 11 8
+# income = 1622
+1 11 9
+# income = 1622
+1 11 10
+# income = 1802
+0 16 1
+# income = 1802
+2 15 1
+# income = 1802
+2 14 1
+# income = 1802
+2 13 1
+# income = 1802
+2 12 1
+# income = 1802
+2 11 1
+# income = 1802
+2 10 1
+# income = 1802
+2 9 1
+# income = 1802
+2 8 1
+# income = 1802
+2 7 1
+# income = 1802
+6 6 1
+# income = 1802
+1 6 2
+# income = 1933
+0 24 18
+# income = 1933
+1 24 19
+# income = 1933
+1 24 20
+# income = 1933
+3 24 21
+# income = 1933
+2 25 21
+# income = 1933
+2 26 21
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
 -1
-# income = 545
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
+-1
+# income = 1993
 -1

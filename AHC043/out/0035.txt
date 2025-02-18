@@ -1,800 +1,1600 @@
-1 9 13
-1 9 39
-1 43 24
-1 1 24
-1 22 12
-1 36 12
-1 34 39
-1 15 22
-1 9 7
-1 9 20
+# income = 0
+0 31 18
+# income = 0
+0 11 13
+# income = 0
+3 11 14
+# income = 0
+2 12 14
+# income = 0
+2 13 14
+# income = 0
+2 14 14
+# income = 0
+2 15 14
+# income = 0
+2 16 14
+# income = 0
+2 17 14
+# income = 0
+5 18 14
+# income = 0
+1 18 15
+# income = 0
+1 18 16
+# income = 0
+1 18 17
+# income = 0
+1 18 18
+# income = 0
+3 18 19
+# income = 0
+4 19 19
+# income = 0
+6 19 18
+# income = 0
+2 20 18
+# income = 0
+2 21 18
+# income = 0
+2 22 18
+# income = 0
+2 23 18
+# income = 0
+2 24 18
+# income = 0
+2 25 18
+# income = 0
+2 26 18
+# income = 0
+2 27 18
+# income = 0
+2 28 18
+# income = 0
+2 29 18
+# income = 0
+2 30 18
+# income = 22
+0 33 25
+# income = 22
+2 32 25
+# income = 22
+3 31 25
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
+1 31 24
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
+1 31 23
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
+1 31 22
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
+1 31 21
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
+1 31 20
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
 -1
+# income = 22
+1 31 19
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
 -1
+# income = 56
+0 4 16
+# income = 56
 -1
+# income = 56
+1 4 15
+# income = 56
 -1
+# income = 56
+1 4 14
+# income = 56
 -1
+# income = 56
+6 4 13
+# income = 56
 -1
+# income = 56
+2 5 13
+# income = 56
+2 6 13
+# income = 56
 -1
+# income = 56
+2 7 13
+# income = 56
 -1
+# income = 56
+2 8 13
+# income = 56
 -1
+# income = 56
+2 9 13
+# income = 56
 -1
+# income = 56
+2 10 13
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
 -1
+# income = 107
+0 18 19
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
 -1
+# income = 137
+0 30 8
+# income = 137
+5 31 8
+# income = 137
+1 31 9
+# income = 137
+1 31 10
+# income = 137
+1 31 11
+# income = 137
+1 31 12
+# income = 137
+1 31 13
+# income = 137
+1 31 14
+# income = 137
+1 31 15
+# income = 137
+1 31 16
+# income = 137
+1 31 17
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
 -1
+# income = 172
+0 13 31
+# income = 172
+1 13 30
+# income = 172
+1 13 29
+# income = 172
+1 13 28
+# income = 172
+1 13 27
+# income = 172
+1 13 26
+# income = 172
+1 13 25
+# income = 172
+1 13 24
+# income = 172
+1 13 23
+# income = 172
+1 13 22
+# income = 172
+1 13 21
+# income = 172
+1 13 20
+# income = 172
+6 13 19
+# income = 172
+2 14 19
+# income = 172
+2 15 19
+# income = 172
+2 16 19
+# income = 172
+2 17 19
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
 -1
+# income = 195
+0 15 14
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
 -1
+# income = 237
+0 41 25
+# income = 237
+2 40 25
+# income = 237
+2 39 25
+# income = 237
+2 38 25
+# income = 237
+2 37 25
+# income = 237
+2 36 25
+# income = 237
+2 35 25
+# income = 237
+2 34 25
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
 -1
+# income = 307
+0 9 39
+# income = 307
+1 9 38
+# income = 307
+1 9 37
+# income = 307
+1 9 36
+# income = 307
+1 9 35
+# income = 307
+1 9 34
+# income = 307
+1 9 33
+# income = 307
+1 9 32
+# income = 307
+6 9 31
+# income = 307
+2 10 31
+# income = 307
+2 11 31
+# income = 307
+2 12 31
+# income = 353
 -1
+# income = 353
 -1
+# income = 353
 -1
+# income = 353
 -1
+# income = 353
 -1
+# income = 353
 -1
+# income = 353
 -1
+# income = 353
+0 44 21
+# income = 353
+4 44 22
+# income = 353
+2 43 22
+# income = 353
+2 42 22
+# income = 353
+6 41 22
+# income = 353
+1 41 23
+# income = 353
+1 41 24
+# income = 459
 -1
+# income = 459
 -1
+# income = 459
 -1
+# income = 459
 -1
+# income = 459
 -1
+# income = 459
 -1
+# income = 459
 -1
+# income = 459
+0 40 19
+# income = 459
+1 40 20
+# income = 459
+3 40 21
+# income = 459
+2 41 21
+# income = 459
+2 42 21
+# income = 459
+2 43 21
+# income = 495
 -1
+# income = 495
 -1
+# income = 495
 -1
+# income = 495
 -1
+# income = 495
 -1
+# income = 495
+0 36 4
+# income = 495
+2 35 4
+# income = 495
+2 34 4
+# income = 495
+2 33 4
+# income = 495
+2 32 4
+# income = 495
+2 31 4
+# income = 495
+6 30 4
+# income = 495
+1 30 5
+# income = 495
+1 30 6
+# income = 495
+1 30 7
+# income = 516
 -1
+# income = 516
 -1
+# income = 516
+0 46 22
+# income = 516
+5 46 21
+# income = 516
+2 45 21
+# income = 601
 -1
+# income = 601
 -1
+# income = 601
 -1
+# income = 601
 -1
+# income = 601
 -1
+# income = 601
 -1
+# income = 601
+0 41 14
+# income = 601
+6 40 14
+# income = 601
+1 40 15
+# income = 601
+1 40 16
+# income = 601
+1 40 17
+# income = 601
+1 40 18
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
+# income = 635
 -1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
+# income = 635
 -1

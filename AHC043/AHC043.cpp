@@ -195,8 +195,8 @@ int k;
 const int T = 800;
 
 vector<int> sx, sy, tx, ty;
-int a[n][n];
-int b[n][n];
+vector<int> a[n][n];
+vector<int> b[n][n];
 
 struct Turn
 {
@@ -211,6 +211,7 @@ struct Ans
   Turn turns[T];
   string comment[T];
   int score;
+  int stationCount;
 };
 
 Ans ans;
@@ -239,6 +240,9 @@ void Action(int num, int x, int y, int income)
   ans.turns[turn].y = y;
   if (num != -1) {
     board[x][y] = num;
+  }
+  if (num == 0) {
+    ans.stationCount++;
   }
   turn++;
 }
@@ -298,6 +302,15 @@ int GetRailNum(int x1, int y1, int x2, int y2, int x3, int y3)
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      a[i][j].clear();
+      b[i][j].clear();
+    }
+  }
+
   sx.clear();
   sy.clear();
   tx.clear();
@@ -305,6 +318,7 @@ void SetUp()
 
   ans.order.clear();
   ans.score =0;
+  ans.stationCount = 0;
   rep(i, T)
   {
     ans.turns[i].num = -1;
@@ -349,18 +363,10 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n)
-    {
-      a[i][j] = -1;
-      b[i][j] = -1;
-    }
-  }
   rep(i, m)
   {
-    a[sx[i]][sy[i]] = i;
-    b[tx[i]][ty[i]] = i;
+    a[sx[i]][sy[i]].push_back(i);
+    b[tx[i]][ty[i]].push_back(i);
   }
 }
 
@@ -419,6 +425,11 @@ struct EkiMap
   int Count = 0;
   int Stations[MAX_STATION][2];
   int StationCount = 50;
+
+  EkiMap(int stationCount)
+  {
+    StationCount = stationCount;
+  }
 };
 
 int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
@@ -433,15 +444,13 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
     int nx = bx + ex[i];
     int ny = by + ey[i];
     if (IsNG(nx, ny))continue;
-    if (a[nx][ny] != -1) {
-      int num = a[nx][ny];
+    for (auto num : a[nx][ny]) {
       ekiMap.ACount[num]--;
       if (ekiMap.ACount[num] == 0 && ekiMap.BCount[num] > 0) {
         ekiMap.Count--;
       }
     }
-    if (b[nx][ny] != -1) {
-      int num = b[nx][ny];
+    for (auto num : b[nx][ny]) {
       ekiMap.BCount[num]--;
       if (ekiMap.BCount[num] == 0 && ekiMap.ACount[num] > 0) {
         ekiMap.Count--;
@@ -457,15 +466,13 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
     int nx = x + ex[i];
     int ny = y + ey[i];
     if (IsNG(nx, ny))continue;
-    if (a[nx][ny] != -1) {
-      int num = a[nx][ny];
+    for (auto num : a[nx][ny]) {
       ekiMap.ACount[num]++;
       if (ekiMap.ACount[num] == 1 && ekiMap.BCount[num] > 0) {
         ekiMap.Count++;
       }
     }
-    if (b[nx][ny] != -1) {
-      int num = b[nx][ny];
+    for (auto num : b[nx][ny]) {
       ekiMap.BCount[num]++;
       if (ekiMap.BCount[num] == 1 && ekiMap.ACount[num] > 0) {
         ekiMap.Count++;
@@ -564,6 +571,7 @@ int UpdateIncome(const vector<int>& people, const vector<P>& stations)
 int Simulate(const EkiMap& ekiMap, const vector<int>& people)
 {
   ClearBoard();
+  ans.stationCount = 0;
 
   int money = k;
   int income = 0;
@@ -572,6 +580,16 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
   int now = 0;
   int root = -1;
   while (turn < T) {
+    //{
+    //  vector<P> stations;
+    //  rep(i, ekiMap.StationCount)
+    //  {
+    //    if (isBuilt[i]) {
+    //      stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
+    //    }
+    //  }
+    //  income = UpdateIncome(people, stations);
+    //}
     if (now == 0) {
       int num = ans.order[now];
       Action(0, ekiMap.Stations[num][0], ekiMap.Stations[num][1], income);
@@ -752,17 +770,29 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
   return money;
 }
 
-// ナイーブな解法
-void Method1()
+// ハイパーパラメータ
+struct Hypers
 {
-  EkiMap ekiMap;
-  EkiMap best_ekiMap;
+  double StartTemp;
+  double EndTemp;
+  double MultipleValue;
+  int Partition;
+  int StationCount;
+};
+
+// ナイーブな解法
+void Method1(Hypers hypers)
+{
+  //EkiMap ekiMap(hypers.StationCount);
+  //EkiMap best_ekiMap(hypers.StationCount);
+  EkiMap ekiMap(10 + m / 100 * 5);
+  EkiMap best_ekiMap(10 + m / 100 * 5);
 
   // 初期解
   rep(i, ekiMap.StationCount)
   {
-    int x = RandXor() % n;
-    int y = RandXor() % n;
+    int x = RandXor() % (n - 2) + 1;
+    int y = RandXor() % (n - 2) + 1;
     ekiMap.Stations[i][0] = x;
     ekiMap.Stations[i][1] = y;
 
@@ -771,15 +801,13 @@ void Method1()
       int nx = x + ex[j];
       int ny = y + ey[j];
       if (IsNG(nx, ny))continue;
-      if (a[nx][ny] != -1) {
-        int num = a[nx][ny];
+      for (auto num : a[nx][ny]) {
         ekiMap.ACount[num]++;
         if (ekiMap.ACount[num] == 1 && ekiMap.BCount[num] > 0) {
           ekiMap.Count++;
         }
       }
-      if (b[nx][ny] != -1) {
-        int num = b[nx][ny];
+      for (auto num : b[nx][ny]) {
         ekiMap.BCount[num]++;
         if (ekiMap.BCount[num] == 1 && ekiMap.ACount[num] > 0) {
           ekiMap.Count++;
@@ -791,7 +819,7 @@ void Method1()
 
   {
     double nowTime = GetNowTime();
-    const double START_TEMP = 2.0;
+    const double START_TEMP = 200.0;
     const double END_TEMP = 0.1;
 
     int loop = 0;
@@ -803,13 +831,13 @@ void Method1()
       loop++;
 
       int raIndex = RandXor() % ekiMap.StationCount;
-      int rax = RandXor() % n;
-      int ray = RandXor() % n;
+      int rax = RandXor() % (n - 2) + 1;
+      int ray = RandXor() % (n - 2) + 1;
 
       int keepx = ekiMap.Stations[raIndex][0];
       int keepy = ekiMap.Stations[raIndex][1];
 
-      double diffScore = MoveOneStation(ekiMap, raIndex, rax, ray) * 1234.5;
+      double diffScore = MoveOneStation(ekiMap, raIndex, rax, ray) * 12345.5;
 
       double progressRatio = nowTime / TL;
       double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -900,7 +928,25 @@ void Method1()
         int x = que.front().first;
         int y = que.front().second;
         que.pop();
-        if (x == ttx && y == tty)break;
+        if (fff[x][y] == 2 && (x != ssx || y != ssy)) {
+          int ok = 0;
+          rep(i, ekiMap.StationCount)
+          {
+            int xx = ekiMap.Stations[i][0];
+            int yy = ekiMap.Stations[i][1];
+            if (x == xx && y == yy && !uf.IsSame(e.from, i)) {
+              e.to = i;
+              ok = 1;
+              break;
+            }
+          }
+          if (ok) {
+            break;
+          }
+          else {
+            continue;
+          }
+        }
         rep(i, 4)
         {
           int nx = x + dx[i];
@@ -909,14 +955,9 @@ void Method1()
           if (fff[nx][ny] == 1)continue;
           if (f[nx][ny] > f[x][y] + 1) {
             if (fff[nx][ny] == 2) {
-              if (nx == ttx && ny == tty) {
-                f[nx][ny] = f[x][y] + 1;
-                f2[nx][ny] = (i + 2) % 4;
-                que.push(P(nx, ny));
-              }
-              else {
-                continue;
-              }
+              f[nx][ny] = f[x][y] + 1;
+              f2[nx][ny] = (i + 2) % 4;
+              que.push(P(nx, ny));
             }
             else {
               f[nx][ny] = f[x][y] + 1;
@@ -926,8 +967,14 @@ void Method1()
           }
         }
       }
+
+      ttx = ekiMap.Stations[e.to][0];
+      tty = ekiMap.Stations[e.to][1];
       if (f[ttx][tty] == INF) {
         cerr << "NG:BFS" << endl;
+        continue;
+        fff[ssx][ssy] = 3;
+        fff[ttx][tty] = 4;
         rep(i, n)
         {
           rep(j, n)
@@ -1007,9 +1054,12 @@ void Method1()
       }
 
       int beforeScore = ans.score;
+      int beforeStationCount = ans.stationCount;
       int afterScore = Simulate(ekiMap, people);
+      int afterStationCount = ans.stationCount;
+      double RATIO = 10000;
 
-      double diffScore = (afterScore - beforeScore) * 1234.5;
+      double diffScore = ((double)afterScore + afterStationCount * RATIO - beforeScore - beforeStationCount * RATIO) * 1234.5;
 
       double progressRatio = nowTime / TL;
       double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -1017,7 +1067,7 @@ void Method1()
 
       if (prob > Rand01()) {
         // 採用
-        if (ans.score > best_ans.score) {
+        if (afterScore + afterStationCount * RATIO > best_ans.score + best_ans.stationCount * RATIO) {
           best_ans = ans;
         }
       }
@@ -1025,6 +1075,7 @@ void Method1()
         // 元に戻す
         swap(ans.order[ra1], ans.order[ra2]);
         ans.score = beforeScore;
+        ans.stationCount =beforeStationCount;
       }
     }
 
@@ -1035,15 +1086,6 @@ void Method1()
     }
   }
 }
-
-// ハイパーパラメータ
-struct Hypers
-{
-  double StartTemp;
-  double EndTemp;
-  double MultipleValue;
-  int Partition;
-};
 
 void SimulatedAnnealing(Hypers hypers)
 {
@@ -1123,7 +1165,7 @@ ll Solve(int problem_num, Hypers hypers)
   OpenOfs(problem_num, ofs);
 
   // 初期解生成
-  Method1();
+  Method1(hypers);
 
   // 焼きなまし
   //SimulatedAnnealing(hypers);
@@ -1168,7 +1210,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 13, 100)
+    srep(i, 0, 100)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
@@ -1196,9 +1238,10 @@ int main()
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
       hypers.Partition = RandXor() % 101;
+      hypers.StationCount = RandXor() % 151 + 10;
 
       ll sum = 0;
-      srep(i, 0, 15)
+      srep(i, 25, 26)
       {
         ll score = Solve(i, hypers);
         sum += score;
@@ -1212,10 +1255,11 @@ int main()
       cout
         << "Loop = " << loop
         << ", Sum = " << sum
-        << ", StartTemp = " << hypers.StartTemp
-        << ", EndTemp = " << hypers.EndTemp
-        << ", MultipleValue = " << hypers.MultipleValue
-        << ", Partition1 = " << hypers.Partition
+        //<< ", StartTemp = " << hypers.StartTemp
+        //<< ", EndTemp = " << hypers.EndTemp
+        //<< ", MultipleValue = " << hypers.MultipleValue
+        //<< ", Partition1 = " << hypers.Partition
+        << ", StationCount = " << hypers.StationCount
         << endl;
 
       if (sum > bestSumScore) {

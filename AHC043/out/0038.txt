@@ -1,800 +1,1600 @@
-1 8 8
-1 46 49
-1 38 33
-1 7 4
-1 36 29
-1 37 41
-1 9 16
-1 25 8
-1 13 24
-1 7 19
+# income = 0
+0 25 22
+# income = 0
+0 39 46
+# income = 0
+1 39 45
+# income = 0
+1 39 44
+# income = 0
+1 39 43
+# income = 0
+1 39 42
+# income = 0
+1 39 41
+# income = 0
+1 39 40
+# income = 0
+1 39 39
+# income = 0
+6 39 38
+# income = 0
+2 40 38
+# income = 0
+2 41 38
+# income = 0
+4 42 38
+# income = 0
+5 42 37
+# income = 0
+2 41 37
+# income = 0
+2 40 37
+# income = 0
+2 39 37
+# income = 0
+2 38 37
+# income = 0
+2 37 37
+# income = 0
+2 36 37
+# income = 0
+2 35 37
+# income = 0
+2 34 37
+# income = 0
+2 33 37
+# income = 0
+3 32 37
+# income = 0
+1 32 36
+# income = 0
+1 32 35
+# income = 0
+1 32 34
+# income = 0
+1 32 33
+# income = 0
+6 32 32
+# income = 0
+4 33 32
+# income = 0
+1 33 31
+# income = 0
+1 33 30
+# income = 0
+1 33 29
+# income = 0
+1 33 28
+# income = 0
+1 33 27
+# income = 0
+1 33 26
+# income = 0
+6 33 25
+# income = 0
+2 34 25
+# income = 0
+2 35 25
+# income = 0
+4 36 25
+# income = 0
+5 36 24
+# income = 0
+3 35 24
+# income = 0
+1 35 23
+# income = 0
+5 35 22
+# income = 0
+2 34 22
+# income = 0
+2 33 22
+# income = 0
+2 32 22
+# income = 0
+2 31 22
+# income = 0
+2 30 22
+# income = 0
+2 29 22
+# income = 0
+2 28 22
+# income = 0
+2 27 22
+# income = 0
+2 26 22
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
 -1
+# income = 77
+0 3 6
+# income = 77
+2 4 6
+# income = 77
+2 5 6
+# income = 77
 -1
+# income = 77
+2 6 6
+# income = 77
+5 7 6
+# income = 77
+3 7 7
+# income = 77
 -1
+# income = 77
+2 8 7
+# income = 77
+2 9 7
+# income = 77
+5 10 7
+# income = 77
+1 10 8
+# income = 77
 -1
+# income = 77
+1 10 9
+# income = 77
+1 10 10
+# income = 77
+1 10 11
+# income = 77
 -1
+# income = 77
+1 10 12
+# income = 77
+1 10 13
+# income = 77
+1 10 14
+# income = 77
 -1
+# income = 77
+1 10 15
+# income = 77
+1 10 16
+# income = 77
+1 10 17
+# income = 77
+1 10 18
+# income = 77
 -1
+# income = 77
+1 10 19
+# income = 77
+1 10 20
+# income = 77
+1 10 21
+# income = 77
 -1
+# income = 77
+1 10 22
+# income = 77
+1 10 23
+# income = 77
+1 10 24
+# income = 77
 -1
+# income = 77
+3 10 25
+# income = 77
+4 11 25
+# income = 77
+1 11 24
+# income = 77
+1 11 23
+# income = 77
 -1
+# income = 77
+6 11 22
+# income = 77
+2 12 22
+# income = 77
+2 13 22
+# income = 77
 -1
+# income = 77
+2 14 22
+# income = 77
+2 15 22
+# income = 77
+2 16 22
+# income = 77
 -1
+# income = 77
+2 17 22
+# income = 77
+2 18 22
+# income = 77
+2 19 22
+# income = 77
+2 20 22
+# income = 77
 -1
+# income = 77
+2 21 22
+# income = 77
+2 22 22
+# income = 77
+2 23 22
+# income = 77
 -1
+# income = 77
+2 24 22
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
 -1
+# income = 191
+0 48 43
+# income = 191
+2 47 43
+# income = 191
+2 46 43
+# income = 191
+2 45 43
+# income = 191
+2 44 43
+# income = 191
+2 43 43
+# income = 191
+2 42 43
+# income = 191
+2 41 43
+# income = 191
+6 40 43
+# income = 191
+1 40 44
+# income = 191
+1 40 45
+# income = 191
+4 40 46
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
 -1
+# income = 271
+0 7 7
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
 -1
+# income = 425
+0 32 37
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
 -1
+# income = 499
+0 42 37
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
 -1
+# income = 565
+0 46 24
+# income = 565
+2 45 24
+# income = 565
+2 44 24
+# income = 565
+2 43 24
+# income = 565
+2 42 24
+# income = 565
+2 41 24
+# income = 565
+2 40 24
+# income = 565
+2 39 24
+# income = 565
+2 38 24
+# income = 565
+2 37 24
+# income = 565
+0 36 24
+# income = 744
 -1
+# income = 744
 -1
+# income = 744
 -1
+# income = 744
 -1
+# income = 744
 -1
+# income = 744
 -1
+# income = 744
+0 7 43
+# income = 744
+1 7 42
+# income = 744
+1 7 41
+# income = 744
+1 7 40
+# income = 744
+1 7 39
+# income = 744
+1 7 38
+# income = 744
+1 7 37
+# income = 744
+1 7 36
+# income = 744
+1 7 35
+# income = 744
+1 7 34
+# income = 744
+1 7 33
+# income = 744
+1 7 32
+# income = 744
+1 7 31
+# income = 744
+1 7 30
+# income = 744
+1 7 29
+# income = 744
+1 7 28
+# income = 744
+1 7 27
+# income = 744
+6 7 26
+# income = 744
+2 8 26
+# income = 744
+2 9 26
+# income = 744
+2 10 26
+# income = 744
+4 11 26
+# income = 744
+0 11 25
+# income = 912
+0 30 22
+# income = 975
+0 30 18
+# income = 975
+1 30 19
+# income = 975
+1 30 20
+# income = 975
+1 30 21
+# income = 1031
+0 33 32
+# income = 1085
 -1
+# income = 1085
 -1
+# income = 1085
 -1
+# income = 1085
 -1
+# income = 1085
+0 38 20
+# income = 1085
+2 37 20
+# income = 1085
+6 36 20
+# income = 1085
+1 36 21
+# income = 1085
+1 36 22
+# income = 1085
+1 36 23
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
+# income = 1143
 -1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
+# income = 1143
 -1

@@ -1,800 +1,1600 @@
-1 22 43
-1 37 32
-1 24 22
-1 26 41
-1 39 25
-1 37 42
-1 28 24
-1 4 3
-1 10 1
-1 29 21
+# income = 0
+0 5 2
+# income = 0
+0 22 20
+# income = 0
+2 21 20
+# income = 0
+2 20 20
+# income = 0
+2 19 20
+# income = 0
+2 18 20
+# income = 0
+2 17 20
+# income = 0
+2 16 20
+# income = 0
+2 15 20
+# income = 0
+2 14 20
+# income = 0
+2 13 20
+# income = 0
+2 12 20
+# income = 0
+2 11 20
+# income = 0
+2 10 20
+# income = 0
+2 9 20
+# income = 0
+2 8 20
+# income = 0
+2 7 20
+# income = 0
+2 6 20
+# income = 0
+3 5 20
+# income = 0
+1 5 19
+# income = 0
+1 5 18
+# income = 0
+1 5 17
+# income = 0
+1 5 16
+# income = 0
+1 5 15
+# income = 0
+1 5 14
+# income = 0
+1 5 13
+# income = 0
+1 5 12
+# income = 0
+1 5 11
+# income = 0
+1 5 10
+# income = 0
+1 5 9
+# income = 0
+1 5 8
+# income = 0
+1 5 7
+# income = 0
+1 5 6
+# income = 0
+1 5 5
+# income = 0
+1 5 4
+# income = 0
+1 5 3
+# income = 72
+0 28 43
+# income = 72
+2 27 43
+# income = 72
+2 26 43
+# income = 72
+2 25 43
+# income = 72
+3 24 43
+# income = 72
+1 24 42
+# income = 72
+1 24 41
+# income = 72
+1 24 40
+# income = 72
+1 24 39
+# income = 72
+1 24 38
+# income = 72
+1 24 37
+# income = 72
+1 24 36
+# income = 72
+1 24 35
+# income = 72
+1 24 34
+# income = 72
+1 24 33
+# income = 72
+1 24 32
+# income = 72
+1 24 31
+# income = 72
+1 24 30
+# income = 72
+6 24 29
+# income = 72
+2 25 29
+# income = 72
+2 26 29
+# income = 72
 -1
+# income = 72
+2 27 29
+# income = 72
+4 28 29
+# income = 72
+5 28 28
+# income = 72
 -1
+# income = 72
+3 27 28
+# income = 72
+1 27 27
+# income = 72
 -1
+# income = 72
+1 27 26
+# income = 72
+1 27 25
+# income = 72
+1 27 24
+# income = 72
 -1
+# income = 72
+1 27 23
+# income = 72
+5 27 22
+# income = 72
+3 26 22
+# income = 72
 -1
+# income = 72
+1 26 21
+# income = 72
+5 26 20
+# income = 72
 -1
+# income = 72
+2 25 20
+# income = 72
+2 24 20
+# income = 72
+2 23 20
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
 -1
+# income = 136
+0 2 4
+# income = 136
+1 2 3
+# income = 136
+6 2 2
+# income = 136
+2 3 2
+# income = 136
+2 4 2
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
 -1
+# income = 266
+0 37 42
+# income = 266
+2 36 42
+# income = 266
+2 35 42
+# income = 266
+2 34 42
+# income = 266
+2 33 42
+# income = 266
+2 32 42
+# income = 266
+2 31 42
+# income = 266
+2 30 42
+# income = 266
+2 29 42
+# income = 266
+6 28 42
+# income = 414
 -1
+# income = 414
 -1
+# income = 414
 -1
+# income = 414
 -1
+# income = 414
 -1
+# income = 414
 -1
+# income = 414
 -1
+# income = 414
+0 28 28
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
 -1
+# income = 510
+0 27 22
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
 -1
+# income = 597
+0 40 26
+# income = 597
+2 39 26
+# income = 597
+2 38 26
+# income = 597
+2 37 26
+# income = 597
+2 36 26
+# income = 597
+2 35 26
+# income = 597
+2 34 26
+# income = 597
+2 33 26
+# income = 597
+2 32 26
+# income = 597
+2 31 26
+# income = 597
+2 30 26
+# income = 597
+2 29 26
+# income = 597
+6 28 26
+# income = 597
+1 28 27
+# income = 659
+0 29 18
+# income = 659
+2 28 18
+# income = 659
+6 27 18
+# income = 659
+1 27 19
+# income = 659
+1 27 20
+# income = 659
+1 27 21
+# income = 699
+0 24 41
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
+# income = 747
 -1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
+# income = 747
 -1

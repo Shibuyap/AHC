@@ -1,1600 +1,1600 @@
 # income = 0
-0 31 37
+0 18 7
 # income = 0
-0 12 21
+0 15 17
 # income = 0
-1 12 22
+1 15 16
 # income = 0
-1 12 23
+6 15 15
 # income = 0
-1 12 24
+2 16 15
 # income = 0
-1 12 25
+2 17 15
 # income = 0
-1 12 26
+4 18 15
 # income = 0
-1 12 27
+6 18 14
 # income = 0
-1 12 28
+2 19 14
 # income = 0
-1 12 29
+2 20 14
 # income = 0
-1 12 30
+2 21 14
 # income = 0
-1 12 31
+4 22 14
 # income = 0
-1 12 32
+5 22 13
 # income = 0
-1 12 33
+3 21 13
 # income = 0
+1 21 12
+# income = 0
+1 21 11
+# income = 0
+5 21 10
+# income = 0
+2 20 10
+# income = 0
+2 19 10
+# income = 0
+3 18 10
+# income = 0
+1 18 9
+# income = 0
+1 18 8
+# income = 31
+0 11 18
+# income = 31
+1 11 17
+# income = 31
+6 11 16
+# income = 31
+5 12 16
+# income = 31
+3 12 17
+# income = 31
+2 13 17
+# income = 31
+2 14 17
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+-1
+# income = 86
+0 15 44
+# income = 86
+-1
+# income = 86
+2 14 44
+# income = 86
+2 13 44
+# income = 86
+3 12 44
+# income = 86
+1 12 43
+# income = 86
+1 12 42
+# income = 86
+1 12 41
+# income = 86
+-1
+# income = 86
+1 12 40
+# income = 86
+1 12 39
+# income = 86
+1 12 38
+# income = 86
+1 12 37
+# income = 86
+1 12 36
+# income = 86
+1 12 35
+# income = 86
+-1
+# income = 86
 1 12 34
-# income = 0
-3 12 35
-# income = 0
-2 13 35
-# income = 0
-2 14 35
-# income = 0
-2 15 35
-# income = 0
-2 16 35
-# income = 0
-2 17 35
-# income = 0
-2 18 35
-# income = 0
-2 19 35
-# income = 0
-2 20 35
-# income = 0
-2 21 35
-# income = 0
-2 22 35
-# income = 0
-2 23 35
-# income = 0
-2 24 35
-# income = 0
-5 25 35
-# income = 0
-1 25 36
-# income = 0
-1 25 37
-# income = 0
-1 25 38
-# income = 0
-3 25 39
-# income = 0
-4 26 39
-# income = 0
-1 26 38
-# income = 0
-6 26 37
-# income = 0
-2 27 37
-# income = 0
-2 28 37
-# income = 0
-2 29 37
-# income = 0
-2 30 37
-# income = 31
-0 15 8
-# income = 31
-2 14 8
-# income = 31
-2 13 8
-# income = 31
--1
-# income = 31
-6 12 8
-# income = 31
--1
-# income = 31
--1
-# income = 31
--1
-# income = 31
-1 12 9
-# income = 31
+# income = 86
+1 12 33
+# income = 86
+1 12 32
+# income = 86
+1 12 31
+# income = 86
+1 12 30
+# income = 86
+1 12 29
+# income = 86
 -1
-# income = 31
+# income = 86
+1 12 28
+# income = 86
+1 12 27
+# income = 86
+1 12 26
+# income = 86
+6 12 25
+# income = 86
+4 13 25
+# income = 86
+1 13 24
+# income = 86
+1 13 23
+# income = 86
 -1
-# income = 31
-1 12 10
-# income = 31
+# income = 86
+1 13 22
+# income = 86
+1 13 21
+# income = 86
+5 13 20
+# income = 86
+2 12 20
+# income = 86
+3 11 20
+# income = 86
+1 11 19
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 11
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 12
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 13
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 14
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 15
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 16
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 17
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 18
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 19
-# income = 31
+# income = 185
 -1
-# income = 31
+# income = 185
 -1
-# income = 31
-1 12 20
-# income = 77
+# income = 185
 -1
-# income = 77
+# income = 185
 -1
-# income = 77
+# income = 185
 -1
-# income = 77
+# income = 185
 -1
-# income = 77
+# income = 185
 -1
-# income = 77
+# income = 185
+0 21 10
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
 -1
-# income = 77
+# income = 208
+0 12 40
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
+# income = 307
 -1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
--1
-# income = 77
-0 41 41
-# income = 77
--1
-# income = 77
-2 40 41
-# income = 77
-2 39 41
-# income = 77
-2 38 41
-# income = 77
-2 37 41
-# income = 77
--1
-# income = 77
-2 36 41
-# income = 77
-2 35 41
-# income = 77
-2 34 41
-# income = 77
--1
-# income = 77
-2 33 41
-# income = 77
-2 32 41
-# income = 77
-3 31 41
-# income = 77
--1
-# income = 77
-1 31 40
-# income = 77
-1 31 39
-# income = 77
-1 31 38
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
--1
-# income = 193
-0 41 33
-# income = 193
-1 41 34
-# income = 193
-1 41 35
-# income = 193
-1 41 36
-# income = 193
-1 41 37
-# income = 193
-1 41 38
-# income = 193
-1 41 39
-# income = 193
-1 41 40
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
--1
-# income = 297
-0 27 7
-# income = 297
-2 26 7
-# income = 297
-2 25 7
-# income = 297
-2 24 7
-# income = 297
-2 23 7
-# income = 297
-2 22 7
-# income = 297
-2 21 7
-# income = 297
-2 20 7
-# income = 297
-2 19 7
-# income = 297
-2 18 7
-# income = 297
-2 17 7
-# income = 297
+# income = 307
+0 22 3
+# income = 307
+2 21 3
+# income = 307
+2 20 3
+# income = 307
+2 19 3
+# income = 307
+2 18 3
+# income = 307
+2 17 3
+# income = 307
+2 16 3
+# income = 307
+6 15 3
+# income = 307
+1 15 4
+# income = 307
+1 15 5
+# income = 307
+1 15 6
+# income = 307
+3 15 7
+# income = 307
 2 16 7
-# income = 297
-6 15 7
-# income = 370
+# income = 307
+2 17 7
+# income = 422
 -1
-# income = 370
+# income = 422
 -1
-# income = 370
+# income = 422
 -1
-# income = 370
+# income = 422
 -1
-# income = 370
+# income = 422
 -1
-# income = 370
+# income = 422
+0 42 13
+# income = 422
+2 41 13
+# income = 422
+2 40 13
+# income = 422
+2 39 13
+# income = 422
+6 38 13
+# income = 422
+1 38 14
+# income = 422
+1 38 15
+# income = 422
+4 38 16
+# income = 422
+2 37 16
+# income = 422
+2 36 16
+# income = 422
+2 35 16
+# income = 422
+2 34 16
+# income = 422
+2 33 16
+# income = 422
+2 32 16
+# income = 422
+6 31 16
+# income = 422
+1 31 17
+# income = 422
+4 31 18
+# income = 422
+2 30 18
+# income = 422
+2 29 18
+# income = 422
+2 28 18
+# income = 422
+2 27 18
+# income = 422
+2 26 18
+# income = 422
+2 25 18
+# income = 422
+3 24 18
+# income = 422
+1 24 17
+# income = 422
+1 24 16
+# income = 422
+5 24 15
+# income = 422
+2 23 15
+# income = 422
+2 22 15
+# income = 422
+2 21 15
+# income = 422
+2 20 15
+# income = 422
+2 19 15
+# income = 422
+0 18 15
+# income = 577
+0 35 36
+# income = 577
+1 35 35
+# income = 577
+1 35 34
+# income = 577
+1 35 33
+# income = 577
+1 35 32
+# income = 577
+6 35 31
+# income = 577
+2 36 31
+# income = 577
+2 37 31
+# income = 577
+4 38 31
+# income = 577
+1 38 30
+# income = 577
+1 38 29
+# income = 577
+1 38 28
+# income = 577
+1 38 27
+# income = 577
+1 38 26
+# income = 577
+1 38 25
+# income = 577
+1 38 24
+# income = 577
+1 38 23
+# income = 577
+1 38 22
+# income = 577
+1 38 21
+# income = 577
+1 38 20
+# income = 577
+1 38 19
+# income = 577
+6 38 18
+# income = 577
+4 39 18
+# income = 577
+1 39 17
+# income = 577
+5 39 16
+# income = 577
+0 38 16
+# income = 753
+0 13 24
+# income = 879
 -1
-# income = 370
-0 14 35
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
--1
-# income = 412
-0 22 7
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
--1
-# income = 487
-0 26 39
-# income = 579
--1
-# income = 579
--1
-# income = 579
--1
-# income = 579
--1
-# income = 579
--1
-# income = 579
--1
-# income = 579
--1
-# income = 579
-0 24 10
-# income = 579
-1 24 9
-# income = 579
-5 24 8
-# income = 579
+# income = 879
+0 42 42
+# income = 879
+3 41 42
+# income = 879
+1 41 41
+# income = 879
+1 41 40
+# income = 879
+1 41 39
+# income = 879
+1 41 38
+# income = 879
+1 41 37
+# income = 879
+5 41 36
+# income = 879
+2 40 36
+# income = 879
+2 39 36
+# income = 879
+2 38 36
+# income = 879
+2 37 36
+# income = 879
+2 36 36
+# income = 1047
+0 12 20
+# income = 1142
+0 26 8
+# income = 1142
+2 25 8
+# income = 1142
+2 24 8
+# income = 1142
 2 23 8
-# income = 579
-3 22 8
-# income = 698
+# income = 1142
+2 22 8
+# income = 1142
+6 21 8
+# income = 1142
+1 21 9
+# income = 1268
+0 38 31
+# income = 1348
+0 29 11
+# income = 1348
+1 29 10
+# income = 1348
+1 29 9
+# income = 1348
+5 29 8
+# income = 1348
+2 28 8
+# income = 1348
+2 27 8
+# income = 1479
+0 22 14
+# income = 1549
+0 8 23
+# income = 1549
+2 9 23
+# income = 1549
+2 10 23
+# income = 1549
+2 11 23
+# income = 1549
+5 12 23
+# income = 1549
+3 12 24
+# income = 1669
+0 15 4
+# income = 1735
+0 12 6
+# income = 1735
+1 12 5
+# income = 1735
+6 12 4
+# income = 1735
+2 13 4
+# income = 1735
+2 14 4
+# income = 1858
+0 31 18
+# income = 1962
+0 15 11
+# income = 1962
+2 14 11
+# income = 1962
+2 13 11
+# income = 1962
+3 12 11
+# income = 1962
+1 12 10
+# income = 1962
+1 12 9
+# income = 1962
+1 12 8
+# income = 1962
+1 12 7
+# income = 2139
+0 24 17
+# income = 2253
+0 11 16
+# income = 2344
+0 45 41
+# income = 2344
+2 44 41
+# income = 2344
+2 43 41
+# income = 2344
+6 42 41
+# income = 2440
+0 36 25
+# income = 2440
+1 36 24
+# income = 2440
+1 36 23
+# income = 2440
+1 36 22
+# income = 2440
+1 36 21
+# income = 2440
+1 36 20
+# income = 2440
+1 36 19
+# income = 2440
+1 36 18
+# income = 2440
+6 36 17
+# income = 2440
+2 37 17
+# income = 2440
+4 38 17
+# income = 2648
+0 44 18
+# income = 2648
+2 43 18
+# income = 2648
+3 42 18
+# income = 2648
+1 42 17
+# income = 2648
+1 42 16
+# income = 2648
+1 42 15
+# income = 2648
+1 42 14
+# income = 2777
+0 6 12
+# income = 2777
+1 6 13
+# income = 2777
+1 6 14
+# income = 2777
+1 6 15
+# income = 2777
+3 6 16
+# income = 2777
+2 7 16
+# income = 2777
+2 8 16
+# income = 2777
+2 9 16
+# income = 2777
+2 10 16
+# income = 2905
+0 18 23
+# income = 2905
+2 17 23
+# income = 2905
+2 16 23
+# income = 2905
+2 15 23
+# income = 2905
+6 14 23
+# income = 2905
+4 14 24
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
+# income = 2966
 -1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
--1
-# income = 698
+# income = 2966
 -1
