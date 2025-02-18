@@ -28,6 +28,19 @@
 #include <utility>
 #include <vector>
 
+// ループの簡略化マクロ
+#define rep(i, n) for (int i = 0; i < (n); ++i)
+#define srep(i, s, t) for (int i = s; i < t; ++i)
+#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
+
+using namespace std;
+
+// 型定義のエイリアス
+typedef long long int ll;
+typedef pair<int, int> P;
+typedef pair<P, P> PP;
+
 class UnionFind
 {
 public:
@@ -104,19 +117,6 @@ public:
     return Count[Find(x)];
   }
 };
-
-// ループの簡略化マクロ
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
-
-using namespace std;
-
-// 型定義のエイリアス
-typedef long long int ll;
-typedef pair<int, int> P;
-typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
 static uint32_t RandXor()
@@ -205,11 +205,14 @@ struct Turn
   int y;
 };
 
-Turn ans[T];
+struct Ans
+{
+  Turn turns[T];
+  int score;
+};
 
-int ansScore;
-
-int best_ansScore;
+Ans ans;
+Ans best_ans;
 
 int board[n][n];
 int turn = 0;
@@ -228,9 +231,9 @@ void ClearBoard()
 
 void Action(int num, int x, int y)
 {
-  ans[turn].num =num;
-  ans[turn].x = x;
-  ans[turn].y = y;
+  ans.turns[turn].num =num;
+  ans.turns[turn].x = x;
+  ans.turns[turn].y = y;
   if (num != -1) {
     board[x][y] = num;
   }
@@ -239,12 +242,12 @@ void Action(int num, int x, int y)
 
 void CopyToBest()
 {
-  best_ansScore = ansScore;
+  best_ans = ans;
 }
 
 void CopyToAns()
 {
-  ansScore = best_ansScore;
+  ans = best_ans;
 }
 
 bool IsNG(int x, int y)
@@ -256,16 +259,18 @@ bool IsNG(int x, int y)
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
-  ansScore = 0;
   sx.clear();
   sy.clear();
   tx.clear();
   ty.clear();
 
+  ans.score =0;
   rep(i, T)
   {
-    ans[i].num = -1;
+    ans.turns[i].num = -1;
   }
+
+  CopyToBest();
 
   ClearBoard();
 }
@@ -332,7 +337,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 // スコアを計算する関数
 int CalcScore()
 {
-  int res = ansScore;
+  int res = ans.score;
   return res;
 }
 
@@ -343,11 +348,11 @@ void Output(ofstream& ofs)
     // 標準出力
     rep(i, T)
     {
-      if (ans[i].num == -1) {
-        cout << ans[i].num << endl;
+      if (ans.turns[i].num == -1) {
+        cout << ans.turns[i].num << endl;
       }
       else {
-        cout << ans[i].num << ' ' << ans[i].x << ' ' << ans[i].y << endl;
+        cout << ans.turns[i].num << ' ' << ans.turns[i].x << ' ' << ans.turns[i].y << endl;
       }
     }
   }
@@ -355,11 +360,11 @@ void Output(ofstream& ofs)
     // ファイル出力
     rep(i, T)
     {
-      if (ans[i].num == -1) {
-        ofs << ans[i].num << endl;
+      if (ans.turns[i].num == -1) {
+        ofs << ans.turns[i].num << endl;
       }
       else {
-        ofs << ans[i].num << ' ' << ans[i].x << ' ' << ans[i].y << endl;
+        ofs << ans.turns[i].num << ' ' << ans.turns[i].x << ' ' << ans.turns[i].y << endl;
       }
     }
   }
@@ -434,6 +439,7 @@ struct Edge
   int from;
   int to;
   int cost;
+  vector<P> route;
 
   bool operator<(const Edge& other) const
   {
@@ -543,9 +549,9 @@ void Method1()
     }
   }
 
+  vector<Edge> G[50];
+
   // クラスカル法
-  int money = k;
-  int income = 0;
   UnionFind uf(ekiMap.StationCount);
   vector<Edge> es;
   rep(i, ekiMap.StationCount)
@@ -562,109 +568,70 @@ void Method1()
   sort(es.begin(), es.end());
   for (auto e : es) {
     if (!uf.IsSame(e.from, e.to)) {
-
       int ssx = ekiMap.Stations[e.from][0];
       int ssy = ekiMap.Stations[e.from][1];
       int ttx = ekiMap.Stations[e.to][0];
       int tty = ekiMap.Stations[e.to][1];
 
       // BFSで線路つなぐ
+      int f[n][n];
+      int f2[n][n];
+      rep(i, n)
       {
-        int f[n][n];
-        int f2[n][n];
-        rep(i, n)
+        rep(j, n)
         {
-          rep(j, n)
-          {
-            f[i][j] = INF;
-            f2[i][j] = -1;
+          f[i][j] = INF;
+          f2[i][j] = -1;
+        }
+      }
+      queue<P> que;
+      que.push(P(ssx, ssy));
+      f[ssx][ssy] = 0;
+      while (que.size()) {
+        int x = que.front().first;
+        int y = que.front().second;
+        que.pop();
+        if (x == ttx && y == tty)break;
+        rep(i, 4)
+        {
+          int nx = x + dx[i];
+          int ny = y + dy[i];
+          if (IsNG(nx, ny))continue;
+          if (f[nx][ny] > f[x][y] + 1) {
+            f[nx][ny] = f[x][y] + 1;
+            f2[nx][ny] = (i + 2) % 4;
+            que.push(P(nx, ny));
           }
         }
-        queue<P> que;
-        que.push(P(ssx, ssy));
-        f[ssx][ssy] = 0;
-        while (que.size()) {
-          int x = que.front().first;
-          int y = que.front().second;
-          que.pop();
-          if (x == ttx && y == tty)break;
-          rep(i, 4)
-          {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            if (IsNG(nx, ny))continue;
-            if (f[nx][ny] > f[x][y] + 1) {
-              f[nx][ny] = f[x][y] + 1;
-              f2[nx][ny] = (i + 2) % 4;
-              que.push(P(nx, ny));
-            }
-          }
-        }
-        if (f[ttx][tty] == INF) {
-          cerr << "NG:BFS" << endl;
-        }
-        vector<P> route;
-        int x = ttx;
-        int y = tty;
-        while (x != ssx || y != ssy) {
-          route.push_back(P(x, y));
-          int nx = x + dx[f2[x][y]];
-          int ny = y + dy[f2[x][y]];
-          x = nx;
-          y = ny;
-        }
+      }
+      if (f[ttx][tty] == INF) {
+        cerr << "NG:BFS" << endl;
+      }
+      vector<P> route;
+      int x = ttx;
+      int y = tty;
+      while (x != ssx || y != ssy) {
         route.push_back(P(x, y));
-
-        srep(i, 1, route.size() - 1)
-        {
-
-        }
+        int nx = x + dx[f2[x][y]];
+        int ny = y + dy[f2[x][y]];
+        x = nx;
+        y = ny;
       }
+      route.push_back(P(x, y));
 
-      if (board[ssx][ssy] != 0) {
-        while (money < 5000 && turn < T) {
-          Action(-1, 0, 0);
-          money +=income;
-        }
-        if (turn >= T) break;
-        Action(0, ssx, ssy);
-        money -= 5000;
-        money += income;
-      }
+      reverse(route.begin(), route.end());
+      e.route = route;
+      G[e.from].push_back(e);
 
-      if (board[ttx][tty] != 0) {
-        while (money < 5000 && turn < T) {
-          Action(-1, 0, 0);
-          money +=income;
-        }
-        if (turn >= T) break;
-        Action(0, ttx, tty);
-        money -= 5000;
-        money += income;
-      }
+      reverse(e.route.begin(), e.route.end());
+      swap(e.from, e.to);
+      G[e.from].push_back(e);
 
       uf.Unite(e.from, e.to);
-      rep(i, nums.size())
-      {
-        if (oks[i])continue;
-        rep(j, as[i].size())
-        {
-          rep(k, bs[i].size())
-          {
-            if (uf.IsSame(as[i][j], bs[i][k])) {
-              oks[i] = 1;
-              income += abs(sx[nums[i]] - tx[nums[i]]) + abs(sy[nums[i]] - ty[nums[i]]);
-              break;
-            }
-          }
-          if (oks[i])break;
-        }
-      }
     }
-    if (turn >= T) break;
   }
 
-  ansScore = money;
+
 }
 
 // ハイパーパラメータ
@@ -710,14 +677,14 @@ void SimulatedAnnealing(Hypers hypers)
       double tmpScore = CalcScore();
 
       // 焼きなまし
-      double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
+      double diffScore = (tmpScore - ans.score) * hypers.MultipleValue;
       double prob = exp(diffScore / temp);
       if (prob > Rand01()) {
         // 採用
-        ansScore = tmpScore;
+        ans.score = tmpScore;
 
         // Best解よりもいいか
-        if (ansScore > best_ansScore) {
+        if (ans.score > best_ans.score) {
           CopyToBest();
         }
       }
