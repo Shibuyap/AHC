@@ -447,13 +447,15 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
     for (auto num : a[nx][ny]) {
       ekiMap.ACount[num]--;
       if (ekiMap.ACount[num] == 0 && ekiMap.BCount[num] > 0) {
-        ekiMap.Count--;
+        ekiMap.Count -= abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
+        //ekiMap.Count--;
       }
     }
     for (auto num : b[nx][ny]) {
       ekiMap.BCount[num]--;
       if (ekiMap.BCount[num] == 0 && ekiMap.ACount[num] > 0) {
-        ekiMap.Count--;
+        ekiMap.Count -= abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
+        //ekiMap.Count--;
       }
     }
   }
@@ -469,13 +471,15 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
     for (auto num : a[nx][ny]) {
       ekiMap.ACount[num]++;
       if (ekiMap.ACount[num] == 1 && ekiMap.BCount[num] > 0) {
-        ekiMap.Count++;
+        //ekiMap.Count++;
+        ekiMap.Count += abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
       }
     }
     for (auto num : b[nx][ny]) {
       ekiMap.BCount[num]++;
       if (ekiMap.BCount[num] == 1 && ekiMap.ACount[num] > 0) {
-        ekiMap.Count++;
+        //ekiMap.Count++;
+        ekiMap.Count += abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
       }
     }
   }
@@ -527,51 +531,72 @@ void MakeRootG(int root)
   }
 }
 
-int UpdateIncome(const vector<int>& people, const vector<P>& stations)
+int okA[MAX_M];
+int okB[MAX_M];
+vector<vector<int>> numsA;
+vector<vector<int>> numsB;
+int UpdateIncome(const vector<int>& people, const vector<int>& stations, int income)
 {
-  int income = 0;
-
-  for (auto id : people) {
-    bool okA = false;
-    int ssx = sx[id];
-    int ssy = sy[id];
-
-    for (auto p : stations) {
-      int x = p.first;
-      int y = p.second;
-      if (abs(ssx - x) + abs(ssy - y) <= 2) {
-        okA = true;
-        break;
+  for (auto st : stations) {
+    for (auto num : numsA[st]) {
+      okA[num]++;
+      if (okA[num] == 1 && okB[num] > 0) {
+        income += abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
       }
     }
-
-    if (okA) {
-      bool okB = false;
-      int ttx = tx[id];
-      int tty = ty[id];
-
-      for (auto p : stations) {
-        int x = p.first;
-        int y = p.second;
-        if (abs(ttx - x) + abs(tty - y) <= 2) {
-          okB = true;
-          break;
-        }
-      }
-
-      if (okB) {
-        income += abs(ssx - ttx) + abs(ssy - tty);
+    for (auto num : numsB[st]) {
+      okB[num]++;
+      if (okB[num] == 1 && okA[num] > 0) {
+        income += abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
       }
     }
   }
 
+  //for (auto id : people) {
+  //  bool okA = false;
+  //  int ssx = sx[id];
+  //  int ssy = sy[id];
+
+  //  for (auto p : stations) {
+  //    int x = p.first;
+  //    int y = p.second;
+  //    if (abs(ssx - x) + abs(ssy - y) <= 2) {
+  //      okA = true;
+  //      break;
+  //    }
+  //  }
+
+  //  if (okA) {
+  //    bool okB = false;
+  //    int ttx = tx[id];
+  //    int tty = ty[id];
+
+  //    for (auto p : stations) {
+  //      int x = p.first;
+  //      int y = p.second;
+  //      if (abs(ttx - x) + abs(tty - y) <= 2) {
+  //        okB = true;
+  //        break;
+  //      }
+  //    }
+
+  //    if (okB) {
+  //      income += abs(ssx - ttx) + abs(ssy - tty);
+  //    }
+  //  }
+  //}
+
   return income;
 }
 
-int Simulate(const EkiMap& ekiMap, const vector<int>& people)
+int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true)
 {
   ClearBoard();
   ans.stationCount = 0;
+  for (auto id : people) {
+    okA[id] = 0;
+    okB[id] = 0;
+  }
 
   int money = k;
   int income = 0;
@@ -579,21 +604,13 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
 
   int now = 0;
   int root = -1;
+  vector<int> stations;
   while (turn < T) {
-    //{
-    //  vector<P> stations;
-    //  rep(i, ekiMap.StationCount)
-    //  {
-    //    if (isBuilt[i]) {
-    //      stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
-    //    }
-    //  }
-    //  income = UpdateIncome(people, stations);
-    //}
     if (now == 0) {
       int num = ans.order[now];
       Action(0, ekiMap.Stations[num][0], ekiMap.Stations[num][1], income);
       isBuilt[num] = 1;
+      stations.push_back(num);
       money -= 5000;
       MakeRootG(num);
       root = num;
@@ -615,24 +632,24 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
           while (money < 5000 && turn < T) {
             Action(-1, 0, 0, income);
             money += income;
+            if (isSkip) {
+              if (income == 0) {
+                turn = T;
+              }
+            }
           }
           if (turn == T)break;
           Action(0, ekiMap.Stations[num2][0], ekiMap.Stations[num2][1], income);
           money -= 5000;
           isBuilt[num2] = 1;
+          stations.push_back(num2);
 
           if (board[ParentEdge[num2].route[1].first][ParentEdge[num2].route[1].second] == -1) {
             money += income;
           }
           else {
-            vector<P> stations;
-            rep(i, ekiMap.StationCount)
-            {
-              if (isBuilt[i]) {
-                stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
-              }
-            }
-            income = UpdateIncome(people, stations);
+            income = UpdateIncome(people, stations, income);
+            stations.clear();
             money += income;
             break;
           }
@@ -643,6 +660,11 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
             while (money < 100 && turn < T) {
               Action(-1, 0, 0, income);
               money += income;
+              if (isSkip) {
+                if (income == 0) {
+                  turn = T;
+                }
+              }
             }
             if (turn == T)break;
             int railNum = GetRailNum(
@@ -658,14 +680,8 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
               int nx = ekiMap.Stations[num3][0];
               int ny = ekiMap.Stations[num3][1];
               if (board[nx][ny] == 0) {
-                vector<P> stations;
-                rep(i, ekiMap.StationCount)
-                {
-                  if (isBuilt[i]) {
-                    stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
-                  }
-                }
-                income = UpdateIncome(people, stations);
+                income = UpdateIncome(people, stations, income);
+                stations.clear();
               }
             }
 
@@ -683,6 +699,11 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
             while (money < 100 && turn < T) {
               Action(-1, 0, 0, income);
               money += income;
+              if (isSkip) {
+                if (income == 0) {
+                  turn = T;
+                }
+              }
             }
             if (turn == T)break;
             int railNum = GetRailNum(
@@ -700,6 +721,11 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
               while (money < 100 && turn < T) {
                 Action(-1, 0, 0, income);
                 money += income;
+                if (isSkip) {
+                  if (income == 0) {
+                    turn = T;
+                  }
+                }
               }
               if (turn == T)break;
               int railNum = GetRailNum(
@@ -715,14 +741,8 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
                 int nx = ekiMap.Stations[num3][0];
                 int ny = ekiMap.Stations[num3][1];
                 if (board[nx][ny] == 0) {
-                  vector<P> stations;
-                  rep(i, ekiMap.StationCount)
-                  {
-                    if (isBuilt[i]) {
-                      stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
-                    }
-                  }
-                  income = UpdateIncome(people, stations);
+                  income = UpdateIncome(people, stations, income);
+                  stations.clear();
                 }
               }
 
@@ -739,20 +759,20 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
             while (money < 5000 && turn < T) {
               Action(-1, 0, 0, income);
               money += income;
+              if (isSkip) {
+                if (income == 0) {
+                  turn = T;
+                }
+              }
             }
             if (turn == T)break;
             Action(0, ekiMap.Stations[num2][0], ekiMap.Stations[num2][1], income);
             money -= 5000;
             isBuilt[num2] = 1;
+            stations.push_back(num2);
 
-            vector<P> stations;
-            rep(i, ekiMap.StationCount)
-            {
-              if (isBuilt[i]) {
-                stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
-              }
-            }
-            income = UpdateIncome(people, stations);
+            income = UpdateIncome(people, stations, income);
+            stations.clear();
             money += income;
             break;
           }
@@ -761,8 +781,14 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people)
       now++;
     }
     else {
-      Action(-1, 0, 0, income);
-      money += income;
+      if (isSkip) {
+        money += income * (T - turn);
+        turn = T;
+      }
+      else {
+        Action(-1, 0, 0, income);
+        money += income;
+      }
     }
   }
 
@@ -783,10 +809,12 @@ struct Hypers
 // ナイーブな解法
 void Method1(Hypers hypers)
 {
-  //EkiMap ekiMap(hypers.StationCount);
-  //EkiMap best_ekiMap(hypers.StationCount);
-  EkiMap ekiMap(10 + m / 100 * 5);
-  EkiMap best_ekiMap(10 + m / 100 * 5);
+  int stationCount = 10 + m / 100 * 5;
+  if (mode == 3) {
+    stationCount = hypers.StationCount;
+  }
+  EkiMap ekiMap(stationCount);
+  EkiMap best_ekiMap(stationCount);
 
   // 初期解
   rep(i, ekiMap.StationCount)
@@ -863,10 +891,28 @@ void Method1(Hypers hypers)
   }
 
   vector<int> people;
+  numsA.resize(ekiMap.StationCount);
+  numsB.resize(ekiMap.StationCount);
+  rep(i, ekiMap.StationCount)
+  {
+    numsA[i].clear();
+    numsB[i].clear();
+  }
   rep(i, m)
   {
-    if (ekiMap.ACount[i] > 0 && ekiMap.BCount[i]) {
+    if (ekiMap.ACount[i] > 0 && ekiMap.BCount[i] > 0) {
       people.push_back(i);
+      rep(j, ekiMap.StationCount)
+      {
+        int x = ekiMap.Stations[j][0];
+        int y = ekiMap.Stations[j][1];
+        if (abs(x - sx[i]) + abs(y - sy[i]) <= 2) {
+          numsA[j].push_back(i);
+        }
+        if (abs(x - tx[i]) + abs(y - ty[i]) <= 2) {
+          numsB[j].push_back(i);
+        }
+      }
     }
   }
 
@@ -1057,7 +1103,7 @@ void Method1(Hypers hypers)
       int beforeStationCount = ans.stationCount;
       int afterScore = Simulate(ekiMap, people);
       int afterStationCount = ans.stationCount;
-      double RATIO = 10000;
+      double RATIO = 0;
 
       double diffScore = ((double)afterScore + afterStationCount * RATIO - beforeScore - beforeStationCount * RATIO) * 1234.5;
 
@@ -1080,6 +1126,7 @@ void Method1(Hypers hypers)
     }
 
     ans = best_ans;
+    Simulate(ekiMap, people, false);
 
     if (mode != 0) {
       cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
@@ -1197,7 +1244,7 @@ int main()
     RandXor();
   }
 
-  mode = 2;
+  mode = 3;
 
   Hypers HYPERS;
   HYPERS.StartTemp = 2048.0;
@@ -1238,10 +1285,11 @@ int main()
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
       hypers.Partition = RandXor() % 101;
-      hypers.StationCount = RandXor() % 151 + 10;
+      hypers.StationCount = RandXor() % 1 + 30;
+      cout << "StationCount = " << hypers.StationCount << endl;
 
       ll sum = 0;
-      srep(i, 25, 26)
+      srep(i, 0, 1)
       {
         ll score = Solve(i, hypers);
         sum += score;
@@ -1268,6 +1316,7 @@ int main()
       }
 
       loop++;
+      break;
     }
   }
 
