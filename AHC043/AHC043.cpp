@@ -411,13 +411,14 @@ void Output(ofstream& ofs)
   }
 }
 
+const int MAX_STATION = 200;
 struct EkiMap
 {
   int ACount[MAX_M] = {};
   int BCount[MAX_M] = {};
   int Count = 0;
-  int Stations[50][2];
-  int StationCount = 20;
+  int Stations[MAX_STATION][2];
+  int StationCount = 50;
 };
 
 int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
@@ -488,7 +489,6 @@ struct Edge
   }
 };
 
-const int MAX_STATION = 50;
 vector<Edge> G[MAX_STATION];
 vector<Edge> RootG[MAX_STATION];
 int Parent[MAX_STATION];
@@ -1168,7 +1168,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 13, 100)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
