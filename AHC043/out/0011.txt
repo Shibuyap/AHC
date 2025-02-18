@@ -1,800 +1,1600 @@
-1 11 25
-1 43 17
-1 39 39
-1 4 26
-1 1 5
+# income = 0
+0 40 40
+# income = 0
+0 1 5
+# income = 0
+2 2 5
+# income = 0
+2 3 5
+# income = 0
+2 4 5
+# income = 0
+2 5 5
+# income = 0
+2 6 5
+# income = 0
+2 7 5
+# income = 0
+2 8 5
+# income = 0
+2 9 5
+# income = 0
+5 10 5
+# income = 0
+1 10 6
+# income = 0
+1 10 7
+# income = 0
+1 10 8
+# income = 0
+1 10 9
+# income = 0
+1 10 10
+# income = 0
+1 10 11
+# income = 0
+1 10 12
+# income = 0
+1 10 13
+# income = 0
+1 10 14
+# income = 0
+1 10 15
+# income = 0
 1 10 16
-1 48 42
-1 31 14
-1 15 17
+# income = 0
+3 10 17
+# income = 0
+2 11 17
+# income = 0
+2 12 17
+# income = 0
+2 13 17
+# income = 0
+2 14 17
+# income = 0
+4 15 17
+# income = 0
+1 15 16
+# income = 0
+6 15 15
+# income = 0
+2 16 15
+# income = 0
+2 17 15
+# income = 0
+2 18 15
+# income = 0
+2 19 15
+# income = 0
+2 20 15
+# income = 0
+2 21 15
+# income = 0
+2 22 15
+# income = 0
+2 23 15
+# income = 0
+2 24 15
+# income = 0
+2 25 15
+# income = 0
+2 26 15
+# income = 0
+2 27 15
+# income = 0
+2 28 15
+# income = 0
+2 29 15
+# income = 0
+2 30 15
+# income = 0
+2 31 15
+# income = 0
+2 32 15
+# income = 0
+2 33 15
+# income = 0
+2 34 15
+# income = 0
+2 35 15
+# income = 0
+2 36 15
+# income = 0
+2 37 15
+# income = 0
+2 38 15
+# income = 0
+5 39 15
+# income = 0
+1 39 16
+# income = 0
 1 39 17
+# income = 0
+3 39 18
+# income = 0
+5 40 18
+# income = 0
+1 40 19
+# income = 0
+1 40 20
+# income = 0
+1 40 21
+# income = 0
+1 40 22
+# income = 0
+1 40 23
+# income = 0
+1 40 24
+# income = 0
+1 40 25
+# income = 0
+1 40 26
+# income = 0
+1 40 27
+# income = 0
+1 40 28
+# income = 0
+1 40 29
+# income = 0
+1 40 30
+# income = 0
+1 40 31
+# income = 0
+1 40 32
+# income = 0
+1 40 33
+# income = 0
+1 40 34
+# income = 0
+1 40 35
+# income = 0
+1 40 36
+# income = 0
+1 40 37
+# income = 0
+1 40 38
+# income = 0
+1 40 39
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
 -1
+# income = 71
+0 15 17
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
+0 48 42
+# income = 117
+2 47 42
+# income = 117
+2 46 42
+# income = 117
+2 45 42
+# income = 117
+2 44 42
+# income = 117
+2 43 42
+# income = 117
+2 42 42
+# income = 117
+2 41 42
+# income = 117
+3 40 42
+# income = 117
+1 40 41
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
 -1
+# income = 117
+0 10 16
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
 -1
+# income = 183
+0 40 18
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
 -1
+# income = 244
+0 43 17
+# income = 244
+2 42 17
+# income = 244
+2 41 17
+# income = 244
+6 40 17
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
 -1
+# income = 303
+0 11 27
+# income = 303
+4 12 27
+# income = 303
+1 12 26
+# income = 303
+5 12 25
+# income = 303
+2 11 25
+# income = 303
+2 10 25
+# income = 303
+3 9 25
+# income = 303
+1 9 24
+# income = 303
+1 9 23
+# income = 303
+1 9 22
+# income = 303
+1 9 21
+# income = 303
+1 9 20
+# income = 303
+1 9 19
+# income = 303
+1 9 18
+# income = 303
+1 9 17
+# income = 303
+6 9 16
+# income = 336
 -1
+# income = 336
 -1
+# income = 336
 -1
+# income = 336
 -1
+# income = 336
+0 4 26
+# income = 336
+2 5 26
+# income = 336
+2 6 26
+# income = 336
+2 7 26
+# income = 336
+2 8 26
+# income = 336
+2 9 26
+# income = 336
+2 10 26
+# income = 336
+5 11 26
+# income = 420
 -1
+# income = 420
 -1
+# income = 420
 -1
+# income = 420
 -1
+# income = 420
 -1
+# income = 420
 -1
+# income = 420
 -1
+# income = 420
+0 31 15
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
+# income = 457
 -1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
--1
+# income = 457
 -1

@@ -162,7 +162,7 @@ std::mt19937 engine(seed_gen());
 // 非常に大きな値
 const int INF = 1001001001;
 
-// 移動方向の配列
+// 移動方向の配列(上,左,下,右)
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
@@ -207,7 +207,9 @@ struct Turn
 
 struct Ans
 {
+  vector<int> order;
   Turn turns[T];
+  string comment[T];
   int score;
 };
 
@@ -229,9 +231,10 @@ void ClearBoard()
   }
 }
 
-void Action(int num, int x, int y)
+void Action(int num, int x, int y, int income)
 {
-  ans.turns[turn].num =num;
+  ans.comment[turn] = "income = " + to_string(income);
+  ans.turns[turn].num = num;
   ans.turns[turn].x = x;
   ans.turns[turn].y = y;
   if (num != -1) {
@@ -256,6 +259,42 @@ bool IsNG(int x, int y)
   return false;
 }
 
+int GetRailNum(int x1, int y1, int x2, int y2, int x3, int y3)
+{
+  int dir1 = 0, dir2 = 0;
+  rep(i, 4)
+  {
+    int nx = x2 + dx[i];
+    int ny = y2 + dy[i];
+    if (nx == x1 && ny == y1) dir1 = i;
+    if (nx == x3 && ny == y3) dir2 = i;
+  }
+
+  if (dir1 > dir2)swap(dir1, dir2);
+
+  if (dir1 == 0 && dir2 == 1) {
+    return 4;
+  }
+  else if (dir1 == 0 && dir2 == 2) {
+    return 2;
+  }
+  else if (dir1 == 0 && dir2 == 3) {
+    return 5;
+  }
+  else if (dir1 == 1 && dir2 == 2) {
+    return 3;
+  }
+  else if (dir1 == 1 && dir2 == 3) {
+    return 1;
+  }
+  else if (dir1 == 2 && dir2 == 3) {
+    return 6;
+  }
+
+  cerr << "NG:Rail" << endl;
+  return 1;
+}
+
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
@@ -264,6 +303,7 @@ void SetUp()
   tx.clear();
   ty.clear();
 
+  ans.order.clear();
   ans.score =0;
   rep(i, T)
   {
@@ -360,6 +400,7 @@ void Output(ofstream& ofs)
     // ファイル出力
     rep(i, T)
     {
+      ofs << "# " << ans.comment[i] << endl;
       if (ans.turns[i].num == -1) {
         ofs << ans.turns[i].num << endl;
       }
@@ -376,7 +417,7 @@ struct EkiMap
   int BCount[MAX_M] = {};
   int Count = 0;
   int Stations[50][2];
-  int StationCount = 10;
+  int StationCount = 20;
 };
 
 int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
@@ -438,14 +479,278 @@ struct Edge
 {
   int from;
   int to;
-  int cost;
+  int manhattan;
   vector<P> route;
 
   bool operator<(const Edge& other) const
   {
-    return cost < other.cost;
+    return manhattan < other.manhattan;
   }
 };
+
+const int MAX_STATION = 50;
+vector<Edge> G[MAX_STATION];
+vector<Edge> RootG[MAX_STATION];
+int Parent[MAX_STATION];
+Edge ParentEdge[MAX_STATION];
+
+void MakeRootG(int root)
+{
+  rep(i, MAX_STATION)
+  {
+    RootG[i].clear();
+    Parent[i] = -1;
+  }
+
+  queue<int> que;
+  que.push(root);
+  while (que.size()) {
+    int x = que.front();
+    que.pop();
+    for (auto e : G[x]) {
+      int y = e.to;
+      if (Parent[y] != -1 || y == root)continue;
+      Parent[y] = x;
+      ParentEdge[y] = e;
+      swap(ParentEdge[y].from, ParentEdge[y].to);
+      reverse(ParentEdge[y].route.begin(), ParentEdge[y].route.end());
+      RootG[x].push_back(e);
+      que.push(y);
+    }
+  }
+}
+
+int UpdateIncome(const vector<int>& people, const vector<P>& stations)
+{
+  int income = 0;
+
+  for (auto id : people) {
+    bool okA = false;
+    int ssx = sx[id];
+    int ssy = sy[id];
+
+    for (auto p : stations) {
+      int x = p.first;
+      int y = p.second;
+      if (abs(ssx - x) + abs(ssy - y) <= 2) {
+        okA = true;
+        break;
+      }
+    }
+
+    if (okA) {
+      bool okB = false;
+      int ttx = tx[id];
+      int tty = ty[id];
+
+      for (auto p : stations) {
+        int x = p.first;
+        int y = p.second;
+        if (abs(ttx - x) + abs(tty - y) <= 2) {
+          okB = true;
+          break;
+        }
+      }
+
+      if (okB) {
+        income += abs(ssx - ttx) + abs(ssy - tty);
+      }
+    }
+  }
+
+  return income;
+}
+
+int Simulate(const EkiMap& ekiMap, const vector<int>& people)
+{
+  ClearBoard();
+
+  int money = k;
+  int income = 0;
+  int isBuilt[MAX_STATION] = {};
+
+  int now = 0;
+  int root = -1;
+  while (turn < T) {
+    if (now == 0) {
+      int num = ans.order[now];
+      Action(0, ekiMap.Stations[num][0], ekiMap.Stations[num][1], income);
+      isBuilt[num] = 1;
+      money -= 5000;
+      MakeRootG(num);
+      root = num;
+      now++;
+    }
+    else if (now < ekiMap.StationCount) {
+      int num = ans.order[now];
+      int num2 = num;
+      int preNum2 = -1;
+      while (num2 != root) {
+        int x = ekiMap.Stations[num2][0];
+        int y = ekiMap.Stations[num2][1];
+        if (board[x][y] == 0) {
+          break;
+        }
+
+        if (num2 == num) {
+          // 駅作る
+          while (money < 5000 && turn < T) {
+            Action(-1, 0, 0, income);
+            money += income;
+          }
+          if (turn == T)break;
+          Action(0, ekiMap.Stations[num2][0], ekiMap.Stations[num2][1], income);
+          money -= 5000;
+          isBuilt[num2] = 1;
+
+          if (board[ParentEdge[num2].route[1].first][ParentEdge[num2].route[1].second] == -1) {
+            money += income;
+          }
+          else {
+            vector<P> stations;
+            rep(i, ekiMap.StationCount)
+            {
+              if (isBuilt[i]) {
+                stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
+              }
+            }
+            income = UpdateIncome(people, stations);
+            money += income;
+            break;
+          }
+
+          // 道作る
+          srep(i, 1, ParentEdge[num2].route.size() - 1)
+          {
+            while (money < 100 && turn < T) {
+              Action(-1, 0, 0, income);
+              money += income;
+            }
+            if (turn == T)break;
+            int railNum = GetRailNum(
+              ParentEdge[num2].route[i - 1].first, ParentEdge[num2].route[i - 1].second,
+              ParentEdge[num2].route[i].first, ParentEdge[num2].route[i].second,
+              ParentEdge[num2].route[i + 1].first, ParentEdge[num2].route[i + 1].second
+            );
+            Action(railNum, ParentEdge[num2].route[i].first, ParentEdge[num2].route[i].second, income);
+            money -= 100;
+
+            if (i == ParentEdge[num2].route.size() - 2) {
+              int num3 = Parent[num2];
+              int nx = ekiMap.Stations[num3][0];
+              int ny = ekiMap.Stations[num3][1];
+              if (board[nx][ny] == 0) {
+                vector<P> stations;
+                rep(i, ekiMap.StationCount)
+                {
+                  if (isBuilt[i]) {
+                    stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
+                  }
+                }
+                income = UpdateIncome(people, stations);
+              }
+            }
+
+            money += income;
+            if (turn == T)break;
+          }
+          if (turn == T)break;
+
+          preNum2 = num2;
+          num2 = Parent[num2];
+        }
+        else {
+          if (board[x][y] == -1) {
+            // 一時的に線路作る
+            while (money < 100 && turn < T) {
+              Action(-1, 0, 0, income);
+              money += income;
+            }
+            if (turn == T)break;
+            int railNum = GetRailNum(
+              ParentEdge[preNum2].route[ParentEdge[preNum2].route.size() - 2].first, ParentEdge[preNum2].route[ParentEdge[preNum2].route.size() - 2].second,
+              x, y,
+              ParentEdge[num2].route[1].first, ParentEdge[num2].route[1].second
+            );
+            Action(railNum, x, y, income);
+            money -= 100;
+            money += income;
+
+            // 道作る
+            srep(i, 1, ParentEdge[num2].route.size() - 1)
+            {
+              while (money < 100 && turn < T) {
+                Action(-1, 0, 0, income);
+                money += income;
+              }
+              if (turn == T)break;
+              int railNum = GetRailNum(
+                ParentEdge[num2].route[i - 1].first, ParentEdge[num2].route[i - 1].second,
+                ParentEdge[num2].route[i].first, ParentEdge[num2].route[i].second,
+                ParentEdge[num2].route[i + 1].first, ParentEdge[num2].route[i + 1].second
+              );
+              Action(railNum, ParentEdge[num2].route[i].first, ParentEdge[num2].route[i].second, income);
+              money -= 100;
+
+              if (i == ParentEdge[num2].route.size() - 2) {
+                int num3 = Parent[num2];
+                int nx = ekiMap.Stations[num3][0];
+                int ny = ekiMap.Stations[num3][1];
+                if (board[nx][ny] == 0) {
+                  vector<P> stations;
+                  rep(i, ekiMap.StationCount)
+                  {
+                    if (isBuilt[i]) {
+                      stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
+                    }
+                  }
+                  income = UpdateIncome(people, stations);
+                }
+              }
+
+              money += income;
+              if (turn == T)break;
+            }
+            if (turn == T)break;
+
+            preNum2 = num2;
+            num2 = Parent[num2];
+          }
+          else {
+            // 駅作る
+            while (money < 5000 && turn < T) {
+              Action(-1, 0, 0, income);
+              money += income;
+            }
+            if (turn == T)break;
+            Action(0, ekiMap.Stations[num2][0], ekiMap.Stations[num2][1], income);
+            money -= 5000;
+            isBuilt[num2] = 1;
+
+            vector<P> stations;
+            rep(i, ekiMap.StationCount)
+            {
+              if (isBuilt[i]) {
+                stations.emplace_back(ekiMap.Stations[i][0], ekiMap.Stations[i][1]);
+              }
+            }
+            income = UpdateIncome(people, stations);
+            money += income;
+            break;
+          }
+        }
+      }
+      now++;
+    }
+    else {
+      Action(-1, 0, 0, income);
+      money += income;
+    }
+  }
+
+  ans.score = money;
+  return money;
+}
 
 // ナイーブな解法
 void Method1()
@@ -484,74 +789,64 @@ void Method1()
   }
   best_ekiMap = ekiMap;
 
-  double nowTime = GetNowTime();
-  const double START_TEMP = 2.0;
-  const double END_TEMP = 0.1;
+  {
+    double nowTime = GetNowTime();
+    const double START_TEMP = 2.0;
+    const double END_TEMP = 0.1;
 
-  int loop = 0;
-  while (true) {
-    if (loop % 100 == 0) {
-      nowTime = GetNowTime();
-      if (nowTime > TL / 3) break;
-    }
-    loop++;
+    int loop = 0;
+    while (true) {
+      if (loop % 100 == 0) {
+        nowTime = GetNowTime();
+        if (nowTime > TL / 3) break;
+      }
+      loop++;
 
-    int raIndex = RandXor() % ekiMap.StationCount;
-    int rax = RandXor() % n;
-    int ray = RandXor() % n;
+      int raIndex = RandXor() % ekiMap.StationCount;
+      int rax = RandXor() % n;
+      int ray = RandXor() % n;
 
-    int keepx = ekiMap.Stations[raIndex][0];
-    int keepy = ekiMap.Stations[raIndex][1];
+      int keepx = ekiMap.Stations[raIndex][0];
+      int keepy = ekiMap.Stations[raIndex][1];
 
-    double diffScore = MoveOneStation(ekiMap, raIndex, rax, ray) * 1234.5;
+      double diffScore = MoveOneStation(ekiMap, raIndex, rax, ray) * 1234.5;
 
-    double progressRatio = nowTime / TL;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
-    double prob = exp(diffScore / temp);
+      double progressRatio = nowTime / TL;
+      double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+      double prob = exp(diffScore / temp);
 
-    if (prob > Rand01()) {
-      // 採用
-      if (ekiMap.Count > best_ekiMap.Count) {
-        best_ekiMap = ekiMap;
+      if (prob > Rand01()) {
+        // 採用
+        if (ekiMap.Count > best_ekiMap.Count) {
+          best_ekiMap = ekiMap;
+        }
+      }
+      else {
+        // 元に戻す
+        MoveOneStation(ekiMap, raIndex, keepx, keepy);
       }
     }
-    else {
-      // 元に戻す
-      MoveOneStation(ekiMap, raIndex, keepx, keepy);
+
+    ekiMap = best_ekiMap;
+
+    if (mode != 0) {
+      cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
     }
   }
 
-  ekiMap = best_ekiMap;
-
-  if (mode != 0) {
-    cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
-  }
-
-  vector<int> nums, oks;
-  vector<vector<int>> as, bs;
+  vector<int> people;
   rep(i, m)
   {
     if (ekiMap.ACount[i] > 0 && ekiMap.BCount[i]) {
-      nums.push_back(i);
-      oks.push_back(0);
-      vector<int> aa, bb;
-      rep(j, ekiMap.StationCount)
-      {
-        if (abs(sx[i] - ekiMap.Stations[j][0]) + abs(sy[i] - ekiMap.Stations[j][1])) {
-          aa.push_back(j);
-        }
-        if (abs(tx[i] - ekiMap.Stations[j][0]) + abs(ty[i] - ekiMap.Stations[j][1])) {
-          bb.push_back(j);
-        }
-      }
-      as.push_back(aa);
-      bs.push_back(bb);
+      people.push_back(i);
     }
   }
 
-  vector<Edge> G[50];
-
   // クラスカル法
+  rep(i, MAX_STATION)
+  {
+    G[i].clear();
+  }
   UnionFind uf(ekiMap.StationCount);
   vector<Edge> es;
   rep(i, ekiMap.StationCount)
@@ -561,11 +856,25 @@ void Method1()
       Edge e;
       e.from = i;
       e.to = j;
-      e.cost = max(0, abs(ekiMap.Stations[i][0] - ekiMap.Stations[j][0]) + abs(ekiMap.Stations[i][1] - ekiMap.Stations[j][1]) - 1);
+      e.manhattan = max(0, abs(ekiMap.Stations[i][0] - ekiMap.Stations[j][0]) + abs(ekiMap.Stations[i][1] - ekiMap.Stations[j][1]) - 1);
       es.push_back(e);
     }
   }
   sort(es.begin(), es.end());
+
+  int fff[n][n];
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      fff[i][j] = 0;
+    }
+  }
+  rep(i, ekiMap.StationCount)
+  {
+    fff[ekiMap.Stations[i][0]][ekiMap.Stations[i][1]] = 2;
+  }
+
   for (auto e : es) {
     if (!uf.IsSame(e.from, e.to)) {
       int ssx = ekiMap.Stations[e.from][0];
@@ -597,15 +906,36 @@ void Method1()
           int nx = x + dx[i];
           int ny = y + dy[i];
           if (IsNG(nx, ny))continue;
+          if (fff[nx][ny] == 1)continue;
           if (f[nx][ny] > f[x][y] + 1) {
-            f[nx][ny] = f[x][y] + 1;
-            f2[nx][ny] = (i + 2) % 4;
-            que.push(P(nx, ny));
+            if (fff[nx][ny] == 2) {
+              if (nx == ttx && ny == tty) {
+                f[nx][ny] = f[x][y] + 1;
+                f2[nx][ny] = (i + 2) % 4;
+                que.push(P(nx, ny));
+              }
+              else {
+                continue;
+              }
+            }
+            else {
+              f[nx][ny] = f[x][y] + 1;
+              f2[nx][ny] = (i + 2) % 4;
+              que.push(P(nx, ny));
+            }
           }
         }
       }
       if (f[ttx][tty] == INF) {
         cerr << "NG:BFS" << endl;
+        rep(i, n)
+        {
+          rep(j, n)
+          {
+            cerr << fff[i][j];
+          }
+          cerr << endl;
+        }
       }
       vector<P> route;
       int x = ttx;
@@ -628,10 +958,82 @@ void Method1()
       G[e.from].push_back(e);
 
       uf.Unite(e.from, e.to);
+
+      srep(i, 1, route.size() - 1)
+      {
+        fff[route[i].first][route[i].second] = 1;
+      }
     }
   }
 
+  //rep(i, n)
+  //{
+  //  rep(j, n)
+  //  {
+  //    cerr << fff[i][j];
+  //  }
+  //  cerr << endl;
+  //}
 
+  {
+    ans.order.clear();
+    rep(i, ekiMap.StationCount)
+    {
+      ans.order.push_back(i);
+    }
+
+    double nowTime = GetNowTime();
+    const double START_TEMP = 2.0;
+    const double END_TEMP = 0.1;
+
+    int loop = 0;
+    while (true) {
+      if (loop % 100 == 0) {
+        nowTime = GetNowTime();
+        if (nowTime > TL) break;
+      }
+      loop++;
+
+      int ra1 = RandXor() % ekiMap.StationCount;
+      int ra2 = RandXor() % ekiMap.StationCount;
+      while (ra1 == ra2) {
+        ra2 = RandXor() % ekiMap.StationCount;
+      }
+
+      swap(ans.order[ra1], ans.order[ra2]);
+
+      if (ans.score <= k) {
+        std::shuffle(ans.order.begin(), ans.order.end(), engine);
+      }
+
+      int beforeScore = ans.score;
+      int afterScore = Simulate(ekiMap, people);
+
+      double diffScore = (afterScore - beforeScore) * 1234.5;
+
+      double progressRatio = nowTime / TL;
+      double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+      double prob = exp(diffScore / temp);
+
+      if (prob > Rand01()) {
+        // 採用
+        if (ans.score > best_ans.score) {
+          best_ans = ans;
+        }
+      }
+      else {
+        // 元に戻す
+        swap(ans.order[ra1], ans.order[ra2]);
+        ans.score = beforeScore;
+      }
+    }
+
+    ans = best_ans;
+
+    if (mode != 0) {
+      cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
+    }
+  }
 }
 
 // ハイパーパラメータ
