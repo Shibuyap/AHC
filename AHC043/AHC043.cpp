@@ -55,8 +55,8 @@ public:
   void Initialize()
   {
     for (int i = 0; i < N; i++) {
-      Par[i]   = i;
-      Rank[i]  = 0;
+      Par[i] = i;
+      Rank[i] = 0;
       Count[i] = 1;
     }
   }
@@ -317,7 +317,7 @@ void SetUp()
   ty.clear();
 
   ans.order.clear();
-  ans.score =0;
+  ans.score = 0;
   ans.stationCount = 0;
   rep(i, T)
   {
@@ -552,45 +552,16 @@ int UpdateIncome(const vector<int>& people, const vector<int>& stations, int inc
     }
   }
 
-  //for (auto id : people) {
-  //  bool okA = false;
-  //  int ssx = sx[id];
-  //  int ssy = sy[id];
-
-  //  for (auto p : stations) {
-  //    int x = p.first;
-  //    int y = p.second;
-  //    if (abs(ssx - x) + abs(ssy - y) <= 2) {
-  //      okA = true;
-  //      break;
-  //    }
-  //  }
-
-  //  if (okA) {
-  //    bool okB = false;
-  //    int ttx = tx[id];
-  //    int tty = ty[id];
-
-  //    for (auto p : stations) {
-  //      int x = p.first;
-  //      int y = p.second;
-  //      if (abs(ttx - x) + abs(tty - y) <= 2) {
-  //        okB = true;
-  //        break;
-  //      }
-  //    }
-
-  //    if (okB) {
-  //      income += abs(ssx - ttx) + abs(ssy - tty);
-  //    }
-  //  }
-  //}
-
   return income;
 }
 
-int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true)
+int Simulate(int simMode, const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true)
 {
+  int TT = T;
+  if (simMode != 0) {
+    TT = 100 * simMode;
+  }
+
   ClearBoard();
   ans.stationCount = 0;
   for (auto id : people) {
@@ -605,7 +576,7 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
   int now = 0;
   int root = -1;
   vector<int> stations;
-  while (turn < T) {
+  while (turn < TT) {
     if (now == 0) {
       int num = ans.order[now];
       Action(0, ekiMap.Stations[num][0], ekiMap.Stations[num][1], income);
@@ -629,16 +600,16 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
 
         if (num2 == num) {
           // 駅作る
-          while (money < 5000 && turn < T) {
+          while (money < 5000 && turn < TT) {
             Action(-1, 0, 0, income);
             money += income;
             if (isSkip) {
               if (income == 0) {
-                turn = T;
+                turn = TT;
               }
             }
           }
-          if (turn == T)break;
+          if (turn == TT)break;
           Action(0, ekiMap.Stations[num2][0], ekiMap.Stations[num2][1], income);
           money -= 5000;
           isBuilt[num2] = 1;
@@ -657,16 +628,16 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
           // 道作る
           srep(i, 1, ParentEdge[num2].route.size() - 1)
           {
-            while (money < 100 && turn < T) {
+            while (money < 100 && turn < TT) {
               Action(-1, 0, 0, income);
               money += income;
               if (isSkip) {
                 if (income == 0) {
-                  turn = T;
+                  turn = TT;
                 }
               }
             }
-            if (turn == T)break;
+            if (turn == TT)break;
             int railNum = GetRailNum(
               ParentEdge[num2].route[i - 1].first, ParentEdge[num2].route[i - 1].second,
               ParentEdge[num2].route[i].first, ParentEdge[num2].route[i].second,
@@ -686,9 +657,9 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
             }
 
             money += income;
-            if (turn == T)break;
+            if (turn == TT)break;
           }
-          if (turn == T)break;
+          if (turn == TT)break;
 
           preNum2 = num2;
           num2 = Parent[num2];
@@ -696,16 +667,16 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
         else {
           if (board[x][y] == -1) {
             // 一時的に線路作る
-            while (money < 100 && turn < T) {
+            while (money < 100 && turn < TT) {
               Action(-1, 0, 0, income);
               money += income;
               if (isSkip) {
                 if (income == 0) {
-                  turn = T;
+                  turn = TT;
                 }
               }
             }
-            if (turn == T)break;
+            if (turn == TT)break;
             int railNum = GetRailNum(
               ParentEdge[preNum2].route[ParentEdge[preNum2].route.size() - 2].first, ParentEdge[preNum2].route[ParentEdge[preNum2].route.size() - 2].second,
               x, y,
@@ -718,16 +689,16 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
             // 道作る
             srep(i, 1, ParentEdge[num2].route.size() - 1)
             {
-              while (money < 100 && turn < T) {
+              while (money < 100 && turn < TT) {
                 Action(-1, 0, 0, income);
                 money += income;
                 if (isSkip) {
                   if (income == 0) {
-                    turn = T;
+                    turn = TT;
                   }
                 }
               }
-              if (turn == T)break;
+              if (turn == TT)break;
               int railNum = GetRailNum(
                 ParentEdge[num2].route[i - 1].first, ParentEdge[num2].route[i - 1].second,
                 ParentEdge[num2].route[i].first, ParentEdge[num2].route[i].second,
@@ -747,25 +718,25 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
               }
 
               money += income;
-              if (turn == T)break;
+              if (turn == TT)break;
             }
-            if (turn == T)break;
+            if (turn == TT)break;
 
             preNum2 = num2;
             num2 = Parent[num2];
           }
           else {
             // 駅作る
-            while (money < 5000 && turn < T) {
+            while (money < 5000 && turn < TT) {
               Action(-1, 0, 0, income);
               money += income;
               if (isSkip) {
                 if (income == 0) {
-                  turn = T;
+                  turn = TT;
                 }
               }
             }
-            if (turn == T)break;
+            if (turn == TT)break;
             Action(0, ekiMap.Stations[num2][0], ekiMap.Stations[num2][1], income);
             money -= 5000;
             isBuilt[num2] = 1;
@@ -782,8 +753,8 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
     }
     else {
       if (isSkip) {
-        money += income * (T - turn);
-        turn = T;
+        money += income * (TT - turn);
+        turn = TT;
       }
       else {
         Action(-1, 0, 0, income);
@@ -791,6 +762,8 @@ int Simulate(const EkiMap& ekiMap, const vector<int>& people, bool isSkip = true
       }
     }
   }
+
+  money += (T - TT) * income;
 
   ans.score = money;
   return money;
@@ -809,7 +782,7 @@ struct Hypers
 // ナイーブな解法
 void Method1(Hypers hypers)
 {
-  int stationCount = 10 + m / 100 * 5;
+  int stationCount = 40 + m / 100 * 5;
   if (mode == 3) {
     stationCount = hypers.StationCount;
   }
@@ -819,8 +792,10 @@ void Method1(Hypers hypers)
   // 初期解
   rep(i, ekiMap.StationCount)
   {
-    int x = RandXor() % (n - 2) + 1;
-    int y = RandXor() % (n - 2) + 1;
+    //int x = RandXor() % (n - 2) + 1;
+    //int y = RandXor() % (n - 2) + 1;
+    int x = RandXor() % n;
+    int y = RandXor() % n;
     ekiMap.Stations[i][0] = x;
     ekiMap.Stations[i][1] = y;
 
@@ -859,8 +834,10 @@ void Method1(Hypers hypers)
       loop++;
 
       int raIndex = RandXor() % ekiMap.StationCount;
-      int rax = RandXor() % (n - 2) + 1;
-      int ray = RandXor() % (n - 2) + 1;
+      //int rax = RandXor() % (n - 2) + 1;
+      //int ray = RandXor() % (n - 2) + 1;
+      int rax = RandXor() % n;
+      int ray = RandXor() % n;
 
       int keepx = ekiMap.Stations[raIndex][0];
       int keepy = ekiMap.Stations[raIndex][1];
@@ -1059,15 +1036,6 @@ void Method1(Hypers hypers)
     }
   }
 
-  //rep(i, n)
-  //{
-  //  rep(j, n)
-  //  {
-  //    cerr << fff[i][j];
-  //  }
-  //  cerr << endl;
-  //}
-
   {
     ans.order.clear();
     rep(i, ekiMap.StationCount)
@@ -1075,6 +1043,7 @@ void Method1(Hypers hypers)
       ans.order.push_back(i);
     }
 
+    double startTime = GetNowTime();
     double nowTime = GetNowTime();
     const double START_TEMP = 2.0;
     const double END_TEMP = 0.1;
@@ -1086,6 +1055,7 @@ void Method1(Hypers hypers)
         if (nowTime > TL) break;
       }
       loop++;
+      double progressRatio = (nowTime - startTime) / (TL - startTime);
 
       int ra1 = RandXor() % ekiMap.StationCount;
       int ra2 = RandXor() % ekiMap.StationCount;
@@ -1099,15 +1069,20 @@ void Method1(Hypers hypers)
         std::shuffle(ans.order.begin(), ans.order.end(), engine);
       }
 
+      int simMode = 0;
+      if (progressRatio < 0.5 && RandXor() % 2 == 0) {
+        simMode = progressRatio * 10 + 1;
+      }
+
       int beforeScore = ans.score;
       int beforeStationCount = ans.stationCount;
-      int afterScore = Simulate(ekiMap, people);
+      int afterScore = Simulate(simMode, ekiMap, people);
       int afterStationCount = ans.stationCount;
       double RATIO = 0;
 
       double diffScore = ((double)afterScore + afterStationCount * RATIO - beforeScore - beforeStationCount * RATIO) * 1234.5;
 
-      double progressRatio = nowTime / TL;
+
       double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
       double prob = exp(diffScore / temp);
 
@@ -1121,17 +1096,25 @@ void Method1(Hypers hypers)
         // 元に戻す
         swap(ans.order[ra1], ans.order[ra2]);
         ans.score = beforeScore;
-        ans.stationCount =beforeStationCount;
+        ans.stationCount = beforeStationCount;
       }
     }
 
     ans = best_ans;
-    Simulate(ekiMap, people, false);
+    Simulate(0, ekiMap, people, false);
 
     if (mode != 0) {
       cout << "loop = " << loop << ", Count = " << ekiMap.Count << endl;
     }
   }
+}
+
+// 貪欲
+void Method2() {
+  ClearBoard();
+
+  // 2点決める
+
 }
 
 void SimulatedAnnealing(Hypers hypers)
@@ -1213,6 +1196,7 @@ ll Solve(int problem_num, Hypers hypers)
 
   // 初期解生成
   Method1(hypers);
+  //Method2();
 
   // 焼きなまし
   //SimulatedAnnealing(hypers);
@@ -1244,7 +1228,7 @@ int main()
     RandXor();
   }
 
-  mode = 3;
+  mode = 2;
 
   Hypers HYPERS;
   HYPERS.StartTemp = 2048.0;
@@ -1257,7 +1241,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 13, 14)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
@@ -1289,7 +1273,7 @@ int main()
       cout << "StationCount = " << hypers.StationCount << endl;
 
       ll sum = 0;
-      srep(i, 0, 1)
+      srep(i, 0, 10)
       {
         ll score = Solve(i, hypers);
         sum += score;

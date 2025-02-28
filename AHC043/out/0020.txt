@@ -1,1600 +1,1600 @@
 # income = 0
-0 38 36
+0 10 35
 # income = 0
-0 6 32
-# income = 0
-2 7 32
-# income = 0
-2 8 32
-# income = 0
-2 9 32
-# income = 0
-2 10 32
-# income = 0
-2 11 32
-# income = 0
-2 12 32
-# income = 0
-2 13 32
-# income = 0
-2 14 32
-# income = 0
-4 15 32
-# income = 0
-5 15 31
-# income = 0
-2 14 31
-# income = 0
-2 13 31
-# income = 0
-3 12 31
-# income = 0
-1 12 30
-# income = 0
-1 12 29
-# income = 0
-1 12 28
-# income = 0
-1 12 27
-# income = 0
-1 12 26
-# income = 0
-6 12 25
-# income = 0
-2 13 25
-# income = 0
-2 14 25
-# income = 0
-2 15 25
-# income = 0
-2 16 25
-# income = 0
-2 17 25
-# income = 0
-2 18 25
-# income = 0
-2 19 25
-# income = 0
-2 20 25
-# income = 0
-2 21 25
-# income = 0
-4 22 25
-# income = 0
-1 22 24
-# income = 0
-1 22 23
-# income = 0
-1 22 22
-# income = 0
-1 22 21
-# income = 0
-1 22 20
-# income = 0
-1 22 19
-# income = 0
-6 22 18
-# income = 0
-2 23 18
-# income = 0
-4 24 18
-# income = 0
-1 24 17
-# income = 0
-6 24 16
-# income = 0
-2 25 16
-# income = 0
-2 26 16
-# income = 0
-2 27 16
-# income = 0
-2 28 16
-# income = 0
-4 29 16
-# income = 0
-1 29 15
-# income = 0
-6 29 14
-# income = 0
-2 30 14
-# income = 0
-2 31 14
-# income = 0
-2 32 14
-# income = 0
-2 33 14
-# income = 0
-2 34 14
-# income = 0
-5 35 14
-# income = 0
-1 35 15
-# income = 0
-1 35 16
-# income = 0
-1 35 17
-# income = 0
-1 35 18
-# income = 0
-1 35 19
-# income = 0
-1 35 20
-# income = 0
-1 35 21
-# income = 0
-1 35 22
-# income = 0
-1 35 23
-# income = 0
-1 35 24
-# income = 0
-1 35 25
-# income = 0
-1 35 26
-# income = 0
-1 35 27
-# income = 0
-1 35 28
-# income = 0
-1 35 29
-# income = 0
-1 35 30
-# income = 0
-1 35 31
-# income = 0
-1 35 32
-# income = 0
-1 35 33
-# income = 0
-1 35 34
-# income = 0
-1 35 35
-# income = 0
-1 35 36
-# income = 0
-3 35 37
-# income = 0
-4 36 37
-# income = 0
-6 36 36
-# income = 0
-2 37 36
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
--1
-# income = 107
-0 9 32
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
--1
-# income = 203
 0 39 33
-# income = 203
+# income = 0
 6 38 33
-# income = 203
+# income = 0
 1 38 34
-# income = 203
+# income = 0
 1 38 35
-# income = 273
+# income = 0
+1 38 36
+# income = 0
+1 38 37
+# income = 0
+1 38 38
+# income = 0
+1 38 39
+# income = 0
+1 38 40
+# income = 0
+1 38 41
+# income = 0
+4 38 42
+# income = 0
+2 37 42
+# income = 0
+2 36 42
+# income = 0
+2 35 42
+# income = 0
+2 34 42
+# income = 0
+2 33 42
+# income = 0
+2 32 42
+# income = 0
+2 31 42
+# income = 0
+2 30 42
+# income = 0
+2 29 42
+# income = 0
+2 28 42
+# income = 0
+2 27 42
+# income = 0
+2 26 42
+# income = 0
+2 25 42
+# income = 0
+2 24 42
+# income = 0
+2 23 42
+# income = 0
+2 22 42
+# income = 0
+2 21 42
+# income = 0
+2 20 42
+# income = 0
+2 19 42
+# income = 0
+2 18 42
+# income = 0
+2 17 42
+# income = 0
+2 16 42
+# income = 0
+2 15 42
+# income = 0
+2 14 42
+# income = 0
+2 13 42
+# income = 0
+2 12 42
+# income = 0
+2 11 42
+# income = 0
+3 10 42
+# income = 0
+1 10 41
+# income = 0
+1 10 40
+# income = 0
+1 10 39
+# income = 0
+1 10 38
+# income = 0
+1 10 37
+# income = 0
+1 10 36
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
 -1
-# income = 273
+# income = 96
+0 38 37
+# income = 160
 -1
-# income = 273
+# income = 160
 -1
-# income = 273
+# income = 160
 -1
-# income = 273
-0 12 29
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
+# income = 160
 -1
-# income = 364
-0 3 10
-# income = 364
-2 2 10
-# income = 364
-6 1 10
-# income = 364
-1 1 11
-# income = 364
-1 1 12
-# income = 364
-1 1 13
-# income = 364
-1 1 14
-# income = 364
-1 1 15
-# income = 364
-1 1 16
-# income = 364
-1 1 17
-# income = 364
-1 1 18
-# income = 364
-1 1 19
-# income = 364
-1 1 20
-# income = 364
-1 1 21
-# income = 364
-1 1 22
-# income = 364
-1 1 23
-# income = 364
-1 1 24
-# income = 364
-1 1 25
-# income = 364
-1 1 26
-# income = 364
-1 1 27
-# income = 364
-1 1 28
-# income = 364
-1 1 29
-# income = 364
-1 1 30
-# income = 364
-1 1 31
-# income = 364
-3 1 32
-# income = 364
-2 2 32
-# income = 364
-2 3 32
-# income = 364
-2 4 32
-# income = 364
-2 5 32
-# income = 470
-0 35 14
-# income = 588
+# income = 160
 -1
-# income = 588
+# income = 160
 -1
-# income = 588
+# income = 160
 -1
-# income = 588
-0 35 34
-# income = 720
+# income = 160
 -1
-# income = 720
+# income = 160
 -1
-# income = 720
+# income = 160
 -1
-# income = 720
+# income = 160
 -1
-# income = 720
+# income = 160
 -1
-# income = 720
+# income = 160
 -1
-# income = 720
-0 34 7
-# income = 720
-1 34 8
-# income = 720
-1 34 9
-# income = 720
-1 34 10
-# income = 720
-1 34 11
-# income = 720
-1 34 12
-# income = 720
-3 34 13
-# income = 720
-5 35 13
-# income = 860
+# income = 160
+-1
+# income = 160
+-1
+# income = 160
+-1
+# income = 160
+-1
+# income = 160
+-1
+# income = 160
+0 8 32
+# income = 160
+2 9 32
+# income = 160
+5 10 32
+# income = 160
+1 10 33
+# income = 160
+1 10 34
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+-1
+# income = 256
+0 44 15
+# income = 256
+4 44 16
+# income = 256
+2 43 16
+# income = 256
+2 42 16
+# income = 256
+2 41 16
+# income = 256
+2 40 16
+# income = 256
+2 39 16
+# income = 256
+2 38 16
+# income = 256
+6 37 16
+# income = 256
+1 37 17
+# income = 256
+1 37 18
+# income = 256
+1 37 19
+# income = 256
+1 37 20
+# income = 256
+1 37 21
+# income = 256
+1 37 22
+# income = 256
+1 37 23
+# income = 256
+3 37 24
+# income = 256
+2 38 24
+# income = 256
+5 39 24
+# income = 256
+1 39 25
+# income = 256
+1 39 26
+# income = 256
+1 39 27
+# income = 256
+1 39 28
+# income = 256
+1 39 29
+# income = 256
+1 39 30
+# income = 256
+1 39 31
+# income = 256
+1 39 32
+# income = 341
+-1
+# income = 341
+-1
+# income = 341
+0 42 5
+# income = 341
+1 42 6
+# income = 341
+1 42 7
+# income = 341
+1 42 8
+# income = 341
+1 42 9
+# income = 341
+1 42 10
+# income = 341
+1 42 11
+# income = 341
+1 42 12
+# income = 341
+1 42 13
+# income = 341
+1 42 14
+# income = 341
+3 42 15
+# income = 341
+2 43 15
+# income = 436
+-1
+# income = 436
+-1
+# income = 436
+-1
+# income = 436
+-1
+# income = 436
+0 9 1
+# income = 436
+2 10 1
+# income = 436
+2 11 1
+# income = 436
+2 12 1
+# income = 436
+2 13 1
+# income = 436
+2 14 1
+# income = 436
+2 15 1
+# income = 436
+2 16 1
+# income = 436
+2 17 1
+# income = 436
+2 18 1
+# income = 436
+2 19 1
+# income = 436
+2 20 1
+# income = 436
+2 21 1
+# income = 436
+2 22 1
+# income = 436
+2 23 1
+# income = 436
+2 24 1
+# income = 436
+2 25 1
+# income = 436
+2 26 1
+# income = 436
+2 27 1
+# income = 436
+2 28 1
+# income = 436
+2 29 1
+# income = 436
+5 30 1
+# income = 436
+3 30 2
+# income = 436
+4 31 2
+# income = 436
+6 31 1
+# income = 436
+2 32 1
+# income = 436
+2 33 1
+# income = 436
+2 34 1
+# income = 436
+2 35 1
+# income = 436
+2 36 1
+# income = 436
+2 37 1
+# income = 436
+2 38 1
+# income = 436
+2 39 1
+# income = 436
+2 40 1
+# income = 436
+2 41 1
+# income = 436
+5 42 1
+# income = 436
+1 42 2
+# income = 436
+1 42 3
+# income = 436
+1 42 4
+# income = 592
+0 38 42
+# income = 665
+0 12 31
+# income = 665
+2 11 31
+# income = 665
+2 10 31
+# income = 665
+2 9 31
+# income = 665
+6 8 31
+# income = 818
 0 2 4
-# income = 860
-5 3 4
-# income = 860
-1 3 5
-# income = 860
-1 3 6
-# income = 860
-1 3 7
-# income = 860
-1 3 8
-# income = 860
-1 3 9
-# income = 966
-0 9 2
-# income = 966
-2 8 2
-# income = 966
-2 7 2
-# income = 966
-2 6 2
-# income = 966
-2 5 2
-# income = 966
-2 4 2
-# income = 966
-2 3 2
-# income = 966
-6 2 2
-# income = 966
+# income = 818
 1 2 3
-# income = 1061
+# income = 818
+1 2 2
+# income = 818
+6 2 1
+# income = 818
+2 3 1
+# income = 818
+2 4 1
+# income = 818
+2 5 1
+# income = 818
+2 6 1
+# income = 818
+2 7 1
+# income = 818
+2 8 1
+# income = 963
+0 37 24
+# income = 1050
+0 39 46
+# income = 1050
+3 38 46
+# income = 1050
+1 38 45
+# income = 1050
+1 38 44
+# income = 1050
+1 38 43
+# income = 1166
 0 35 37
-# income = 1245
-0 24 18
-# income = 1357
+# income = 1166
+2 36 37
+# income = 1166
+2 37 37
+# income = 1315
 -1
-# income = 1357
--1
-# income = 1357
--1
-# income = 1357
-0 15 32
-# income = 1463
--1
-# income = 1463
--1
-# income = 1463
-0 12 37
-# income = 1463
-2 11 37
-# income = 1463
-2 10 37
-# income = 1463
-3 9 37
-# income = 1463
-1 9 36
-# income = 1463
-1 9 35
-# income = 1463
-1 9 34
-# income = 1463
-1 9 33
-# income = 1587
-0 1 15
-# income = 1656
-0 29 16
-# income = 1746
--1
-# income = 1746
-0 22 25
-# income = 1838
--1
-# income = 1838
-0 26 12
-# income = 1838
-1 26 11
-# income = 1838
-1 26 10
-# income = 1838
-1 26 9
-# income = 1838
-1 26 8
-# income = 1838
-6 26 7
-# income = 1838
-2 27 7
-# income = 1838
-2 28 7
-# income = 1838
+# income = 1315
+0 43 45
+# income = 1315
+2 42 45
+# income = 1315
+2 41 45
+# income = 1315
+2 40 45
+# income = 1315
+6 39 45
+# income = 1426
+0 33 7
+# income = 1426
+1 33 6
+# income = 1426
+1 33 5
+# income = 1426
+1 33 4
+# income = 1426
+1 33 3
+# income = 1426
+5 33 2
+# income = 1426
+2 32 2
+# income = 1426
+0 31 2
+# income = 1646
+0 3 10
+# income = 1646
+3 2 10
+# income = 1646
+1 2 9
+# income = 1646
+1 2 8
+# income = 1646
+1 2 7
+# income = 1646
+1 2 6
+# income = 1646
+1 2 5
+# income = 1760
+0 17 42
+# income = 1859
+0 28 13
+# income = 1859
+1 28 12
+# income = 1859
+1 28 11
+# income = 1859
+1 28 10
+# income = 1859
+1 28 9
+# income = 1859
+1 28 8
+# income = 1859
+6 28 7
+# income = 1859
 2 29 7
-# income = 1838
+# income = 1859
 2 30 7
-# income = 1838
+# income = 1859
 2 31 7
-# income = 1838
+# income = 1859
 2 32 7
-# income = 1838
-2 33 7
-# income = 1949
-0 20 47
-# income = 1949
-1 20 46
-# income = 1949
-1 20 45
-# income = 1949
-1 20 44
-# income = 1949
-1 20 43
-# income = 1949
-1 20 42
-# income = 1949
-1 20 41
-# income = 1949
-1 20 40
-# income = 1949
-1 20 39
-# income = 1949
-1 20 38
-# income = 1949
-5 20 37
-# income = 1949
-2 19 37
-# income = 1949
-2 18 37
-# income = 1949
-2 17 37
-# income = 1949
-2 16 37
-# income = 1949
-2 15 37
-# income = 1949
-2 14 37
-# income = 1949
-2 13 37
-# income = 2033
+# income = 1994
+0 27 17
+# income = 1994
+1 27 16
+# income = 1994
+1 27 15
+# income = 1994
+1 27 14
+# income = 1994
+6 27 13
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
 -1
-# income = 2033
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
+-1
+# income = 2087
 -1

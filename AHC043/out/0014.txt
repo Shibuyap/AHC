@@ -1,1600 +1,1600 @@
 # income = 0
-0 12 15
+0 43 36
 # income = 0
-0 9 6
+0 38 35
 # income = 0
-2 10 6
+5 39 35
 # income = 0
-2 11 6
+1 39 36
 # income = 0
-5 12 6
+1 39 37
 # income = 0
-1 12 7
+3 39 38
 # income = 0
-1 12 8
+4 40 38
 # income = 0
-1 12 9
+1 40 37
 # income = 0
-1 12 10
+6 40 36
 # income = 0
-1 12 11
+2 41 36
 # income = 0
-1 12 12
-# income = 0
-1 12 13
-# income = 0
-1 12 14
-# income = 20
+2 42 36
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
+# income = 6
 -1
-# income = 20
-0 12 9
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-0 42 6
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 41 6
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 40 6
-# income = 36
+# income = 6
 -1
-# income = 36
-2 39 6
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-6 38 6
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 38 7
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-4 38 8
-# income = 36
+# income = 6
 -1
-# income = 36
-2 37 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 36 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 35 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 34 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 33 8
-# income = 36
+# income = 6
 -1
-# income = 36
-2 32 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 31 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 30 8
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-3 29 8
-# income = 36
+# income = 6
 -1
-# income = 36
-1 29 7
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 29 6
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 29 5
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 29 4
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 29 3
-# income = 36
+# income = 6
 -1
-# income = 36
-5 29 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 28 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 27 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 26 2
-# income = 36
+# income = 6
 -1
-# income = 36
-2 25 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 24 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 23 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 22 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 21 2
-# income = 36
+# income = 6
 -1
-# income = 36
-2 20 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 19 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 18 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 17 2
-# income = 36
+# income = 6
 -1
-# income = 36
-2 16 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 15 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 14 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 13 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 12 2
-# income = 36
+# income = 6
 -1
-# income = 36
-2 11 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 10 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 9 2
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-3 8 2
-# income = 36
+# income = 6
 -1
-# income = 36
-5 8 1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 7 1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 6 1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-6 5 1
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 5 2
-# income = 36
+# income = 6
 -1
-# income = 36
-1 5 3
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-1 5 4
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-3 5 5
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 6 5
-# income = 36
+# income = 6
 -1
-# income = 36
-2 7 5
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-2 8 5
-# income = 36
+# income = 6
 -1
-# income = 36
+# income = 6
 -1
-# income = 36
-5 9 5
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
-0 40 30
-# income = 73
-1 40 29
-# income = 73
-5 40 28
-# income = 73
+# income = 6
 -1
-# income = 73
-2 39 28
-# income = 73
-2 38 28
-# income = 73
+# income = 6
 -1
-# income = 73
-3 37 28
-# income = 73
-1 37 27
-# income = 73
-1 37 26
-# income = 73
+# income = 6
 -1
-# income = 73
-1 37 25
-# income = 73
-1 37 24
-# income = 73
-1 37 23
-# income = 73
+# income = 6
 -1
-# income = 73
-5 37 22
-# income = 73
-2 36 22
-# income = 73
+# income = 6
 -1
-# income = 73
-2 35 22
-# income = 73
-2 34 22
-# income = 73
-3 33 22
-# income = 73
+# income = 6
 -1
-# income = 73
-1 33 21
-# income = 73
-1 33 20
-# income = 73
-5 33 19
-# income = 73
+# income = 6
 -1
-# income = 73
-2 32 19
-# income = 73
-2 31 19
-# income = 73
+# income = 6
 -1
-# income = 73
-2 30 19
-# income = 73
-2 29 19
-# income = 73
-2 28 19
-# income = 73
+# income = 6
 -1
-# income = 73
-2 27 19
-# income = 73
-3 26 19
-# income = 73
-1 26 18
-# income = 73
+# income = 6
 -1
-# income = 73
-1 26 17
-# income = 73
-1 26 16
-# income = 73
-1 26 15
-# income = 73
+# income = 6
 -1
-# income = 73
-6 26 14
-# income = 73
-2 27 14
-# income = 73
+# income = 6
 -1
-# income = 73
-4 28 14
-# income = 73
-1 28 13
-# income = 73
-1 28 12
-# income = 73
+# income = 6
 -1
-# income = 73
-6 28 11
-# income = 73
-2 29 11
-# income = 73
-4 30 11
-# income = 73
+# income = 6
 -1
-# income = 73
-1 30 10
-# income = 73
-6 30 9
-# income = 73
+# income = 6
 -1
-# income = 73
-2 31 9
-# income = 73
-2 32 9
-# income = 73
-4 33 9
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
+# income = 6
 -1
-# income = 73
-0 33 8
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
+# income = 6
 -1
-# income = 206
-0 18 2
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
+# income = 6
 -1
-# income = 219
-0 19 34
-# income = 219
-2 20 34
-# income = 219
-2 21 34
-# income = 219
-2 22 34
-# income = 219
-2 23 34
-# income = 219
-2 24 34
-# income = 219
-2 25 34
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
+# income = 6
+-1
