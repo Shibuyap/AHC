@@ -582,7 +582,7 @@ double Solve(int mode, int problemNum = 0)
 
     // Ä‚«‚È‚Ü‚µ
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     double TL = 4.0 / seedCount;
     double nowProgress = nowTime / TL;
     double startTemperature = 20;
@@ -593,7 +593,7 @@ double Solve(int mode, int problemNum = 0)
       loop++;
       if (loop % 100 == 1) {
         endTime = clock();
-        nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+        nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
         nowProgress = nowTime / TL;
       }
       if (nowProgress > 1.0) break;
@@ -641,7 +641,7 @@ double Solve(int mode, int problemNum = 0)
   // Ä‚«‚È‚Ü‚µ
   startTime = clock();
   endTime = clock();
-  double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   double TL = 0.9;
   double nowProgress = nowTime / TL;
   double startTemperature = 2;
@@ -652,7 +652,7 @@ double Solve(int mode, int problemNum = 0)
     loop++;
     if (loop % 100 == 1) {
       endTime = clock();
-      nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       nowProgress = nowTime / TL;
     }
     if (nowProgress > 1.0) break;

@@ -409,7 +409,7 @@ void SA1()
   while (true) {
     if (loopCount % 100 == 0) {
       endTime = clock();
-      nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       if (nowTime > TL) {
         break;
       }

@@ -908,7 +908,7 @@ int Solve(int mode, int problemNum)
 
   // Ä‚«‚È‚Ü‚µ
   endTime = clock();
-  nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+  nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   double TL = 5.8;
   double nowProgress = nowTime / TL;
   int loop = 0;
@@ -918,7 +918,7 @@ int Solve(int mode, int problemNum)
     loop++;
     if (loop % 1 == 0) {
       endTime = clock();
-      nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       nowProgress = nowTime / TL;
     }
     if (nowProgress > 1.0) break;

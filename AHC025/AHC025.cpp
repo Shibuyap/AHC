@@ -1552,7 +1552,7 @@ char Query(int& turn)
     if (queryCount % 100 == 0) {
       endTime = clock();
     }
-    nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     if (nowTime < TL) {
       isUse = true;
     }
@@ -1696,7 +1696,7 @@ char Query1(int& turn, int lhs, int rhs)
   query1Count++;
   if (query1Count % 100 == 0) {
     endTime = clock();
-    nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   }
   if (nowTime > TL - 0.1) {
     cerr << "Assert Query1" << endl;
@@ -6322,7 +6322,7 @@ ll Solve(int probNum, ll hai2 = D18)
 
   if (mode != 0) {
     endTime = clock();
-    nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     if (nowTime > 1.95) {
       cerr << "!!!TLE!!! << endl";
       cerr << "NN = " << NN << ", QQ = " << QQ << ", DD = " << DD << endl;
@@ -6496,7 +6496,7 @@ int main()
 
       ll score = Solve(2, hai2);
       endTime = clock();
-      nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
 
       //cout << "score = " << setw(7) << score << ", ";
       //cout << "queryCount = " << setw(7) << queryCount << ", ";

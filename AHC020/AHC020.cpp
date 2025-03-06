@@ -181,7 +181,7 @@ ll OuterKruscal2()
     loop++;
     {
       endTime = clock();
-      double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       double nowProgress = nowTime / TL;
       if (nowProgress > 1.0) break;
     }
@@ -557,13 +557,13 @@ void Solve2()
   double startTemperature = 200048;
   double endTemperature = 0;
   endTime = clock();
-  double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   double nowProgress = nowTime / TL;
   while (true) {
     loop++;
     if (loop % 100 == 0) {
       endTime = clock();
-      nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       nowProgress = nowTime / TL;
       if (nowProgress > 1.0) break;
     }
@@ -643,13 +643,13 @@ void Solve3()
     double startTemperature = 1000;
     double endTemperature = 0;
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     double nowProgress = nowTime / TL;
     while (true) {
       loop++;
       if (loop % 10 == 0) {
         endTime = clock();
-        nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+        nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
         nowProgress = nowTime / TL;
         if (nowProgress > 1.0) break;
       }
@@ -842,13 +842,13 @@ void Solve4()
     double startTemperature = 1000;
     double endTemperature = 0;
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     double nowProgress = nowTime / TL;
     while (true) {
       loop++;
       if (loop % 10 == 0) {
         endTime = clock();
-        nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+        nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
         nowProgress = nowTime / TL;
         if (nowProgress > 1.0) break;
       }

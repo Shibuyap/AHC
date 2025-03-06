@@ -2571,8 +2571,8 @@ int Solver1()
   rep(i, m)
   {
     int num = numArr[i];
-    double e0 = (n - 1) * eps;
-    double e1 = (num - 1) + (n - num) * eps - (num - 1) * eps;
+    double e0 = ((double)n - 1) * eps;
+    double e1 = ((double)num - 1) + ((double)n - num) * eps - ((double)num - 1) * eps;
     int kijun = round(e0 + (e1 - e0) / 2.0);
     int count = 0;
     rep(j, 100)
@@ -2688,7 +2688,7 @@ int Solver3()
         }
       }
       int sz = vec[f[i]].size();
-      if (cnt[i][0] / sz >= cnt[i][1] / (n - sz)) {
+      if (cnt[i][0] / sz >= cnt[i][1] / ((double)n - sz)) {
         nxt[f[i]].push_back(i);
       }
       else {
@@ -2994,7 +2994,7 @@ int Solver6()
   rep(i, n) { bione[i] = 1; }
 
   int flipLoop = 1000;
-  if (MODE == 0) flipLoop == 10000;
+  if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
     int x = randxor() % n;
@@ -3178,7 +3178,7 @@ int Solver7()
   rep(i, n) { bione[i] = 1; }
 
   int flipLoop = 1000;
-  if (MODE == 0) flipLoop == 10000;
+  if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
     int x = randxor() % n;
@@ -3425,7 +3425,7 @@ int Solver9()
   rep(i, n) { bione[i] = 1; }
 
   int flipLoop = 1000;
-  if (MODE == 0) flipLoop == 10000;
+  if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
     int x = randxor() % n;
@@ -3817,7 +3817,7 @@ int Solver11()
   rep(i, n) { bione[i] = 1; }
 
   int flipLoop = 1000;
-  if (MODE == 0) flipLoop == 10000;
+  if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
     int x = randxor() % n;
@@ -4151,7 +4151,7 @@ int Solver12()
   rep(i, n) { bione[i] = 1; }
 
   int flipLoop = 1000;
-  if (MODE == 0) flipLoop == 10000;
+  if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
     int x = randxor() % n;
@@ -4570,7 +4570,7 @@ int Solver13()
   rep(i, n) { bione[i] = 1; }
 
   int flipLoop = 1000;
-  if (MODE == 0) flipLoop == 10000;
+  if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
     int x = randxor() % n;
@@ -4850,7 +4850,7 @@ int Solver14()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -5105,7 +5105,7 @@ int Solver15()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -5408,7 +5408,7 @@ int Solver16()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -5705,7 +5705,7 @@ int Solver17()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -6059,7 +6059,7 @@ int Solver19()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -6272,7 +6272,7 @@ int Solver20()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -6536,7 +6536,7 @@ int Solver21()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -6793,7 +6793,7 @@ int Solver22()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -7076,7 +7076,7 @@ int Solver23()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -7373,7 +7373,7 @@ int Solver24()
     rep(i, n) { bione[i] = 1; }
 
     int flipLoop = 1000;
-    if (MODE == 0) flipLoop == 10000;
+    if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
       int x = randxor() % n;
@@ -7602,7 +7602,7 @@ void solve(int mode)
       loop++;
       if (loop % 10 == 1) {
         endTime = clock();
-        double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+        double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
         if (nowTime > 360000.0) break;
       }
 

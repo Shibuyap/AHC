@@ -497,7 +497,7 @@ int Solve(int mode)
     while (true) {
       if (loop % 8 == 0) {
         endTime = clock();
-        double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+        double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
         if (nowTime > tl) break;
       }
 

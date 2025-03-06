@@ -1514,7 +1514,7 @@ inline void Ui_Tei()
       // 焼きなまし
       start = clock();
       end = clock();
-      double now_time = (double)(end - start) / CLOCKS_PER_SEC;
+      double now_time = ((double)end - start) / CLOCKS_PER_SEC;
       double TL = (0.10 / (double)T) / allLoopTimes;
       double start_temp = 2048;
       double end_temp = 0.1;
@@ -1524,7 +1524,7 @@ inline void Ui_Tei()
         loop++;
         if (loop % 100 == 1) {
           end = clock();
-          now_time = (double)(end - start) / CLOCKS_PER_SEC;
+          now_time = ((double)end - start) / CLOCKS_PER_SEC;
           if (now_time > TL)break;
           temp = start_temp + (end_temp - start_temp) * now_time / TL;
         }
@@ -1600,7 +1600,7 @@ inline void Ui_Tei()
     clock_t start, end;
     start = clock();
     end = clock();
-    double now_time = (double)(end - start) / CLOCKS_PER_SEC;
+    double now_time = ((double)end - start) / CLOCKS_PER_SEC;
     double TL = 0.02 / allLoopTimes;
     double start_temp = 50048;
     double end_temp = 0.1;
@@ -1611,7 +1611,7 @@ inline void Ui_Tei()
       loop++;
       if (loop % 100 == 1) {
         end = clock();
-        now_time = (double)(end - start) / CLOCKS_PER_SEC;
+        now_time = ((double)end - start) / CLOCKS_PER_SEC;
         if (now_time > TL)break;
         temp = start_temp + (end_temp - start_temp) * now_time / TL;
       }
@@ -1768,7 +1768,7 @@ int solve(int teisyutu, int fileNum)
         start = clock();
         end = clock();
         startClock = system_clock::now();
-        double now_time = (double)(end - start) / CLOCKS_PER_SEC;
+        double now_time = ((double)end - start) / CLOCKS_PER_SEC;
         double TL = (((realTL - 0.7) / T) / TT) / allLoopTimes;
         double start_temp = 20048.0;
         double end_temp = 0.1;
@@ -1925,7 +1925,7 @@ int solve(int teisyutu, int fileNum)
 
       // エスケープ
       end = clock();
-      if ((double)(end - real_start) / CLOCKS_PER_SEC > realTL) break;
+      if (((double)end - real_start) / CLOCKS_PER_SEC > realTL) break;
     }
 
     // real_real_maxScore戻す

@@ -200,7 +200,7 @@ int Solve(int mode, int num)
 
 
   int dp[20][20];
-  int dir[20][20];
+  int dir[21][21];
   int dist[20][20];
   rep(i, 20)
   {

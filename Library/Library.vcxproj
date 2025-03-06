@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="二次元座標.h" />
     <ClInclude Include="焼きなまし.h" />
+    <ClInclude Include="自作キュー.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AHCTemplate.cpp" />

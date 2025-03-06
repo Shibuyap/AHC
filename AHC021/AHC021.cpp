@@ -279,7 +279,7 @@ void Method3_2()
   int loopCount = 0;
   while (true) {
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     if (nowTime > 0.2) {
       break;
     }
@@ -381,7 +381,7 @@ void Method3_3()
 
   while (RandomCount < 50) {
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     if (nowTime > 0.3) {
       break;
     }
@@ -500,7 +500,7 @@ void Method4()
   int cnt = 0;
   while (true) {
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     if (nowTime > 0.01) {
       break;
     }
@@ -991,7 +991,7 @@ int Solve(int mode, int probNum)
   int loopCount = 0;
   while (true) {
     endTime = clock();
-    double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
     if (nowTime > 0.8) {
       break;
     }

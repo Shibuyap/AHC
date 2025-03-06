@@ -721,7 +721,7 @@ ll Solve(int probNum)
     break;
     if (loopCount % 100 == 0) {
       endTime = clock();
-      double nowTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+      double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       if (nowTime > TL) {
         break;
       }
