@@ -193,7 +193,7 @@ struct Hypers
   double StartTemp;
   double EndTemp;
   double MultipleValue;
-  int Partition;
+  int Partition[10];
 };
 
 void SimulatedAnnealing(Hypers hypers)
@@ -222,31 +222,38 @@ void SimulatedAnnealing(Hypers hypers)
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
-    int raMode = RandXor() % 100;
-    if (raMode < hypers.Partition) {
-      // 近傍解作成
+    // 近傍解作成
+    int raMode = RandXor() % hypers.Partition[1];
+    int ra1, ra2, ra3, ra4, ra5;
+    int keep1, keep2, keep3, keep4, keep5;
+    if (raMode < hypers.Partition[0]) {
 
-      // スコア計算
-      double tmpScore = CalcScore();
+    }
+    else if (raMode < hypers.Partition[1]) {
 
-      // 焼きなまし
-      double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
-      double prob = exp(diffScore / temp);
-      if (prob > Rand01()) {
-        // 採用
-        ansScore = tmpScore;
+    }
 
-        // Best解よりもいいか
-        if (ansScore > best_ansScore) {
-          CopyToBest();
-        }
-      }
-      else {
-        // 元に戻す
+    // スコア計算
+    double tmpScore = CalcScore();
+
+    // 焼きなまし
+    double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
+    double prob = exp(diffScore / temp);
+    if (prob > Rand01()) {
+      // 採用
+      ansScore = tmpScore;
+
+      // Best解よりもいいか
+      if (ansScore > best_ansScore) {
+        CopyToBest();
       }
     }
-    else if (raMode < 100) {
-
+    else {
+      // 元に戻す
+      if (raMode < hypers.Partition[0]) {
+      }
+      else if (raMode < hypers.Partition[1]) {
+      }
     }
   }
 
@@ -311,8 +318,17 @@ int main()
   Hypers HYPERS;
   HYPERS.StartTemp = 2048.0;
   HYPERS.EndTemp = 0.0;
-  HYPERS.MultipleValue = 1.0;
-  HYPERS.Partition = 50;
+  HYPERS.MultipleValue = 12345.0;
+  HYPERS.Partition[0] = 100;
+  HYPERS.Partition[1] = 200;
+  HYPERS.Partition[2] = 300;
+  HYPERS.Partition[3] = 400;
+  HYPERS.Partition[4] = 500;
+  HYPERS.Partition[5] = 600;
+  HYPERS.Partition[6] = 700;
+  HYPERS.Partition[7] = 800;
+  HYPERS.Partition[8] = 900;
+  HYPERS.Partition[9] = 1000;
 
   if (mode == 0) {
     Solve(0, HYPERS);
@@ -345,7 +361,7 @@ int main()
       hypers.StartTemp = pow(2.0, Rand01() * 20);
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition = RandXor() % 101;
+      hypers.Partition[0] = RandXor() % 101;
 
       ll sum = 0;
       srep(i, 0, 15)
@@ -365,7 +381,7 @@ int main()
         << ", StartTemp = " << hypers.StartTemp
         << ", EndTemp = " << hypers.EndTemp
         << ", MultipleValue = " << hypers.MultipleValue
-        << ", Partition1 = " << hypers.Partition
+        << ", Partition1 = " << hypers.Partition[0]
         << endl;
 
       if (sum > bestSumScore) {

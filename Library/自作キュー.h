@@ -38,16 +38,16 @@ void ClearQueue()
 }
 int FrontX()
 {
-  return queueArr2[queueHead][0];
+  return queueArr2[queueHead2][0];
 }
 int FrontY()
 {
-  return queueArr2[queueHead][1];
+  return queueArr2[queueHead2][1];
 }
 void Push(int x, int y)
 {
-  queueArr2[queueTail][0] = x;
-  queueArr2[queueTail][1] = y;
+  queueArr2[queueTail2][0] = x;
+  queueArr2[queueTail2][1] = y;
   queueTail2++;
 }
 void Pop()
