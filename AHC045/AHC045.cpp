@@ -108,9 +108,17 @@ double GetNowTime()
   return elapsed.count();
 }
 
-//const int MAX_N = 30;
+const int n = 800;
+const int MAX_M = 400;
+const int q = 400;
+const int MAX_L = 15;
 
-int n;
+int m, l, w;
+
+int g[MAX_M];
+int lx[n], rx[n], ly[n], ry[n];
+
+int true_x[n], true_y[n];
 
 int ansScore;
 
@@ -147,10 +155,27 @@ void Input(int problemNum)
 
   if (!ifs.is_open()) {
     // 標準入力
+    int _n, _q;
+    cin >> _n >> m >> _q >> l >> w;
+    rep(i, m)cin >> g[i];
+    rep(i, n) {
+      cin >> lx[i] >> rx[i] >> ly[i] >> ry[i];
+    }
   }
   else {
     // ファイル入力
+    int _n, _q;
+    ifs >> _n >> m >> _q >> l >> w;
+    rep(i, m)ifs >> g[i];
+    rep(i, n) {
+      ifs >> lx[i] >> rx[i] >> ly[i] >> ry[i];
+    }
+    rep(i, n)cin >> true_x[i] >> true_y[i];
   }
+}
+
+vector<P> QueryLocal() {
+  return {};
 }
 
 // 出力ファイルストリームを開く関数
