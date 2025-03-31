@@ -264,7 +264,6 @@ void SimulatedAnnealing(Hypers hypers)
   CopyToAns();
 }
 
-
 // 問題を解く関数
 ll Solve(int problem_num, Hypers hypers)
 {
