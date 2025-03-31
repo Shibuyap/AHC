@@ -82,6 +82,73 @@ std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
+namespace
+{
+  const int MAX_UF = 10005;
+  int UF_par[MAX_UF];   // 親
+  int UF_rank[MAX_UF];  // 木の深さ
+  int UF_cnt[MAX_UF];   // 属する頂点の個数(親のみ正しい)
+
+  // 初期化
+  void UF_Init(int n)
+  {
+    for (int i = 0; i < n; i++) {
+      UF_par[i]  = i;
+      UF_rank[i] = 0;
+      UF_cnt[i]  = 1;
+    }
+  }
+
+  // 初期化
+  void UF_Init()
+  {
+    UF_Init(MAX_UF);
+  }
+
+  // 木の根を求める
+  int UF_Find(int x)
+  {
+    if (UF_par[x] == x) {
+      return x;
+    }
+    else {
+      return UF_par[x] = UF_Find(UF_par[x]);
+    }
+  }
+
+  // xとyの属する集合を併合
+  void UF_Unite(int x, int y)
+  {
+    x = UF_Find(x);
+    y = UF_Find(y);
+    if (x == y) return;
+
+    if (UF_rank[x] < UF_rank[y]) {
+      UF_par[x] = y;
+      UF_cnt[y] += UF_cnt[x];
+    }
+    else {
+      UF_par[y] = x;
+      UF_cnt[x] += UF_cnt[y];
+      if (UF_rank[x] == UF_rank[y]) UF_rank[x]++;
+    }
+  }
+
+  // xとyが同じ集合に属するか否か
+  bool UF_Same(int x, int y)
+  {
+    return UF_Find(x) == UF_Find(y);
+  }
+
+  // xの属する集合のサイズ
+  int UF_Count(int x)
+  {
+    return UF_cnt[UF_Find(x)];
+  }
+}  // namespace
+
+
+
 // 非常に大きな値
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
@@ -116,13 +183,65 @@ const int MAX_L = 15;
 int m, l, w;
 
 int g[MAX_M];
+int sort_g[MAX_M];
+int arg_g[MAX_M];
+int arg_rev_g[MAX_M];
+
 int lx[n], rx[n], ly[n], ry[n];
 
 int true_x[n], true_y[n];
 
 int ansScore;
+int ans[n];
 
 int best_ansScore;
+int best_ans[n];
+
+struct Edge
+{
+  int dist;
+  int u;
+  int v;
+};
+
+P GetPoint(int num)
+{
+  return P((lx[num] + rx[num]) / 2, (ly[num] + ry[num]) / 2);
+}
+
+int Distance(const P& p1, const P& p2)
+{
+  return (p1.first - p2.first) * (p1.first - p2.first) + (p1.second - p2.second) * (p1.second - p2.second);
+}
+
+vector<P> MakeZenikigi(const vector<int>& nums)
+{
+  vector<P> points;
+  for (auto num : nums) {
+    points.push_back(GetPoint(num));
+  }
+
+  vector<Edge> edges;
+  rep(i, nums.size())
+  {
+    srep(j, i + 1, points.size())
+    {
+      Edge e;
+      e.dist = Distance(points[i], points[j]);
+      e.u = nums[i];
+      e.v = nums[j];
+      edges.push_back(e);
+    }
+  }
+
+  sort(edges.begin(), edges.end());
+
+  vector<P> res;
+
+
+
+  return res;
+}
 
 void CopyToBest()
 {
@@ -158,7 +277,8 @@ void Input(int problemNum)
     int _n, _q;
     cin >> _n >> m >> _q >> l >> w;
     rep(i, m)cin >> g[i];
-    rep(i, n) {
+    rep(i, n)
+    {
       cin >> lx[i] >> rx[i] >> ly[i] >> ry[i];
     }
   }
@@ -167,14 +287,29 @@ void Input(int problemNum)
     int _n, _q;
     ifs >> _n >> m >> _q >> l >> w;
     rep(i, m)ifs >> g[i];
-    rep(i, n) {
+    rep(i, n)
+    {
       ifs >> lx[i] >> rx[i] >> ly[i] >> ry[i];
     }
     rep(i, n)cin >> true_x[i] >> true_y[i];
   }
+
+  vector<P> vp;
+  rep(i, m)
+  {
+    vp.emplace_back(g[i], i);
+  }
+  sort(vp.begin(), vp.end());
+  rep(i, m)
+  {
+    sort_g[i] = vp[i].first;
+    arg_g[i] = vp[i].second;
+    arg_rev_g[vp[i].second] = i;
+  }
 }
 
-vector<P> QueryLocal() {
+vector<P> QueryLocal()
+{
   return {};
 }
 
@@ -198,11 +333,53 @@ ll CalcScore()
 // 解答を出力する関数
 void Output(ofstream& ofs)
 {
+  UF_Init(n);
+
   if (mode == 0) {
     // 標準出力
+    cout << '!' << endl;
+    rep(i, m)
+    {
+      int rev_i = arg_rev_g[i];
+      vector<int> points;
+      rep(j, n)
+      {
+        if (ans[j] == rev_i) {
+          points.push_back(j);
+        }
+      }
+      for (auto po : points) {
+        cout << po << ' ';
+      }
+      cout << endl;
+      vector<P> edges = MakeZenikigi(points);
+      for (auto edge : edges) {
+        cout << edge.first << ' ' << edge.second << endl;
+      }
+    }
   }
   else {
     // ファイル出力
+    ofs << '!' << endl;
+    rep(i, m)
+    {
+      int rev_i = arg_rev_g[i];
+      vector<int> points;
+      rep(j, n)
+      {
+        if (ans[j] == rev_i) {
+          points.push_back(j);
+        }
+      }
+      for (auto po : points) {
+        ofs << po << ' ';
+      }
+      ofs << endl;
+      vector<P> edges = MakeZenikigi(points);
+      for (auto edge : edges) {
+        ofs << edge.first << ' ' << edge.second << endl;
+      }
+    }
   }
 }
 
