@@ -252,6 +252,7 @@ int Distance(int num1, int num2)
 double buildMST_sum;
 P buildMST_points[n];
 Edge buildMST_edges[n * n];
+int buildMST_idxDict[n];
 vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
 {
   buildMST_sum = 0;
@@ -294,6 +295,118 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
       res[resCount] = P(nums[buildMST_edges[i].u], nums[buildMST_edges[i].v]);
       resCount++;
       if (UF_Count(buildMST_edges[i].u) == nums.size()) {
+        break;
+      }
+    }
+  }
+
+  return res;
+}
+
+vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
+{
+  const auto& nums1 = ans_nums[g_num1];
+  const auto& nums2 = ans_nums[g_num2];
+  int n1 = nums1.size();
+  int n2 = nums2.size();
+
+  buildMST_sum = 0;
+
+  UF_Init(n1 + n2);
+
+  rep(i, n1)
+  {
+    if (isTrue) {
+      buildMST_points[i] = GetTruePoint(nums1[i]);
+    }
+    else {
+      buildMST_points[i] = GetPoint(nums1[i]);
+    }
+
+    buildMST_idxDict[nums1[i]] = i;
+  }
+  rep(i, n2)
+  {
+    if (isTrue) {
+      buildMST_points[i + n1] = GetTruePoint(nums2[i]);
+    }
+    else {
+      buildMST_points[i + n1] = GetPoint(nums2[i]);
+    }
+
+    buildMST_idxDict[nums2[i]] = n1 + i;
+  }
+
+  int maxDist = -1;
+  int edgeCount = 0;
+  for (auto p : ans_edges[g_num1]) {
+    buildMST_edges[edgeCount].dist = Distance(buildMST_points[buildMST_idxDict[p.first]], buildMST_points[buildMST_idxDict[p.second]]);
+    maxDist = max(maxDist, buildMST_edges[edgeCount].dist);
+    buildMST_edges[edgeCount].u = buildMST_idxDict[p.first];
+    buildMST_edges[edgeCount].v = buildMST_idxDict[p.second];
+    edgeCount++;
+  }
+  for (auto p : ans_edges[g_num2]) {
+    buildMST_edges[edgeCount].dist = Distance(buildMST_points[buildMST_idxDict[p.first]], buildMST_points[buildMST_idxDict[p.second]]);
+    maxDist = max(maxDist, buildMST_edges[edgeCount].dist);
+    buildMST_edges[edgeCount].u = buildMST_idxDict[p.first];
+    buildMST_edges[edgeCount].v = buildMST_idxDict[p.second];
+    edgeCount++;
+  }
+
+  Edge minE;
+  minE.dist = INT_INF;
+  bool contains = false;
+  rep(ii, nums1.size())
+  {
+    rep(jj, nums2.size())
+    {
+      int i = ii;
+      int j = jj + n1;
+      buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
+      buildMST_edges[edgeCount].u = i;
+      buildMST_edges[edgeCount].v = j;
+      if (buildMST_edges[edgeCount].dist < minE.dist) {
+        minE = buildMST_edges[edgeCount];
+      }
+      if (buildMST_edges[edgeCount].dist <= maxDist) {
+        edgeCount++;
+        contains = true;
+      }
+    }
+  }
+
+  if (!contains) {
+    buildMST_edges[edgeCount] = minE;
+    edgeCount++;
+  }
+
+  sort(buildMST_edges, buildMST_edges + edgeCount);
+
+  vector<P> res(n1 + n2 - 1);
+  int resCount = 0;
+
+  rep(i, edgeCount)
+  {
+    if (!UF_Same(buildMST_edges[i].u, buildMST_edges[i].v)) {
+      buildMST_sum += sqrt(buildMST_edges[i].dist);
+      UF_Unite(buildMST_edges[i].u, buildMST_edges[i].v);
+      int uu, vv;
+      if (buildMST_edges[i].u < n1) {
+        uu = nums1[buildMST_edges[i].u];
+      }
+      else {
+        uu = nums2[buildMST_edges[i].u - n1];
+      }
+      if (buildMST_edges[i].v < n1) {
+        vv = nums1[buildMST_edges[i].v];
+      }
+      else {
+        vv = nums2[buildMST_edges[i].v - n1];
+      }
+      res[resCount] = P(uu, vv);
+      resCount++;
+      if (UF_Count(buildMST_edges[i].u) == n1 + n2) {
         break;
       }
     }
@@ -738,7 +851,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
   }
 
   if (mode != 0 && mode != 3) {
-    cout << loop << endl;
+    cout << "sa0 : " << loop << endl;
   }
 
   CopyToAns();
@@ -851,7 +964,7 @@ void SimulatedAnnealing1(Hypers hypers)
   }
 
   if (mode != 0 && mode != 3) {
-    cout << loop << endl;
+    cout << "sa1 : " << loop << endl;
   }
 
   CopyToAns();
@@ -966,7 +1079,7 @@ void SimulatedAnnealing2(Hypers hypers)
   }
 
   if (mode != 0 && mode != 3) {
-    cout << loop << endl;
+    cout << "sa2 : " << loop << endl;
   }
 
   CopyToAns();
@@ -1056,7 +1169,8 @@ void SimulatedAnnealing3(Hypers hypers)
 
       auto vec = ans_nums[ra1];
       vec.insert(vec.end(), ans_nums[ra2].begin(), ans_nums[ra2].end());
-      auto zen = BuildMST(vec);
+      //auto zen = BuildMST(vec);
+      auto zen = BuildMST(ra1, ra2);
 
       for (auto num : vec) {
         sa3_graph_count[num] = 0;
@@ -1150,7 +1264,7 @@ void SimulatedAnnealing3(Hypers hypers)
   }
 
   if (mode != 0 && mode != 3) {
-    cout << loop << endl;
+    cout << "sa3 : " << loop << endl;
   }
 
   //CopyToAns();
