@@ -175,6 +175,8 @@ double GetNowTime()
   return elapsed.count();
 }
 
+ofstream ofs;
+
 const int n = 800;
 const int MAX_M = 400;
 const int q = 400;
@@ -190,6 +192,7 @@ int arg_rev_g[MAX_M];
 int lx[n], rx[n], ly[n], ry[n];
 int pred_x[n], pred_y[n];
 
+int queryCount;
 vector<int> queries[q];
 vector<P> queryAnswers[q];
 vector<int> num_queries[n];
@@ -197,11 +200,13 @@ vector<int> num_queries[n];
 int true_x[n], true_y[n];
 
 ll ansScore;
+double dScore;
 int ans[n];
 vector<int> ans_nums[MAX_M];
 vector<P> ans_edges[MAX_M];
 
 ll best_ansScore;
+double best_dScore;
 int best_ans[n];
 vector<int> best_ans_nums[MAX_M];
 vector<P> best_ans_edges[MAX_M];
@@ -212,7 +217,8 @@ struct Edge
   int u;
   int v;
 
-  bool operator<(const Edge& other) const {
+  bool operator<(const Edge& other) const
+  {
     return dist < other.dist;
   }
 };
@@ -222,8 +228,14 @@ P GetMIddlePoint(int num)
   return P((lx[num] + rx[num]) / 2, (ly[num] + ry[num]) / 2);
 }
 
-P GetPoint(int num) {
+P GetPoint(int num)
+{
   return P(pred_x[num], pred_y[num]);
+}
+
+P GetTruePoint(int num)
+{
+  return P(true_x[num], true_y[num]);
 }
 
 int Distance(const P& p1, const P& p2)
@@ -231,13 +243,21 @@ int Distance(const P& p1, const P& p2)
   return (p1.first - p2.first) * (p1.first - p2.first) + (p1.second - p2.second) * (p1.second - p2.second);
 }
 
-vector<P> MakeZenikigi(const vector<int>& nums)
+double makeZenikigi_sum;
+vector<P> MakeZenikigi(const vector<int>& nums, bool isTrue = false)
 {
+  makeZenikigi_sum = 0;
+
   UF_Init(nums.size());
 
   vector<P> points;
   for (auto num : nums) {
-    points.push_back(GetMIddlePoint(num));
+    if (isTrue) {
+      points.push_back(GetTruePoint(num));
+    }
+    else {
+      points.push_back(GetPoint(num));
+    }
   }
 
   vector<Edge> edges;
@@ -259,6 +279,7 @@ vector<P> MakeZenikigi(const vector<int>& nums)
 
   for (auto e : edges) {
     if (!UF_Same(e.u, e.v)) {
+      makeZenikigi_sum += sqrt(e.dist);
       UF_Unite(e.u, e.v);
       res.push_back(P(nums[e.u], nums[e.v]));
       if (UF_Count(e.u) == nums.size()) {
@@ -273,10 +294,13 @@ vector<P> MakeZenikigi(const vector<int>& nums)
 void CopyToBest()
 {
   best_ansScore = ansScore;
-  rep(i, n) {
+  best_dScore = dScore;
+  rep(i, n)
+  {
     best_ans[i] = ans[i];
   }
-  rep(i, m) {
+  rep(i, m)
+  {
     best_ans_nums[i] = ans_nums[i];
     best_ans_edges[i] = ans_edges[i];
   }
@@ -285,10 +309,13 @@ void CopyToBest()
 void CopyToAns()
 {
   ansScore = best_ansScore;
-  rep(i, n) {
+  dScore = best_dScore;
+  rep(i, n)
+  {
     ans[i] = best_ans[i];
   }
-  rep(i, m) {
+  rep(i, m)
+  {
     ans_nums[i] = best_ans_nums[i];
     ans_edges[i] = best_ans_edges[i];
   }
@@ -304,20 +331,26 @@ bool IsNG(int x, int y)
 void SetUp()
 {
   ansScore = INT_INF;
-  rep(i, MAX_M) {
+  rep(i, MAX_M)
+  {
     ans_nums[i].clear();
     ans_edges[i].clear();
   }
   CopyToBest();
 
-  rep(i, q) {
+  queryCount = 0;
+  rep(i, q)
+  {
     queries[i].clear();
     queryAnswers[i].clear();
   }
-  rep(i, n) {
+  rep(i, n)
+  {
     num_queries[i].clear();
   }
 }
+
+bool isSimulateTruePoint = false;
 
 // 入力を受け取る関数
 void Input(int problemNum)
@@ -348,6 +381,12 @@ void Input(int problemNum)
     rep(i, n)ifs >> true_x[i] >> true_y[i];
   }
 
+  rep(i, n)
+  {
+    pred_x[i] = GetMIddlePoint(i).first;
+    pred_y[i] = GetMIddlePoint(i).second;
+  }
+
   vector<P> vp;
   rep(i, m)
   {
@@ -361,8 +400,9 @@ void Input(int problemNum)
     arg_rev_g[vp[i].second] = i;
   }
 
-  if (true) {
-    rep(i, n) {
+  if (isSimulateTruePoint) {
+    rep(i, n)
+    {
       lx[i] = true_x[i];
       rx[i] = true_x[i];
       ly[i] = true_y[i];
@@ -379,6 +419,10 @@ vector<P> QueryLocal()
 // 出力ファイルストリームを開く関数
 void OpenOfs(int probNum, ofstream& ofs)
 {
+  if (ofs.is_open()) {
+    ofs.close();
+  }
+
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
@@ -392,7 +436,7 @@ int CalcScore(int g_num)
   int res = 0;
 
   for (auto e : ans_edges[g_num]) {
-    res += sqrt(Distance(GetMIddlePoint(e.first), GetMIddlePoint(e.second)));
+    res += sqrt(Distance(GetPoint(e.first), GetPoint(e.second)));
   }
 
   return res;
@@ -402,9 +446,10 @@ int CalcScoreAll()
 {
   int res = 0;
 
-  rep(i, m) {
+  rep(i, m)
+  {
     for (auto e : ans_edges[i]) {
-      res += sqrt(Distance(GetMIddlePoint(e.first), GetMIddlePoint(e.second)));
+      res += sqrt(Distance(GetPoint(e.first), GetPoint(e.second)));
     }
   }
 
@@ -415,7 +460,8 @@ int CalcScoreLocal()
 {
   int res = 0;
 
-  rep(i, m) {
+  rep(i, m)
+  {
     for (auto e : ans_edges[i]) {
       res += sqrt(Distance(P(true_x[e.first], true_y[e.first]), P(true_x[e.second], true_y[e.second])));
     }
@@ -459,38 +505,66 @@ void Output(ofstream& ofs)
   }
 }
 
-// 面積大きい順にQ個クエリを投げる
-// Lは最大まで使う
-// 残りL-1頂点は近い順
-void Method1_Query() {
-  vector<P> vp;
-  rep(i, n) {
-    vp.emplace_back((rx[i] - lx[i] + 1) * (ry[i] - ly[i] + 1), i);
-  }
-  sort(vp.begin(), vp.end(), greater<P>());
-
-  rep(i, q) {
-    int num = vp[i].second;
-    auto po = GetMIddlePoint(num);
-    vector<P> dists;
-    rep(j, n) {
-      dists.emplace_back(Distance(po, GetMIddlePoint(j)), j);
-    }
-    sort(dists.begin(), dists.end());
+void Query()
+{
+  if (mode == 0) {
     cout << "? " << l;
-    rep(j, l) {
-      cout << ' ' << dists[j].second;
-      queries[i].push_back(dists[j].second);
-      num_queries[dists[j].second].push_back(i);
+    rep(j, l)
+    {
+      cout << ' ' << queries[queryCount][j];
     }
     cout << endl;
     fflush(stdout);
 
-    rep(j, l - 1) {
+    rep(j, l - 1)
+    {
       int a, b;
       cin >> a >> b;
-      queryAnswers[i].push_back(P(a, b));
+      queryAnswers[queryCount].push_back(P(a, b));
     }
+  }
+  else {
+    ofs << "? " << l;
+    rep(j, l)
+    {
+      ofs << ' ' << queries[queryCount][j];
+    }
+    ofs << endl;
+
+    queryAnswers[queryCount] = MakeZenikigi(queries[queryCount], true);
+  }
+
+  queryCount++;
+}
+
+// 面積大きい順にQ個クエリを投げる
+// Lは最大まで使う
+// 残りL-1頂点は近い順
+void Method1_Query()
+{
+  vector<P> vp;
+  rep(i, n)
+  {
+    vp.emplace_back((rx[i] - lx[i] + 1) * (ry[i] - ly[i] + 1), i);
+  }
+  sort(vp.begin(), vp.end(), greater<P>());
+
+  rep(i, q)
+  {
+    int num = vp[i].second;
+    auto po = GetPoint(num);
+    vector<P> dists;
+    rep(j, n)
+    {
+      dists.emplace_back(Distance(po, GetPoint(j)), j);
+    }
+    sort(dists.begin(), dists.end());
+    rep(j, l)
+    {
+      queries[i].push_back(dists[j].second);
+      num_queries[dists[j].second].push_back(i);
+    }
+    Query();
   }
 }
 
@@ -498,8 +572,10 @@ void Method1_Query() {
 void Method1()
 {
   int now = 0;
-  rep(i, m) {
-    rep(j, sort_g[i]) {
+  rep(i, m)
+  {
+    rep(j, sort_g[i])
+    {
       ans[now] = i;
       ans_nums[i].push_back(now);
       now++;
@@ -526,13 +602,14 @@ struct Hypers
   int Partition[10];
 };
 
-int BoundingScore(int g_num) {
+int BoundingScore(int g_num)
+{
   int minx = INT_INF;
   int maxx = -INT_INF;
   int miny = INT_INF;
   int maxy = -INT_INF;
   for (auto num : ans_nums[g_num]) {
-    auto po = GetMIddlePoint(num);
+    auto po = GetPoint(num);
     minx = min(minx, po.first);
     maxx = max(maxx, po.first);
     miny = min(miny, po.second);
@@ -547,6 +624,7 @@ void SimulatedAnnealing0(Hypers hypers)
   double timeLimit = TL / 2;
   double startTime = GetNowTime();
 
+  dScore = 0;
   CopyToBest();
 
   double nowTime = GetNowTime();
@@ -570,7 +648,7 @@ void SimulatedAnnealing0(Hypers hypers)
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
-    ll tmpScore = ansScore;
+    double tmpScore = dScore;
 
     // 近傍解作成
     int raMode = RandXor() % hypers.Partition[0];
@@ -579,56 +657,70 @@ void SimulatedAnnealing0(Hypers hypers)
     if (raMode < hypers.Partition[0]) {
       if (m == 1)continue;
       ra1 = RandXor() % n;
-      ra2 = RandXor() % n;
-      while (ans[ra1] == ans[ra2]) {
+      while (num_queries[ra1].empty()) {
         ra1 = RandXor() % n;
-        ra2 = RandXor() % n;
+      }
+      if (RandXor() % 2 == 0) {
+        ra2 = RandXor() % (rx[ra1] - lx[ra1] + 1) + lx[ra1];
+        ra3 = RandXor() % (ry[ra1] - ly[ra1] + 1) + ly[ra1];
+      }
+      else {
+        int len = (rx[ra1] - lx[ra1] + 1) / 10 + 1;
+        ra2 = RandXor() % (len * 2 + 1) - len + pred_x[ra1];
+        ra3 = RandXor() % (len * 2 + 1) - len + pred_y[ra1];
+      }
+      ra2 = max(ra2, lx[ra1]);
+      ra2 = min(ra2, rx[ra1]);
+      ra3 = max(ra3, ly[ra1]);
+      ra3 = min(ra3, ry[ra1]);
+
+      for (auto q_num : num_queries[ra1]) {
+        auto zen = MakeZenikigi(queries[q_num]);
+        double zenSum = makeZenikigi_sum;
+        double querySum = 0;
+        for (auto p : queryAnswers[q_num]) {
+          querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
+        }
+        tmpScore -= querySum / zenSum;
       }
 
-      int g_num1 = ans[ra1];
-      int g_num2 = ans[ra2];
+      keep2 = pred_x[ra1];
+      keep3 = pred_y[ra1];
+      pred_x[ra1] = ra2;
+      pred_y[ra1] = ra3;
 
-      tmpScore -= BoundingScore(g_num1);
-      tmpScore -= BoundingScore(g_num2);
-
-      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-      ans_nums[g_num1].push_back(ra2);
-      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-      ans_nums[g_num2].push_back(ra1);
-
-      tmpScore += BoundingScore(g_num1);
-      tmpScore += BoundingScore(g_num2);
-
-      swap(ans[ra1], ans[ra2]);
+      for (auto q_num : num_queries[ra1]) {
+        auto zen = MakeZenikigi(queries[q_num]);
+        double zenSum = makeZenikigi_sum;
+        double querySum = 0;
+        for (auto p : queryAnswers[q_num]) {
+          querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
+        }
+        tmpScore += querySum / zenSum;
+      }
     }
     else if (raMode < hypers.Partition[1]) {
 
     }
 
+
     // 焼きなまし
-    double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
+    double diffScore = (dScore - tmpScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
     if (prob > Rand01()) {
       // 採用
-      ansScore = tmpScore;
+      dScore = tmpScore;
 
       // Best解よりもいいか
-      if (ansScore < best_ansScore) {
+      if (dScore < best_dScore) {
         CopyToBest();
       }
     }
     else {
       // 元に戻す
       if (raMode < hypers.Partition[0]) {
-        int g_num1 = ans[ra1];
-        int g_num2 = ans[ra2];
-
-        ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-        ans_nums[g_num1].push_back(ra2);
-        ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-        ans_nums[g_num2].push_back(ra1);
-
-        swap(ans[ra1], ans[ra2]);
+        pred_x[ra1] = keep2;
+        pred_y[ra1] = keep3;
       }
       else if (raMode < hypers.Partition[1]) {
       }
@@ -648,6 +740,11 @@ void SimulatedAnnealing0(Hypers hypers)
   ansScore = CalcScoreAll();
 
   CopyToBest();
+
+  //rep(i, 100)
+  //{
+  //  cout << pred_x[i] << ' ' << pred_y[i] << endl;
+  //}
 }
 
 
@@ -880,15 +977,15 @@ ll Solve(int problem_num, Hypers hypers)
   Input(problem_num);
 
   // 出力ファイルストリームオープン
-  ofstream ofs;
   OpenOfs(problem_num, ofs);
 
   // 初期解生成
   Method1();
 
   // 焼きなまし
+  SimulatedAnnealing0(hypers);
   SimulatedAnnealing1(hypers);
-  SimulatedAnnealing2(hypers);
+  //SimulatedAnnealing2(hypers);
 
   // 解答を出力
   Output(ofs);
@@ -919,9 +1016,10 @@ int main()
   }
 
   mode = 2;
+  isSimulateTruePoint = false;
 
   Hypers HYPERS;
-  HYPERS.StartTemp = 200048.0;
+  HYPERS.StartTemp = 248.0;
   HYPERS.EndTemp = 0.0;
   HYPERS.MultipleValue = 12345.0;
   HYPERS.Partition[0] = 100;
