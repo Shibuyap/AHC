@@ -1019,7 +1019,7 @@ void SimulatedAnnealing3(Hypers hypers)
   while (true) {
     loop++;
 
-    if (loop % 100 == 0) {
+    if (loop % 100 == 0 || sort_g[m - 1] >= 100) {
       nowTime = GetNowTime();
       if (nowTime > timeLimit) break;
     }
