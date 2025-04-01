@@ -196,6 +196,7 @@ int queryCount;
 vector<int> queries[q];
 vector<P> queryAnswers[q];
 vector<int> num_queries[n];
+set<vector<int>> querySet;
 
 int true_x[n], true_y[n];
 
@@ -243,22 +244,27 @@ int Distance(const P& p1, const P& p2)
   return (p1.first - p2.first) * (p1.first - p2.first) + (p1.second - p2.second) * (p1.second - p2.second);
 }
 
-double makeZenikigi_sum;
-P makeZenikigi_points[n];
-Edge makeZenikigi_edges[n * n];
-vector<P> MakeZenikigi(const vector<int>& nums, bool isTrue = false)
+int Distance(int num1, int num2)
 {
-  makeZenikigi_sum = 0;
+  return Distance(GetPoint(num1), GetPoint(num2));
+}
+
+double buildMST_sum;
+P buildMST_points[n];
+Edge buildMST_edges[n * n];
+vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
+{
+  buildMST_sum = 0;
 
   UF_Init(nums.size());
 
   rep(i, nums.size())
   {
     if (isTrue) {
-      makeZenikigi_points[i] = GetTruePoint(nums[i]);
+      buildMST_points[i] = GetTruePoint(nums[i]);
     }
     else {
-      makeZenikigi_points[i] = GetPoint(nums[i]);
+      buildMST_points[i] = GetPoint(nums[i]);
     }
   }
 
@@ -268,26 +274,26 @@ vector<P> MakeZenikigi(const vector<int>& nums, bool isTrue = false)
     srep(j, i + 1, nums.size())
     {
       Edge e;
-      makeZenikigi_edges[edgeCount].dist = Distance(makeZenikigi_points[i], makeZenikigi_points[j]);
-      makeZenikigi_edges[edgeCount].u = i;
-      makeZenikigi_edges[edgeCount].v = j;
+      buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
+      buildMST_edges[edgeCount].u = i;
+      buildMST_edges[edgeCount].v = j;
       edgeCount++;
     }
   }
 
-  sort(makeZenikigi_edges, makeZenikigi_edges + edgeCount);
+  sort(buildMST_edges, buildMST_edges + edgeCount);
 
   vector<P> res(nums.size() - 1);
   int resCount = 0;
 
   rep(i, edgeCount)
   {
-    if (!UF_Same(makeZenikigi_edges[i].u, makeZenikigi_edges[i].v)) {
-      makeZenikigi_sum += sqrt(makeZenikigi_edges[i].dist);
-      UF_Unite(makeZenikigi_edges[i].u, makeZenikigi_edges[i].v);
-      res[resCount] = P(nums[makeZenikigi_edges[i].u], nums[makeZenikigi_edges[i].v]);
+    if (!UF_Same(buildMST_edges[i].u, buildMST_edges[i].v)) {
+      buildMST_sum += sqrt(buildMST_edges[i].dist);
+      UF_Unite(buildMST_edges[i].u, buildMST_edges[i].v);
+      res[resCount] = P(nums[buildMST_edges[i].u], nums[buildMST_edges[i].v]);
       resCount++;
-      if (UF_Count(makeZenikigi_edges[i].u) == nums.size()) {
+      if (UF_Count(buildMST_edges[i].u) == nums.size()) {
         break;
       }
     }
@@ -326,12 +332,6 @@ void CopyToAns()
   }
 }
 
-bool IsNG(int x, int y)
-{
-  //if (x < 0 || n <= x || y < 0 || n <= y)return true;
-  return false;
-}
-
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
@@ -353,10 +353,10 @@ void SetUp()
   {
     num_queries[i].clear();
   }
+  querySet.clear();
 }
 
 bool isSimulateTruePoint = false;
-
 // 入力を受け取る関数
 void Input(int problemNum)
 {
@@ -416,11 +416,6 @@ void Input(int problemNum)
   }
 }
 
-vector<P> QueryLocal()
-{
-  return {};
-}
-
 // 出力ファイルストリームを開く関数
 void OpenOfs(int probNum, ofstream& ofs)
 {
@@ -453,9 +448,7 @@ int CalcScoreAll()
 
   rep(i, m)
   {
-    for (auto e : ans_edges[i]) {
-      res += sqrt(Distance(GetPoint(e.first), GetPoint(e.second)));
-    }
+    res += CalcScore(i);
   }
 
   return res;
@@ -536,7 +529,7 @@ void Query()
     }
     ofs << endl;
 
-    queryAnswers[queryCount] = MakeZenikigi(queries[queryCount], true);
+    queryAnswers[queryCount] = BuildMST(queries[queryCount], true);
   }
 
   queryCount++;
@@ -545,7 +538,7 @@ void Query()
 // 面積大きい順にQ個クエリを投げる
 // Lは最大まで使う
 // 残りL-1頂点は近い順
-void Method1_Query()
+void Method1_Query(int start, int queryEnd)
 {
   vector<P> vp;
   rep(i, n)
@@ -554,7 +547,7 @@ void Method1_Query()
   }
   sort(vp.begin(), vp.end(), greater<P>());
 
-  rep(i, q)
+  srep(i, start, n)
   {
     int num = vp[i].second;
     auto po = GetPoint(num);
@@ -564,12 +557,27 @@ void Method1_Query()
       dists.emplace_back(Distance(po, GetPoint(j)), j);
     }
     sort(dists.begin(), dists.end());
+    queries[queryCount].clear();
     rep(j, l)
     {
-      queries[i].push_back(dists[j].second);
-      num_queries[dists[j].second].push_back(i);
+      queries[queryCount].push_back(dists[j].second);
     }
+    sort(queries[queryCount].begin(), queries[queryCount].end());
+    if (querySet.find(queries[queryCount]) != querySet.end()) {
+      continue;
+    }
+    rep(j, l)
+    {
+      num_queries[dists[j].second].push_back(queryCount);
+    }
+    querySet.insert(queries[queryCount]);
     Query();
+    if (queryCount == queryEnd) {
+      if (mode != 0) {
+        cout << i + 1 << endl;
+      }
+      break;
+    }
   }
 }
 
@@ -589,13 +597,11 @@ void Method1()
 
   rep(i, m)
   {
-    ans_edges[i] = MakeZenikigi(ans_nums[i]);
+    ans_edges[i] = BuildMST(ans_nums[i]);
   }
 
   ansScore = CalcScoreAll();
   CopyToBest();
-
-  Method1_Query();
 }
 
 // ハイパーパラメータ
@@ -624,9 +630,8 @@ int BoundingScore(int g_num)
   return (maxx - minx) * (maxx - minx) + (maxy - miny) * (maxy - miny);
 }
 
-void SimulatedAnnealing0(Hypers hypers)
+void SimulatedAnnealing0(Hypers hypers, double timeLimit)
 {
-  double timeLimit = TL / 2;
   double startTime = GetNowTime();
 
   dScore = 0;
@@ -680,8 +685,8 @@ void SimulatedAnnealing0(Hypers hypers)
       ra3 = min(ra3, ry[ra1]);
 
       for (auto q_num : num_queries[ra1]) {
-        auto zen = MakeZenikigi(queries[q_num]);
-        double zenSum = makeZenikigi_sum;
+        auto zen = BuildMST(queries[q_num]);
+        double zenSum = buildMST_sum;
         double querySum = 0;
         for (auto p : queryAnswers[q_num]) {
           querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
@@ -695,8 +700,8 @@ void SimulatedAnnealing0(Hypers hypers)
       pred_y[ra1] = ra3;
 
       for (auto q_num : num_queries[ra1]) {
-        auto zen = MakeZenikigi(queries[q_num]);
-        double zenSum = makeZenikigi_sum;
+        auto zen = BuildMST(queries[q_num]);
+        double zenSum = buildMST_sum;
         double querySum = 0;
         for (auto p : queryAnswers[q_num]) {
           querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
@@ -740,7 +745,7 @@ void SimulatedAnnealing0(Hypers hypers)
 
   rep(i, m)
   {
-    ans_edges[i] = MakeZenikigi(ans_nums[i]);
+    ans_edges[i] = BuildMST(ans_nums[i]);
   }
   ansScore = CalcScoreAll();
 
@@ -751,7 +756,6 @@ void SimulatedAnnealing0(Hypers hypers)
   //  cout << pred_x[i] << ' ' << pred_y[i] << endl;
   //}
 }
-
 
 void SimulatedAnnealing1(Hypers hypers)
 {
@@ -854,7 +858,7 @@ void SimulatedAnnealing1(Hypers hypers)
 
   rep(i, m)
   {
-    ans_edges[i] = MakeZenikigi(ans_nums[i]);
+    ans_edges[i] = BuildMST(ans_nums[i]);
   }
   ansScore = CalcScoreAll();
 
@@ -916,8 +920,8 @@ void SimulatedAnnealing2(Hypers hypers)
       ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
       ans_nums[g_num2].push_back(ra1);
 
-      ans_edges[g_num1] = MakeZenikigi(ans_nums[g_num1]);
-      ans_edges[g_num2] = MakeZenikigi(ans_nums[g_num2]);
+      ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
+      ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
 
       tmpScore += CalcScore(g_num1);
       tmpScore += CalcScore(g_num2);
@@ -951,8 +955,8 @@ void SimulatedAnnealing2(Hypers hypers)
         ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
         ans_nums[g_num2].push_back(ra1);
 
-        ans_edges[g_num1] = MakeZenikigi(ans_nums[g_num1]);
-        ans_edges[g_num2] = MakeZenikigi(ans_nums[g_num2]);
+        ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
+        ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
 
         swap(ans[ra1], ans[ra2]);
       }
@@ -1052,7 +1056,7 @@ void SimulatedAnnealing3(Hypers hypers)
 
       auto vec = ans_nums[ra1];
       vec.insert(vec.end(), ans_nums[ra2].begin(), ans_nums[ra2].end());
-      auto zen = MakeZenikigi(vec);
+      auto zen = BuildMST(vec);
 
       for (auto num : vec) {
         sa3_graph_count[num] = 0;
@@ -1153,13 +1157,12 @@ void SimulatedAnnealing3(Hypers hypers)
 
   rep(i, m)
   {
-    ans_edges[i] = MakeZenikigi(ans_nums[i]);
+    ans_edges[i] = BuildMST(ans_nums[i]);
   }
   ansScore = CalcScoreAll();
 
   CopyToBest();
 }
-
 
 // 問題を解く関数
 ll Solve(int problem_num, Hypers hypers)
@@ -1172,6 +1175,8 @@ ll Solve(int problem_num, Hypers hypers)
   // 入力受け取り
   Input(problem_num);
 
+  //if (l >= 5)return 0;
+
   // 出力ファイルストリームオープン
   OpenOfs(problem_num, ofs);
 
@@ -1179,7 +1184,13 @@ ll Solve(int problem_num, Hypers hypers)
   Method1();
 
   // 焼きなまし
-  SimulatedAnnealing0(hypers);
+  int aespa = 2;
+  if (l <= 4)aespa = 4;
+  rep(i, aespa)
+  {
+    Method1_Query(0, q / aespa * (i + 1));
+    SimulatedAnnealing0(hypers, TL / 2 / aespa * (i + 1));
+  }
   SimulatedAnnealing1(hypers);
   //SimulatedAnnealing2(hypers);
   SimulatedAnnealing3(hypers);
@@ -1195,6 +1206,11 @@ ll Solve(int problem_num, Hypers hypers)
   if (mode != 0) {
     cout << CalcScoreAll() << endl;
     score = CalcScoreLocal();
+
+    //rep(i, 100)
+    //{
+    //  cout << "(" << true_x[i] << ", " << true_y[i] << ") (" << GetMIddlePoint(i).first << ", " << GetMIddlePoint(i).second << ") (" << pred_x[i] << ", " << pred_y[i] << ")" << endl;
+    //}
   }
   return score;
 }
@@ -1235,7 +1251,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 50)
+    srep(i, 0, 150)
     {
       ll score = Solve(i, HYPERS);
       sum += score;

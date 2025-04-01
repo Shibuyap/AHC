@@ -314,29 +314,29 @@ int main()
 
   mode = 2;
 
-  Hypers HYPERS;
-  HYPERS.StartTemp = 2048.0;
-  HYPERS.EndTemp = 0.0;
-  HYPERS.MultipleValue = 12345.0;
-  HYPERS.Partition[0] = 100;
-  HYPERS.Partition[1] = 200;
-  HYPERS.Partition[2] = 300;
-  HYPERS.Partition[3] = 400;
-  HYPERS.Partition[4] = 500;
-  HYPERS.Partition[5] = 600;
-  HYPERS.Partition[6] = 700;
-  HYPERS.Partition[7] = 800;
-  HYPERS.Partition[8] = 900;
-  HYPERS.Partition[9] = 1000;
+  Hypers hypers;
+  hypers.StartTemp = 2048.0;
+  hypers.EndTemp = 0.0;
+  hypers.MultipleValue = 12345.0;
+  hypers.Partition[0] = 100;
+  hypers.Partition[1] = 200;
+  hypers.Partition[2] = 300;
+  hypers.Partition[3] = 400;
+  hypers.Partition[4] = 500;
+  hypers.Partition[5] = 600;
+  hypers.Partition[6] = 700;
+  hypers.Partition[7] = 800;
+  hypers.Partition[8] = 900;
+  hypers.Partition[9] = 1000;
 
   if (mode == 0) {
-    Solve(0, HYPERS);
+    Solve(0, hypers);
   }
   else if (mode <= 2) {
     ll sum = 0;
     srep(i, 0, 15)
     {
-      ll score = Solve(i, HYPERS);
+      ll score = Solve(i, hypers);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
@@ -356,16 +356,16 @@ int main()
     ll bestSumScore = 0;
 
     while (true) {
-      Hypers hypers;
-      hypers.StartTemp = pow(2.0, Rand01() * 20);
-      hypers.EndTemp = 0.0;
-      hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition[0] = RandXor() % 101;
+      Hypers newHypers;
+      newHypers.StartTemp = pow(2.0, Rand01() * 20);
+      newHypers.EndTemp = 0.0;
+      newHypers.MultipleValue = pow(2.0, Rand01() * 20);
+      newHypers.Partition[0] = RandXor() % 101;
 
       ll sum = 0;
       srep(i, 0, 15)
       {
-        ll score = Solve(i, hypers);
+        ll score = Solve(i, newHypers);
         sum += score;
 
         // シード0が悪ければ打ち切り
@@ -377,15 +377,15 @@ int main()
       cout
         << "Loop = " << loop
         << ", Sum = " << sum
-        << ", StartTemp = " << hypers.StartTemp
-        << ", EndTemp = " << hypers.EndTemp
-        << ", MultipleValue = " << hypers.MultipleValue
-        << ", Partition1 = " << hypers.Partition[0]
+        << ", StartTemp = " << newHypers.StartTemp
+        << ", EndTemp = " << newHypers.EndTemp
+        << ", MultipleValue = " << newHypers.MultipleValue
+        << ", Partition1 = " << newHypers.Partition[0]
         << endl;
 
       if (sum > bestSumScore) {
         bestSumScore = sum;
-        bestHypers = hypers;
+        bestHypers = newHypers;
       }
 
       loop++;
