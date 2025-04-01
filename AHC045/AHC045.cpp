@@ -244,45 +244,50 @@ int Distance(const P& p1, const P& p2)
 }
 
 double makeZenikigi_sum;
+P makeZenikigi_points[n];
+Edge makeZenikigi_edges[n * n];
 vector<P> MakeZenikigi(const vector<int>& nums, bool isTrue = false)
 {
   makeZenikigi_sum = 0;
 
   UF_Init(nums.size());
 
-  vector<P> points;
-  for (auto num : nums) {
-    if (isTrue) {
-      points.push_back(GetTruePoint(num));
-    }
-    else {
-      points.push_back(GetPoint(num));
-    }
-  }
-
-  vector<Edge> edges;
   rep(i, nums.size())
   {
-    srep(j, i + 1, points.size())
-    {
-      Edge e;
-      e.dist = Distance(points[i], points[j]);
-      e.u = i;
-      e.v = j;
-      edges.push_back(e);
+    if (isTrue) {
+      makeZenikigi_points[i] = GetTruePoint(nums[i]);
+    }
+    else {
+      makeZenikigi_points[i] = GetPoint(nums[i]);
     }
   }
 
-  sort(edges.begin(), edges.end());
+  int edgeCount = 0;
+  rep(i, nums.size())
+  {
+    srep(j, i + 1, nums.size())
+    {
+      Edge e;
+      makeZenikigi_edges[edgeCount].dist = Distance(makeZenikigi_points[i], makeZenikigi_points[j]);
+      makeZenikigi_edges[edgeCount].u = i;
+      makeZenikigi_edges[edgeCount].v = j;
+      edgeCount++;
+    }
+  }
 
-  vector<P> res;
+  sort(makeZenikigi_edges, makeZenikigi_edges + edgeCount);
 
-  for (auto e : edges) {
-    if (!UF_Same(e.u, e.v)) {
-      makeZenikigi_sum += sqrt(e.dist);
-      UF_Unite(e.u, e.v);
-      res.push_back(P(nums[e.u], nums[e.v]));
-      if (UF_Count(e.u) == nums.size()) {
+  vector<P> res(nums.size() - 1);
+  int resCount = 0;
+
+  rep(i, edgeCount)
+  {
+    if (!UF_Same(makeZenikigi_edges[i].u, makeZenikigi_edges[i].v)) {
+      makeZenikigi_sum += sqrt(makeZenikigi_edges[i].dist);
+      UF_Unite(makeZenikigi_edges[i].u, makeZenikigi_edges[i].v);
+      res[resCount] = P(nums[makeZenikigi_edges[i].u], nums[makeZenikigi_edges[i].v]);
+      resCount++;
+      if (UF_Count(makeZenikigi_edges[i].u) == nums.size()) {
         break;
       }
     }
@@ -750,7 +755,7 @@ void SimulatedAnnealing0(Hypers hypers)
 
 void SimulatedAnnealing1(Hypers hypers)
 {
-  double timeLimit = TL;
+  double timeLimit = TL * 3 / 4;
   double startTime = GetNowTime();
 
   CopyToBest();
@@ -965,6 +970,197 @@ void SimulatedAnnealing2(Hypers hypers)
   CopyToBest();
 }
 
+int sa3_graph[n][n];
+int sa3_graph_count[n];
+
+int sa3_subtree_size[n];
+bool sa3_visited[n];
+int sa3_parent[n];
+int sa3_dfs(int u, int p)
+{
+  sa3_parent[u] = p;
+  sa3_visited[u] = true;
+  int cnt = 1; // 自分自身を含めるので1からスタート
+  rep(i, sa3_graph_count[u])
+  {
+    if (!sa3_visited[sa3_graph[u][i]]) {
+      cnt += sa3_dfs(sa3_graph[u][i], u);
+    }
+  }
+  sa3_subtree_size[u] = cnt;
+  return cnt;
+}
+
+void sa3_dfs2(int u, int p, int g_num)
+{
+  ans[u] = g_num;
+  ans_nums[g_num].push_back(u);
+  rep(i, sa3_graph_count[u])
+  {
+    if (sa3_graph[u][i] != p) {
+      ans_edges[g_num].emplace_back(u, sa3_graph[u][i]);
+      sa3_dfs2(sa3_graph[u][i], u, g_num);
+    }
+  }
+}
+
+void SimulatedAnnealing3(Hypers hypers)
+{
+  double timeLimit = TL;
+  double startTime = GetNowTime();
+
+  CopyToBest();
+
+  double nowTime = GetNowTime();
+  const double START_TEMP = hypers.StartTemp;
+  const double END_TEMP = hypers.EndTemp;
+
+  int loop = 0;
+  while (true) {
+    loop++;
+
+    if (loop % 100 == 0) {
+      nowTime = GetNowTime();
+      if (nowTime > timeLimit) break;
+    }
+
+    // 戻す
+    //if (ansScore * 1.2 < best_ansScore) {
+    //  CopyToAns();
+    //}
+
+    double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+
+    ll tmpScore = ansScore;
+
+    // 近傍解作成
+    int raMode = RandXor() % hypers.Partition[0];
+    int ra1, ra2, ra3, ra4, ra5;
+    int keep1, keep2, keep3, keep4, keep5;
+    if (raMode < hypers.Partition[0]) {
+      if (m == 1)continue;
+      ra1 = RandXor() % m;
+      ra2 = RandXor() % m;
+      while (ra1 == ra2) {
+        ra1 = RandXor() % m;
+        ra2 = RandXor() % m;
+      }
+
+      int sz1 = sort_g[ra1];
+      int sz2 = sort_g[ra2];
+
+      auto vec = ans_nums[ra1];
+      vec.insert(vec.end(), ans_nums[ra2].begin(), ans_nums[ra2].end());
+      auto zen = MakeZenikigi(vec);
+
+      for (auto num : vec) {
+        sa3_graph_count[num] = 0;
+        sa3_visited[num] = false;
+      }
+      for (auto p : zen) {
+        sa3_graph[p.first][sa3_graph_count[p.first]] = p.second;
+        sa3_graph_count[p.first]++;
+        sa3_graph[p.second][sa3_graph_count[p.second]] = p.first;
+        sa3_graph_count[p.second]++;
+      }
+
+      sa3_dfs(vec[0], -1);
+
+      int cutNum = -1;
+      int ra1Root = -1;
+      int ra2Root = -1;
+      double cutLen = -1;
+      rep(i, zen.size())
+      {
+        int u = zen[i].first;
+        int v = zen[i].second;
+        if (sa3_parent[v] == u) {
+          if (sa3_subtree_size[v] == sz1 || sa3_subtree_size[v] == sz2) {
+            if (Distance(GetPoint(u), GetPoint(v)) > cutLen) {
+              cutLen = Distance(GetPoint(u), GetPoint(v));
+              cutNum = i;
+              if (sa3_subtree_size[v] == sz1) {
+                ra1Root = v;
+                ra2Root = u;
+              }
+              else {
+                ra1Root = u;
+                ra2Root = v;
+              }
+            }
+          }
+        }
+        else {
+          if (sa3_subtree_size[u] == sz1 || sa3_subtree_size[u] == sz2) {
+            if (Distance(GetPoint(u), GetPoint(v)) > cutLen) {
+              cutLen = Distance(GetPoint(u), GetPoint(v));
+              cutNum = i;
+              if (sa3_subtree_size[u] == sz1) {
+                ra1Root = u;
+                ra2Root = v;
+              }
+              else {
+                ra1Root = v;
+                ra2Root = u;
+              }
+            }
+          }
+        }
+      }
+
+      if (cutNum == -1) continue;
+
+      ans_nums[ra1].clear();
+      ans_edges[ra1].clear();
+      ans_nums[ra2].clear();
+      ans_edges[ra2].clear();
+      sa3_dfs2(ra1Root, ra2Root, ra1);
+      sa3_dfs2(ra2Root, ra1Root, ra2);
+    }
+    else if (raMode < hypers.Partition[1]) {
+
+    }
+
+    // 焼きなまし
+    double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
+    double prob = exp(diffScore / temp);
+    //if (prob > Rand01()) {
+    if (true) {
+      // 採用
+      //ansScore = tmpScore;
+
+      // Best解よりもいいか
+      //if (ansScore < best_ansScore) {
+      //  CopyToBest();
+      //}
+    }
+    else {
+      // 元に戻す
+      if (raMode < hypers.Partition[0]) {
+
+      }
+      else if (raMode < hypers.Partition[1]) {
+      }
+    }
+  }
+
+  if (mode != 0 && mode != 3) {
+    cout << loop << endl;
+  }
+
+  //CopyToAns();
+
+  rep(i, m)
+  {
+    ans_edges[i] = MakeZenikigi(ans_nums[i]);
+  }
+  ansScore = CalcScoreAll();
+
+  CopyToBest();
+}
+
+
 // 問題を解く関数
 ll Solve(int problem_num, Hypers hypers)
 {
@@ -986,6 +1182,7 @@ ll Solve(int problem_num, Hypers hypers)
   SimulatedAnnealing0(hypers);
   SimulatedAnnealing1(hypers);
   //SimulatedAnnealing2(hypers);
+  SimulatedAnnealing3(hypers);
 
   // 解答を出力
   Output(ofs);
@@ -1038,7 +1235,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 150)
+    srep(i, 0, 50)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
