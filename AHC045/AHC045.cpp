@@ -147,8 +147,6 @@ namespace
   }
 }  // namespace
 
-
-
 // 非常に大きな値
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
@@ -195,6 +193,8 @@ int pred_x[n], pred_y[n];
 int queryCount;
 vector<int> queries[q];
 vector<P> queryAnswers[q];
+vector<P> queryPredMST[q];
+int  queryPredMSTSum[q];
 vector<int> num_queries[n];
 set<vector<int>> querySet;
 
@@ -253,28 +253,34 @@ double buildMST_sum;
 P buildMST_points[n];
 Edge buildMST_edges[n * n];
 int buildMST_idxDict[n];
+
+void BuildMST_InitPoints(const vector<int>& nums, int startIndex, bool isTrue)
+{
+  rep(i, nums.size())
+  {
+    if (isTrue) {
+      buildMST_points[startIndex + i] = GetTruePoint(nums[i]);
+    }
+    else {
+      buildMST_points[startIndex + i] = GetPoint(nums[i]);
+    }
+    buildMST_idxDict[nums[i]] = startIndex + i;
+  }
+}
+
 vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
 {
   buildMST_sum = 0;
 
   UF_Init(nums.size());
 
-  rep(i, nums.size())
-  {
-    if (isTrue) {
-      buildMST_points[i] = GetTruePoint(nums[i]);
-    }
-    else {
-      buildMST_points[i] = GetPoint(nums[i]);
-    }
-  }
+  BuildMST_InitPoints(nums, 0, isTrue);
 
   int edgeCount = 0;
   rep(i, nums.size())
   {
     srep(j, i + 1, nums.size())
     {
-      Edge e;
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
       buildMST_edges[edgeCount].v = j;
@@ -303,10 +309,8 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
   return res;
 }
 
-vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
+vector<P> BuildMST(const vector<int>& nums1, const vector<P>& edges1, const vector<int>& nums2, const vector<P>& edges2, bool isTrue = false)
 {
-  const auto& nums1 = ans_nums[g_num1];
-  const auto& nums2 = ans_nums[g_num2];
   int n1 = nums1.size();
   int n2 = nums2.size();
 
@@ -314,39 +318,19 @@ vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
 
   UF_Init(n1 + n2);
 
-  rep(i, n1)
-  {
-    if (isTrue) {
-      buildMST_points[i] = GetTruePoint(nums1[i]);
-    }
-    else {
-      buildMST_points[i] = GetPoint(nums1[i]);
-    }
-
-    buildMST_idxDict[nums1[i]] = i;
-  }
-  rep(i, n2)
-  {
-    if (isTrue) {
-      buildMST_points[i + n1] = GetTruePoint(nums2[i]);
-    }
-    else {
-      buildMST_points[i + n1] = GetPoint(nums2[i]);
-    }
-
-    buildMST_idxDict[nums2[i]] = n1 + i;
-  }
+  BuildMST_InitPoints(nums1, 0, isTrue);
+  BuildMST_InitPoints(nums2, n1, isTrue);
 
   int maxDist = -1;
   int edgeCount = 0;
-  for (auto p : ans_edges[g_num1]) {
+  for (auto p : edges1) {
     buildMST_edges[edgeCount].dist = Distance(buildMST_points[buildMST_idxDict[p.first]], buildMST_points[buildMST_idxDict[p.second]]);
     maxDist = max(maxDist, buildMST_edges[edgeCount].dist);
     buildMST_edges[edgeCount].u = buildMST_idxDict[p.first];
     buildMST_edges[edgeCount].v = buildMST_idxDict[p.second];
     edgeCount++;
   }
-  for (auto p : ans_edges[g_num2]) {
+  for (auto p : edges2) {
     buildMST_edges[edgeCount].dist = Distance(buildMST_points[buildMST_idxDict[p.first]], buildMST_points[buildMST_idxDict[p.second]]);
     maxDist = max(maxDist, buildMST_edges[edgeCount].dist);
     buildMST_edges[edgeCount].u = buildMST_idxDict[p.first];
@@ -383,7 +367,7 @@ vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
 
   sort(buildMST_edges, buildMST_edges + edgeCount);
 
-  vector<P> res(n1 + n2 - 1);
+  vector<P> res((ll)n1 + n2 - 1);
   int resCount = 0;
 
   rep(i, edgeCount)
@@ -396,13 +380,13 @@ vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
         uu = nums1[buildMST_edges[i].u];
       }
       else {
-        uu = nums2[buildMST_edges[i].u - n1];
+        uu = nums2[(ll)buildMST_edges[i].u - n1];
       }
       if (buildMST_edges[i].v < n1) {
         vv = nums1[buildMST_edges[i].v];
       }
       else {
-        vv = nums2[buildMST_edges[i].v - n1];
+        vv = nums2[(ll)buildMST_edges[i].v - n1];
       }
       res[resCount] = P(uu, vv);
       resCount++;
@@ -413,6 +397,11 @@ vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
   }
 
   return res;
+}
+
+vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
+{
+  return BuildMST(ans_nums[g_num1], ans_edges[g_num1], ans_nums[g_num2], ans_edges[g_num2]);
 }
 
 void CopyToBest()
@@ -461,6 +450,7 @@ void SetUp()
   {
     queries[i].clear();
     queryAnswers[i].clear();
+    queryPredMST[i].clear();
   }
   rep(i, n)
   {
@@ -499,6 +489,16 @@ void Input(int problemNum)
     rep(i, n)ifs >> true_x[i] >> true_y[i];
   }
 
+  if (isSimulateTruePoint) {
+    rep(i, n)
+    {
+      lx[i] = true_x[i];
+      rx[i] = true_x[i];
+      ly[i] = true_y[i];
+      ry[i] = true_y[i];
+    }
+  }
+
   rep(i, n)
   {
     pred_x[i] = GetMIddlePoint(i).first;
@@ -517,16 +517,6 @@ void Input(int problemNum)
     arg_g[i] = vp[i].second;
     arg_rev_g[vp[i].second] = i;
   }
-
-  if (isSimulateTruePoint) {
-    rep(i, n)
-    {
-      lx[i] = true_x[i];
-      rx[i] = true_x[i];
-      ly[i] = true_y[i];
-      ry[i] = true_y[i];
-    }
-  }
 }
 
 // 出力ファイルストリームを開く関数
@@ -544,12 +534,17 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // スコアを計算する関数
-int CalcScore(int g_num)
+int CalcScore(int g_num, bool isTrue = false)
 {
   int res = 0;
 
   for (auto e : ans_edges[g_num]) {
-    res += sqrt(Distance(GetPoint(e.first), GetPoint(e.second)));
+    if (isTrue) {
+      res += sqrt(Distance(GetTruePoint(e.first), GetTruePoint(e.second)));
+    }
+    else {
+      res += sqrt(Distance(GetPoint(e.first), GetPoint(e.second)));
+    }
   }
 
   return res;
@@ -558,26 +553,20 @@ int CalcScore(int g_num)
 int CalcScoreAll()
 {
   int res = 0;
-
   rep(i, m)
   {
     res += CalcScore(i);
   }
-
   return res;
 }
 
 int CalcScoreLocal()
 {
   int res = 0;
-
   rep(i, m)
   {
-    for (auto e : ans_edges[i]) {
-      res += sqrt(Distance(P(true_x[e.first], true_y[e.first]), P(true_x[e.second], true_y[e.second])));
-    }
+    res += CalcScore(i, true);
   }
-
   return res;
 }
 
@@ -643,6 +632,8 @@ void Query()
     ofs << endl;
 
     queryAnswers[queryCount] = BuildMST(queries[queryCount], true);
+    queryPredMST[queryCount] = BuildMST(queries[queryCount], false);
+    queryPredMSTSum[queryCount] = buildMST_sum;
   }
 
   queryCount++;
@@ -743,6 +734,8 @@ int BoundingScore(int g_num)
   return (maxx - minx) * (maxx - minx) + (maxy - miny) * (maxy - miny);
 }
 
+vector<P> sa0_keepMST[q];
+int sa0_keepMSTSum[q];
 void SimulatedAnnealing0(Hypers hypers, double timeLimit)
 {
   double startTime = GetNowTime();
@@ -763,11 +756,6 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       if (nowTime > timeLimit) break;
     }
 
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
-
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
@@ -777,34 +765,38 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
     int raMode = RandXor() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
+
     if (raMode < hypers.Partition[0]) {
       if (m == 1)continue;
       ra1 = RandXor() % n;
       while (num_queries[ra1].empty()) {
         ra1 = RandXor() % n;
       }
-      if (RandXor() % 2 == 0) {
+      if (RandXor() % 100 < 50) {
         ra2 = RandXor() % (rx[ra1] - lx[ra1] + 1) + lx[ra1];
         ra3 = RandXor() % (ry[ra1] - ly[ra1] + 1) + ly[ra1];
       }
       else {
-        int len = (rx[ra1] - lx[ra1] + 1) / 10 + 1;
-        ra2 = RandXor() % (len * 2 + 1) - len + pred_x[ra1];
-        ra3 = RandXor() % (len * 2 + 1) - len + pred_y[ra1];
+        int len2 = (rx[ra1] - lx[ra1] + 1) / 5 + 1;
+        int len3 = (ry[ra1] - ly[ra1] + 1) / 5 + 1;
+        ra2 = RandXor() % (len2 * 2 + 1) - len2 + pred_x[ra1];
+        ra3 = RandXor() % (len3 * 2 + 1) - len3 + pred_y[ra1];
       }
       ra2 = max(ra2, lx[ra1]);
       ra2 = min(ra2, rx[ra1]);
       ra3 = max(ra3, ly[ra1]);
       ra3 = min(ra3, ry[ra1]);
 
-      for (auto q_num : num_queries[ra1]) {
-        auto zen = BuildMST(queries[q_num]);
-        double zenSum = buildMST_sum;
+      rep(i, num_queries[ra1].size())
+      {
+        int q_num = num_queries[ra1][i];
+        sa0_keepMST[i] = queryPredMST[q_num];
+        sa0_keepMSTSum[i] = queryPredMSTSum[q_num];
         double querySum = 0;
         for (auto p : queryAnswers[q_num]) {
           querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
         }
-        tmpScore -= querySum / zenSum;
+        tmpScore -= querySum / sa0_keepMSTSum[i];
       }
 
       keep2 = pred_x[ra1];
@@ -812,20 +804,21 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       pred_x[ra1] = ra2;
       pred_y[ra1] = ra3;
 
-      for (auto q_num : num_queries[ra1]) {
-        auto zen = BuildMST(queries[q_num]);
-        double zenSum = buildMST_sum;
+      rep(i, num_queries[ra1].size())
+      {
+        int q_num = num_queries[ra1][i];
+        queryPredMST[q_num] = BuildMST(queries[q_num]);
+        queryPredMSTSum[q_num] = buildMST_sum;
         double querySum = 0;
         for (auto p : queryAnswers[q_num]) {
           querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
         }
-        tmpScore += querySum / zenSum;
+        tmpScore += querySum / queryPredMSTSum[q_num];
       }
     }
     else if (raMode < hypers.Partition[1]) {
 
     }
-
 
     // 焼きなまし
     double diffScore = (dScore - tmpScore) * hypers.MultipleValue;
@@ -844,6 +837,12 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       if (raMode < hypers.Partition[0]) {
         pred_x[ra1] = keep2;
         pred_y[ra1] = keep3;
+        rep(i, num_queries[ra1].size())
+        {
+          int q_num = num_queries[ra1][i];
+          queryPredMST[q_num] =  sa0_keepMST[i];
+          queryPredMSTSum[q_num] =sa0_keepMSTSum[i];
+        }
       }
       else if (raMode < hypers.Partition[1]) {
       }
@@ -889,11 +888,6 @@ void SimulatedAnnealing1(Hypers hypers)
       nowTime = GetNowTime();
       if (nowTime > timeLimit) break;
     }
-
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
 
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -997,11 +991,6 @@ void SimulatedAnnealing2(Hypers hypers)
       nowTime = GetNowTime();
       if (nowTime > timeLimit) break;
     }
-
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
 
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -1140,11 +1129,6 @@ void SimulatedAnnealing3(Hypers hypers)
       nowTime = GetNowTime();
       if (nowTime > timeLimit) break;
     }
-
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
 
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -1303,7 +1287,7 @@ ll Solve(int problem_num, Hypers hypers)
   rep(i, aespa)
   {
     Method1_Query(0, q / aespa * (i + 1));
-    SimulatedAnnealing0(hypers, TL / 2 / aespa * (i + 1));
+    SimulatedAnnealing0(hypers, TL / 2 / aespa * ((ll)i + 1));
   }
   SimulatedAnnealing1(hypers);
   //SimulatedAnnealing2(hypers);
@@ -1365,7 +1349,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 150)
+    srep(i, 0, 50)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
