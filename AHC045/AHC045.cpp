@@ -82,6 +82,39 @@ std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
+// 2次元キュー
+int queueArr2[10000][2];
+int queueHead2 = 0;
+int queueTail2 = 0;
+void ClearQueue2()
+{
+  queueHead2 = 0;
+  queueTail2 = 0;
+}
+int Front2X()
+{
+  return queueArr2[queueHead2][0];
+}
+int Front2Y()
+{
+  return queueArr2[queueHead2][1];
+}
+void Push2(int x, int y)
+{
+  queueArr2[queueTail2][0] = x;
+  queueArr2[queueTail2][1] = y;
+  queueTail2++;
+}
+void Pop2()
+{
+  queueHead2++;
+}
+int Size2()
+{
+  return queueTail2 - queueHead2;
+}
+
+
 namespace
 {
   const int MAX_UF = 10005;
@@ -205,12 +238,46 @@ double dScore;
 int ans[n];
 vector<int> ans_nums[MAX_M];
 vector<P> ans_edges[MAX_M];
+int ans_MSTSums[MAX_M];
 
 ll best_ansScore;
 double best_dScore;
 int best_ans[n];
 vector<int> best_ans_nums[MAX_M];
 vector<P> best_ans_edges[MAX_M];
+int best_ans_MSTSums[MAX_M];
+
+void CopyToBest()
+{
+  best_ansScore = ansScore;
+  best_dScore = dScore;
+  rep(i, n)
+  {
+    best_ans[i] = ans[i];
+  }
+  rep(i, m)
+  {
+    best_ans_nums[i] = ans_nums[i];
+    best_ans_edges[i] = ans_edges[i];
+    best_ans_MSTSums[i] = ans_MSTSums[i];
+  }
+}
+
+void CopyToAns()
+{
+  ansScore = best_ansScore;
+  dScore = best_dScore;
+  rep(i, n)
+  {
+    ans[i] = best_ans[i];
+  }
+  rep(i, m)
+  {
+    ans_nums[i] = best_ans_nums[i];
+    ans_edges[i] = best_ans_edges[i];
+    ans_MSTSums[i] = best_ans_MSTSums[i];
+  }
+}
 
 struct Edge
 {
@@ -402,36 +469,6 @@ vector<P> BuildMST(const vector<int>& nums1, const vector<P>& edges1, const vect
 vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
 {
   return BuildMST(ans_nums[g_num1], ans_edges[g_num1], ans_nums[g_num2], ans_edges[g_num2]);
-}
-
-void CopyToBest()
-{
-  best_ansScore = ansScore;
-  best_dScore = dScore;
-  rep(i, n)
-  {
-    best_ans[i] = ans[i];
-  }
-  rep(i, m)
-  {
-    best_ans_nums[i] = ans_nums[i];
-    best_ans_edges[i] = ans_edges[i];
-  }
-}
-
-void CopyToAns()
-{
-  ansScore = best_ansScore;
-  dScore = best_dScore;
-  rep(i, n)
-  {
-    ans[i] = best_ans[i];
-  }
-  rep(i, m)
-  {
-    ans_nums[i] = best_ans_nums[i];
-    ans_edges[i] = best_ans_edges[i];
-  }
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
@@ -711,7 +748,7 @@ void Method1()
 // ハイパーパラメータ
 struct Hypers
 {
-  double StartTemp;
+  double StartTemp[10];
   double EndTemp;
   double MultipleValue;
   int Partition[10];
@@ -734,6 +771,54 @@ int BoundingScore(int g_num)
   return (maxx - minx) * (maxx - minx) + (maxy - miny) * (maxy - miny);
 }
 
+vector<int> sa0_graph[n];
+vector<vector<int>> sa0_DivideTreeNums;
+vector<vector<P>> sa0_DivideTreeEdges;
+void sa0_DivideTree(const vector<int>& nums, const vector<P>& edges, int root)
+{
+  sa0_DivideTreeNums.clear();
+  sa0_DivideTreeEdges.clear();
+
+  for (auto num : nums) {
+    sa0_graph[num].clear();
+  }
+  for (auto e : edges) {
+    sa0_graph[e.first].push_back(e.second);
+    sa0_graph[e.second].push_back(e.first);
+  }
+
+  vector<int> dTreeNums;
+  vector<P> dTreeEdges;
+
+  dTreeNums.push_back(root);
+  sa0_DivideTreeNums.push_back(dTreeNums);
+  sa0_DivideTreeEdges.push_back(dTreeEdges);
+
+  for (auto num : sa0_graph[root]) {
+    dTreeNums.clear();
+    dTreeEdges.clear();
+    ClearQueue2();
+
+    Push2(num, root);
+    dTreeNums.push_back(num);
+
+    while (Size2()) {
+      int x = Front2X();
+      int par = Front2Y();
+      Pop2();
+      for (auto y : sa0_graph[x]) {
+        if (y == par)continue;
+        dTreeEdges.emplace_back(x, y);
+        dTreeNums.push_back(y);
+        Push2(y, x);
+      }
+    }
+
+    sa0_DivideTreeNums.push_back(dTreeNums);
+    sa0_DivideTreeEdges.push_back(dTreeEdges);
+  }
+}
+
 vector<P> sa0_keepMST[q];
 int sa0_keepMSTSum[q];
 void SimulatedAnnealing0(Hypers hypers, double timeLimit)
@@ -744,7 +829,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp;
+  const double START_TEMP = hypers.StartTemp[0];
   const double END_TEMP = hypers.EndTemp;
 
   int loop = 0;
@@ -807,8 +892,19 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       rep(i, num_queries[ra1].size())
       {
         int q_num = num_queries[ra1][i];
+
+        //sa0_DivideTree(queries[q_num], queryPredMST[q_num], ra1);
+        //srep(j, 1, sa0_DivideTreeNums.size())
+        //{
+        //  sa0_DivideTreeEdges[0] = BuildMST(sa0_DivideTreeNums[0], sa0_DivideTreeEdges[0], sa0_DivideTreeNums[j], sa0_DivideTreeEdges[j]);
+        //  sa0_DivideTreeNums[0].insert(sa0_DivideTreeNums[0].end(), sa0_DivideTreeNums[j].begin(), sa0_DivideTreeNums[j].end());
+        //}
+        //queryPredMST[q_num] = sa0_DivideTreeEdges[0];
+        //queryPredMSTSum[q_num] = buildMST_sum;
+
         queryPredMST[q_num] = BuildMST(queries[q_num]);
         queryPredMSTSum[q_num] = buildMST_sum;
+
         double querySum = 0;
         for (auto p : queryAnswers[q_num]) {
           querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
@@ -869,15 +965,14 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
   //}
 }
 
-void SimulatedAnnealing1(Hypers hypers)
+void SimulatedAnnealing1(Hypers hypers, double timeLimit)
 {
-  double timeLimit = TL * 3 / 4;
   double startTime = GetNowTime();
 
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp;
+  const double START_TEMP = hypers.StartTemp[1];
   const double END_TEMP = hypers.EndTemp;
 
   int loop = 0;
@@ -966,6 +1061,7 @@ void SimulatedAnnealing1(Hypers hypers)
   rep(i, m)
   {
     ans_edges[i] = BuildMST(ans_nums[i]);
+    ans_MSTSums[i] = buildMST_sum;
   }
   ansScore = CalcScoreAll();
 
@@ -980,7 +1076,7 @@ void SimulatedAnnealing2(Hypers hypers)
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp;
+  const double START_TEMP = hypers.StartTemp[2];
   const double END_TEMP = hypers.EndTemp;
 
   int loop = 0;
@@ -1110,15 +1206,14 @@ void sa3_dfs2(int u, int p, int g_num)
   }
 }
 
-void SimulatedAnnealing3(Hypers hypers)
+void SimulatedAnnealing3(Hypers hypers, double timeLimit)
 {
-  double timeLimit = TL;
   double startTime = GetNowTime();
 
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp;
+  const double START_TEMP = hypers.StartTemp[0];
   const double END_TEMP = hypers.EndTemp;
 
   int loop = 0;
@@ -1136,7 +1231,7 @@ void SimulatedAnnealing3(Hypers hypers)
     ll tmpScore = ansScore;
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[0];
+    int raMode = RandXor() % hypers.Partition[3];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
     if (raMode < hypers.Partition[0]) {
@@ -1153,7 +1248,6 @@ void SimulatedAnnealing3(Hypers hypers)
 
       auto vec = ans_nums[ra1];
       vec.insert(vec.end(), ans_nums[ra2].begin(), ans_nums[ra2].end());
-      //auto zen = BuildMST(vec);
       auto zen = BuildMST(ra1, ra2);
 
       for (auto num : vec) {
@@ -1227,12 +1321,11 @@ void SimulatedAnnealing3(Hypers hypers)
     // 焼きなまし
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
-    //if (prob > Rand01()) {
-    if (true) {
-      // 採用
+    if (prob > Rand01()) {
+      //// 採用
       //ansScore = tmpScore;
 
-      // Best解よりもいいか
+      //// Best解よりもいいか
       //if (ansScore < best_ansScore) {
       //  CopyToBest();
       //}
@@ -1287,11 +1380,11 @@ ll Solve(int problem_num, Hypers hypers)
   rep(i, aespa)
   {
     Method1_Query(0, q / aespa * (i + 1));
-    SimulatedAnnealing0(hypers, TL / 2 / aespa * ((ll)i + 1));
+    SimulatedAnnealing0(hypers, (TL * 0.8) * (((double)i + 1) / aespa));
   }
-  SimulatedAnnealing1(hypers);
+  SimulatedAnnealing1(hypers, TL * 0.9);
   //SimulatedAnnealing2(hypers);
-  SimulatedAnnealing3(hypers);
+  SimulatedAnnealing3(hypers, TL);
 
   // 解答を出力
   Output(ofs);
@@ -1330,7 +1423,16 @@ int main()
   isSimulateTruePoint = false;
 
   Hypers HYPERS;
-  HYPERS.StartTemp = 248.0;
+  HYPERS.StartTemp[0] = 248.0;
+  HYPERS.StartTemp[1] = 2000048.0;
+  HYPERS.StartTemp[2] = 248.0;
+  HYPERS.StartTemp[3] = 248.0;
+  HYPERS.StartTemp[4] = 248.0;
+  HYPERS.StartTemp[5] = 248.0;
+  HYPERS.StartTemp[6] = 248.0;
+  HYPERS.StartTemp[7] = 248.0;
+  HYPERS.StartTemp[8] = 248.0;
+  HYPERS.StartTemp[9] = 248.0;
   HYPERS.EndTemp = 0.0;
   HYPERS.MultipleValue = 12345.0;
   HYPERS.Partition[0] = 100;
@@ -1372,7 +1474,7 @@ int main()
 
     while (true) {
       Hypers hypers;
-      hypers.StartTemp = pow(2.0, Rand01() * 20);
+      hypers.StartTemp[0] = pow(2.0, Rand01() * 20);
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
       hypers.Partition[0] = RandXor() % 101;
@@ -1392,7 +1494,7 @@ int main()
       cout
         << "Loop = " << loop
         << ", Sum = " << sum
-        << ", StartTemp = " << hypers.StartTemp
+        << ", StartTemp = " << hypers.StartTemp[0]
         << ", EndTemp = " << hypers.EndTemp
         << ", MultipleValue = " << hypers.MultipleValue
         << ", Partition1 = " << hypers.Partition[0]
