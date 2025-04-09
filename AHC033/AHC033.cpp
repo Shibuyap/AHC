@@ -62,7 +62,7 @@ static double Rand01() {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-// lˆÈãr–¢–‚ÌÀ”‚ğ‚Æ‚é—”
+
 static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
@@ -94,19 +94,17 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
-std::chrono::steady_clock::time_point startTimeClock;
 
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-
 double GetNowTime()
 {
-  auto endTimeClock = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 

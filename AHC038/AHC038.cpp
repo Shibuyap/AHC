@@ -91,17 +91,17 @@ vector<int> ordVec[6] = { {0,-1,1},{0,1,-1},{-1,0,1},{-1,1,0},{1,-1,0},{1,0,-1} 
 
 const double TL = 2.8;
 int mode;
-std::chrono::steady_clock::time_point startTime, endTime;
+
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {
-  startTime = std::chrono::steady_clock::now();
+  startTimeClock = std::chrono::steady_clock::now();
 }
 
 double GetNowTime()
 {
-  auto endTime = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTime - startTime;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 

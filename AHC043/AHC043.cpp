@@ -139,7 +139,7 @@ static double Rand01() {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-// l以上r未満の実数をとる乱数
+
 static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
@@ -171,19 +171,17 @@ const int ey[13] = { 0,-1,0,1,-2,-1,0,1,2,-1,0,1,0 };
 
 double TL = 2.8;
 int mode;
-std::chrono::steady_clock::time_point startTimeClock;
 
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-
 double GetNowTime()
 {
-  auto endTimeClock = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 

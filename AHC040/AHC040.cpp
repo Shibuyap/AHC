@@ -86,17 +86,17 @@ int dW[MAX_T], dH[MAX_T];
 
 double TL = 2.8;
 int executionMode;
-std::chrono::steady_clock::time_point globalStartTimePoint;
+
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {
-  globalStartTimePoint = std::chrono::steady_clock::now();
+  startTimeClock = std::chrono::steady_clock::now();
 }
 
 double GetNowTime()
 {
-  auto endPoint = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endPoint - globalStartTimePoint;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 

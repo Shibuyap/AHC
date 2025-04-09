@@ -93,6 +93,7 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
+
 std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
@@ -102,8 +103,7 @@ void ResetTime()
 
 double GetNowTime()
 {
-  auto endTimeClock = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 

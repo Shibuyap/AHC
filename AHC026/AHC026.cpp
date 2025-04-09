@@ -87,6 +87,7 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
+
 std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()

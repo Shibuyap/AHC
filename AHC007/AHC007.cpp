@@ -102,7 +102,6 @@ public:
   }
 };
 
-// 乱数
 static uint32_t Rand()
 {
   static uint32_t x = 123456789;
@@ -118,19 +117,16 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0以上1未満の実数をとる乱数
 static double Rand01()
 {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-// l以上r未満の実数をとる乱数
 static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
 
-// 配列シャッフル
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
@@ -146,7 +142,6 @@ std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
@@ -155,17 +150,17 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
-std::chrono::steady_clock::time_point startTime, endTime;
+
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {
-  startTime = std::chrono::steady_clock::now();
+  startTimeClock = std::chrono::steady_clock::now();
 }
 
 double GetNowTime()
 {
-  auto endTime = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = endTime - startTime;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 
@@ -338,24 +333,18 @@ ll Solve(int probNum)
 {
   ResetTime();
 
-  // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
-  // 入力ファイルストリームオープン
   ifstream ifs;
   OpenIfs(probNum, ifs);
 
-  // 入力受け取り
   Input(probNum, ifs);
 
-  // 出力ファイルストリームオープン
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // 初期解生成
   Method1(ifs, ofs);
 
-  // 解答を出力
   Output(ofs);
 
   if (ifs.is_open()) {
