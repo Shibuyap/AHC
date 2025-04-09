@@ -54,7 +54,9 @@ static uint32_t Rand()
 }
 
 // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() {
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+}
 
 int n, m;
 string s[1000];

@@ -53,8 +53,10 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0以上1未満の小数をとる乱数
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 struct edge
@@ -654,7 +656,7 @@ void InnerMethod4(double temperature)
     (newOldDayScore + newNewDayScore) - (oldOldDayScore + oldNewDayScore);
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     dayCount[day]--;
     dayCount[newDay]++;
   }
@@ -696,7 +698,7 @@ void InnerMethod5(double temperature)
     (newOldDayScore + newNewDayScore) - (oldOldDayScore + oldNewDayScore);
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     dayCount[day]--;
     dayCount[newDay]++;
   }
@@ -738,7 +740,7 @@ void InnerMethod6(double temperature)
     + (newOldDay2Score + newNewDay2Score) - (oldOldDay2Score + oldNewDay2Score);
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     ;
   }
   else {
@@ -810,7 +812,7 @@ void InnerMethod7(double temperature)
   }
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     dayCount[day] -= sz;
     dayCount[newDay] += sz;
   }
@@ -891,7 +893,7 @@ int Solve(int mode, int problemNum)
   // 過去のスコアをインプット
   if (mode != 0) {
     InputAns(problemNum);
-  }
+}
 #endif
 
 #if 0
@@ -929,7 +931,7 @@ int Solve(int mode, int problemNum)
     }
     else {
       InnerMethod2();
-    }
+  }
 #endif
     FINISH_COUNT = nowProgress * 100 + 50;
     double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;

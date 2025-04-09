@@ -63,8 +63,8 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
@@ -266,7 +266,7 @@ void Operation1()
   double temp = start_temp + (end_temp - start_temp) * now_time / TL;
   double prob = exp((double)diffScore / temp);
   // if (tmp > 0) {
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     // cout << tmpScore << endl;
     maxScore += diffScore;
     if (maxScore > real_maxScore) {
@@ -302,7 +302,7 @@ void Operation2()
   double temp = start_temp + (end_temp - start_temp) * now_time / TL;
   double prob = exp((double)diffScore / temp);
   // if (tmp > 0) {
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     // cout << tmpScore << endl;
     maxScore += diffScore;
     if (maxScore > real_maxScore) {
@@ -557,7 +557,7 @@ bool FindTreeAni(bool isReset = false)
 
     double temp = startAniTemp + (endAniTemp - startAniTemp) * nowAniTime / AniTL;
     double prob = exp((double)diffScore / temp);
-    if (prob > rand01()) {
+    if (prob > Rand01()) {
       maxAniScore += diffScore;
       if (maxAniScore > realMaxAniScore) {
         realMaxAniScore = maxAniScore;
@@ -1537,7 +1537,7 @@ int Solve(int mode, int problemNum = 0)
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       double prob = exp((double)diffScore / temp);
-      if (prob > rand01()) {
+      if (prob > Rand01()) {
         ans = tmpAns;
         maxScore = tmpScore;
 

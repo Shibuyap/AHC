@@ -55,8 +55,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 
@@ -663,7 +665,7 @@ void Method1(double temperature)
 
   ll diffScore = tmpSumScore - maxScore;
   double prob = exp((double)diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     MethodCount[1][2]++;
     maxScore += diffScore;
     maxHaitiCost += haitiDiff;

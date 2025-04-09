@@ -59,8 +59,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 namespace /* •Ï” */
@@ -2241,7 +2243,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
   double temp = start_temp + (end_temp - start_temp) * now_progress;
   double prob = exp((double)diffScore / temp);
   int isDo = 0;
-  if (forceDo || prob > rand01()) {
+  if (forceDo || prob > Rand01()) {
     isDo = 1;
     maxScore += diffScore;
 
@@ -2376,7 +2378,7 @@ void Method3(double start_temp, double end_temp, double now_progress)
 
   double temp = start_temp + (end_temp - start_temp) * now_progress;
   double prob = exp((double)diffScore / temp);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     maxScore += diffScore;
 
     methodCount[3][0]++;
@@ -2458,7 +2460,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
 
   double temp = start_temp + (end_temp - start_temp) * now_progress;
   double prob = exp((double)diffScore / temp);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     maxScore += diffScore;
 
     methodCount[4][0]++;

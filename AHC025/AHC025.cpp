@@ -72,8 +72,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 std::random_device seed_gen;
@@ -1333,7 +1335,7 @@ void GenerateCase(int _n = -1, int _d = -1, int _q = -1)
   if (_n != -1) N = _n;
   D = Rand() % (N / 4 - 1) + 2;
   if (_d != -1) D = _d;
-  Q = round(pow(2, rand01() * 4.0 + 1.0) * N);
+  Q = round(pow(2, Rand01() * 4.0 + 1.0) * N);
   if (_q != -1) Q = _q;
   GenerateLocalItems();
 }
@@ -1362,7 +1364,7 @@ void GeneratecaseFromNNDDQQ()
   else {
     N = Rand() % 5 + 30 + NN * 5;
   }
-  double dou = rand01() * 0.1;
+  double dou = Rand01() * 0.1;
   Q = round(pow(2, 1.0 + 0.1 * QQ + dou) * N);
   D = DD + 2;
   GenerateLocalItems();

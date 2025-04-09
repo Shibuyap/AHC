@@ -59,8 +59,8 @@ namespace /* —” */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
@@ -532,7 +532,7 @@ int Solve(string iunputFileNum)
 
         int rN = Rand() % n;
 
-        double rA = rand01() * 20 - 10;
+        double rA = Rand01() * 20 - 10;
 
         if (rULDR == 0) if (Upper[rN] + rA < 1000 || 9000 < Upper[rN] + rA) continue;
         if (rULDR == 1) if (Lefter[rN] + rA < 1000 || 9000 < Lefter[rN] + rA) continue;
@@ -582,7 +582,7 @@ int Solve(string iunputFileNum)
 
         double prob = exp((double)diff / temp);
 
-        if (prob > rand01()) {
+        if (prob > Rand01()) {
           if (rULDR == 0) {
             rep(i, TurnUD[rN].size())
             {
@@ -629,7 +629,7 @@ int Solve(string iunputFileNum)
 
         int rN = Rand() % n;
 
-        double rA = rand01() * 20 - 10;
+        double rA = Rand01() * 20 - 10;
 
         if (rUL == 0) if (Upper[rN] + rA < 1000 || 9000 < Upper[rN] + rA) continue;
         if (rUL == 1) if (Lefter[rN] + rA < 1000 || 9000 < Lefter[rN] + rA) continue;
@@ -659,7 +659,7 @@ int Solve(string iunputFileNum)
 
         double prob = exp((double)diff / temp);
 
-        if (prob > rand01()) {
+        if (prob > Rand01()) {
           if (rUL == 0) {
             rep(i, TurnUD[rN].size())
             {
@@ -729,7 +729,7 @@ int Solve(string iunputFileNum)
 
         double prob = exp((double)diff / temp);
 
-        if (prob > rand01()) {
+        if (prob > Rand01()) {
           if (rUL == 0) {
             rep(i, TurnUD[rN].size())
             {
@@ -1013,7 +1013,7 @@ int Solve(string iunputFileNum)
         rx = Rand() % 30;
         ry = Rand() % 29 + 1;
       }
-      double ra = rand01() * 200.0 - 100.0;
+      double ra = Rand01() * 200.0 - 100.0;
       if (rv == 0) {
         if (rx <= CutUD[ry]) {
           if (Upper[ry] + ra < 1000 || 9000 < Upper[ry] + ra) continue;

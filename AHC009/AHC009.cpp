@@ -56,8 +56,8 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
@@ -93,7 +93,7 @@ ll CalcScore(vector<int>& vec)
     int x = sx, y = sy;
     rep(i, le)
     {
-      if (rand01() < pro) {
+      if (Rand01() < pro) {
         ;
       }
       else {
@@ -418,7 +418,7 @@ int Solve(int mode, int num)
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       double prob = exp((double)diffScore / temp);
       // if (tmp > 0) {
-      if (prob > rand01()) {
+      if (prob > Rand01()) {
         // cout << tmpScore << endl;
         maxScore += diffScore;
         if (maxScore > real_maxScore) {

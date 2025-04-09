@@ -51,8 +51,10 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0以上1未満の小数をとる乱数
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
@@ -641,7 +643,7 @@ void GuruGuru2(int t)
       double temp = (50000 - _) / 50000.0 * 10;
       const double prob = exp((double)(after - before) / temp);
 
-      if (prob > rand01()) {
+      if (prob > Rand01()) {
       }
       else {
         swap(A[ra1][ra2], A[ra3][ra4]);

@@ -54,8 +54,8 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
@@ -1993,7 +1993,7 @@ void Method4_3_1()
       //  widths[k] = widths2[k];
       //}
 
-      if (prob > rand01()) {
+      if (prob > Rand01()) {
         M431Count++;
         ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
         rep(i, M43_tmpAnsNextCount)
@@ -2267,7 +2267,7 @@ void Method4_3_2()
       double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
       const double prob = exp((double)totalDiffScore * 100 / temp);
 
-      if (prob > rand01()) {
+      if (prob > Rand01()) {
         ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
         rep(i, M43_tmpAnsNextCount)
         {
@@ -2471,7 +2471,7 @@ void Method4_3_3()
   const double prob = exp((double)totalDiffScore * 10000 / temp);
 
   if (totalDiffScore >= 0) {
-    // if (prob > rand01()) {
+    // if (prob > Rand01()) {
     // cout << "OK";
     ansColumnSchedulesCount[raD][line2] = M43_tmpAnsNextCount;
     rep(i, M43_tmpAnsNextCount)
@@ -2765,7 +2765,7 @@ void Method4_3_5()
   const double prob = exp((double)diffScore * 1 / temp);
 
   // if (diffScore >= 0) {
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     if (raDir == 0) {
       widths[lineNum] -= moveAmount;
       widths[lineNum - 1] += moveAmount;
@@ -2909,7 +2909,7 @@ void Method4_3_7()
   double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
   const double prob = exp((double)totalDiffScore * 100 / temp);
 
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
     rep(i, M43_tmpAnsCurrentCount)
     {
@@ -4418,7 +4418,7 @@ void Method3_2(double timeLimit)
     double temp = (start_temp + (end_temp - start_temp) * GetNowTime() / timeLimit);
     const double prob = exp((double)diffScore / temp);
 
-    if (prob > rand01()) {
+    if (prob > Rand01()) {
       srep(i, 1, d)
       {
         ansLinePos[i][ra] = ansLinePos[0][ra];
@@ -4927,7 +4927,7 @@ void Method8(double timeLimit)
     double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * timeRatio);
     const double prob = exp((double)diffScore * 100 / temp);
 
-    if (prob > rand01()) { M8ansNum[raD] = raNum; }
+    if (prob > Rand01()) { M8ansNum[raD] = raNum; }
   }
 
   CopyM8ToAns();

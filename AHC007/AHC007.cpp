@@ -119,7 +119,7 @@ static uint32_t Rand()
 }
 
 // 0以上1未満の実数をとる乱数
-static double rand01()
+static double Rand01()
 {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
@@ -127,7 +127,7 @@ static double rand01()
 // l以上r未満の実数をとる乱数
 static double RandRange(double l, double r)
 {
-  return l + (r - l) * rand01();
+  return l + (r - l) * Rand01();
 }
 
 // 配列シャッフル

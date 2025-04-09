@@ -55,7 +55,7 @@ static uint32_t Rand()
 }
 
 // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-static double rand01()
+static double Rand01()
 {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
@@ -74,7 +74,7 @@ int shuffles[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, 
 /*
 ‚¢‚ë‚¢‚ë
 int x = Rand()%100;
-double x = rand01();
+double x = Rand01();
 mt19937 get_rand_mt;
 shuffle(vec.begin(), vec.end(), get_rand_mt);
 int dx[4] = {-1, 0, 1, 0};
@@ -580,7 +580,7 @@ inline void Extend(int ite, double temp)
 
   // int tmp = tmpScore - maxScore;
   // double prob = exp((double)tmp / temp);
-  // if(prob > rand01())
+  // if(prob > Rand01())
 
   if (tmpScore >= maxScore) {
     modeCount[4]++;
@@ -1007,7 +1007,7 @@ inline void oneChange(int ite, double temp)
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
 
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     modeCount[0]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -1056,7 +1056,7 @@ inline void fourChange(int ite, double temp)
   int tmp = tmpScore - maxScore;
 
   const double prob = exp((double)tmp / temp);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     modeCount[3]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -1418,7 +1418,7 @@ inline void zurasi2(int ite, double temp)
   int tmp = tmpScore - maxScore;
   double prob = exp((double)tmp / temp);
 
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     modeCount[5]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {

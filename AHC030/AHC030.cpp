@@ -71,8 +71,8 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }

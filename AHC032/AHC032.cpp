@@ -51,8 +51,8 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
@@ -349,7 +349,7 @@ void Method1_1()
 
   double temp = (startTemp + (endTemp - startTemp) * nowTime / TL);
   const double prob = exp((double)diff / temp);
-  // if (prob > rand01()) {
+  // if (prob > Rand01()) {
   if (diff >= 0) {
     if (ans[raT][0] != -1) {
       rep(i, 3)

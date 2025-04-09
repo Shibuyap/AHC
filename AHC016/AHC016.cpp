@@ -54,8 +54,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 namespace
@@ -1176,7 +1178,7 @@ void RandmizeGraph(int x)
     srep(k, j + 1, n)
     {
       b[j][k] = a[x][j][k];
-      if (rand01() < eps) {
+      if (Rand01() < eps) {
         b[j][k] = 1 - b[j][k];
       }
       b[k][j] = b[j][k];
@@ -8068,7 +8070,7 @@ void solve(int mode)
       }
     }
     OutputHaipara();
-  }
+}
 #endif
 }
 

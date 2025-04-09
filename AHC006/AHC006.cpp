@@ -59,8 +59,8 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01()
+
+  static double Rand01()
   {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
@@ -305,7 +305,7 @@ int Solve(int mode)
 
     double temp = start_temp + (end_temp - start_temp) * now_time / TL;
     double prob = exp((double)diffScore / temp);
-    if (prob > rand01()) {
+    if (prob > Rand01()) {
       minTime = tmpTime;
       use[argAns[ite]] = 0;
       use[x] = 1;
@@ -397,7 +397,7 @@ int Solve(int mode)
 
         double temp = start_temp + (end_temp - start_temp) * now_time / TL;
         double prob = exp((double)diffScore / temp);
-        if (prob > rand01()) {
+        if (prob > Rand01()) {
           minTime = tmpTime;
           if (argAns[ite1] < 1000) {
             pair_[argAns[ite1] + 1000] = ite2;
@@ -444,7 +444,7 @@ int Solve(int mode)
 
       //     double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       //     double prob = exp((double)diffScore / temp);
-      //     if (prob > rand01()) {
+      //     if (prob > Rand01()) {
       //         minTime = tmpTime;
       //         swap(argAns2[ite1], argAns2[ite2]);
       //         swap(ans[ite1 + m + 1], ans[ite2 + m + 1]);

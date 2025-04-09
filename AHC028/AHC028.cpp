@@ -51,8 +51,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 const int dx[4] = { -1, 0, 1, 0 };
@@ -743,7 +745,7 @@ void Method11(double temperature)
 
   int diffScore = beforeScore - afterScore;
   double prob = exp((double)diffScore / temperature);
-  //if (prob > rand01()) {
+  //if (prob > Rand01()) {
   if (diffScore >= 0) {
     swap(ans[x1], ans[x2]);
     swap(id[x1], id[x2]);
@@ -786,7 +788,7 @@ void Method12(double temperature)
 
   int diffScore = beforeScore - afterScore;
   double prob = exp((double)diffScore / temperature);
-  //if (prob > rand01()) {
+  //if (prob > Rand01()) {
   if (diffScore >= 0) {
     id[x] = y;
     // cout << y << ' ' << diffScore << endl;

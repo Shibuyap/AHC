@@ -69,7 +69,7 @@ static uint32_t RandRange(uint32_t l, uint32_t r)
   return l + Rand() % (r - l + 1);
 }
 
-// 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
+
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
@@ -192,7 +192,7 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
-std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {

@@ -28,30 +28,25 @@
 #include <utility>
 #include <vector>
 
-
-#define rep(i, n) for (int i = 0; i < (n); ++i)          // iを0からn未満まで増加させるループ
-#define srep(i, s, t) for (int i = s; i < t; ++i)        // iをsからt未満まで増加させるループ
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)      // iをn-1から0まで減少させるループ
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)  // iをt-1からsまで減少させるループ
+#define rep(i, n) for (int i = 0; i < (n); ++i)
+#define srep(i, s, t) for (int i = s; i < t; ++i)
+#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
 
 using namespace std;
 
-// 型定義のエイリアス
-typedef long long int ll;     // 長い型名を短くする
-typedef pair<int, int> P;     // 整数ペアの型定義
-typedef pair<P, P> PP;        // 整数ペアのペアの型定義
+typedef long long int ll;
+typedef pair<int, int> P;
+typedef pair<P, P> PP;
 
-// 乱数生成（XorShift法による擬似乱数生成器）
 static uint32_t Rand()
 {
-  // 初期値の設定（シード値）
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
   static uint32_t w = 88675123;
   uint32_t t;
 
-  // XorShiftアルゴリズムによる乱数生成
   t = x ^ (x << 11);
   x = y;
   y = z;
@@ -59,16 +54,22 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() {
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+}
 
-// l以上r未満の実数をとる乱数
 static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
 
-// 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
+// [l, r]
+static uint32_t RandRange(uint32_t l, uint32_t r)
+{
+  return l + Rand() % (r - l + 1);
+}
+
+
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
@@ -79,33 +80,31 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（現在は未使用）
-// std::random_device seed_gen;
-// std::mt19937 engine(seed_gen());
+// ランダムデバイスとメルセンヌ・ツイスタ
+std::random_device seed_gen;
+std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-const int dx[4] = { -1, 0, 1, 0 };  // x方向の変化
-const int dy[4] = { 0, -1, 0, 1 };  // y方向の変化
+const int dx[4] = { -1, 0, 1, 0 };
+const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
-std::chrono::steady_clock::time_point startTimeClock, endTimeClock; // 時間計測用
-
+std::chrono::steady_clock::time_point startTimeClock;
 
 void ResetTime()
 {
-  startTimeClock = std::chrono::steady_clock::now();  // 現在の時間を記録
+  startTimeClock = std::chrono::steady_clock::now();
 }
-
 
 double GetNowTime()
 {
-  auto endTimeClock = std::chrono::steady_clock::now();  // 現在の時間を取得
-  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;  // 経過時間を計算
-  return elapsed.count();  // 経過時間を秒単位で返す
+  auto endTimeClock = std::chrono::steady_clock::now();
+  std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
+  return elapsed.count();
 }
 
 // 二次元座標を表す構造体

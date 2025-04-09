@@ -69,7 +69,7 @@ static uint32_t RandRange(uint32_t l, uint32_t r)
   return l + Rand() % (r - l + 1);
 }
 
-// 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
+
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {

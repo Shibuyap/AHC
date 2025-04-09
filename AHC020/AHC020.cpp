@@ -52,8 +52,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 const ll INF = 1001001001001001001;
@@ -495,7 +497,7 @@ void Method1(double temperature)
   ll diffScore = tmpScore - maxScore;
 
   double prob = exp((double)diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     maxScore += diffScore;
     if (maxScore > real_maxScore) {
       SetReal();
@@ -730,7 +732,7 @@ void Solve3()
       ll diffScore = tmpScore - maxScore;
 
       double prob = exp((double)diffScore / temperature);
-      if (prob > rand01()) {
+      if (prob > Rand01()) {
         maxScore += diffScore;
         if (maxScore > real_maxScore) {
           if (mode != 0) {
@@ -930,7 +932,7 @@ void Solve4()
         ll diffScore = tmpScore - maxScore;
 
         double prob = exp((double)diffScore / temperature);
-        if (prob > rand01()) {
+        if (prob > Rand01()) {
           maxScore += diffScore;
           if (maxScore > real_maxScore) {
             if (mode != 0) {
@@ -958,7 +960,7 @@ void Solve4()
         ll diffScore = tmpScore - maxScore;
 
         double prob = exp((double)diffScore / temperature);
-        if (prob > rand01()) {
+        if (prob > Rand01()) {
           maxScore += diffScore;
           if (maxScore > real_maxScore) {
             if (mode != 0) {

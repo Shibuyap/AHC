@@ -36,12 +36,12 @@
 
 using namespace std;
 
-// 型定義のエイリアス
+
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// 乱数生成（XorShift法による擬似乱数生成器）
+
 static uint32_t Rand()
 {
   static uint32_t x = 123456789;
@@ -57,8 +57,10 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+static double Rand01() {
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+}
 
 // l以上r未満の実数をとる乱数
 static double RandRange(double l, double r)
@@ -66,7 +68,7 @@ static double RandRange(double l, double r)
   return l + (r - l) * Rand01();
 }
 
-// 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
+
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
@@ -92,7 +94,7 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
-std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
+std::chrono::steady_clock::time_point startTimeClock;
 
 
 void ResetTime()

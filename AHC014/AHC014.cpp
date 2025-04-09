@@ -63,8 +63,10 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  // 0ˆÈã1–¢–ž‚Ì¬”‚ð‚Æ‚é—”
-  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
+
+  static double Rand01() {
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  }
 }  // namespace
 
 namespace /* •Ï” */
@@ -859,7 +861,7 @@ void Method1(double temperature)
   double diffScore = 1000000.0 * N * N / M * W[x][y] / S;
 
   double prob = exp(diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     methodCount[1][0]++;
 
     maxScore += diffScore;
@@ -1006,7 +1008,7 @@ void Method2(double temperature)
   double diffScore = -1000000.0 * N * N / M * W[x[0]][y[0]] / S;
 
   double prob = exp(diffScore / temperature);
-  if (prob > rand01()) {
+  if (prob > Rand01()) {
     methodCount[2][0]++;
 
     maxScore += diffScore;
