@@ -38,7 +38,7 @@ typedef pair<P, P> PP;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -46,24 +46,24 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j   = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -76,9 +76,9 @@ std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-const ll INF      = 1001001001001001001;
+const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
-const int MA      = 1000000000;
+const int MA = 1000000000;
 
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
@@ -99,7 +99,7 @@ double GetNowTime()
   return elapsed.count();
 }
 
-const int n     = 1000;
+const int n = 1000;
 const int MAX_M = 5000;
 
 ll a[n], b[n];
@@ -116,7 +116,7 @@ ll real_ansCost;
 void CopyToReal()
 {
   real_ansCount = ansCount;
-  real_ansCost  = ansCost;
+  real_ansCost = ansCost;
 
   rep(i, ansCount)
   {
@@ -130,7 +130,7 @@ void CopyToReal()
 void CopyToAns()
 {
   ansCount = real_ansCount;
-  ansCost  = real_ansCost;
+  ansCost = real_ansCost;
 
   rep(i, ansCount)
   {
@@ -145,7 +145,7 @@ void CopyToAns()
 void SetUp()
 {
   ansCount = 0;
-  ansCost  = 0;
+  ansCost = 0;
 }
 
 // 入力受け取り
@@ -356,7 +356,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

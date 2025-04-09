@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -52,7 +52,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 const int dx[4] = { -1, 0, 1, 0 };
@@ -277,7 +277,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && randxor() % 2) {
+          else if (tmp == mi && Rand() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -362,7 +362,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && randxor() % 2) {
+          else if (tmp == mi && Rand() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -446,7 +446,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && randxor() % 2) {
+          else if (tmp == mi && Rand() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -530,7 +530,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && randxor() % 2) {
+          else if (tmp == mi && Rand() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -629,8 +629,8 @@ void Output(ofstream& ofs)
 void Method11(double temperature)
 {
   // 2点スワップ
-  int x1 = randxor() % m;
-  int x2 = randxor() % m;
+  int x1 = Rand() % m;
+  int x2 = Rand() % m;
   if (x1 > x2) swap(x1, x2);
   if (x2 - x1 <= 1) return;
   int x11 = x1 - 1;
@@ -753,8 +753,8 @@ void Method11(double temperature)
 // ID変更
 void Method12(double temperature)
 {
-  int x = randxor() % m;
-  int y = randxor() % 10;
+  int x = Rand() % m;
+  int y = Rand() % 10;
   if (V[ans[x]].size() <= y) return;
   if (x == 0 || x == m - 1) return;
   if (y == id[x]) return;
@@ -814,7 +814,7 @@ void Method1(clock_t start)
     double temperature =
       startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-    int ra = randxor() % 100;
+    int ra = Rand() % 100;
     if (ra < 50) {
       // 2点スワップ
       Method11(temperature);
@@ -968,7 +968,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -36,13 +35,11 @@
 
 using namespace std;
 
-// 型定義のエイリアス
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -57,27 +54,33 @@ static uint32_t RandXor()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() {
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+}
 
-// l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
+}
+
+// [l, r]
+static uint32_t RandRange(uint32_t l, uint32_t r)
+{
+  return l + Rand() % (r - l + 1);
 }
 
 // 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタ
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -113,7 +116,6 @@ int Size2()
 {
   return queueTail2 - queueHead2;
 }
-
 
 namespace
 {
@@ -180,25 +182,23 @@ namespace
   }
 }  // namespace
 
-// 非常に大きな値
+
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列
+
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
+double TL = 1.8;
+int mode;
 std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -1204,24 +1204,24 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
     double tmpScore = dScore;
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[0];
+    int raMode = Rand() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
     if (raMode < hypers.Partition[0]) {
-      ra1 = RandXor() % n;
+      ra1 = Rand() % n;
       while (num_queries[ra1].empty()) {
-        ra1 = RandXor() % n;
+        ra1 = Rand() % n;
       }
-      if (RandXor() % 100 < 50) {
-        ra2 = RandXor() % (rx[ra1] - lx[ra1] + 1) + lx[ra1];
-        ra3 = RandXor() % (ry[ra1] - ly[ra1] + 1) + ly[ra1];
+      if (Rand() % 100 < 50) {
+        ra2 = Rand() % (rx[ra1] - lx[ra1] + 1) + lx[ra1];
+        ra3 = Rand() % (ry[ra1] - ly[ra1] + 1) + ly[ra1];
       }
       else {
         int len2 = (rx[ra1] - lx[ra1] + 1) / 5 + 1;
         int len3 = (ry[ra1] - ly[ra1] + 1) / 5 + 1;
-        ra2 = RandXor() % (len2 * 2 + 1) - len2 + pred_x[ra1];
-        ra3 = RandXor() % (len3 * 2 + 1) - len3 + pred_y[ra1];
+        ra2 = Rand() % (len2 * 2 + 1) - len2 + pred_x[ra1];
+        ra3 = Rand() % (len3 * 2 + 1) - len3 + pred_y[ra1];
       }
       ra2 = max(ra2, lx[ra1]);
       ra2 = min(ra2, rx[ra1]);
@@ -1325,15 +1325,15 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
     ll tmpScore = ansScore;
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[0];
+    int raMode = Rand() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
     if (m == 1)continue;
-    ra1 = RandXor() % n;
-    ra2 = RandXor() % n;
+    ra1 = Rand() % n;
+    ra2 = Rand() % n;
     while (ans[ra1] == ans[ra2]) {
-      ra1 = RandXor() % n;
-      ra2 = RandXor() % n;
+      ra1 = Rand() % n;
+      ra2 = Rand() % n;
     }
 
     int g_num1 = ans[ra1];
@@ -1424,11 +1424,11 @@ void SimulatedAnnealing2(Hypers hypers)
     int keep1, keep2, keep3, keep4, keep5;
 
     if (m == 1)continue;
-    ra1 = RandXor() % n;
-    ra2 = RandXor() % n;
+    ra1 = Rand() % n;
+    ra2 = Rand() % n;
     while (ans[ra1] == ans[ra2]) {
-      ra1 = RandXor() % n;
-      ra2 = RandXor() % n;
+      ra1 = Rand() % n;
+      ra2 = Rand() % n;
     }
 
     int g_num1 = ans[ra1];
@@ -1536,16 +1536,16 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
     }
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[1];
+    int raMode = Rand() % hypers.Partition[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
     if (true || raMode < hypers.Partition[0]) {
       if (m == 1)continue;
-      ra1 = RandXor() % m;
-      ra2 = RandXor() % m;
+      ra1 = Rand() % m;
+      ra2 = Rand() % m;
       while (ra1 == ra2) {
-        ra1 = RandXor() % m;
-        ra2 = RandXor() % m;
+        ra1 = Rand() % m;
+        ra2 = Rand() % m;
       }
 
       int sz1 = sort_g[ra1];
@@ -1555,8 +1555,8 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       vec.insert(vec.end(), ans_nums[ra2].begin(), ans_nums[ra2].end());
 
       vector<P> zen;
-      if (RandXor() % 100 < 100) {
-        if (RandXor() % 100 < 90) {
+      if (Rand() % 100 < 100) {
+        if (Rand() % 100 < 90) {
           zen = BuildMST(ra1, ra2);
         }
         else {
@@ -1632,9 +1632,9 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       sa3_dfs2(ra2Root, ra1Root, ra2);
     }
     else if (raMode < hypers.Partition[1]) {
-      ra1 = RandXor() % m;
+      ra1 = Rand() % m;
       while (sort_g[ra1] == 1) {
-        ra1 = RandXor() % m;
+        ra1 = Rand() % m;
       }
 
       auto res = BuildMSTWithOnePoint(ans_nums[ra1], ans_nums[ra1]);
@@ -1678,7 +1678,7 @@ void SimulatedAnnealing4(Hypers hypers, double timeLimit)
     }
 
     // 近傍解作成
-    int ra1 = RandXor() % m;
+    int ra1 = Rand() % m;
     ans_edges[ra1] = BuildMSTWithEdgeCompare(ans_nums[ra1]);
     ans_MSTSums[ra1] = buildMST_sum;
   }
@@ -1745,7 +1745,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   mode = 2;
@@ -1806,7 +1806,7 @@ int main()
       hypers.StartTemp[0] = pow(2.0, Rand01() * 20);
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition[0] = RandXor() % 101;
+      hypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
       srep(i, 0, 15)

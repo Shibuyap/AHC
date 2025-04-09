@@ -50,7 +50,7 @@ int GetDir(int num)
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -66,7 +66,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 namespace /* 変数 */
@@ -374,10 +374,10 @@ void RollBackFromSeed()
 // 1*1*1のブロックを作る
 void Method1(double temperature)
 {
-  int i = randxor() % 2;
-  int x = randxor() % D;
-  int y = randxor() % D;
-  int z = randxor() % D;
+  int i = Rand() % 2;
+  int x = Rand() % D;
+  int y = Rand() % D;
+  int z = Rand() % D;
   if (ans[i][x][y][z] != -1) return;
   if (!F[i][z][x] || !R[i][z][y]) return;
 
@@ -436,10 +436,10 @@ bool CanDelete(int i, int x, int y, int z)
 // 1*1*1のブロックを消す
 void Method2(double temperature)
 {
-  int i = randxor() % 2;
-  int x = randxor() % D;
-  int y = randxor() % D;
-  int z = randxor() % D;
+  int i = Rand() % 2;
+  int x = Rand() % D;
+  int y = Rand() % D;
+  int z = Rand() % D;
   if (ans[i][x][y][z] != 0) return;
   if (!CanDelete(i, x, y, z)) return;
 
@@ -477,11 +477,11 @@ bool IsNG(int x, int y, int z)
 // 1のブロックを合体
 void Method3(double temperature)
 {
-  int i = randxor() % 2;
-  int x = randxor() % D;
-  int y = randxor() % D;
-  int z = randxor() % D;
-  int dir = randxor() % 6;
+  int i = Rand() % 2;
+  int x = Rand() % D;
+  int y = Rand() % D;
+  int z = Rand() % D;
+  int dir = Rand() % 6;
   if (ans[i][x][y][z] != 0) return;
   int nx = x + dx[dir];
   int ny = y + dy[dir];
@@ -519,10 +519,10 @@ void Method3(double temperature)
 // 2のブロックを分裂
 void Method4(double temperature)
 {
-  int i = randxor() % 2;
-  int x = randxor() % D;
-  int y = randxor() % D;
-  int z = randxor() % D;
+  int i = Rand() % 2;
+  int x = Rand() % D;
+  int y = Rand() % D;
+  int z = Rand() % D;
   if (ans[i][x][y][z] <= 0) return;
   int dir = GetDir(ans[i][x][y][z]);
   int nx = x + dx[dir];
@@ -608,7 +608,7 @@ double Solve(int mode, int problemNum = 0)
         startTemperature + (endTemperature - startTemperature) * nowProgress;
 
       // メソッド選択
-      int ra = randxor() % 100;
+      int ra = Rand() % 100;
 
       // 各メソッド処理
       if (ra < 20) {
@@ -667,7 +667,7 @@ double Solve(int mode, int problemNum = 0)
       startTemperature + (endTemperature - startTemperature) * nowProgress;
 
     // メソッド選択
-    int ra = randxor() % 100;
+    int ra = Rand() % 100;
 
     // 各メソッド処理
     if (ra < 20) {
@@ -721,7 +721,7 @@ int main()
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   int mode = 0;

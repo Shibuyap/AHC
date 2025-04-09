@@ -41,7 +41,7 @@ const char cc[4] = { 'U','L','D','R' };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -49,17 +49,17 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -139,9 +139,9 @@ int Solve(int mode, int num)
   srand((unsigned)time(NULL));
   clock_t start_time, end_time;
   start_time = clock();
-  end_time   = clock();
+  end_time = clock();
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   // 入力部
@@ -194,7 +194,7 @@ int Solve(int mode, int num)
   ans.clear();
   rep(i, 200)
   {
-    ans.push_back(randxor() % 4);
+    ans.push_back(Rand() % 4);
   }
   maxScore = CalcScore(ans);
 
@@ -382,20 +382,20 @@ int Solve(int mode, int num)
       ans.clear();
       rep(i, 200)
       {
-        ans.push_back(randxor() % 4);
+        ans.push_back(Rand() % 4);
       }
     }
 
     maxScore = CalcScore(ans);
 
-    real_ans      = ans;
+    real_ans = ans;
     real_maxScore = maxScore;
 
     // 山登り解、焼きなまし解
-    double now_time   = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-    double TL         = 1.9;
+    double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    double TL = 1.9;
     double start_temp = 2048;
-    double end_temp   = 0.0001;
+    double end_temp = 0.0001;
     // int loop          = 0;
     int keep[1000][3];
     while (true) {
@@ -406,8 +406,8 @@ int Solve(int mode, int num)
       }
       if (now_time > TL) break;
 
-      int x = randxor() % 200;
-      int y = randxor() % 4;
+      int x = Rand() % 200;
+      int y = Rand() % 4;
       int keepy = ans[x];
       ans[x] = y;
 
@@ -423,7 +423,7 @@ int Solve(int mode, int num)
         maxScore += diffScore;
         if (maxScore > real_maxScore) {
           real_maxScore = maxScore;
-          real_ans      = ans;
+          real_ans = ans;
         }
       }
       else {
@@ -433,7 +433,7 @@ int Solve(int mode, int num)
     }
 
     // 最高スコアを戻す
-    ans      = real_ans;
+    ans = real_ans;
     maxScore = real_maxScore;
 
   }

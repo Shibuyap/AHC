@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -52,13 +52,13 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -435,7 +435,7 @@ void InitRoute2()
 void InitRoute3()
 {
   route.clear();
-  int ra = randxor() % 9 + 1;
+  int ra = Rand() % 9 + 1;
   int a[n][n];
   rep(i, n) rep(j, n) a[i][j] = 0;
   int x = 0, y = 0;
@@ -514,7 +514,7 @@ void InitRoute3()
 void InitRoute4()
 {
   route.clear();
-  int ra = randxor() % 9 + 1;
+  int ra = Rand() % 9 + 1;
   int a[n][n];
   rep(i, n) rep(j, n) a[i][j] = 0;
   int x = 0, y = 0;
@@ -965,9 +965,9 @@ ll Solve(int probNum)
     if (GetNowTime() > 1.8) {
       break;
     }
-    int ra1 = randxor() % 1000;
-    int ra2 = randxor() % 1000;
-    int ra3 = randxor() % 100;
+    int ra1 = Rand() % 1000;
+    int ra2 = Rand() % 1000;
+    int ra3 = Rand() % 100;
     if (ra3 < 10) {
       InitRoute1();
     }
@@ -1003,7 +1003,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

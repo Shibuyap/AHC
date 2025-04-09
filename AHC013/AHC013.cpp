@@ -44,7 +44,7 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -60,7 +60,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 namespace /* 変数 */
@@ -2312,8 +2312,8 @@ void Method1(double start_temp, double end_temp, double now_progress)
     if (randCnt == 100) {
       return;
     }
-    ite = randxor() % K100;  // 1マス動かすコンピュータ
-    dir = randxor() % 4;
+    ite = Rand() % K100;  // 1マス動かすコンピュータ
+    dir = Rand() % 4;
 
     nx = x[ite] + dx[dir];
     ny = y[ite] + dy[dir];
@@ -2331,15 +2331,15 @@ void Method3(double start_temp, double end_temp, double now_progress)
 {
   int xx, yy, dir1, dir2;
   while (true) {
-    xx = randxor() % n;
-    yy = randxor() % n;
+    xx = Rand() % n;
+    yy = Rand() % n;
     if (a[xx][yy] == -1) {
       break;
     }
   }
 
-  dir1 = randxor() % 4;
-  dir2 = randxor() % 4;
+  dir1 = Rand() % 4;
+  dir2 = Rand() % 4;
   int nx1 = xx + dx[dir1];
   int ny1 = yy + dy[dir1];
   int nx2 = nx1 + dx[dir2];
@@ -2422,9 +2422,9 @@ void Method3(double start_temp, double end_temp, double now_progress)
 // コンピュータをランダムに2マス移動
 void Method4(double start_temp, double end_temp, double now_progress)
 {
-  int ite = randxor() % K100;  // 1マス動かすコンピュータ
-  int dir1 = randxor() % 4;
-  int dir2 = randxor() % 4;
+  int ite = Rand() % K100;  // 1マス動かすコンピュータ
+  int dir1 = Rand() % 4;
+  int dir2 = Rand() % 4;
 
   int xx = x[ite];
   int yy = y[ite];
@@ -2500,7 +2500,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
 // 移動をランダムに1つ削除
 void Method5(double start_temp, double end_temp, double now_progress)
 {
-  int ite = randxor() % ope1;
+  int ite = Rand() % ope1;
 
   // NGチェック
   // ite以降の操作で、操作元が移動後のマス、操作後が移動前のマス、の操作が出てこなければOK
@@ -2682,7 +2682,7 @@ int Solve(int mode, int problemNum = 0)
   start_time = clock();
   end_time = clock();
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   Init();
@@ -2721,26 +2721,26 @@ int Solve(int mode, int problemNum = 0)
       if (now_progress > 1.0) break;
 
       // 現在のスコアが悪いときは元に戻す
-      if (maxScore * 1.2 < real_maxScore || randxor() % 123456 == 0) {
+      if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
         RollBackFromReal();
         rollbackCount++;
       }
 
       int me = 1;
 
-      // if (K100 * 4 >= n * n * 3 && randxor() % 5 == 0) {
+      // if (K100 * 4 >= n * n * 3 && Rand() % 5 == 0) {
       //   me = 3;
       // }
 
-      // if (now_progress > 0.66 && randxor() % 5 == 0) {
+      // if (now_progress > 0.66 && Rand() % 5 == 0) {
       //   me = 4;
       // }
 
-      if (randxor() % 2 == 0) {
+      if (Rand() % 2 == 0) {
         me = 5;
       }
 
-      if (randxor() % 203 == 0) {
+      if (Rand() % 203 == 0) {
         me = 6;
       }
 
@@ -2817,30 +2817,30 @@ int Solve(int mode, int problemNum = 0)
 
     // 現在のスコアが悪いときは元に戻す
     // if (maxScore * 1.1 < real_maxScore || loop % 94687 == 37) {
-    if (maxScore * 1.2 < real_maxScore || randxor() % 123456 == 0) {
+    if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
       RollBackFromReal();
       rollbackCount++;
     }
 
     int me = 1;
 
-    // if (K100 * 4 >= n * n * 3 && randxor() % 5 == 0) {
+    // if (K100 * 4 >= n * n * 3 && Rand() % 5 == 0) {
     //   me = 3;
     // }
 
-    // if (now_progress > 0.66 && randxor() % 5 == 0) {
+    // if (now_progress > 0.66 && Rand() % 5 == 0) {
     //   me = 4;
     // }
 
-    if (randxor() % 2 == 0) {
+    if (Rand() % 2 == 0) {
       me = 5;
     }
 
-    if (randxor() % 203 == 0) {
+    if (Rand() % 203 == 0) {
       me = 6;
     }
 
-    if (randxor() % 1011 == 0) {
+    if (Rand() % 1011 == 0) {
       me = 7;
     }
 

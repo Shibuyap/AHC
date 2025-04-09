@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -36,13 +35,11 @@
 
 using namespace std;
 
-// 型定義のエイリアス
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -57,58 +54,58 @@ static uint32_t RandXor()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() {
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+}
 
-// l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
+}
+
+// [l, r]
+static uint32_t RandRange(uint32_t l, uint32_t r)
+{
+  return l + Rand() % (r - l + 1);
 }
 
 // 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタ
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 非常に大きな値
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
-std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
+double TL = 1.8;
+int mode;
+std::chrono::steady_clock::time_point startTimeClock;
 
-// 時間計測をリセットする関数
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed = endTimeClock - startTimeClock;
   return elapsed.count();
 }
-
-//const int MAX_N = 30;
 
 int n;
 
@@ -190,7 +187,7 @@ void Method1()
 // ハイパーパラメータ
 struct Hypers
 {
-  double StartTemp;
+  double StartTemp[10];
   double EndTemp;
   double MultipleValue;
   int Partition[10];
@@ -201,7 +198,7 @@ void SimulatedAnnealing(Hypers hypers)
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp;
+  const double START_TEMP = hypers.StartTemp[0];
   const double END_TEMP = hypers.EndTemp;
 
 
@@ -214,16 +211,11 @@ void SimulatedAnnealing(Hypers hypers)
       if (nowTime > TL) break;
     }
 
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
-
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[1];
+    int raMode = Rand() % hypers.Partition[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
     if (raMode < hypers.Partition[0]) {
@@ -309,13 +301,22 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   mode = 2;
 
   Hypers hypers;
-  hypers.StartTemp = 2048.0;
+  hypers.StartTemp[0] = 2048.0;
+  hypers.StartTemp[1] = 2048.0;
+  hypers.StartTemp[2] = 2048.0;
+  hypers.StartTemp[3] = 2048.0;
+  hypers.StartTemp[4] = 2048.0;
+  hypers.StartTemp[5] = 2048.0;
+  hypers.StartTemp[6] = 2048.0;
+  hypers.StartTemp[7] = 2048.0;
+  hypers.StartTemp[8] = 2048.0;
+  hypers.StartTemp[9] = 2048.0;
   hypers.EndTemp = 0.0;
   hypers.MultipleValue = 12345.0;
   hypers.Partition[0] = 100;
@@ -357,10 +358,10 @@ int main()
 
     while (true) {
       Hypers newHypers;
-      newHypers.StartTemp = pow(2.0, Rand01() * 20);
+      newHypers.StartTemp[0] = pow(2.0, Rand01() * 20);
       newHypers.EndTemp = 0.0;
       newHypers.MultipleValue = pow(2.0, Rand01() * 20);
-      newHypers.Partition[0] = RandXor() % 101;
+      newHypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
       srep(i, 0, 15)
@@ -377,7 +378,7 @@ int main()
       cout
         << "Loop = " << loop
         << ", Sum = " << sum
-        << ", StartTemp = " << newHypers.StartTemp
+        << ", StartTemp = " << newHypers.StartTemp[0]
         << ", EndTemp = " << newHypers.EndTemp
         << ", MultipleValue = " << newHypers.MultipleValue
         << ", Partition1 = " << newHypers.Partition[0]

@@ -39,7 +39,7 @@ typedef pair<int, int> P;
 #define yn {puts("Yes");}else{puts("No");}
 #define MAX_N 200005
 
-static uint32_t randxor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -94,7 +94,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 10 != 0) {
-    randxor();
+    Rand();
   }
 
   string fileNameIfs = "1120.txt";
@@ -175,7 +175,7 @@ int main()
     string t;
 
     while (true) {
-      int ra = randxor() % 24;
+      int ra = Rand() % 24;
       int ok = 0;
 
       rep(i, 4)
@@ -233,7 +233,7 @@ int main()
     }
 
     while (true) {
-      int ra = randxor() % 24;
+      int ra = Rand() % 24;
       int ok = 0;
 
       rep(i, 4)
@@ -298,8 +298,8 @@ int main()
       yy.push_back(y);
     }
 
-    int left = randxor() % (m - 40) + 10;
-    int right = left + 1 + randxor() % 20;
+    int left = Rand() % (m - 40) + 10;
+    int right = left + 1 + Rand() % 20;
     int tmp2 = 0;
     srep(i, left + 1, right)
     {
@@ -325,7 +325,7 @@ int main()
       int tmp3 = 0;
       string ttt;
       while (x != gx || y != gy) {
-        int ra = randxor() % 24;
+        int ra = Rand() % 24;
         int ok = 0;
 
         rep(i, 4)

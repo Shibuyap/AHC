@@ -34,15 +34,15 @@ typedef pair<int, int> P;
 #define MAX_N 200005
 
 // いろいろ
-const int INF    = 1001001001;
-const int dx[4]  = { -1, 0, 1, 0 };
-const int dy[4]  = { 0, -1, 0, 1 };
+const int INF = 1001001001;
+const int dx[4] = { -1, 0, 1, 0 };
+const int dy[4] = { 0, -1, 0, 1 };
 const char cc[4] = { 'U', 'L', 'D', 'R' };
 const char cGetPet[4] = { 'u', 'l', 'd', 'r' };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -50,17 +50,17 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -69,9 +69,9 @@ namespace /* 変数 */
 {
   // 問題設定
   const int MAX_HUMAN = 10;
-  const int MAX_PET   = 20;
-  const int N         = 30;
-  const int T         = 300;
+  const int MAX_PET = 20;
+  const int N = 30;
+  const int T = 300;
 
   // 入力用変数
   int n, m;
@@ -107,7 +107,7 @@ namespace /* ユーティリティ */
     {
       rep(j, N)
       {
-        dp[i][j]  = INF;
+        dp[i][j] = INF;
         dir[i][j] = -1;
       }
     }
@@ -321,7 +321,7 @@ public:
     10 : 完成済み
     */
     int finishFenceCount = 0;
-    int fence[N]         = {};
+    int fence[N] = {};
     rep(i, N)
     {
       if (i % 4 != 1) {
@@ -341,9 +341,9 @@ public:
             rep(j, N)
             {
               if (fence[j] == 0) {
-                myFence[i]   = j;
+                myFence[i] = j;
                 humanMode[i] = 1;
-                fence[j]     = 1;
+                fence[j] = 1;
                 break;
               }
             }
@@ -396,9 +396,9 @@ public:
             else {
               // 両サイド柵あり
               if (hx[i] == N - 1) {
-                humanMode[i]      = 0;
+                humanMode[i] = 0;
                 fence[myFence[i]] = 10;
-                myFence[i]        = -1;
+                myFence[i] = -1;
                 finishFenceCount++;
                 outStr += ".";
               }
@@ -659,7 +659,7 @@ public:
     10 : 完成済み
     */
     int finishFenceCount = 0;
-    int fence[N]         = {};
+    int fence[N] = {};
     rep(i, N)
     {
       if (i % 4 != 1) {
@@ -701,9 +701,9 @@ public:
               rep(j, N)
               {
                 if (fence[j] == 0) {
-                  myFence[i]   = j;
+                  myFence[i] = j;
                   humanMode[i] = 1;
-                  fence[j]     = 1;
+                  fence[j] = 1;
                   break;
                 }
               }
@@ -712,9 +712,9 @@ public:
               drep(j, N)
               {
                 if (fence[j] == 0) {
-                  myFence[i]   = j;
+                  myFence[i] = j;
                   humanMode[i] = 1;
-                  fence[j]     = 1;
+                  fence[j] = 1;
                   break;
                 }
               }
@@ -774,9 +774,9 @@ public:
             else {
               // 両サイド柵あり
               if (hx[i] == N - 1) {
-                humanMode[i]      = 0;
+                humanMode[i] = 0;
                 fence[myFence[i]] = 10;
-                myFence[i]        = -1;
+                myFence[i] = -1;
                 finishFenceCount++;
                 outStr += ".";
               }
@@ -1161,8 +1161,8 @@ public:
     10 : 完成済み
     */
     int finishFenceCount = 0;
-    int fenceU[N]         = {};
-    int fenceD[N]         = {};
+    int fenceU[N] = {};
+    int fenceD[N] = {};
     rep(i, N)
     {
       if (i % 4 != 1) {
@@ -1206,15 +1206,15 @@ public:
               rep(j, N)
               {
                 if (fenceU[j] == 0) {
-                  myFence[i]   = j;
+                  myFence[i] = j;
                   humanMode[i] = 1;
-                  fenceU[j]     = 1;
+                  fenceU[j] = 1;
                   break;
                 }
                 if (fenceD[j] == 0) {
-                  myFence[i]   = j + 100;
+                  myFence[i] = j + 100;
                   humanMode[i] = 1;
-                  fenceD[j]    = 1;
+                  fenceD[j] = 1;
                   break;
                 }
               }
@@ -1223,15 +1223,15 @@ public:
               drep(j, N)
               {
                 if (fenceU[j] == 0) {
-                  myFence[i]   = j;
+                  myFence[i] = j;
                   humanMode[i] = 1;
-                  fenceU[j]     = 1;
+                  fenceU[j] = 1;
                   break;
                 }
                 if (fenceD[j] == 0) {
-                  myFence[i]   = j + 100;
+                  myFence[i] = j + 100;
                   humanMode[i] = 1;
-                  fenceD[j]    = 1;
+                  fenceD[j] = 1;
                   break;
                 }
               }
@@ -1296,9 +1296,9 @@ public:
                   goalX = 3;
                 }
                 if (hx[i] == goalX) {
-                  humanMode[i]      = 0;
+                  humanMode[i] = 0;
                   fenceU[myFence[i] % 100] = 10;
-                  myFence[i]        = -1;
+                  myFence[i] = -1;
                   finishFenceCount++;
                   outStr += "D";
                 }
@@ -1308,9 +1308,9 @@ public:
               }
               else {
                 if (hx[i] == N - 1) {
-                  humanMode[i]      = 0;
+                  humanMode[i] = 0;
                   fenceD[myFence[i] % 100] = 10;
-                  myFence[i]        = -1;
+                  myFence[i] = -1;
                   finishFenceCount++;
                   outStr += "U";
                 }
@@ -1696,8 +1696,8 @@ public:
     10 : 完成済み
     */
     int finishFenceCount = 0;
-    int fenceU[N]         = {};
-    int fenceD[N]         = {};
+    int fenceU[N] = {};
+    int fenceD[N] = {};
     rep(i, N)
     {
       if (i % 4 != 1) {
@@ -1741,15 +1741,15 @@ public:
               rep(j, N)
               {
                 if (fenceU[j] == 0) {
-                  myFence[i]   = j;
+                  myFence[i] = j;
                   humanMode[i] = 1;
-                  fenceU[j]     = 1;
+                  fenceU[j] = 1;
                   break;
                 }
                 if (fenceD[j] == 0) {
-                  myFence[i]   = j + 100;
+                  myFence[i] = j + 100;
                   humanMode[i] = 1;
-                  fenceD[j]    = 1;
+                  fenceD[j] = 1;
                   break;
                 }
               }
@@ -1758,15 +1758,15 @@ public:
               drep(j, N)
               {
                 if (fenceU[j] == 0) {
-                  myFence[i]   = j;
+                  myFence[i] = j;
                   humanMode[i] = 1;
-                  fenceU[j]     = 1;
+                  fenceU[j] = 1;
                   break;
                 }
                 if (fenceD[j] == 0) {
-                  myFence[i]   = j + 100;
+                  myFence[i] = j + 100;
                   humanMode[i] = 1;
-                  fenceD[j]    = 1;
+                  fenceD[j] = 1;
                   break;
                 }
               }
@@ -1831,9 +1831,9 @@ public:
                   goalX = 3;
                 }
                 if (hx[i] == goalX) {
-                  humanMode[i]      = 0;
+                  humanMode[i] = 0;
                   fenceU[myFence[i] % 100] = 10;
-                  myFence[i]        = -1;
+                  myFence[i] = -1;
                   finishFenceCount++;
                   outStr += "D";
                 }
@@ -1843,9 +1843,9 @@ public:
               }
               else {
                 if (hx[i] == N - 1) {
-                  humanMode[i]      = 0;
+                  humanMode[i] = 0;
                   fenceD[myFence[i] % 100] = 10;
-                  myFence[i]        = -1;
+                  myFence[i] = -1;
                   finishFenceCount++;
                   outStr += "U";
                 }
@@ -2265,9 +2265,9 @@ int Solve(int mode)
   srand((unsigned)time(NULL));
   clock_t start_time, end_time;
   start_time = clock();
-  end_time   = clock();
+  end_time = clock();
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   // 入力受け取り

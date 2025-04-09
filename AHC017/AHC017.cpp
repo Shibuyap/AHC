@@ -38,7 +38,7 @@ const ll LLINF = 1001001001001001001;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -54,7 +54,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 struct edge
@@ -463,7 +463,7 @@ void Method2()
 void Method3()
 {
   // シャッフル
-  mt19937 mt(randxor());
+  mt19937 mt(Rand());
 
   rep(i, M) ans[i] = -1;
 
@@ -537,11 +537,11 @@ void Method4()
 // ある辺の日にちを変える
 void InnerMethod1()
 {
-  int id = randxor() % M;
+  int id = Rand() % M;
   int day = ans[id];
   int newDay = day;
   while (newDay == day) {
-    newDay = randxor() % D;
+    newDay = Rand() % D;
     if (dayCount[newDay] == K) {
       newDay = day;
     }
@@ -570,12 +570,12 @@ void InnerMethod1()
 // 隣接する2つの辺の日にちをスワップする
 void InnerMethod2()
 {
-  int id = randxor() % M;
-  int vertex = randxor() % 2 ? u[id] : v[id];
+  int id = Rand() % M;
+  int vertex = Rand() % 2 ? u[id] : v[id];
   int id2 = id;
   while (id2 == id) {
     int sz = G[vertex].size();
-    id2 = G[vertex][randxor() % sz].id;
+    id2 = G[vertex][Rand() % sz].id;
   }
   if (ans[id] == ans[id2]) return;
 
@@ -600,11 +600,11 @@ void InnerMethod2()
 // ある辺の日にちを変える
 void InnerMethod3()
 {
-  int id = randxor() % M;
+  int id = Rand() % M;
   int day = ans[id];
   int newDay = day;
   while (newDay == day) {
-    newDay = randxor() % D;
+    newDay = Rand() % D;
     if (dayCount[newDay] == K) {
       newDay = day;
     }
@@ -633,11 +633,11 @@ void InnerMethod3()
 
 void InnerMethod4(double temperature)
 {
-  int id = randxor() % M;
+  int id = Rand() % M;
   int day = ans[id];
   int newDay = day;
   while (newDay == day) {
-    newDay = randxor() % D;
+    newDay = Rand() % D;
     if (dayCount[newDay] == K) {
       newDay = day;
     }
@@ -666,7 +666,7 @@ void InnerMethod4(double temperature)
 // ある辺の日にちを隣接する辺と同じにする
 void InnerMethod5(double temperature)
 {
-  int id = randxor() % M;
+  int id = Rand() % M;
   int day = ans[id];
   set<int> se;
   for (auto e : G[u[id]]) {
@@ -680,7 +680,7 @@ void InnerMethod5(double temperature)
     if (x != day) vec.push_back(x);
   }
   if (vec.size() == 0) return;
-  int newDay = vec[randxor() % vec.size()];
+  int newDay = vec[Rand() % vec.size()];
   if (dayCount[newDay] == K) {
     return;
   }
@@ -708,12 +708,12 @@ void InnerMethod5(double temperature)
 // 隣接する2つの辺の日にちをスワップする
 void InnerMethod6(double temperature)
 {
-  int id1 = randxor() % M;
-  int vertex = randxor() % 2 ? u[id1] : v[id1];
+  int id1 = Rand() % M;
+  int vertex = Rand() % 2 ? u[id1] : v[id1];
   int id2 = id1;
   while (id2 == id1) {
     int sz = G[vertex].size();
-    id2 = G[vertex][randxor() % sz].id;
+    id2 = G[vertex][Rand() % sz].id;
   }
   if (ans[id1] == ans[id2]) return;
 
@@ -749,7 +749,7 @@ void InnerMethod6(double temperature)
 // まとめて引っ越し
 void InnerMethod7(double temperature)
 {
-  int id = randxor() % M;
+  int id = Rand() % M;
   int day = ans[id];
   queue<int> que;
   que.push(id);
@@ -778,7 +778,7 @@ void InnerMethod7(double temperature)
   int sz = edges.size();
   rep(_, 30)
   {
-    newDay = randxor() % D;
+    newDay = Rand() % D;
     if (dayCount[newDay] + sz > K) newDay = day;
     if (newDay != day) break;
   }
@@ -832,7 +832,7 @@ int Solve(int mode, int problemNum)
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   clock_t startTime, endTime;
@@ -924,7 +924,7 @@ int Solve(int mode, int problemNum)
     if (nowProgress > 1.0) break;
 
 #if 0
-    if (randxor() % 2 == 0) {
+    if (Rand() % 2 == 0) {
       InnerMethod1();
     }
     else {
@@ -936,7 +936,7 @@ int Solve(int mode, int problemNum)
     if (nowTime < FIRST_HALF) {
       temperature = 200 + (0 - 200) * (nowTime / FIRST_HALF);
     }
-    int ra = randxor() % 100;
+    int ra = Rand() % 100;
     if (ra < 60) {
       InnerMethod5(temperature);
     }

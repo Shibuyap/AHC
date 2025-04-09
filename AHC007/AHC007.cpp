@@ -49,7 +49,7 @@ public:
   void Initialize()
   {
     for (int i = 0; i < N; i++) {
-      Par[i]  = i;
+      Par[i] = i;
       Rank[i] = 0;
     }
   }
@@ -103,7 +103,7 @@ public:
 };
 
 // —”
-static uint32_t randxor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -121,11 +121,11 @@ static uint32_t randxor()
 // 0ˆÈã1–¢–ž‚ÌŽÀ”‚ð‚Æ‚é—”
 static double rand01()
 {
-  return (randxor() + 0.5) * (1.0 / UINT_MAX);
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
 // lˆÈãr–¢–ž‚ÌŽÀ”‚ð‚Æ‚é—”
-static double randUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * rand01();
 }
@@ -134,7 +134,7 @@ static double randUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = randxor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -256,7 +256,7 @@ void Prepare()
     vector<P> tmpVec(m);
     rep(i, m)
     {
-      tmpVec[i] = make_pair(round(randUniform(minCostRatio, maxCostRatio) * distances[i]), i);
+      tmpVec[i] = make_pair(round(RandRange(minCostRatio, maxCostRatio) * distances[i]), i);
     }
     sort(tmpVec.begin(), tmpVec.end());
     randomDistances.emplace_back(tmpVec);
@@ -383,7 +383,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 2;

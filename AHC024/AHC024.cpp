@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,10 +58,10 @@ static uint32_t RandXor()
 }
 
 // 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 // l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
@@ -70,14 +70,14 @@ static double RandUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタの初期化
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -115,25 +115,25 @@ int Size()
 }
 
 
-// 非常に大きな値
+
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列
+
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
+double TL = 1.8;
+int mode;
 std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
+
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
+
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -442,16 +442,16 @@ void SimulatedAnnealing(Hypers hypers)
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[2];
+    int raMode = Rand() % hypers.Partition[2];
     int ra1, ra2, ra3, ra4, ra5, raDir;
     int keep1, keep2, keep3, keep4, keep5;
     if (raMode < hypers.Partition[0]) {
-      int raDir = RandXor() % 2;
-      int ra1 = RandXor() % n + 1;
+      int raDir = Rand() % 2;
+      int ra1 = Rand() % n + 1;
       int ok = 0;
       while (ok == 0) {
-        raDir = RandXor() % 2;
-        ra1 = RandXor() % n + 1;
+        raDir = Rand() % 2;
+        ra1 = Rand() % n + 1;
         if (raDir == 0) {
           srep(j, 1, n + 1)
           {
@@ -508,9 +508,9 @@ void SimulatedAnnealing(Hypers hypers)
     else if (raMode < hypers.Partition[1]) {
 
       while (true) {
-        ra1 = RandXor() % (n - 1) + 1;
-        ra2 = RandXor() % (n - 1) + 1;
-        raDir = RandXor() % 4;
+        ra1 = Rand() % (n - 1) + 1;
+        ra2 = Rand() % (n - 1) + 1;
+        raDir = Rand() % 4;
         if (d[ra1][ra2] == 0 || d[ra1][ra2 + 1] == 0 || d[ra1 + 1][ra2] == 0 || d[ra1 + 1][ra2 + 1] == 0)continue;
         break;
       }
@@ -538,9 +538,9 @@ void SimulatedAnnealing(Hypers hypers)
     }
     else if (raMode < hypers.Partition[2]) {
       while (true) {
-        ra1 = RandXor() % n + 1;
-        ra2 = RandXor() % n + 1;
-        int dir = RandXor() % 4;
+        ra1 = Rand() % n + 1;
+        ra2 = Rand() % n + 1;
+        int dir = Rand() % 4;
         ra3 = ra1 + dx[dir];
         ra4 = ra2 + dy[dir];
         if (d[ra1][ra2] == 0 || d[ra1][ra2] == d[ra3][ra4])continue;
@@ -641,7 +641,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   mode = 2;
@@ -692,7 +692,7 @@ int main()
       hypers.StartTemp = pow(2.0, Rand01() * 20);
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition[0] = RandXor() % 101;
+      hypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
       srep(i, 0, 15)

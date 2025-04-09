@@ -35,15 +35,15 @@ typedef long long int ll;
 typedef pair<int, int> P;
 
 // 10のx乗
-const ll D1  = 10LL;
-const ll D2  = 100LL;
-const ll D3  = 1000LL;
-const ll D4  = 10000LL;
-const ll D5  = 100000LL;
-const ll D6  = 1000000LL;
-const ll D7  = 10000000LL;
-const ll D8  = 100000000LL;
-const ll D9  = 1000000000LL;
+const ll D1 = 10LL;
+const ll D2 = 100LL;
+const ll D3 = 1000LL;
+const ll D4 = 10000LL;
+const ll D5 = 100000LL;
+const ll D6 = 1000000LL;
+const ll D7 = 10000000LL;
+const ll D8 = 100000000LL;
+const ll D9 = 1000000000LL;
 const ll D10 = 10000000000LL;
 const ll D11 = 100000000000LL;
 const ll D12 = 1000000000000LL;
@@ -56,7 +56,7 @@ const ll D18 = 1000000000000000000LL;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -64,17 +64,17 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -87,14 +87,14 @@ const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
 const int INF = 1001001001;
-double TL     = 2.5;
+double TL = 2.5;
 int mode;
 double g_cost;
 int g_query2Count;
 clock_t g_startTime, g_endTime;
 
-const int MAX_N    = 20;
-const int MAX_M    = 20;
+const int MAX_N = 20;
+const int MAX_M = 20;
 const int MAX_NNNN = MAX_N * MAX_N * MAX_N * MAX_N;
 
 int n, m;
@@ -107,7 +107,7 @@ int minIi[MAX_M], maxIi[MAX_M], minJj[MAX_M], maxJj[MAX_M];
 int sum;
 
 // ハイパラ調整用
-const int M_INDEX_SIZE   = 21;
+const int M_INDEX_SIZE = 21;
 const int EPS_INDEX_SIZE = 21;
 int mIndex, epsIndex;
 
@@ -127,7 +127,7 @@ double sampleEs[3 * MAX_N * MAX_N];
 
 double GetNowTime()
 {
-  g_endTime      = clock();
+  g_endTime = clock();
   double nowTime = (double)(g_endTime - g_startTime) / CLOCKS_PER_SEC;
   return nowTime;
 }
@@ -140,7 +140,7 @@ bool IsNG(int x, int y)
 
 void InitIndices()
 {
-  mIndex   = m;
+  mIndex = m;
   epsIndex = intEps;
 }
 
@@ -154,32 +154,32 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
     }
   }
   if (isMakeN && isMakeM) {
-    n      = randxor() % (20 - 10 + 1) + 10;
+    n = Rand() % (20 - 10 + 1) + 10;
     int ma = n * n / 20;
-    m      = randxor() % (ma - 2 + 1) + 2;
+    m = Rand() % (ma - 2 + 1) + 2;
   }
   else if (isMakeN && !isMakeM) {
     while (true) {
-      n      = randxor() % (20 - 10 + 1) + 10;
+      n = Rand() % (20 - 10 + 1) + 10;
       int ma = n * n / 20;
       if (m <= ma) break;
     }
   }
   else if (!isMakeN && !isMakeM) {
     int ma = n * n / 20;
-    m      = randxor() % (ma - 2 + 1) + 2;
+    m = Rand() % (ma - 2 + 1) + 2;
   }
 
   if (isMakeEps) {
-    eps    = (double)(randxor() % (20 - 1 + 1) + 1) * 0.01;
+    eps = (double)(Rand() % (20 - 1 + 1) + 1) * 0.01;
     intEps = static_cast<int>(round(eps * 100 + 0.2));
   }
   {
-    int paraA = (randxor() % (n * n / 2 - n * n / 5 + 1) + n * n / 5) / m;
-    int paraD = randxor() % ((paraA - 4) - 0 + 1) + 0;
+    int paraA = (Rand() % (n * n / 2 - n * n / 5 + 1) + n * n / 5) / m;
+    int paraD = Rand() % ((paraA - 4) - 0 + 1) + 0;
     rep(i, m)
     {
-      d[i] = randxor() % ((paraA + paraD) - (paraA - paraD) + 1) + (paraA - paraD);
+      d[i] = Rand() % ((paraA + paraD) - (paraA - paraD) + 1) + (paraA - paraD);
       int grid[MAX_N][MAX_N];
       rep(j, n)
       {
@@ -207,7 +207,7 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
           }
         }
         vector<P> v(se.begin(), se.end());
-        P p                     = v[randxor() % v.size()];
+        P p = v[Rand() % v.size()];
         grid[p.first][p.second] = 1;
       }
       int miX = INF, miY = INF;
@@ -238,10 +238,10 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
       }
 
       // ローカルテスタ変数
-      int sx = randxor() % ((n - 1 - (maX - miX)) - 0 + 1);
-      int sy = randxor() % ((n - 1 - (maY - miY)) - 0 + 1);
-      di[i]  = sx;
-      dj[i]  = sy;
+      int sx = Rand() % ((n - 1 - (maX - miX)) - 0 + 1);
+      int sy = Rand() % ((n - 1 - (maY - miY)) - 0 + 1);
+      di[i] = sx;
+      dj[i] = sy;
       rep(j, n)
       {
         rep(k, n)
@@ -305,14 +305,14 @@ int Query1(int x, int y, ofstream& ofs)
 
 int Query2Local(const vector<P>& points)
 {
-  int k    = static_cast<int>(points.size());
+  int k = static_cast<int>(points.size());
   int vSum = 0;
   for (const auto& p : points) {
     vSum += localAnsGrid[p.first][p.second];
   }
-  double mean     = (static_cast<double>(k) - vSum) * eps + vSum * (1.0 - eps);
+  double mean = (static_cast<double>(k) - vSum) * eps + vSum * (1.0 - eps);
   double variance = k * eps * (1 - eps);
-  double std_dev  = std::sqrt(variance);  // 分散から標準偏差を計算
+  double std_dev = std::sqrt(variance);  // 分散から標準偏差を計算
 
   double transformed_sample = sampleEs[g_query2Count] * std_dev + mean;
   g_query2Count++;
@@ -352,7 +352,7 @@ int Query2(const vector<P>& points, ofstream& ofs)
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  g_cost        = 0;
+  g_cost = 0;
   g_query2Count = 0;
   localAns.clear();
 }
@@ -420,8 +420,8 @@ void Input(int problemNum)
 
 void Initialize()
 {
-  nn   = n * n;
-  nnn  = n * n * n;
+  nn = n * n;
+  nnn = n * n * n;
   nnnn = n * n * n * n;
 
   sum = 0;
@@ -537,11 +537,11 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
     {
       m2_kakuteiValue1[i][j] = -1;
       m2_kakuteiValue2[i][j] = -1;
-      m2_aimaiValue[i][j]    = -1;
+      m2_aimaiValue[i][j] = -1;
     }
   }
 
-  int cnt  = 0;
+  int cnt = 0;
   int cnt2 = 0;
   if (isTotyuu != 0) {
     rep(i, n)
@@ -601,7 +601,7 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
       {
         rep(j0, n)
         {
-          int idx    = i0 * n + j0;
+          int idx = i0 * n + j0;
           m2_ok[idx] = true;
           rep(k, d[mNum0])
           {
@@ -683,8 +683,8 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
               int ma = max(m2_nums[i][j][0], max(m2_nums[i][j][1], m2_nums[i][j][2]));
               if (ma < minMax) {
                 minMax = ma;
-                x      = i;
-                y      = j;
+                x = i;
+                y = j;
               }
             }
           }
@@ -699,8 +699,8 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
               srep(k, 1, m + 1) numsSum += m2_nums[i][j][k];
               if (numsSum > maxNums && m2_kakuteiValue1[i][j] == -1) {
                 maxNums = numsSum;
-                x       = i;
-                y       = j;
+                x = i;
+                y = j;
               }
             }
           }
@@ -796,7 +796,7 @@ void Method2_2_Initialize()
     {
       m2_kakuteiValue1[i][j] = -1;
       m2_kakuteiValue2[i][j] = -1;
-      m2_aimaiValue[i][j]    = -1;
+      m2_aimaiValue[i][j] = -1;
     }
   }
 }
@@ -867,8 +867,8 @@ int Method2_2_ChallengeAns(ofstream& ofs)
   rep(i, nnnn)
   {
     if (m2_ok[i]) {
-      tmp.first                                = m2_2_penalty[i];
-      tmp.second                               = i;
+      tmp.first = m2_2_penalty[i];
+      tmp.second = i;
       m2_2_penaltySortedArray[m2_2_kouhoCount] = tmp;
       m2_2_kouhoCount++;
     }
@@ -881,7 +881,7 @@ int Method2_2_ChallengeAns(ofstream& ofs)
   }
   else {
     if (m2_2_penaltySortedArray[0].first + 180.0 < m2_2_penaltySortedArray[1].first) {
-      int idx       = m2_2_penaltySortedArray[0].second;
+      int idx = m2_2_penaltySortedArray[0].second;
       bool isCorect = Method2_PrintAnsWithIndex(idx, ofs);
       if (isCorect) {
         return 1;
@@ -958,8 +958,8 @@ void Method2_2(int query2Size, ofstream& ofs)
             int ma = max(nums[j][k][0], max(nums[j][k][1], nums[j][k][2]));
             if (ma == 0) continue;
             if (ma < minMax) {
-              x      = j;
-              y      = k;
+              x = j;
+              y = k;
               minMax = ma;
             }
           }
@@ -974,7 +974,7 @@ void Method2_2(int query2Size, ofstream& ofs)
             valSum += kakuteiValues[i].second;
           }
           points.emplace_back(x, y);
-          int val             = Query2(points, ofs) - valSum;
+          int val = Query2(points, ofs) - valSum;
           m2_aimaiValue[x][y] = val;
           continue;
         }
@@ -1015,15 +1015,15 @@ void Method2_2(int query2Size, ofstream& ofs)
             int ma = max(nums[j][k][0], max(nums[j][k][1], nums[j][k][2]));
             if (ma == 0) continue;
             if (ma < minMax) {
-              x      = j;
-              y      = k;
+              x = j;
+              y = k;
               minMax = ma;
             }
           }
         }
 
         if (x != -1) {
-          int val                = Query1(x, y, ofs);
+          int val = Query1(x, y, ofs);
           m2_kakuteiValue1[x][y] = val;
         }
       }
@@ -1160,8 +1160,8 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
         rep(l, shuuiSize)
         {
           unused[k][l] = 0;
-          int xx       = xxx + k - (shuuiSize / 2);
-          int yy       = yyy + l - (shuuiSize / 2);
+          int xx = xxx + k - (shuuiSize / 2);
+          int yy = yyy + l - (shuuiSize / 2);
           if (!IsNG(xx, yy) && m3_used[xx][yy] >= 1) { unused[k][l] = m3_used[xx][yy]; }
         }
       }
@@ -1194,8 +1194,8 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
       }
 
       for (auto unusedPoint : unusedPoints) {
-        int ux      = unusedPoint.first;
-        int uy      = unusedPoint.second;
+        int ux = unusedPoint.first;
+        int uy = unusedPoint.second;
         m3_usedM[i] = 1;
         rep(k, d[i])
         {
@@ -1233,7 +1233,7 @@ void Method3_Initialize()
   {
     rep(j, n)
     {
-      m3_used[i][j]  = -1;
+      m3_used[i][j] = -1;
       m3_used2[i][j] = 0;
     }
   }
@@ -1250,7 +1250,7 @@ void Method3(ofstream& ofs)
 
   onesEmptyCount = 0;
 
-  int cnt  = 0;
+  int cnt = 0;
   int cnt2 = 0;
   while (true) {
     if (cnt + cnt2 == sum) {
@@ -1361,13 +1361,13 @@ void Method3(ofstream& ofs)
                 if (hasNeighbor) continue;
               }
               maxNums = nums[i][j];
-              x       = i;
-              y       = j;
+              x = i;
+              y = j;
             }
           }
         }
 
-        int val       = Query1(x, y, ofs);
+        int val = Query1(x, y, ofs);
         m3_used[x][y] = val - m3_used2[x][y];
         cnt += m3_used[x][y];
       }
@@ -1403,7 +1403,7 @@ void Method3(ofstream& ofs)
               }
               sort(v2.begin(), v2.end());
               if (realCount == 0) {
-                v1   = v2;
+                v1 = v2;
                 onem = i;
                 realCount++;
               }
@@ -1447,8 +1447,8 @@ void Method3(ofstream& ofs)
         rep(aespa, ones.size())
         {
           P p = ones[aespa];
-          x   = p.first;
-          y   = p.second;
+          x = p.first;
+          y = p.second;
 
           kouhoCount = 0;
           rep(i, n)
@@ -1481,8 +1481,8 @@ void Method3(ofstream& ofs)
 
           if (kouhoCount < minKouhoCount) {
             if (true) {
-              int nx      = -1;
-              int ny      = -1;
+              int nx = -1;
+              int ny = -1;
               int minDiff = INF;
               rep(i, n)
               {
@@ -1492,8 +1492,8 @@ void Method3(ofstream& ofs)
                   if (nums[i][j] > 0) {
                     if (abs(kouhoCount / 2 - nums[i][j]) < minDiff) {
                       minDiff = abs(kouhoCount / 2 - nums[i][j]);
-                      nx      = i;
-                      ny      = j;
+                      nx = i;
+                      ny = j;
                     }
                   }
                 }
@@ -1525,8 +1525,8 @@ void Method3(ofstream& ofs)
         y = miny;
 
         if (kouhoCount > 1) {
-          int nx      = -1;
-          int ny      = -1;
+          int nx = -1;
+          int ny = -1;
           int minDiff = INF;
           if (kouhoCount < INF) {
             rep(i, n)
@@ -1537,8 +1537,8 @@ void Method3(ofstream& ofs)
                 if (nums[i][j] > 0) {
                   if (abs(kouhoCount / 2 - nums[i][j]) < minDiff) {
                     minDiff = abs(kouhoCount / 2 - nums[i][j]);
-                    nx      = i;
-                    ny      = j;
+                    nx = i;
+                    ny = j;
                   }
                 }
               }
@@ -1551,8 +1551,8 @@ void Method3(ofstream& ofs)
                 << "kouhoCount = " << kouhoCount << endl;
             }
             while (nx == -1) {
-              int nnx = randxor() % n;
-              int nny = randxor() % n;
+              int nnx = Rand() % n;
+              int nny = Rand() % n;
               if (m3_used[nnx][nny] == -1) {
                 nx = nnx;
                 ny = nny;
@@ -1577,7 +1577,7 @@ void Method3(ofstream& ofs)
             }
           }
 
-          int val         = Query1(nx, ny, ofs);
+          int val = Query1(nx, ny, ofs);
           m3_used[nx][ny] = val;
           m3_used[nx][ny] -= m3_used2[nx][ny];
           cnt += m3_used[nx][ny];
@@ -1652,7 +1652,7 @@ void Method4(int kakuteiCount, ofstream& ofs)
 ll Solve(int probNum)
 {
   g_startTime = clock();
-  g_endTime   = clock();
+  g_endTime = clock();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -1726,8 +1726,8 @@ void Battle()
       // winQueueに中身がある場合はそちらからシミュレーション
       // 次に試したい場所
       int nextIndex = winQueue.front().first;
-      mIndex        = nextIndex / D2;
-      epsIndex      = nextIndex % D2;
+      mIndex = nextIndex / D2;
+      epsIndex = nextIndex % D2;
       // 試したいパラメータ
       newPara = winQueue.front().second;
       winQueue.pop();
@@ -1743,30 +1743,30 @@ void Battle()
         newPara = solverNum * D10;
       }
       else if (solverNum == 1) {
-        int query2Size = randxor() % 9 + 1;
-        newPara        = solverNum * D10 + query2Size;
+        int query2Size = Rand() % 9 + 1;
+        newPara = solverNum * D10 + query2Size;
       }
     }
 
     // 同じ値の場合はcontinue
     if (hyperParams[mIndex][epsIndex] == newPara) continue;
 
-    int win  = 0;
+    int win = 0;
     int lose = 0;
     int draw = 0;
 
     int judgeMode = 0;
-    bool isWin    = false;
+    bool isWin = false;
     if (m != 2 || eps > 0.1) continue;
     cout << loop << ' ' << m << ' ' << eps << ", oldPara = " << hyperParams[mIndex][epsIndex] << ", newPara = " << newPara;
     if (judgeMode == 0) {  // 20戦18勝
       for (int _ = 0; _ < 20; _++) {
         // ここで毎回テストケースを1ケース作成
         TestCaseGenerator(true, false, false);
-        ll oldScore                   = Solve(0);
-        ll oldPara                    = hyperParams[mIndex][epsIndex];
+        ll oldScore = Solve(0);
+        ll oldPara = hyperParams[mIndex][epsIndex];
         hyperParams[mIndex][epsIndex] = newPara;
-        ll newScore                   = Solve(0);
+        ll newScore = Solve(0);
         hyperParams[mIndex][epsIndex] = oldPara;
 
         // cout << "n = " << n << ", d[0] = " << d[0] << ", d[1] = " << d[1] << ", oldScore = " << oldScore << ", newScore = " << newScore << endl;
@@ -1794,10 +1794,10 @@ void Battle()
       for (int _ = 0; _ < 200; _++) {
         // ここで毎回テストケースを1ケース作成
         TestCaseGenerator(true, false, false);
-        ll oldScore                   = Solve(0);
-        ll oldPara                    = hyperParams[mIndex][epsIndex];
+        ll oldScore = Solve(0);
+        ll oldPara = hyperParams[mIndex][epsIndex];
         hyperParams[mIndex][epsIndex] = newPara;
-        ll newScore                   = Solve(0);
+        ll newScore = Solve(0);
         hyperParams[mIndex][epsIndex] = oldPara;
 
         if (newScore < oldScore) {
@@ -1827,10 +1827,10 @@ void Battle()
       for (int _ = 0; _ < 1000; _++) {
         // ここで毎回テストケースを1ケース作成
         TestCaseGenerator(true, false, false);
-        ll oldScore                   = Solve(0);
-        ll oldPara                    = hyperParams[mIndex][epsIndex];
+        ll oldScore = Solve(0);
+        ll oldPara = hyperParams[mIndex][epsIndex];
         hyperParams[mIndex][epsIndex] = newPara;
-        ll newScore                   = Solve(0);
+        ll newScore = Solve(0);
         hyperParams[mIndex][epsIndex] = oldPara;
 
         if (newScore < oldScore) {
@@ -1863,7 +1863,7 @@ void Battle()
 
       // 付近(各インデックス±1)をキューに入れる
       for (int i = 0; i < 4; i++) {
-        int nextMIndex   = mIndex;
+        int nextMIndex = mIndex;
         int nextEpsIndex = epsIndex;
         if (i == 0) {
           nextMIndex--;
@@ -1898,7 +1898,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;
@@ -1907,12 +1907,12 @@ int main()
     Solve(0);
   }
   else if (mode == 1) {
-    ll sum          = 0;
+    ll sum = 0;
     ll onesEmptySum = 0;
     srep(i, 0, 100)
     {
       onesEmptyCount = 0;
-      ll score       = Solve(i);
+      ll score = Solve(i);
       if (score == 0) continue;
       sum += score;
       onesEmptySum += onesEmptyCount * 1000000LL;

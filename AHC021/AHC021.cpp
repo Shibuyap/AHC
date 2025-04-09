@@ -39,7 +39,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -55,7 +55,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 int n = 30;
@@ -289,12 +289,12 @@ void Method3_2()
 
     int loop = 0;
 
-    int random = randxor() % 20 + 1;
+    int random = Rand() % 20 + 1;
     rep(_, random)
     {
       while (true) {
-        int x = randxor() % (n - 1);
-        int y = randxor() % (x + 1);
+        int x = Rand() % (n - 1);
+        int y = Rand() % (x + 1);
         int diff = 0;
         int nx = -1;
         int ny = -1;
@@ -407,8 +407,8 @@ void Method3_3()
     }
 
     while (true) {
-      int x = randxor() % (n - 1);
-      int y = randxor() % (x + 1);
+      int x = Rand() % (n - 1);
+      int y = Rand() % (x + 1);
       int diff = 0;
       int nx = -1;
       int ny = -1;
@@ -792,7 +792,7 @@ void Method5_2()
       int ny = -1;
 
       if (loop >= ra && randomOpe == 0) {
-        int dir = randxor() % 2;
+        int dir = Rand() % 2;
         if (dir == 0) {
           if (y != 0) {
             nx = x;
@@ -960,7 +960,7 @@ int Solve(int mode, int probNum)
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   Input(probNum);
@@ -996,7 +996,7 @@ int Solve(int mode, int probNum)
       break;
     }
     loopCount++;
-    if (randxor() % 2 == 0) {
+    if (Rand() % 2 == 0) {
       Method5_1();
     }
     else {

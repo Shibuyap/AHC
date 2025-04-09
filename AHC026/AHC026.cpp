@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,42 +58,42 @@ static uint32_t RandXor()
 }
 
 // 0以上1未満の小数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 // 配列をシャッフルする関数（Fisher-Yatesアルゴリズム）
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタの初期化
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-const ll INF = 1001001001001001001; // 非常に大きな値（オーバーフローに注意）
+const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;     // int型の非常に大きな値
 
-// 移動方向の配列（使用されていない）
+
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
+double TL = 1.8;
+int mode;
 std::chrono::steady_clock::time_point startTimeClock, endTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
+
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
+
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -390,12 +390,12 @@ Problem greedy_solution()
     if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && GetNowTime() < TL) {
       rep(iteration, 500)
       {
-        int random_position = RandXor() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
+        int random_position = Rand() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
         int keep = move_targets[random_position];
 
-        if (RandXor() % 2 == 0) {
+        if (Rand() % 2 == 0) {
           // ランダムに移動先を変更
-          int random_idx = RandXor() % (m - 1) + 1;
+          int random_idx = Rand() % (m - 1) + 1;
           move_targets[random_position] = min_box_per_stack[random_idx].second;
         }
         else {
@@ -405,7 +405,7 @@ Problem greedy_solution()
             random_dir = 1;
           }
           else if (random_position != current_y + 1 && random_position != problem.stacks[from_stack].size() - 1) {
-            if (RandXor() % 2 == 0) {
+            if (Rand() % 2 == 0) {
               random_dir = 1;
             }
           }
@@ -469,10 +469,10 @@ int main()
 {
   srand((unsigned)time(NULL)); // 乱数の種を設定
   while (rand() % 100) {
-    RandXor(); // 乱数を進めておく
+    Rand(); // 乱数を進めておく
   }
 
-  mode = 2; // 実行モードの設定
+  mode = 2;
 
   if (mode == 0) {
     solve(0); // 単一のケースを解く

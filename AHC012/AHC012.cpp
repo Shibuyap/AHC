@@ -37,7 +37,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // —”
-static uint32_t randxor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -55,11 +55,11 @@ static uint32_t randxor()
 // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
 static double rand01()
 {
-  return (randxor() + 0.5) * (1.0 / UINT_MAX);
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
 // lˆÈãr–¢–‚ÌÀ”‚ğ‚Æ‚é—”
-static double randUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * rand01();
 }
@@ -68,7 +68,7 @@ static double randUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = randxor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -221,7 +221,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 2;

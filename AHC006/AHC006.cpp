@@ -44,7 +44,7 @@ const char cc[4] = {'U','L','D','R'};
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -52,17 +52,17 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -96,14 +96,14 @@ namespace /* 変数 */
   {
     argA.clear();
     maxScore = 0;
-    minTime  = 0;
+    minTime = 0;
     ans.clear();
     argAns.resize(140);
     argAns2.resize(140);
     use.resize(1100);
     pair_.resize(2100);
     real_maxScore = 0;
-    real_minTime  = 0;
+    real_minTime = 0;
     real_ans.clear();
   }
 
@@ -146,7 +146,7 @@ bool IsGood2(int ite, int L1, int R1, int U1, int D1, int L2, int R2, int U2, in
 void FilterInput(clock_t& start_time)
 {
   vector<int> aa, bb, cc, dd;
-  int mi   = 1001001;
+  int mi = 1001001;
   int loop = 0;
   clock_t end_time;
   double now_time;
@@ -159,14 +159,14 @@ void FilterInput(clock_t& start_time)
     if (now_time > 0.2) break;
 
     vector<int> aaa, bbb, ccc, ddd, argAA;
-    int L1 = randxor() % 801;
-    int R1 = randxor() % 801;
-    int U1 = randxor() % 801;
-    int D1 = randxor() % 801;
-    int L2 = randxor() % 801;
-    int R2 = randxor() % 801;
-    int U2 = randxor() % 801;
-    int D2 = randxor() % 801;
+    int L1 = Rand() % 801;
+    int R1 = Rand() % 801;
+    int U1 = Rand() % 801;
+    int D1 = Rand() % 801;
+    int L2 = Rand() % 801;
+    int R2 = Rand() % 801;
+    int U2 = Rand() % 801;
+    int D2 = Rand() % 801;
     if (L1 > R1) swap(L1, R1);
     if (U1 > D1) swap(U1, D1);
     if (L2 > R2) swap(L2, R2);
@@ -188,12 +188,12 @@ void FilterInput(clock_t& start_time)
       }
     }
     if (aaa.size() >= m + 1) {
-      aa   = aaa;
-      bb   = bbb;
-      cc   = ccc;
-      dd   = ddd;
+      aa = aaa;
+      bb = bbb;
+      cc = ccc;
+      dd = ddd;
       argA = argAA;
-      mi   = sz;
+      mi = sz;
     }
   }
 
@@ -222,9 +222,9 @@ int Solve(int mode)
   srand((unsigned)time(NULL));
   clock_t start_time, end_time;
   start_time = clock();
-  end_time   = clock();
+  end_time = clock();
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   // 入力部
@@ -252,26 +252,26 @@ int Solve(int mode)
   {
     ans.push_back(P(a[i], b[i]));
     argAns[i] = i;
-    use[i]    = 1;
+    use[i] = 1;
   }
   rep(i, m)
   {
     ans.push_back(P(c[i], d[i]));
   }
   ans.push_back(P(400, 400));
-  minTime  = CalcTime();
+  minTime = CalcTime();
   maxScore = CalcScore(minTime);
 
-  real_ans      = ans;
-  real_minTime  = minTime;
+  real_ans = ans;
+  real_minTime = minTime;
   real_maxScore = maxScore;
 
   // 山登り解、焼きなまし解
-  double now_time   = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-  double TL         = 1.8;
+  double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+  double TL = 1.8;
   double start_temp = 48;
-  double end_temp   = 0.0001;
-  int loop          = 0;
+  double end_temp = 0.0001;
+  int loop = 0;
   while (true) {
     loop++;
     if (loop % 100 == 1) {
@@ -280,16 +280,16 @@ int Solve(int mode)
     }
     if (now_time > 0.4) break;
 
-    int x = randxor() % n;
+    int x = Rand() % n;
 
     while (use[x]) {
-      x = randxor() % n;
+      x = Rand() % n;
     }
 
-    int ite = randxor() % m;
+    int ite = Rand() % m;
 
     int keepNum = argAns[ite];
-    int diff    = 0;
+    int diff = 0;
     diff += abs(a[x] - ans[ite].first) + abs(b[x] - ans[ite].second);
     diff += abs(a[x] - ans[ite + 2].first) + abs(b[x] - ans[ite + 2].second);
     diff += abs(c[x] - ans[ite + m].first) + abs(d[x] - ans[ite + m].second);
@@ -300,25 +300,25 @@ int Solve(int mode)
     diff -= abs(ans[ite + m + 1].first - ans[ite + m].first) + abs(ans[ite + m + 1].second - ans[ite + m].second);
     diff -= abs(ans[ite + m + 1].first - ans[ite + m + 2].first) + abs(ans[ite + m + 1].second - ans[ite + m + 2].second);
 
-    int tmpTime   = minTime + diff;
+    int tmpTime = minTime + diff;
     int diffScore = -diff;
 
     double temp = start_temp + (end_temp - start_temp) * now_time / TL;
     double prob = exp((double)diffScore / temp);
     if (prob > rand01()) {
-      minTime          = tmpTime;
+      minTime = tmpTime;
       use[argAns[ite]] = 0;
-      use[x]           = 1;
-      argAns[ite]      = x;
-      ans[ite + 1]     = P(a[x], b[x]);
+      use[x] = 1;
+      argAns[ite] = x;
+      ans[ite + 1] = P(a[x], b[x]);
       ans[ite + m + 1] = P(c[x], d[x]);
-      maxScore         = CalcScore(minTime);
+      maxScore = CalcScore(minTime);
       if (maxScore > real_maxScore) {
-        real_minTime  = minTime;
+        real_minTime = minTime;
         real_maxScore = maxScore;
-        real_ans      = ans;
-        real_argAns   = argAns;
-        real_use      = use;
+        real_ans = ans;
+        real_argAns = argAns;
+        real_use = use;
       }
     }
     else {
@@ -328,15 +328,15 @@ int Solve(int mode)
   }
 
   // 最高スコアを戻す
-  ans      = real_ans;
-  minTime  = real_minTime;
+  ans = real_ans;
+  minTime = real_minTime;
   maxScore = real_maxScore;
-  argAns   = real_argAns;
-  use      = real_use;
+  argAns = real_argAns;
+  use = real_use;
 
   rep(i, m)
   {
-    pair_[argAns[i]]        = i + m;
+    pair_[argAns[i]] = i + m;
     pair_[argAns[i] + 1000] = i;
   }
   rep(i, m)
@@ -344,9 +344,9 @@ int Solve(int mode)
     argAns[i + m] = argAns[i] + 1000;
   }
   real_argAns = argAns;
-  real_pair_  = pair_;
+  real_pair_ = pair_;
 
-  argAns2      = argAns;
+  argAns2 = argAns;
   real_argAns2 = argAns2;
 
   // それぞれをTSP
@@ -360,10 +360,10 @@ int Solve(int mode)
       }
       if (now_time > (TL / 15) * (6 + ui_tei)) break;
 
-      int ite1 = randxor() % (m * 2);
-      int ite2 = randxor() % (m * 2);
+      int ite1 = Rand() % (m * 2);
+      int ite2 = Rand() % (m * 2);
       while (ite1 == ite2) {
-        ite2 = randxor() % (m * 2);
+        ite2 = Rand() % (m * 2);
       }
       if (ite1 > ite2) swap(ite1, ite2);
       if (ite2 - ite1 == 1) continue;
@@ -392,7 +392,7 @@ int Solve(int mode)
         diff -= abs(ans[ite2 + 1].first - ans[ite2].first) + abs(ans[ite2 + 1].second - ans[ite2].second);
         diff -= abs(ans[ite2 + 1].first - ans[ite2 + 2].first) + abs(ans[ite2 + 1].second - ans[ite2 + 2].second);
 
-        int tmpTime   = minTime + diff;
+        int tmpTime = minTime + diff;
         int diffScore = -diff;
 
         double temp = start_temp + (end_temp - start_temp) * now_time / TL;
@@ -415,12 +415,12 @@ int Solve(int mode)
           swap(ans[ite1 + 1], ans[ite2 + 1]);
           maxScore = CalcScore(minTime);
           if (maxScore > real_maxScore) {
-            real_minTime  = minTime;
+            real_minTime = minTime;
             real_maxScore = maxScore;
-            real_ans      = ans;
-            real_argAns   = argAns;
-            real_use      = use;
-            real_pair_    = pair_;
+            real_ans = ans;
+            real_argAns = argAns;
+            real_use = use;
+            real_pair_ = pair_;
           }
         }
         else {
@@ -464,20 +464,20 @@ int Solve(int mode)
     }
 
     // 最高スコアを戻す
-    ans      = real_ans;
-    minTime  = real_minTime;
+    ans = real_ans;
+    minTime = real_minTime;
     maxScore = real_maxScore;
-    argAns   = real_argAns;
-    argAns2  = real_argAns2;
-    use      = real_use;
-    pair_    = real_pair_;
+    argAns = real_argAns;
+    argAns2 = real_argAns2;
+    use = real_use;
+    pair_ = real_pair_;
   }
 
   TL = 1.95;
 
-  const int INF  = 1001001001;
-  int mi         = INF;
-  argAns2        = argAns;
+  const int INF = 1001001001;
+  int mi = INF;
+  argAns2 = argAns;
   vector<P> ans2 = ans;
 
   random_device seed_gen;
@@ -517,8 +517,8 @@ int Solve(int mode)
     }
 
     int tmpTime = 0;
-    int nowx    = 400;
-    int nowy    = 400;
+    int nowx = 400;
+    int nowy = 400;
     vector<P> ans3;
     ans3.push_back(P(400, 400));
     rep(i, m * 2)
@@ -535,7 +535,7 @@ int Solve(int mode)
     ans3.push_back(P(400, 400));
 
     if (tmpTime < mi) {
-      mi   = tmpTime;
+      mi = tmpTime;
       ans2 = ans3;
       argAns2.clear();
 
@@ -545,10 +545,10 @@ int Solve(int mode)
     }
   }
 
-  ans    = ans2;
+  ans = ans2;
   argAns = argAns2;
 
-  minTime  = CalcTime();
+  minTime = CalcTime();
   maxScore = CalcScore(minTime);
 
   // 解の出力
@@ -604,7 +604,7 @@ int Solve(int mode)
 int main()
 {
   int mode = 0;
-  m        = 55;
+  m = 55;
   if (mode == 0) {
     Solve(mode);
   }

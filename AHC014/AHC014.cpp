@@ -48,7 +48,7 @@ const int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -64,7 +64,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 namespace /* 変数 */
@@ -726,8 +726,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
 // ランダムに1点が足せるかどうか
 void Method1(double temperature)
 {
-  int x = randxor() % N;
-  int y = randxor() % N;
+  int x = Rand() % N;
+  int y = Rand() % N;
 
   if (f[x][y]) return;
 
@@ -990,7 +990,7 @@ inline int GetDir(int x1, int y1, int x2, int y2)
 void Method2(double temperature)
 {
   if (ansSize == 0) return;
-  int ite = randxor() % ansSize;
+  int ite = Rand() % ansSize;
   if (ansDelete[ite]) return;
   if (use[ans[ite][0][0]][ans[ite][0][1]] > 1) return;
 
@@ -1164,7 +1164,7 @@ int Solve(int mode, int problemNum = 0)
 
       // メソッド選択
       int me = 1;
-      if (randxor() % 2 == 0) {
+      if (Rand() % 2 == 0) {
         me = 2;
       }
 
@@ -1226,7 +1226,7 @@ int Solve(int mode, int problemNum = 0)
 
     // メソッド選択
     int me = 1;
-    if (randxor() % 2 == 0) {
+    if (Rand() % 2 == 0) {
       me = 2;
     }
 
@@ -1289,7 +1289,7 @@ int main()
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   int mode = 0;

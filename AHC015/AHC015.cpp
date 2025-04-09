@@ -39,7 +39,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -55,7 +55,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 const int dx[4] = { -1, 0, 1, 0 };
@@ -102,7 +102,7 @@ inline void CopyKeepAtoA()
   }
 }
 
-inline int RandomPoint(int turn) { return randxor() % (100 - turn) + 1; }
+inline int RandomPoint(int turn) { return Rand() % (100 - turn) + 1; }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
 void Input(int problemNum)
@@ -502,7 +502,7 @@ int Solve(int mode)
       }
 
       if (loop % 4 == 0) {
-        simBias = randxor() % 3 - 1;
+        simBias = Rand() % 3 - 1;
       }
 
       CopyKeepAtoA();
@@ -562,7 +562,7 @@ int main()
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   int mode = 0;

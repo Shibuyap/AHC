@@ -41,7 +41,7 @@ typedef pair<int, int> P;
 #define yn {puts("Yes");}else{puts("No");}
 #define MAX_N 205
 
-static uint32_t randxor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -57,7 +57,7 @@ static uint32_t randxor()
 // 0以上1未満の小数をとる乱数
 static double rand01()
 {
-  return (randxor() + 0.5) * (1.0 / UINT_MAX);
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
 // ハイパラはここにおく
@@ -73,7 +73,7 @@ int shuffles[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, 
 
 /*
 いろいろ
-int x = randxor()%100;
+int x = Rand()%100;
 double x = rand01();
 mt19937 get_rand_mt;
 shuffle(vec.begin(), vec.end(), get_rand_mt);
@@ -325,7 +325,7 @@ inline void hukuramashi(int ite)
   vExtend[2] = x[ite] + 1;
   vExtend[3] = y[ite] + 1;
 
-  int flagTateYoko = randxor() % 2;
+  int flagTateYoko = Rand() % 2;
   if (flagTateYoko == 0) {
     vExtend[0] = 0;
     vExtend[2] = 10000;
@@ -491,10 +491,10 @@ inline void hukuramashi(int ite)
   }
 
   int shuf[4] = {};
-  int shuffleSeed = randxor() % 24;
+  int shuffleSeed = Rand() % 24;
   rep(j, 4) shuf[j] = shuffles[shuffleSeed][j];
 
-  int yure = randxor() % 2;
+  int yure = Rand() % 2;
 
   rep(i, 4)
   {
@@ -616,7 +616,7 @@ inline void Tubusu(int tubusu)
 {
   rep(i, tubusu)
   { // tubusu個つぶす
-    int ite = randxor() % n;
+    int ite = Rand() % n;
     a[ite] = x[ite];
     b[ite] = y[ite];
     c[ite] = x[ite] + 1;
@@ -672,7 +672,7 @@ inline void TubusuWorst(int tubusu_worst)
 
 inline void AnaWoAkeru(int hole)
 {
-  int ite = randxor() % n;
+  int ite = Rand() % n;
   vector<int> keep;
   keep.emplace_back(ite);
   a[ite] -= 100;
@@ -713,12 +713,12 @@ inline void AnaWoAkeru(int hole)
 int vExtendKing[4];
 inline void hukuramashiKing(int ite)
 {
-  vExtendKing[0] = max(0, (int)(x[ite] - randxor() % 1000));
-  vExtendKing[1] = max(0, (int)(y[ite] - randxor() % 1000));
-  vExtendKing[2] = min(10000, (int)(x[ite] + 1 + randxor() % 1000));
-  vExtendKing[3] = min(10000, (int)(y[ite] + 1 + randxor() % 1000));
+  vExtendKing[0] = max(0, (int)(x[ite] - Rand() % 1000));
+  vExtendKing[1] = max(0, (int)(y[ite] - Rand() % 1000));
+  vExtendKing[2] = min(10000, (int)(x[ite] + 1 + Rand() % 1000));
+  vExtendKing[3] = min(10000, (int)(y[ite] + 1 + Rand() % 1000));
 
-  int tateyoko = randxor() % 2;
+  int tateyoko = Rand() % 2;
 
   if (tateyoko == 0) {
     int argX = arg_sort_x[ite];
@@ -862,10 +862,10 @@ inline void hukuramashiKing(int ite)
 
 
   int shuf[4] = {};
-  int shuffleSeed = randxor() % 24;
+  int shuffleSeed = Rand() % 24;
   rep(j, 4) shuf[j] = shuffles[shuffleSeed][j];
 
-  int yure = randxor() % 2;
+  int yure = Rand() % 2;
 
   rep(i, 4)
   {
@@ -986,8 +986,8 @@ inline void ExtendKing(int ite)
 inline void oneChange(int ite, double temp)
 {
   int diff = 0;
-  while (diff == 0) diff = randxor() % 101 - 50;
-  int abcd = randxor() % 4;
+  while (diff == 0) diff = Rand() % 101 - 50;
+  int abcd = Rand() % 4;
 
   if (abcd == 0) a[ite] += diff;
   if (abcd == 1) b[ite] += diff;
@@ -1033,10 +1033,10 @@ inline void oneChange(int ite, double temp)
 
 inline void fourChange(int ite, double temp)
 {
-  int diffA = randxor() % 101 - 50;
-  int diffB = randxor() % 101 - 50;
-  int diffC = randxor() % 101 - 50;
-  int diffD = randxor() % 101 - 50;
+  int diffA = Rand() % 101 - 50;
+  int diffB = Rand() % 101 - 50;
+  int diffC = Rand() % 101 - 50;
+  int diffD = Rand() % 101 - 50;
 
   a[ite] += diffA;
   b[ite] += diffB;
@@ -1083,8 +1083,8 @@ inline void fourChange(int ite, double temp)
 inline void Slide(int ite)
 {
   int diff = 0;
-  while (diff == 0) diff = randxor() % 101 - 50;
-  int ab = randxor() % 2;
+  while (diff == 0) diff = Rand() % 101 - 50;
+  int ab = Rand() % 2;
 
   if (ab == 0) {
     a[ite] += diff;
@@ -1139,7 +1139,7 @@ inline void Slide(int ite)
 
 inline void aspectChange(int ite)
 {
-  int yokoRatio = randxor() % 9 + 1; // 1 ~ 9;
+  int yokoRatio = Rand() % 9 + 1; // 1 ~ 9;
   int tateRatio = 10 - yokoRatio;
 
   int S = yokoRatio * tateRatio;
@@ -1164,9 +1164,9 @@ inline void aspectChange(int ite)
   int rangeB = rightB - leftB + 1;
   if (rangeB < 1) return;
 
-  a[ite] = randxor() % rangeA + leftA;
+  a[ite] = Rand() % rangeA + leftA;
   c[ite] = a[ite] + rangeA;
-  b[ite] = randxor() % rangeB + leftB;
+  b[ite] = Rand() % rangeB + leftB;
   d[ite] = b[ite] + rangeB;
 
   if (isOK(ite) == 0) {
@@ -1348,8 +1348,8 @@ int keepvA[MAX_N], keepvB[MAX_N], keepvC[MAX_N], keepvD[MAX_N];
 inline void zurasi2(int ite, double temp)
 {
   int diff = 0;
-  while (diff == 0) diff = randxor() % 50 + 1;
-  int abcd = randxor() % 4;
+  while (diff == 0) diff = Rand() % 50 + 1;
+  int abcd = Rand() % 4;
 
   if (abcd < 2) diff *= -1;
 
@@ -1531,19 +1531,19 @@ inline void Ui_Tei()
 
         int mode = loop % 4;
         if (mode == 0) {
-          int ite = randxor() % n;
+          int ite = Rand() % n;
           oneChange(ite, temp);
         }
         else if (mode == 1) {
-          int ite = randxor() % n;
+          int ite = Rand() % n;
           Slide(ite);
         }
         else if (now_time > 2.0 / T && mode == 2) {
-          int ite = randxor() % n;
+          int ite = Rand() % n;
           aspectChange(ite);
         }
         else if (mode == -3) {
-          int ite = randxor() % n;
+          int ite = Rand() % n;
           fourChange(ite, temp);
         }
       }
@@ -1618,23 +1618,23 @@ inline void Ui_Tei()
 
       int mode = loop % 5;
       if (mode == 0) { // a,b,c,dのうち1つ変更
-        int ite = randxor() % n;
+        int ite = Rand() % n;
         oneChange(ite, temp);
       }
       else if (kouhan && mode == 1) { // 位置をスライド
-        int ite = randxor() % n;
+        int ite = Rand() % n;
         Slide(ite);
       }
       else if (mode == 2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
-        int ite = randxor() % n;
+        int ite = Rand() % n;
         aspectChange(ite);
       }
       else if (mode == -3) { // a,b,c,dを4つ同時に変更
-        int ite = randxor() % n;
+        int ite = Rand() % n;
         fourChange(ite, temp);
       }
       else if (mode == 4) { // 膨らまして縮める
-        int ite = randxor() % n;
+        int ite = Rand() % n;
         Extend(ite, temp);
       }
     }
@@ -1790,27 +1790,27 @@ int solve(int teisyutu, int fileNum)
           int mode = loop % 6;
 
           if (mode == -1) { // a,b,c,dのうち1つ変更
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             oneChange(ite, temp);
           }
           else if (mode == 1) { // 位置をスライド
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             Slide(ite);
           }
           else if (mode == -2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             aspectChange(ite);
           }
           else if (mode == -3) { // a,b,c,dを4つ同時に変更
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             fourChange(ite, temp);
           }
           else if (mode == 4) { // 膨らまして縮める
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             Extend(ite, temp);
           }
           else if (mode == 5) { // 境界をずらす
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             zurasi2(ite, temp);
           }
 
@@ -1824,7 +1824,7 @@ int solve(int teisyutu, int fileNum)
 
 
           if (loop % 34567 == 1120) {
-            int ite = randxor() % n;
+            int ite = Rand() % n;
             ExtendKing(ite);
           }
 

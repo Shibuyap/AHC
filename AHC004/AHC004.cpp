@@ -38,7 +38,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 200005
 const ll PERFECT = 100000000;
-static uint32_t randxor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -46,15 +46,15 @@ static uint32_t randxor()
   static uint32_t w = 88675123;
   uint32_t t;
 
-  t        = x ^ (x << 11);
-  x        = y;
-  y        = z;
-  z        = w;
+  t = x ^ (x << 11);
+  x = y;
+  y = z;
+  z = w;
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
 // 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
-static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 int n, m;
 string s[1000];
@@ -67,7 +67,7 @@ bool f[1000][20][20][2];
 int countOK[1000];
 
 const double start_temp = 103.48026;
-const double end_temp   = 6.74495e-07;
+const double end_temp = 6.74495e-07;
 
 ll calc()
 {
@@ -235,7 +235,7 @@ ll calc2(int x, int y)
 int main()
 {
   srand((unsigned)time(NULL));
-  while (rand() % 100) randxor();
+  while (rand() % 100) Rand();
 
   string fileNameIfs = "in\\0000.txt";
   ifstream ifs(fileNameIfs.c_str());
@@ -264,7 +264,7 @@ int main()
 
   rep(i, 20)
   {
-    rep(j, 20) { ans[i][j] = randxor() % 8 + 1; }
+    rep(j, 20) { ans[i][j] = Rand() % 8 + 1; }
   }
 
   clock_t start, end;
@@ -278,11 +278,11 @@ int main()
   int loop = 0;
   while (true) {
     loop++;
-    int x   = randxor() % n;
-    int y   = randxor() % n;
-    int val = randxor() % 9;
+    int x = Rand() % n;
+    int y = Rand() % n;
+    int val = Rand() % 9;
 
-    int keep  = ans[x][y];
+    int keep = ans[x][y];
     ans[x][y] = val;
 
     ll tmp = calc2(x, y);

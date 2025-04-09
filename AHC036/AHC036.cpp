@@ -38,7 +38,7 @@ const int INF = 1001001001;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -46,24 +46,24 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j   = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -104,7 +104,7 @@ int real_cCount;
 void CopyToReal()
 {
   real_ansCount = ansCount;
-  real_cCount   = cCount;
+  real_cCount = cCount;
   rep(i, ansCount)
   {
     rep(j, 4)
@@ -117,7 +117,7 @@ void CopyToReal()
 void CopyToAns()
 {
   ansCount = real_ansCount;
-  cCount   = real_cCount;
+  cCount = real_cCount;
   rep(i, ansCount)
   {
     rep(j, 4)
@@ -129,7 +129,7 @@ void CopyToAns()
 
 double GetNowTime()
 {
-  endTime        = clock();
+  endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
 }
@@ -160,7 +160,7 @@ void InitRoutes()
     rep(j, N)
     {
       visited[j] = 0;
-      prev[j]    = -1;
+      prev[j] = -1;
     }
     visited[i] = 1;
     que.push(i);
@@ -170,7 +170,7 @@ void InitRoutes()
       for (auto y : G[x]) {
         if (visited[y] == 0) {
           visited[y] = 1;
-          prev[y]    = x;
+          prev[y] = x;
           que.push(y);
         }
       }
@@ -301,7 +301,7 @@ void MakeA2(const vector<int>& route)
 void Initialize(const vector<int>& route)
 {
   ansCount = 0;
-  cCount   = 0;
+  cCount = 0;
 
   int b[MAX_LB];
   rep(i, LB)
@@ -311,7 +311,7 @@ void Initialize(const vector<int>& route)
 
   rep(i, route.size())
   {
-    int r      = route[i];
+    int r = route[i];
     int exists = 0;
     rep(j, LB)
     {
@@ -325,7 +325,7 @@ void Initialize(const vector<int>& route)
       rep(j, LA)
       {
         if (a[j] == r) {
-          int len          = min(LB, LA - j);
+          int len = min(LB, LA - j);
           ans[ansCount][0] = 0;
           ans[ansCount][1] = len;
           ans[ansCount][2] = j;
@@ -347,7 +347,7 @@ vector<int> argN[610];
 void Method1(const vector<int>& route)
 {
   ansCount = 0;
-  cCount   = 0;
+  cCount = 0;
 
   int b[MAX_LB];
   rep(i, LB)
@@ -357,7 +357,7 @@ void Method1(const vector<int>& route)
 
   rep(i, route.size())
   {
-    int r      = route[i];
+    int r = route[i];
     int exists = 0;
     rep(j, LB)
     {
@@ -391,7 +391,7 @@ void Method1(const vector<int>& route)
 void Method2(const vector<int>& route)
 {
   ansCount = 0;
-  cCount   = 0;
+  cCount = 0;
 
   int b[MAX_LB];
   rep(i, LB)
@@ -401,7 +401,7 @@ void Method2(const vector<int>& route)
 
   rep(i, route.size())
   {
-    int r      = route[i];
+    int r = route[i];
     int exists = 0;
     rep(j, LB)
     {
@@ -412,7 +412,7 @@ void Method2(const vector<int>& route)
     }
 
     if (exists == 0) {
-      int ma   = -1;
+      int ma = -1;
       int pos2 = -1;
       int len2 = -1;
       {
@@ -424,7 +424,7 @@ void Method2(const vector<int>& route)
 
         int now = i;
         while (now < route.size() - 1) {
-          int rr     = route[now + 1];
+          int rr = route[now + 1];
           int exists = 0;
           rep(j, LB)
           {
@@ -442,17 +442,17 @@ void Method2(const vector<int>& route)
         }
         pos2 = pos;
         len2 = len;
-        ma   = now;
+        ma = now;
       }
 
       {
         int pos = argN[r][0] - LB + 1;
-        pos     = max(pos, 0);
+        pos = max(pos, 0);
         int len = min(LB, LA - pos);
 
         int now = i;
         while (now < route.size() - 1) {
-          int rr     = route[now + 1];
+          int rr = route[now + 1];
           int exists = 0;
           rep(j, LB)
           {
@@ -471,7 +471,7 @@ void Method2(const vector<int>& route)
         if (ma < now) {
           pos2 = pos;
           len2 = len;
-          ma   = now;
+          ma = now;
         }
       }
 
@@ -566,13 +566,13 @@ void MakeA1DFS(int x, vector<int>& route, vector<int>& visited, int order = 0)
 void MakeA1()
 {
   int center = -1;
-  int mi     = INF;
+  int mi = INF;
   rep(i, N)
   {
     int tmp = abs(500 - X[i]) + abs(500 - Y[i]);
     if (tmp < mi) {
       center = i;
-      mi     = tmp;
+      mi = tmp;
     }
   }
 
@@ -631,14 +631,14 @@ ll Solve(int probNum)
 
   CopyToReal();
 
-  int loop  = 0;
+  int loop = 0;
   int loop2 = 0;
   while (GetNowTime() < TL) {
     loop++;
-    int raMode = randxor() % 2;
-    int ra1    = randxor() % LA;
-    int ra2    = randxor() % LA;
-    int raLen  = randxor() % 10 + 2;
+    int raMode = Rand() % 2;
+    int ra1 = Rand() % LA;
+    int ra2 = Rand() % LA;
+    int raLen = Rand() % 10 + 2;
 
     if (raMode == 0) {
       swap(a[ra1], a[ra2]);
@@ -697,7 +697,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

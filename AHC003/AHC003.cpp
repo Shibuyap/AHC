@@ -46,7 +46,7 @@ const int INF = 1001001001;
 
 namespace /* 乱数 */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -62,7 +62,7 @@ namespace /* 乱数 */
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }
 
@@ -528,9 +528,9 @@ int Solve(string iunputFileNum)
 
       // Upper, Downer, Lefter, Righterのいずれか一つを変更
       if (MODE == 0) {
-        int rULDR = randxor() % 4;
+        int rULDR = Rand() % 4;
 
-        int rN = randxor() % n;
+        int rN = Rand() % n;
 
         double rA = rand01() * 20 - 10;
 
@@ -625,9 +625,9 @@ int Solve(string iunputFileNum)
 
       // UpperとDowner、もしくはLefterとRighterを変更
       if (MODE == 1) {
-        int rUL = randxor() % 2;
+        int rUL = Rand() % 2;
 
-        int rN = randxor() % n;
+        int rN = Rand() % n;
 
         double rA = rand01() * 20 - 10;
 
@@ -686,10 +686,10 @@ int Solve(string iunputFileNum)
 
       // 区切りを一か所変更
       if (MODE == 2) {
-        int rUL = randxor() % 2;
-        int rN = randxor() % 30;
-        int rA = randxor() % 30 + 1;
-        if (randxor() % 2 == 1) rA *= -1;
+        int rUL = Rand() % 2;
+        int rN = Rand() % 30;
+        int rA = Rand() % 30 + 1;
+        if (Rand() % 2 == 1) rA *= -1;
         if (rUL == 0) if (CutUD[rN] + rA < 3 || 27 <= CutUD[rN] + rA) continue;
         if (rUL == 1) if (CutLR[rN] + rA < 3 || 27 <= CutLR[rN] + rA) continue;
 
@@ -768,8 +768,8 @@ int Solve(string iunputFileNum)
 
       // 1ライン調整
       if (MODE == 3) {
-        int rUL = randxor() % 2;
-        int rN = randxor() % n;
+        int rUL = Rand() % 2;
+        int rN = Rand() % n;
         if (rUL == 0) {
           vector<double> amari;
           rep(i, TurnUD[rN].size())
@@ -791,7 +791,7 @@ int Solve(string iunputFileNum)
           {
             rep(randomChallenge, 20)
             {
-              double rA = randxor() % 8001 + 1000;
+              double rA = Rand() % 8001 + 1000;
 
               double countSum = 0;
               rep(i, TurnUD[rN].size())
@@ -892,7 +892,7 @@ int Solve(string iunputFileNum)
           {
             rep(randomChallenge, 20)
             {
-              double rA = randxor() % 8001 + 1000;
+              double rA = Rand() % 8001 + 1000;
               double countSum = 0;
               rep(i, TurnLR[rN].size())
               {
@@ -1003,15 +1003,15 @@ int Solve(string iunputFileNum)
 
     rep(_, 20000)
     {
-      int rv = randxor() % 2;
+      int rv = Rand() % 2;
       int rx = 0, ry = 0;
       if (rv == 0) {
-        rx = randxor() % 29 + 1;
-        ry = randxor() % 30;
+        rx = Rand() % 29 + 1;
+        ry = Rand() % 30;
       }
       else {
-        rx = randxor() % 30;
-        ry = randxor() % 29 + 1;
+        rx = Rand() % 30;
+        ry = Rand() % 29 + 1;
       }
       double ra = rand01() * 200.0 - 100.0;
       if (rv == 0) {
@@ -1116,7 +1116,7 @@ int main()
   start = clock();
 
   srand((unsigned)time(NULL));
-  while (rand() % 128) randxor();
+  while (rand() % 128) Rand();
 
   int mode = 0;
 

@@ -40,7 +40,7 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -56,7 +56,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 
@@ -217,7 +217,7 @@ void InitHaiti2()
 {
   rep(i, L)
   {
-    rep(j, L) { P[i][j] = randxor() % 2 * 1000; }
+    rep(j, L) { P[i][j] = Rand() % 2 * 1000; }
   }
 }
 
@@ -234,7 +234,7 @@ void InitHaiti4()
 {
   rep(i, L)
   {
-    rep(j, L) { P[i][j] = randxor() % 1001; }
+    rep(j, L) { P[i][j] = Rand() % 1001; }
   }
 }
 
@@ -242,7 +242,7 @@ void InitHaiti5()
 {
   rep(i, L)
   {
-    rep(j, L) { P[i][j] = 250 + randxor() % 2 * 500; }
+    rep(j, L) { P[i][j] = 250 + Rand() % 2 * 500; }
   }
 }
 
@@ -568,8 +568,8 @@ void Method1(double temperature)
 {
   MethodCount[1][0]++;
 
-  int y = randxor() % L;
-  int x = randxor() % L;
+  int y = Rand() % L;
+  int x = Rand() % L;
   int diff = rand() % 201 - 100;
   int beforeP = P[y][x];
   int afterP = max(0, min(1000, P[y][x] + diff));
@@ -765,7 +765,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
   std::random_device rnd;
   engine.seed(rnd());

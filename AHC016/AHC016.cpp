@@ -39,7 +39,7 @@ const int dy[4] = { 0, 0, -1, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -55,7 +55,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 namespace
@@ -934,18 +934,18 @@ namespace
       rep(i, 100) ifs >> judgeArr[i];
     }
     else if (mode == 100 || mode == 110) {
-      m = randxor() % 91 + 10;
-      // m = randxor() % 41 + 10;
-      iEps = randxor() % 41;
-      // iEps = randxor() % 11 + 30;
+      m = Rand() % 91 + 10;
+      // m = Rand() % 41 + 10;
+      iEps = Rand() % 41;
+      // iEps = Rand() % 11 + 30;
       eps = iEps / 100.0;
-      rep(i, 100) judgeArr[i] = randxor() % m;
+      rep(i, 100) judgeArr[i] = Rand() % m;
     }
     else if (mode == 333) {
       m = problemNum * 10;
       iEps = 40;
       eps = iEps / 100.0;
-      rep(i, 100) judgeArr[i] = randxor() % m;
+      rep(i, 100) judgeArr[i] = Rand() % m;
     }
   }
 }  // namespace
@@ -2997,10 +2997,10 @@ int Solver6()
   if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
-    int x = randxor() % n;
-    int ra = randxor() % 3;
+    int x = Rand() % n;
+    int ra = Rand() % 3;
     while (ra == f[x]) {
-      ra = randxor() % 3;
+      ra = Rand() % 3;
     }
     if (res2 = 0) {
       ra = 1 - f[x];
@@ -3181,10 +3181,10 @@ int Solver7()
   if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
-    int x = randxor() % n;
-    int ra = randxor() % 3;
+    int x = Rand() % n;
+    int ra = Rand() % 3;
     while (ra == f[x]) {
-      ra = randxor() % 3;
+      ra = Rand() % 3;
     }
     if (res2 == 0) {
       ra = 1 - f[x];
@@ -3300,7 +3300,7 @@ int Solver9()
         }
       }
       if (arv.empty()) break;
-      int arg = arv[randxor() % arv.size()];
+      int arg = arv[Rand() % arv.size()];
       rep(i, n)
       {
         if (i == arg) continue;
@@ -3344,7 +3344,7 @@ int Solver9()
         }
       }
       if (arv.empty()) break;
-      int arg = arv[randxor() % arv.size()];
+      int arg = arv[Rand() % arv.size()];
       rep(i, n)
       {
         if (i == arg) continue;
@@ -3428,10 +3428,10 @@ int Solver9()
   if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
-    int x = randxor() % n;
-    int ra = randxor() % 3;
+    int x = Rand() % n;
+    int ra = Rand() % 3;
     while (ra == f[x]) {
-      ra = randxor() % 3;
+      ra = Rand() % 3;
     }
     if (res2 == 0) {
       ra = 1 - f[x];
@@ -3536,7 +3536,7 @@ int Solver10()
         }
       }
       if (arv.empty()) break;
-      int arg = arv[randxor() % arv.size()];
+      int arg = arv[Rand() % arv.size()];
       rep(i, n)
       {
         if (i == arg) continue;
@@ -3580,7 +3580,7 @@ int Solver10()
         }
       }
       if (arv.empty()) break;
-      int arg = arv[randxor() % arv.size()];
+      int arg = arv[Rand() % arv.size()];
       rep(i, n)
       {
         if (i == arg) continue;
@@ -3658,7 +3658,7 @@ int Solver11()
     rep(i, 4)
     {
       while (true) {
-        core[i] = kouho[randxor() % kouho.size()];
+        core[i] = kouho[Rand() % kouho.size()];
         rep(j, i)
         {
           if (core[j] == core[i]) core[i] = -1;
@@ -3730,7 +3730,7 @@ int Solver11()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -3820,10 +3820,10 @@ int Solver11()
   if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
-    int x = randxor() % n;
-    int ra = randxor() % 3;
+    int x = Rand() % n;
+    int ra = Rand() % 3;
     while (ra == f[x]) {
-      ra = randxor() % 3;
+      ra = Rand() % 3;
     }
     if (res2 == 0) {
       ra = 1 - f[x];
@@ -3916,7 +3916,7 @@ int Solver12()
     rep(i, 4)
     {
       while (true) {
-        core[i] = kouho[randxor() % kouho.size()];
+        core[i] = kouho[Rand() % kouho.size()];
         rep(j, i)
         {
           if (core[j] == core[i]) core[i] = -1;
@@ -3988,7 +3988,7 @@ int Solver12()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -4062,7 +4062,7 @@ int Solver12()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -4154,18 +4154,18 @@ int Solver12()
   if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
-    int x = randxor() % n;
-    int ra = randxor() % 4;
+    int x = Rand() % n;
+    int ra = Rand() % 4;
     while (ra == f[x]) {
-      ra = randxor() % 4;
+      ra = Rand() % 4;
     }
     if (res2 == 0) {
       ra = 1 - f[x];
     }
     else if (res3 == 0) {
-      ra = randxor() % 3;
+      ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
     }
     int tmp = score;
@@ -4259,7 +4259,7 @@ int Solver13()
     rep(i, 4)
     {
       while (true) {
-        core[i] = kouho[randxor() % kouho.size()];
+        core[i] = kouho[Rand() % kouho.size()];
         rep(j, i)
         {
           if (core[j] == core[i]) core[i] = -1;
@@ -4331,7 +4331,7 @@ int Solver13()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -4405,7 +4405,7 @@ int Solver13()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -4480,7 +4480,7 @@ int Solver13()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -4573,24 +4573,24 @@ int Solver13()
   if (MODE == 0) flipLoop = 10000;
   rep(_, flipLoop)
   {
-    int x = randxor() % n;
-    int ra = randxor() % 5;
+    int x = Rand() % n;
+    int ra = Rand() % 5;
     while (ra == f[x]) {
-      ra = randxor() % 5;
+      ra = Rand() % 5;
     }
     if (res2 == 0) {
       ra = 1 - f[x];
     }
     else if (res3 == 0) {
-      ra = randxor() % 3;
+      ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
     }
     else if (res4 == 0) {
-      ra = randxor() % 4;
+      ra = Rand() % 4;
       while (ra == f[x]) {
-        ra = randxor() % 4;
+        ra = Rand() % 4;
       }
     }
     int tmp = score;
@@ -4691,7 +4691,7 @@ int Solver14()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -4763,7 +4763,7 @@ int Solver14()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -4853,10 +4853,10 @@ int Solver14()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -4946,7 +4946,7 @@ int Solver15()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -5018,7 +5018,7 @@ int Solver15()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -5108,10 +5108,10 @@ int Solver15()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -5249,7 +5249,7 @@ int Solver16()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -5321,7 +5321,7 @@ int Solver16()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -5411,10 +5411,10 @@ int Solver16()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -5546,7 +5546,7 @@ int Solver17()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -5618,7 +5618,7 @@ int Solver17()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -5708,10 +5708,10 @@ int Solver17()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -5900,7 +5900,7 @@ int Solver19()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -5972,7 +5972,7 @@ int Solver19()
         rep(i, 4)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -6062,10 +6062,10 @@ int Solver19()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -6187,7 +6187,7 @@ int Solver20()
       rep(i, 4)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -6275,10 +6275,10 @@ int Solver20()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 2;
+      int x = Rand() % n;
+      int ra = Rand() % 2;
       while (ra == f[x]) {
-        ra = randxor() % 2;
+        ra = Rand() % 2;
       }
       int tmp = score;
       int keep = f[x];
@@ -6377,7 +6377,7 @@ int Solver21()
       rep(i, 5)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -6449,7 +6449,7 @@ int Solver21()
         rep(i, 5)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -6539,10 +6539,10 @@ int Solver21()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -6634,7 +6634,7 @@ int Solver22()
       rep(i, 3)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -6706,7 +6706,7 @@ int Solver22()
         rep(i, 3)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -6796,10 +6796,10 @@ int Solver22()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -6917,7 +6917,7 @@ int Solver23()
       rep(i, 3)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -6989,7 +6989,7 @@ int Solver23()
         rep(i, 3)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -7079,10 +7079,10 @@ int Solver23()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -7214,7 +7214,7 @@ int Solver24()
       rep(i, 5)
       {
         while (true) {
-          core[i] = kouho[randxor() % kouho.size()];
+          core[i] = kouho[Rand() % kouho.size()];
           rep(j, i)
           {
             if (core[j] == core[i]) core[i] = -1;
@@ -7286,7 +7286,7 @@ int Solver24()
         rep(i, 5)
         {
           while (true) {
-            core[i] = kouho[randxor() % kouho.size()];
+            core[i] = kouho[Rand() % kouho.size()];
             rep(j, i)
             {
               if (core[j] == core[i]) core[i] = -1;
@@ -7376,10 +7376,10 @@ int Solver24()
     if (MODE == 0) flipLoop = 10000;
     rep(_, flipLoop)
     {
-      int x = randxor() % n;
-      int ra = randxor() % 3;
+      int x = Rand() % n;
+      int ra = Rand() % 3;
       while (ra == f[x]) {
-        ra = randxor() % 3;
+        ra = Rand() % 3;
       }
       if (res2 == 0) {
         ra = 1 - f[x];
@@ -7668,16 +7668,16 @@ void solve(int mode)
       }
 
       Input(mode);
-      m = randxor() % 91 + 10;
-      iEps = randxor() % 41;
+      m = Rand() % 91 + 10;
+      iEps = Rand() % 41;
       eps = iEps / 100.0;
-      rep(i, 100) judgeArr[i] = randxor() % m;
+      rep(i, 100) judgeArr[i] = Rand() % m;
 
       int initMode = loop % 2;
 
       // if (initMode == 99) {
-      //   iEps = randxor() % 6 + 35;
-      //   m = randxor() % 11 + 90;
+      //   iEps = Rand() % 6 + 35;
+      //   m = Rand() % 11 + 90;
       //   eps = iEps / 100.0;
       //   n = hyperN[m][iEps];
       //   hyperSolverNum = hyperSolver[m][iEps];
@@ -7694,7 +7694,7 @@ void solve(int mode)
         int nm = m;
         int niEps = iEps;
         while (true) {
-          int ra = randxor() % 4;
+          int ra = Rand() % 4;
           nm = m + dx[ra];
           niEps = iEps + dy[ra];
           if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) break;
@@ -7707,7 +7707,7 @@ void solve(int mode)
           nm = m;
           niEps = iEps;
           while (true) {
-            int ra = randxor() % 4;
+            int ra = Rand() % 4;
             nm = m + dx[ra];
             niEps = iEps + dy[ra];
             if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) break;
@@ -7724,33 +7724,33 @@ void solve(int mode)
         hyperStep2 = hyperStep2Arr[nm][niEps];
 
         // 隣を改変
-        if (winners.empty() && randxor() % 2 == 0) {
+        if (winners.empty() && Rand() % 2 == 0) {
           //vector<int> selection = { 1114, 1134, 1134, 1134, 1152,
           //                         1152, 1135, 1135, 1135 };
           //vector<int> selection = { 1186,1196 ,1187,1197};
           // vector<int> selection = { 1186,1196 ,1187,1197};
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
-          hyperSolverNum = selection[randxor() % selection.size()];
+          hyperSolverNum = selection[Rand() % selection.size()];
 
-          n = n + randxor() % 5 - 2;
+          n = n + Rand() % 5 - 2;
           n = max(n, 4);
           n = min(n, 100);
-          hyperStep1 = hyperStep1 + randxor() % 3 - 1;
+          hyperStep1 = hyperStep1 + Rand() % 3 - 1;
           hyperStep1 = max(1, hyperStep1);
-          hyperStep2 = hyperStep2 + randxor() % 3 - 1;
+          hyperStep2 = hyperStep2 + Rand() % 3 - 1;
           hyperStep2 = max(1, hyperStep2);
-          if (randxor() % 2 == 0) {
+          if (Rand() % 2 == 0) {
             hyperStep2 = hyperStep1;
           }
 
-          if (randxor() % 2 == 0) {
-            hyperMinDiff = hyperMinDiff + randxor() % 3 - 1;
+          if (Rand() % 2 == 0) {
+            hyperMinDiff = hyperMinDiff + Rand() % 3 - 1;
             hyperMinDiff = max(0, hyperMinDiff);
           }
-          if (randxor() % 2 == 0) {
+          if (Rand() % 2 == 0) {
             hyperMinDiff = 0;
           }
-          hyperMaxRound = hyperMaxRound + randxor() % 3 - 1;
+          hyperMaxRound = hyperMaxRound + Rand() % 3 - 1;
           hyperMaxRound = max(1, hyperMaxRound);
         }
       }
@@ -7763,11 +7763,11 @@ void solve(int mode)
         hyperStep1 = hyperStep1Arr[m][iEps];
         hyperStep2 = hyperStep2Arr[m][iEps];
 
-        if (false && randxor() % 2 == 0) {
+        if (false && Rand() % 2 == 0) {
           //vector<int> selection = { 1186,1196 ,1187,1197};
           //vector<int> selection = { 1189,1199 };
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
-          hyperSolverNum = selection[randxor() % selection.size()];
+          hyperSolverNum = selection[Rand() % selection.size()];
         }
         else {
           // vector<int> selection = {
@@ -7781,34 +7781,34 @@ void solve(int mode)
           // vector<int> selection = { 1189,1199 };
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
 
-          hyperSolverNum = selection[randxor() % selection.size()];
+          hyperSolverNum = selection[Rand() % selection.size()];
 
-          n = hyperN[m][iEps] + randxor() % 21 - 10;
-          if (randxor() % 2 == 0) {
+          n = hyperN[m][iEps] + Rand() % 21 - 10;
+          if (Rand() % 2 == 0) {
             n = hyperN[m][iEps] - 1;
           }
           n = max(n, 4);
           n = min(n, 100);
-          if (randxor() % 2 == 0) {
-            hyperStep1 = hyperStep1Arr[m][iEps] + randxor() % 3 - 1;
+          if (Rand() % 2 == 0) {
+            hyperStep1 = hyperStep1Arr[m][iEps] + Rand() % 3 - 1;
             hyperStep1 = max(1, hyperStep1);
-            hyperStep2 = hyperStep2Arr[m][iEps] + randxor() % 3 - 1;
+            hyperStep2 = hyperStep2Arr[m][iEps] + Rand() % 3 - 1;
             hyperStep2 = max(1, hyperStep2);
-            if (randxor() % 2 == 0) {
+            if (Rand() % 2 == 0) {
               hyperStep2 = hyperStep1;
             }
           }
 
 
-          if (randxor() % 2 == 0) {
-            hyperMinDiff = hyperMinDiffArr[m][iEps] + randxor() % 15 - 7;
+          if (Rand() % 2 == 0) {
+            hyperMinDiff = hyperMinDiffArr[m][iEps] + Rand() % 15 - 7;
             hyperMinDiff = max(0, hyperMinDiff);
           }
-          if (randxor() % 2 == 0) {
+          if (Rand() % 2 == 0) {
             hyperMinDiff = 0;
           }
-          if (randxor() % 2 == 0) {
-            hyperMaxRound = hyperMaxRoundArr[m][iEps] + randxor() % 5 - 2;
+          if (Rand() % 2 == 0) {
+            hyperMaxRound = hyperMaxRoundArr[m][iEps] + Rand() % 5 - 2;
             hyperMaxRound = max(1, hyperMaxRound);
           }
 
@@ -7850,7 +7850,7 @@ void solve(int mode)
       rep(i, CHAMP + LOSE + 100)
       {
         matchCount++;
-        rep(j, 100) judgeArr[j] = randxor() % m;
+        rep(j, 100) judgeArr[j] = Rand() % m;
 
         n = nown;
         hyperSolverNum = nowhyperSolverNum;
@@ -8047,7 +8047,7 @@ void solve(int mode)
             m = i;
             iEps = j;
             eps = iEps / 100.0;
-            rep(l, 100) judgeArr[l] = randxor() % m;
+            rep(l, 100) judgeArr[l] = Rand() % m;
             n = hyperN[m][iEps];
             hyperSolverNum = hyperSolver[m][iEps];
             hyperMinDiff = hyperMinDiffArr[m][iEps];
@@ -8098,7 +8098,7 @@ int main()
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   int mode = 0;

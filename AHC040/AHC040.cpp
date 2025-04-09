@@ -39,7 +39,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -53,10 +53,10 @@ static uint32_t RandXor()
 
 static double Rand01()
 {
-  return (RandXor() + 0.5) * (1.0 / UINT_MAX);
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
@@ -64,7 +64,7 @@ static double RandUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -615,7 +615,7 @@ void BuildInitialMethod2LayoutsPhase1()
   currentShelf.clear();
   currentLayout.clear();
 
-  int widthLimit = RandXor() % 1000000 + 200000;
+  int widthLimit = Rand() % 1000000 + 200000;
 
   rep(i, n)
   {
@@ -660,19 +660,19 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
   currentLayout.clear();
   RectanglePiece piece;
 
-  int widthLimit = RandXor() % 1000000 + 200000;
+  int widthLimit = Rand() % 1000000 + 200000;
   if (progressRatio > 0.5) {
-    widthLimit = RandXor() % 200000 - 100000 + candidateLayouts[0].GetMaxWidth();
+    widthLimit = Rand() % 200000 - 100000 + candidateLayouts[0].GetMaxWidth();
   }
 
-  int rotationProbabilityThreshold = RandXor() % 10;
-  int secondStackingThreshold = RandXor() % 200;
+  int rotationProbabilityThreshold = Rand() % 10;
+  int secondStackingThreshold = Rand() % 200;
   double heightRatioLimit = 0.9 + Rand01() * 0.2;
   int bestsLimit = t / 2;
   int terminateFlag = 0;
 
-  int rankThreshold = RandXor() % 10 + 5;
-  int lyingConditionThreshold = RandXor() % 100;
+  int rankThreshold = Rand() % 10 + 5;
+  int lyingConditionThreshold = Rand() % 100;
 
   rep(i, n)
   {
@@ -683,7 +683,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
 
     piece = basePieces[i];
 
-    if (rotationProbabilityThreshold >= 1 && RandXor() % n <= rotationProbabilityThreshold) {
+    if (rotationProbabilityThreshold >= 1 && Rand() % n <= rotationProbabilityThreshold) {
       piece.rot = 1 - piece.rot;
     }
 
@@ -694,7 +694,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
     if (secondStackingThreshold < 50 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
       if (currentShelf.sz > 0 && currentShelf.blocks[currentShelf.sz - 1].count() == 1 && currentShelf.blocks[currentShelf.sz - 1].height() + piece.height() < MAX_HEIGHT * heightRatioLimit) {
         isPlacementAllowed = 1;
-        if (RandXor() % 25 > secondStackingThreshold) {
+        if (Rand() % 25 > secondStackingThreshold) {
           isPlacementAllowed = 0;
         }
         if (isPlacementAllowed) {
@@ -706,7 +706,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
     else if (secondStackingThreshold < 100 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
       if (currentShelf.sz >= 1 && currentShelf.blocks[currentShelf.sz - 1].count() == 1 && currentShelf.blocks[currentShelf.sz - 1].height() + piece.height() < MAX_HEIGHT * heightRatioLimit) {
         isPlacementAllowed = 1;
-        if (RandXor() % 2 == 0) {
+        if (Rand() % 2 == 0) {
           isPlacementAllowed = 0;
         }
         if (isPlacementAllowed) {
@@ -722,7 +722,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
           {
             if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
               isPlacementAllowed = 1;
-              if (RandXor() % 2 == 0) {
+              if (Rand() % 2 == 0) {
                 isPlacementAllowed = 0;
               }
               if (isPlacementAllowed) {
@@ -741,7 +741,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
     else if (secondStackingThreshold < 150 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
       if (currentShelf.sz >= 1 && currentShelf.blocks[currentShelf.sz - 1].count() == 1 && currentShelf.blocks[currentShelf.sz - 1].height() + piece.height() < MAX_HEIGHT * heightRatioLimit) {
         isPlacementAllowed = 1;
-        if (RandXor() % 2 == 0) {
+        if (Rand() % 2 == 0) {
           isPlacementAllowed = 0;
         }
         if (isPlacementAllowed) {
@@ -764,7 +764,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
               && currentLayout.shelves[currentLayout.sz - 1].blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit
               && piece.width() < currentLayout.shelves[currentLayout.sz - 1].blocks[j].width()) {
               isPlacementAllowed = 1;
-              if (RandXor() % 2 == 0) {
+              if (Rand() % 2 == 0) {
                 isPlacementAllowed = 0;
               }
               if (isPlacementAllowed) {
@@ -785,7 +785,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
           {
             if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
               isPlacementAllowed = 1;
-              if (RandXor() % 2 == 0) {
+              if (Rand() % 2 == 0) {
                 isPlacementAllowed = 0;
               }
               if (isPlacementAllowed) {
@@ -808,7 +808,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
         int newHeight = max(currentShelf.blocks[currentShelf.sz - 1].width(), piece.width());
         if (abs(currentShelf.blocks[currentShelf.sz - 1].height() - piece.height()) < 20000 && 70000 < newHeight && newHeight < MAX_HEIGHT * 1.5) {
           isPlacementAllowed = 1;
-          if (RandXor() % 50 < lyingConditionThreshold) {
+          if (Rand() % 50 < lyingConditionThreshold) {
             currentShelf.rotateBack();
             piece.rot = 1 - piece.rot;
             currentShelf.addPiece(currentShelf.sz - 1, piece);
@@ -819,10 +819,10 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
     }
 
     currentStackUnit.piece1 = piece;
-    if (currentShelf.GetSumWidth() < widthLimit * 0.9 && currentLayout.count() >= 1 && currentLayout.back().GetSumWidth() + currentStackUnit.piece1.width() <= widthLimit && RandXor() % 4 != 0) {
+    if (currentShelf.GetSumWidth() < widthLimit * 0.9 && currentLayout.count() >= 1 && currentLayout.back().GetSumWidth() + currentStackUnit.piece1.width() <= widthLimit && Rand() % 4 != 0) {
       currentLayout.Add(currentLayout.count() - 1, currentStackUnit);
     }
-    else if (currentShelf.GetSumWidth() + currentStackUnit.piece1.width() <= widthLimit && RandXor() % (n) != 0) {
+    else if (currentShelf.GetSumWidth() + currentStackUnit.piece1.width() <= widthLimit && Rand() % (n) != 0) {
       currentShelf.add(currentStackUnit);
     }
     else {
@@ -1065,17 +1065,17 @@ void RefineAndPrintSolutions(ofstream& ofs)
       ブロックごと動かした方が楽そう
       */
 
-      int layoutNum = RandXor() % layouts.size();
+      int layoutNum = Rand() % layouts.size();
       keep = layouts[layoutNum];
       int beforeScore = keep.score();
 
-      int raMode = RandXor() % 4;
+      int raMode = Rand() % 4;
       tmp.clear();
 
-      int raNum1 = RandXor() % n;
-      int raNum2 = RandXor() % n;
+      int raNum1 = Rand() % n;
+      int raNum2 = Rand() % n;
       while (raNum1 == raNum2) {
-        raNum2 = RandXor() % n;
+        raNum2 = Rand() % n;
       }
       if (raNum1 > raNum2) {
         swap(raNum1, raNum2);
@@ -1233,32 +1233,32 @@ void RefineAndPrintSolutions(ofstream& ofs)
       }
     }
 
-    int randomCandidateIndex = RandXor() % min(7, 5);
-    int randomModificationMode = RandXor() % 4;
-    int randomPieceIndex = RandXor() % n;
+    int randomCandidateIndex = Rand() % min(7, 5);
+    int randomModificationMode = Rand() % 4;
+    int randomPieceIndex = Rand() % n;
     RectanglePiece keep = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex];
 
     if (randomModificationMode == 0) {
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot;
     }
     else if (randomModificationMode == 1) {
-      int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+      int newBaseIndex = Rand() % (randomPieceIndex + 1) - 1;
       if (solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base == newBaseIndex)continue;
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
     }
     else if (randomModificationMode == 2) {
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir;
-      if (RandXor() % 2 == 0) {
-        int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+      if (Rand() % 2 == 0) {
+        int newBaseIndex = Rand() % (randomPieceIndex + 1) - 1;
         solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
       }
     }
     else if (randomModificationMode == 3) {
       keepAns = solutionCandidates[randomCandidateIndex];
 
-      int randomPieceIndex2 = RandXor() % n;
+      int randomPieceIndex2 = Rand() % n;
       while (randomPieceIndex2 == randomPieceIndex) {
-        randomPieceIndex2 = RandXor() % n;
+        randomPieceIndex2 = Rand() % n;
       }
       if (randomPieceIndex2 < randomPieceIndex) {
         swap(randomPieceIndex, randomPieceIndex2);
@@ -1358,27 +1358,27 @@ void RefineAndPrintSolutions(ofstream& ofs)
       currentElapsedTime = GetNowTime();
     }
 
-    int randomModificationMode = RandXor() % 3;
+    int randomModificationMode = Rand() % 3;
 
-    if (RandXor() % 2 == 0) {
+    if (Rand() % 2 == 0) {
       solutionCandidates[randomCandidateIndex].pieces = keep;
-      randomCandidateIndex = RandXor() % raQCount;
+      randomCandidateIndex = Rand() % raQCount;
       keep = solutionCandidates[randomCandidateIndex].pieces;
     }
 
-    int randomPieceIndex = RandXor() % n;
+    int randomPieceIndex = Rand() % n;
     if (randomModificationMode == 0) {
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].rot;
     }
     else if (randomModificationMode == 1) {
-      int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+      int newBaseIndex = Rand() % (randomPieceIndex + 1) - 1;
       if (solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base == newBaseIndex)continue;
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
     }
     else {
       solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir = 1 - solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].dir;
-      if (RandXor() % 2 == 0) {
-        int newBaseIndex = RandXor() % (randomPieceIndex + 1) - 1;
+      if (Rand() % 2 == 0) {
+        int newBaseIndex = Rand() % (randomPieceIndex + 1) - 1;
         solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex].base = newBaseIndex;
       }
     }
@@ -1437,7 +1437,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   executionMode = 1;

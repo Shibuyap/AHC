@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,10 +58,10 @@ static uint32_t RandXor()
 }
 
 // 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 // l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
@@ -70,38 +70,38 @@ static double RandUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタの初期化
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 非常に大きな値
+
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列
+
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 const char dc[4] = { 'U','L','D','R' };
 
-double TL = 1.9; // 時間制限（Time Limit）
-int mode;        // 実行モード
+double TL = 1.9;
+int mode;
 std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
+
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
+
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -812,13 +812,13 @@ void Mountain(Haiparas haiparas)
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
-    int raMode = RandXor() % 100;
+    int raMode = Rand() % 100;
     if (raMode < haiparas.Partition1) {
       // swap
-      int ra1 = RandXor() % ans.size();
-      int ra2 = RandXor() % ans.size();
+      int ra1 = Rand() % ans.size();
+      int ra2 = Rand() % ans.size();
       while (ans[ra1] == ans[ra2]) {
-        ra2 = RandXor() % ans.size();
+        ra2 = Rand() % ans.size();
       }
       swap(ans[ra1], ans[ra2]);
 
@@ -866,9 +866,9 @@ void Mountain(Haiparas haiparas)
       }
     }
     else {
-      int ra1 = RandXor() % (ans.size() - 1);
-      int raDir = RandXor() % 4;
-      int raNum = RandXor() % n + 1;
+      int ra1 = Rand() % (ans.size() - 1);
+      int raDir = Rand() % 4;
+      int raNum = Rand() % n + 1;
       P keep = ans[ra1];
       ans[ra1] = P(raDir, raNum);
 
@@ -968,7 +968,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   mode = 2;
@@ -1011,7 +1011,7 @@ int main()
       haiparas.StartTemp = pow(2.0, Rand01() * 10);
       haiparas.EndTemp = 0.0;
       haiparas.MultipleValue = pow(2.0, Rand01() * 10);
-      haiparas.Partition1 = RandXor() % 101;
+      haiparas.Partition1 = Rand() % 101;
       haiparas.SimPartition = Rand01();
 
       ll sum = 0;

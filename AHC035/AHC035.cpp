@@ -36,7 +36,7 @@ typedef pair<ll, ll> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -52,13 +52,13 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -420,10 +420,10 @@ void GuruGuru(int t)
   if (t < 100) {
     rep(_, 30000)
     {
-      int ra1 = randxor() % 6;
-      int ra2 = randxor() % 6;
-      int ra3 = randxor() % 6;
-      int ra4 = randxor() % 6;
+      int ra1 = Rand() % 6;
+      int ra2 = Rand() % 6;
+      int ra3 = Rand() % 6;
+      int ra4 = Rand() % 6;
 
       int before = 0;
       {
@@ -539,7 +539,7 @@ ll InnerGuruGuru2(int x, int y)
       ll tmp = 0;
       rep(j, M)
       {
-        if (randxor() % 2) {
+        if (Rand() % 2) {
           tmp += X[id][j];
         }
         else {
@@ -613,17 +613,17 @@ void GuruGuru2(int t)
   if (t < 100) {
     rep(_, 50000)
     {
-      int ra1 = randxor() % 6;
-      int ra2 = randxor() % 6;
-      int ra3 = randxor() % 6;
-      int ra4 = randxor() % 6;
+      int ra1 = Rand() % 6;
+      int ra2 = Rand() % 6;
+      int ra3 = Rand() % 6;
+      int ra4 = Rand() % 6;
       if (t < 109) {
       }
       else {
-        ra1 = randxor() % 4 + 1;
-        ra2 = randxor() % 4 + 1;
-        ra3 = randxor() % 4 + 1;
-        ra4 = randxor() % 4 + 1;
+        ra1 = Rand() % 4 + 1;
+        ra2 = Rand() % 4 + 1;
+        ra3 = Rand() % 4 + 1;
+        ra4 = Rand() % 4 + 1;
       }
 
       // if ((ra1 + ra2) % 2 != (ra3 + ra4) % 2) continue;
@@ -738,7 +738,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

@@ -38,7 +38,7 @@ int mode;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -53,7 +53,7 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 const ll INF = 1001001001001001001;
@@ -186,7 +186,7 @@ ll OuterKruscal2()
       if (nowProgress > 1.0) break;
     }
 
-    int num = randxor() % (n - 1) + 1;
+    int num = Rand() % (n - 1) + 1;
     if (p[num] != 0) {
       continue;
     }
@@ -483,10 +483,10 @@ void SetReal()
 // ランダムに1つ拡大縮小する
 void Method1(double temperature)
 {
-  int num = randxor() % n;
+  int num = Rand() % n;
   int pre = p[num];
 
-  p[num] += randxor() % 51 - 25;
+  p[num] += Rand() % 51 - 25;
   p[num] = max(0LL, p[num]);
   p[num] = min(5000LL, p[num]);
 
@@ -664,27 +664,27 @@ void Solve3()
         pre_maxPowers[i] = maxPowers[i];
       }
 
-      int num = randxor() % n;
+      int num = Rand() % n;
 
 
-      maxPowers[num] += randxor() % 101 - 50;
-      if (randxor() % 10 == 0) {
-        maxPowers[num] += randxor() % 1001 - 500;
+      maxPowers[num] += Rand() % 101 - 50;
+      if (Rand() % 10 == 0) {
+        maxPowers[num] += Rand() % 1001 - 500;
       }
-      if (randxor() % 100 == 0) {
-        maxPowers[num] += randxor() % 10001 - 5000;
+      if (Rand() % 100 == 0) {
+        maxPowers[num] += Rand() % 10001 - 5000;
       }
       maxPowers[num] = max(0, maxPowers[num]);
       maxPowers[num] = min(5000, maxPowers[num]);
 
       if (rand() % 10 == 0) {
-        int num2 = randxor() % n;
-        maxPowers[num2] += randxor() % 101 - 50;
-        if (randxor() % 10 == 0) {
-          maxPowers[num2] += randxor() % 1001 - 500;
+        int num2 = Rand() % n;
+        maxPowers[num2] += Rand() % 101 - 50;
+        if (Rand() % 10 == 0) {
+          maxPowers[num2] += Rand() % 1001 - 500;
         }
-        if (randxor() % 100 == 0) {
-          maxPowers[num2] += randxor() % 10001 - 5000;
+        if (Rand() % 100 == 0) {
+          maxPowers[num2] += Rand() % 10001 - 5000;
         }
         maxPowers[num2] = max(0, maxPowers[num2]);
         maxPowers[num2] = min(5000, maxPowers[num2]);
@@ -856,7 +856,7 @@ void Solve4()
       double temperature =
         startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-      if (randxor() % 10 != 0) {
+      if (Rand() % 10 != 0) {
         int pre_maxPowers[110];
         int pre_p[110];
         rep(i, n)
@@ -866,10 +866,10 @@ void Solve4()
           pre_maxPowers[i] = maxPowers[i];
         }
 
-        int num = randxor() % n;
+        int num = Rand() % n;
 
 
-        maxPowers[num] += randxor() % 101 - 50;
+        maxPowers[num] += Rand() % 101 - 50;
         maxPowers[num] = max(0, maxPowers[num]);
         maxPowers[num] = min(5000, maxPowers[num]);
 
@@ -920,7 +920,7 @@ void Solve4()
         }
         ll tmpScore = 0;
         if (isUpdate) {
-          tmpScore= OuterKruscal3();
+          tmpScore = OuterKruscal3();
         }
         else {
           tmpScore = CalcScore(false);
@@ -948,7 +948,7 @@ void Solve4()
         }
       }
       else {
-        int num = randxor() % (n - 1) + 1;
+        int num = Rand() % (n - 1) + 1;
         if (p[num] != 0) {
           continue;
         }
@@ -1033,7 +1033,7 @@ int main()
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

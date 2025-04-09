@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -119,7 +119,7 @@ public:
 };
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -135,10 +135,10 @@ static uint32_t RandXor()
 }
 
 // 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 // l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
@@ -147,39 +147,37 @@ static double RandUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタの初期化
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 非常に大きな値
 const int INF = 1001001001;
 
-// 移動方向の配列(上,左,下,右)
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
 const int ex[13] = { -2,-1,-1,-1,0,0,0,0,0,1,1,1,2 };
 const int ey[13] = { 0,-1,0,1,-2,-1,0,1,2,-1,0,1,0 };
 
-double TL = 2.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
+double TL = 2.8;
+int mode;
 std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
+
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
+
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -792,10 +790,10 @@ void Method1(Hypers hypers)
   // 初期解
   rep(i, ekiMap.StationCount)
   {
-    //int x = RandXor() % (n - 2) + 1;
-    //int y = RandXor() % (n - 2) + 1;
-    int x = RandXor() % n;
-    int y = RandXor() % n;
+    //int x = Rand() % (n - 2) + 1;
+    //int y = Rand() % (n - 2) + 1;
+    int x = Rand() % n;
+    int y = Rand() % n;
     ekiMap.Stations[i][0] = x;
     ekiMap.Stations[i][1] = y;
 
@@ -833,11 +831,11 @@ void Method1(Hypers hypers)
       }
       loop++;
 
-      int raIndex = RandXor() % ekiMap.StationCount;
-      //int rax = RandXor() % (n - 2) + 1;
-      //int ray = RandXor() % (n - 2) + 1;
-      int rax = RandXor() % n;
-      int ray = RandXor() % n;
+      int raIndex = Rand() % ekiMap.StationCount;
+      //int rax = Rand() % (n - 2) + 1;
+      //int ray = Rand() % (n - 2) + 1;
+      int rax = Rand() % n;
+      int ray = Rand() % n;
 
       int keepx = ekiMap.Stations[raIndex][0];
       int keepy = ekiMap.Stations[raIndex][1];
@@ -1057,10 +1055,10 @@ void Method1(Hypers hypers)
       loop++;
       double progressRatio = (nowTime - startTime) / (TL - startTime);
 
-      int ra1 = RandXor() % ekiMap.StationCount;
-      int ra2 = RandXor() % ekiMap.StationCount;
+      int ra1 = Rand() % ekiMap.StationCount;
+      int ra2 = Rand() % ekiMap.StationCount;
       while (ra1 == ra2) {
-        ra2 = RandXor() % ekiMap.StationCount;
+        ra2 = Rand() % ekiMap.StationCount;
       }
 
       swap(ans.order[ra1], ans.order[ra2]);
@@ -1070,7 +1068,7 @@ void Method1(Hypers hypers)
       }
 
       int simMode = 0;
-      if (progressRatio < 0.5 && RandXor() % 2 == 0) {
+      if (progressRatio < 0.5 && Rand() % 2 == 0) {
         simMode = progressRatio * 10 + 1;
       }
 
@@ -1143,7 +1141,7 @@ void SimulatedAnnealing(Hypers hypers)
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
-    int raMode = RandXor() % 100;
+    int raMode = Rand() % 100;
     if (raMode < hypers.Partition) {
       // 近傍解作成
 
@@ -1225,7 +1223,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   mode = 2;
@@ -1268,8 +1266,8 @@ int main()
       hypers.StartTemp = pow(2.0, Rand01() * 20);
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition = RandXor() % 101;
-      hypers.StationCount = RandXor() % 1 + 30;
+      hypers.Partition = Rand() % 101;
+      hypers.StationCount = Rand() % 1 + 30;
       cout << "StationCount = " << hypers.StationCount << endl;
 
       ll sum = 0;

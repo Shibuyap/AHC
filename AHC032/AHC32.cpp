@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -44,24 +44,24 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j   = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -83,14 +83,14 @@ clock_t startTime, endTime;
 
 double GetNowTime()
 {
-  endTime        = clock();
+  endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
 }
 
-const int n   = 9;
-const int m   = 20;
-const int T   = 81;
+const int n = 9;
+const int m = 20;
+const int T = 81;
 const int MOD = 998244353;
 int a[n][n];
 int initA[n][n];
@@ -314,16 +314,16 @@ void Output(ofstream& ofs)
   }
 }
 
-double nowTime   = 0;
+double nowTime = 0;
 double startTemp = 1001001001;
-double endTemp   = 0.1;
+double endTemp = 0.1;
 void Method1_1()
 {
-  int raT = randxor() % T;
-  int raX = randxor() % 7;
-  int raY = randxor() % 7;
-  int raM = randxor() % m;
-  if (randxor() % 2 == 0) { raM = -1; }
+  int raT = Rand() % T;
+  int raX = Rand() % 7;
+  int raY = Rand() % 7;
+  int raM = Rand() % m;
+  if (Rand() % 2 == 0) { raM = -1; }
   if (ans[raT][0] == raM) return;
   ll diff = 0;
   if (ans[raT][0] != -1) {
@@ -347,7 +347,7 @@ void Method1_1()
     }
   }
 
-  double temp       = (startTemp + (endTemp - startTemp) * nowTime / TL);
+  double temp = (startTemp + (endTemp - startTemp) * nowTime / TL);
   const double prob = exp((double)diff / temp);
   // if (prob > rand01()) {
   if (diff >= 0) {
@@ -386,7 +386,7 @@ void Method1()
 {
   CopyFromBest();
   int loopCount = 0;
-  nowTime       = GetNowTime();
+  nowTime = GetNowTime();
   while (true) {
     loopCount++;
     if (loopCount % 10000 == 0) {
@@ -557,7 +557,7 @@ void Method2DFS(int mm, int cnt, int lim)
         }
       }
       rep(j, cnt) maAnssArr[j] = anssArr[j];
-      maAnsCount               = cnt;
+      maAnsCount = cnt;
     }
 
     Method2DFS(i, cnt, lim);
@@ -581,13 +581,13 @@ void Method2(double timeLimit)
     double nowTime = GetNowTime();
     if (nowTime > timeLimit) break;
 
-    ll hosyou = randxor() % 200000000 + MOD - 200000000;
+    ll hosyou = Rand() % 200000000 + MOD - 200000000;
 
     int ng = 0;
     InitializeAns();
-    int cnt  = 0;
-    int dir1 = randxor() % 2;
-    int dir2 = randxor() % 2;
+    int cnt = 0;
+    int dir1 = Rand() % 2;
+    int dir2 = Rand() % 2;
     rep(ii, n - 2)
     {
       int i = ii;
@@ -597,12 +597,12 @@ void Method2(double timeLimit)
         int j = jj;
         if (dir2) j = n - 3 - jj;
         maAnsCount = 0;
-        maxSum     = 0;
+        maxSum = 0;
         rep(k, 3)
         {
           rep(l, 3)
           {
-            ma[k][l]  = a[i + k][j + l];
+            ma[k][l] = a[i + k][j + l];
             now[k][l] = ma[k][l];
           }
         }
@@ -643,7 +643,7 @@ void Method2(double timeLimit)
 
         rep(k, maAnsCount)
         {
-          int ansM    = maAnssArr[k];
+          int ansM = maAnssArr[k];
           ans[cnt][0] = ansM;
           ans[cnt][1] = i;
           ans[cnt][2] = j;
@@ -683,7 +683,7 @@ void Method3(double timeLimit)
     double nowTime = GetNowTime();
     if (nowTime > timeLimit) break;
 
-    ll hosyou = randxor() % 200000000 + MOD - 200000000;
+    ll hosyou = Rand() % 200000000 + MOD - 200000000;
 
     int aaa[49];
     rep(i, 49) aaa[i] = i;
@@ -719,12 +719,12 @@ void Method3(double timeLimit)
       int j = aaa[ii] % 7;
 
       maAnsCount = 0;
-      maxSum     = 0;
+      maxSum = 0;
       rep(k, 3)
       {
         rep(l, 3)
         {
-          ma[k][l]  = a[i + k][j + l];
+          ma[k][l] = a[i + k][j + l];
           now[k][l] = ma[k][l];
         }
       }
@@ -773,7 +773,7 @@ void Method3(double timeLimit)
 
       rep(k, maAnsCount)
       {
-        int ansM    = maAnssArr[k];
+        int ansM = maAnssArr[k];
         ans[cnt][0] = ansM;
         ans[cnt][1] = i;
         ans[cnt][2] = j;
@@ -816,13 +816,13 @@ void Method4(double timeLimit)
     double nowTime = GetNowTime();
     if (nowTime > timeLimit) break;
 
-    ll hosyou = randxor() % 200000000 + MOD - 200000000;
+    ll hosyou = Rand() % 200000000 + MOD - 200000000;
 
     int ng = 0;
     InitializeAns();
-    int cnt  = 0;
-    int dir1 = randxor() % 2;
-    int dir2 = randxor() % 2;
+    int cnt = 0;
+    int dir1 = Rand() % 2;
+    int dir2 = Rand() % 2;
     // dir1     = 0;
     dir2 = 0;
     rep(ii, n - 2)
@@ -834,8 +834,8 @@ void Method4(double timeLimit)
         break;
       }
 
-      int nowCnt    = cnt;
-      ll maPosSum   = 0;
+      int nowCnt = cnt;
+      ll maPosSum = 0;
       int maCntTail = 0;
       rep(p, n)
       {
@@ -851,15 +851,15 @@ void Method4(double timeLimit)
         rep(jj, jjj)
         {
           int j = jj;
-          dir2  = 0;
+          dir2 = 0;
           if (dir2) j = n - 3 - jj;
           maAnsCount = 0;
-          maxSum     = 0;
+          maxSum = 0;
           rep(k, 3)
           {
             rep(l, 3)
             {
-              ma[k][l]  = a[i + k][j + l];
+              ma[k][l] = a[i + k][j + l];
               now[k][l] = ma[k][l];
             }
           }
@@ -876,7 +876,7 @@ void Method4(double timeLimit)
 
           if (useCount == 1) {
             Method2DFS(0, 0, 1);
-            if (maxSum < hosyou && randxor() % 3 != 0) {
+            if (maxSum < hosyou && Rand() % 3 != 0) {
               rep(p, 3)
               {
                 rep(q, 3)
@@ -900,7 +900,7 @@ void Method4(double timeLimit)
 
           rep(k, maAnsCount)
           {
-            int ansM    = maAnssArr[k];
+            int ansM = maAnssArr[k];
             ans[cnt][0] = ansM;
             ans[cnt][1] = i;
             ans[cnt][2] = j;
@@ -921,15 +921,15 @@ void Method4(double timeLimit)
         if (ng) break;
 
         for (int jj = n - 3; jj > jjj; jj--) {
-          int j      = jj;
-          dir2       = 1;
+          int j = jj;
+          dir2 = 1;
           maAnsCount = 0;
-          maxSum     = 0;
+          maxSum = 0;
           rep(k, 3)
           {
             rep(l, 3)
             {
-              ma[k][l]  = a[i + k][j + l];
+              ma[k][l] = a[i + k][j + l];
               now[k][l] = ma[k][l];
             }
           }
@@ -946,7 +946,7 @@ void Method4(double timeLimit)
 
           if (useCount == 1) {
             Method2DFS(0, 0, 1);
-            if (maxSum < hosyou && randxor() % 3 != 0) {
+            if (maxSum < hosyou && Rand() % 3 != 0) {
               rep(p, 3)
               {
                 rep(q, 3)
@@ -970,7 +970,7 @@ void Method4(double timeLimit)
 
           rep(k, maAnsCount)
           {
-            int ansM    = maAnssArr[k];
+            int ansM = maAnssArr[k];
             ans[cnt][0] = ansM;
             ans[cnt][1] = i;
             ans[cnt][2] = j;
@@ -990,14 +990,14 @@ void Method4(double timeLimit)
         }
 
         {
-          int j      = jjj;
+          int j = jjj;
           maAnsCount = 0;
-          maxSum     = 0;
+          maxSum = 0;
           rep(k, 3)
           {
             rep(l, 3)
             {
-              ma[k][l]  = a[i + k][j + l];
+              ma[k][l] = a[i + k][j + l];
               now[k][l] = ma[k][l];
             }
           }
@@ -1015,7 +1015,7 @@ void Method4(double timeLimit)
 
           if (useCount == 1) {
             Method2DFS(0, 0, 1);
-            if (maxSum < hosyou && randxor() % 3 != 0) {
+            if (maxSum < hosyou && Rand() % 3 != 0) {
               rep(p, 3)
               {
                 rep(q, 3)
@@ -1040,7 +1040,7 @@ void Method4(double timeLimit)
 
           rep(k, maAnsCount)
           {
-            int ansM    = maAnssArr[k];
+            int ansM = maAnssArr[k];
             ans[cnt][0] = ansM;
             ans[cnt][1] = i;
             ans[cnt][2] = j;
@@ -1136,7 +1136,7 @@ void Method4(double timeLimit)
     if (ng) continue;
 
     srep(t, cnt, T) ans[t][0] = -1;
-    ansScore                  = CalcScore();
+    ansScore = CalcScore();
     // cout << ansScore << endl;
     if (ansScore > best_ansScore) {
       // cout << hosyou << ' ' << ansScore << endl;
@@ -1150,7 +1150,7 @@ void Method4(double timeLimit)
 ll Solve(int probNum)
 {
   startTime = clock();
-  endTime   = clock();
+  endTime = clock();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -1186,7 +1186,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

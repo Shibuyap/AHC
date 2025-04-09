@@ -57,7 +57,7 @@ const ll D18 = 1000000000000000000LL;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -73,7 +73,7 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 }  // namespace
 
 std::random_device seed_gen;
@@ -1329,9 +1329,9 @@ void GenerateLocalItems()
 
 void GenerateCase(int _n = -1, int _d = -1, int _q = -1)
 {
-  N = randxor() % 71 + 30;
+  N = Rand() % 71 + 30;
   if (_n != -1) N = _n;
-  D = randxor() % (N / 4 - 1) + 2;
+  D = Rand() % (N / 4 - 1) + 2;
   if (_d != -1) D = _d;
   Q = round(pow(2, rand01() * 4.0 + 1.0) * N);
   if (_q != -1) Q = _q;
@@ -1340,15 +1340,15 @@ void GenerateCase(int _n = -1, int _d = -1, int _q = -1)
 
 void GenerateNNDDQQ(int _nn = -1, int _qq = -1, int _dd = -1)
 {
-  NN = randxor() % 14;
+  NN = Rand() % 14;
   if (_nn != -1) {
     NN = _nn;
   }
-  QQ = randxor() % 40;
+  QQ = Rand() % 40;
   if (_qq != -1) {
     QQ = _qq;
   }
-  DD = randxor() % haipara[NN][QQ].size();
+  DD = Rand() % haipara[NN][QQ].size();
   if (_dd != -1) {
     DD = _dd;
   }
@@ -1357,10 +1357,10 @@ void GenerateNNDDQQ(int _nn = -1, int _qq = -1, int _dd = -1)
 void GeneratecaseFromNNDDQQ()
 {
   if (NN == 13) {
-    N = randxor() % 6 + 30 + NN * 5;
+    N = Rand() % 6 + 30 + NN * 5;
   }
   else {
-    N = randxor() % 5 + 30 + NN * 5;
+    N = Rand() % 5 + 30 + NN * 5;
   }
   double dou = rand01() * 0.1;
   Q = round(pow(2, 1.0 + 0.1 * QQ + dou) * N);
@@ -1860,14 +1860,14 @@ void ResetMemory()
 // 1個移動
 void Move1(int& countQ, int cutLine = 999)
 {
-  int x = randxor() % D;
+  int x = Rand() % D;
   int loop = 0;
   while (true) {
     loop++;
     if (loop >= 100) {
       return;
     }
-    x = randxor() % D;
+    x = Rand() % D;
     int cnt = 0;
     rep(j, N)
     {
@@ -1880,9 +1880,9 @@ void Move1(int& countQ, int cutLine = 999)
       break;
     }
   }
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (x == y) {
-    y = randxor() % D;
+    y = Rand() % D;
   }
   vector<int> vx;
   rep(j, N)
@@ -1891,7 +1891,7 @@ void Move1(int& countQ, int cutLine = 999)
       vx.push_back(j);
     }
   }
-  int z = vx[randxor() % vx.size()];
+  int z = vx[Rand() % vx.size()];
 
   if (cutLine < 100) {
     int win = 0;
@@ -1932,9 +1932,9 @@ void Move1(int& countQ, int cutLine = 999)
 int Move1_Specify(int& countQ, int groupId)
 {
   int x = groupId;
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (x == y) {
-    y = randxor() % D;
+    y = Rand() % D;
   }
   vector<int> vx;
   rep(j, N)
@@ -1946,7 +1946,7 @@ int Move1_Specify(int& countQ, int groupId)
   if (vx.size() <= 1) {
     return -1;
   }
-  int z = vx[randxor() % vx.size()];
+  int z = vx[Rand() % vx.size()];
 
   rep(j, N)
   {
@@ -1973,11 +1973,11 @@ void MoveSmall1(const vector<int>& items, int& countQ, int smallLine)
 {
   int _N = min(smallLine, N);
   _N = max(1, _N);
-  int z = randxor() % _N;
+  int z = Rand() % _N;
   int x = ans[z];
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (x == y) {
-    y = randxor() % D;
+    y = Rand() % D;
   }
 
   rep(j, N)
@@ -2004,9 +2004,9 @@ void Move1_Two(int& countQ, int cutLine = 999)
     Move1(countQ, cutLine);
     return;
   }
-  int x = randxor() % D;
+  int x = Rand() % D;
   while (true) {
-    x = randxor() % D;
+    x = Rand() % D;
     int cnt = 0;
     rep(j, N)
     {
@@ -2019,13 +2019,13 @@ void Move1_Two(int& countQ, int cutLine = 999)
       break;
     }
   }
-  int y1 = randxor() % D;
+  int y1 = Rand() % D;
   while (x == y1) {
-    y1 = randxor() % D;
+    y1 = Rand() % D;
   }
-  int y2 = randxor() % D;
+  int y2 = Rand() % D;
   while (x == y2 || y1 == y2) {
-    y2 = randxor() % D;
+    y2 = Rand() % D;
   }
   char c1 = QueryGroup(countQ, y1, y2);
   int y = y1;
@@ -2037,7 +2037,7 @@ void Move1_Two(int& countQ, int cutLine = 999)
       vx.push_back(j);
     }
   }
-  int z = vx[randxor() % vx.size()];
+  int z = vx[Rand() % vx.size()];
 
   if (cutLine < 100) {
     int win = 0;
@@ -2076,9 +2076,9 @@ void Move1_Two(int& countQ, int cutLine = 999)
 
 void Move1Minimum(int& countQ, int cutLine = 999)
 {
-  int x = randxor() % D;
+  int x = Rand() % D;
   while (true) {
-    x = randxor() % D;
+    x = Rand() % D;
     int cnt = 0;
     rep(j, N)
     {
@@ -2091,9 +2091,9 @@ void Move1Minimum(int& countQ, int cutLine = 999)
       break;
     }
   }
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (x == y) {
-    y = randxor() % D;
+    y = Rand() % D;
   }
   vector<int> vv;
   rep(j, N)
@@ -2102,10 +2102,10 @@ void Move1Minimum(int& countQ, int cutLine = 999)
       vv.push_back(j);
     }
   }
-  int z = vv[randxor() % vv.size()];
+  int z = vv[Rand() % vv.size()];
   rep(_, 30)
   {
-    int zz = vv[randxor() % vv.size()];
+    int zz = vv[Rand() % vv.size()];
     if (hikaku[zz][z] == 0 || hikaku[zz][z] == -1) {
       z = zz;
     }
@@ -2150,7 +2150,7 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
 {
   int x = combo;
   if (x == -1) {
-    x = randxor() % D;
+    x = Rand() % D;
   }
   while (true) {
     int cnt = 0;
@@ -2164,11 +2164,11 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
     if (cnt >= 2) {
       break;
     }
-    x = randxor() % D;
+    x = Rand() % D;
   }
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (x == y) {
-    y = randxor() % D;
+    y = Rand() % D;
   }
   vector<int> vv;
   rep(j, N)
@@ -2177,7 +2177,7 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
       vv.push_back(j);
     }
   }
-  int z = vv[randxor() % vv.size()];
+  int z = vv[Rand() % vv.size()];
 
   if (cutLine < 100) {
     int win = 0;
@@ -2221,9 +2221,9 @@ int arr8_2_L[110];
 int arr8_2_R[110];
 void Swap1(int& countQ, int diffLine = 999)
 {
-  int x = randxor() % D;
+  int x = Rand() % D;
   while (true) {
-    x = randxor() % D;
+    x = Rand() % D;
     int cnt = 0;
     rep(j, N)
     {
@@ -2236,14 +2236,14 @@ void Swap1(int& countQ, int diffLine = 999)
       break;
     }
   }
-  int y = randxor() % D;
+  int y = Rand() % D;
   int yloop = 0;
   while (true) {
     yloop++;
     if (yloop == 30) {
       break;
     }
-    y = randxor() % D;
+    y = Rand() % D;
     if (x == y) {
       continue;
     }
@@ -2273,8 +2273,8 @@ void Swap1(int& countQ, int diffLine = 999)
       szR++;
     }
   }
-  int lid = arr8_2_L[randxor() % szL];
-  int rid = arr8_2_R[randxor() % szR];
+  int lid = arr8_2_L[Rand() % szL];
+  int rid = arr8_2_R[Rand() % szR];
 
   if (diffLine < 100) {
     if (hikaku[lid][rid] == -1) {
@@ -2337,9 +2337,9 @@ int arrSwapHalf_L[110];
 int arrSwapHalf_R[110];
 void SwapHalf(int& countQ)
 {
-  int x = randxor() % D;
+  int x = Rand() % D;
   while (true) {
-    x = randxor() % D;
+    x = Rand() % D;
     int cnt = 0;
     rep(j, N)
     {
@@ -2352,9 +2352,9 @@ void SwapHalf(int& countQ)
       break;
     }
   }
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (true) {
-    y = randxor() % D;
+    y = Rand() % D;
     if (x == y) {
       continue;
     }
@@ -2420,9 +2420,9 @@ void SwapHalf(int& countQ)
 
 void Method11_1(int& countQ)
 {
-  int x = randxor() % D;
+  int x = Rand() % D;
   while (true) {
-    x = randxor() % D;
+    x = Rand() % D;
     int cnt = 0;
     rep(j, N)
     {
@@ -2435,9 +2435,9 @@ void Method11_1(int& countQ)
       break;
     }
   }
-  int y = randxor() % D;
+  int y = Rand() % D;
   while (true) {
-    y = randxor() % D;
+    y = Rand() % D;
     if (x == y) {
       continue;
     }
@@ -2463,11 +2463,11 @@ void Method11_1(int& countQ)
       vr.push_back(j);
     }
   }
-  int lid = vl[randxor() % vl.size()];
-  int rid = vr[randxor() % vr.size()];
+  int lid = vl[Rand() % vl.size()];
+  int rid = vr[Rand() % vr.size()];
   rep(i, 50)
   {
-    rid = vr[randxor() % vr.size()];
+    rid = vr[Rand() % vr.size()];
     if (hikaku[lid][rid] == 1) {
       break;
     }
@@ -2556,11 +2556,11 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
   int loop = 0;
   while (true) {
     loop++;
-    int num = randxor() % (M - 1);
+    int num = Rand() % (M - 1);
     rep(_, 30)
     {
       if (memory_SwapNeighbor1[num]) {
-        num = randxor() % (M - 1);
+        num = Rand() % (M - 1);
       }
       else {
         break;
@@ -2577,7 +2577,7 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
       }
       else {
         while (xg == yg) {
-          num = randxor() % (N - 1);
+          num = Rand() % (N - 1);
           x = items[num];
           y = items[num + 1];
           xg = ans[x];
@@ -2635,7 +2635,7 @@ bool SwapNeighborSmall1(const vector<int>& items, int& countQ, int smallLine)
   while (true) {
     int _N = min(N, smallLine);
     _N = max(2, _N);
-    int num = randxor() % (_N - 1);
+    int num = Rand() % (_N - 1);
     int x = items[num];
     int y = items[num + 1];
     int xg = ans[x];
@@ -2683,7 +2683,7 @@ void SwapNeighbor1Block(const vector<vector<int>>& blocks, int& countQ)
 {
   int M = blocks.size();
   while (true) {
-    int num = randxor() % (M - 1);
+    int num = Rand() % (M - 1);
     vector<int> xb = blocks[num];
     vector<int> yb = blocks[num + 1];
     int xg = ans[xb[0]];
@@ -2739,7 +2739,7 @@ void Method8(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       Move1(countQ);
     }
@@ -2774,7 +2774,7 @@ void Method208(int _kireme, int hiritu1, int hiritu2)
     else {
       hiritu = hiritu2;
     }
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       Move1(countQ);
     }
@@ -2796,7 +2796,7 @@ void Method8_Two(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       Move1_Two(countQ);
     }
@@ -2818,7 +2818,7 @@ void Method19(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       Move1(countQ);
     }
@@ -2840,7 +2840,7 @@ void Method18(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       Move1Minimum(countQ);
     }
@@ -2862,7 +2862,7 @@ void Method13(int diffLine = 999)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < 10) {
       Move1(countQ);
     }
@@ -2887,7 +2887,7 @@ void Method14()
   int countQ = 0;
   while (countQ < Q) {
     if (countQ < 0.75 * Q) {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < 60) {
         Move1(countQ);
       }
@@ -2921,7 +2921,7 @@ void Method15(int hiritu = 60)
       combo = Move1Combo(countQ, combo);
     }
     else {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         Move1(countQ);
       }
@@ -2949,10 +2949,10 @@ void Method16(int hiritu = 60)
       ans[i] = i;
     }
     else {
-      int x = randxor() % D;
-      int y = randxor() % D;
+      int x = Rand() % D;
+      int y = Rand() % D;
       while (x == y) {
-        y = randxor() % D;
+        y = Rand() % D;
       }
       rep(j, N)
       {
@@ -2975,7 +2975,7 @@ void Method16(int hiritu = 60)
   }
 
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       Move1(countQ);
     }
@@ -2997,7 +2997,7 @@ void Method11()
 
   int countQ = 0;
   while (countQ <= Q - 2) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < 33) {
       Move1(countQ);
     }
@@ -3309,7 +3309,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
   int loop = 0;
   while (true) {
     loop++;
-    int num = randxor() % (M - 1);
+    int num = Rand() % (M - 1);
     int x1 = items[num];
     int y1 = items[num + 1];
     int xg = ans[x1];
@@ -3317,7 +3317,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
     if (xg == yg) {
       if (loop > 100) {
         while (xg == yg) {
-          num = randxor() % (N - 1);
+          num = Rand() % (N - 1);
           x1 = items[num];
           y1 = items[num + 1];
           xg = ans[x1];
@@ -3391,10 +3391,10 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
 bool SwapN(const vector<int>& items, int& countQ, int minDiff)
 {
   bool isChange = false;
-  int xg = randxor() % D;
-  int yg = randxor() % D;
+  int xg = Rand() % D;
+  int yg = Rand() % D;
   while (xg == yg) {
-    yg = randxor() % D;
+    yg = Rand() % D;
   }
 
   vector<P> vpx, vpy;
@@ -3451,7 +3451,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
     rep(winter, 10)
     {
       if (loop % 2 == 0) {
-        P p = vpx[randxor() % vpx.size()];
+        P p = vpx[Rand() % vpx.size()];
         int x = p.first;
         int y = p.second;
         if (use.find(x) == use.end() && use.find(y) == use.end()) {
@@ -3463,7 +3463,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
         }
       }
       else {
-        P p = vpy[randxor() % vpy.size()];
+        P p = vpy[Rand() % vpy.size()];
         int x = p.first;
         int y = p.second;
         if (use.find(x) == use.end() && use.find(y) == use.end()) {
@@ -3489,9 +3489,9 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   std::shuffle(vpx2.begin(), vpx2.end(), engine_mt19937);
   std::shuffle(vpy2.begin(), vpy2.end(), engine_mt19937);
 
-  int lNum = randxor() % 3 + 1;
+  int lNum = Rand() % 3 + 1;
   lNum = min(lNum, (int)vpx2.size());
-  int rNum = randxor() % 3 + 1;
+  int rNum = Rand() % 3 + 1;
   rNum = min(rNum, (int)vpy2.size());
 
   vector<int> vQuery1X, vQuery1Y, vQuery2X, vQuery2Y;
@@ -3560,7 +3560,7 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
 {
   int M = blocks.size();
   while (true) {
-    int num = randxor() % (M - 1);
+    int num = Rand() % (M - 1);
     vector<int> xb1 = blocks[num];
     vector<int> yb1 = blocks[num + 1];
     int xg = ans[xb1[0]];
@@ -3583,8 +3583,8 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
     if (vx.empty() || vy.empty()) {
       break;
     }
-    int x2 = vx[randxor() % vx.size()];
-    int y2 = vy[randxor() % vy.size()];
+    int x2 = vx[Rand() % vx.size()];
+    int y2 = vy[Rand() % vy.size()];
 
     rep(i, N)
     {
@@ -3703,7 +3703,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     int failedCount = 0;
 
     while (countQ < Q - D) {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         bool isChange = SwapNeighbor1(items, countQ);
         if (isChange) {
@@ -3928,7 +3928,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
         cerr << "TLE : Method226 " << "time = " << nowTime << ", setCount = " << setCount << endl;
         break;
       }
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         bool isChange = SwapNeighbor1(items, countQ);
         if (isChange) {
@@ -4133,7 +4133,7 @@ void Method6(int hiritu = 100, int minDiff = 10)
       hiritu = 90;
       minDiff = 999;
     }
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       bool isChange = SwapNeighbor1(items, countQ);
       if (isChange) {
@@ -4224,7 +4224,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
       hiritu2 = 66;
       minDiff = 999;
     }
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu1) {
       bool isChange = SwapNeighbor1(items, countQ);
       if (isChange) {
@@ -4342,7 +4342,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
     }
 
     if (isKouhan) {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       int hiritu = hiritu1;
       if (qu < hiritu) {
         Move1(countQ);
@@ -4360,7 +4360,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -4510,7 +4510,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     }
 
     if (isKouhan) {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       int hiritu = hiritu1;
       if (qu < hiritu) {
         Move1(countQ);
@@ -4528,7 +4528,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -4713,7 +4713,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -4956,7 +4956,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -5104,7 +5104,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -5300,7 +5300,7 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
   }
 
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ);
     }
@@ -5395,7 +5395,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     if (loop > 100000) {
       break;
     }
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ, M);
     }
@@ -5498,7 +5498,7 @@ void Method806(int hiritu, int minDiff, int _m)
     if (loop > 100000) {
       break;
     }
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ, M);
     }
@@ -5642,7 +5642,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     if (loop > 100000) {
       break;
     }
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ, M);
     }
@@ -5773,11 +5773,11 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
   }
 
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       int sma = small1;
       if (hiritu == 100) {
-        if (randxor() % 20 == 0) {
+        if (Rand() % 20 == 0) {
           sma = 999;
         }
       }
@@ -5959,7 +5959,7 @@ void Method17(int ikichi, int hiritu)
   }
 
   while (countQ < Q) {
-    int qu = randxor() % 100;
+    int qu = Rand() % 100;
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ);
     }
@@ -6038,7 +6038,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
 
   if (isMethod9) {
     while (countQ < Q) {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < 100) {
         SwapNeighbor1(items, countQ);
       }
@@ -6046,7 +6046,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
   }
   else {
     while (countQ <= Q - 2) {
-      int qu = randxor() % 100;
+      int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1(items, countQ);
       }
@@ -6265,52 +6265,52 @@ ll Solve(int probNum, ll hai2 = D18)
   }
   else {
     switch (hai) {
-      case 6:
-        Method6();
-        break;
-      case 610:
-        Method6(70, 10);
-        break;
-      case 61003:
-        Method6(50, 3);
-        break;
-      case 8:
-        Method8();
-        break;
-      case 9:
-        Method10(70, 10, true);
-        break;
-      case 10:
-        Method10();
-        break;
-      case 1003:
-        Method10(50, 3);
-        break;
-      case 11:
-        Method11();
-        break;
-      case 12:
-        Method12();
-        break;
-      case 13:
-        Method13();
-        break;
-      case 14:
-        Method14();
-        break;
-      case 15:
-        Method15();
-        break;
-      case 16:
-        Method16();
-        break;
-      case 1220:
-        Method12(20);
-        break;
-      default:
-        cerr << "NG hai : " << hai << endl;
-        Method8();
-        break;
+    case 6:
+      Method6();
+      break;
+    case 610:
+      Method6(70, 10);
+      break;
+    case 61003:
+      Method6(50, 3);
+      break;
+    case 8:
+      Method8();
+      break;
+    case 9:
+      Method10(70, 10, true);
+      break;
+    case 10:
+      Method10();
+      break;
+    case 1003:
+      Method10(50, 3);
+      break;
+    case 11:
+      Method11();
+      break;
+    case 12:
+      Method12();
+      break;
+    case 13:
+      Method13();
+      break;
+    case 14:
+      Method14();
+      break;
+    case 15:
+      Method15();
+      break;
+    case 16:
+      Method16();
+      break;
+    case 1220:
+      Method12(20);
+      break;
+    default:
+      cerr << "NG hai : " << hai << endl;
+      Method8();
+      break;
     }
   }
 
@@ -6424,7 +6424,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   //set<int> haiSet;
@@ -6557,7 +6557,7 @@ int main()
         //  GenerateNNDDQQ();
         //}
         //else {
-        //  int ijk = kouho[randxor() % kouho.size()];
+        //  int ijk = kouho[Rand() % kouho.size()];
         //  GenerateNNDDQQ(ijk / D4, ijk % D4 / D2, ijk % D2);
         //}
 
@@ -6571,17 +6571,17 @@ int main()
         }
 
         newHai = 200916;
-        newHai2 = hai2 % D10 + randxor() % D2 * D10;
-        if (hai == 200916 && randxor() % 2 == 0) {
+        newHai2 = hai2 % D10 + Rand() % D2 * D10;
+        if (hai == 200916 && Rand() % 2 == 0) {
           newHai2 = hai2 + D10;
         }
 
         //ll x = newHai2 % D4 / D2;
         //ll y = newHai2 % D2;
-        //x += (int)(randxor() % 3) - 1;
+        //x += (int)(Rand() % 3) - 1;
         //x = max(2LL, x);
         //x = min(99LL, x);
-        //y += (int)(randxor() % 3) - 1;
+        //y += (int)(Rand() % 3) - 1;
         //y = max(2LL, y);
         //y = min(99LL, y);
 
@@ -6592,14 +6592,14 @@ int main()
         //newHai2 = hai2;
 
         //if (hai == 200216 || hai == 200236 || hai == 200316) {
-        //  if (randxor() % 2) {
-        //    newHai2 += (randxor() % 3 - 1) * D2;
+        //  if (Rand() % 2) {
+        //    newHai2 += (Rand() % 3 - 1) * D2;
         //    if (newHai2 % D4 / D2 < 2) {
         //      newHai2 += D2;
         //    }
         //  }
-        //  if (randxor() % 2) {
-        //    newHai2 += (randxor() % 3 - 1);
+        //  if (Rand() % 2) {
+        //    newHai2 += (Rand() % 3 - 1);
         //    if (newHai2 % D2 < 1) {
         //      newHai2 += 1LL;
         //    }
@@ -6612,18 +6612,18 @@ int main()
         //newHai = 200516;
         //newHai2 = hai2;
 
-        //newHai = 1008000 + randxor() % 101;
+        //newHai = 1008000 + Rand() % 101;
         //newHai2 = 0;
 
         if (false) {
-          if (randxor() % 2 == 0) {
-            int NNN = NN + randxor() % 3 - 1;
+          if (Rand() % 2 == 0) {
+            int NNN = NN + Rand() % 3 - 1;
             NNN = max(NNN, 0);
             NNN = min(NNN, 13);
-            int QQQ = QQ + randxor() % 3 - 1;
+            int QQQ = QQ + Rand() % 3 - 1;
             QQQ = max(QQQ, 0);
             QQQ = min(QQQ, 39);
-            int DDD = DD + randxor() % 3 - 1;
+            int DDD = DD + Rand() % 3 - 1;
             DDD = max(0, DDD);
             DDD = min(DDD, (int)haipara[NNN][QQQ].size() - 1);
             newHai = haipara[NNN][QQQ][DDD];
@@ -6639,14 +6639,14 @@ int main()
 
         //if (hai == 200216 || hai == 200236 || hai == 200316) {
         //  newHai2 = hai2;
-        //  if (randxor() % 2) {
-        //    newHai2 += (randxor() % 3 - 1) * D2;
+        //  if (Rand() % 2) {
+        //    newHai2 += (Rand() % 3 - 1) * D2;
         //    if (newHai2 % D4 / D2 < 2) {
         //      newHai2 += D2;
         //    }
         //  }
-        //  if (randxor() % 2) {
-        //    newHai2 += (randxor() % 3 - 1);
+        //  if (Rand() % 2) {
+        //    newHai2 += (Rand() % 3 - 1);
         //    if (newHai2 % D2 < 1) {
         //      newHai2 += 1LL;
         //    }
@@ -6657,48 +6657,48 @@ int main()
         //}
 
         //newHai = 200306;
-        //newHai2 = 99 * D6 + randxor() % D6;
+        //newHai2 = 99 * D6 + Rand() % D6;
 
         //if (QQ >= 20) continue;
 
-        //int ra = randxor() % 100;
+        //int ra = Rand() % 100;
         //if (ra < 60) {
         //  newHai = 200366;
-        //  newHai2 = randxor() % D3 * D4 + randxor() % D4;
+        //  newHai2 = Rand() % D3 * D4 + Rand() % D4;
         //}
         //else if (ra < 80) {
         //  newHai = 200266;
-        //  newHai2 = randxor() % D4;
+        //  newHai2 = Rand() % D4;
         //}
         //else {
         //  newHai = 200226;
-        //  newHai2 = randxor() % D4;
+        //  newHai2 = Rand() % D4;
         //}
 
         //if (QQ <= 20) continue;
 
         //newHai = 200316;
         //newHai2 = 0;
-        //newHai2 += (ll)randxor() % 2 * 98 + 1;
+        //newHai2 += (ll)Rand() % 2 * 98 + 1;
         //newHai2 *= 100;
-        //newHai2 += (ll)randxor() % 2 * 98 + 1;
+        //newHai2 += (ll)Rand() % 2 * 98 + 1;
         //newHai2 *= 100;
-        //newHai2 += (ll)randxor() % 2 * 98 + 1;
+        //newHai2 += (ll)Rand() % 2 * 98 + 1;
         //newHai2 *= 100;
-        //newHai2 += (ll)randxor() % 14 + 2;
+        //newHai2 += (ll)Rand() % 14 + 2;
         //newHai2 *= 100;
-        //newHai2 += (ll)randxor() % 10 + 1;
+        //newHai2 += (ll)Rand() % 10 + 1;
 
         //if (hai == 200216 || hai == 200236 || hai == 200316) {
         //  newHai2 = hai2;
-        //  if (randxor() % 2) {
-        //    newHai2 += (randxor() % 3 - 1) * D2;
+        //  if (Rand() % 2) {
+        //    newHai2 += (Rand() % 3 - 1) * D2;
         //    if (newHai2 % D4 / D2 < 2) {
         //      newHai2 += D2;
         //    }
         //  }
-        //  if (randxor() % 2) {
-        //    newHai2 += (randxor() % 3 - 1);
+        //  if (Rand() % 2) {
+        //    newHai2 += (Rand() % 3 - 1);
         //    if (newHai2 % D2 < 1) {
         //      newHai2 += 1LL;
         //    }
@@ -6709,10 +6709,10 @@ int main()
         //}
 
         //newHai = 200306;
-        //newHai2 = 99 * D6 + randxor() % D6;
+        //newHai2 = 99 * D6 + Rand() % D6;
 
         //newHai = 200266;
-        //newHai2 = randxor() % D4;
+        //newHai2 = Rand() % D4;
         //if (hai != 1000610) {
         //  continue;
         //}
@@ -6724,26 +6724,26 @@ int main()
         //}
 
         //newHai = 200256;
-        //newHai2 = randxor() % D6;
+        //newHai2 = Rand() % D6;
 
         //if (hai != 200246 && hai != 200256 && hai / D4 != 109) {
         //  continue;
         //}
 
         //newHai = 200236;
-        //newHai2 = randxor() % D6 * D4 + (randxor() % 35 + 2) * D2 + randxor() % 20;
+        //newHai2 = Rand() % D6 * D4 + (Rand() % 35 + 2) * D2 + Rand() % 20;
 
         //newHai = 200226;
-        //newHai2 = randxor() % D4;
+        //newHai2 = Rand() % D4;
 
-        // newHai = 1090000 + randxor() % 10000;
-        // if (randxor() % 2 == 0) {
-        //   newHai = 1070000 + randxor() % 10000;
+        // newHai = 1090000 + Rand() % 10000;
+        // if (Rand() % 2 == 0) {
+        //   newHai = 1070000 + Rand() % 10000;
         // }
 
-        // newHai = 1100000 + randxor() % 10000;
+        // newHai = 1100000 + Rand() % 10000;
 
-        // int ra = randxor() % 20;
+        // int ra = Rand() % 20;
         // if (ra < 1) {
         //   newHai = 1000006;
         // }
@@ -6790,23 +6790,23 @@ int main()
         //   newHai = 1000016;
         // }
         // else if (ra < 16) {
-        //   newHai = 1070000 + randxor() % 10000;
+        //   newHai = 1070000 + Rand() % 10000;
         // }
         // else if (ra < 17) {
-        //   newHai = 1008000 + randxor() % 101;
+        //   newHai = 1008000 + Rand() % 101;
         // }
         // else if (ra < 18) {
-        //   newHai = 1080000 + randxor() % 10000;
+        //   newHai = 1080000 + Rand() % 10000;
         //   newHai -= newHai % 100;
         // }
         // else if (ra < 19) {
-        //   newHai = 1001200 + randxor() % 100;
+        //   newHai = 1001200 + Rand() % 100;
         // }
         // else if (ra < 20) {
-        //   newHai = 1001900 + randxor() % 100;
+        //   newHai = 1001900 + Rand() % 100;
         // }
         // else if (ra < 21) {
-        //   newHai = 1090000 + randxor() % 10000;
+        //   newHai = 1090000 + Rand() % 10000;
         // }
       }
       GeneratecaseFromNNDDQQ();

@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)          // iを0からn未満まで増加させるループ
 #define srep(i, s, t) for (int i = s; i < t; ++i)        // iをsからt未満まで増加させるループ
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)      // iをn-1から0まで減少させるループ
@@ -42,7 +42,7 @@ typedef pair<int, int> P;     // 整数ペアの型定義
 typedef pair<P, P> PP;        // 整数ペアのペアの型定義
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   // 初期値の設定（シード値）
   static uint32_t x = 123456789;
@@ -60,10 +60,10 @@ static uint32_t RandXor()
 }
 
 // 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 // l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
@@ -72,7 +72,7 @@ static double RandUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -84,25 +84,23 @@ void FisherYates(int* data, int n)
 // std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 非常に大きな値の定義（オーバーフロー防止用）
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列（上下左右の移動を表す）
 const int dx[4] = { -1, 0, 1, 0 };  // x方向の変化
 const int dy[4] = { 0, -1, 0, 1 };  // y方向の変化
 
-double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード（0: 標準入出力、1: スコア表示、2: 詳細表示）
+double TL = 1.8;
+int mode;
 std::chrono::steady_clock::time_point startTimeClock, endTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
+
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();  // 現在の時間を記録
 }
 
-// 現在の経過時間を取得する関数
+
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();  // 現在の時間を取得
@@ -304,8 +302,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     }
     loop2++;
 
-    int rax = RandXor() % blockSize;  // ランダムなセルのxインデックス
-    int ray = RandXor() % blockSize;  // ランダムなセルのyインデックス
+    int rax = Rand() % blockSize;  // ランダムなセルのxインデックス
+    int ray = Rand() % blockSize;  // ランダムなセルのyインデックス
 
     int ng = 1;  // 変更が可能かどうかのフラグ
     rep(i, 4)
@@ -520,10 +518,10 @@ void Method3()
     }
     loop1++;
     // ランダムに矩形領域を選択
-    int x1 = RandXor() % blockSize;
-    int x2 = RandXor() % blockSize;
-    int y1 = RandXor() % blockSize;
-    int y2 = RandXor() % blockSize;
+    int x1 = Rand() % blockSize;
+    int x2 = Rand() % blockSize;
+    int y1 = Rand() % blockSize;
+    int y2 = Rand() % blockSize;
     if (x1 > x2) swap(x1, x2);  // x1とx2を小さい順に並べ替え
     if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
 
@@ -698,10 +696,10 @@ int main()
 {
   srand((unsigned)time(NULL));  // 乱数のシードを設定
   while (rand() % 100) {
-    RandXor();  // 乱数のウォームアップ
+    Rand();  // 乱数のウォームアップ
   }
 
-  mode = 2;  // 実行モードの設定（0: 標準入出力、1: スコア表示、2: 詳細表示）
+  mode = 2;
 
   if (mode == 0) {
     Solve(0);  // 問題番号0を解く

@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor() {
+  static uint32_t Rand() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -52,13 +52,13 @@ namespace /* 乱数ライブラリ */
 
   // 0以上1未満の小数をとる乱数
   static double rand01() {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
   // 配列シャッフル
   void FisherYates(int* data, int n) {
     for (int i = n - 1; i >= 0; i--) {
-      int j = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -182,11 +182,11 @@ int hei[n] = {};
 int fcount;
 int dfsLimit = 40;
 void dfs(int x) {
-  int raFlag = randxor() % 10;
+  int raFlag = Rand() % 10;
   int raIte = -1;
   if (raFlag == 0) {
     if (G[x].size() >= 2) {
-      raIte = randxor() % (G[x].size() - 1);
+      raIte = Rand() % (G[x].size() - 1);
       swap(G[x][raIte], G[x][raIte + 1]);
     }
   }
@@ -228,7 +228,7 @@ void Initialize() {
     if (GetNowTime() > TL / 3) {
       break;
     }
-    // dfsLimit = randxor() % 10 * 10;
+    // dfsLimit = Rand() % 10 * 10;
     rep(i, n) {
       p[i] = -2;
       f[i] = 0;
@@ -237,17 +237,17 @@ void Initialize() {
 
     fcount = 0;
     while (fcount < n) {
-      int ra = randxor() % n;
+      int ra = Rand() % n;
       while (f[ra] == 1) {
         ra = (ra + 1) % n;
-        ra = randxor() % n;
+        ra = Rand() % n;
       }
 
       if (a[ra] >= 40) {
-        ra = randxor() % n;
+        ra = Rand() % n;
         while (f[ra] == 1) {
           ra = (ra + 1) % n;
-          ra = randxor() % n;
+          ra = Rand() % n;
         }
       }
 
@@ -287,7 +287,7 @@ void Method1() {
     if (GetNowTime() > TL) {
       break;
     }
-    // dfsLimit = randxor() % 10 * 10;
+    // dfsLimit = Rand() % 10 * 10;
 
     roots.clear();
     rep(i, n) {
@@ -304,7 +304,7 @@ void Method1() {
       }
     }
 
-    if (randxor() % 20 == 0) {
+    if (Rand() % 20 == 0) {
       CalcScore();
 
       int flag = 0;
@@ -335,7 +335,7 @@ void Method1() {
     }
 
     std::shuffle(roots.begin(), roots.end(), engine);
-    int raCount = randxor() % 5 + 1;
+    int raCount = Rand() % 5 + 1;
     fcount = n;
     rep(aespa, raCount) {
       queue<int> que;
@@ -354,17 +354,17 @@ void Method1() {
     }
 
     while (fcount < n) {
-      int ra = randxor() % n;
+      int ra = Rand() % n;
       while (f[ra] == 1) {
         ra = (ra + 1) % n;
-        ra = randxor() % n;
+        ra = Rand() % n;
       }
 
       // if (a[ra] >= 40) {
-      //   ra = randxor() % n;
+      //   ra = Rand() % n;
       //   while (f[ra] == 1) {
       //     ra = (ra + 1) % n;
-      //     ra = randxor() % n;
+      //     ra = Rand() % n;
       //   }
       // }
 
@@ -446,7 +446,7 @@ ll Solve(int probNum) {
 int main() {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 1;

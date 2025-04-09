@@ -39,7 +39,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -47,24 +47,24 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j   = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -72,7 +72,7 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
-const ll INF      = 1001001001001001001;
+const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
 const int dx[4] = { -1, 0, 1, 0 };
@@ -84,15 +84,15 @@ clock_t startTime, endTime;
 
 double GetNowTime()
 {
-  endTime        = clock();
+  endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
 }
 
-const int MAX_D         = 55;
-const int MAX_N         = 56;
+const int MAX_D = 55;
+const int MAX_N = 56;
 const int MAX_LINECOUNT = 60;
-int lineMaxLimit        = 100;
+int lineMaxLimit = 100;
 
 const int w = 1000;
 int d, n;
@@ -130,7 +130,7 @@ int real_real_ansLinePos[MAX_D][MAX_LINECOUNT] = {};
 int real_real_ansLineCount[MAX_D];
 int real_real_ansBaseLineCount;
 
-int keep31Count    = 0;
+int keep31Count = 0;
 int keep31KeepSize = 2;
 int keep31_ans[10][MAX_D][MAX_N][4];
 ll keep31_ansScore[10];
@@ -333,7 +333,7 @@ void CopyFromTemp()
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  ansScore      = INF;
+  ansScore = INF;
   real_ansScore = INF;
 }
 
@@ -348,13 +348,13 @@ void InitMostVariableAs()
       {
         mostVariableAsValue[i][j][k] = 0;
       }
-      int n2     = 0;
+      int n2 = 0;
       int n2Need = (a[i][n2] - 1) / j + 1;
       if (n2Need > w) continue;
       drep(n1, n)
       {
         if (n2 == n) break;
-        int val    = a[i][n1];
+        int val = a[i][n1];
         int n1Need = (val - 1) / j + 1;
         if (n1Need + n2Need > w) continue;
         while (n2 < n - 1) {
@@ -372,27 +372,27 @@ void InitMostVariableAs()
           if (n2 - k < 0) break;
           if (n2 - k == n1) continue;
           int valSum = val + a[i][n2 - k];
-          int junni  = mostVariableAsCount[i][j];
+          int junni = mostVariableAsCount[i][j];
           if (junni == 10) {
             if (valSum > mostVariableAsValue[i][j][9]) {
               mostVariableAsValue[i][j][9] = valSum;
-              mostVariableAs[i][j][9][0]   = n1;
-              mostVariableAs[i][j][9][1]   = n2 - k;
-              junni                        = 9;
+              mostVariableAs[i][j][9][0] = n1;
+              mostVariableAs[i][j][9][1] = n2 - k;
+              junni = 9;
             }
           }
           if (junni == 10) break;
           while (junni > 0) {
             if (mostVariableAsValue[i][j][junni] > mostVariableAsValue[i][j][junni - 1]) {
-              int swa                              = mostVariableAsValue[i][j][junni - 1];
+              int swa = mostVariableAsValue[i][j][junni - 1];
               mostVariableAsValue[i][j][junni - 1] = mostVariableAsValue[i][j][junni];
-              mostVariableAsValue[i][j][junni]     = swa;
-              swa                                  = mostVariableAs[i][j][junni - 1][0];
-              mostVariableAs[i][j][junni - 1][0]   = mostVariableAs[i][j][junni][0];
-              mostVariableAs[i][j][junni][0]       = swa;
-              swa                                  = mostVariableAs[i][j][junni - 1][1];
-              mostVariableAs[i][j][junni - 1][1]   = mostVariableAs[i][j][junni][1];
-              mostVariableAs[i][j][junni][1]       = swa;
+              mostVariableAsValue[i][j][junni] = swa;
+              swa = mostVariableAs[i][j][junni - 1][0];
+              mostVariableAs[i][j][junni - 1][0] = mostVariableAs[i][j][junni][0];
+              mostVariableAs[i][j][junni][0] = swa;
+              swa = mostVariableAs[i][j][junni - 1][1];
+              mostVariableAs[i][j][junni - 1][1] = mostVariableAs[i][j][junni][1];
+              mostVariableAs[i][j][junni][1] = swa;
               junni--;
             }
             else {
@@ -739,7 +739,7 @@ ll CalcScoreForMethod3()
       rep(k, ansLineCount[i])
       {
         if (ans[i][j][1] == ansLinePos[i][k]) {
-          CalcScoreForMethod3Used[k]     = 1;
+          CalcScoreForMethod3Used[k] = 1;
           CalcScoreForMethod3Used[k + 1] = 1;
         }
       }
@@ -831,13 +831,13 @@ void Initialize()
     int now = 0;
     rep(j, n)
     {
-      int need     = (a[i][j] - 1) / w + 1;
-      int newY     = min(now + need, w - (n - 1 - j));
+      int need = (a[i][j] - 1) / w + 1;
+      int newY = min(now + need, w - (n - 1 - j));
       ans[i][j][0] = 0;
       ans[i][j][1] = now;
       ans[i][j][2] = w;
       ans[i][j][3] = newY;
-      now          = newY;
+      now = newY;
     }
   }
 
@@ -850,42 +850,42 @@ void Method1()
   int ok = 1;
   rep(i, d)
   {
-    int x           = 0;
-    int y           = 0;
+    int x = 0;
+    int y = 0;
     int used[MAX_N] = {};
     rep(j, n)
     {
       int minAmari = INT_INF;
       int tmpansjj = -1;
-      int tmpans2  = -1;
-      int tmpans3  = -1;
-      int newx     = -1;
-      int newy     = -1;
+      int tmpans2 = -1;
+      int tmpans3 = -1;
+      int newx = -1;
+      int newy = -1;
       rep(jj, n)
       {
         if (used[jj]) continue;
         int lenx = w - x;
         int leny = w - y;
         if (a[i][jj] > lenx * leny) continue;
-        int need1  = (a[i][jj] - 1) / leny + 1;
-        int need2  = (a[i][jj] - 1) / lenx + 1;
+        int need1 = (a[i][jj] - 1) / leny + 1;
+        int need2 = (a[i][jj] - 1) / lenx + 1;
         int amari1 = need1 * leny - a[i][jj];
         int amari2 = need2 * lenx - a[i][jj];
         if (amari1 <= minAmari) {
           minAmari = amari1;
           tmpansjj = jj;
-          tmpans2  = x + need1;
-          tmpans3  = w;
-          newx     = x + need1;
-          newy     = y;
+          tmpans2 = x + need1;
+          tmpans3 = w;
+          newx = x + need1;
+          newy = y;
         }
         if (amari2 <= minAmari) {
           minAmari = amari2;
           tmpansjj = jj;
-          tmpans2  = w;
-          tmpans3  = y + need2;
-          newx     = x;
-          newy     = y + need2;
+          tmpans2 = w;
+          tmpans3 = y + need2;
+          newx = x;
+          newy = y + need2;
         }
       }
       if (tmpansjj == -1) {
@@ -896,9 +896,9 @@ void Method1()
       ans[i][tmpansjj][1] = y;
       ans[i][tmpansjj][2] = tmpans2;
       ans[i][tmpansjj][3] = tmpans3;
-      used[tmpansjj]      = 1;
-      x                   = newx;
-      y                   = newy;
+      used[tmpansjj] = 1;
+      x = newx;
+      y = newy;
     }
     if (ok == 0) { break; }
   }
@@ -920,17 +920,17 @@ void MethodPerfect()
   int ok = 1;
   rep(i, d)
   {
-    int x           = 0;
-    int y           = 0;
+    int x = 0;
+    int y = 0;
     int used[MAX_N] = {};
     rep(j, n)
     {
       int minAmari = INT_INF;
       int tmpansjj = -1;
-      int tmpans2  = -1;
-      int tmpans3  = -1;
-      int newx     = -1;
-      int newy     = -1;
+      int tmpans2 = -1;
+      int tmpans3 = -1;
+      int newx = -1;
+      int newy = -1;
       rep(jj, n)
       {
         if (used[jj]) continue;
@@ -940,25 +940,25 @@ void MethodPerfect()
           ok = 0;
           break;
         }
-        int need1  = (maxA[jj] - 1) / leny + 1;
-        int need2  = (maxA[jj] - 1) / lenx + 1;
+        int need1 = (maxA[jj] - 1) / leny + 1;
+        int need2 = (maxA[jj] - 1) / lenx + 1;
         int amari1 = need1 * leny - maxA[jj];
         int amari2 = need2 * lenx - maxA[jj];
         if (amari1 <= minAmari) {
           minAmari = amari1;
           tmpansjj = jj;
-          tmpans2  = x + need1;
-          tmpans3  = w;
-          newx     = x + need1;
-          newy     = y;
+          tmpans2 = x + need1;
+          tmpans3 = w;
+          newx = x + need1;
+          newy = y;
         }
         if (amari2 <= minAmari) {
           minAmari = amari2;
           tmpansjj = jj;
-          tmpans2  = w;
-          tmpans3  = y + need2;
-          newx     = x;
-          newy     = y + need2;
+          tmpans2 = w;
+          tmpans3 = y + need2;
+          newx = x;
+          newy = y + need2;
         }
       }
       if (ok == 0) { break; }
@@ -967,9 +967,9 @@ void MethodPerfect()
         ans[i][tmpansjj][1] = y;
         ans[i][tmpansjj][2] = tmpans2;
         ans[i][tmpansjj][3] = tmpans3;
-        used[tmpansjj]      = 1;
-        x                   = newx;
-        y                   = newy;
+        used[tmpansjj] = 1;
+        x = newx;
+        y = newy;
       }
     }
     if (ok == 0) { break; }
@@ -1008,7 +1008,7 @@ void CopyToReal_M42()
       real_ansColumnSchedulesCount[i][j] = ansColumnSchedulesCount[i][j];
       rep(k, real_ansColumnSchedulesCount[i][j] + 1)
       {
-        real_ansColumnSchedules[i][j][k]         = ansColumnSchedules[i][j][k];
+        real_ansColumnSchedules[i][j][k] = ansColumnSchedules[i][j][k];
         real_ansColumnSchedulesPosition[i][j][k] = ansColumnSchedulesPosition[i][j][k];
       }
     }
@@ -1029,7 +1029,7 @@ void CoptToCurrent_M42()
       ansColumnSchedulesCount[i][j] = real_ansColumnSchedulesCount[i][j];
       rep(k, ansColumnSchedulesCount[i][j] + 1)
       {
-        ansColumnSchedules[i][j][k]         = real_ansColumnSchedules[i][j][k];
+        ansColumnSchedules[i][j][k] = real_ansColumnSchedules[i][j][k];
         ansColumnSchedulesPosition[i][j][k] = real_ansColumnSchedulesPosition[i][j][k];
       }
     }
@@ -1071,7 +1071,7 @@ int CalcDiffScore3(int winter, int memberCount, int neighborPosCount, int day, i
       ;
     }
     else if (memberCount == 2) {
-      int swa        = CD3_Members[0];
+      int swa = CD3_Members[0];
       CD3_Members[0] = CD3_Members[1];
       CD3_Members[1] = swa;
     }
@@ -1090,11 +1090,11 @@ int CalcDiffScore3(int winter, int memberCount, int neighborPosCount, int day, i
       FisherYates(CD3_Members, memberCount);
     }
   }
-  int tmpMargin         = margin;
-  int ite1              = 0;
-  int sum               = preCalcScheduleSizes[day][CD3_Members[0]][lineNum];
-  CD3_TmpPosition[0]    = 0;
-  int ite2              = 1;
+  int tmpMargin = margin;
+  int ite1 = 0;
+  int sum = preCalcScheduleSizes[day][CD3_Members[0]][lineNum];
+  CD3_TmpPosition[0] = 0;
+  int ite2 = 1;
   CD3_TmpPosition[ite2] = sum;
   while (ite1 < neighborPosCount && ite2 < memberCount) {
     int pos1 = CD3_NeighborPos[ite1];
@@ -1117,7 +1117,7 @@ int CalcDiffScore3(int winter, int memberCount, int neighborPosCount, int day, i
         }
       }
       tmpMargin -= pos1 - sum;
-      sum                   = pos1;
+      sum = pos1;
       CD3_TmpPosition[ite2] = sum;
       sum += preCalcScheduleSizes[day][CD3_Members[ite2]][lineNum];
       ite2++;
@@ -1164,7 +1164,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       ;
     }
     else if (memberCount == 2) {
-      int swa         = CD32_Members[0];
+      int swa = CD32_Members[0];
       CD32_Members[0] = CD32_Members[1];
       CD32_Members[1] = swa;
     }
@@ -1183,10 +1183,10 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       FisherYates(CD32_Members, memberCount);
     }
   }
-  int tmpMargin          = margin;
-  int ite1               = 1;
-  int sum                = preCalcScheduleSizes[day][CD32_Members[0]][lineNum];
-  CD32_TmpPosition[0]    = 0;
+  int tmpMargin = margin;
+  int ite1 = 1;
+  int sum = preCalcScheduleSizes[day][CD32_Members[0]][lineNum];
+  CD32_TmpPosition[0] = 0;
   CD32_TmpPosition[ite1] = sum;
 
   int ite2 = 1;
@@ -1195,11 +1195,11 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
   while (ite1 < memberCount) {
     int num2 = 0, pos2 = 0, pos22 = 0;
     if (ite2 < beforeCount) {
-      num2  = ansColumnSchedules[day - 1][lineNum][ite2 - 1];
-      pos2  = ansColumnSchedulesPosition[day - 1][lineNum][ite2 - 1] + preCalcScheduleSizes[day - 1][num2][lineNum];
+      num2 = ansColumnSchedules[day - 1][lineNum][ite2 - 1];
+      pos2 = ansColumnSchedulesPosition[day - 1][lineNum][ite2 - 1] + preCalcScheduleSizes[day - 1][num2][lineNum];
       pos22 = ansColumnSchedulesPosition[day - 1][lineNum][ite2];
-      pos2  = min(pos22, max(pos2, sum + 1));
-      pos2  = pos22;
+      pos2 = min(pos22, max(pos2, sum + 1));
+      pos2 = pos22;
       if (1 < day) {
         rep(k, ansColumnSchedulesCount[day - 2][lineNum])
         {
@@ -1212,11 +1212,11 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
     }
     int num3 = 0, pos3 = 0, pos32 = 0;
     if (ite3 < afterCount) {
-      num3  = ansColumnSchedules[day + 1][lineNum][ite3 - 1];
-      pos3  = ansColumnSchedulesPosition[day + 1][lineNum][ite3 - 1] + preCalcScheduleSizes[day + 1][num3][lineNum];
+      num3 = ansColumnSchedules[day + 1][lineNum][ite3 - 1];
+      pos3 = ansColumnSchedulesPosition[day + 1][lineNum][ite3 - 1] + preCalcScheduleSizes[day + 1][num3][lineNum];
       pos32 = ansColumnSchedulesPosition[day + 1][lineNum][ite3];
-      pos3  = min(pos32, max(pos3, sum + 1));
-      pos3  = pos32;
+      pos3 = min(pos32, max(pos3, sum + 1));
+      pos3 = pos32;
       if (day < n - 2) {
         rep(k, ansColumnSchedulesCount[day + 2][lineNum])
         {
@@ -1271,7 +1271,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             if (isConnect1) diffScore3 += widths[lineNum] * 2;
             if (isConnect2) diffScore3 += widths[lineNum] * 2;
             tmpMargin -= pos22 - sum;
-            sum                    = pos22;
+            sum = pos22;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1294,7 +1294,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
                 }
               }
               tmpMargin -= pos2 - sum;
-              sum                    = pos2;
+              sum = pos2;
               CD32_TmpPosition[ite1] = sum;
               sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
               ite1++;
@@ -1314,7 +1314,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
                 }
               }
               tmpMargin -= pos3 - sum;
-              sum                    = pos3;
+              sum = pos3;
               CD32_TmpPosition[ite1] = sum;
               sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
               ite1++;
@@ -1339,7 +1339,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             // nPos = pos22
             if (isConnect) diffScore3 += widths[lineNum] * 2;
             tmpMargin -= pos22 - sum;
-            sum                    = pos22;
+            sum = pos22;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1358,7 +1358,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
               }
             }
             tmpMargin -= pos2 - sum;
-            sum                    = pos2;
+            sum = pos2;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1382,7 +1382,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             // nPos = pos32
             if (isConnect) diffScore3 += widths[lineNum] * 2;
             tmpMargin -= pos32 - sum;
-            sum                    = pos32;
+            sum = pos32;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1401,7 +1401,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
               }
             }
             tmpMargin -= pos3 - sum;
-            sum                    = pos3;
+            sum = pos3;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1436,7 +1436,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           if (pos22 <= sum + tmpMargin) {
             diffScore3 += widths[lineNum] * 2;
             tmpMargin -= pos22 - sum;
-            sum                    = pos22;
+            sum = pos22;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1454,7 +1454,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
               }
             }
             tmpMargin -= pos2 - sum;
-            sum                    = pos2;
+            sum = pos2;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1473,7 +1473,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             }
           }
           tmpMargin -= pos2 - sum;
-          sum                    = pos2;
+          sum = pos2;
           CD32_TmpPosition[ite1] = sum;
           sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
           ite1++;
@@ -1507,7 +1507,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           if (pos32 <= sum + tmpMargin) {
             diffScore3 += widths[lineNum] * 2;
             tmpMargin -= pos32 - sum;
-            sum                    = pos32;
+            sum = pos32;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1525,7 +1525,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
               }
             }
             tmpMargin -= pos3 - sum;
-            sum                    = pos3;
+            sum = pos3;
             CD32_TmpPosition[ite1] = sum;
             sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
             ite1++;
@@ -1544,7 +1544,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             }
           }
           tmpMargin -= pos3 - sum;
-          sum                    = pos3;
+          sum = pos3;
           CD32_TmpPosition[ite1] = sum;
           sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
           ite1++;
@@ -1578,7 +1578,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       if (isConnect && pos22 <= sum + tmpMargin) {
         diffScore3 += widths[lineNum] * 2;
         tmpMargin -= pos22 - sum;
-        sum                    = pos22;
+        sum = pos22;
         CD32_TmpPosition[ite1] = sum;
         sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
         ite1++;
@@ -1596,7 +1596,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           }
         }
         tmpMargin -= pos2 - sum;
-        sum                    = pos2;
+        sum = pos2;
         CD32_TmpPosition[ite1] = sum;
         sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
         ite1++;
@@ -1640,7 +1640,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           }
         }
         tmpMargin -= pos3 - sum;
-        sum                    = pos3;
+        sum = pos3;
         CD32_TmpPosition[ite1] = sum;
         sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
         ite1++;
@@ -1649,7 +1649,7 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       else {
         if (isConnect) diffScore3 += widths[lineNum] * 2;
         tmpMargin -= pos32 - sum;
-        sum                    = pos32;
+        sum = pos32;
         CD32_TmpPosition[ite1] = sum;
         sum += preCalcScheduleSizes[day][CD32_Members[ite1]][lineNum];
         ite1++;
@@ -1705,16 +1705,16 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
 }
 
 double M43_start_temp = 10000.1;
-double M43_end_temp   = 0.1;
-double M43_startTime  = 0;
-double M43_nowTime    = 0;
-double M43_timeLimit  = 0;
-int M43_karinas[32]   = {};
+double M43_end_temp = 0.1;
+double M43_startTime = 0;
+double M43_nowTime = 0;
+double M43_timeLimit = 0;
+int M43_karinas[32] = {};
 
 int M43_kouhos[MAX_N];
 int M43_kouhoCount = 0;
 int M43_nonKouhos[MAX_N];
-int M43_nonKouhoCount    = 0;
+int M43_nonKouhoCount = 0;
 int M43_neighborPosCount = 0;
 
 int M43_tmpAnsNextLine[MAX_N];
@@ -1733,9 +1733,9 @@ int M43_tmpAnsCurrentLineAfterPosition[MAX_N];
 int M431Count;
 void Method4_3_1()
 {
-  int raD          = randxor() % d;
-  int raN          = randxor() % n;
-  int lineNum      = ansColumnNum[raD][raN];
+  int raD = Rand() % d;
+  int raN = Rand() % n;
+  int lineNum = ansColumnNum[raD][raN];
   int lineCapacity = w;
   rep(k, ansColumnSchedulesCount[raD][lineNum])
   {
@@ -1743,15 +1743,15 @@ void Method4_3_1()
     if (num != raN) { lineCapacity -= preCalcScheduleSizes[raD][num][lineNum]; }
   }
 
-  int nextLine = randxor() % ansLineCount[raD];
+  int nextLine = Rand() % ansLineCount[raD];
   while (nextLine == lineNum) {
-    nextLine = randxor() % ansLineCount[raD];
+    nextLine = Rand() % ansLineCount[raD];
   }
-  int beforeCount         = ansColumnSchedulesCount[raD][lineNum];
-  int afterCount          = ansColumnSchedulesCount[raD][nextLine];
-  M43_kouhoCount          = 0;
-  M43_nonKouhoCount       = 0;
-  int nextLineCapacity    = w;
+  int beforeCount = ansColumnSchedulesCount[raD][lineNum];
+  int afterCount = ansColumnSchedulesCount[raD][nextLine];
+  M43_kouhoCount = 0;
+  M43_nonKouhoCount = 0;
+  int nextLineCapacity = w;
   int maxNextLineCapacity = w;
   rep(k, ansColumnSchedulesCount[raD][nextLine])
   {
@@ -1788,8 +1788,8 @@ void Method4_3_1()
   else {
     rep(aespa, 32)
     {
-      // int karina               = randxor() % ((1 << M43_kouhoCount) - 1) + 1;
-      int karina               = randxor() % ((1 << M43_kouhoCount));
+      // int karina               = Rand() % ((1 << M43_kouhoCount) - 1) + 1;
+      int karina = Rand() % ((1 << M43_kouhoCount));
       M43_karinas[karinaCount] = karina;
       karinaCount++;
     }
@@ -1797,7 +1797,7 @@ void Method4_3_1()
   FisherYates(M43_karinas, karinaCount);
   rep(my, karinaCount)
   {
-    int karina    = M43_karinas[my];
+    int karina = M43_karinas[my];
     int nextSpace = 0;
     int needSpace = 0;
     rep(jj, M43_kouhoCount)
@@ -1878,7 +1878,7 @@ void Method4_3_1()
       rep(jj, M43_kouhoCount)
       {
         if ((karina & (1 << jj)) == 0) {
-          int j                            = M43_kouhos[jj];
+          int j = M43_kouhos[jj];
           M43_nonKouhos[M43_nonKouhoCount] = j;
           M43_nonKouhoCount++;
         }
@@ -1904,11 +1904,11 @@ void Method4_3_1()
           diffScore3 = tmpDiffScore3;
           rep(i, M43_nonKouhoCount)
           {
-            M43_tmpAnsNextLine[i]         = CD3_Members[i];
+            M43_tmpAnsNextLine[i] = CD3_Members[i];
             M43_tmpAnsNextLinePosition[i] = CD3_TmpPosition[i];
           }
           M43_tmpAnsNextLinePosition[M43_nonKouhoCount] = CD3_TmpPosition[M43_nonKouhoCount];
-          M43_tmpAnsNextCount                           = M43_nonKouhoCount;
+          M43_tmpAnsNextCount = M43_nonKouhoCount;
         }
       }
 
@@ -1934,7 +1934,7 @@ void Method4_3_1()
       rep(jj, M43_kouhoCount)
       {
         if (karina & (1 << jj)) {
-          int j                    = M43_kouhos[jj];
+          int j = M43_kouhos[jj];
           tmpKouhos[tmpKouhoCount] = j;
           tmpKouhoCount++;
         }
@@ -1973,11 +1973,11 @@ void Method4_3_1()
           diffScore4 = tmpDiffScore4;
           rep(i, M43_kouhoCount)
           {
-            M43_tmpAnsCurrentLine[i]         = CD3_Members[i];
+            M43_tmpAnsCurrentLine[i] = CD3_Members[i];
             M43_tmpAnsCurrentLinePosition[i] = CD3_TmpPosition[i];
           }
           M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-          M43_tmpAnsCurrentCount                        = M43_kouhoCount;
+          M43_tmpAnsCurrentCount = M43_kouhoCount;
         }
       }
 
@@ -1998,9 +1998,9 @@ void Method4_3_1()
         ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
         rep(i, M43_tmpAnsNextCount)
         {
-          int num                                      = M43_tmpAnsNextLine[i];
-          ansColumnNum[raD][num]                       = nextLine;
-          ansColumnSchedules[raD][nextLine][i]         = num;
+          int num = M43_tmpAnsNextLine[i];
+          ansColumnNum[raD][num] = nextLine;
+          ansColumnSchedules[raD][nextLine][i] = num;
           ansColumnSchedulesPosition[raD][nextLine][i] = M43_tmpAnsNextLinePosition[i];
         }
         ansColumnSchedulesPosition[raD][nextLine][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
@@ -2008,9 +2008,9 @@ void Method4_3_1()
         ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
         rep(i, M43_tmpAnsCurrentCount)
         {
-          int num                                     = M43_tmpAnsCurrentLine[i];
-          ansColumnNum[raD][num]                      = lineNum;
-          ansColumnSchedules[raD][lineNum][i]         = num;
+          int num = M43_tmpAnsCurrentLine[i];
+          ansColumnNum[raD][num] = lineNum;
+          ansColumnSchedules[raD][lineNum][i] = num;
           ansColumnSchedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
         }
         ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
@@ -2034,9 +2034,9 @@ void Method4_3_1()
 // 1対多スワップ（柔軟）
 void Method4_3_2()
 {
-  int raD          = randxor() % d;
-  int raN          = randxor() % n;
-  int lineNum      = ansColumnNum[raD][raN];
+  int raD = Rand() % d;
+  int raN = Rand() % n;
+  int lineNum = ansColumnNum[raD][raN];
   int lineCapacity = w;
   rep(k, ansColumnSchedulesCount[raD][lineNum])
   {
@@ -2044,15 +2044,15 @@ void Method4_3_2()
     if (num != raN) { lineCapacity -= preCalcScheduleSizes[raD][num][lineNum]; }
   }
 
-  int nextLine = randxor() % ansLineCount[raD];
+  int nextLine = Rand() % ansLineCount[raD];
   while (nextLine == lineNum) {
-    nextLine = randxor() % ansLineCount[raD];
+    nextLine = Rand() % ansLineCount[raD];
   }
-  int beforeCount         = ansColumnSchedulesCount[raD][lineNum];
-  int afterCount          = ansColumnSchedulesCount[raD][nextLine];
-  M43_kouhoCount          = 0;
-  M43_nonKouhoCount       = 0;
-  int nextLineCapacity    = w;
+  int beforeCount = ansColumnSchedulesCount[raD][lineNum];
+  int afterCount = ansColumnSchedulesCount[raD][nextLine];
+  M43_kouhoCount = 0;
+  M43_nonKouhoCount = 0;
+  int nextLineCapacity = w;
   int maxNextLineCapacity = w;
   rep(k, ansColumnSchedulesCount[raD][nextLine])
   {
@@ -2090,7 +2090,7 @@ void Method4_3_2()
   else {
     rep(aespa, 32)
     {
-      int karina               = randxor() % ((1 << M43_kouhoCount) - 1) + 1;
+      int karina = Rand() % ((1 << M43_kouhoCount) - 1) + 1;
       M43_karinas[karinaCount] = karina;
       karinaCount++;
     }
@@ -2098,7 +2098,7 @@ void Method4_3_2()
   FisherYates(M43_karinas, karinaCount);
   rep(my, karinaCount)
   {
-    int karina    = M43_karinas[my];
+    int karina = M43_karinas[my];
     int nextSpace = 0;
     int needSpace = 0;
     rep(jj, M43_kouhoCount)
@@ -2145,7 +2145,7 @@ void Method4_3_2()
       rep(jj, M43_kouhoCount)
       {
         if ((karina & (1 << jj)) == 0) {
-          int j                            = M43_kouhos[jj];
+          int j = M43_kouhos[jj];
           M43_nonKouhos[M43_nonKouhoCount] = j;
           M43_nonKouhoCount++;
         }
@@ -2171,11 +2171,11 @@ void Method4_3_2()
           diffScore3 = tmpDiffScore3;
           rep(i, M43_nonKouhoCount)
           {
-            M43_tmpAnsNextLine[i]         = CD32_Members[i];
+            M43_tmpAnsNextLine[i] = CD32_Members[i];
             M43_tmpAnsNextLinePosition[i] = CD32_TmpPosition[i];
           }
           M43_tmpAnsNextLinePosition[M43_nonKouhoCount] = CD32_TmpPosition[M43_nonKouhoCount];
-          M43_tmpAnsNextCount                           = M43_nonKouhoCount;
+          M43_tmpAnsNextCount = M43_nonKouhoCount;
         }
 
         if (raD > 0) {
@@ -2200,7 +2200,7 @@ void Method4_3_2()
       rep(jj, M43_kouhoCount)
       {
         if (karina & (1 << jj)) {
-          int j                    = M43_kouhos[jj];
+          int j = M43_kouhos[jj];
           tmpKouhos[tmpKouhoCount] = j;
           tmpKouhoCount++;
         }
@@ -2239,11 +2239,11 @@ void Method4_3_2()
           diffScore4 = tmpDiffScore4;
           rep(i, M43_kouhoCount)
           {
-            M43_tmpAnsCurrentLine[i]         = CD32_Members[i];
+            M43_tmpAnsCurrentLine[i] = CD32_Members[i];
             M43_tmpAnsCurrentLinePosition[i] = CD32_TmpPosition[i];
           }
           M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD32_TmpPosition[M43_kouhoCount];
-          M43_tmpAnsCurrentCount                        = M43_kouhoCount;
+          M43_tmpAnsCurrentCount = M43_kouhoCount;
 
           if (raD > 0) {
             beforeCount = ansColumnSchedulesCount[raD - 1][lineNum];
@@ -2264,16 +2264,16 @@ void Method4_3_2()
 
       int totalDiffScore = diffScore1 + diffScore2 + diffScore3 + diffScore4;
 
-      double temp       = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
+      double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
       const double prob = exp((double)totalDiffScore * 100 / temp);
 
       if (prob > rand01()) {
         ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
         rep(i, M43_tmpAnsNextCount)
         {
-          int num                                      = M43_tmpAnsNextLine[i];
-          ansColumnNum[raD][num]                       = nextLine;
-          ansColumnSchedules[raD][nextLine][i]         = num;
+          int num = M43_tmpAnsNextLine[i];
+          ansColumnNum[raD][num] = nextLine;
+          ansColumnSchedules[raD][nextLine][i] = num;
           ansColumnSchedulesPosition[raD][nextLine][i] = M43_tmpAnsNextLinePosition[i];
         }
         ansColumnSchedulesPosition[raD][nextLine][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
@@ -2281,9 +2281,9 @@ void Method4_3_2()
         ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
         rep(i, M43_tmpAnsCurrentCount)
         {
-          int num                                     = M43_tmpAnsCurrentLine[i];
-          ansColumnNum[raD][num]                      = lineNum;
-          ansColumnSchedules[raD][lineNum][i]         = num;
+          int num = M43_tmpAnsCurrentLine[i];
+          ansColumnNum[raD][num] = lineNum;
+          ansColumnSchedules[raD][lineNum][i] = num;
           ansColumnSchedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
         }
         ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
@@ -2335,11 +2335,11 @@ void Method4_3_2()
 // 列スワップ
 void Method4_3_3()
 {
-  int raD   = randxor() % d;
-  int line1 = randxor() % ansLineCount[raD];
-  int line2 = randxor() % ansLineCount[raD];
+  int raD = Rand() % d;
+  int line1 = Rand() % ansLineCount[raD];
+  int line2 = Rand() % ansLineCount[raD];
   while (line2 == line1) {
-    line2 = randxor() % ansLineCount[raD];
+    line2 = Rand() % ansLineCount[raD];
   }
   if (ansColumnSchedulesCount[raD][line1] == 0 || ansColumnSchedulesCount[raD][line2] == 0) return;
 
@@ -2394,7 +2394,7 @@ void Method4_3_3()
   sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
 
   M43_kouhoCount = ansColumnSchedulesCount[raD][line1];
-  int margin     = w;
+  int margin = w;
   rep(i, M43_kouhoCount)
   {
     CD3_Members[i] = ansColumnSchedules[raD][line1][i];
@@ -2412,11 +2412,11 @@ void Method4_3_3()
       diffScore3 = tmpDiffScore3;
       rep(i, M43_kouhoCount)
       {
-        M43_tmpAnsNextLine[i]         = CD3_Members[i];
+        M43_tmpAnsNextLine[i] = CD3_Members[i];
         M43_tmpAnsNextLinePosition[i] = CD3_TmpPosition[i];
       }
       M43_tmpAnsNextLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-      M43_tmpAnsNextCount                        = M43_kouhoCount;
+      M43_tmpAnsNextCount = M43_kouhoCount;
     }
   }
 
@@ -2439,7 +2439,7 @@ void Method4_3_3()
   sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
 
   M43_kouhoCount = ansColumnSchedulesCount[raD][line2];
-  margin         = w;
+  margin = w;
   rep(i, M43_kouhoCount)
   {
     CD3_Members[i] = ansColumnSchedules[raD][line2][i];
@@ -2457,17 +2457,17 @@ void Method4_3_3()
       diffScore4 = tmpDiffScore4;
       rep(i, M43_kouhoCount)
       {
-        M43_tmpAnsCurrentLine[i]         = CD3_Members[i];
+        M43_tmpAnsCurrentLine[i] = CD3_Members[i];
         M43_tmpAnsCurrentLinePosition[i] = CD3_TmpPosition[i];
       }
       M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-      M43_tmpAnsCurrentCount                        = M43_kouhoCount;
+      M43_tmpAnsCurrentCount = M43_kouhoCount;
     }
   }
 
   int totalDiffScore = diffScore1 + diffScore2 + diffScore3 + diffScore4;
 
-  double temp       = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
+  double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
   const double prob = exp((double)totalDiffScore * 10000 / temp);
 
   if (totalDiffScore >= 0) {
@@ -2476,9 +2476,9 @@ void Method4_3_3()
     ansColumnSchedulesCount[raD][line2] = M43_tmpAnsNextCount;
     rep(i, M43_tmpAnsNextCount)
     {
-      int num                                   = M43_tmpAnsNextLine[i];
-      ansColumnNum[raD][num]                    = line2;
-      ansColumnSchedules[raD][line2][i]         = num;
+      int num = M43_tmpAnsNextLine[i];
+      ansColumnNum[raD][num] = line2;
+      ansColumnSchedules[raD][line2][i] = num;
       ansColumnSchedulesPosition[raD][line2][i] = M43_tmpAnsNextLinePosition[i];
     }
     ansColumnSchedulesPosition[raD][line2][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
@@ -2486,9 +2486,9 @@ void Method4_3_3()
     ansColumnSchedulesCount[raD][line1] = M43_tmpAnsCurrentCount;
     rep(i, M43_tmpAnsCurrentCount)
     {
-      int num                                   = M43_tmpAnsCurrentLine[i];
-      ansColumnNum[raD][num]                    = line1;
-      ansColumnSchedules[raD][line1][i]         = num;
+      int num = M43_tmpAnsCurrentLine[i];
+      ansColumnNum[raD][num] = line1;
+      ansColumnSchedules[raD][line1][i] = num;
       ansColumnSchedulesPosition[raD][line1][i] = M43_tmpAnsCurrentLinePosition[i];
     }
     ansColumnSchedulesPosition[raD][line1][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
@@ -2505,22 +2505,22 @@ void Method4_3_3()
 // 横線を移動
 void Method4_3_4()
 {
-  int raD     = randxor() % d;
-  int lineNum = randxor() % ansBaseLineCount;
+  int raD = Rand() % d;
+  int lineNum = Rand() % ansBaseLineCount;
   if (ansColumnSchedulesCount[raD][lineNum] <= 1) return;
-  int raIndex = randxor() % ansColumnSchedulesCount[raD][lineNum];
-  int raDir   = randxor() % 2;
+  int raIndex = Rand() % ansColumnSchedulesCount[raD][lineNum];
+  int raDir = Rand() % 2;
   if (raIndex == 0) { raDir = 1; }
   if (raIndex == ansColumnSchedulesCount[raD][lineNum] - 1) { raDir = 0; }
-  int raN    = ansColumnSchedules[raD][lineNum][raIndex];
+  int raN = ansColumnSchedules[raD][lineNum][raIndex];
   int margin = (ansColumnSchedulesPosition[raD][lineNum][raIndex + 1] - ansColumnSchedulesPosition[raD][lineNum][raIndex]) - preCalcScheduleSizes[raD][raN][lineNum];
   if (margin == 0) return;
-  int moveAmount = randxor() % margin + 1;
-  int beforePos  = ansColumnSchedulesPosition[raD][lineNum][raIndex];
-  int afterPos   = ansColumnSchedulesPosition[raD][lineNum][raIndex] + moveAmount;
+  int moveAmount = Rand() % margin + 1;
+  int beforePos = ansColumnSchedulesPosition[raD][lineNum][raIndex];
+  int afterPos = ansColumnSchedulesPosition[raD][lineNum][raIndex] + moveAmount;
   if (raDir == 1) {
     beforePos = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1];
-    afterPos  = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1] - moveAmount;
+    afterPos = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1] - moveAmount;
   }
   int diffScore = 0;
   if (raD > 0) {
@@ -2556,19 +2556,19 @@ void Method4_3_4()
 // 横線を移動
 void Method4_3_4_2()
 {
-  int raD     = randxor() % d;
-  int lineNum = randxor() % ansBaseLineCount;
+  int raD = Rand() % d;
+  int lineNum = Rand() % ansBaseLineCount;
   if (ansColumnSchedulesCount[raD][lineNum] <= 1) return;
-  int raIndex = randxor() % ansColumnSchedulesCount[raD][lineNum];
-  int raDir   = randxor() % 2;
+  int raIndex = Rand() % ansColumnSchedulesCount[raD][lineNum];
+  int raDir = Rand() % 2;
   if (raIndex == 0) { raDir = 1; }
   if (raIndex == ansColumnSchedulesCount[raD][lineNum] - 1) { raDir = 0; }
   int beforeLinePos = ansColumnSchedulesPosition[raD][lineNum][raIndex];
   if (raDir == 1) { beforeLinePos = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1]; }
 
-  int margin   = w;
+  int margin = w;
   int startDay = raD;
-  int endDay   = raD;
+  int endDay = raD;
   drep(i, raD + 1)
   {
     int lineIndex = -1;
@@ -2583,11 +2583,11 @@ void Method4_3_4_2()
     startDay = i;
     if (raDir == 0) {
       int raN = ansColumnSchedules[i][lineNum][lineIndex];
-      margin  = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex + 1] - ansColumnSchedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
+      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex + 1] - ansColumnSchedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     else {
       int raN = ansColumnSchedules[i][lineNum][lineIndex - 1];
-      margin  = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex] - ansColumnSchedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
+      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex] - ansColumnSchedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     if (margin == 0) return;
   }
@@ -2605,16 +2605,16 @@ void Method4_3_4_2()
     endDay = i;
     if (raDir == 0) {
       int raN = ansColumnSchedules[i][lineNum][lineIndex];
-      margin  = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex + 1] - ansColumnSchedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
+      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex + 1] - ansColumnSchedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     else {
       int raN = ansColumnSchedules[i][lineNum][lineIndex - 1];
-      margin  = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex] - ansColumnSchedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
+      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex] - ansColumnSchedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     if (margin == 0) return;
   }
 
-  int moveAmount   = randxor() % margin + 1;
+  int moveAmount = Rand() % margin + 1;
   int afterLinePos = beforeLinePos + moveAmount;
   if (raDir == 1) { afterLinePos = beforeLinePos - moveAmount; }
 
@@ -2642,7 +2642,7 @@ void Method4_3_4_2()
       {
         if (ansColumnSchedulesPosition[i][lineNum][j] == beforeLinePos) {
           ansColumnSchedulesPosition[i][lineNum][j] = afterLinePos;
-          ok                                        = 1;
+          ok = 1;
           break;
         }
       }
@@ -2657,8 +2657,8 @@ void Method4_3_4_2()
 
 void Method4_3_5()
 {
-  int lineNum = randxor() % ansBaseLineCount;
-  int raDir   = randxor() % 2;
+  int lineNum = Rand() % ansBaseLineCount;
+  int raDir = Rand() % 2;
   if (lineNum == 0) { raDir = 1; }
   if (lineNum == ansBaseLineCount - 1) { raDir = 0; }
   int margin = widths[lineNum] - 1;
@@ -2666,15 +2666,15 @@ void Method4_3_5()
   {
     rep(k, ansColumnSchedulesCount[i][lineNum])
     {
-      int num       = ansColumnSchedules[i][lineNum][k];
+      int num = ansColumnSchedules[i][lineNum][k];
       int tmpMargin = widths[lineNum] - ((a[i][num] - 1) / (ansColumnSchedulesPosition[i][lineNum][k + 1] - ansColumnSchedulesPosition[i][lineNum][k]) + 1);
       if (tmpMargin < margin) margin = tmpMargin;
     }
     if (margin <= 0) break;
   }
   if (margin == 0) return;
-  int moveAmount = randxor() % margin + 1;
-  int diffScore  = 0;
+  int moveAmount = Rand() % margin + 1;
+  int diffScore = 0;
   srep(i, 1, d)
   {
     int ite1 = 1;
@@ -2761,7 +2761,7 @@ void Method4_3_5()
     }
   }
 
-  double temp       = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
+  double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
   const double prob = exp((double)diffScore * 1 / temp);
 
   // if (diffScore >= 0) {
@@ -2773,7 +2773,7 @@ void Method4_3_5()
       {
         rep(j, n)
         {
-          preCalcScheduleSizes[i][j][lineNum]     = (a[i][j] - 1) / widths[lineNum] + 1;
+          preCalcScheduleSizes[i][j][lineNum] = (a[i][j] - 1) / widths[lineNum] + 1;
           preCalcScheduleSizes[i][j][lineNum - 1] = (a[i][j] - 1) / widths[lineNum - 1] + 1;
         }
       }
@@ -2785,7 +2785,7 @@ void Method4_3_5()
       {
         rep(j, n)
         {
-          preCalcScheduleSizes[i][j][lineNum]     = (a[i][j] - 1) / widths[lineNum] + 1;
+          preCalcScheduleSizes[i][j][lineNum] = (a[i][j] - 1) / widths[lineNum] + 1;
           preCalcScheduleSizes[i][j][lineNum + 1] = (a[i][j] - 1) / widths[lineNum + 1] + 1;
         }
       }
@@ -2809,39 +2809,39 @@ void Method4_3_5()
 // 交換できるやつを交換
 void Method4_3_6()
 {
-  int raD       = randxor() % d;
-  int raN       = randxor() % n;
-  int lineNum   = ansColumnNum[raD][raN];
+  int raD = Rand() % d;
+  int raN = Rand() % n;
+  int lineNum = ansColumnNum[raD][raN];
   int lineIndex = 0;
-  int raNSpace  = 0;
+  int raNSpace = 0;
   rep(i, ansColumnSchedulesCount[raD][lineNum])
   {
     if (ansColumnSchedules[raD][lineNum][i] == raN) {
       lineIndex = i;
-      raNSpace  = (ansColumnSchedulesPosition[raD][lineNum][i + 1] - ansColumnSchedulesPosition[raD][lineNum][i]) * widths[lineNum];
+      raNSpace = (ansColumnSchedulesPosition[raD][lineNum][i + 1] - ansColumnSchedulesPosition[raD][lineNum][i]) * widths[lineNum];
       break;
     }
   }
-  int now = randxor() % n;
+  int now = Rand() % n;
   rep(jisoo, n)
   {
     now = (now + 97) % n;
     if (now == raN) continue;
-    int nextLine      = ansColumnNum[raD][now];
+    int nextLine = ansColumnNum[raD][now];
     int nextLineIndex = 0;
-    int nowSpace      = 0;
+    int nowSpace = 0;
     rep(i, ansColumnSchedulesCount[raD][nextLine])
     {
       if (ansColumnSchedules[raD][nextLine][i] == now) {
         nextLineIndex = i;
-        nowSpace      = (ansColumnSchedulesPosition[raD][nextLine][i + 1] - ansColumnSchedulesPosition[raD][nextLine][i]) * widths[nextLine];
+        nowSpace = (ansColumnSchedulesPosition[raD][nextLine][i + 1] - ansColumnSchedulesPosition[raD][nextLine][i]) * widths[nextLine];
         break;
       }
     }
     if (a[raD][raN] <= nowSpace && a[raD][now] <= raNSpace) {
-      ansColumnNum[raD][raN]                           = nextLine;
-      ansColumnNum[raD][now]                           = lineNum;
-      ansColumnSchedules[raD][lineNum][lineIndex]      = now;
+      ansColumnNum[raD][raN] = nextLine;
+      ansColumnNum[raD][now] = lineNum;
+      ansColumnSchedules[raD][lineNum][lineIndex] = now;
       ansColumnSchedules[raD][nextLine][nextLineIndex] = raN;
       break;
     }
@@ -2851,9 +2851,9 @@ void Method4_3_6()
 // 列シャッフル
 void Method4_3_7()
 {
-  int raD          = randxor() % d;
-  int raN          = randxor() % n;
-  int lineNum      = ansColumnNum[raD][raN];
+  int raD = Rand() % d;
+  int raN = Rand() % n;
+  int lineNum = ansColumnNum[raD][raN];
   int lineCapacity = w;
   if (ansColumnSchedulesCount[raD][lineNum] == 1) return;
 
@@ -2878,7 +2878,7 @@ void Method4_3_7()
   }
 
   M43_kouhoCount = ansColumnSchedulesCount[raD][lineNum];
-  int margin     = w;
+  int margin = w;
   rep(i, M43_kouhoCount)
   {
     CD3_Members[i] = ansColumnSchedules[raD][lineNum][i];
@@ -2896,26 +2896,26 @@ void Method4_3_7()
       diffScore4 = tmpDiffScore4;
       rep(i, M43_kouhoCount)
       {
-        M43_tmpAnsCurrentLine[i]         = CD3_Members[i];
+        M43_tmpAnsCurrentLine[i] = CD3_Members[i];
         M43_tmpAnsCurrentLinePosition[i] = CD3_TmpPosition[i];
       }
       M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-      M43_tmpAnsCurrentCount                        = M43_kouhoCount;
+      M43_tmpAnsCurrentCount = M43_kouhoCount;
     }
   }
 
   int totalDiffScore = diffScore2 + diffScore4;
 
-  double temp       = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
+  double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
   const double prob = exp((double)totalDiffScore * 100 / temp);
 
   if (prob > rand01()) {
     ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
     rep(i, M43_tmpAnsCurrentCount)
     {
-      int num                                     = M43_tmpAnsCurrentLine[i];
-      ansColumnNum[raD][num]                      = lineNum;
-      ansColumnSchedules[raD][lineNum][i]         = num;
+      int num = M43_tmpAnsCurrentLine[i];
+      ansColumnNum[raD][num] = lineNum;
+      ansColumnSchedules[raD][lineNum][i] = num;
       ansColumnSchedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
     }
     ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
@@ -2938,12 +2938,12 @@ void Method4_3_8()
 {
   rep(j, ansBaseLineCount) M438_LineNumbers[j] = j;
   FisherYates(M438_LineNumbers, ansBaseLineCount);
-  int minLineNum     = -1;
-  int minLineCount   = INT_INF;
+  int minLineNum = -1;
+  int minLineCount = INT_INF;
   int taisyouLineNum = M438_LineNumbers[0];
   rep(jj, 2)
   {
-    int j                 = M438_LineNumbers[jj];
+    int j = M438_LineNumbers[jj];
     M438_yokoLineCount[j] = 0;
     srep(i, 1, d)
     {
@@ -2971,7 +2971,7 @@ void Method4_3_8()
     }
     if (M438_yokoLineCount[j] < minLineCount) {
       minLineCount = M438_yokoLineCount[j];
-      minLineNum   = j;
+      minLineNum = j;
       if (minLineCount == 0) break;
     }
   }
@@ -2984,14 +2984,14 @@ void Method4_3_8()
   {
     rep(j, ansColumnSchedulesCount[i][taisyouLineNum])
     {
-      int num    = ansColumnSchedules[i][taisyouLineNum][j];
+      int num = ansColumnSchedules[i][taisyouLineNum][j];
       int height = ansColumnSchedulesPosition[i][taisyouLineNum][j + 1] - ansColumnSchedulesPosition[i][taisyouLineNum][j];
       rep(k, n)
       {
         if (k == num) break;
         if (ansColumnNum[i][k] == taisyouLineNum) continue;
         if (preCalcScheduleSizes[i][k][taisyouLineNum] <= height) {
-          int nextLine      = ansColumnNum[i][k];
+          int nextLine = ansColumnNum[i][k];
           int nextLineIndex = -1;
           rep(l, ansColumnSchedulesCount[i][nextLine])
           {
@@ -3030,7 +3030,7 @@ void Method4_3_8()
     rep(j, n)
     {
       preCalcScheduleSizes[i][j][taisyouLineNum] = (a[i][j] - 1) / widths[taisyouLineNum] + 1;
-      preCalcScheduleSizes[i][j][minLineNum]     = (a[i][j] - 1) / widths[minLineNum] + 1;
+      preCalcScheduleSizes[i][j][minLineNum] = (a[i][j] - 1) / widths[minLineNum] + 1;
     }
   }
 
@@ -3047,15 +3047,15 @@ int M439LineNum[MAX_N];
 int M439LineIndex[MAX_N];
 void Method4_3_9()
 {
-  int raD = randxor() % d;
+  int raD = Rand() % d;
   int cnt = 0;
   rep(j, ansBaseLineCount)
   {
     rep(k, ansColumnSchedulesCount[raD][j])
     {
-      M439LineNum[cnt]   = j;
+      M439LineNum[cnt] = j;
       M439LineIndex[cnt] = k;
-      M439Array[cnt]     = widths[j] * (ansColumnSchedulesPosition[raD][j][k + 1] - ansColumnSchedulesPosition[raD][j][k]) * 100 + cnt;
+      M439Array[cnt] = widths[j] * (ansColumnSchedulesPosition[raD][j][k + 1] - ansColumnSchedulesPosition[raD][j][k]) * 100 + cnt;
       cnt++;
     }
   }
@@ -3074,10 +3074,10 @@ void Method4_3_9()
   {
     while (true) {
       if (a[raD][j] <= M439Array[ite] / 100) {
-        int posNum                                  = M439Array[ite] % 100;
-        int lineNum                                 = M439LineNum[posNum];
-        int lineIndex                               = M439LineIndex[posNum];
-        ansColumnNum[raD][j]                        = lineNum;
+        int posNum = M439Array[ite] % 100;
+        int lineNum = M439LineNum[posNum];
+        int lineIndex = M439LineIndex[posNum];
+        ansColumnNum[raD][j] = lineNum;
         ansColumnSchedules[raD][lineNum][lineIndex] = j;
         ite++;
         break;
@@ -3093,7 +3093,7 @@ void Method4_3(double timeLimit)
 {
   M43_startTime = GetNowTime();
   M43_timeLimit = timeLimit;
-  M431Count     = 0;
+  M431Count = 0;
 
   rep(i, d)
   {
@@ -3139,7 +3139,7 @@ void Method4_3(double timeLimit)
   {
     drep(j, n)
     {
-      int lineNum                                                         = ansColumnNum[i][j];
+      int lineNum = ansColumnNum[i][j];
       ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
       ansColumnSchedulesCount[i][lineNum]++;
     }
@@ -3151,7 +3151,7 @@ void Method4_3(double timeLimit)
       ansColumnSchedulesPosition[i][j][0] = 0;
       rep(k, ansColumnSchedulesCount[i][j])
       {
-        int num                                 = ansColumnSchedules[i][j][k];
+        int num = ansColumnSchedules[i][j][k];
         ansColumnSchedulesPosition[i][j][k + 1] = ansColumnSchedulesPosition[i][j][k] + preCalcScheduleSizes[i][num][j];
         if (k == ansColumnSchedulesCount[i][j] - 1) { ansColumnSchedulesPosition[i][j][k + 1] = w; }
       }
@@ -3167,7 +3167,7 @@ void Method4_3(double timeLimit)
   CopyToReal_M42();
 
   int loopCount = 0;
-  endTime       = clock();
+  endTime = clock();
   while (true) {
     loopCount++;
     if (loopCount % 100 == 0) {
@@ -3175,7 +3175,7 @@ void Method4_3(double timeLimit)
       if (M43_nowTime > timeLimit) { break; }
     }
 
-    int ra = randxor() % 101;
+    int ra = Rand() % 101;
     if (ra < 0) {
       if (M43_nowTime < (M43_startTime + timeLimit) / 2) continue;
       Method4_3_2();
@@ -3202,11 +3202,11 @@ void Method4_3(double timeLimit)
       Method4_3_7();
     }
     else if (ra < 101) {
-      if (randxor() % 100 != 0) continue;
+      if (Rand() % 100 != 0) continue;
       Method4_3_9();
     }
 
-    // if (randxor() % 212121 == 0) {
+    // if (Rand() % 212121 == 0) {
     //  CopyFromRealAns();
     //  CoptToCurrent_M42();
     //}
@@ -3222,10 +3222,10 @@ void Method4_3(double timeLimit)
     {
       rep(k, ansColumnSchedulesCount[i][j])
       {
-        int num        = ansColumnSchedules[i][j][k];
+        int num = ansColumnSchedules[i][j][k];
         ans[i][num][0] = ansColumnSchedulesPosition[i][j][k];
         ans[i][num][2] = ansColumnSchedulesPosition[i][j][k + 1];
-        int posNum     = ansColumnNum[i][num];
+        int posNum = ansColumnNum[i][num];
         ans[i][num][1] = ansLinePos[i][posNum];
         ans[i][num][3] = ansLinePos[i][posNum + 1];
       }
@@ -3264,7 +3264,7 @@ int Method3_Oshii()
     }
 
     int now[MAX_LINECOUNT] = {};
-    int ng                 = 0;
+    int ng = 0;
     drep(ii, d)
     {
       int i = daysDifficultySorted[ii];
@@ -3277,26 +3277,26 @@ int Method3_Oshii()
       {
         if (M3_alreadyUsed[i][j]) continue;
         int minAmari = INT_INF;
-        int minOver  = INT_INF;
-        int posNum   = -1;
-        int tmpNeed  = 0;
+        int minOver = INT_INF;
+        int posNum = -1;
+        int tmpNeed = 0;
         dsrep(k, M3_alreadyCount, ansLineCount[i])
         {
           int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
           if (width * w < a[i][j]) break;
-          int need  = (a[i][j] - 1) / width + 1;
-          int over  = 0;
+          int need = (a[i][j] - 1) / width + 1;
+          int over = 0;
           int amari = need * width - a[i][j];
           if (now[k] + need > w) {
-            over  = (now[k] + need - w) * width;
+            over = (now[k] + need - w) * width;
             amari = 0;
           }
 
           if (over < minOver || (over == minOver && amari <= minAmari)) {
             minAmari = amari;
-            minOver  = over;
-            posNum   = k;
-            tmpNeed  = need;
+            minOver = over;
+            posNum = k;
+            tmpNeed = need;
           }
         }
 
@@ -3355,10 +3355,10 @@ int Method3_Oshii()
   int ng = 0;
   int kouhos[MAX_N];
   int kouhoCount = 0;
-  int loopCount  = 0;
+  int loopCount = 0;
   rep(ii, d)
   {
-    int i  = daysDifficultySorted[ii];
+    int i = daysDifficultySorted[ii];
     int ok = 1;
     rep(j, n)
     {
@@ -3386,17 +3386,17 @@ int Method3_Oshii()
     }
     rep(j, n)
     {
-      int lineNum                                                         = ansColumnNum[i][j];
+      int lineNum = ansColumnNum[i][j];
       ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
       ansColumnSchedulesCount[i][lineNum]++;
     }
 
     rep(leSserafim, 10000)
     {
-      // if (randxor() % 5 != 0) {
-      //  int raN1     = randxor() % n;
+      // if (Rand() % 5 != 0) {
+      //  int raN1     = Rand() % n;
       //  int lineNum1 = ansColumnNum[i][raN1];
-      //  int raN2     = randxor() % n;
+      //  int raN2     = Rand() % n;
       //  if (raN1 == raN2) continue;
       //  int lineNum2 = ansColumnNum[i][raN2];
       //  if (lineNum1 == lineNum2) continue;
@@ -3432,11 +3432,11 @@ int Method3_Oshii()
       //  continue;
       //}
 
-      int raN      = randxor() % n;
-      int lineNum  = ansColumnNum[i][raN];
-      int nextLine = randxor() % ansBaseLineCount;
+      int raN = Rand() % n;
+      int lineNum = ansColumnNum[i][raN];
+      int nextLine = Rand() % ansBaseLineCount;
       while (nextLine == lineNum) {
-        nextLine = randxor() % ansBaseLineCount;
+        nextLine = Rand() % ansBaseLineCount;
       }
       kouhoCount = 0;
       if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][raN][nextLine] > w) continue;
@@ -3469,7 +3469,7 @@ int Method3_Oshii()
             // スワップ
             if (nowSum[lineNum] > w) ngCount--;
             if (nowSum[nextLine] > w) ngCount--;
-            nowSum[lineNum]  = nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace;
+            nowSum[lineNum] = nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace;
             nowSum[nextLine] = nowSum[nextLine] - nextSpace + preCalcScheduleSizes[i][raN][nextLine];
             if (nowSum[lineNum] > w) ngCount++;
             if (nowSum[nextLine] > w) ngCount++;
@@ -3477,7 +3477,7 @@ int Method3_Oshii()
             rep(jj, kouhoCount)
             {
               if (chaewon & (1 << jj)) {
-                int j              = kouhos[jj];
+                int j = kouhos[jj];
                 ansColumnNum[i][j] = lineNum;
               }
             }
@@ -3489,7 +3489,7 @@ int Method3_Oshii()
             }
             rep(j, n)
             {
-              int lineNum                                                         = ansColumnNum[i][j];
+              int lineNum = ansColumnNum[i][j];
               ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
               ansColumnSchedulesCount[i][lineNum]++;
             }
@@ -3501,7 +3501,7 @@ int Method3_Oshii()
       else {
         rep(eunchae, 32)
         {
-          int chaewon = randxor() % ((1 << kouhoCount) - 1) + 1;
+          int chaewon = Rand() % ((1 << kouhoCount) - 1) + 1;
           if (chaewon == 0) continue;
           int nextSpace = 0;
           int needSpace = 0;
@@ -3519,7 +3519,7 @@ int Method3_Oshii()
             // スワップ
             if (nowSum[lineNum] > w) ngCount--;
             if (nowSum[nextLine] > w) ngCount--;
-            nowSum[lineNum]  = nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace;
+            nowSum[lineNum] = nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace;
             nowSum[nextLine] = nowSum[nextLine] - nextSpace + preCalcScheduleSizes[i][raN][nextLine];
             if (nowSum[lineNum] > w) ngCount++;
             if (nowSum[nextLine] > w) ngCount++;
@@ -3527,7 +3527,7 @@ int Method3_Oshii()
             rep(jj, kouhoCount)
             {
               if (chaewon & (1 << jj)) {
-                int j              = kouhos[jj];
+                int j = kouhos[jj];
                 ansColumnNum[i][j] = lineNum;
               }
             }
@@ -3539,7 +3539,7 @@ int Method3_Oshii()
             }
             rep(j, n)
             {
-              int lineNum                                                         = ansColumnNum[i][j];
+              int lineNum = ansColumnNum[i][j];
               ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
               ansColumnSchedulesCount[i][lineNum]++;
             }
@@ -3565,19 +3565,19 @@ int Method3_Oshii()
 
   // ansScheduleLineNumからansを作成
   {
-    int now[MAX_LINECOUNT]     = {};
+    int now[MAX_LINECOUNT] = {};
     int lastNum[MAX_LINECOUNT] = {};
     rep(i, d)
     {
       rep(j, ansLineCount[i])
       {
-        now[j]     = 0;
+        now[j] = 0;
         lastNum[j] = -1;
       }
       drep(j, n)
       {
-        int posNum   = ansColumnNum[i][j];
-        int need     = preCalcScheduleSizes[i][j][posNum];
+        int posNum = ansColumnNum[i][j];
+        int need = preCalcScheduleSizes[i][j][posNum];
         ans[i][j][0] = now[posNum];
         ans[i][j][2] = now[posNum] + need;
         ans[i][j][1] = ansLinePos[i][posNum];
@@ -3592,7 +3592,7 @@ int Method3_Oshii()
       }
     }
     ansScore = CalcScore();
-    int ret  = 1;
+    int ret = 1;
     if (ansScore < real_ansScore) {
       // cout << "Oshii" << endl;
       CopyToRealAns();
@@ -3623,7 +3623,7 @@ void Method3_Oshii2()
     }
 
     int now[MAX_LINECOUNT] = {};
-    int ng                 = 0;
+    int ng = 0;
     drep(ii, d)
     {
       int i = daysDifficultySorted[ii];
@@ -3635,26 +3635,26 @@ void Method3_Oshii2()
       drep(j, n)
       {
         int minAmari = INT_INF;
-        int minOver  = INT_INF;
-        int posNum   = -1;
-        int tmpNeed  = 0;
+        int minOver = INT_INF;
+        int posNum = -1;
+        int tmpNeed = 0;
         drep(k, ansLineCount[i])
         {
           int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
           if (width * w < a[i][j]) break;
-          int need  = (a[i][j] - 1) / width + 1;
-          int over  = 0;
+          int need = (a[i][j] - 1) / width + 1;
+          int over = 0;
           int amari = need * width - a[i][j];
           if (now[k] + need > w) {
-            over  = (now[k] + need - w) * width;
+            over = (now[k] + need - w) * width;
             amari = 0;
           }
 
           if (over < minOver || (over == minOver && amari <= minAmari)) {
             minAmari = amari;
-            minOver  = over;
-            posNum   = k;
-            tmpNeed  = need;
+            minOver = over;
+            posNum = k;
+            tmpNeed = need;
           }
         }
 
@@ -3680,12 +3680,12 @@ void Method3_Oshii2()
 
   // 調整
   {
-    int ng                     = 0;
-    int now[MAX_LINECOUNT]     = {};
+    int ng = 0;
+    int now[MAX_LINECOUNT] = {};
     int lastNum[MAX_LINECOUNT] = {};
     rep(ii, d)
     {
-      int i  = daysDifficultySorted[ii];
+      int i = daysDifficultySorted[ii];
       int ok = 1;
       rep(j, n)
       {
@@ -3699,12 +3699,12 @@ void Method3_Oshii2()
       ok = 0;
       srep(newjeans, 1, ansLineCount[i])
       {
-        int keepPos             = ansLinePos[i][newjeans];
+        int keepPos = ansLinePos[i][newjeans];
         ansLinePos[i][newjeans] = ansLinePos[i][newjeans + 1];
 
         rep(j, ansLineCount[i])
         {
-          now[j]     = 0;
+          now[j] = 0;
           lastNum[j] = -1;
         }
 
@@ -3712,8 +3712,8 @@ void Method3_Oshii2()
         drep(j, n)
         {
           int minAmari = INT_INF;
-          int posNum   = -1;
-          int tmpNeed  = 0;
+          int posNum = -1;
+          int tmpNeed = 0;
           drep(k, ansLineCount[i])
           {
             int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
@@ -3723,8 +3723,8 @@ void Method3_Oshii2()
             int amari = need * width - a[i][j];
             if (amari <= minAmari) {
               minAmari = amari;
-              posNum   = k;
-              tmpNeed  = need;
+              posNum = k;
+              tmpNeed = need;
             }
           }
 
@@ -3777,36 +3777,36 @@ void Method3_Oshii2()
 }
 
 int oshiiDecideMethod = 0;
-int oshiiMinMax       = INT_INF;
-int oshiiMinNGCount   = INT_INF;
+int oshiiMinMax = INT_INF;
+int oshiiMinNGCount = INT_INF;
 
 int Method3_Normal(int loopCount)
 {
   const int MIN_LINECOUNT = 2;
-  ansBaseLineCount        = randxor() % n + MIN_LINECOUNT;
-  if (real_ansBaseLineCount >= MIN_LINECOUNT && randxor() % 2 == 0) {
+  ansBaseLineCount = Rand() % n + MIN_LINECOUNT;
+  if (real_ansBaseLineCount >= MIN_LINECOUNT && Rand() % 2 == 0) {
     ansBaseLineCount = real_ansBaseLineCount + 1;
   }
   else if (loopCount >= 100000 && real_ansBaseLineCount != -1) {
     ansBaseLineCount = min(ansBaseLineCount, real_ansBaseLineCount + 1);
-    if (randxor() % 10 != 0) { ansBaseLineCount = max(ansBaseLineCount, real_ansBaseLineCount - 1); }
+    if (Rand() % 10 != 0) { ansBaseLineCount = max(ansBaseLineCount, real_ansBaseLineCount - 1); }
   }
-  if (loopCount >= 100000 && real_ansBaseLineCount == -1) { ansBaseLineCount = randxor() % 3 + MIN_LINECOUNT; }
+  if (loopCount >= 100000 && real_ansBaseLineCount == -1) { ansBaseLineCount = Rand() % 3 + MIN_LINECOUNT; }
 
   if (ansBaseLineCount <= M3_alreadyCount) return 0;
   // if (real_ansBaseLineCount != -1 && ansBaseLineCount < real_ansBaseLineCount) return 0;
 
   if (ansBaseLineCount > lineMaxLimit) return 0;
 
-  int startW     = ansLinePos[0][M3_alreadyCount];
-  int nokoriW    = w - startW;
-  int startLine  = M3_alreadyCount;
+  int startW = ansLinePos[0][M3_alreadyCount];
+  int nokoriW = w - startW;
+  int startLine = M3_alreadyCount;
   int nokoriLine = ansBaseLineCount - M3_alreadyCount;
 
   {
-    int ra = randxor() % 100;
+    int ra = Rand() % 100;
     if (ra < 25) {
-      int hosyouWidth = randxor() % 21;
+      int hosyouWidth = Rand() % 21;
       if (startW + nokoriLine * hosyouWidth > 800) return 0;
       int ok2 = 0;
       rep(_, 10)
@@ -3814,7 +3814,7 @@ int Method3_Normal(int loopCount)
         ansLinePos[0][ansBaseLineCount] = (startW + nokoriW - nokoriLine * hosyouWidth);
         srep(i, startLine + 1, ansBaseLineCount)
         {
-          ansLinePos[0][i] = startW + randxor() % (nokoriW - nokoriLine * hosyouWidth);
+          ansLinePos[0][i] = startW + Rand() % (nokoriW - nokoriLine * hosyouWidth);
         }
         sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
         int ok = 1;
@@ -3840,15 +3840,15 @@ int Method3_Normal(int loopCount)
       int ok2 = 0;
       rep(_, 10)
       {
-        ansLinePos[0][ansBaseLineCount]     = w;
-        int maxNeed                         = (maxA[n - 1] - 1) / w + 1;
+        ansLinePos[0][ansBaseLineCount] = w;
+        int maxNeed = (maxA[n - 1] - 1) / w + 1;
         ansLinePos[0][ansBaseLineCount - 1] = w - maxNeed;
         if (ansLinePos[0][ansBaseLineCount - 1] <= ansLinePos[0][startLine]) break;
         int ng = 0;
         srep(i, startLine + 1, ansBaseLineCount - 1)
         {
           ansLinePos[0][i] = startW + (w - maxNeed - startW) * i / (ansBaseLineCount - 1 - startLine);
-          ansLinePos[0][i] += randxor() % 31 - 15;
+          ansLinePos[0][i] += Rand() % 31 - 15;
           if (ansLinePos[0][i] <= ansLinePos[0][i - 1]) {
             ng = 1;
             break;
@@ -3875,14 +3875,14 @@ int Method3_Normal(int loopCount)
       int ok2 = 0;
       rep(_, 10)
       {
-        ansLinePos[0][ansBaseLineCount]     = w;
-        int maxNeed                         = (maxA[n - 1] - 1) / w + 1;
+        ansLinePos[0][ansBaseLineCount] = w;
+        int maxNeed = (maxA[n - 1] - 1) / w + 1;
         ansLinePos[0][ansBaseLineCount - 1] = w - maxNeed;
         if (ansLinePos[0][ansBaseLineCount - 1] <= ansLinePos[0][startLine]) break;
         int ng = 0;
         srep(i, startLine + 1, ansBaseLineCount - 1)
         {
-          ansLinePos[0][i] = startW + randxor() % (nokoriW - maxNeed);
+          ansLinePos[0][i] = startW + Rand() % (nokoriW - maxNeed);
         }
         sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
         int ok = 1;
@@ -3907,7 +3907,7 @@ int Method3_Normal(int loopCount)
         ansLinePos[0][ansBaseLineCount] = w;
         srep(i, 1, ansBaseLineCount)
         {
-          ansLinePos[0][i] = startW + randxor() % nokoriW;
+          ansLinePos[0][i] = startW + Rand() % nokoriW;
         }
         sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
         int ok = 1;
@@ -3947,7 +3947,7 @@ int Method3_Normal(int loopCount)
     }
     // if (ansBaseLineCount > 10) {
     //  ansBaseLineCount++;
-    //  int ra = randxor() % 5 + 1;
+    //  int ra = Rand() % 5 + 1;
     //  rep(i, ra) {
     //    ansLinePos[0][ansBaseLineCount - i] = ansLinePos[0][ansBaseLineCount - 1 - i];
     //  }
@@ -3966,29 +3966,29 @@ int Method3_Normal(int loopCount)
     }
   }
 
-  int ng                     = 0;
-  int now[MAX_LINECOUNT]     = {};
+  int ng = 0;
+  int now[MAX_LINECOUNT] = {};
   int lastNum[MAX_LINECOUNT] = {};
-  int tmpOshiiMax            = 0;
-  int tmpOshiiNGMax          = 0;
+  int tmpOshiiMax = 0;
+  int tmpOshiiNGMax = 0;
   int numsOrder[MAX_N];
   drep(ii, d)
   {
     int i = daysDifficultySorted[ii];
     rep(j, ansLineCount[i])
     {
-      now[j]     = 0;
+      now[j] = 0;
       lastNum[j] = -1;
     }
 
-    int tmpOshiiSum        = 0;
-    int tmpOshiiNGCount    = 0;
+    int tmpOshiiSum = 0;
+    int tmpOshiiNGCount = 0;
     rep(j, n) numsOrder[j] = j;
-    if (randxor() % 5 == 0) {
-      int cnt = randxor() % 30;
+    if (Rand() % 5 == 0) {
+      int cnt = Rand() % 30;
       rep(_, cnt)
       {
-        int raN = randxor() % (n - 1);
+        int raN = Rand() % (n - 1);
         swap(numsOrder[raN], numsOrder[raN + 1]);
       }
     }
@@ -3997,25 +3997,25 @@ int Method3_Normal(int loopCount)
       int j = numsOrder[jj];
       if (M3_alreadyUsed[i][j]) { continue; }
       int minAmari = INT_INF;
-      int minOver  = INT_INF;
-      int posNum   = -1;
-      int tmpNeed  = 0;
+      int minOver = INT_INF;
+      int posNum = -1;
+      int tmpNeed = 0;
       dsrep(k, startLine, ansLineCount[i])
       {
         int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
         if (width * w < a[i][j]) break;
-        int need  = (a[i][j] - 1) / width + 1;
-        int over  = 0;
+        int need = (a[i][j] - 1) / width + 1;
+        int over = 0;
         int amari = need * width - a[i][j];
         if (now[k] + need > w) {
-          over  = (now[k] + need - w) * width;
+          over = (now[k] + need - w) * width;
           amari = 0;
         }
         if (over < minOver || (over == minOver && amari <= minAmari)) {
           minAmari = amari;
-          minOver  = over;
-          posNum   = k;
-          tmpNeed  = need;
+          minOver = over;
+          posNum = k;
+          tmpNeed = need;
         }
       }
 
@@ -4068,7 +4068,7 @@ int Method3_Normal(int loopCount)
       ans[i][lastNum[j]][2] = w;
     }
 
-    tmpOshiiMax   = max(tmpOshiiMax, tmpOshiiSum);
+    tmpOshiiMax = max(tmpOshiiMax, tmpOshiiSum);
     tmpOshiiNGMax = max(tmpOshiiNGMax, tmpOshiiNGCount);
   }
 
@@ -4080,7 +4080,7 @@ int Method3_Normal(int loopCount)
   }
 
   if (ng == 0) {
-    int ret  = 1;
+    int ret = 1;
     ansScore = CalcScoreForMethod3();
     if (ansScore < real_ansScore) {
       ret = 2;
@@ -4089,7 +4089,7 @@ int Method3_Normal(int loopCount)
       {
         oshiiLineCount[i] = -1;
       }
-      oshiiMinMax     = INT_INF;
+      oshiiMinMax = INT_INF;
       oshiiMinNGCount = INT_INF;
     }
     return ret;
@@ -4128,9 +4128,9 @@ int Method3_Normal(int loopCount)
 
 void Method3_1(double timeLimit)
 {
-  keep31Count           = 0;
-  int loopCount         = 0;
-  ansBaseLineCount      = -1;
+  keep31Count = 0;
+  int loopCount = 0;
+  ansBaseLineCount = -1;
   real_ansBaseLineCount = -1;
   rep(i, d)
   {
@@ -4138,11 +4138,11 @@ void Method3_1(double timeLimit)
     {
       ansLinePos[i][j] = 0;
     }
-    ansLineCount[i]      = -1;
+    ansLineCount[i] = -1;
     real_ansLineCount[i] = -1;
-    oshiiLineCount[i]    = -1;
+    oshiiLineCount[i] = -1;
   }
-  oshiiMinMax     = INT_INF;
+  oshiiMinMax = INT_INF;
   oshiiMinNGCount = INT_INF;
 
   M3_alreadyCount = 0;
@@ -4172,22 +4172,22 @@ void Method3_1(double timeLimit)
       }
 
       if (real_ansBaseLineCount == -1) {
-        M3_alreadyCount = randxor() % 3;
+        M3_alreadyCount = Rand() % 3;
       }
       else {
         if (real_ansBaseLineCount <= 5) {
-          M3_alreadyCount = randxor() % 3;
+          M3_alreadyCount = Rand() % 3;
         }
         else {
-          M3_alreadyCount = randxor() % (n / 2 + 1);
+          M3_alreadyCount = Rand() % (n / 2 + 1);
         }
       }
 
       if (M3_alreadyCount == 0) continue;
       rep(blackpink, M3_alreadyCount)
       {
-        int baseWidth = randxor() % 100 + 50;
-        if (M3_alreadyCount >= 5) { baseWidth = randxor() % 100 + 20; }
+        int baseWidth = Rand() % 100 + 50;
+        if (M3_alreadyCount >= 5) { baseWidth = Rand() % 100 + 20; }
         if (blackpink > 0 && ansLinePos[0][blackpink - 1] + baseWidth + 20 > w) {
           M3_alreadyCount = 0;
           rep(i, d)
@@ -4200,13 +4200,13 @@ void Method3_1(double timeLimit)
           break;
         }
 
-        int maxWidth    = -1;
+        int maxWidth = -1;
         double maxValue = 0;
         rep(lisa, 20)
         {
-          int width    = baseWidth + lisa;
+          int width = baseWidth + lisa;
           int minValue = INT_INF;
-          int ng       = 0;
+          int ng = 0;
           rep(i, d)
           {
             int ok = 0;
@@ -4248,12 +4248,12 @@ void Method3_1(double timeLimit)
           rep(k, mostVariableAsCount[i][maxWidth])
           {
             if (M3_alreadyUsed[i][mostVariableAs[i][maxWidth][k][0]] == 0 && M3_alreadyUsed[i][mostVariableAs[i][maxWidth][k][1]] == 0) {
-              int j1                = mostVariableAs[i][maxWidth][k][0];
-              int j2                = mostVariableAs[i][maxWidth][k][1];
+              int j1 = mostVariableAs[i][maxWidth][k][0];
+              int j2 = mostVariableAs[i][maxWidth][k][1];
               M3_alreadyUsed[i][j1] = 1;
               M3_alreadyUsed[i][j2] = 1;
 
-              int need1     = (a[i][j1] - 1) / maxWidth + 1;
+              int need1 = (a[i][j1] - 1) / maxWidth + 1;
               ans[i][j1][0] = 0;
               ans[i][j1][2] = need1;
               ans[i][j1][1] = ansLinePos[0][blackpink];
@@ -4271,7 +4271,7 @@ void Method3_1(double timeLimit)
       continue;
     }
 
-    int ra   = randxor() % 10000;
+    int ra = Rand() % 10000;
     int isOK = 0;
     if (ra < 9990) {
       isOK = Method3_Normal(loopCount);
@@ -4284,7 +4284,7 @@ void Method3_1(double timeLimit)
       {
         oshiiLineCount[i] = -1;
       }
-      oshiiMinMax     = INT_INF;
+      oshiiMinMax = INT_INF;
       oshiiMinNGCount = INT_INF;
     }
     else if (ra < 10000) {
@@ -4321,10 +4321,10 @@ void Method3_2(double timeLimit)
     }
   }
 
-  int loopCount     = 0;
-  endTime           = clock();
+  int loopCount = 0;
+  endTime = clock();
   double start_temp = 100.1;
-  double end_temp   = 0.0;
+  double end_temp = 0.0;
 
   while (true) {
     loopCount++;
@@ -4332,10 +4332,10 @@ void Method3_2(double timeLimit)
       if (GetNowTime() > timeLimit) { break; }
     }
 
-    int ra  = randxor() % (ansBaseLineCount - 1) + 1;
+    int ra = Rand() % (ansBaseLineCount - 1) + 1;
     int ra2 = 0;
     while (ra2 == 0) {
-      ra2 = randxor() % 11 - 5;
+      ra2 = Rand() % 11 - 5;
     }
     ansLinePos[0][ra] += ra2;
     if (ansLinePos[0][ra - 1] >= ansLinePos[0][ra] || ansLinePos[0][ra] >= ansLinePos[0][ra + 1]) {
@@ -4355,22 +4355,22 @@ void Method3_2(double timeLimit)
       continue;
     }
 
-    int ng                     = 0;
-    int now[MAX_LINECOUNT]     = {};
+    int ng = 0;
+    int now[MAX_LINECOUNT] = {};
     int lastNum[MAX_LINECOUNT] = {};
     rep(i, d)
     {
       rep(j, ansBaseLineCount)
       {
-        now[j]     = 0;
+        now[j] = 0;
         lastNum[j] = -1;
       }
 
       drep(j, n)
       {
         int minAmari = INT_INF;
-        int posNum   = -1;
-        int tmpNeed  = 0;
+        int posNum = -1;
+        int tmpNeed = 0;
         drep(k, ansBaseLineCount)
         {
           int width = ansLinePos[0][k + 1] - ansLinePos[0][k];
@@ -4380,8 +4380,8 @@ void Method3_2(double timeLimit)
           int amari = need * width - a[i][j];
           if (amari <= minAmari) {
             minAmari = amari;
-            posNum   = k;
-            tmpNeed  = need;
+            posNum = k;
+            tmpNeed = need;
           }
         }
 
@@ -4412,10 +4412,10 @@ void Method3_2(double timeLimit)
     }
 
     int beforeScore = ansScore;
-    ansScore        = CalcScoreForMethod3();
-    int diffScore   = beforeScore - ansScore;
+    ansScore = CalcScoreForMethod3();
+    int diffScore = beforeScore - ansScore;
 
-    double temp       = (start_temp + (end_temp - start_temp) * GetNowTime() / timeLimit);
+    double temp = (start_temp + (end_temp - start_temp) * GetNowTime() / timeLimit);
     const double prob = exp((double)diffScore / temp);
 
     if (prob > rand01()) {
@@ -4469,11 +4469,11 @@ void Method6_ColumnShuffle(double timeLimit)
   {
     FisherYates(v, ansBaseLineCount);
     int nextLinePos[MAX_LINECOUNT] = {};
-    int nextArgPos[MAX_LINECOUNT]  = {};
+    int nextArgPos[MAX_LINECOUNT] = {};
     rep(i, ansBaseLineCount)
     {
       nextLinePos[i + 1] = nextLinePos[i] + widths[v[i]];
-      nextArgPos[v[i]]   = i;
+      nextArgPos[v[i]] = i;
     }
     rep(i, d)
     {
@@ -4536,14 +4536,14 @@ void Method7()
       {
         rep(j, ansColumnSchedulesCount[i][line1])
         {
-          int num    = ansColumnSchedules[i][line1][j];
+          int num = ansColumnSchedules[i][line1][j];
           int height = ansColumnSchedulesPosition[i][line1][j + 1] - ansColumnSchedulesPosition[i][line1][j];
           rep(k, n)
           {
             if (k == num) break;
             if (ansColumnNum[i][k] == line1) continue;
             if (preCalcScheduleSizes[i][k][line1] <= height) {
-              int nextLine      = ansColumnNum[i][k];
+              int nextLine = ansColumnNum[i][k];
               int nextLineIndex = -1;
               rep(l, ansColumnSchedulesCount[i][nextLine])
               {
@@ -4624,8 +4624,8 @@ void CopyM8ToAns()
 void Method8(double timeLimit)
 {
   const int TMP_NUM = 1000;
-  const int NG_NUM  = 1005;
-  M8ansansCount     = 0;
+  const int NG_NUM = 1005;
+  M8ansansCount = 0;
   rep(i, d)
   {
     M8ansNum[i] = -1;
@@ -4633,7 +4633,7 @@ void Method8(double timeLimit)
 
   rep(i, d)
   {
-    M8ansNum[i]           = NG_NUM;
+    M8ansNum[i] = NG_NUM;
     M8ansScore[NG_NUM][i] = 1001001;
     rep(j, n)
     {
@@ -4645,8 +4645,8 @@ void Method8(double timeLimit)
   }
 
   double M8_startTime = GetNowTime();
-  double M8_NowTime   = GetNowTime();
-  int loopCount       = 0;
+  double M8_NowTime = GetNowTime();
+  int loopCount = 0;
   while (M8ansansCount < 1000) {
     loopCount++;
     if (loopCount % 25 == 0) {
@@ -4655,14 +4655,14 @@ void Method8(double timeLimit)
     }
 
     // 縦線作成
-    ansBaseLineCount = randxor() % 5 + 2;
-    int ok2          = 0;
+    ansBaseLineCount = Rand() % 5 + 2;
+    int ok2 = 0;
     rep(_2, 10)
     {
       ansLinePos[0][ansBaseLineCount] = w;
       srep(i, 1, ansBaseLineCount)
       {
-        ansLinePos[0][i] = randxor() % w;
+        ansLinePos[0][i] = Rand() % w;
       }
       sort(ansLinePos[0], ansLinePos[0] + ansBaseLineCount);
       int ok = 1;
@@ -4699,8 +4699,8 @@ void Method8(double timeLimit)
       M8ansLinePos[TMP_NUM][i] = ansLinePos[0][i];
     }
 
-    int okCount                = 0;
-    int now[MAX_LINECOUNT]     = {};
+    int okCount = 0;
+    int now[MAX_LINECOUNT] = {};
     int lastNum[MAX_LINECOUNT] = {};
     int numsOrder[MAX_N];
     drep(ii, d)
@@ -4708,37 +4708,37 @@ void Method8(double timeLimit)
       int i = daysDifficultySorted[ii];
       rep(j, ansBaseLineCount)
       {
-        now[j]     = 0;
+        now[j] = 0;
         lastNum[j] = -1;
       }
 
       rep(j, n) numsOrder[j] = j;
-      if (randxor() % 5 == 0) {
-        int cnt = randxor() % 30;
+      if (Rand() % 5 == 0) {
+        int cnt = Rand() % 30;
         rep(_, cnt)
         {
-          int raN = randxor() % (n - 1);
+          int raN = Rand() % (n - 1);
           swap(numsOrder[raN], numsOrder[raN + 1]);
         }
       }
       int ok = 1;
       drep(jj, n)
       {
-        int j        = numsOrder[jj];
+        int j = numsOrder[jj];
         int minAmari = INT_INF;
-        int posNum   = -1;
-        int tmpNeed  = 0;
+        int posNum = -1;
+        int tmpNeed = 0;
         dsrep(k, 0, ansBaseLineCount)
         {
           int width = ansLinePos[0][k + 1] - ansLinePos[0][k];
           if (width * w < a[i][j]) break;
-          int need  = (a[i][j] - 1) / width + 1;
+          int need = (a[i][j] - 1) / width + 1;
           int amari = need * width - a[i][j];
           if (now[k] + need > w) { continue; }
           if (amari < minAmari) {
             minAmari = amari;
-            posNum   = k;
-            tmpNeed  = need;
+            posNum = k;
+            tmpNeed = need;
           }
         }
 
@@ -4824,8 +4824,8 @@ void Method8(double timeLimit)
   // cout << endl;
 
   double M8_startTime2 = GetNowTime();
-  loopCount            = 0;
-  M8_NowTime           = GetNowTime();
+  loopCount = 0;
+  M8_NowTime = GetNowTime();
   while (true) {
     loopCount++;
     if (loopCount % 100 == 0) {
@@ -4839,9 +4839,9 @@ void Method8(double timeLimit)
       if (ansScore < real_ansScore) { CopyToRealAns(); }
     }
 
-    int raD = randxor() % d;
+    int raD = Rand() % d;
     if (M8ansansCountEachDay[raD] == 0) continue;
-    int raNum = M8ansansNumEachDay[raD][randxor() % M8ansansCountEachDay[raD]];
+    int raNum = M8ansansNumEachDay[raD][Rand() % M8ansansCountEachDay[raD]];
     if (raNum == M8ansNum[raD]) continue;
 
     int beforeNum = M8ansNum[raD];
@@ -4923,8 +4923,8 @@ void Method8(double timeLimit)
       }
     }
 
-    double timeRatio  = (M8_NowTime - M8_startTime2) / (timeLimit - M8_startTime2);
-    double temp       = (M43_start_temp + (M43_end_temp - M43_start_temp) * timeRatio);
+    double timeRatio = (M8_NowTime - M8_startTime2) / (timeLimit - M8_startTime2);
+    double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * timeRatio);
     const double prob = exp((double)diffScore * 100 / temp);
 
     if (prob > rand01()) { M8ansNum[raD] = raNum; }
@@ -4945,7 +4945,7 @@ void Method4(int setCount)
   CopyFromRealAns();
   CopyToTemp();
 
-  double outerTL     = TL;
+  double outerTL = TL;
   double m4StartTime = GetNowTime();
   rep(twice, setCount)
   {
@@ -5002,11 +5002,11 @@ void Method5()
   CopyToRealRealAns();
 
   keep31Count = min(keep31KeepSize, keep31Count);
-  double TL2  = TL * 0.7;
+  double TL2 = TL * 0.7;
   rep(tzuyu, keep31Count)
   {
-    double nowTime   = GetNowTime();
-    double innerTL   = (TL2 - nowTime) * (tzuyu + 1) / keep31KeepSize + nowTime;
+    double nowTime = GetNowTime();
+    double innerTL = (TL2 - nowTime) * (tzuyu + 1) / keep31KeepSize + nowTime;
     double innerTL32 = (innerTL - nowTime) / 5.0 + nowTime;
     CopyFromKeep31(tzuyu);
     CopyToRealAns();
@@ -5033,7 +5033,7 @@ void Method5()
 ll Solve(int probNum)
 {
   startTime = clock();
-  endTime   = clock();
+  endTime = clock();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -5080,7 +5080,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 0;

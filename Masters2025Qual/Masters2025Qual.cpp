@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-// ループの簡略化マクロ
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // 乱数生成（XorShift法による擬似乱数生成器）
-static uint32_t RandXor()
+static uint32_t Rand()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -58,10 +58,10 @@ static uint32_t RandXor()
 }
 
 // 0以上1未満の実数を返す乱数関数
-static double Rand01() { return (RandXor() + 0.5) * (1.0 / UINT_MAX); }
+static double Rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
 // l以上r未満の実数をとる乱数
-static double RandUniform(double l, double r)
+static double RandRange(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
@@ -70,39 +70,39 @@ static double RandUniform(double l, double r)
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = RandXor() % (i + 1);
+    int j = Rand() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタの初期化（使用されていない）
+// ランダムデバイスとメルセンヌ・ツイスタの初期化
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 非常に大きな値
+
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-// 移動方向の配列
+
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 const char dc[4] = { 'U','L','D','R' };
 
-double TL = 1.8; // 時間制限（Time Limit）
-int mode;        // 実行モード
+double TL = 1.8;
+int mode;
 int mode2;
 std::chrono::steady_clock::time_point startTimeClock; // 時間計測用
 
-// 時間計測をリセットする関数
+
 void ResetTime()
 {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-// 現在の経過時間を取得する関数
+
 double GetNowTime()
 {
   auto endTimeClock = std::chrono::steady_clock::now();
@@ -1034,18 +1034,18 @@ void Method1(Hypers hypers)
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
     keepOrder = order;
-    int raMode = RandXor() % 100;
+    int raMode = Rand() % 100;
     if (raMode < hypers.Partition) {
       // 近傍解作成
-      int ra1 = RandXor() % crystalCount;
-      int ra2 = RandXor() % crystalCount;
+      int ra1 = Rand() % crystalCount;
+      int ra2 = Rand() % crystalCount;
 
       swap(order[ra1], order[ra2]);
     }
     else if (raMode < 75) {
-      int ra1 = RandXor() % crystalCount;
-      int raPos = RandXor() % order.size();
-      int raDir = RandXor() % 4;
+      int ra1 = Rand() % crystalCount;
+      int raPos = Rand() % order.size();
+      int raDir = Rand() % 4;
       order.insert(order.begin() + raPos, P(ra1, raDir));
     }
     else if (raMode < 100) {
@@ -1057,7 +1057,7 @@ void Method1(Hypers hypers)
         }
       }
       if (eCount == 0)continue;
-      int raIdx = RandXor() % eCount;
+      int raIdx = Rand() % eCount;
       int pos = ErasePos[raIdx];
       order.erase(order.begin() + pos);
     }
@@ -1145,7 +1145,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    RandXor();
+    Rand();
   }
 
   mode = 2;
@@ -1188,7 +1188,7 @@ int main()
       hypers.StartTemp = pow(2.0, Rand01() * 20);
       hypers.EndTemp = 0.0;
       hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition = RandXor() % 101;
+      hypers.Partition = Rand() % 101;
 
       ll sum = 0;
       srep(i, 8, 15)

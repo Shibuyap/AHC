@@ -37,7 +37,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -53,13 +53,13 @@ namespace /* 乱数ライブラリ */
   }
 
   // 0以上1未満の小数をとる乱数
-  static double rand01() { return (randxor() + 0.5) * (1.0 / UINT_MAX); }
+  static double rand01() { return (Rand() + 0.5) * (1.0 / UINT_MAX); }
 
   // 配列シャッフル
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
-      int j = randxor() % (i + 1);
+      int j = Rand() % (i + 1);
       int swa = data[i];
       data[i] = data[j];
       data[j] = swa;
@@ -732,30 +732,30 @@ int MakeLength(int ra)
   int length = 1;
   if (ra < 30) {
     ArmLengthMethod = 0;
-    length = randxor() % ((n - 1) * 1 / 3) + 1;
+    length = Rand() % ((n - 1) * 1 / 3) + 1;
   }
   else if (ra < 60) {
     ArmLengthMethod = 1;
-    length = randxor() % ((n - 1) * 1 / 2) + 1;
+    length = Rand() % ((n - 1) * 1 / 2) + 1;
   }
   else if (ra < 80) {
     ArmLengthMethod = 2;
-    length = randxor() % ((n - 1) * 2 / 3) + 1;
+    length = Rand() % ((n - 1) * 2 / 3) + 1;
   }
   else if (ra < 100) {
     ArmLengthMethod = 3;
-    length = randxor() % ((n - 1) * 3 / 4) + 1;
+    length = Rand() % ((n - 1) * 3 / 4) + 1;
   }
   else {
     ArmLengthMethod = 4;
-    length = randxor() % (n - 1) + 1;
+    length = Rand() % (n - 1) + 1;
   }
   return length;
 }
 
 void MakeTree1()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
   srep(i, 1, V)
   {
@@ -768,15 +768,15 @@ void MakeTree1()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 2 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 2 + 1;
     srep(i, 2, V)le[i] = i - 2 + st;
   }
 }
 
 void MakeTree2()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
   srep(i, 1, V)
   {
@@ -792,11 +792,11 @@ void MakeTree2()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 3 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 3 + 1;
     srep(i, 3, V)le[i] = i - 3 + st;
-    //if (le[V - 1] < n - 1 && V >= 5 && randxor() % 2 == 0) {
-    //  int st2 = randxor() % (V - 4) + 4;
+    //if (le[V - 1] < n - 1 && V >= 5 && Rand() % 2 == 0) {
+    //  int st2 = Rand() % (V - 4) + 4;
     //  srep(i, st2, V)le[i]++;
     //}
   }
@@ -804,7 +804,7 @@ void MakeTree2()
 
 void MakeTree6()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
   srep(i, 1, V)
   {
@@ -823,11 +823,11 @@ void MakeTree6()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 4 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 4 + 1;
     srep(i, 4, V)le[i] = i - 4 + st;
-    //if (le[V - 1] < n - 1 && V >= 6 && randxor() % 2 == 0) {
-    //  int st2 = randxor() % (V - 5) + 5;
+    //if (le[V - 1] < n - 1 && V >= 6 && Rand() % 2 == 0) {
+    //  int st2 = Rand() % (V - 5) + 5;
     //  srep(i, st2, V)le[i]++;
     //}
   }
@@ -835,7 +835,7 @@ void MakeTree6()
 
 void MakeTree4()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
   srep(i, 1, V)
   {
@@ -857,11 +857,11 @@ void MakeTree4()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 5 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 5 + 1;
     srep(i, 5, V)le[i] = i - 5 + st;
-    //if (le[V - 1] < n - 1 && V >= 7 && randxor() % 2 == 0) {
-    //  int st2 = randxor() % (V - 6) + 6;
+    //if (le[V - 1] < n - 1 && V >= 7 && Rand() % 2 == 0) {
+    //  int st2 = Rand() % (V - 6) + 6;
     //  srep(i, st2, V)le[i]++;
     //}
   }
@@ -869,7 +869,7 @@ void MakeTree4()
 
 void MakeTree5()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
   srep(i, 1, V)
   {
@@ -894,11 +894,11 @@ void MakeTree5()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 5 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 5 + 1;
     srep(i, 6, V)le[i] = i - 6 + st;
-    //if (le[V - 1] < n - 1 && V >= 8 && randxor() % 2 == 0) {
-    //  int st2 = randxor() % (V - 7) + 7;
+    //if (le[V - 1] < n - 1 && V >= 8 && Rand() % 2 == 0) {
+    //  int st2 = Rand() % (V - 7) + 7;
     //  srep(i, st2, V)le[i]++;
     //}
   }
@@ -906,9 +906,9 @@ void MakeTree5()
 
 void MakeTree22()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
-  leafs1 = randxor() % (V - 6) + 1;
+  leafs1 = Rand() % (V - 6) + 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -929,19 +929,19 @@ void MakeTree22()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 4 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 4 + 1;
     srep(i, 4, 4 + leafs1)le[i] = i - 4 + st;
-    st = randxor() % 4 + 1;
+    st = Rand() % 4 + 1;
     srep(i, 4 + leafs1, V)le[i] = i - (4 + leafs1) + st;
   }
 }
 
 void MakeTree32()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
-  leafs1 = randxor() % (V - 7) + 1;
+  leafs1 = Rand() % (V - 7) + 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -965,19 +965,19 @@ void MakeTree32()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 5 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 5 + 1;
     srep(i, 5, 5 + leafs1)le[i] = i - 5 + st;
-    st = randxor() % 5 + 1;
+    st = Rand() % 5 + 1;
     srep(i, 5 + leafs1, V)le[i] = i - (5 + leafs1) + st;
   }
 }
 
 void MakeTree42()
 {
-  int ra = randxor() % 100;
+  int ra = Rand() % 100;
   V = v;
-  leafs1 = randxor() % (V - 8) + 1;
+  leafs1 = Rand() % (V - 8) + 1;
   srep(i, 1, V)
   {
     if (i == 1) {
@@ -1004,10 +1004,10 @@ void MakeTree42()
     le[i] = MakeLength(ra);
   }
 
-  if (randxor() % 2) {
-    int st = randxor() % 5 + 1;
+  if (Rand() % 2) {
+    int st = Rand() % 5 + 1;
     srep(i, 6, 6 + leafs1)le[i] = i - 6 + st;
-    st = randxor() % 5 + 1;
+    st = Rand() % 5 + 1;
     srep(i, 6 + leafs1, V)le[i] = i - (6 + leafs1) + st;
   }
 }
@@ -1231,7 +1231,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1271,7 +1271,7 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1317,7 +1317,7 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1369,7 +1369,7 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1427,7 +1427,7 @@ void DecideBest82(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1492,7 +1492,7 @@ void DecideBest53(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1549,7 +1549,7 @@ void DecideBest63(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1612,7 +1612,7 @@ void DecideBest73(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = randxor() % 6;
+    rep(i, 6)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1917,7 +1917,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
     // メソッド決定
     if (v < 7) {
-      int ra = randxor() % 100;
+      int ra = Rand() % 100;
       if (ra < 20) {
         Method = 42;
       }
@@ -1929,7 +1929,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
       }
     }
     else {
-      int ra = randxor() % 100;
+      int ra = Rand() % 100;
       if (ra < 40) {
         Method = 52;
       }
@@ -1958,44 +1958,44 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
     // 木作成
     switch (Method) {
-      case 42:
-        MakeTree1();
-        break;
-      case 52:
-        MakeTree2();
-        break;
-      case 62:
-        MakeTree6();
-        break;
-      case 72:
-        MakeTree4();
-        break;
-      case 82:
-        MakeTree5();
-        break;
-      case 53:
-        MakeTree22();
-        break;
-      case 63:
-        MakeTree32();
-        break;
-      case 73:
-        MakeTree42();
-        break;
+    case 42:
+      MakeTree1();
+      break;
+    case 52:
+      MakeTree2();
+      break;
+    case 62:
+      MakeTree6();
+      break;
+    case 72:
+      MakeTree4();
+      break;
+    case 82:
+      MakeTree5();
+      break;
+    case 53:
+      MakeTree22();
+      break;
+    case 63:
+      MakeTree32();
+      break;
+    case 73:
+      MakeTree42();
+      break;
     }
 
     // 初期位置作成
-    sx = randxor() % n;
-    sy = randxor() % n;
+    sx = Rand() % n;
+    sy = Rand() % n;
 
     while (sx < 3 || n - 3 <= sx) {
-      sx = randxor() % n;
+      sx = Rand() % n;
     }
     while (sy < 3 || n - 3 <= sy) {
-      sy = randxor() % n;
+      sy = Rand() % n;
     }
 
-    if (randxor() % 2 && Method == real_Method && real_ansCount[Method] < 999) {
+    if (Rand() % 2 && Method == real_Method && real_ansCount[Method] < 999) {
       rep(i, v)
       {
         pa[i] = real_pa[i];
@@ -2252,7 +2252,7 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   mode = 2;

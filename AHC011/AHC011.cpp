@@ -41,14 +41,14 @@ typedef pair<int, int> P;
 //
 ///////////////////////////////////////////
 
-const int INF    = 1001001001;
-const int dx[4]  = { -1, 0, 1, 0 };
-const int dy[4]  = { 0, -1, 0, 1 };
+const int INF = 1001001001;
+const int dx[4] = { -1, 0, 1, 0 };
+const int dy[4] = { 0, -1, 0, 1 };
 const char cc[4] = { 'U', 'L', 'D', 'R' };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t randxor()
+  static uint32_t Rand()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -56,17 +56,17 @@ namespace /* 乱数ライブラリ */
     static uint32_t w = 88675123;
     uint32_t t;
 
-    t        = x ^ (x << 11);
-    x        = y;
-    y        = z;
-    z        = w;
+    t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
   // 0以上1未満の小数をとる乱数
   static double rand01()
   {
-    return (randxor() + 0.5) * (1.0 / UINT_MAX);
+    return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -85,9 +85,9 @@ namespace /* 変数 */
 
   // 焼きなまし用変数
   double now_time;
-  double TL         = 2.9;
+  double TL = 2.9;
   double start_temp = 2048;
-  double end_temp   = 0.0001;
+  double end_temp = 0.0001;
   ll real_maxScore;
   vector<int> real_ans;
 
@@ -103,10 +103,10 @@ namespace /* Union Find*/
   void UFinit(const int nn)
   {
     for (int i = 0; i < nn; i++) {
-      parUF[i]  = i;
+      parUF[i] = i;
       rankUF[i] = 0;
-      cntUF[i]  = 1;
-      int val   = board[i / n][i % n];
+      cntUF[i] = 1;
+      int val = board[i / n][i % n];
       if (val == 1 || val == 2 || val == 4 || val == 8) { cntUF[i] = 1; }
     }
   }
@@ -236,7 +236,7 @@ bool IsOKRoute(const vector<int>& ope)
 // kから後ろを全リセット
 void Operation1()
 {
-  int ite = randxor() % t;
+  int ite = Rand() % t;
 
   int x = startX;
   int y = startY;
@@ -248,9 +248,9 @@ void Operation1()
       y += dy[ans[i]];
     }
     else {
-      int val = randxor() % 4;
+      int val = Rand() % 4;
       while (!IsOK(x + dx[val], y + dy[val])) {
-        val = randxor() % 4;
+        val = Rand() % 4;
       }
 
       ans[i] = val;
@@ -271,7 +271,7 @@ void Operation1()
     maxScore += diffScore;
     if (maxScore > real_maxScore) {
       real_maxScore = maxScore;
-      real_ans      = ans;
+      real_ans = ans;
     }
   }
   else {
@@ -286,7 +286,7 @@ void Operation1()
 // kとkの直後をスワップ
 void Operation2()
 {
-  int ite = randxor() % (t - 1);
+  int ite = Rand() % (t - 1);
 
   swap(ans[ite], ans[ite + 1]);
 
@@ -307,7 +307,7 @@ void Operation2()
     maxScore += diffScore;
     if (maxScore > real_maxScore) {
       real_maxScore = maxScore;
-      real_ans      = ans;
+      real_ans = ans;
     }
   }
   else {
@@ -498,13 +498,13 @@ int CalcAniScore()
 bool FindTreeAni(bool isReset = false)
 {
   clock_t startAniTime, endAniTime;
-  const double AniTL  = 0.1;
-  startAniTime        = clock();
-  endAniTime          = clock();
-  double nowAniTime   = (double)(endAniTime - startAniTime) / CLOCKS_PER_SEC;
-  int loopAni         = 0;
+  const double AniTL = 0.1;
+  startAniTime = clock();
+  endAniTime = clock();
+  double nowAniTime = (double)(endAniTime - startAniTime) / CLOCKS_PER_SEC;
+  int loopAni = 0;
   double startAniTemp = 0.1;
-  double endAniTemp   = 0.0;
+  double endAniTemp = 0.0;
 
   if (isReset) {
     rep(i, n)
@@ -519,7 +519,7 @@ bool FindTreeAni(bool isReset = false)
   // カーソルは右下固定
   swap(aniBoard[startX][startY], aniBoard[n - 1][n - 1]);
 
-  int maxAniScore     = CalcAniScore();
+  int maxAniScore = CalcAniScore();
   int realMaxAniScore = maxAniScore;
   rep(i, n)
   {
@@ -536,15 +536,15 @@ bool FindTreeAni(bool isReset = false)
       if (nowAniTime > AniTL) break;
     }
 
-    int x1 = randxor() % n;
-    int y1 = randxor() % n;
-    int x2 = randxor() % n;
+    int x1 = Rand() % n;
+    int y1 = Rand() % n;
+    int x2 = Rand() % n;
     while (x1 == x2) {
-      x2 = randxor() % n;
+      x2 = Rand() % n;
     }
-    int y2 = randxor() % n;
+    int y2 = Rand() % n;
     while (y1 == y2) {
-      y2 = randxor() % n;
+      y2 = Rand() % n;
     }
 
     if (x1 == n - 1 && y1 == n - 1) { continue; }
@@ -628,8 +628,8 @@ bool CheckInversion()
     rep(j, n)
     {
       int num = i * n + j;
-      int x   = -1;
-      int y   = -1;
+      int x = -1;
+      int y = -1;
       rep(k, n)
       {
         rep(l, n)
@@ -712,15 +712,15 @@ void InitPeaceNum()
 
 pair<P, P> ShufflePiece()
 {
-  int ite = randxor() % 16;
+  int ite = Rand() % 16;
   while (originNum[ite].size() <= 1) {
-    ite = randxor() % 16;
+    ite = Rand() % 16;
   }
 
-  int a = randxor() % originNum[ite].size();
-  int b = randxor() % originNum[ite].size();
+  int a = Rand() % originNum[ite].size();
+  int b = Rand() % originNum[ite].size();
   while (a == b) {
-    b = randxor() % originNum[ite].size();
+    b = Rand() % originNum[ite].size();
   }
 
   int x1 = originNum[ite][a].first;
@@ -782,9 +782,9 @@ void OneMove(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, v
 
   queue<P> que;
   que.push(P(x, y));
-  dp[x][y]   = 0;
+  dp[x][y] = 0;
   dp[xx][yy] = -1;
-  dir[x][y]  = -1;
+  dir[x][y] = -1;
   while (que.size()) {
     int a = que.front().first;
     int b = que.front().second;
@@ -892,10 +892,10 @@ void MoveTwoPiece(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<
 
   queue<P> que;
   que.push(P(x, y));
-  dp[x][y]          = 0;
+  dp[x][y] = 0;
   dp[ii + 1][n - 2] = -1;
-  dp[ii][n - 1]     = INF;
-  dir[x][y]         = -1;
+  dp[ii][n - 1] = INF;
+  dir[x][y] = -1;
   while (que.size()) {
     int a = que.front().first;
     int b = que.front().second;
@@ -969,10 +969,10 @@ void MoveTwoPiece2(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector
 
   queue<P> que;
   que.push(P(x, y));
-  dp[x][y]          = 0;
+  dp[x][y] = 0;
   dp[n - 2][jj + 1] = -1;
-  dp[n - 1][jj]     = INF;
-  dir[x][y]         = -1;
+  dp[n - 1][jj] = INF;
+  dir[x][y] = -1;
   while (que.size()) {
     int a = que.front().first;
     int b = que.front().second;
@@ -1251,8 +1251,8 @@ vector<int> FindAnsDfs2()
       vector<vector<int>> keeptmpBoard;
       rep(k, vxx.size())
       {
-        x      = keepX;
-        y      = keepY;
+        x = keepX;
+        y = keepY;
         int xx = vxx[k];
         int yy = vyy[k];
         vector<int> tmpVec;
@@ -1273,20 +1273,20 @@ vector<int> FindAnsDfs2()
           }
         }
 
-        if (tmpVec.size() < miniScore || randxor() % 100 == 0) {
-          miniScore    = tmpVec.size();
-          miniVec      = tmpVec;
+        if (tmpVec.size() < miniScore || Rand() % 100 == 0) {
+          miniScore = tmpVec.size();
+          miniVec = tmpVec;
           keeptmpBoard = tmptmpBoard;
-          miniX        = x;
-          miniY        = y;
+          miniX = x;
+          miniY = y;
         }
       }
 
       for (auto& nd : miniVec) {
         ansDfs.push_back(nd);
       }
-      x        = miniX;
-      y        = miniY;
+      x = miniX;
+      y = miniY;
       tmpBoard = keeptmpBoard;
     }
 
@@ -1324,8 +1324,8 @@ vector<int> FindAnsDfs2()
       vector<vector<int>> keeptmpBoard;
       rep(k, vxx.size())
       {
-        x      = keepX;
-        y      = keepY;
+        x = keepX;
+        y = keepY;
         int xx = vxx[k];
         int yy = vyy[k];
         vector<int> tmpVec;
@@ -1346,20 +1346,20 @@ vector<int> FindAnsDfs2()
           }
         }
 
-        if (tmpVec.size() < miniScore || randxor() % 100 == 0) {
-          miniScore    = tmpVec.size();
-          miniVec      = tmpVec;
+        if (tmpVec.size() < miniScore || Rand() % 100 == 0) {
+          miniScore = tmpVec.size();
+          miniVec = tmpVec;
           keeptmpBoard = tmptmpBoard;
-          miniX        = x;
-          miniY        = y;
+          miniX = x;
+          miniY = y;
         }
       }
 
       for (auto& nd : miniVec) {
         ansDfs.push_back(nd);
       }
-      x        = miniX;
-      y        = miniY;
+      x = miniX;
+      y = miniY;
       tmpBoard = keeptmpBoard;
 
       MoveTwoPiece(x, y, i, tmpBoard, ansDfs);
@@ -1465,16 +1465,16 @@ int Solve(int mode, int problemNum = 0)
   srand((unsigned)time(NULL));
   clock_t start_time, end_time;
   start_time = clock();
-  end_time   = clock();
+  end_time = clock();
   while (rand() % 100) {
-    randxor();
+    Rand();
   }
 
   // 入力部
   Input(problemNum);
 
   // 木を1つ見つける
-  bool isFind      = false;
+  bool isFind = false;
   int findTreeMode = 1;
   if (findTreeMode == 0) {
     // DFSで全探索
@@ -1511,10 +1511,10 @@ int Solve(int mode, int problemNum = 0)
     InitPeaceNum();
 
     vector<int> ansDfs = FindAnsDfs2();
-    ans                = ansDfs;
-    maxScore           = CalcScore(ans);
+    ans = ansDfs;
+    maxScore = CalcScore(ans);
 
-    real_ans      = ans;
+    real_ans = ans;
     real_maxScore = maxScore;
 
     int loop = 0;
@@ -1531,20 +1531,20 @@ int Solve(int mode, int problemNum = 0)
       }
 
       vector<int> tmpAns = FindAnsDfs2();
-      int tmpScore       = CalcScore(tmpAns);
+      int tmpScore = CalcScore(tmpAns);
 
       int diffScore = tmpScore - maxScore;
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       double prob = exp((double)diffScore / temp);
       if (prob > rand01()) {
-        ans      = tmpAns;
+        ans = tmpAns;
         maxScore = tmpScore;
 
         if (maxScore > real_maxScore) {
           // cout << maxScore << endl;
           real_maxScore = maxScore;
-          real_ans      = ans;
+          real_ans = ans;
         }
       }
       else {
@@ -1565,9 +1565,9 @@ int Solve(int mode, int problemNum = 0)
       int y = startY;
       rep(i, t)
       {
-        int val = randxor() % 4;
+        int val = Rand() % 4;
         while (!IsOK(x + dx[val], y + dy[val])) {
-          val = randxor() % 4;
+          val = Rand() % 4;
         }
         ans.push_back(val);
         x += dx[val];
@@ -1577,7 +1577,7 @@ int Solve(int mode, int problemNum = 0)
 
     maxScore = CalcScore(ans);
 
-    real_ans      = ans;
+    real_ans = ans;
     real_maxScore = maxScore;
 
     // 山登り解、焼きなまし解
@@ -1601,7 +1601,7 @@ int Solve(int mode, int problemNum = 0)
     }
 
     // 最高スコアを戻す
-    ans      = real_ans;
+    ans = real_ans;
     maxScore = real_maxScore;
   }
 
