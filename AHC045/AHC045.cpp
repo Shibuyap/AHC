@@ -251,6 +251,11 @@ vector<int> best_ans_nums[MAX_M];
 vector<P> best_ans_edges[MAX_M];
 int best_ans_MSTSums[MAX_M];
 
+int free_use_graph[n][n];
+int free_use_graph_count[n];
+bool fre_use__visited[n];
+int free_use_parent[n];
+
 void CopyToBest()
 {
   best_ansScore = ansScore;
@@ -430,6 +435,152 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
 
   return res;
 }
+
+int buildMSTWithOnePoint_IsOne[n];
+vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, bool isTrue = false)
+{
+  int vCount = _nums.size();
+  auto nums = _nums;
+  rep(i, m) {
+    if (sort_g[i] == 1) {
+      nums.push_back(ans_nums[i][0]);
+    }
+    else {
+      break;
+    }
+  }
+
+  UF_Init(nums.size());
+
+  BuildMST_InitPoints(nums, 0, isTrue);
+
+  int edgeCount = 0;
+  rep(i, nums.size())
+  {
+    srep(j, i + 1, nums.size())
+    {
+      buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
+      buildMST_edges[edgeCount].u = i;
+      buildMST_edges[edgeCount].v = j;
+      edgeCount++;
+    }
+  }
+
+  sort(buildMST_edges, buildMST_edges + edgeCount);
+
+  vector<P> res;
+  vector<P> idxs;
+  int root = -1;
+  int rootNum = -1;
+  int sz = -1;
+
+  rep(i, edgeCount)
+  {
+    if (!UF_Same(buildMST_edges[i].u, buildMST_edges[i].v)) {
+      UF_Unite(buildMST_edges[i].u, buildMST_edges[i].v);
+      res.push_back(P(nums[buildMST_edges[i].u], nums[buildMST_edges[i].v]));
+      idxs.push_back(P(buildMST_edges[i].u, buildMST_edges[i].v));
+      if (UF_Count(buildMST_edges[i].u) >= vCount) {
+        root = UF_Find(buildMST_edges[i].u);
+        rootNum = nums[root];
+        sz = UF_Count(buildMST_edges[i].u);
+        break;
+      }
+    }
+  }
+
+  if (sz != vCount) {
+    return {};
+  }
+
+  buildMST_sum = 0;
+  newNums.clear();
+
+  vector<P> es;
+  rep(i, res.size()) {
+    if (UF_Find(idxs[i].first) == root) {
+      es.push_back(res[i]);
+    }
+  }
+
+  //cout << sz << ' ' << es.size() << endl;
+
+  //if (UF_Count(root) == vCount) {
+  //  return es;
+  //}
+
+  for (auto p : es) {
+    free_use_graph_count[p.first] = 0;
+    free_use_graph_count[p.second] = 0;
+  }
+
+  for (auto p : es) {
+    free_use_graph[p.first][free_use_graph_count[p.first]] = p.second;;
+    free_use_graph[p.second][free_use_graph_count[p.second]] = p.first;
+    free_use_graph_count[p.first]++;
+    free_use_graph_count[p.second]++;
+  }
+
+  priority_queue<pair<int, P>, vector<pair<int, P>>, greater<pair<int, P>>> pque;
+  pair<int, P> pp;
+  rep(i, free_use_graph_count[rootNum]) {
+    int y = free_use_graph[rootNum][i];
+    pp.first = Distance(rootNum, y);
+    pp.second.first = rootNum;
+    pp.second.second = y;
+    pque.emplace(pp);
+  }
+  newNums.push_back(rootNum);
+
+  vector<P> es2;
+  while (pque.size()) {
+    pp = pque.top();
+    pque.pop();
+    es2.emplace_back(pp.second);
+    buildMST_sum += sqrt(pp.first);
+    newNums.push_back(pp.second.second);
+
+    if (es2.size() == vCount - 1) {
+      break;
+    }
+
+    int par = pp.second.first;
+    int x = pp.second.second;
+    rep(i, free_use_graph_count[x]) {
+      int y = free_use_graph[x][i];
+      if (y == par)continue;
+      pp.first = Distance(x, y);
+      pp.second.first = x;
+      pp.second.second = y;
+      pque.emplace(pp);
+    }
+  }
+
+  //cout << sz << ' ' << vCount << ' ' << newNums.size() << ' ' << es2.size() << endl;
+
+  //for (auto num : newNums) {
+  //  cout << num << ' ';
+  //}
+  //cout << endl;
+
+  int now = 0;
+  for (auto num : nums) {
+    buildMSTWithOnePoint_IsOne[num] = true;
+  }
+  for (auto num : newNums) {
+    buildMSTWithOnePoint_IsOne[num] = false;
+  }
+  for (auto num : nums) {
+    if (buildMSTWithOnePoint_IsOne[num]) {
+      ans_nums[now][0] = num;
+      ans[num] = now;
+      now++;
+    }
+  }
+
+  return es2;
+}
+
 
 vector<P> BuildMSTWithEdgeCompare(const vector<int>& nums, bool isTrue = false)
 {
@@ -857,9 +1008,10 @@ void Query()
     ofs << endl;
 
     queryAnswers[queryCount] = BuildMST(queries[queryCount], true);
-    queryPredMST[queryCount] = BuildMST(queries[queryCount], false);
-    queryPredMSTSum[queryCount] = buildMST_sum;
   }
+
+  queryPredMST[queryCount] = BuildMST(queries[queryCount], false);
+  queryPredMSTSum[queryCount] = buildMST_sum;
 
   rep(i, queryAnswers[queryCount].size())
   {
@@ -919,7 +1071,7 @@ void Method1_Query(int start, int queryEnd)
     querySet.insert(queries[queryCount]);
     Query();
     if (queryCount == queryEnd) {
-      if (mode != 0) {
+      if (mode == 2) {
         cout << i + 1 << endl;
       }
       break;
@@ -1126,16 +1278,14 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
         rep(i, num_queries[ra1].size())
         {
           int q_num = num_queries[ra1][i];
-          queryPredMST[q_num] =  sa0_keepMST[i];
-          queryPredMSTSum[q_num] =sa0_keepMSTSum[i];
+          queryPredMST[q_num] = sa0_keepMST[i];
+          queryPredMSTSum[q_num] = sa0_keepMSTSum[i];
         }
-      }
-      else if (raMode < hypers.Partition[1]) {
       }
     }
   }
 
-  if (mode != 0 && mode != 3) {
+  if (mode == 2) {
     cout << "sa0 : " << loop << endl;
   }
 
@@ -1148,11 +1298,6 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
   ansScore = CalcScoreAll();
 
   CopyToBest();
-
-  //rep(i, 100)
-  //{
-  //  cout << pred_x[i] << ' ' << pred_y[i] << endl;
-  //}
 }
 
 void SimulatedAnnealing1(Hypers hypers, double timeLimit)
@@ -1183,34 +1328,29 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
     int raMode = RandXor() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
-    if (raMode < hypers.Partition[0]) {
-      if (m == 1)continue;
+    if (m == 1)continue;
+    ra1 = RandXor() % n;
+    ra2 = RandXor() % n;
+    while (ans[ra1] == ans[ra2]) {
       ra1 = RandXor() % n;
       ra2 = RandXor() % n;
-      while (ans[ra1] == ans[ra2]) {
-        ra1 = RandXor() % n;
-        ra2 = RandXor() % n;
-      }
-
-      int g_num1 = ans[ra1];
-      int g_num2 = ans[ra2];
-
-      tmpScore -= BoundingScore(g_num1);
-      tmpScore -= BoundingScore(g_num2);
-
-      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-      ans_nums[g_num1].push_back(ra2);
-      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-      ans_nums[g_num2].push_back(ra1);
-
-      tmpScore += BoundingScore(g_num1);
-      tmpScore += BoundingScore(g_num2);
-
-      swap(ans[ra1], ans[ra2]);
     }
-    else if (raMode < hypers.Partition[1]) {
 
-    }
+    int g_num1 = ans[ra1];
+    int g_num2 = ans[ra2];
+
+    tmpScore -= BoundingScore(g_num1);
+    tmpScore -= BoundingScore(g_num2);
+
+    ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
+    ans_nums[g_num1].push_back(ra2);
+    ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
+    ans_nums[g_num2].push_back(ra1);
+
+    tmpScore += BoundingScore(g_num1);
+    tmpScore += BoundingScore(g_num2);
+
+    swap(ans[ra1], ans[ra2]);
 
     // 焼きなまし
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
@@ -1226,23 +1366,19 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
     }
     else {
       // 元に戻す
-      if (raMode < hypers.Partition[0]) {
-        int g_num1 = ans[ra1];
-        int g_num2 = ans[ra2];
+      int g_num1 = ans[ra1];
+      int g_num2 = ans[ra2];
 
-        ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-        ans_nums[g_num1].push_back(ra2);
-        ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-        ans_nums[g_num2].push_back(ra1);
+      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
+      ans_nums[g_num1].push_back(ra2);
+      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
+      ans_nums[g_num2].push_back(ra1);
 
-        swap(ans[ra1], ans[ra2]);
-      }
-      else if (raMode < hypers.Partition[1]) {
-      }
+      swap(ans[ra1], ans[ra2]);
     }
   }
 
-  if (mode != 0 && mode != 3) {
+  if (mode == 2) {
     cout << "sa1 : " << loop << endl;
   }
 
@@ -1284,41 +1420,36 @@ void SimulatedAnnealing2(Hypers hypers)
     double tmpScore = INT_INF;
 
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
-    if (raMode < hypers.Partition[0]) {
-      if (m == 1)continue;
+
+    if (m == 1)continue;
+    ra1 = RandXor() % n;
+    ra2 = RandXor() % n;
+    while (ans[ra1] == ans[ra2]) {
       ra1 = RandXor() % n;
       ra2 = RandXor() % n;
-      while (ans[ra1] == ans[ra2]) {
-        ra1 = RandXor() % n;
-        ra2 = RandXor() % n;
-      }
-
-      int g_num1 = ans[ra1];
-      int g_num2 = ans[ra2];
-
-      tmpScore = ansScore;
-      tmpScore -= CalcScore(g_num1);
-      tmpScore -= CalcScore(g_num2);
-
-      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-      ans_nums[g_num1].push_back(ra2);
-      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-      ans_nums[g_num2].push_back(ra1);
-
-      ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
-      ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
-
-      tmpScore += CalcScore(g_num1);
-      tmpScore += CalcScore(g_num2);
-
-      swap(ans[ra1], ans[ra2]);
     }
-    else if (raMode < hypers.Partition[1]) {
 
-    }
+    int g_num1 = ans[ra1];
+    int g_num2 = ans[ra2];
+
+    tmpScore = ansScore;
+    tmpScore -= CalcScore(g_num1);
+    tmpScore -= CalcScore(g_num2);
+
+    ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
+    ans_nums[g_num1].push_back(ra2);
+    ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
+    ans_nums[g_num2].push_back(ra1);
+
+    ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
+    ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
+
+    tmpScore += CalcScore(g_num1);
+    tmpScore += CalcScore(g_num2);
+
+    swap(ans[ra1], ans[ra2]);
 
     // 焼きなまし
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
@@ -1334,26 +1465,22 @@ void SimulatedAnnealing2(Hypers hypers)
     }
     else {
       // 元に戻す
-      if (raMode < hypers.Partition[0]) {
-        int g_num1 = ans[ra1];
-        int g_num2 = ans[ra2];
+      int g_num1 = ans[ra1];
+      int g_num2 = ans[ra2];
 
-        ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-        ans_nums[g_num1].push_back(ra2);
-        ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-        ans_nums[g_num2].push_back(ra1);
+      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
+      ans_nums[g_num1].push_back(ra2);
+      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
+      ans_nums[g_num2].push_back(ra1);
 
-        ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
-        ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
+      ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
+      ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
 
-        swap(ans[ra1], ans[ra2]);
-      }
-      else if (raMode < hypers.Partition[1]) {
-      }
+      swap(ans[ra1], ans[ra2]);
     }
   }
 
-  if (mode != 0 && mode != 3) {
+  if (mode == 2) {
     cout << "sa2 : " << loop << endl;
   }
 
@@ -1362,21 +1489,16 @@ void SimulatedAnnealing2(Hypers hypers)
   CopyToBest();
 }
 
-int sa3_graph[n][n];
-int sa3_graph_count[n];
-
 int sa3_subtree_size[n];
-bool sa3_visited[n];
-int sa3_parent[n];
 int sa3_dfs(int u, int p)
 {
-  sa3_parent[u] = p;
-  sa3_visited[u] = true;
+  free_use_parent[u] = p;
+  fre_use__visited[u] = true;
   int cnt = 1; // 自分自身を含めるので1からスタート
-  rep(i, sa3_graph_count[u])
+  rep(i, free_use_graph_count[u])
   {
-    if (!sa3_visited[sa3_graph[u][i]]) {
-      cnt += sa3_dfs(sa3_graph[u][i], u);
+    if (!fre_use__visited[free_use_graph[u][i]]) {
+      cnt += sa3_dfs(free_use_graph[u][i], u);
     }
   }
   sa3_subtree_size[u] = cnt;
@@ -1387,11 +1509,11 @@ void sa3_dfs2(int u, int p, int g_num)
 {
   ans[u] = g_num;
   ans_nums[g_num].push_back(u);
-  rep(i, sa3_graph_count[u])
+  rep(i, free_use_graph_count[u])
   {
-    if (sa3_graph[u][i] != p) {
-      ans_edges[g_num].emplace_back(u, sa3_graph[u][i]);
-      sa3_dfs2(sa3_graph[u][i], u, g_num);
+    if (free_use_graph[u][i] != p) {
+      ans_edges[g_num].emplace_back(u, free_use_graph[u][i]);
+      sa3_dfs2(free_use_graph[u][i], u, g_num);
     }
   }
 }
@@ -1403,8 +1525,6 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp[0];
-  const double END_TEMP = hypers.EndTemp;
 
   int loop = 0;
   while (true) {
@@ -1415,16 +1535,11 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       if (nowTime > timeLimit) break;
     }
 
-    double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
-
-    ll tmpScore = ansScore;
-
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[3];
+    int raMode = RandXor() % hypers.Partition[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
-    if (raMode < hypers.Partition[0]) {
+    if (true || raMode < hypers.Partition[0]) {
       if (m == 1)continue;
       ra1 = RandXor() % m;
       ra2 = RandXor() % m;
@@ -1441,21 +1556,26 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
 
       vector<P> zen;
       if (RandXor() % 100 < 100) {
-        zen = BuildMST(ra1, ra2);
+        if (RandXor() % 100 < 90) {
+          zen = BuildMST(ra1, ra2);
+        }
+        else {
+          zen = BuildMST(vec);
+        }
       }
       else {
         zen = BuildMSTWithEdgeCompare(vec);
       }
 
       for (auto num : vec) {
-        sa3_graph_count[num] = 0;
-        sa3_visited[num] = false;
+        free_use_graph_count[num] = 0;
+        fre_use__visited[num] = false;
       }
       for (auto p : zen) {
-        sa3_graph[p.first][sa3_graph_count[p.first]] = p.second;
-        sa3_graph_count[p.first]++;
-        sa3_graph[p.second][sa3_graph_count[p.second]] = p.first;
-        sa3_graph_count[p.second]++;
+        free_use_graph[p.first][free_use_graph_count[p.first]] = p.second;
+        free_use_graph_count[p.first]++;
+        free_use_graph[p.second][free_use_graph_count[p.second]] = p.first;
+        free_use_graph_count[p.second]++;
       }
 
       sa3_dfs(vec[0], -1);
@@ -1468,7 +1588,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       {
         int u = zen[i].first;
         int v = zen[i].second;
-        if (sa3_parent[v] == u) {
+        if (free_use_parent[v] == u) {
           if (sa3_subtree_size[v] == sz1 || sa3_subtree_size[v] == sz2) {
             if (Distance(GetPoint(u), GetPoint(v)) > cutLen) {
               cutLen = Distance(GetPoint(u), GetPoint(v));
@@ -1512,36 +1632,27 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       sa3_dfs2(ra2Root, ra1Root, ra2);
     }
     else if (raMode < hypers.Partition[1]) {
-
-    }
-
-    // 焼きなまし
-    double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
-    double prob = exp(diffScore / temp);
-    if (prob > Rand01()) {
-      //// 採用
-      //ansScore = tmpScore;
-
-      //// Best解よりもいいか
-      //if (ansScore < best_ansScore) {
-      //  CopyToBest();
-      //}
-    }
-    else {
-      // 元に戻す
-      if (raMode < hypers.Partition[0]) {
-
+      ra1 = RandXor() % m;
+      while (sort_g[ra1] == 1) {
+        ra1 = RandXor() % m;
       }
-      else if (raMode < hypers.Partition[1]) {
+
+      auto res = BuildMSTWithOnePoint(ans_nums[ra1], ans_nums[ra1]);
+      if (!res.empty()) {
+        ans_edges[ra1] = res;
+        ans_MSTSums[ra1] = buildMST_sum;
+        for (auto num : ans_nums[ra1]) {
+          ans[num] = ra1;
+        }
       }
     }
+
+
   }
 
-  if (mode != 0 && mode != 3) {
+  if (mode == 2) {
     cout << "sa3 : " << loop << endl;
   }
-
-  //CopyToAns();
 
   rep(i, m)
   {
@@ -1555,12 +1666,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
 void SimulatedAnnealing4(Hypers hypers, double timeLimit)
 {
   double startTime = GetNowTime();
-
-  CopyToBest();
-
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp[0];
-  const double END_TEMP = hypers.EndTemp;
 
   int loop = 0;
   while (true) {
@@ -1571,27 +1677,13 @@ void SimulatedAnnealing4(Hypers hypers, double timeLimit)
       if (nowTime > timeLimit) break;
     }
 
-    double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
-
-    ll tmpScore = ansScore;
-
     // 近傍解作成
-    int raMode = RandXor() % hypers.Partition[3];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
-    if (raMode < hypers.Partition[0]) {
-      ra1 = RandXor() % m;
-
-      ans_edges[ra1] = BuildMSTWithEdgeCompare(ans_nums[ra1]);
-      ans_MSTSums[ra1] = buildMST_sum;
-    }
-    else if (raMode < hypers.Partition[1]) {
-
-    }
+    int ra1 = RandXor() % m;
+    ans_edges[ra1] = BuildMSTWithEdgeCompare(ans_nums[ra1]);
+    ans_MSTSums[ra1] = buildMST_sum;
   }
 
-  if (mode != 0 && mode != 3) {
+  if (mode == 2) {
     cout << "sa4 : " << loop << endl;
   }
 
@@ -1609,8 +1701,6 @@ ll Solve(int problem_num, Hypers hypers)
   // 入力受け取り
   Input(problem_num);
 
-  //if (l >= 5)return 0;
-
   // 出力ファイルストリームオープン
   OpenOfs(problem_num, ofs);
 
@@ -1620,19 +1710,16 @@ ll Solve(int problem_num, Hypers hypers)
   // 焼きなまし
   int aespa = 2;
   if (l <= 4)aespa = 4;
-  //aespa = 1;
   rep(i, aespa)
   {
     Method1_Query(0, q / aespa * (i + 1));
-    SimulatedAnnealing0(hypers, (TL * 0.6) * (((double)i + 1) / aespa));
+    SimulatedAnnealing0(hypers, (TL * 0.6) / aespa * (i + 1));
   }
   InitShorterEdges();
   SimulatedAnnealing1(hypers, TL * 0.7);
   //SimulatedAnnealing2(hypers);
   SimulatedAnnealing3(hypers, TL * 0.8);
-  //cout << CalcScoreLocal() << endl;
   SimulatedAnnealing4(hypers, TL * 1.0);
-  //cout << CalcScoreLocal() << endl;
 
   // 解答を出力
   Output(ofs);
@@ -1643,13 +1730,7 @@ ll Solve(int problem_num, Hypers hypers)
 
   ll score = 0;
   if (mode != 0) {
-    //cout << CalcScoreAll() << endl;
     score = CalcScoreLocal();
-
-    //rep(i, 100)
-    //{
-    //  cout << "(" << true_x[i] << ", " << true_y[i] << ") (" << GetMIddlePoint(i).first << ", " << GetMIddlePoint(i).second << ") (" << pred_x[i] << ", " << pred_y[i] << ")" << endl;
-    //}
   }
   return score;
 }
@@ -1668,11 +1749,11 @@ int main()
   }
 
   mode = 2;
-  isSimulateTruePoint = false;
+  isSimulateTruePoint = true;
 
   Hypers HYPERS;
   HYPERS.StartTemp[0] = 248.0;
-  HYPERS.StartTemp[1] = 2000048.0;
+  HYPERS.StartTemp[1] = 20048.0;
   HYPERS.StartTemp[2] = 248.0;
   HYPERS.StartTemp[3] = 248.0;
   HYPERS.StartTemp[4] = 248.0;
@@ -1684,7 +1765,7 @@ int main()
   HYPERS.EndTemp = 0.0;
   HYPERS.MultipleValue = 12345.0;
   HYPERS.Partition[0] = 100;
-  HYPERS.Partition[1] = 200;
+  HYPERS.Partition[1] = 110;
   HYPERS.Partition[2] = 300;
   HYPERS.Partition[3] = 400;
   HYPERS.Partition[4] = 500;
@@ -1699,9 +1780,9 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 50)
+    srep(i, 0, 150)
     {
-      ll score = Solve(i, HYPERS);
+      ll score = Solve(5, HYPERS);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
