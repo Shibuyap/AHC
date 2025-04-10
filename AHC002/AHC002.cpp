@@ -36,7 +36,7 @@ using namespace std;
 // using namespace atcoder;
 typedef long long int ll;
 typedef pair<int, int> P;
-#define yn {puts("Yes");}else{puts("No");}
+
 #define MAX_N 200005
 
 static uint32_t Rand()

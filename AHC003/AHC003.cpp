@@ -40,7 +40,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<double, P> PDP;
-#define yn {puts("Yes");}else{puts("No");}
+
 #define MAX_N 200005
 const int INF = 1001001001;
 
