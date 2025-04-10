@@ -63,79 +63,95 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-struct Point {
-  int x;
-  int y;
-};
-
-int nxt[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
+int next_directions[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
                    {1, 0, 2, 3}, {1, 0, 3, 2}, {1, 2, 0, 3}, {1, 2, 3, 0}, {1, 3, 0, 2}, {1, 3, 2, 0},
                    {2, 0, 1, 3}, {2, 0, 3, 1}, {2, 1, 0, 3}, {2, 1, 3, 0}, {2, 3, 0, 1}, {2, 3, 1, 0},
                    {3, 0, 1, 2}, {3, 0, 2, 1}, {3, 1, 0, 2}, {3, 1, 2, 0}, {3, 2, 0, 1}, {3, 2, 1, 0} };
 
 int dx[4] = { -1, 0, 1, 0 };
 int dy[4] = { 0, -1, 0, 1 };
-char nxtc[4] = { 'U','L','D','R' };
+char next_char[4] = { 'U','L','D','R' };
 
 const int n = 50;
+const int nn = n * n;
 int si, sj;
 int f[60][60];
 int value_grid[60][60];
-P h[60][60];
 
-int visited2[n * n];
-int v2_counter;
+int visited[n * n];
+int visited_counter;
+
+class Answer
+{
+public:
+  Answer() : length(0), score(0) {}
+
+  int length;
+  int direction[nn];
+  int x[nn];
+  int y[nn];
+  int score;
+
+  void init(int start_x, int start_y)
+  {
+    x[0] = start_x;
+    y[0] = start_y;
+    score = value_grid[x[0]][y[0]];
+    length = 1;
+  }
+
+  void add(int d)
+  {
+    x[length] = x[length - 1] + dx[d];
+    y[length] = y[length - 1] + dy[d];
+    direction[length - 1] = d;
+    score += value_grid[x[length]][y[length]];
+    length++;
+  }
+
+  void copy(const Answer& a)
+  {
+    length = a.length;
+    score = a.score;
+    rep(i, length) {
+      direction[i] = a.direction[i];
+      x[i] = a.x[i];
+      y[i] = a.y[i];
+    }
+  }
+
+  bool operator<(const Answer& other) const {
+    return score < other.score;
+  }
+
+  bool operator>(const Answer& other) const {
+    return score > other.score;
+  }
+};
+
+void swap_answer(Answer& a, Answer& b)
+{
+  int len = max(a.length, b.length);
+  for (int i = 0; i < len; i++) {
+    swap(a.direction[i], b.direction[i]);
+    swap(a.x[i], b.x[i]);
+    swap(a.y[i], b.y[i]);
+  }
+  swap(a.length, b.length);
+  swap(a.score, b.score);
+}
+
+Answer current_answer;
 
 const int KOUHO_SIZE = 100;
-string kouho_paths[KOUHO_SIZE];
-int kouho_scores[KOUHO_SIZE];
+Answer kouho[KOUHO_SIZE];
 
-string best_path;
-int best_score = 0;
-
-int calcScore(const string& path)
-{
-  int x = si, y = sj;
-  int res = value_grid[x][y];
-  int m = path.size();
-  rep(i, m)
-  {
-    if (path[i] == 'U') x--;
-    if (path[i] == 'D') x++;
-    if (path[i] == 'L') y--;
-    if (path[i] == 'R') y++;
-    res += value_grid[x][y];
-  }
-  return res;
-}
+Answer best_answer;
 
 bool is_out_of_range(int x, int y)
 {
   if (x < 0 || n <= x || y < 0 || n <= y) return true;
   return false;
-}
-
-void sort_kouho(int size)
-{
-  vector<pair<int, string>> kouho;
-  rep(i, size)
-  {
-    if (kouho_scores[i] > 0) {
-      kouho.push_back(make_pair(kouho_scores[i], kouho_paths[i]));
-    }
-  }
-  sort(kouho.begin(), kouho.end(), greater<pair<int, string>>());
-  rep(i, size)
-  {
-    if (i < kouho.size()) {
-      kouho_scores[i] = kouho[i].first;
-      kouho_paths[i] = kouho[i].second;
-    }
-    else {
-      kouho_scores[i] = 0;
-      kouho_paths[i] = "";
-    }
-  }
 }
 
 static void input_data() {
@@ -178,134 +194,97 @@ static void input_data() {
   }
 }
 
+void random_walk(Answer& answer) {
+  int x = answer.x[answer.length - 1];
+  int y = answer.y[answer.length - 1];
+  while (true) {
+    int ra = Rand() % 24;
+    bool ok = false;
+    rep(i, 4)
+    {
+      int nx = x + dx[next_directions[ra][i]];
+      int ny = y + dy[next_directions[ra][i]];
+      if (!is_out_of_range(nx, ny) && visited[f[nx][ny]] != visited_counter) {
+        visited[f[nx][ny]] = visited_counter;
+        answer.add(next_directions[ra][i]);
+        x = nx;
+        y = ny;
+        ok = true;
+        break;
+      }
+    }
+    if (!ok) break;
+  }
+}
+
+void init_visited()
+{
+  visited_counter++;
+  visited[f[si][sj]] = visited_counter;
+}
+
+void init_visited(const Answer& answer)
+{
+  visited_counter++;
+  rep(i, answer.length) {
+    visited[f[answer.x[i]][answer.y[i]]] = visited_counter;
+  }
+}
+
 int main()
 {
   input_data();
 
   start_timer();
 
-  // h‰Šú‰»
-  rep(i, n)
-  {
-    rep(j, n)
-    {
-      int num = f[i][j];
-      h[i][j].first = -1;
-      h[i][j].second = -1;
-      rep(k, 4)
-      {
-        int nx = i + dx[k];
-        int ny = j + dy[k];
-        if (!is_out_of_range(nx, ny) && f[nx][ny] == num) {
-          h[i][j].first = nx;
-          h[i][j].second = ny;
-        }
-      }
-    }
-  }
-
   rep(i, KOUHO_SIZE) {
-    kouho_scores[i] = 0;
+    kouho[i].init(si, sj);
   }
 
   int loop1 = 0;
   // ‰Šú‰ð
-  rep(_, 100000)
+  rep(i, 100000)
   {
     loop1++;
-    v2_counter++;
-    int x = si;
-    int y = sj;
-    int tmp = value_grid[x][y];
 
-    visited2[f[x][y]] = v2_counter;
+    init_visited();
 
-    string t;
+    current_answer.init(si, sj);
+    random_walk(current_answer);
 
-    while (true) {
-      int ra = Rand() % 24;
-      int ok = 0;
-
-      rep(i, 4)
-      {
-        int nx = x + dx[nxt[ra][i]];
-        int ny = y + dy[nxt[ra][i]];
-        if (!is_out_of_range(nx, ny) && visited2[f[nx][ny]] != v2_counter) {
-          ok = 1;
-          tmp += value_grid[nx][ny];
-          visited2[f[nx][ny]] = v2_counter;
-          t += nxtc[nxt[ra][i]];
-          x = nx;
-          y = ny;
-          break;
-        }
-      }
-
-      if (ok == 0) break;
+    int num = i % KOUHO_SIZE;
+    if (current_answer.score > kouho[num].score) {
+      kouho[num].copy(current_answer);
     }
 
-    int num = _ % KOUHO_SIZE;
-    if (tmp > kouho_scores[num]) {
-      kouho_scores[num] = tmp;
-      kouho_paths[num] = t;
-    }
-
-    if (get_elapsed_time() > 1.9)
+    if (get_elapsed_time() > 0.5)
     {
       break;
-    } 
+    }
   }
 
   int loop2 = 0;
   while (true) {
     loop2++;
-    v2_counter++;
-    int x = si;
-    int y = sj;
-    int tmp = value_grid[x][y];
 
-    visited2[f[x][y]] = v2_counter;
+    init_visited();
+
+    current_answer.init(si, sj);
 
     int num = Rand() % KOUHO_SIZE;
 
-    string t;
-    int m = rand() % kouho_paths[num].size() + 1;
-    t = kouho_paths[num].substr(0, m);
-    rep(i, m)
-    {
-      if (t[i] == 'U') x--;
-      if (t[i] == 'D') x++;
-      if (t[i] == 'L') y--;
-      if (t[i] == 'R') y++;
-      tmp += value_grid[x][y];
-      visited2[f[x][y]] = v2_counter;
+    int m = rand() % kouho[num].length;
+    rep(i, m) {
+      current_answer.add(kouho[num].direction[i]);
+      int x = current_answer.x[current_answer.length - 1];
+      int y = current_answer.y[current_answer.length - 1];
+      visited[f[x][y]] = visited_counter;
     }
 
-    while (true) {
-      int ra = Rand() % 24;
-      int ok = 0;
+    random_walk(current_answer);
 
-      rep(i, 4)
-      {
-        int nx = x + dx[nxt[ra][i]];
-        int ny = y + dy[nxt[ra][i]];
-        if (!is_out_of_range(nx, ny) && visited2[f[nx][ny]] != v2_counter) {
-          ok = 1;
-          tmp += value_grid[nx][ny];
-          visited2[f[nx][ny]] = v2_counter;
-          t += nxtc[nxt[ra][i]];
-          x = nx;
-          y = ny;
-          break;
-        }
-      }
-
-      if (ok == 0) break;
-    }
-
-    if (tmp > kouho_scores[num]) {
-      kouho_scores[num] = tmp;
-      kouho_paths[num] = t;
+    if (current_answer.score > kouho[num].score) {
+      kouho[num].copy(current_answer);
     }
 
     if (get_elapsed_time() > 1.0)
@@ -314,126 +293,120 @@ int main()
     }
   }
 
-  sort_kouho(KOUHO_SIZE);
-  best_path = kouho_paths[0];
-  best_score = kouho_scores[0];
+  sort(kouho, kouho + KOUHO_SIZE, greater<Answer>());
+  best_answer.copy(kouho[0]);
 
   bool is_sorted = false;
 
-  int xxx[10000], yyy[10000];
-  int xxx_count, yyy_count;
+  Answer before_keep_path, keep_path, after_keep_path;
   int loop3 = 0;
   while (true) {
     loop3++;
 
-    v2_counter++;
-    int x = si;
-    int y = sj;
-    int tmp = value_grid[x][y];
+    int num = is_sorted ? 0 : Rand() % 10;
 
-    visited2[f[x][y]] = v2_counter;
+    init_visited();
 
-    int num = Rand() % 10;
-    if (is_sorted) {
-      num = 0;
-    }
-
-    int m = kouho_paths[num].size();
-    string t = kouho_paths[num];
-
-    vector<int> xx, yy;
-    xx.push_back(x);
-    yy.push_back(y);
-
-    rep(i, m)
-    {
-      if (t[i] == 'U') x--;
-      if (t[i] == 'D') x++;
-      if (t[i] == 'L') y--;
-      if (t[i] == 'R') y++;
-      tmp += value_grid[x][y];
-      visited2[f[x][y]] = v2_counter;
-      xx.push_back(x);
-      yy.push_back(y);
-    }
-
+    int m = kouho[num].length;
     int left = Rand() % (m - 40) + 10;
     int right = left + 1 + Rand() % 20;
-    int tmp2 = 0;
-    srep(i, left + 1, right)
-    {
-      x = xx[i], y = yy[i];
-      tmp -= value_grid[x][y];
-      tmp2 += value_grid[x][y];
-      visited2[f[x][y]] = -1;
+
+    int sx = kouho[num].x[left];
+    int sy = kouho[num].y[left];
+    int gx = kouho[num].x[right];
+    int gy = kouho[num].y[right];
+
+    before_keep_path.init(si, sj);
+    rep(i, left) {
+      before_keep_path.add(kouho[num].direction[i]);
+      int x = before_keep_path.x[before_keep_path.length - 1];
+      int y = before_keep_path.y[before_keep_path.length - 1];
+      visited[f[x][y]] = visited_counter;
     }
 
-    string t1, t2, t3;
-    rep(i, left) t1 += t[i];
-    srep(i, left, right) t2 += t[i];
-    srep(i, right, m) t3 += t[i];
+    keep_path.init(sx, sy);
+    srep(i, left, right)
+    {
+      keep_path.add(kouho[num].direction[i]);
+      int x = keep_path.x[keep_path.length - 1];
+      int y = keep_path.y[keep_path.length - 1];
+      visited[f[x][y]] = -1;
+    }
 
-    int sx = xx[left], sy = yy[left];
-    int gx = xx[right], gy = yy[right];
+    after_keep_path.init(gx, gy);
+    srep(i, right, m - 1)
+    {
+      after_keep_path.add(kouho[num].direction[i]);
+      int x = after_keep_path.x[after_keep_path.length - 1];
+      int y = after_keep_path.y[after_keep_path.length - 1];
+      visited[f[x][y]] = visited_counter;
+    }
 
+    Answer new_path;
     rep(_, 100)
     {
-      xxx_count = 0;
-      yyy_count = 0;
-      x = sx; y = sy;
-      int tmp3 = 0;
-      string ttt;
+      new_path.init(sx, sy);
+      int x = sx;
+      int y = sy;
+
       while (x != gx || y != gy) {
         int ra = Rand() % 24;
-        int ok = 0;
+        bool ok = false;
 
         rep(i, 4)
         {
-          int nx = x + dx[nxt[ra][i]];
-          int ny = y + dy[nxt[ra][i]];
-          if (nx == gx && ny == gy && f[x][y] != f[nx][ny]) {
-            ok = 2;
-            x = gx;
-            y = gy;
-            ttt += nxtc[nxt[ra][i]];
-            break;
+          int nx = x + dx[next_directions[ra][i]];
+          int ny = y + dy[next_directions[ra][i]];
+          if (nx == gx && ny == gy) {
+            if (visited[f[nx][ny]] == visited_counter) {
+              ok = false;
+              break;
+            }
+            else {
+              x = nx;
+              y = ny;
+              new_path.add(next_directions[ra][i]);
+              visited[f[x][y]] = visited_counter;
+              ok = true;
+              break;
+            }
           }
-          if (!is_out_of_range(nx, ny) && visited2[f[nx][ny]] != v2_counter) {
-            ok = 1;
-            tmp3 += value_grid[nx][ny];
-            visited2[f[nx][ny]] = v2_counter;
-            xxx[xxx_count] = nx;
-            yyy[yyy_count] = ny;
-            xxx_count++;
-            yyy_count++;
-            ttt += nxtc[nxt[ra][i]];
+          if (!is_out_of_range(nx, ny) && visited[f[nx][ny]] != visited_counter) {
             x = nx;
             y = ny;
+            new_path.add(next_directions[ra][i]);
+            visited[f[x][y]] = visited_counter;
+            ok = true;
             break;
           }
         }
 
-        if (ok == 0) break;
+        if (!ok) break;
       }
 
-      if (x == gx && y == gy && tmp3 > tmp2) {
-        tmp2 = tmp3;
-        t2 = ttt;
+      if (x == gx && y == gy && new_path.score > keep_path.score) {
+        keep_path.copy(new_path);
       }
-      rep(i, xxx_count)
+      srep(i, 1, new_path.length)
       {
-        x = xxx[i];
-        y = yyy[i];
-        visited2[f[x][y]] = -1;
+        int x = new_path.x[i];
+        int y = new_path.y[i];
+        visited[f[x][y]] = -1;
       }
     }
 
-    if (tmp + tmp2 > kouho_scores[num]) {
-      kouho_scores[num] = tmp + tmp2;
-      kouho_paths[num] = t1 + t2 + t3;
-      if (tmp + tmp2 > best_score) {
-        best_score = tmp + tmp2;
-        best_path = t1 + t2 + t3;
+    if (before_keep_path.score + keep_path.score + after_keep_path.score > kouho[num].score) {
+
+      kouho[num].copy(before_keep_path);
+      rep(i, keep_path.length - 1) {
+        kouho[num].add(keep_path.direction[i]);
+      }
+      rep(i, after_keep_path.length - 1) {
+        kouho[num].add(after_keep_path.direction[i]);
+      }
+
+      if (kouho[num].score > best_answer.score) {
+        best_answer.copy(kouho[num]);
       }
     }
 
@@ -443,7 +416,7 @@ int main()
     }
     if (!is_sorted && get_elapsed_time() > 1.5)
     {
-      sort_kouho(10);
+      sort(kouho, kouho + 10, greater<Answer>());
       is_sorted = true;
     }
   }
@@ -451,8 +424,12 @@ int main()
   cerr << "loop1 = " << loop1 << endl;
   cerr << "loop2 = " << loop2 << endl;
   cerr << "loop3 = " << loop3 << endl;
-  cerr << "best_score = " << best_score << endl;
+  cerr << "best_score = " << best_answer.score << endl;
 
-  cout << best_path << endl;
+  string best_string;
+  rep(i, best_answer.length - 1) {
+    best_string += next_char[best_answer.direction[i]];
+  }
+  cout << best_string << endl;
   return 0;
 }
