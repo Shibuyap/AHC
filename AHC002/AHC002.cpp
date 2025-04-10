@@ -50,9 +50,9 @@ double get_elapsed_time()
   return elapsed.count();
 }
 
-const double TIME_LIMIT_STAGE1 = 0.5;
-const double TIME_LIMIT_STAGE2 = 1.0;
-const double TIME_LIMIT_STAGE3 = 1.5;
+const double TIME_LIMIT_STAGE1 = 0.2;
+const double TIME_LIMIT_STAGE2 = 0.5;
+const double TIME_LIMIT_STAGE3 = 1.0;
 const double TIME_LIMIT_FINAL = 1.9;
 
 static uint32_t Rand()
@@ -66,6 +66,11 @@ static uint32_t Rand()
   t = x ^ (x << 11);
   x = y; y = z; z = w;
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+}
+
+static double Rand01()
+{
+  return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
 int next_directions[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
@@ -148,7 +153,8 @@ public:
 
 Path current_path;
 
-const int CANDIDATE_SIZE = 100;
+const int CANDIDATE_SIZE = 1;
+const int CANDIDATE_SIZE_2 = 1;
 Path candidate_paths[CANDIDATE_SIZE];
 
 Path best_path;
@@ -308,17 +314,21 @@ int main()
   // ÇªÇÍà»ç~Ç after_keep_path Ç∆ÇµÇƒä«óùÅB
   Path before_keep_path, keep_path, after_keep_path;
   int loop3 = 0;
+  const double START_TEMP = 2000048.0;
+  const double END_TEMP = 0.1;
+  const double SCORE_SCALE = 12345.6;
+  double syori3_start_time = get_elapsed_time();
   while (true) {
     loop3++;
 
-    int num = is_sorted ? 0 : Rand() % 10;
+    int num = is_sorted ? 0 : Rand() % CANDIDATE_SIZE_2;
 
     init_visited();
 
     int m = candidate_paths[num].length;
-    if (m <= 40) continue;
-    int left = Rand() % (m - 40) + 10;
-    int right = left + 1 + Rand() % 20;
+    int left = Rand() % max(m - 80, 1) + 10;
+    int right = left + 1 + Rand() % 40;
+    right = min(right, m - 2);
 
     int sx = candidate_paths[num].x[left];
     int sy = candidate_paths[num].y[left];
@@ -351,6 +361,7 @@ int main()
       visited[tile_id[x][y]] = visited_version;
     }
 
+    bool is_first = true;
     Path new_path;
     rep(_, 100)
     {
@@ -393,8 +404,9 @@ int main()
         if (!ok) break;
       }
 
-      if (x == gx && y == gy && new_path.score > keep_path.score) {
+      if (x == gx && y == gy && (is_first||new_path.score > keep_path.score)) {
         keep_path.copy(new_path);
+        is_first = false;
       }
       srep(i, 1, new_path.length)
       {
@@ -404,7 +416,15 @@ int main()
       }
     }
 
-    if (before_keep_path.score + keep_path.score + after_keep_path.score > candidate_paths[num].score) {
+    double now_time = get_elapsed_time();
+
+    double progress_ratio = (now_time - syori3_start_time) / (TIME_LIMIT_FINAL - syori3_start_time);
+
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+    double new_score = before_keep_path.score + keep_path.score + after_keep_path.score - (cell_value[sx][sy] + cell_value[gx][gy]);
+    double diff_score = (new_score - candidate_paths[num].score) * SCORE_SCALE;
+    double prob = exp(diff_score / temp);
+    if (prob > Rand01()) {
       candidate_paths[num].copy(before_keep_path);
       rep(i, keep_path.length - 1) {
         candidate_paths[num].add(keep_path.direction[i]);
@@ -418,13 +438,13 @@ int main()
       }
     }
 
-    if (!is_sorted && get_elapsed_time() > TIME_LIMIT_STAGE3)
+    if (!is_sorted && now_time > TIME_LIMIT_STAGE3)
     {
-      sort(candidate_paths, candidate_paths + 10, greater<Path>());
+      sort(candidate_paths, candidate_paths + CANDIDATE_SIZE_2, greater<Path>());
       is_sorted = true;
     }
 
-    if (get_elapsed_time() > TIME_LIMIT_FINAL)
+    if (now_time > TIME_LIMIT_FINAL)
     {
       break;
     }
