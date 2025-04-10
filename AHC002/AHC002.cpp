@@ -50,6 +50,11 @@ double get_elapsed_time()
   return elapsed.count();
 }
 
+const double TIME_LIMIT_STAGE1 = 0.5;
+const double TIME_LIMIT_STAGE2 = 1.0;
+const double TIME_LIMIT_STAGE3 = 1.5;
+const double TIME_LIMIT_FINAL = 1.9;
+
 static uint32_t Rand()
 {
   static uint32_t x = 123456789;
@@ -72,31 +77,31 @@ int dx[4] = { -1, 0, 1, 0 };
 int dy[4] = { 0, -1, 0, 1 };
 char next_char[4] = { 'U','L','D','R' };
 
-const int n = 50;
-const int nn = n * n;
+const int GRID_SIZE = 50;
+const int MAX_PATH_LENGTH = GRID_SIZE * GRID_SIZE;
 int si, sj;
-int f[60][60];
-int value_grid[60][60];
+int tile_id[60][60];
+int cell_value[60][60];
 
-int visited[n * n];
-int visited_counter;
+int visited[GRID_SIZE * GRID_SIZE];
+int visited_version;
 
-class Answer
+class Path
 {
 public:
-  Answer() : length(0), score(0) {}
+  Path() : length(0), score(0) {}
 
   int length;
-  int direction[nn];
-  int x[nn];
-  int y[nn];
+  int direction[MAX_PATH_LENGTH];
+  int x[MAX_PATH_LENGTH];
+  int y[MAX_PATH_LENGTH];
   int score;
 
   void init(int start_x, int start_y)
   {
     x[0] = start_x;
     y[0] = start_y;
-    score = value_grid[x[0]][y[0]];
+    score = cell_value[x[0]][y[0]];
     length = 1;
   }
 
@@ -105,11 +110,11 @@ public:
     x[length] = x[length - 1] + dx[d];
     y[length] = y[length - 1] + dy[d];
     direction[length - 1] = d;
-    score += value_grid[x[length]][y[length]];
+    score += cell_value[x[length]][y[length]];
     length++;
   }
 
-  void copy(const Answer& a)
+  void copy(const Path& a)
   {
     length = a.length;
     score = a.score;
@@ -120,37 +125,37 @@ public:
     }
   }
 
-  bool operator<(const Answer& other) const {
+  Path& operator=(const Path& a) {
+    if (this == &a) return *this;
+    length = a.length;
+    score = a.score;
+    rep(i, length) {
+      direction[i] = a.direction[i];
+      x[i] = a.x[i];
+      y[i] = a.y[i];
+    }
+    return *this;
+  }
+
+  bool operator<(const Path& other) const {
     return score < other.score;
   }
 
-  bool operator>(const Answer& other) const {
+  bool operator>(const Path& other) const {
     return score > other.score;
   }
 };
 
-void swap_answer(Answer& a, Answer& b)
-{
-  int len = max(a.length, b.length);
-  for (int i = 0; i < len; i++) {
-    swap(a.direction[i], b.direction[i]);
-    swap(a.x[i], b.x[i]);
-    swap(a.y[i], b.y[i]);
-  }
-  swap(a.length, b.length);
-  swap(a.score, b.score);
-}
+Path current_path;
 
-Answer current_answer;
+const int CANDIDATE_SIZE = 100;
+Path candidate_paths[CANDIDATE_SIZE];
 
-const int KOUHO_SIZE = 100;
-Answer kouho[KOUHO_SIZE];
-
-Answer best_answer;
+Path best_path;
 
 bool is_out_of_range(int x, int y)
 {
-  if (x < 0 || n <= x || y < 0 || n <= y) return true;
+  if (x < 0 || GRID_SIZE <= x || y < 0 || GRID_SIZE <= y) return true;
   return false;
 }
 
@@ -160,43 +165,43 @@ static void input_data() {
   ifstream ifs(cstrIfs);
   if (!ifs.is_open()) { // 標準入力する
     cin >> si >> sj;
-    rep(i, n)
+    rep(i, GRID_SIZE)
     {
-      rep(j, n)
+      rep(j, GRID_SIZE)
       {
-        cin >> f[i][j];
+        cin >> tile_id[i][j];
       }
     }
-    rep(i, n)
+    rep(i, GRID_SIZE)
     {
-      rep(j, n)
+      rep(j, GRID_SIZE)
       {
-        cin >> value_grid[i][j];
+        cin >> cell_value[i][j];
       }
     }
   }
   else { // ファイル入力する
     ifs >> si >> sj;
-    rep(i, n)
+    rep(i, GRID_SIZE)
     {
-      rep(j, n)
+      rep(j, GRID_SIZE)
       {
-        ifs >> f[i][j];
+        ifs >> tile_id[i][j];
       }
     }
-    rep(i, n)
+    rep(i, GRID_SIZE)
     {
-      rep(j, n)
+      rep(j, GRID_SIZE)
       {
-        ifs >> value_grid[i][j];
+        ifs >> cell_value[i][j];
       }
     }
   }
 }
 
-void random_walk(Answer& answer) {
-  int x = answer.x[answer.length - 1];
-  int y = answer.y[answer.length - 1];
+void extend_random_path(Path& path) {
+  int x = path.x[path.length - 1];
+  int y = path.y[path.length - 1];
   while (true) {
     int ra = Rand() % 24;
     bool ok = false;
@@ -204,9 +209,9 @@ void random_walk(Answer& answer) {
     {
       int nx = x + dx[next_directions[ra][i]];
       int ny = y + dy[next_directions[ra][i]];
-      if (!is_out_of_range(nx, ny) && visited[f[nx][ny]] != visited_counter) {
-        visited[f[nx][ny]] = visited_counter;
-        answer.add(next_directions[ra][i]);
+      if (!is_out_of_range(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
+        visited[tile_id[nx][ny]] = visited_version;
+        path.add(next_directions[ra][i]);
         x = nx;
         y = ny;
         ok = true;
@@ -219,15 +224,15 @@ void random_walk(Answer& answer) {
 
 void init_visited()
 {
-  visited_counter++;
-  visited[f[si][sj]] = visited_counter;
+  visited_version++;
+  visited[tile_id[si][sj]] = visited_version;
 }
 
-void init_visited(const Answer& answer)
+void init_visited(const Path& path)
 {
-  visited_counter++;
-  rep(i, answer.length) {
-    visited[f[answer.x[i]][answer.y[i]]] = visited_counter;
+  visited_version++;
+  rep(i, path.length) {
+    visited[tile_id[path.x[i]][path.y[i]]] = visited_version;
   }
 }
 
@@ -237,8 +242,8 @@ int main()
 
   start_timer();
 
-  rep(i, KOUHO_SIZE) {
-    kouho[i].init(si, sj);
+  rep(i, CANDIDATE_SIZE) {
+    candidate_paths[i].init(si, sj);
   }
 
   int loop1 = 0;
@@ -249,15 +254,15 @@ int main()
 
     init_visited();
 
-    current_answer.init(si, sj);
-    random_walk(current_answer);
+    current_path.init(si, sj);
+    extend_random_path(current_path);
 
-    int num = i % KOUHO_SIZE;
-    if (current_answer.score > kouho[num].score) {
-      kouho[num].copy(current_answer);
+    int num = i % CANDIDATE_SIZE;
+    if (current_path.score > candidate_paths[num].score) {
+      candidate_paths[num].copy(current_path);
     }
 
-    if (get_elapsed_time() > 0.5)
+    if (get_elapsed_time() > TIME_LIMIT_STAGE1)
     {
       break;
     }
@@ -269,36 +274,39 @@ int main()
 
     init_visited();
 
-    current_answer.init(si, sj);
+    current_path.init(si, sj);
 
-    int num = Rand() % KOUHO_SIZE;
+    int num = Rand() % CANDIDATE_SIZE;
 
-    int m = rand() % kouho[num].length;
+    int m = Rand() % candidate_paths[num].length;
     rep(i, m) {
-      current_answer.add(kouho[num].direction[i]);
-      int x = current_answer.x[current_answer.length - 1];
-      int y = current_answer.y[current_answer.length - 1];
-      visited[f[x][y]] = visited_counter;
+      current_path.add(candidate_paths[num].direction[i]);
+      int x = current_path.x[current_path.length - 1];
+      int y = current_path.y[current_path.length - 1];
+      visited[tile_id[x][y]] = visited_version;
     }
 
-    random_walk(current_answer);
+    extend_random_path(current_path);
 
-    if (current_answer.score > kouho[num].score) {
-      kouho[num].copy(current_answer);
+    if (current_path.score > candidate_paths[num].score) {
+      candidate_paths[num].copy(current_path);
     }
 
-    if (get_elapsed_time() > 1.0)
+    if (get_elapsed_time() > TIME_LIMIT_STAGE2)
     {
       break;
     }
   }
 
-  sort(kouho, kouho + KOUHO_SIZE, greater<Answer>());
-  best_answer.copy(kouho[0]);
+  sort(candidate_paths, candidate_paths + CANDIDATE_SIZE, greater<Path>());
+  best_path.copy(candidate_paths[0]);
 
   bool is_sorted = false;
 
-  Answer before_keep_path, keep_path, after_keep_path;
+  // [left, right)区間の経路を再生成するため、
+  // それ以前を before_keep_path、該当区間を keep_path、
+  // それ以降を after_keep_path として管理。
+  Path before_keep_path, keep_path, after_keep_path;
   int loop3 = 0;
   while (true) {
     loop3++;
@@ -307,42 +315,43 @@ int main()
 
     init_visited();
 
-    int m = kouho[num].length;
+    int m = candidate_paths[num].length;
+    if (m <= 40) continue;
     int left = Rand() % (m - 40) + 10;
     int right = left + 1 + Rand() % 20;
 
-    int sx = kouho[num].x[left];
-    int sy = kouho[num].y[left];
-    int gx = kouho[num].x[right];
-    int gy = kouho[num].y[right];
+    int sx = candidate_paths[num].x[left];
+    int sy = candidate_paths[num].y[left];
+    int gx = candidate_paths[num].x[right];
+    int gy = candidate_paths[num].y[right];
 
     before_keep_path.init(si, sj);
     rep(i, left) {
-      before_keep_path.add(kouho[num].direction[i]);
+      before_keep_path.add(candidate_paths[num].direction[i]);
       int x = before_keep_path.x[before_keep_path.length - 1];
       int y = before_keep_path.y[before_keep_path.length - 1];
-      visited[f[x][y]] = visited_counter;
+      visited[tile_id[x][y]] = visited_version;
     }
 
     keep_path.init(sx, sy);
     srep(i, left, right)
     {
-      keep_path.add(kouho[num].direction[i]);
+      keep_path.add(candidate_paths[num].direction[i]);
       int x = keep_path.x[keep_path.length - 1];
       int y = keep_path.y[keep_path.length - 1];
-      visited[f[x][y]] = -1;
+      visited[tile_id[x][y]] = -1;
     }
 
     after_keep_path.init(gx, gy);
     srep(i, right, m - 1)
     {
-      after_keep_path.add(kouho[num].direction[i]);
+      after_keep_path.add(candidate_paths[num].direction[i]);
       int x = after_keep_path.x[after_keep_path.length - 1];
       int y = after_keep_path.y[after_keep_path.length - 1];
-      visited[f[x][y]] = visited_counter;
+      visited[tile_id[x][y]] = visited_version;
     }
 
-    Answer new_path;
+    Path new_path;
     rep(_, 100)
     {
       new_path.init(sx, sy);
@@ -358,7 +367,7 @@ int main()
           int nx = x + dx[next_directions[ra][i]];
           int ny = y + dy[next_directions[ra][i]];
           if (nx == gx && ny == gy) {
-            if (visited[f[nx][ny]] == visited_counter) {
+            if (visited[tile_id[nx][ny]] == visited_version) {
               ok = false;
               break;
             }
@@ -366,16 +375,16 @@ int main()
               x = nx;
               y = ny;
               new_path.add(next_directions[ra][i]);
-              visited[f[x][y]] = visited_counter;
+              visited[tile_id[x][y]] = visited_version;
               ok = true;
               break;
             }
           }
-          if (!is_out_of_range(nx, ny) && visited[f[nx][ny]] != visited_counter) {
+          if (!is_out_of_range(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
             x = nx;
             y = ny;
             new_path.add(next_directions[ra][i]);
-            visited[f[x][y]] = visited_counter;
+            visited[tile_id[x][y]] = visited_version;
             ok = true;
             break;
           }
@@ -391,44 +400,44 @@ int main()
       {
         int x = new_path.x[i];
         int y = new_path.y[i];
-        visited[f[x][y]] = -1;
+        visited[tile_id[x][y]] = -1;
       }
     }
 
-    if (before_keep_path.score + keep_path.score + after_keep_path.score > kouho[num].score) {
-
-      kouho[num].copy(before_keep_path);
+    if (before_keep_path.score + keep_path.score + after_keep_path.score > candidate_paths[num].score) {
+      candidate_paths[num].copy(before_keep_path);
       rep(i, keep_path.length - 1) {
-        kouho[num].add(keep_path.direction[i]);
+        candidate_paths[num].add(keep_path.direction[i]);
       }
       rep(i, after_keep_path.length - 1) {
-        kouho[num].add(after_keep_path.direction[i]);
+        candidate_paths[num].add(after_keep_path.direction[i]);
       }
 
-      if (kouho[num].score > best_answer.score) {
-        best_answer.copy(kouho[num]);
+      if (candidate_paths[num].score > best_path.score) {
+        best_path.copy(candidate_paths[num]);
       }
     }
 
-    if (get_elapsed_time() > 1.9)
+    if (!is_sorted && get_elapsed_time() > TIME_LIMIT_STAGE3)
+    {
+      sort(candidate_paths, candidate_paths + 10, greater<Path>());
+      is_sorted = true;
+    }
+
+    if (get_elapsed_time() > TIME_LIMIT_FINAL)
     {
       break;
-    }
-    if (!is_sorted && get_elapsed_time() > 1.5)
-    {
-      sort(kouho, kouho + 10, greater<Answer>());
-      is_sorted = true;
     }
   }
 
   cerr << "loop1 = " << loop1 << endl;
   cerr << "loop2 = " << loop2 << endl;
   cerr << "loop3 = " << loop3 << endl;
-  cerr << "best_score = " << best_answer.score << endl;
+  cerr << "best_score = " << best_path.score << endl;
 
   string best_string;
-  rep(i, best_answer.length - 1) {
-    best_string += next_char[best_answer.direction[i]];
+  rep(i, best_path.length - 1) {
+    best_string += next_char[best_path.direction[i]];
   }
   cout << best_string << endl;
   return 0;
