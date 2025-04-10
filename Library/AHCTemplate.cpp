@@ -91,13 +91,14 @@ const int DY[4] = { 0, -1, 0, 1 };
 
 double time_limit = 1.8;
 int exec_mode;
-std::chrono::steady_clock::time_point start_time_clock;
 
 int n;
 
 int current_score;
 
 int best_score;
+
+std::chrono::steady_clock::time_point start_time_clock;
 
 void start_timer()
 {

@@ -28,16 +28,27 @@
 #include <utility>
 #include <vector>
 
-// #include <atcoder/all>
 #define rep(i,n) for(int i = 0; i < (n); ++i)
 #define srep(i,s,t) for(int i = s; i < t; ++i)
 #define drep(i,n) for(int i = (n)-1; i >= 0; --i)
 using namespace std;
-// using namespace atcoder;
 typedef long long int ll;
 typedef pair<int, int> P;
 
 #define MAX_N 200005
+
+std::chrono::steady_clock::time_point start_time_clock;
+
+void start_timer()
+{
+  start_time_clock = std::chrono::steady_clock::now();
+}
+
+double get_elapsed_time()
+{
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+  return elapsed.count();
+}
 
 static uint32_t Rand()
 {
@@ -52,6 +63,11 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
+struct Point {
+  int x;
+  int y;
+};
+
 int nxt[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
                    {1, 0, 2, 3}, {1, 0, 3, 2}, {1, 2, 0, 3}, {1, 2, 3, 0}, {1, 3, 0, 2}, {1, 3, 2, 0},
                    {2, 0, 1, 3}, {2, 0, 3, 1}, {2, 1, 0, 3}, {2, 1, 3, 0}, {2, 3, 0, 1}, {2, 3, 1, 0},
@@ -64,39 +80,65 @@ char nxtc[4] = { 'U','L','D','R' };
 const int n = 50;
 int si, sj;
 int f[60][60];
-int a[60][60];
-int g[60][60];
-
+int value_grid[60][60];
 P h[60][60];
 
-string ans;
-int ma = 0;
+int visited2[n * n];
+int v2_counter;
 
-int calcScore(string s)
+const int KOUHO_SIZE = 100;
+string kouho_paths[KOUHO_SIZE];
+int kouho_scores[KOUHO_SIZE];
+
+string best_path;
+int best_score = 0;
+
+int calcScore(const string& path)
 {
   int x = si, y = sj;
-  int res = a[x][y];
-  int m = s.size();
+  int res = value_grid[x][y];
+  int m = path.size();
   rep(i, m)
   {
-    if (s[i] == 'U') x--;
-    if (s[i] == 'D') x++;
-    if (s[i] == 'L') y--;
-    if (s[i] == 'R') y++;
-    res += a[x][y];
+    if (path[i] == 'U') x--;
+    if (path[i] == 'D') x++;
+    if (path[i] == 'L') y--;
+    if (path[i] == 'R') y++;
+    res += value_grid[x][y];
   }
   return res;
 }
 
-
-
-int main()
+bool is_out_of_range(int x, int y)
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 10 != 0) {
-    Rand();
-  }
+  if (x < 0 || n <= x || y < 0 || n <= y) return true;
+  return false;
+}
 
+void sort_kouho(int size)
+{
+  vector<pair<int, string>> kouho;
+  rep(i, size)
+  {
+    if (kouho_scores[i] > 0) {
+      kouho.push_back(make_pair(kouho_scores[i], kouho_paths[i]));
+    }
+  }
+  sort(kouho.begin(), kouho.end(), greater<pair<int, string>>());
+  rep(i, size)
+  {
+    if (i < kouho.size()) {
+      kouho_scores[i] = kouho[i].first;
+      kouho_paths[i] = kouho[i].second;
+    }
+    else {
+      kouho_scores[i] = 0;
+      kouho_paths[i] = "";
+    }
+  }
+}
+
+static void input_data() {
   string fileNameIfs = "1120.txt";
   const char* cstrIfs = fileNameIfs.c_str();
   ifstream ifs(cstrIfs);
@@ -113,7 +155,7 @@ int main()
     {
       rep(j, n)
       {
-        cin >> a[i][j];
+        cin >> value_grid[i][j];
       }
     }
   }
@@ -130,16 +172,19 @@ int main()
     {
       rep(j, n)
       {
-        ifs >> a[i][j];
+        ifs >> value_grid[i][j];
       }
     }
   }
+}
 
+int main()
+{
+  input_data();
 
+  start_timer();
 
-  clock_t start, end;
-  start = clock();
-
+  // hèâä˙âª
   rep(i, n)
   {
     rep(j, n)
@@ -151,7 +196,7 @@ int main()
       {
         int nx = i + dx[k];
         int ny = j + dy[k];
-        if (0 <= nx && nx < n && 0 <= ny && ny < n && f[nx][ny] == num) {
+        if (!is_out_of_range(nx, ny) && f[nx][ny] == num) {
           h[i][j].first = nx;
           h[i][j].second = ny;
         }
@@ -159,18 +204,21 @@ int main()
     }
   }
 
-  int loop = 0;
+  rep(i, KOUHO_SIZE) {
+    kouho_scores[i] = 0;
+  }
+
+  int loop1 = 0;
   // èâä˙â
-  rep(_, 10000)
+  rep(_, 100000)
   {
-    loop++;
-    rep(i, n) rep(j, n) g[i][j] = 0;
+    loop1++;
+    v2_counter++;
     int x = si;
     int y = sj;
-    int tmp = a[x][y];
+    int tmp = value_grid[x][y];
 
-    g[x][y] = 1;
-    if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 1;
+    visited2[f[x][y]] = v2_counter;
 
     string t;
 
@@ -182,11 +230,10 @@ int main()
       {
         int nx = x + dx[nxt[ra][i]];
         int ny = y + dy[nxt[ra][i]];
-        if (0 <= nx && nx < n && 0 <= ny && ny < n && g[nx][ny] == 0) {
+        if (!is_out_of_range(nx, ny) && visited2[f[nx][ny]] != v2_counter) {
           ok = 1;
-          tmp += a[nx][ny];
-          g[nx][ny] = 1;
-          if (h[nx][ny].first != -1) g[h[nx][ny].first][h[nx][ny].second] = 1;
+          tmp += value_grid[nx][ny];
+          visited2[f[nx][ny]] = v2_counter;
           t += nxtc[nxt[ra][i]];
           x = nx;
           y = ny;
@@ -197,39 +244,41 @@ int main()
       if (ok == 0) break;
     }
 
-
-    if (tmp > ma) {
-      ma = tmp;
-      ans = t;
+    int num = _ % KOUHO_SIZE;
+    if (tmp > kouho_scores[num]) {
+      kouho_scores[num] = tmp;
+      kouho_paths[num] = t;
     }
 
-    end = clock();
-    if ((double)(end - start) / CLOCKS_PER_SEC > 1.9)break;
+    if (get_elapsed_time() > 1.9)
+    {
+      break;
+    } 
   }
 
-
+  int loop2 = 0;
   while (true) {
-    loop++;
-    rep(i, n) rep(j, n) g[i][j] = 0;
+    loop2++;
+    v2_counter++;
     int x = si;
     int y = sj;
-    int tmp = a[x][y];
+    int tmp = value_grid[x][y];
 
-    g[x][y] = 1;
-    if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 1;
+    visited2[f[x][y]] = v2_counter;
+
+    int num = Rand() % KOUHO_SIZE;
 
     string t;
-    int m = rand() % ans.size() + 1;
-    t = ans.substr(0, m);
+    int m = rand() % kouho_paths[num].size() + 1;
+    t = kouho_paths[num].substr(0, m);
     rep(i, m)
     {
       if (t[i] == 'U') x--;
       if (t[i] == 'D') x++;
       if (t[i] == 'L') y--;
       if (t[i] == 'R') y++;
-      tmp += a[x][y];
-      g[x][y] = 1;
-      if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 1;
+      tmp += value_grid[x][y];
+      visited2[f[x][y]] = v2_counter;
     }
 
     while (true) {
@@ -240,11 +289,10 @@ int main()
       {
         int nx = x + dx[nxt[ra][i]];
         int ny = y + dy[nxt[ra][i]];
-        if (0 <= nx && nx < n && 0 <= ny && ny < n && g[nx][ny] == 0) {
+        if (!is_out_of_range(nx, ny) && visited2[f[nx][ny]] != v2_counter) {
           ok = 1;
-          tmp += a[nx][ny];
-          g[nx][ny] = 1;
-          if (h[nx][ny].first != -1) g[h[nx][ny].first][h[nx][ny].second] = 1;
+          tmp += value_grid[nx][ny];
+          visited2[f[nx][ny]] = v2_counter;
           t += nxtc[nxt[ra][i]];
           x = nx;
           y = ny;
@@ -255,31 +303,43 @@ int main()
       if (ok == 0) break;
     }
 
-
-    if (tmp > ma) {
-      ma = tmp;
-      ans = t;
+    if (tmp > kouho_scores[num]) {
+      kouho_scores[num] = tmp;
+      kouho_paths[num] = t;
     }
 
-    end = clock();
-    if ((double)(end - start) / CLOCKS_PER_SEC > 1.0)break;
+    if (get_elapsed_time() > 1.0)
+    {
+      break;
+    }
   }
 
+  sort_kouho(KOUHO_SIZE);
+  best_path = kouho_paths[0];
+  best_score = kouho_scores[0];
 
+  bool is_sorted = false;
+
+  int xxx[10000], yyy[10000];
+  int xxx_count, yyy_count;
+  int loop3 = 0;
   while (true) {
-    loop++;
+    loop3++;
 
-    rep(i, n) rep(j, n) g[i][j] = 0;
+    v2_counter++;
     int x = si;
     int y = sj;
-    int tmp = a[x][y];
+    int tmp = value_grid[x][y];
 
-    g[x][y] = 1;
-    if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 1;
+    visited2[f[x][y]] = v2_counter;
 
-    string t;
-    int m = ans.size();
-    t = ans;
+    int num = Rand() % 10;
+    if (is_sorted) {
+      num = 0;
+    }
+
+    int m = kouho_paths[num].size();
+    string t = kouho_paths[num];
 
     vector<int> xx, yy;
     xx.push_back(x);
@@ -291,9 +351,8 @@ int main()
       if (t[i] == 'D') x++;
       if (t[i] == 'L') y--;
       if (t[i] == 'R') y++;
-      tmp += a[x][y];
-      g[x][y] = 1;
-      if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 1;
+      tmp += value_grid[x][y];
+      visited2[f[x][y]] = v2_counter;
       xx.push_back(x);
       yy.push_back(y);
     }
@@ -304,10 +363,9 @@ int main()
     srep(i, left + 1, right)
     {
       x = xx[i], y = yy[i];
-      tmp -= a[x][y];
-      tmp2 += a[x][y];
-      g[x][y] = 0;
-      if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 0;
+      tmp -= value_grid[x][y];
+      tmp2 += value_grid[x][y];
+      visited2[f[x][y]] = -1;
     }
 
     string t1, t2, t3;
@@ -317,11 +375,12 @@ int main()
 
     int sx = xx[left], sy = yy[left];
     int gx = xx[right], gy = yy[right];
-    // cout << ans << endl;
+
     rep(_, 100)
     {
+      xxx_count = 0;
+      yyy_count = 0;
       x = sx; y = sy;
-      vector<int> xxx, yyy;
       int tmp3 = 0;
       string ttt;
       while (x != gx || y != gy) {
@@ -339,13 +398,14 @@ int main()
             ttt += nxtc[nxt[ra][i]];
             break;
           }
-          if (0 <= nx && nx < n && 0 <= ny && ny < n && g[nx][ny] == 0) {
+          if (!is_out_of_range(nx, ny) && visited2[f[nx][ny]] != v2_counter) {
             ok = 1;
-            tmp3 += a[nx][ny];
-            g[nx][ny] = 1;
-            xxx.push_back(nx);
-            yyy.push_back(ny);
-            if (h[nx][ny].first != -1) g[h[nx][ny].first][h[nx][ny].second] = 1;
+            tmp3 += value_grid[nx][ny];
+            visited2[f[nx][ny]] = v2_counter;
+            xxx[xxx_count] = nx;
+            yyy[yyy_count] = ny;
+            xxx_count++;
+            yyy_count++;
             ttt += nxtc[nxt[ra][i]];
             x = nx;
             y = ny;
@@ -360,31 +420,39 @@ int main()
         tmp2 = tmp3;
         t2 = ttt;
       }
-      rep(i, xxx.size())
+      rep(i, xxx_count)
       {
-        x = xxx[i]; y = yyy[i];
-        g[x][y] = 0;
-        if (h[x][y].first != -1) g[h[x][y].first][h[x][y].second] = 0;
+        x = xxx[i];
+        y = yyy[i];
+        visited2[f[x][y]] = -1;
       }
     }
 
-
-    if (tmp + tmp2 > ma) {
-      ma = tmp + tmp2;
-      ans = t1 + t2 + t3;
+    if (tmp + tmp2 > kouho_scores[num]) {
+      kouho_scores[num] = tmp + tmp2;
+      kouho_paths[num] = t1 + t2 + t3;
+      if (tmp + tmp2 > best_score) {
+        best_score = tmp + tmp2;
+        best_path = t1 + t2 + t3;
+      }
     }
 
-    // cout << ans << endl;
-
-
-    end = clock();
-    if ((double)(end - start) / CLOCKS_PER_SEC > 1.9)break;
+    if (get_elapsed_time() > 1.9)
+    {
+      break;
+    }
+    if (!is_sorted && get_elapsed_time() > 1.5)
+    {
+      sort_kouho(10);
+      is_sorted = true;
+    }
   }
 
-  // cout << loop << endl;
-  // cout << ma << ' ' << calcScore(ans) << endl;
-  cout << ans << endl;
+  cerr << "loop1 = " << loop1 << endl;
+  cerr << "loop2 = " << loop2 << endl;
+  cerr << "loop3 = " << loop3 << endl;
+  cerr << "best_score = " << best_score << endl;
+
+  cout << best_path << endl;
   return 0;
 }
-
-

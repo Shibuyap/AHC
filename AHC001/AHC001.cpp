@@ -959,11 +959,7 @@ inline void ExtendKing(int ite)
     }
   }
 
-
-
-  int tmpScore = calc(-1);
-
-  maxScore = tmpScore;
+  maxScore = calc(-1);
   if (maxScore > real_maxScore) {
     real_maxScore = maxScore;
     rep(i, n)
@@ -974,10 +970,7 @@ inline void ExtendKing(int ite)
       real_d[i] = d[i];
     }
   }
-
 }
-
-
 
 inline void oneChange(int ite, double temp)
 {
@@ -1646,11 +1639,6 @@ inline void Ui_Tei()
     }
     calc(-1);
 
-    // ’ñoˆÈ‰º‚ÍÁ‚·
-
-    // cout << "loop = " << loop << ", maxScore = " << maxScore << endl;
-
-
     if (maxScore > ui_tei_maxScore) {
       ui_tei_maxScore = maxScore;
       rep(i, n)
@@ -1810,35 +1798,10 @@ int solve(int teisyutu, int fileNum)
             zurasi2(ite, temp);
           }
 
-          /*
-          int tubusu = 0;
-          if(_ % 6 == 0 && loop % tubusuFrequency == 1120) tubusu = 1;
-          if(_ % 6 == 2 && loop % tubusuFrequency == 1120) tubusu = 3;
-          if(_ % 6 == 4 && loop % tubusuFrequency == 1120) tubusu = 5;
-          if(tubusu > 0) Tubusu(tubusu);
-          */
-
-
           if (loop % 34567 == 1120) {
             int ite = Rand() % n;
             ExtendKing(ite);
           }
-
-
-
-
-          /*
-          int tubusu_worst = 0;
-          if(_ % 2 == 0 && loop % 121349 == 1120) tubusu_worst = 1;
-          if(_ % 2 == 1 && loop % 121349 == 1120) tubusu_worst = 3;
-          if(tubusu_worst > 0) TubusuWorst(tubusu_worst);
-          */
-
-          /*
-          int hole = 0;
-          if(loop % 3000003 == 123) hole = 1;
-          if(hole) AnaWoAkeru(hole);
-          */
 
           // ŒvZŒë·‰ğÁ?
           if (loop % 10000 == 1) {
@@ -2031,8 +1994,6 @@ inline void AllClear()
 
 int main()
 {
-  // srand((unsigned) 1120);
-
   int teisyutu = 1;
 
   if (teisyutu) {
