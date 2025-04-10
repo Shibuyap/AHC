@@ -1,60 +1,71 @@
 #pragma once
 
 // 1次元キュー
-int queueArr[10000];
-int queueHead = 0;
-int queueTail = 0;
-void ClearQueue()
+int queue_arr[10000];
+int queue_head = 0;
+int queue_tail = 0;
+
+void clear_queue()
 {
-  queueHead = 0;
-  queueTail = 0;
+  queue_head = 0;
+  queue_tail = 0;
 }
-int Front()
+
+int front()
 {
-  return queueArr[queueHead];
+  return queue_arr[queue_head];
 }
-void Push(int val)
+
+void push(int val)
 {
-  queueArr[queueTail] = val;
-  queueTail++;
+  queue_arr[queue_tail] = val;
+  queue_tail++;
 }
-void Pop()
+
+void pop()
 {
-  queueHead++;
+  queue_head++;
 }
-int Size()
+
+int size()
 {
-  return queueTail - queueHead;
+  return queue_tail - queue_head;
 }
 
 // 2次元キュー
-int queueArr2[10000][2];
-int queueHead2 = 0;
-int queueTail2 = 0;
-void ClearQueue2()
+int queue_arr_2d[10000][2];
+int queue_head_2d = 0;
+int queue_tail_2d = 0;
+
+void clear_queue_2d()
 {
-  queueHead2 = 0;
-  queueTail2 = 0;
+  queue_head_2d = 0;
+  queue_tail_2d = 0;
 }
-int Front2X()
+
+int front_2d_x()
 {
-  return queueArr2[queueHead2][0];
+  return queue_arr_2d[queue_head_2d][0];
 }
-int Front2Y()
+
+int front_2d_y()
 {
-  return queueArr2[queueHead2][1];
+  return queue_arr_2d[queue_head_2d][1];
 }
-void Push2(int x, int y)
+
+void push_2d(int x, int y)
 {
-  queueArr2[queueTail2][0] = x;
-  queueArr2[queueTail2][1] = y;
-  queueTail2++;
+  queue_arr_2d[queue_tail_2d][0] = x;
+  queue_arr_2d[queue_tail_2d][1] = y;
+  queue_tail_2d++;
 }
-void Pop2()
+
+void pop_2d()
 {
-  queueHead2++;
+  queue_head_2d++;
 }
-int Size2()
+
+int size_2d()
 {
-  return queueTail2 - queueHead2;
+  return queue_tail_2d - queue_head_2d;
 }
