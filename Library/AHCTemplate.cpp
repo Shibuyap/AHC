@@ -39,107 +39,102 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t Rand()
+static uint32_t rand_xorshift()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
   static uint32_t w = 88675123;
-  uint32_t t;
-
-  t = x ^ (x << 11);
+  uint32_t t = x ^ (x << 11);
   x = y;
   y = z;
   z = w;
-  return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+  w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+  return w;
 }
 
-static double Rand01() {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
-}
-
-static double RandRange(double l, double r)
+static double rand_01()
 {
-  return l + (r - l) * Rand01();
+  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
 }
 
-// [l, r]
-static uint32_t RandRange(uint32_t l, uint32_t r)
+static double rand_range(double l, double r)
 {
-  return l + Rand() % (r - l + 1);
+  return l + (r - l) * rand_01();
 }
 
+static uint32_t rand_range(uint32_t l, uint32_t r)
+{
+  return l + rand_xorshift() % (r - l + 1); // [l, r]
+}
 
-void FisherYates(int* data, int n)
+void shuffle_array(int* arr, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = Rand() % (i + 1);
-    int swa = data[i];
-    data[i] = data[j];
-    data[j] = swa;
+    int j = rand_xorshift() % (i + 1);
+    int swa = arr[i];
+    arr[i] = arr[j];
+    arr[j] = swa;
   }
 }
 
-// ランダムデバイスとメルセンヌ・ツイスタ
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-const ll INF = 1001001001001001001;
+const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
 
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
+const int DX[4] = { -1, 0, 1, 0 };
+const int DY[4] = { 0, -1, 0, 1 };
 
-double TL = 1.8;
-int mode;
 
-std::chrono::steady_clock::time_point startTimeClock;
-
-void ResetTime()
-{
-  startTimeClock = std::chrono::steady_clock::now();
-}
-
-double GetNowTime()
-{
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
-  return elapsed.count();
-}
+double time_limit = 1.8;
+int exec_mode;
+std::chrono::steady_clock::time_point start_time_clock;
 
 int n;
 
-int ansScore;
+int current_score;
 
-int best_ansScore;
+int best_score;
 
-void CopyToBest()
+void start_timer()
 {
-  best_ansScore = ansScore;
+  start_time_clock = std::chrono::steady_clock::now();
 }
 
-void CopyToAns()
+double get_elapsed_time()
 {
-  ansScore = best_ansScore;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+  return elapsed.count();
 }
 
-bool IsNG(int x, int y)
+void store_best_score()
 {
-  //if (x < 0 || n <= x || y < 0 || n <= y)return true;
+  best_score = current_score;
+}
+
+void restore_best_score()
+{
+  current_score = best_score;
+}
+
+bool is_out_of_range(int x, int y)
+{
+  //if (x < 0 || n <= x || y < 0 || n <= y) return true;
   return false;
 }
 
-// 複数のケースを処理する際に、内部状態を初期化する関数
-void SetUp()
+void initialize_state()
 {
-  ansScore = 0;
+  current_score = 0;
 }
 
-// 入力を受け取る関数
-void Input(int problemNum)
+void input_data(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
@@ -150,27 +145,24 @@ void Input(int problemNum)
   }
 }
 
-// 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs)
+void open_ofs(int case_num, ofstream& ofs)
 {
-  if (mode != 0) {
+  if (exec_mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }
 
-// スコアを計算する関数
-ll CalcScore()
+ll calculate_score()
 {
   ll res = 0;
   return res;
 }
 
-// 解答を出力する関数
-void Output(ofstream& ofs)
+void output_data(ofstream& ofs)
 {
-  if (mode == 0) {
+  if (exec_mode == 0) {
     // 標準出力
   }
   else {
@@ -178,196 +170,179 @@ void Output(ofstream& ofs)
   }
 }
 
-// ナイーブな解法
-void Method1()
+void build_initial_solution()
 {
-
 }
 
-// ハイパーパラメータ
-struct Hypers
+struct AnnealingParams
 {
-  double StartTemp[10];
-  double EndTemp;
-  double MultipleValue;
-  int Partition[10];
+  double start_temperature[10];
+  double end_temperature;
+  double score_scale;
+  int operation_threshold[10];
 };
 
-void SimulatedAnnealing(Hypers hypers)
+void run_simulated_annealing(AnnealingParams annealingParams)
 {
-  CopyToBest();
+  store_best_score();
 
-  double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp[0];
-  const double END_TEMP = hypers.EndTemp;
-
+  double now_time = get_elapsed_time();
+  const double START_TEMP = annealingParams.start_temperature[0];
+  const double END_TEMP = annealingParams.end_temperature;
 
   int loop = 0;
   while (true) {
     loop++;
 
     if (loop % 100 == 0) {
-      nowTime = GetNowTime();
-      if (nowTime > TL) break;
+      now_time = get_elapsed_time();
+      if (now_time > time_limit) break;
     }
 
-    double progressRatio = nowTime / TL;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
+    double progress_ratio = now_time / time_limit;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int raMode = Rand() % hypers.Partition[1];
+    int ra_exec_mode = rand_xorshift() % annealingParams.operation_threshold[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
-    if (raMode < hypers.Partition[0]) {
 
+    if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+      // 近傍操作1
     }
-    else if (raMode < hypers.Partition[1]) {
-
+    else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+      // 近傍操作2
     }
 
     // スコア計算
-    double tmpScore = CalcScore();
+    double tmp_score = calculate_score();
 
-    // 焼きなまし
-    double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
-    double prob = exp(diffScore / temp);
-    if (prob > Rand01()) {
+    // 焼きなましで採用判定
+    double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
+    double prob = exp(diff_score / temp);
+    if (prob > rand_01()) {
       // 採用
-      ansScore = tmpScore;
+      current_score = tmp_score;
 
-      // Best解よりもいいか
-      if (ansScore > best_ansScore) {
-        CopyToBest();
+      // ベスト更新
+      if (current_score > best_score) {
+        store_best_score();
       }
     }
     else {
       // 元に戻す
-      if (raMode < hypers.Partition[0]) {
+      if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+        // 近傍操作1 の巻き戻し
       }
-      else if (raMode < hypers.Partition[1]) {
+      else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+        // 近傍操作2 の巻き戻し
       }
     }
   }
 
-  if (mode != 0 && mode != 3) {
+  if (exec_mode != 0 && exec_mode != 3) {
     cout << loop << endl;
   }
 
-  CopyToAns();
+  restore_best_score();
 }
 
-// 問題を解く関数
-ll Solve(int problem_num, Hypers hypers)
+ll solve_case(int case_num, AnnealingParams annealingParams)
 {
-  ResetTime();
+  start_timer();
 
-  // 複数ケース回すときに内部状態を初期値に戻す
-  SetUp();
+  initialize_state();
 
-  // 入力受け取り
-  Input(problem_num);
+  input_data(case_num);
 
-  // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(problem_num, ofs);
+  open_ofs(case_num, ofs);
 
-  // 初期解生成
-  Method1();
+  build_initial_solution();
 
-  // 焼きなまし
-  //SimulatedAnnealing(hypers);
+  // 焼きなまし実行
+  // run_simulated_annealing(annealingParams);
 
   // 解答を出力
-  Output(ofs);
+  output_data(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
   }
 
   ll score = 0;
-  if (mode != 0) {
-    score = CalcScore();
+  if (exec_mode != 0) {
+    score = calculate_score();
   }
   return score;
 }
 
-/////////////////////////////////////////////////////////////////////////
-/*
-メモ
-
-*/
-/////////////////////////////////////////////////////////////////////////
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
+  exec_mode = 2;
+
+  AnnealingParams annealingParams;
+  annealingParams.start_temperature[0] = 2048.0;
+  annealingParams.start_temperature[1] = 2048.0;
+  annealingParams.start_temperature[2] = 2048.0;
+  annealingParams.start_temperature[3] = 2048.0;
+  annealingParams.start_temperature[4] = 2048.0;
+  annealingParams.start_temperature[5] = 2048.0;
+  annealingParams.start_temperature[6] = 2048.0;
+  annealingParams.start_temperature[7] = 2048.0;
+  annealingParams.start_temperature[8] = 2048.0;
+  annealingParams.start_temperature[9] = 2048.0;
+  annealingParams.end_temperature = 0.0;
+  annealingParams.score_scale = 12345.0;
+  annealingParams.operation_threshold[0] = 100;
+  annealingParams.operation_threshold[1] = 200;
+  annealingParams.operation_threshold[2] = 300;
+  annealingParams.operation_threshold[3] = 400;
+  annealingParams.operation_threshold[4] = 500;
+  annealingParams.operation_threshold[5] = 600;
+  annealingParams.operation_threshold[6] = 700;
+  annealingParams.operation_threshold[7] = 800;
+  annealingParams.operation_threshold[8] = 900;
+  annealingParams.operation_threshold[9] = 1000;
+
+  if (exec_mode == 0) {
+    solve_case(0, annealingParams);
   }
-
-  mode = 2;
-
-  Hypers hypers;
-  hypers.StartTemp[0] = 2048.0;
-  hypers.StartTemp[1] = 2048.0;
-  hypers.StartTemp[2] = 2048.0;
-  hypers.StartTemp[3] = 2048.0;
-  hypers.StartTemp[4] = 2048.0;
-  hypers.StartTemp[5] = 2048.0;
-  hypers.StartTemp[6] = 2048.0;
-  hypers.StartTemp[7] = 2048.0;
-  hypers.StartTemp[8] = 2048.0;
-  hypers.StartTemp[9] = 2048.0;
-  hypers.EndTemp = 0.0;
-  hypers.MultipleValue = 12345.0;
-  hypers.Partition[0] = 100;
-  hypers.Partition[1] = 200;
-  hypers.Partition[2] = 300;
-  hypers.Partition[3] = 400;
-  hypers.Partition[4] = 500;
-  hypers.Partition[5] = 600;
-  hypers.Partition[6] = 700;
-  hypers.Partition[7] = 800;
-  hypers.Partition[8] = 900;
-  hypers.Partition[9] = 1000;
-
-  if (mode == 0) {
-    Solve(0, hypers);
-  }
-  else if (mode <= 2) {
-    ll sum = 0;
+  else if (exec_mode <= 2) {
+    ll sum_score = 0;
     srep(i, 0, 15)
     {
-      ll score = Solve(i, hypers);
-      sum += score;
-      if (mode == 1) {
+      ll score = solve_case(i, annealingParams);
+      sum_score += score;
+      if (exec_mode == 1) {
         cout << score << endl;
       }
       else {
-        cout << "num = " << setw(2) << i << ", ";
-        cout << "score = " << setw(4) << score << ", ";
-        cout << "sum = " << setw(5) << sum << ", ";
-        cout << "time = " << setw(5) << GetNowTime() << ", ";
-        cout << endl;
+        cout << "case = " << setw(2) << i << ", "
+          << "score = " << setw(4) << score << ", "
+          << "sum = " << setw(5) << sum_score << ", "
+          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << endl;
       }
     }
   }
-  else if (mode == 3) {
-    int loop = 0;
-    Hypers bestHypers;
-    ll bestSumScore = 0;
+  else if (exec_mode == 3) {
+    int loop_count = 0;
+    AnnealingParams best_annealingParams;
+    ll best_sum_score = 0;
 
     while (true) {
-      Hypers newHypers;
-      newHypers.StartTemp[0] = pow(2.0, Rand01() * 20);
-      newHypers.EndTemp = 0.0;
-      newHypers.MultipleValue = pow(2.0, Rand01() * 20);
-      newHypers.Partition[0] = Rand() % 101;
+      AnnealingParams new_annealingParams;
+      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
+      new_annealingParams.end_temperature = 0.0;
+      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
+      new_annealingParams.operation_threshold[0] = rand() % 101;
 
-      ll sum = 0;
+      ll sum_score = 0;
       srep(i, 0, 15)
       {
-        ll score = Solve(i, newHypers);
-        sum += score;
+        ll score = solve_case(i, new_annealingParams);
+        sum_score += score;
 
         // シード0が悪ければ打ち切り
         if (i == 0 && score < 0) {
@@ -375,21 +350,20 @@ int main()
         }
       }
 
-      cout
-        << "Loop = " << loop
-        << ", Sum = " << sum
-        << ", StartTemp = " << newHypers.StartTemp[0]
-        << ", EndTemp = " << newHypers.EndTemp
-        << ", MultipleValue = " << newHypers.MultipleValue
-        << ", Partition1 = " << newHypers.Partition[0]
+      cout << "loop_count = " << loop_count
+        << ", sum_score = " << sum_score
+        << ", start_temperature = " << new_annealingParams.start_temperature[0]
+        << ", end_temperature = " << new_annealingParams.end_temperature
+        << ", score_scale = " << new_annealingParams.score_scale
+        << ", operation_threshold = " << new_annealingParams.operation_threshold[0]
         << endl;
 
-      if (sum > bestSumScore) {
-        bestSumScore = sum;
-        bestHypers = newHypers;
+      if (sum_score > best_sum_score) {
+        best_sum_score = sum_score;
+        best_annealingParams = new_annealingParams;
       }
 
-      loop++;
+      loop_count++;
     }
   }
 

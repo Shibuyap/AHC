@@ -1,71 +1,89 @@
 #pragma once
 
-// 1次元キュー
-int queue_arr[10000];
-int queue_head = 0;
-int queue_tail = 0;
-
-void clear_queue()
+// 1次元キューのクラス
+class Queue1D
 {
-  queue_head = 0;
-  queue_tail = 0;
-}
+private:
+  static const int MAX_SIZE = 10000;
+  int arr[MAX_SIZE];
+  int head;
+  int tail;
 
-int front()
+public:
+  // コンストラクタ
+  Queue1D() : head(0), tail(0) {}
+
+  void clear_queue()
+  {
+    head = 0;
+    tail = 0;
+  }
+
+  int front() const
+  {
+    return arr[head];
+  }
+
+  void push(int val)
+  {
+    arr[tail] = val;
+    tail++;
+  }
+
+  void pop()
+  {
+    head++;
+  }
+
+  int size() const
+  {
+    return tail - head;
+  }
+};
+
+// 2次元キューのクラス
+class Queue2D
 {
-  return queue_arr[queue_head];
-}
+private:
+  static const int MAX_SIZE = 10000;
+  int arr[MAX_SIZE][2];
+  int head;
+  int tail;
 
-void push(int val)
-{
-  queue_arr[queue_tail] = val;
-  queue_tail++;
-}
+public:
+  // コンストラクタ
+  Queue2D() : head(0), tail(0) {}
 
-void pop()
-{
-  queue_head++;
-}
+  void clear_queue()
+  {
+    head = 0;
+    tail = 0;
+  }
 
-int size()
-{
-  return queue_tail - queue_head;
-}
+  int front_x() const
+  {
+    return arr[head][0];
+  }
 
-// 2次元キュー
-int queue_arr_2d[10000][2];
-int queue_head_2d = 0;
-int queue_tail_2d = 0;
+  int front_y() const
+  {
+    return arr[head][1];
+  }
 
-void clear_queue_2d()
-{
-  queue_head_2d = 0;
-  queue_tail_2d = 0;
-}
+  void push(int x, int y)
+  {
+    arr[tail][0] = x;
+    arr[tail][1] = y;
+    tail++;
+  }
 
-int front_2d_x()
-{
-  return queue_arr_2d[queue_head_2d][0];
-}
+  void pop()
+  {
+    head++;
+  }
 
-int front_2d_y()
-{
-  return queue_arr_2d[queue_head_2d][1];
-}
-
-void push_2d(int x, int y)
-{
-  queue_arr_2d[queue_tail_2d][0] = x;
-  queue_arr_2d[queue_tail_2d][1] = y;
-  queue_tail_2d++;
-}
-
-void pop_2d()
-{
-  queue_head_2d++;
-}
-
-int size_2d()
-{
-  return queue_tail_2d - queue_head_2d;
-}
+  int size() const
+  {
+    return tail - head;
+  }
+};

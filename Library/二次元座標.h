@@ -3,31 +3,39 @@
 // 二次元座標
 struct Point
 {
-public:
   int x;
   int y;
 
-  Point() { x = 0; y = 0; }
-  Point(int _x, int _y) { x = _x; y = _y; }
+  Point() : x(0), y(0) {}
+  Point(int x_, int y_) : x(x_), y(y_) {}
 };
 
 // 長方形
 struct Rectangle
 {
-  Point p1; // 最小点
-  Point p2; // 最大点
+  // 最小点
+  Point min_point;
+  // 最大点
+  Point max_point;
 };
 
-// innerがouterに内包されているかを判定する関数
-bool IsRectangleInside(const Rectangle& inner, const Rectangle& outer)
+// inner が outer に内包されているかを判定する関数
+bool is_rectangle_inside(const Rectangle& inner, const Rectangle& outer)
 {
-  return outer.p1.x <= inner.p1.x && inner.p2.x <= outer.p2.x && outer.p1.y <= inner.p1.y && inner.p2.y <= outer.p2.y;
+  return (outer.min_point.x <= inner.min_point.x &&
+    inner.max_point.x <= outer.max_point.x &&
+    outer.min_point.y <= inner.min_point.y &&
+    inner.max_point.y <= outer.max_point.y);
 }
 
 // 二つの長方形が交差しているかを判定する関数
-bool AreRectanglesIntersecting(const Rectangle& rect1, const Rectangle& rect2)
+bool are_rectangles_intersecting(const Rectangle& rect1, const Rectangle& rect2)
 {
-  if (rect1.p2.x < rect2.p1.x || rect2.p2.x < rect1.p1.x) return false;
-  if (rect1.p2.y < rect2.p1.y || rect2.p2.y < rect1.p1.y) return false;
+  if (rect1.max_point.x < rect2.min_point.x || rect2.max_point.x < rect1.min_point.x) {
+    return false;
+  }
+  if (rect1.max_point.y < rect2.min_point.y || rect2.max_point.y < rect1.min_point.y) {
+    return false;
+  }
   return true;
 }
