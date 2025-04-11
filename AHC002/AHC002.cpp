@@ -119,6 +119,24 @@ public:
     length++;
   }
 
+  void reverse()
+  {
+    rep(i, length / 2) {
+      swap(x[i], x[length - 1 - i]);
+      swap(y[i], y[length - 1 - i]);
+    }
+    rep(i, length - 1) {
+      rep(j, 4) {
+        int nx = x[i] + dx[j];
+        int ny = y[i] + dy[j];
+        if (nx == x[i + 1] && ny == y[i + 1]) {
+          direction[i] = j;
+          break;
+        }
+      }
+    }
+  }
+
   void copy(const Path& a)
   {
     length = a.length;
@@ -203,6 +221,10 @@ static void input_data() {
       }
     }
   }
+
+  if (ifs.is_open()) {
+    ifs.close();
+  }
 }
 
 void extend_random_path(Path& path) {
@@ -242,7 +264,37 @@ void init_visited(const Path& path)
   }
 }
 
-int main()
+bool attempt_connect(Path& path, int sx, int sy, int gx, int gy) {
+  path.init(sx, sy);
+  int x = sx;
+  int y = sy;
+
+  while (x != gx || y != gy) {
+    int ra = Rand() % 24;
+    bool ok = false;
+
+    rep(i, 4)
+    {
+      int nx = x + dx[next_directions[ra][i]];
+      int ny = y + dy[next_directions[ra][i]];
+
+      if ((nx == gx && ny == gy) || (!is_out_of_range(nx, ny) && visited[tile_id[nx][ny]] != visited_version)) {
+        x = nx;
+        y = ny;
+        path.add(next_directions[ra][i]);
+        visited[tile_id[x][y]] = visited_version;
+        ok = true;
+        break;
+      }
+    }
+
+    if (!ok) break;
+  }
+
+  return x == gx && y == gy;
+}
+
+int solve()
 {
   input_data();
 
@@ -251,6 +303,7 @@ int main()
   rep(i, CANDIDATE_SIZE) {
     candidate_paths[i].init(si, sj);
   }
+  best_path.init(si, sj);
 
   int loop1 = 0;
   // ‰Šú‰ð
@@ -314,7 +367,7 @@ int main()
   // ‚»‚êˆÈ~‚ð after_keep_path ‚Æ‚µ‚ÄŠÇ—B
   Path before_keep_path, keep_path, after_keep_path;
   int loop3 = 0;
-  const double START_TEMP = 2000048.0;
+  const double START_TEMP = 4000048.0;
   const double END_TEMP = 0.1;
   const double SCORE_SCALE = 12345.6;
   double syori3_start_time = get_elapsed_time();
@@ -326,9 +379,9 @@ int main()
     init_visited();
 
     int m = candidate_paths[num].length;
-    int left = Rand() % max(m - 80, 1) + 10;
-    int right = left + 1 + Rand() % 40;
-    right = min(right, m - 2);
+    int len = Rand() % 40 + 3;
+    int left = Rand() % (m - len);
+    int right = left + len;
 
     int sx = candidate_paths[num].x[left];
     int sy = candidate_paths[num].y[left];
@@ -352,6 +405,8 @@ int main()
       visited[tile_id[x][y]] = -1;
     }
 
+    visited[tile_id[gx][gy]] = visited_version;
+
     after_keep_path.init(gx, gy);
     srep(i, right, m - 1)
     {
@@ -365,53 +420,28 @@ int main()
     Path new_path;
     rep(_, 100)
     {
-      new_path.init(sx, sy);
-      int x = sx;
-      int y = sy;
-
-      while (x != gx || y != gy) {
-        int ra = Rand() % 24;
-        bool ok = false;
-
-        rep(i, 4)
-        {
-          int nx = x + dx[next_directions[ra][i]];
-          int ny = y + dy[next_directions[ra][i]];
-          if (nx == gx && ny == gy) {
-            if (visited[tile_id[nx][ny]] == visited_version) {
-              ok = false;
-              break;
-            }
-            else {
-              x = nx;
-              y = ny;
-              new_path.add(next_directions[ra][i]);
-              visited[tile_id[x][y]] = visited_version;
-              ok = true;
-              break;
-            }
-          }
-          if (!is_out_of_range(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
-            x = nx;
-            y = ny;
-            new_path.add(next_directions[ra][i]);
-            visited[tile_id[x][y]] = visited_version;
-            ok = true;
-            break;
-          }
-        }
-
-        if (!ok) break;
+      int is_reverse = Rand() % 2;
+      bool is_connect = false;
+      if (is_reverse == 0) {
+        is_connect = attempt_connect(new_path, sx, sy, gx, gy);
+      }
+      else {
+        is_connect = attempt_connect(new_path, gx, gy, sx, sy);
       }
 
-      if (x == gx && y == gy && (is_first||new_path.score > keep_path.score)) {
+      if (is_connect && (is_first || new_path.score > keep_path.score)) {
+        if (is_reverse == 1) {
+          new_path.reverse();
+        }
         keep_path.copy(new_path);
         is_first = false;
       }
-      srep(i, 1, new_path.length)
+      rep(i, new_path.length)
       {
         int x = new_path.x[i];
         int y = new_path.y[i];
+        if (x == sx && y == sy)continue;
+        if (x == gx && y == gy)continue;
         visited[tile_id[x][y]] = -1;
       }
     }
@@ -460,5 +490,18 @@ int main()
     best_string += next_char[best_path.direction[i]];
   }
   cout << best_string << endl;
-  return 0;
+  return best_path.score;
+}
+
+int main() {
+  int exec_mode = 0;
+
+  if (exec_mode == 0) {
+    solve();
+  }
+  else if (exec_mode == 1) {
+    rep(i, 5) {
+      solve();
+    }
+  }
 }
