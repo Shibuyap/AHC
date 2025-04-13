@@ -56,91 +56,98 @@ static double Rand01() {
 }
 
 static const ll perfect_score = 100000000;
-static const int n = 20;        
-static const int max_patterns = 1000;      
+static const int n = 20;
+static const int max_patterns = 1000;
 
-int m;
+int pattern_count;
 string s[max_patterns];
-vector<int> a[max_patterns];
-int b[max_patterns] = {};
-int ans[20][20];
-ll ma;
+vector<int> patterns[max_patterns];
+int pattern_length[max_patterns] = {};
+int grid[n][n];
+ll best_score;
 
-bool f[max_patterns][20][20][2];
-int countOK[max_patterns];
+bool matched_flag[max_patterns][n][n][2];
+int matched_counts[max_patterns];
 
-ll calc()
+ll calc_score()
 {
-  int cnt = 0;
-  rep(k, m)
-  {
-    int ok = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        ok = 1;
-        rep(l, b[k])
-        {
-          if (ans[i][(j + l) % n] != a[k][l]) {
-            ok = 0;
+  int matched_pattern_count = 0;
+
+  rep(k, pattern_count) {
+    bool found = false;
+    rep(i, n) {
+      rep(j, n) {
+        // 横方向チェック
+        bool is_match = true;
+        rep(l, pattern_length[k]) {
+          if (grid[i][(j + l) % n] != patterns[k][l]) {
+            is_match = false;
             break;
           }
         }
-        if (ok) break;
-        ok = 1;
-        rep(l, b[k])
-        {
-          if (ans[(i + l) % n][j] != a[k][l]) {
-            ok = 0;
+        if (is_match) {
+          found = true;
+          break;
+        }
+        // 縦方向チェック
+        is_match = true;
+        rep(l, pattern_length[k]) {
+          if (grid[(i + l) % n][j] != patterns[k][l]) {
+            is_match = false;
             break;
           }
         }
-        if (ok) break;
+        if (is_match) {
+          found = true;
+          break;
+        }
       }
-      if (ok) break;
+      if (found) break;
     }
-    cnt += ok;
+    if (found) matched_pattern_count++;
   }
-  ll res = 0;
-  if (cnt < m) {
-    res = perfect_score * cnt / m;
+
+  ll result = 0;
+  if (matched_pattern_count < pattern_count) {
+    result = perfect_score * matched_pattern_count / pattern_count;
   }
   else {
-    int cnt2 = 0;
+    int empty_count = 0;
     rep(i, n)
     {
       rep(j, n)
       {
-        if (ans[i][j] == 0) cnt2++;
+        if (grid[i][j] == 0) {
+          empty_count++;
+        }
       }
     }
-    res = perfect_score * 2 * n * n / (2 * n * n - cnt2);
+    result = perfect_score * 2LL * n * n / (2LL * n * n - empty_count);
   }
-  return res;
+  return result;
 }
 
-ll calc2(int x, int y)
+ll update_local_score(int x, int y)
 {
-  rep(i, m)
+  rep(i, pattern_count)
   {
     rep(j, n)
     {
-      countOK[i] -= f[i][j][y][0];
-      countOK[i] -= f[i][j][y][1];
-      f[i][j][y][0] = 0;
-      f[i][j][y][1] = 0;
+      matched_counts[i] -= matched_flag[i][j][y][0];
+      matched_counts[i] -= matched_flag[i][j][y][1];
+      matched_flag[i][j][y][0] = 0;
+      matched_flag[i][j][y][1] = 0;
     }
     rep(k, n)
     {
-      countOK[i] -= f[i][x][k][0];
-      countOK[i] -= f[i][x][k][1];
-      f[i][x][k][0] = 0;
-      f[i][x][k][1] = 0;
+      matched_counts[i] -= matched_flag[i][x][k][0];
+      matched_counts[i] -= matched_flag[i][x][k][1];
+      matched_flag[i][x][k][0] = 0;
+      matched_flag[i][x][k][1] = 0;
     }
   }
 
-  rep(k, m)
+  rep(k, pattern_count)
   {
     int ok = 0;
     srep(i, x, x + 1)
@@ -148,34 +155,34 @@ ll calc2(int x, int y)
       rep(j, n)
       {
         ok = 1;
-        rep(l, b[k])
+        rep(l, pattern_length[k])
         {
-          if (ans[i][(j + l) % n] != a[k][l]) {
+          if (grid[i][(j + l) % n] != patterns[k][l]) {
             ok = 0;
             break;
           }
         }
         if (ok) {
-          countOK[k]++;
-          f[k][i][j][0] = 1;
+          matched_counts[k]++;
+          matched_flag[k][i][j][0] = 1;
         }
         ok = 1;
-        rep(l, b[k])
+        rep(l, pattern_length[k])
         {
-          if (ans[(i + l) % n][j] != a[k][l]) {
+          if (grid[(i + l) % n][j] != patterns[k][l]) {
             ok = 0;
             break;
           }
         }
         if (ok) {
-          countOK[k]++;
-          f[k][i][j][1] = 1;
+          matched_counts[k]++;
+          matched_flag[k][i][j][1] = 1;
         }
       }
     }
   }
 
-  rep(k, m)
+  rep(k, pattern_count)
   {
     int ok = 0;
     rep(i, n)
@@ -184,39 +191,43 @@ ll calc2(int x, int y)
       {
         if (i == x) continue;
         ok = 1;
-        rep(l, b[k])
+        rep(l, pattern_length[k])
         {
-          if (ans[i][(j + l) % n] != a[k][l]) {
+          if (grid[i][(j + l) % n] != patterns[k][l]) {
             ok = 0;
             break;
           }
         }
         if (ok) {
-          countOK[k]++;
-          f[k][i][j][0] = 1;
+          matched_counts[k]++;
+          matched_flag[k][i][j][0] = 1;
         }
         ok = 1;
-        rep(l, b[k])
+        rep(l, pattern_length[k])
         {
-          if (ans[(i + l) % n][j] != a[k][l]) {
+          if (grid[(i + l) % n][j] != patterns[k][l]) {
             ok = 0;
             break;
           }
         }
         if (ok) {
-          countOK[k]++;
-          f[k][i][j][1] = 1;
+          matched_counts[k]++;
+          matched_flag[k][i][j][1] = 1;
         }
       }
     }
   }
 
   int cnt = 0;
-  rep(i, m) if (countOK[i]) cnt++;
+  rep(i, pattern_count) {
+    if (matched_counts[i]) {
+      cnt++;
+    }
+  }
 
   ll res = 0;
-  if (cnt < m) {
-    res = perfect_score * cnt / m;
+  if (cnt < pattern_count) {
+    res = perfect_score * cnt / pattern_count;
   }
   else {
     int cnt2 = 0;
@@ -224,7 +235,9 @@ ll calc2(int x, int y)
     {
       rep(j, n)
       {
-        if (ans[i][j] == 0) cnt2++;
+        if (grid[i][j] == 0) {
+          cnt2++;
+        }
       }
     }
     res = perfect_score * 2 * n * n / (2 * n * n - cnt2);
@@ -238,76 +251,78 @@ int main()
   ifstream ifs(fileNameIfs.c_str());
   if (!ifs.is_open()) {  // 標準入力する
     int _n;
-    cin >> _n >> m;
-    rep(i, m)
+    cin >> _n >> pattern_count;
+    rep(i, pattern_count)
     {
       cin >> s[i];
-      b[i] = s[i].size();
-      rep(j, b[i]) {
-        a[i].push_back(s[i][j] - 'A' + 1);
+      pattern_length[i] = s[i].size();
+      rep(j, pattern_length[i]) {
+        patterns[i].push_back(s[i][j] - 'A' + 1);
       }
     }
   }
   else {  // ファイル入力する
     int _n;
-    ifs >> _n >> m;
-    rep(i, m)
+    ifs >> _n >> pattern_count;
+    rep(i, pattern_count)
     {
       ifs >> s[i];
-      b[i] = s[i].size();
-      rep(j, b[i]) { 
-        a[i].push_back(s[i][j] - 'A' + 1);
+      pattern_length[i] = s[i].size();
+      rep(j, pattern_length[i]) {
+        patterns[i].push_back(s[i][j] - 'A' + 1);
       }
     }
   }
 
   rep(i, 20)
   {
-    rep(j, 20) { 
-      ans[i][j] = Rand() % 8 + 1; 
+    rep(j, 20) {
+      grid[i][j] = Rand() % 8 + 1;
     }
   }
 
-  clock_t start, end;
-  start = clock();
+  clock_t start_clock = clock();
 
-  ma = calc();
+  best_score = calc_score();
+
   rep(i, n) {
-    calc2(i, i);
+    update_local_score(i, i);
   }
 
-  int loop = 0;
+  int iteration_count = 0;
   while (true) {
-    loop++;
-    int x = Rand() % n;
-    int y = Rand() % n;
-    int val = Rand() % 9;
+    iteration_count++;
+    int row = Rand() % n;
+    int col = Rand() % n;
+    int candidate_value = Rand() % 9;
 
-    int keep = ans[x][y];
-    ans[x][y] = val;
+    int old_value = grid[row][col];
+    grid[row][col] = candidate_value;
 
-    ll tmp = calc2(x, y);
-    if (tmp >= ma) {
-      ma = tmp;
+    ll new_score = update_local_score(row, col);
+    if (new_score >= best_score) {
+      best_score = new_score;
     }
     else {
-      ans[x][y] = keep;
-      calc2(x, y);
+      grid[row][col] = old_value;
+      update_local_score(row, col);
     }
 
-    end = clock();
-    if ((double)(end - start) / CLOCKS_PER_SEC > 2.9) break;
+    clock_t end_clock = clock();
+    if ((double)(end_clock - start_clock) / CLOCKS_PER_SEC > 2.9) {
+      break;
+    }
   }
 
   rep(i, n)
   {
     rep(j, n)
     {
-      if (ans[i][j] == 0) {
+      if (grid[i][j] == 0) {
         cout << '.';
       }
       else {
-        cout << (char)(ans[i][j] + 'A' - 1);
+        cout << (char)(grid[i][j] + 'A' - 1);
       }
     }
     cout << endl;
