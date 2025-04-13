@@ -28,16 +28,13 @@
 #include <utility>
 #include <vector>
 
-// #include <atcoder/all>
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
-// using namespace atcoder;
 typedef long long int ll;
 typedef pair<int, int> P;
-#define MAX_N 200005
-const ll PERFECT = 100000000;
+
 static uint32_t Rand()
 {
   static uint32_t x = 123456789;
@@ -58,18 +55,19 @@ static double Rand01() {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-int n, m;
-string s[1000];
-vector<int> a[1000];
-int b[1000] = {};
+static const ll perfect_score = 100000000;
+static const int n = 20;        
+static const int max_patterns = 1000;      
+
+int m;
+string s[max_patterns];
+vector<int> a[max_patterns];
+int b[max_patterns] = {};
 int ans[20][20];
 ll ma;
 
-bool f[1000][20][20][2];
-int countOK[1000];
-
-const double start_temp = 103.48026;
-const double end_temp = 6.74495e-07;
+bool f[max_patterns][20][20][2];
+int countOK[max_patterns];
 
 ll calc()
 {
@@ -106,7 +104,7 @@ ll calc()
   }
   ll res = 0;
   if (cnt < m) {
-    res = PERFECT * cnt / m;
+    res = perfect_score * cnt / m;
   }
   else {
     int cnt2 = 0;
@@ -117,7 +115,7 @@ ll calc()
         if (ans[i][j] == 0) cnt2++;
       }
     }
-    res = PERFECT * 2 * n * n / (2 * n * n - cnt2);
+    res = perfect_score * 2 * n * n / (2 * n * n - cnt2);
   }
   return res;
 }
@@ -218,7 +216,7 @@ ll calc2(int x, int y)
 
   ll res = 0;
   if (cnt < m) {
-    res = PERFECT * cnt / m;
+    res = perfect_score * cnt / m;
   }
   else {
     int cnt2 = 0;
@@ -229,53 +227,54 @@ ll calc2(int x, int y)
         if (ans[i][j] == 0) cnt2++;
       }
     }
-    res = PERFECT * 2 * n * n / (2 * n * n - cnt2);
+    res = perfect_score * 2 * n * n / (2 * n * n - cnt2);
   }
   return res;
 }
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) Rand();
-
   string fileNameIfs = "in\\0000.txt";
   ifstream ifs(fileNameIfs.c_str());
   if (!ifs.is_open()) {  // 標準入力する
-    cin >> n >> m;
-
-    rep(i, m) cin >> s[i];
-
+    int _n;
+    cin >> _n >> m;
     rep(i, m)
     {
+      cin >> s[i];
       b[i] = s[i].size();
-      rep(j, b[i]) { a[i].push_back(s[i][j] - 'A' + 1); }
+      rep(j, b[i]) {
+        a[i].push_back(s[i][j] - 'A' + 1);
+      }
     }
   }
   else {  // ファイル入力する
-    ifs >> n >> m;
-
-    rep(i, m) ifs >> s[i];
-
+    int _n;
+    ifs >> _n >> m;
     rep(i, m)
     {
+      ifs >> s[i];
       b[i] = s[i].size();
-      rep(j, b[i]) { a[i].push_back(s[i][j] - 'A' + 1); }
+      rep(j, b[i]) { 
+        a[i].push_back(s[i][j] - 'A' + 1);
+      }
     }
   }
 
   rep(i, 20)
   {
-    rep(j, 20) { ans[i][j] = Rand() % 8 + 1; }
+    rep(j, 20) { 
+      ans[i][j] = Rand() % 8 + 1; 
+    }
   }
 
   clock_t start, end;
   start = clock();
 
   ma = calc();
-  rep(i, n) calc2(i, i);
-
-  // cout << calc() << ' ' << calc2(0, 0) << endl;
+  rep(i, n) {
+    calc2(i, i);
+  }
 
   int loop = 0;
   while (true) {
@@ -299,10 +298,6 @@ int main()
     end = clock();
     if ((double)(end - start) / CLOCKS_PER_SEC > 2.9) break;
   }
-
-  // cout << loop << endl;
-  // cout << ma << endl;
-  // cout << calc() << endl;
 
   rep(i, n)
   {

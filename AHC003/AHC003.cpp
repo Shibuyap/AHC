@@ -1,36 +1,33 @@
 #pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
-#include <iostream>
-#include <vector>
 #include <algorithm>
-#include <chrono>
+#include <bitset>
 #include <cassert>
+#include <cctype>
+#include <chrono>
 #include <climits>
 #include <cmath>
-#include <vector>
-#include <list>
-#include <map>
-#include <set>
-#include <deque>
-#include <stack>
-#include <bitset>
-#include <algorithm>
-#include <functional>
-#include <numeric>
-#include <utility>
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <iomanip>
 #include <cstdio>
-#include <cmath>
 #include <cstdlib>
-#include <cctype>
-#include <string>
 #include <cstring>
 #include <ctime>
-#include<queue>
+#include <deque>
+#include <fstream>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <list>
+#include <map>
+#include <numeric>
+#include <queue>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <utility>
+#include <vector>
+
 // #include <atcoder/all>
 #define rep(i,n) for(int i = 0; i < (n); ++i)
 #define srep(i,s,t) for(int i = s; i < t; ++i)
