@@ -39,6 +39,19 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
+std::chrono::steady_clock::time_point start_time_clock;
+
+void start_timer()
+{
+  start_time_clock = std::chrono::steady_clock::now();
+}
+
+double get_elapsed_time()
+{
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+  return elapsed.count();
+}
+
 static uint32_t rand_xorshift()
 {
   static uint32_t x = 123456789;
@@ -97,19 +110,6 @@ int n;
 int current_score;
 
 int best_score;
-
-std::chrono::steady_clock::time_point start_time_clock;
-
-void start_timer()
-{
-  start_time_clock = std::chrono::steady_clock::now();
-}
-
-double get_elapsed_time()
-{
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
-  return elapsed.count();
-}
 
 void store_best_score()
 {
