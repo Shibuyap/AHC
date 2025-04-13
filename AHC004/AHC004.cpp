@@ -127,122 +127,113 @@ ll calc_score()
   return result;
 }
 
-ll update_local_score(int x, int y)
+ll update_local_score(int row, int col)
 {
-  rep(i, pattern_count)
+  rep(k, pattern_count) {
+    rep(i, n) {
+      matched_counts[k] -= matched_flag[k][i][col][0];
+      matched_counts[k] -= matched_flag[k][i][col][1];
+      matched_flag[k][i][col][0] = false;
+      matched_flag[k][i][col][1] = false;
+    }
+    rep(j, n) {
+      matched_counts[k] -= matched_flag[k][row][j][0];
+      matched_counts[k] -= matched_flag[k][row][j][1];
+      matched_flag[k][row][j][0] = false;
+      matched_flag[k][row][j][1] = false;
+    }
+  }
+
+  rep(k, pattern_count)
   {
     rep(j, n)
     {
-      matched_counts[i] -= matched_flag[i][j][y][0];
-      matched_counts[i] -= matched_flag[i][j][y][1];
-      matched_flag[i][j][y][0] = 0;
-      matched_flag[i][j][y][1] = 0;
-    }
-    rep(k, n)
-    {
-      matched_counts[i] -= matched_flag[i][x][k][0];
-      matched_counts[i] -= matched_flag[i][x][k][1];
-      matched_flag[i][x][k][0] = 0;
-      matched_flag[i][x][k][1] = 0;
-    }
-  }
-
-  rep(k, pattern_count)
-  {
-    int ok = 0;
-    srep(i, x, x + 1)
-    {
-      rep(j, n)
+      bool is_match = 1;
+      rep(l, pattern_length[k])
       {
-        ok = 1;
-        rep(l, pattern_length[k])
-        {
-          if (grid[i][(j + l) % n] != patterns[k][l]) {
-            ok = 0;
-            break;
-          }
+        if (grid[row][(j + l) % n] != patterns[k][l]) {
+          is_match = 0;
+          break;
         }
-        if (ok) {
-          matched_counts[k]++;
-          matched_flag[k][i][j][0] = 1;
+      }
+      if (is_match) {
+        matched_counts[k]++;
+        matched_flag[k][row][j][0] = 1;
+      }
+      is_match = 1;
+      rep(l, pattern_length[k])
+      {
+        if (grid[(row + l) % n][j] != patterns[k][l]) {
+          is_match = 0;
+          break;
         }
-        ok = 1;
-        rep(l, pattern_length[k])
-        {
-          if (grid[(i + l) % n][j] != patterns[k][l]) {
-            ok = 0;
-            break;
-          }
-        }
-        if (ok) {
-          matched_counts[k]++;
-          matched_flag[k][i][j][1] = 1;
-        }
+      }
+      if (is_match) {
+        matched_counts[k]++;
+        matched_flag[k][row][j][1] = 1;
       }
     }
   }
 
   rep(k, pattern_count)
   {
-    int ok = 0;
     rep(i, n)
     {
-      srep(j, y, y + 1)
+      if (i == row) {
+        continue;
+      }
+      bool is_match = 1;
+      rep(l, pattern_length[k])
       {
-        if (i == x) continue;
-        ok = 1;
-        rep(l, pattern_length[k])
-        {
-          if (grid[i][(j + l) % n] != patterns[k][l]) {
-            ok = 0;
-            break;
-          }
+        if (grid[i][(col + l) % n] != patterns[k][l]) {
+          is_match = 0;
+          break;
         }
-        if (ok) {
-          matched_counts[k]++;
-          matched_flag[k][i][j][0] = 1;
+      }
+      if (is_match) {
+        matched_counts[k]++;
+        matched_flag[k][i][col][0] = 1;
+      }
+      is_match = 1;
+      rep(l, pattern_length[k])
+      {
+        if (grid[(i + l) % n][col] != patterns[k][l]) {
+          is_match = 0;
+          break;
         }
-        ok = 1;
-        rep(l, pattern_length[k])
-        {
-          if (grid[(i + l) % n][j] != patterns[k][l]) {
-            ok = 0;
-            break;
-          }
-        }
-        if (ok) {
-          matched_counts[k]++;
-          matched_flag[k][i][j][1] = 1;
-        }
+      }
+      if (is_match) {
+        matched_counts[k]++;
+        matched_flag[k][i][col][1] = 1;
       }
     }
   }
 
-  int cnt = 0;
+  int matched_pattern_count = 0;
   rep(i, pattern_count) {
-    if (matched_counts[i]) {
-      cnt++;
+    if (matched_counts[i] > 0) {
+      matched_pattern_count++;
     }
   }
 
-  ll res = 0;
-  if (cnt < pattern_count) {
-    res = perfect_score * cnt / pattern_count;
+  ll result = 0;
+  if (matched_pattern_count < pattern_count) {
+    result = perfect_score * matched_pattern_count / pattern_count;
   }
   else {
-    int cnt2 = 0;
+    int empty_count = 0;
     rep(i, n)
     {
       rep(j, n)
       {
         if (grid[i][j] == 0) {
-          cnt2++;
+          empty_count++;
         }
       }
     }
-    res = perfect_score * 2 * n * n / (2 * n * n - cnt2);
+    result = perfect_score * 2 * n * n / (2 * n * n - empty_count);
   }
-  return res;
+  return result;
 }
 
 int main()
@@ -294,7 +285,7 @@ int main()
     iteration_count++;
     int row = Rand() % n;
     int col = Rand() % n;
-    int candidate_value = Rand() % 9;
+    int candidate_value = Rand() % 8 + 1;
 
     int old_value = grid[row][col];
     grid[row][col] = candidate_value;
@@ -313,6 +304,9 @@ int main()
       break;
     }
   }
+
+  cerr << iteration_count << endl;
+  cerr << best_score << endl;
 
   rep(i, n)
   {
