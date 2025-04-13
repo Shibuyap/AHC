@@ -31,295 +31,342 @@
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
+
 using namespace std;
+
 typedef long long int ll;
 typedef pair<int, int> P;
+typedef pair<P, P> PP;
 
-static uint32_t Rand()
+static uint32_t rand_xorshift()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
   static uint32_t w = 88675123;
-  uint32_t t;
-
-  t = x ^ (x << 11);
+  uint32_t t = x ^ (x << 11);
   x = y;
   y = z;
   z = w;
-  return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+  w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+  return w;
 }
 
-// 0以上1未満の小数をとる乱数
-static double Rand01() {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
-}
-
-static const ll perfect_score = 100000000;
-static const int n = 20;
-static const int max_patterns = 1000;
-
-int pattern_count;
-string s[max_patterns];
-vector<int> patterns[max_patterns];
-int pattern_length[max_patterns] = {};
-int grid[n][n];
-ll best_score;
-
-bool matched_flag[max_patterns][n][n][2];
-int matched_counts[max_patterns];
-
-ll calc_score()
+static double rand_01()
 {
-  int matched_pattern_count = 0;
+  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
+}
 
-  rep(k, pattern_count) {
-    bool found = false;
-    rep(i, n) {
-      rep(j, n) {
-        // 横方向チェック
-        bool is_match = true;
-        rep(l, pattern_length[k]) {
-          if (grid[i][(j + l) % n] != patterns[k][l]) {
-            is_match = false;
-            break;
-          }
-        }
-        if (is_match) {
-          found = true;
-          break;
-        }
-        // 縦方向チェック
-        is_match = true;
-        rep(l, pattern_length[k]) {
-          if (grid[(i + l) % n][j] != patterns[k][l]) {
-            is_match = false;
-            break;
-          }
-        }
-        if (is_match) {
-          found = true;
-          break;
-        }
-      }
-      if (found) break;
-    }
-    if (found) matched_pattern_count++;
+static double rand_range(double l, double r)
+{
+  return l + (r - l) * rand_01();
+}
+
+static uint32_t rand_range(uint32_t l, uint32_t r)
+{
+  return l + rand_xorshift() % (r - l + 1); // [l, r]
+}
+
+void shuffle_array(int* arr, int n)
+{
+  for (int i = n - 1; i >= 0; i--) {
+    int j = rand_xorshift() % (i + 1);
+    int swa = arr[i];
+    arr[i] = arr[j];
+    arr[j] = swa;
   }
+}
 
-  ll result = 0;
-  if (matched_pattern_count < pattern_count) {
-    result = perfect_score * matched_pattern_count / pattern_count;
+std::random_device seed_gen;
+std::mt19937 engine(seed_gen());
+// std::shuffle(v.begin(), v.end(), engine);
+
+const ll INF = 1001001001001001001LL;
+const int INT_INF = 1001001001;
+
+const int DX[4] = { -1, 0, 1, 0 };
+const int DY[4] = { 0, -1, 0, 1 };
+
+
+double time_limit = 1.8;
+int exec_mode;
+
+int n;
+
+int current_score;
+
+int best_score;
+
+std::chrono::steady_clock::time_point start_time_clock;
+
+void start_timer()
+{
+  start_time_clock = std::chrono::steady_clock::now();
+}
+
+double get_elapsed_time()
+{
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+  return elapsed.count();
+}
+
+void store_best_score()
+{
+  best_score = current_score;
+}
+
+void restore_best_score()
+{
+  current_score = best_score;
+}
+
+bool is_out_of_range(int x, int y)
+{
+  //if (x < 0 || n <= x || y < 0 || n <= y) return true;
+  return false;
+}
+
+void initialize_state()
+{
+  current_score = 0;
+}
+
+void input_data(int case_num)
+{
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ifstream ifs(oss.str());
+
+  if (!ifs.is_open()) {
+    // 標準入力
   }
   else {
-    int empty_count = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        if (grid[i][j] == 0) {
-          empty_count++;
-        }
-      }
-    }
-    result = perfect_score * 2LL * n * n / (2LL * n * n - empty_count);
+    // ファイル入力
   }
-  return result;
 }
 
-ll update_local_score(int row, int col)
+void open_ofs(int case_num, ofstream& ofs)
 {
-  rep(k, pattern_count) {
-    rep(i, n) {
-      matched_counts[k] -= matched_flag[k][i][col][0];
-      matched_counts[k] -= matched_flag[k][i][col][1];
-      matched_flag[k][i][col][0] = false;
-      matched_flag[k][i][col][1] = false;
-    }
-    rep(j, n) {
-      matched_counts[k] -= matched_flag[k][row][j][0];
-      matched_counts[k] -= matched_flag[k][row][j][1];
-      matched_flag[k][row][j][0] = false;
-      matched_flag[k][row][j][1] = false;
-    }
+  if (exec_mode != 0) {
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofs.open(oss.str());
   }
+}
 
-  rep(k, pattern_count)
-  {
-    rep(j, n)
-    {
-      bool is_match = 1;
-      rep(l, pattern_length[k])
-      {
-        if (grid[row][(j + l) % n] != patterns[k][l]) {
-          is_match = 0;
-          break;
-        }
-      }
-      if (is_match) {
-        matched_counts[k]++;
-        matched_flag[k][row][j][0] = 1;
-      }
-      is_match = 1;
-      rep(l, pattern_length[k])
-      {
-        if (grid[(row + l) % n][j] != patterns[k][l]) {
-          is_match = 0;
-          break;
-        }
-      }
-      if (is_match) {
-        matched_counts[k]++;
-        matched_flag[k][row][j][1] = 1;
-      }
-    }
-  }
+ll calculate_score()
+{
+  ll res = 0;
+  return res;
+}
 
-  rep(k, pattern_count)
-  {
-    rep(i, n)
-    {
-      if (i == row) {
-        continue;
-      }
-      bool is_match = 1;
-      rep(l, pattern_length[k])
-      {
-        if (grid[i][(col + l) % n] != patterns[k][l]) {
-          is_match = 0;
-          break;
-        }
-      }
-      if (is_match) {
-        matched_counts[k]++;
-        matched_flag[k][i][col][0] = 1;
-      }
-      is_match = 1;
-      rep(l, pattern_length[k])
-      {
-        if (grid[(i + l) % n][col] != patterns[k][l]) {
-          is_match = 0;
-          break;
-        }
-      }
-      if (is_match) {
-        matched_counts[k]++;
-        matched_flag[k][i][col][1] = 1;
-      }
-    }
-  }
-
-  int matched_pattern_count = 0;
-  rep(i, pattern_count) {
-    if (matched_counts[i] > 0) {
-      matched_pattern_count++;
-    }
-  }
-
-  ll result = 0;
-  if (matched_pattern_count < pattern_count) {
-    result = perfect_score * matched_pattern_count / pattern_count;
+void output_data(ofstream& ofs)
+{
+  if (exec_mode == 0) {
+    // 標準出力
   }
   else {
-    int empty_count = 0;
-    rep(i, n)
-    {
-      rep(j, n)
-      {
-        if (grid[i][j] == 0) {
-          empty_count++;
-        }
+    // ファイル出力
+  }
+}
+
+void build_initial_solution()
+{
+}
+
+struct AnnealingParams
+{
+  double start_temperature[10];
+  double end_temperature;
+  double score_scale;
+  int operation_threshold[10];
+};
+
+void run_simulated_annealing(AnnealingParams annealingParams)
+{
+  store_best_score();
+
+  double now_time = get_elapsed_time();
+  const double START_TEMP = annealingParams.start_temperature[0];
+  const double END_TEMP = annealingParams.end_temperature;
+
+  int loop = 0;
+  while (true) {
+    loop++;
+
+    if (loop % 100 == 0) {
+      now_time = get_elapsed_time();
+      if (now_time > time_limit) break;
+    }
+
+    double progress_ratio = now_time / time_limit;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+
+    // 近傍解作成
+    int ra_exec_mode = rand_xorshift() % annealingParams.operation_threshold[1];
+    int ra1, ra2, ra3, ra4, ra5;
+    int keep1, keep2, keep3, keep4, keep5;
+
+    if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+      // 近傍操作1
+    }
+    else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+      // 近傍操作2
+    }
+
+    // スコア計算
+    double tmp_score = calculate_score();
+
+    // 焼きなましで採用判定
+    double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
+    double prob = exp(diff_score / temp);
+    if (prob > rand_01()) {
+      // 採用
+      current_score = tmp_score;
+
+      // ベスト更新
+      if (current_score > best_score) {
+        store_best_score();
       }
     }
-    result = perfect_score * 2 * n * n / (2 * n * n - empty_count);
+    else {
+      // 元に戻す
+      if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+        // 近傍操作1 の巻き戻し
+      }
+      else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+        // 近傍操作2 の巻き戻し
+      }
+    }
   }
-  return result;
+
+  if (exec_mode != 0 && exec_mode != 3) {
+    cout << loop << endl;
+  }
+
+  restore_best_score();
+}
+
+ll solve_case(int case_num, AnnealingParams annealingParams)
+{
+  start_timer();
+
+  initialize_state();
+
+  input_data(case_num);
+
+  ofstream ofs;
+  open_ofs(case_num, ofs);
+
+  build_initial_solution();
+
+  // 焼きなまし実行
+  // run_simulated_annealing(annealingParams);
+
+  // 解答を出力
+  output_data(ofs);
+
+  if (ofs.is_open()) {
+    ofs.close();
+  }
+
+  ll score = 0;
+  if (exec_mode != 0) {
+    score = calculate_score();
+  }
+  return score;
 }
 
 int main()
 {
-  string fileNameIfs = "in\\0000.txt";
-  ifstream ifs(fileNameIfs.c_str());
-  if (!ifs.is_open()) {  // 標準入力する
-    int _n;
-    cin >> _n >> pattern_count;
-    rep(i, pattern_count)
+  exec_mode = 2;
+
+  AnnealingParams annealingParams;
+  annealingParams.start_temperature[0] = 2048.0;
+  annealingParams.start_temperature[1] = 2048.0;
+  annealingParams.start_temperature[2] = 2048.0;
+  annealingParams.start_temperature[3] = 2048.0;
+  annealingParams.start_temperature[4] = 2048.0;
+  annealingParams.start_temperature[5] = 2048.0;
+  annealingParams.start_temperature[6] = 2048.0;
+  annealingParams.start_temperature[7] = 2048.0;
+  annealingParams.start_temperature[8] = 2048.0;
+  annealingParams.start_temperature[9] = 2048.0;
+  annealingParams.end_temperature = 0.0;
+  annealingParams.score_scale = 12345.0;
+  annealingParams.operation_threshold[0] = 100;
+  annealingParams.operation_threshold[1] = 200;
+  annealingParams.operation_threshold[2] = 300;
+  annealingParams.operation_threshold[3] = 400;
+  annealingParams.operation_threshold[4] = 500;
+  annealingParams.operation_threshold[5] = 600;
+  annealingParams.operation_threshold[6] = 700;
+  annealingParams.operation_threshold[7] = 800;
+  annealingParams.operation_threshold[8] = 900;
+  annealingParams.operation_threshold[9] = 1000;
+
+  if (exec_mode == 0) {
+    solve_case(0, annealingParams);
+  }
+  else if (exec_mode <= 2) {
+    ll sum_score = 0;
+    srep(i, 0, 15)
     {
-      cin >> s[i];
-      pattern_length[i] = s[i].size();
-      rep(j, pattern_length[i]) {
-        patterns[i].push_back(s[i][j] - 'A' + 1);
-      }
-    }
-  }
-  else {  // ファイル入力する
-    int _n;
-    ifs >> _n >> pattern_count;
-    rep(i, pattern_count)
-    {
-      ifs >> s[i];
-      pattern_length[i] = s[i].size();
-      rep(j, pattern_length[i]) {
-        patterns[i].push_back(s[i][j] - 'A' + 1);
-      }
-    }
-  }
-
-  rep(i, 20)
-  {
-    rep(j, 20) {
-      grid[i][j] = Rand() % 8 + 1;
-    }
-  }
-
-  clock_t start_clock = clock();
-
-  best_score = calc_score();
-
-  rep(i, n) {
-    update_local_score(i, i);
-  }
-
-  int iteration_count = 0;
-  while (true) {
-    iteration_count++;
-    int row = Rand() % n;
-    int col = Rand() % n;
-    int candidate_value = Rand() % 8 + 1;
-
-    int old_value = grid[row][col];
-    grid[row][col] = candidate_value;
-
-    ll new_score = update_local_score(row, col);
-    if (new_score >= best_score) {
-      best_score = new_score;
-    }
-    else {
-      grid[row][col] = old_value;
-      update_local_score(row, col);
-    }
-
-    clock_t end_clock = clock();
-    if ((double)(end_clock - start_clock) / CLOCKS_PER_SEC > 2.9) {
-      break;
-    }
-  }
-
-  cerr << iteration_count << endl;
-  cerr << best_score << endl;
-
-  rep(i, n)
-  {
-    rep(j, n)
-    {
-      if (grid[i][j] == 0) {
-        cout << '.';
+      ll score = solve_case(i, annealingParams);
+      sum_score += score;
+      if (exec_mode == 1) {
+        cout << score << endl;
       }
       else {
-        cout << (char)(grid[i][j] + 'A' - 1);
+        cout << "case = " << setw(2) << i << ", "
+          << "score = " << setw(4) << score << ", "
+          << "sum = " << setw(5) << sum_score << ", "
+          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << endl;
       }
     }
-    cout << endl;
   }
+  else if (exec_mode == 3) {
+    int loop_count = 0;
+    AnnealingParams best_annealingParams;
+    ll best_sum_score = 0;
+
+    while (true) {
+      AnnealingParams new_annealingParams;
+      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
+      new_annealingParams.end_temperature = 0.0;
+      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
+      new_annealingParams.operation_threshold[0] = rand() % 101;
+
+      ll sum_score = 0;
+      srep(i, 0, 15)
+      {
+        ll score = solve_case(i, new_annealingParams);
+        sum_score += score;
+
+        // シード0が悪ければ打ち切り
+        if (i == 0 && score < 0) {
+          break;
+        }
+      }
+
+      cout << "loop_count = " << loop_count
+        << ", sum_score = " << sum_score
+        << ", start_temperature = " << new_annealingParams.start_temperature[0]
+        << ", end_temperature = " << new_annealingParams.end_temperature
+        << ", score_scale = " << new_annealingParams.score_scale
+        << ", operation_threshold = " << new_annealingParams.operation_threshold[0]
+        << endl;
+
+      if (sum_score > best_sum_score) {
+        best_sum_score = sum_score;
+        best_annealingParams = new_annealingParams;
+      }
+
+      loop_count++;
+    }
+  }
+
   return 0;
 }
