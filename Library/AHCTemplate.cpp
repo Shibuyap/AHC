@@ -102,7 +102,7 @@ const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
 
 
-double time_limit = 1.8;
+const double TIME_LIMIT = 1.8;
 int exec_mode;
 
 int n;
@@ -180,7 +180,7 @@ struct AnnealingParams
   double start_temperature[10];
   double end_temperature;
   double score_scale;
-  int operation_threshold[10];
+  int operation_thresholds[10];
 };
 
 void run_simulated_annealing(AnnealingParams annealingParams)
@@ -197,21 +197,21 @@ void run_simulated_annealing(AnnealingParams annealingParams)
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > time_limit) break;
+      if (now_time > TIME_LIMIT) break;
     }
 
-    double progress_ratio = now_time / time_limit;
+    double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_threshold[1];
+    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
-    if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
       // 近傍操作1
     }
-    else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
       // 近傍操作2
     }
 
@@ -232,10 +232,10 @@ void run_simulated_annealing(AnnealingParams annealingParams)
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
       }
-      else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
       }
     }
@@ -295,16 +295,16 @@ int main()
   annealingParams.start_temperature[9] = 2048.0;
   annealingParams.end_temperature = 0.0;
   annealingParams.score_scale = 12345.0;
-  annealingParams.operation_threshold[0] = 100;
-  annealingParams.operation_threshold[1] = 200;
-  annealingParams.operation_threshold[2] = 300;
-  annealingParams.operation_threshold[3] = 400;
-  annealingParams.operation_threshold[4] = 500;
-  annealingParams.operation_threshold[5] = 600;
-  annealingParams.operation_threshold[6] = 700;
-  annealingParams.operation_threshold[7] = 800;
-  annealingParams.operation_threshold[8] = 900;
-  annealingParams.operation_threshold[9] = 1000;
+  annealingParams.operation_thresholds[0] = 100;
+  annealingParams.operation_thresholds[1] = 200;
+  annealingParams.operation_thresholds[2] = 300;
+  annealingParams.operation_thresholds[3] = 400;
+  annealingParams.operation_thresholds[4] = 500;
+  annealingParams.operation_thresholds[5] = 600;
+  annealingParams.operation_thresholds[6] = 700;
+  annealingParams.operation_thresholds[7] = 800;
+  annealingParams.operation_thresholds[8] = 900;
+  annealingParams.operation_thresholds[9] = 1000;
 
   if (exec_mode == 0) {
     solve_case(0, annealingParams);
@@ -337,7 +337,7 @@ int main()
       new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
       new_annealingParams.end_temperature = 0.0;
       new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
-      new_annealingParams.operation_threshold[0] = rand() % 101;
+      new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
       srep(i, 0, 15)
@@ -356,7 +356,7 @@ int main()
         << ", start_temperature = " << new_annealingParams.start_temperature[0]
         << ", end_temperature = " << new_annealingParams.end_temperature
         << ", score_scale = " << new_annealingParams.score_scale
-        << ", operation_threshold = " << new_annealingParams.operation_threshold[0]
+        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
         << endl;
 
       if (sum_score > best_sum_score) {

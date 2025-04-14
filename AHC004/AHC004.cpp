@@ -91,9 +91,9 @@ void shuffle_array(int* arr, int n)
   }
 }
 
-std::random_device seed_gen;
-std::mt19937 engine(seed_gen());
-// std::shuffle(v.begin(), v.end(), engine);
+//std::random_device seed_gen;
+//std::mt19937 engine(seed_gen());
+//std::shuffle(v.begin(), v.end(), engine);
 
 const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
@@ -102,7 +102,7 @@ const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
 
 
-double time_limit = 2.9;
+double TIME_LIMIT = 2.9;
 int exec_mode;
 
 static const ll PERFECT_SCORE = 100000000;
@@ -121,7 +121,7 @@ public:
   Pattern(vector<int> p) : pattern(p), merged_count(1) {}
 };
 
-class Patterns
+class PatternsManager
 {
 private:
   const int MERGE_REQUIRED_LENGTH = 5;
@@ -178,7 +178,7 @@ public:
       int idx2 = -1;
       int diff = 0;
       int max_len = 0;
-      for (int i = 0; i < patterns_tmp.size(); i++) {
+      for (int i = patterns_tmp.size() - 1; i >= 0; i--) {
         for (int j = 0; j < patterns_tmp.size(); j++) {
           if (i == j) {
             continue;
@@ -211,6 +211,13 @@ public:
                 }
               }
             }
+
+            //if (szi < MERGE_REQUIRED_LENGTH + 2 && new_len < szi) {
+            //  ok = false;
+            //}
+            //if (szj < MERGE_REQUIRED_LENGTH + 2 && new_len < szj) {
+            //  ok = false;
+            //}
 
             if (ok) {
               if (new_len > max_len) {
@@ -311,19 +318,19 @@ public:
   }
 };
 
-Patterns patterns;
+PatternsManager patterns_manager;
 
 class State
 {
 public:
-  Patterns& patterns;
+  PatternsManager& patterns;
 
   int matched_count;
   int grid[N][N];
   vector<vector<MatchedFlags>> matched_flags;
 
   State() = delete;
-  State(Patterns& p) : patterns(p) {
+  State(PatternsManager& p) : patterns(p) {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         grid[i][j] = 0;
@@ -425,31 +432,11 @@ private:
   }
 };
 
-
-void store_best_score()
-{
-}
-
-void restore_best_score()
-{
-}
-
-bool is_out_of_range(int x, int y)
-{
-  //if (x < 0 || n <= x || y < 0 || n <= y) return true;
-  return false;
-}
-
-void initialize_state()
-{
-}
-
 void input_data(int case_num)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
-
 
   int _n, _m;
   vector<string> vs;
@@ -473,7 +460,7 @@ void input_data(int case_num)
       vs.push_back(s);
     }
   }
-  patterns.initialize(vs);
+  patterns_manager.initialize(vs);
 }
 
 void open_ofs(int case_num, ofstream& ofs)
@@ -530,13 +517,11 @@ struct AnnealingParams
   double start_temperature[10];
   double end_temperature;
   double score_scale;
-  int operation_threshold[10];
+  int operation_thresholds[10];
 };
 
 void run_simulated_annealing(AnnealingParams annealingParams, State& state)
 {
-  store_best_score();
-
   double now_time = get_elapsed_time();
   const double START_TEMP = annealingParams.start_temperature[0];
   const double END_TEMP = annealingParams.end_temperature;
@@ -547,14 +532,14 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
 
     if (iteration_count % 10 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > time_limit) break;
+      if (now_time > TIME_LIMIT) break;
     }
 
-    double progress_ratio = now_time / time_limit;
+    double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_threshold[1];
+    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
@@ -567,10 +552,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     int old_value = state.grid[row][col];
 
     int len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
-    while (patterns.vv_patterns[len].size() == 0) {
+    while (patterns_manager.vv_patterns[len].size() == 0) {
       len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
     }
-    int index = rand_xorshift() % patterns.vv_patterns[len].size();
+    int index = rand_xorshift() % patterns_manager.vv_patterns[len].size();
     int dir = rand_xorshift() % 2;
 
     int row2 = rand_xorshift() % N;
@@ -588,25 +573,25 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
       }
     }
 
-    if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
       // 近傍操作1
       state.grid[row][col] = candidate_value;
       state.update_one_point(row, col);
     }
-    else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
       // 近傍操作2
       for (int i = 0; i < len; i++) {
         if (dir == 0) {
-          state.grid[row][(col + i) % N] = patterns.vv_patterns[len][index].pattern[i];
+          state.grid[row][(col + i) % N] = patterns_manager.vv_patterns[len][index].pattern[i];
           state.update_one_point(row, (col + i) % N);
         }
         else {
-          state.grid[(row + i) % N][col] = patterns.vv_patterns[len][index].pattern[i];;
+          state.grid[(row + i) % N][col] = patterns_manager.vv_patterns[len][index].pattern[i];;
           state.update_one_point((row + i) % N, col);
         }
       }
     }
-    else if (ra_exec_mode < annealingParams.operation_threshold[2]) {
+    else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
       // 近傍操作3
       int keep[N];
       for (int i = 0; i < N; i++) {
@@ -633,12 +618,12 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < annealingParams.operation_threshold[0]) {
+      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
         state.grid[row][col] = old_value;
         state.update_one_point(row, col);
       }
-      else if (ra_exec_mode < annealingParams.operation_threshold[1]) {
+      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
         for (int i = 0; i < len; i++) {
           if (dir == 0) {
@@ -651,7 +636,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
           }
         }
       }
-      else if (ra_exec_mode < annealingParams.operation_threshold[2]) {
+      else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
         // 近傍操作3 の巻き戻し
         int keep[N];
         for (int i = 0; i < N; i++) {
@@ -669,36 +654,32 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     }
   }
 
-  if (exec_mode != 0 && exec_mode != 3) {
+  if (exec_mode != 0) {
     cout << iteration_count << endl;
   }
-
-  restore_best_score();
 }
 
 ll solve_case(int case_num, AnnealingParams annealingParams)
 {
   start_timer();
 
-  initialize_state();
-
   input_data(case_num);
 
-  patterns.merge();
+  patterns_manager.merge();
 
   if (exec_mode == 3) {
     cerr << get_elapsed_time() << " sec" << endl;
-    for (int i = 0; i < patterns.vv_patterns.size(); i++) {
+    for (int i = 0; i < patterns_manager.vv_patterns.size(); i++) {
       cerr << setw(3) << i << " ";
     }
     cerr << endl;
-    for (int i = 0; i < patterns.vv_patterns.size(); i++) {
-      cerr << setw(3) << patterns.vv_patterns[i].size() << " ";
+    for (int i = 0; i < patterns_manager.vv_patterns.size(); i++) {
+      cerr << setw(3) << patterns_manager.vv_patterns[i].size() << " ";
     }
     cerr << endl;
   }
 
-  State state(patterns);
+  State state(patterns_manager);
 
   ofstream ofs;
   open_ofs(case_num, ofs);
@@ -741,16 +722,16 @@ int main()
   annealingParams.start_temperature[9] = 2048.0;
   annealingParams.end_temperature = 0.0;
   annealingParams.score_scale = 12345.0;
-  annealingParams.operation_threshold[0] = 100;
-  annealingParams.operation_threshold[1] = 200;
-  annealingParams.operation_threshold[2] = 300;
-  annealingParams.operation_threshold[3] = 400;
-  annealingParams.operation_threshold[4] = 500;
-  annealingParams.operation_threshold[5] = 600;
-  annealingParams.operation_threshold[6] = 700;
-  annealingParams.operation_threshold[7] = 800;
-  annealingParams.operation_threshold[8] = 900;
-  annealingParams.operation_threshold[9] = 1000;
+  annealingParams.operation_thresholds[0] = 100;
+  annealingParams.operation_thresholds[1] = 200;
+  annealingParams.operation_thresholds[2] = 300;
+  annealingParams.operation_thresholds[3] = 400;
+  annealingParams.operation_thresholds[4] = 500;
+  annealingParams.operation_thresholds[5] = 600;
+  annealingParams.operation_thresholds[6] = 700;
+  annealingParams.operation_thresholds[7] = 800;
+  annealingParams.operation_thresholds[8] = 900;
+  annealingParams.operation_thresholds[9] = 1000;
 
   if (exec_mode == 0) {
     solve_case(0, annealingParams);
@@ -783,7 +764,7 @@ int main()
       new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
       new_annealingParams.end_temperature = 0.0;
       new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
-      new_annealingParams.operation_threshold[0] = rand() % 101;
+      new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
       srep(i, 0, 15)
@@ -802,7 +783,7 @@ int main()
         << ", start_temperature = " << new_annealingParams.start_temperature[0]
         << ", end_temperature = " << new_annealingParams.end_temperature
         << ", score_scale = " << new_annealingParams.score_scale
-        << ", operation_threshold = " << new_annealingParams.operation_threshold[0]
+        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
         << endl;
 
       if (sum_score > best_sum_score) {
