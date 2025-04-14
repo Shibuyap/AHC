@@ -111,19 +111,27 @@ static const int MAX_PATTERNS = 1000;
 static const int MIN_PATTERN_LENGTH = 2;
 static const int MAX_PATTERN_LENGTH = 20;
 
+struct Pattern
+{
+public:
+  vector<int> pattern;
+  int merged_count;
+
+  Pattern() = delete;
+  Pattern(vector<int> p) : pattern(p), merged_count(1) {}
+};
+
 class Patterns
 {
 private:
   const int MERGE_REQUIRED_LENGTH = 5;
 public:
-  vector<vector<vector<int>>> pattern;
+  vector<vector<Pattern>> vv_patterns;
   int pattern_count;
 
   void initialize(vector<string> strs) {
-    pattern.clear();
-    rep(i, MAX_PATTERN_LENGTH + 1) {
-      pattern.push_back(vector<vector<int>>());
-    }
+    vv_patterns.clear();
+    vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = 0; i < strs.size(); i++) {
       string s = strs[i];
       int len = s.size();
@@ -131,34 +139,32 @@ public:
       for (int j = 0; j < len; j++) {
         tmp[j] = s[j] - 'A' + 1;
       }
-      pattern[len].push_back(tmp);
-    }
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      sort(pattern[i].begin(), pattern[i].end());
+      vv_patterns[len].emplace_back(tmp);
     }
     pattern_count = 0;
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      pattern_count += pattern[i].size();
+    for (auto& v_patterns : vv_patterns) {
+      for (auto& pattern : v_patterns) {
+        pattern_count += pattern.merged_count;
+      }
     }
   }
 
   void clear() {
     pattern_count = 0;
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      pattern[i].clear();
-    }
+    vv_patterns.clear();
+    vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
   }
 
   void merge() {
-    vector<vector<int>> patterns_tmp;
-    vector<vector<int>> patterns_keep;
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (auto& vec : pattern[i]) {
-        if (vec.size() < MERGE_REQUIRED_LENGTH) {
-          patterns_keep.push_back(vec);
+    vector<Pattern> patterns_tmp;
+    vector<Pattern> patterns_keep;
+    for (auto& v_patterns : vv_patterns) {
+      for (auto& pattern : v_patterns) {
+        if (pattern.pattern.size() < MERGE_REQUIRED_LENGTH) {
+          patterns_keep.emplace_back(pattern);
         }
         else {
-          patterns_tmp.push_back(vec);
+          patterns_tmp.emplace_back(pattern);
         }
       }
     }
@@ -173,16 +179,16 @@ public:
           if (i == j) {
             continue;
           }
-          int szi = patterns_tmp[i].size();
-          int szj = patterns_tmp[j].size();
-          rep(k, szi - MERGE_REQUIRED_LENGTH + 1) {
+          int szi = patterns_tmp[i].pattern.size();
+          int szj = patterns_tmp[j].pattern.size();
+          rep(k, szi) {
             int new_len = min(szi - k, szj);
             if (new_len < max_len && szi + szj < MAX_PATTERN_LENGTH) {
               break;
             }
             bool ok = true;
             for (int l = 0; l < new_len; l++) {
-              if (patterns_tmp[i][l + k] != patterns_tmp[j][l]) {
+              if (patterns_tmp[i].pattern[l + k] != patterns_tmp[j].pattern[l]) {
                 ok = false;
                 break;
               }
@@ -191,7 +197,7 @@ public:
             if (ok && max(szi, szj + k) > MAX_PATTERN_LENGTH) {
               for (int l = 0; l < szj; l++) {
                 if (l + k >= MAX_PATTERN_LENGTH) {
-                  if (patterns_tmp[i][l + k - MAX_PATTERN_LENGTH] != patterns_tmp[j][l]) {
+                  if (patterns_tmp[i].pattern[l + k - MAX_PATTERN_LENGTH] != patterns_tmp[j].pattern[l]) {
                     ok = false;
                     break;
                   }
@@ -218,19 +224,20 @@ public:
         break;
       }
 
-      vector<int> new_vec = patterns_tmp[idx1];
-      int szj = patterns_tmp[idx2].size();
+      Pattern merged_pattern = patterns_tmp[idx1];
+      int szj = patterns_tmp[idx2].pattern.size();
       rep(k, szj) {
-        if (new_vec.size() >= MAX_PATTERN_LENGTH) {
+        if (merged_pattern.pattern.size() >= MAX_PATTERN_LENGTH) {
           break;
         }
-        if (k + diff < new_vec.size()) {
+        if (k + diff < merged_pattern.pattern.size()) {
           continue;
         }
         else {
-          new_vec.push_back(patterns_tmp[idx2][k]);
+          merged_pattern.pattern.push_back(patterns_tmp[idx2].pattern[k]);
         }
       }
+      merged_pattern.merged_count += patterns_tmp[idx2].merged_count;
 
       if (idx1 < idx2) {
         patterns_tmp.erase(patterns_tmp.begin() + idx2);
@@ -240,23 +247,22 @@ public:
         patterns_tmp.erase(patterns_tmp.begin() + idx1);
         patterns_tmp.erase(patterns_tmp.begin() + idx2);
       }
-      patterns_tmp.push_back(new_vec);
+      patterns_tmp.push_back(merged_pattern);
     }
 
     clear();
-    for (auto& vec : patterns_keep) {
-      pattern[vec.size()].push_back(vec);
+    for (auto& pattern : patterns_keep) {
+      vv_patterns[pattern.pattern.size()].push_back(pattern);
     }
-    for (auto& vec : patterns_tmp) {
-      pattern[vec.size()].push_back(vec);
-    }
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      sort(pattern[i].begin(), pattern[i].end());
+    for (auto& pattern : patterns_tmp) {
+      vv_patterns[pattern.pattern.size()].push_back(pattern);
     }
 
     pattern_count = 0;
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      pattern_count += pattern[i].size();
+    for (auto& v_patterns : vv_patterns) {
+      for (auto& pattern : v_patterns) {
+        pattern_count += pattern.merged_count;
+      }
     }
   }
 };
@@ -322,8 +328,8 @@ public:
 
     matched_flags.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      matched_flags[i].resize(patterns.pattern[i].size());
-      for (int j = 0; j < patterns.pattern[i].size(); j++) {
+      matched_flags[i].resize(patterns.vv_patterns[i].size());
+      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         matched_flags[i][j].clear();
       }
     }
@@ -340,12 +346,12 @@ public:
   }
 
   void generate_greedy() {
-    for (auto& v : patterns.pattern) {
-      for (auto& vec : v) {
+    for (auto& v_patterns : patterns.vv_patterns) {
+      for (auto& pattern : v_patterns) {
         int row = rand_xorshift() % N;
         int col = rand_xorshift() % N;
-        for (int i = 0; i < vec.size(); i++) {
-          grid[row][(col + i) % N] = vec[i];
+        for (int i = 0; i < pattern.pattern.size(); i++) {
+          grid[row][(col + i) % N] = pattern.pattern[i];
         }
       }
     }
@@ -353,12 +359,12 @@ public:
 
   void recalc_all() {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.pattern[i].size(); j++) {
+      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         matched_flags[i][j].clear();
         rep(k, N) {
           rep(l, N) {
-            matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.pattern[i][j], 0));
-            matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.pattern[i][j], 1));
+            matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 0));
+            matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 1));
           }
         }
       }
@@ -366,21 +372,27 @@ public:
 
     matched_count = 0;
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.pattern[i].size(); j++) {
-        matched_count += matched_flags[i][j].get_count() > 0;
+      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
+        if (matched_flags[i][j].get_count() > 0) {
+          matched_count += patterns.vv_patterns[i][j].merged_count;
+        }
       }
     }
   }
 
   void update_one_point(int row, int col) {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.pattern[i].size(); j++) {
-        matched_count -= matched_flags[i][j].get_count() > 0;
-        rep(k, i) {
-          matched_flags[i][j].set_flag(row, (col + N - k) % N, 0, is_matched(row, (col + N - k) % N, patterns.pattern[i][j], 0));
-          matched_flags[i][j].set_flag((row + N - k) % N, col, 1, is_matched((row + N - k) % N, col, patterns.pattern[i][j], 1));
+      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
+        if (matched_flags[i][j].get_count() > 0) {
+          matched_count -= patterns.vv_patterns[i][j].merged_count;
         }
-        matched_count += matched_flags[i][j].get_count() > 0;
+        rep(k, i) {
+          matched_flags[i][j].set_flag(row, (col + N - k) % N, 0, is_matched(row, (col + N - k) % N, patterns.vv_patterns[i][j].pattern, 0));
+          matched_flags[i][j].set_flag((row + N - k) % N, col, 1, is_matched((row + N - k) % N, col, patterns.vv_patterns[i][j].pattern, 1));
+        }
+        if (matched_flags[i][j].get_count() > 0) {
+          matched_count += patterns.vv_patterns[i][j].merged_count;
+        }
       }
     }
   }
@@ -551,10 +563,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     int old_value = state.grid[row][col];
 
     int len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
-    while (patterns.pattern[len].size() == 0) {
+    while (patterns.vv_patterns[len].size() == 0) {
       len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
     }
-    int index = rand_xorshift() % patterns.pattern[len].size();
+    int index = rand_xorshift() % patterns.vv_patterns[len].size();
     int dir = rand_xorshift() % 2;
     //dir = 0;
     vector<int> old_values(len);
@@ -576,11 +588,11 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
       // ãﬂñTëÄçÏ2
       for (int i = 0; i < len; i++) {
         if (dir == 0) {
-          state.grid[row][(col + i) % N] = patterns.pattern[len][index][i];
+          state.grid[row][(col + i) % N] = patterns.vv_patterns[len][index].pattern[i];
           state.update_one_point(row, (col + i) % N);
         }
         else {
-          state.grid[(row + i) % N][col] = patterns.pattern[len][index][i];;
+          state.grid[(row + i) % N][col] = patterns.vv_patterns[len][index].pattern[i];;
           state.update_one_point((row + i) % N, col);
         }
       }
@@ -633,7 +645,18 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   input_data(case_num);
 
-  patterns.merge();
+  if (exec_mode == 3) {
+    patterns.merge();
+    cerr << get_elapsed_time() << " sec" << endl;
+    for (int i = 0; i < patterns.vv_patterns.size(); i++) {
+      cerr << setw(3) << i << " ";
+    }
+    cerr << endl;
+    for (int i = 0; i < patterns.vv_patterns.size(); i++) {
+      cerr << setw(3) << patterns.vv_patterns[i].size() << " ";
+    }
+    cerr << endl;
+  }
 
   State state(patterns);
 
@@ -692,9 +715,9 @@ int main()
   if (exec_mode == 0) {
     solve_case(0, annealingParams);
   }
-  else if (exec_mode <= 2) {
+  else if (exec_mode < 100) {
     ll sum_score = 0;
-    srep(i, 0, 15)
+    srep(i, 0, 100)
     {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
@@ -710,7 +733,7 @@ int main()
       }
     }
   }
-  else if (exec_mode == 3) {
+  else if (exec_mode == 100) {
     int loop_count = 0;
     AnnealingParams best_annealingParams;
     ll best_sum_score = 0;
