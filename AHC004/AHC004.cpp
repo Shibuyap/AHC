@@ -170,6 +170,10 @@ public:
     }
 
     while (true) {
+      if (get_elapsed_time() > 2.0) {
+        break;
+      }
+
       int idx1 = -1;
       int idx2 = -1;
       int diff = 0;
@@ -534,14 +538,14 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
   store_best_score();
 
   double now_time = get_elapsed_time();
-  const double START_TEMP = annealingParams.start_temperature[1];
+  const double START_TEMP = annealingParams.start_temperature[0];
   const double END_TEMP = annealingParams.end_temperature;
 
   int iteration_count = 0;
   while (true) {
     iteration_count++;
 
-    if (iteration_count % 100 == 0) {
+    if (iteration_count % 10 == 0) {
       now_time = get_elapsed_time();
       if (now_time > time_limit) break;
     }
@@ -568,7 +572,12 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     }
     int index = rand_xorshift() % patterns.vv_patterns[len].size();
     int dir = rand_xorshift() % 2;
-    //dir = 0;
+
+    int row2 = rand_xorshift() % N;
+    while (row2 == row) {
+      row2 = rand_xorshift() % N;
+    }
+
     vector<int> old_values(len);
     for (int i = 0; i < len; i++) {
       if (dir == 0) {
@@ -595,6 +604,21 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
           state.grid[(row + i) % N][col] = patterns.vv_patterns[len][index].pattern[i];;
           state.update_one_point((row + i) % N, col);
         }
+      }
+    }
+    else if (ra_exec_mode < annealingParams.operation_threshold[2]) {
+      // ‹ß–T‘€ì3
+      int keep[N];
+      for (int i = 0; i < N; i++) {
+        keep[i] = state.grid[row][i];
+      }
+      for (int i = 0; i < N; i++) {
+        state.grid[row][i] = state.grid[row2][i];
+        state.update_one_point(row, i);
+      }
+      for (int i = 0; i < N; i++) {
+        state.grid[row2][i] = keep[i];
+        state.update_one_point(row2, i);
       }
     }
 
@@ -627,6 +651,21 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
           }
         }
       }
+      else if (ra_exec_mode < annealingParams.operation_threshold[2]) {
+        // ‹ß–T‘€ì3 ‚ÌŠª‚«–ß‚µ
+        int keep[N];
+        for (int i = 0; i < N; i++) {
+          keep[i] = state.grid[row][i];
+        }
+        for (int i = 0; i < N; i++) {
+          state.grid[row][i] = state.grid[row2][i];
+          state.update_one_point(row, i);
+        }
+        for (int i = 0; i < N; i++) {
+          state.grid[row2][i] = keep[i];
+          state.update_one_point(row2, i);
+        }
+      }
     }
   }
 
@@ -645,8 +684,9 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   input_data(case_num);
 
+  patterns.merge();
+
   if (exec_mode == 3) {
-    patterns.merge();
     cerr << get_elapsed_time() << " sec" << endl;
     for (int i = 0; i < patterns.vv_patterns.size(); i++) {
       cerr << setw(3) << i << " ";
@@ -686,7 +726,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
 int main()
 {
-  exec_mode = 2;
+  exec_mode = 3;
 
   AnnealingParams annealingParams;
   annealingParams.start_temperature[0] = 2048.0;
@@ -700,8 +740,8 @@ int main()
   annealingParams.start_temperature[8] = 2048.0;
   annealingParams.start_temperature[9] = 2048.0;
   annealingParams.end_temperature = 0.0;
-  annealingParams.score_scale = 1234567.0;
-  annealingParams.operation_threshold[0] = 190;
+  annealingParams.score_scale = 12345.0;
+  annealingParams.operation_threshold[0] = 100;
   annealingParams.operation_threshold[1] = 200;
   annealingParams.operation_threshold[2] = 300;
   annealingParams.operation_threshold[3] = 400;
