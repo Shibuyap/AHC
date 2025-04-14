@@ -221,6 +221,18 @@ public:
     }
   }
 
+  void generate_greedy() {
+    for (auto& v : patterns.pattern) {
+      for (auto& vec : v) {
+        int row = rand_xorshift() % n;
+        int col = rand_xorshift() % n;
+        for (int i = 0; i < vec.size(); i++) {
+          grid[row][(col + i) % n] = vec[i];
+        }
+      }
+    }
+  }
+
   void recalc_all() {
     for (int i = 2; i <= 12; i++) {
       for (int j = 0; j < patterns.pattern[i].size(); j++) {
@@ -426,6 +438,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     }
     int index = rand_xorshift() % patterns.pattern[len].size();
     int dir = rand_xorshift() % 2;
+    //dir = 0;
     vector<int> old_values(len);
     for (int i = 0; i < len; i++) {
       if (dir == 0) {
@@ -508,10 +521,11 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   open_ofs(case_num, ofs);
 
   state.generate_random();
+  state.generate_greedy();
   state.recalc_all();
 
   // Ä‚«‚È‚Ü‚µŽÀs
-  run_simulated_annealing(annealingParams, state);
+  //run_simulated_annealing(annealingParams, state);
 
   // ‰ð“š‚ðo—Í
   output_data(ofs, state);
