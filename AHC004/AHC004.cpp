@@ -91,10 +91,6 @@ void shuffle_array(int* arr, int n)
   }
 }
 
-//std::random_device seed_gen;
-//std::mt19937 engine(seed_gen());
-//std::shuffle(v.begin(), v.end(), engine);
-
 const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
 
@@ -125,8 +121,11 @@ public:
 class PatternsManager
 {
 private:
-  const int MERGE_REQUIRED_LENGTH = 5;
+  const int MERGE_REQUIRED_LENGTH = 1;
 public:
+  vector<vector<Pattern>> keep_vv_patterns;
+  int keep_pattern_count = 0;
+
   vector<vector<Pattern>> vv_patterns;
   int pattern_count = 0;
 
@@ -148,6 +147,9 @@ public:
         pattern_count += pattern.merged_count;
       }
     }
+
+    keep_pattern_count = pattern_count;
+    keep_vv_patterns = vv_patterns;
   }
 
   void clear() {
@@ -416,6 +418,33 @@ public:
     return PERFECT_SCORE * matched_count / patterns.pattern_count;
   }
 
+  void recalc_all_keep() {
+    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
+      for (int j = 0; j < patterns.keep_vv_patterns[i].size(); j++) {
+        matched_flags[i][j].clear();
+        rep(k, N) {
+          rep(l, N) {
+            matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.keep_vv_patterns[i][j].pattern, 0));
+            matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.keep_vv_patterns[i][j].pattern, 1));
+          }
+        }
+      }
+    }
+
+    matched_count = 0;
+    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
+      for (int j = 0; j < patterns.keep_vv_patterns[i].size(); j++) {
+        if (matched_flags[i][j].get_count() > 0) {
+          matched_count += patterns.keep_vv_patterns[i][j].merged_count;
+        }
+      }
+    }
+  }
+
+  ll get_score_keep() {
+    return PERFECT_SCORE * matched_count / patterns.keep_pattern_count;
+  }
+
   void assemble() {
     vector<vector<int>> vv;
     drep(i, MAX_PATTERN_LENGTH + 1) {
@@ -430,39 +459,21 @@ public:
       }
     }
 
-    vector<P> prefix3Map[1 << 9];
-    srep(i, 1, vv.size()) {
-      rep(j, vv[i].size()) {
-        int num = 0;
-        rep(k, 3) {
-          num *= CHARACTER_SIZE;
-          num += vv[i][(j + k) % vv[i].size()];
-        }
-        prefix3Map[num].emplace_back(i, j);
+    vector<vector<vector<P>>> prefixMaps;
+    rep(i, 6) {
+      prefixMaps.push_back(vector<vector<P>>(1 << (i * 3)));
+      if (i == 0) {
+        continue;
       }
-    }
-
-    vector<P> prefix4Map[1 << 12];
-    srep(i, 1, vv.size()) {
-      rep(j, vv[i].size()) {
-        int num = 0;
-        rep(k, 4) {
-          num *= CHARACTER_SIZE;
-          num += vv[i][(j + k) % vv[i].size()];
+      srep(j, 0, vv.size()) {
+        rep(k, vv[j].size()) {
+          int num = 0;
+          rep(l, i) {
+            num *= CHARACTER_SIZE;
+            num += vv[j][(k + l) % vv[j].size()];
+          }
+          prefixMaps[i][num].emplace_back(j, k);
         }
-        prefix4Map[num].emplace_back(i, j);
-      }
-    }
-
-    vector<P> prefix5Map[1 << 15];
-    srep(i, 1, vv.size()) {
-      rep(j, vv[i].size()) {
-        int num = 0;
-        rep(k, 5) {
-          num *= CHARACTER_SIZE;
-          num += vv[i][(j + k) % vv[i].size()];
-        }
-        prefix5Map[num].emplace_back(i, j);
       }
     }
 
@@ -486,234 +497,262 @@ public:
     int decided_row_count = 0;
 
     // 1行目は一番長いので固定
-    rep(j, vv[0].size()) {
-      g[0][j] = vv[0][j];
-    }
-    srep(i, 1, vv.size()) {
-      srep(j, 1, vv.size()) {
-        if (i == j) {
-          continue;
-        }
-        rep(k, N) {
-          rep(l, N) {
-            // 2行目と3行目をセット
-            rep(m, vv[i].size()) {
-              g[1][(k + m) % N] = vv[i][m];
-            }
-            rep(m, vv[j].size()) {
-              g[2][(l + m) % N] = vv[j][m];
-            }
 
-            // 各列を決定していく
-            rep(m, N) {
-              decided_col[m] = -1;
-            }
-            decided_col_count = 0;
-            used_version++;
-            used[i] = used_version;
-            used[j] = used_version;
-            int ng_count = 0;;
-            while (true) {
-              bool has_change = false;
+    srep(ii, 0, vv.size()) {
+      rep(j, vv[ii].size()) {
+        g[0][j] = vv[ii][j];
+      }
+      srep(i, 0, vv.size()) {
+        srep(j, 0, vv.size()) {
+          if (i == j || ii == i || ii == j) {
+            continue;
+          }
+          rep(k, N) {
+            rep(l, N) {
+              // 2行目と3行目をセット
+              rep(m, vv[i].size()) {
+                g[1][(k + m) % N] = vv[i][m];
+              }
+              rep(m, vv[j].size()) {
+                g[2][(l + m) % N] = vv[j][m];
+              }
+
+              // 各列を決定していく
               rep(m, N) {
-                if (decided_col[m] != -1) {
-                  continue;
-                }
-                if (g[0][m] == CHARACTER_SIZE || g[1][m] == CHARACTER_SIZE || g[2][m] == CHARACTER_SIZE) {
-                  continue;
-                }
-                int num = g[0][m] * CHARACTER_SIZE * CHARACTER_SIZE + g[1][m] * CHARACTER_SIZE + g[2][m];
-
-                int idx1 = -1;
-                int idx2 = -1;
-                for (auto& pre : prefix3Map[num]) {
-                  if (used[pre.first] == used_version) {
+                decided_col[m] = -1;
+              }
+              decided_col_count = 0;
+              used_version++;
+              used[ii] = used_version;
+              used[i] = used_version;
+              used[j] = used_version;
+              int ng_count = 0;
+              while (true) {
+                bool has_change = false;
+                rep(m, N) {
+                  if (decided_col[m] != -1) {
                     continue;
                   }
-                  else {
-                    if (idx1 == -1) {
-                      idx1 = pre.first;
-                      idx2 = pre.second;
+                  if (g[0][m] == CHARACTER_SIZE || g[1][m] == CHARACTER_SIZE || g[2][m] == CHARACTER_SIZE) {
+                    continue;
+                  }
+                  int num = g[0][m] * CHARACTER_SIZE * CHARACTER_SIZE + g[1][m] * CHARACTER_SIZE + g[2][m];
+
+                  int idx1 = -1;
+                  int idx2 = -1;
+                  for (auto& pre : prefixMaps[3][num]) {
+                    if (used[pre.first] == used_version) {
+                      continue;
                     }
                     else {
-                      idx1 = -2;
+                      if (idx1 == -1) {
+                        idx1 = pre.first;
+                        idx2 = pre.second;
+                      }
+                      else {
+                        idx1 = -2;
+                        break;
+                      }
+                    }
+                  }
+
+                  if (idx1 == -1) {
+                    ng_count++;
+                    if (ng_count >= 1) {
                       break;
                     }
                   }
+                  else if (idx1 >= 0) {
+                    decided_col[m] = idx1;
+                    decided_col_2[m] = idx2;
+                    decided_col_count++;
+                    used[idx1] = used_version;
+                    has_change = true;
+                  }
                 }
-                if (idx1 == -1) {
-                  ng_count++;
-                  if (ng_count >= 1) {
+
+                if (ng_count >= 1) {
+                  break;
+                }
+                if (!has_change) {
+                  break;
+                }
+              }
+
+              // 失敗したら元に戻す
+              if (ng_count >= 1) {
+                rep(m, vv[i].size()) {
+                  g[1][(k + m) % N] = CHARACTER_SIZE;
+                }
+                rep(m, vv[j].size()) {
+                  g[2][(l + m) % N] = CHARACTER_SIZE;
+                }
+                continue;
+              }
+
+              //cout << i << " " << j << " " << k << " " << l << " decided_col_count: " << decided_col_count << endl;
+
+              // 行決定に使う列を決定する
+              const int COL_LENGTH = 1;
+              int start_col = -1;
+              rep(m, N) {
+                bool ok = true;
+                rep(n, COL_LENGTH) {
+                  if (decided_col[(m + n) % N] == -1) {
+                    ok = false;
                     break;
                   }
                 }
-                else if (idx1 >= 0) {
-                  decided_col[m] = idx1;
-                  decided_col_2[m] = idx2;
-                  decided_col_count++;
-                  used[idx1] = used_version;
-                  has_change = true;
+                if (ok) {
+                  start_col = m;
+                  break;
+                }
+              }
+              if (start_col != -1) {
+                rep(mm, COL_LENGTH) {
+                  int m = (start_col + mm) % N;
+                  rep(n, N) {
+                    int idx = (decided_col_2[m] + n) % N;
+                    g[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
+                  }
                 }
               }
 
-              if (ng_count >= 1) {
-                break;
+              // 各行を決定していく
+              rep(m, N) {
+                decided_row[m] = -1;
               }
-              if (!has_change) {
-                break;
-              }
-            }
+              decided_row_count = 0;
+              ng_count = 0;
+              while (start_col != -1) {
+                bool has_change = false;
+                srep(m, 3, N) {
+                  if (decided_row[m] != -1) {
+                    continue;
+                  }
 
-            // 失敗したら元に戻す
-            if (ng_count >= 1) {
+                  bool is_blank = false;
+                  int num = 0;
+                  rep(n, COL_LENGTH) {
+                    if (g[m][(start_col + n) % N] == CHARACTER_SIZE) {
+                      is_blank = true;
+                      break;
+                    }
+                    num *= CHARACTER_SIZE;
+                    num += g[m][(start_col + n) % N];
+                  }
+                  if (is_blank) {
+                    continue;
+                  }
+
+                  int idx1 = -1;
+                  int idx2 = -1;
+                  for (auto& pre : prefixMaps[COL_LENGTH][num]) {
+                    if (used[pre.first] == used_version) {
+                      continue;
+                    }
+                    else {
+                      bool is_ok = true;
+
+                      rep(n, N) {
+                        if (decided_col[n] != -1) {
+                          int idx_col = (decided_col_2[n] + m) % N;
+                          int idx_row = (pre.second + n) % N;
+                          if (idx_col < vv[decided_col[n]].size() && idx_row < vv[pre.first].size()) {
+                            if (vv[pre.first][idx_row] != vv[decided_col[n]][idx_col]) {
+                              is_ok = false;
+                              break;
+                            }
+                          }
+                        }
+                      }
+
+                      if (is_ok) {
+                        if (idx1 == -1) {
+                          idx1 = pre.first;
+                          idx2 = pre.second;
+                        }
+                        else {
+                          idx1 = -2;
+                          break;
+                        }
+                      }
+                      else {
+                        continue;
+                      }
+                    }
+                  }
+
+                  if (idx1 == -1) {
+                    ng_count++;
+                    //break;
+                  }
+                  else if (idx1 >= 0) {
+                    decided_row[m] = idx1;
+                    decided_row_2[m] = idx2;
+                    decided_row_count++;
+                    used[idx1] = used_version;
+                    has_change = true;
+                  }
+                }
+
+                if (!has_change) {
+                  break;
+                }
+              }
+
+              if (ng_count <= 10000 && decided_col_count + decided_row_count * 100 > best_score) {
+                best_score = decided_col_count + decided_row_count * 100;
+                rep(n, N) {
+                  if (n < 3) {
+                    rep(m, N) {
+                      best_g[n][m] = g[n][m];
+                    }
+                  }
+                  else {
+                    rep(m, N) {
+                      if (decided_col[m] != -1) {
+                        int idx = (decided_col_2[m] + n) % N;
+                        best_g[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
+                      }
+                      else {
+                        best_g[n][m] = CHARACTER_SIZE;
+                      }
+                    }
+                  }
+                }
+
+                srep(n, 3, N) {
+                  if (decided_row[n] != -1) {
+                    rep(m, N) {
+                      int idx = (decided_row_2[n] + m) % N;
+                      if (idx < vv[decided_row[n]].size()) {
+                        best_g[n][m] = vv[decided_row[n]][idx];
+                      }
+                    }
+                  }
+                }
+              }
+
+              // 後片付け
               rep(m, vv[i].size()) {
                 g[1][(k + m) % N] = CHARACTER_SIZE;
               }
               rep(m, vv[j].size()) {
                 g[2][(l + m) % N] = CHARACTER_SIZE;
               }
-              continue;
-            }
-
-            // 行決定に使う列を決定する
-            const int COL_LENGTH = 3;
-            int start_col = -1;
-            rep(m, N) {
-              bool ok = true;
-              rep(n, COL_LENGTH) {
-                if (decided_col[(m + n) % N] == -1) {
-                  ok = false;
-                  break;
-                }
-              }
-              if (ok) {
-                start_col = m;
-                break;
-              }
-            }
-            if (start_col != -1) {
-              rep(mm, COL_LENGTH) {
-                int m = (start_col + mm) % N;
-                rep(n, N) {
-                  int idx = (decided_col_2[m] + n) % N;
-                  g[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
-                }
-              }
-            }
-
-            // 各行を決定していく
-            rep(m, N) {
-              decided_row[m] = -1;
-            }
-            decided_row_count = 0;
-            ng_count = 0;
-            while (start_col != -1) {
-              bool has_change = false;
-              srep(m, 3, N) {
-                if (decided_row[m] != -1) {
-                  continue;
-                }
-
-                bool is_blank = false;
-                int num = 0;
-                rep(n, COL_LENGTH) {
-                  if (g[m][(start_col + n) % N] == CHARACTER_SIZE) {
-                    is_blank = true;
-                    break;
-                  }
-                  num *= CHARACTER_SIZE;
-                  num += g[m][(start_col + n) % N];
-                }
-                if (is_blank) {
-                  continue;
-                }
-
-                int idx1 = -1;
-                int idx2 = -1;
-                auto& mp = prefix5Map[num];
-                if (COL_LENGTH == 3) {
-                  mp = prefix3Map[num];
-                }
-                else if (COL_LENGTH == 4) {
-                  mp = prefix4Map[num];
-                }
-                for (auto& pre : mp) {
-                  if (used[pre.first] == used_version) {
-                    continue;
-                  }
-                  else {
-                    if (idx1 == -1) {
-                      idx1 = pre.first;
-                      idx2 = pre.second;
-                    }
-                    else {
-                      idx1 = -2;
-                      break;
-                    }
-                  }
-                }
-                if (idx1 == -1) {
-                  ng_count++;
-                }
-                else if (idx1 >= 0) {
-                  decided_row[m] = idx1;
-                  decided_row_2[m] = idx2;
-                  decided_row_count++;
-                  used[idx1] = used_version;
-                  has_change = true;
-                }
-              }
-
-              if (!has_change) {
-                break;
-              }
-            }
-
-            if (ng_count == 0 &&  decided_col_count + decided_row_count * 100 > best_score) {
-              best_score = decided_col_count + decided_row_count * 100;
-              rep(n, N) {
-                if (n < 3) {
-                  rep(m, N) {
-                    best_g[n][m] = g[n][m];
-                  }
-                }
-                else {
-                  rep(m, N) {
-                    if (decided_col[m] != -1) {
-                      int idx = (decided_col_2[m] + n) % N;
-                      best_g[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
-                    }
-                    else {
-                      best_g[n][m] = CHARACTER_SIZE;
-                    }
-                  }
-                }
-              }
-
-              srep(n, 3, N) {
-                if (decided_row[n] != -1) {
-                  rep(m, N) {
-                    int idx = (decided_row_2[n] + m) % N;
-                    if (idx < vv[decided_row[n]].size()) {
-                      best_g[n][m] = vv[decided_row[n]][idx];
-                    }
-                  }
-                }
-              }
-            }
-
-            // 後片付け
-            rep(m, vv[i].size()) {
-              g[1][(k + m) % N] = CHARACTER_SIZE;
-            }
-            rep(m, vv[j].size()) {
-              g[2][(l + m) % N] = CHARACTER_SIZE;
             }
           }
         }
       }
-    }
 
+      if (best_score >= (N - 3) * 100) {
+        break;
+      }
+      if (get_elapsed_time() > 2.0) {
+        break;
+      }
+    }
     if (best_score > 0) {
       rep(i, N) {
         rep(j, N) {
@@ -992,7 +1031,23 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   State state(patterns_manager);
 
   state.assemble();
-  //state.generate_random_empty();
+
+  rep(i, N)
+  {
+    rep(j, N)
+    {
+      if (state.grid[i][j] == CHARACTER_SIZE) {
+        cerr << '.';
+      }
+      else {
+        cerr << (char)(state.grid[i][j] + 'A');
+      }
+    }
+    cerr << endl;
+  }
+  cerr << get_elapsed_time() << " sec" << endl;
+
+  state.generate_random_empty();
   state.recalc_all();
 
   //state.generate_random();
@@ -1000,7 +1055,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   //state.recalc_all();
 
   // 焼きなまし実行
-  //run_simulated_annealing(annealingParams, state);
+  run_simulated_annealing(annealingParams, state);
 
   // 解答を出力
   output_data(ofs, state);
@@ -1011,7 +1066,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   ll score = 0;
   if (exec_mode != 0) {
-    score = state.get_score();
+    score = state.get_score_keep();
   }
   return score;
 }
@@ -1049,7 +1104,7 @@ int main()
   }
   else if (exec_mode < 100) {
     ll sum_score = 0;
-    srep(i, 6, 7)
+    srep(i, 0, 100)
     {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
