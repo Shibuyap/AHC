@@ -242,7 +242,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
   }
 
   if (exec_mode != 0 && exec_mode != 3) {
-    cout << loop << endl;
+    cerr << loop << endl;
   }
 
   restore_best_score();
@@ -316,10 +316,10 @@ int main()
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
-        cout << score << endl;
+        cerr << score << endl;
       }
       else {
-        cout << "case = " << setw(2) << i << ", "
+        cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
           << "sum = " << setw(5) << sum_score << ", "
           << "time = " << setw(5) << get_elapsed_time() << ", "
@@ -351,7 +351,7 @@ int main()
         }
       }
 
-      cout << "loop_count = " << loop_count
+      cerr << "loop_count = " << loop_count
         << ", sum_score = " << sum_score
         << ", start_temperature = " << new_annealingParams.start_temperature[0]
         << ", end_temperature = " << new_annealingParams.end_temperature

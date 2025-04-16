@@ -39,55 +39,63 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-std::chrono::steady_clock::time_point start_time_clock;
-
-void start_timer()
+// タイマー
+namespace
 {
-  start_time_clock = std::chrono::steady_clock::now();
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
 }
 
-double get_elapsed_time()
+// 乱数
+namespace
 {
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
-  return elapsed.count();
-}
+  static uint32_t rand_xorshift()
+  {
+    static uint32_t x = 123456789;
+    static uint32_t y = 362436069;
+    static uint32_t z = 521288629;
+    static uint32_t w = 88675123;
+    uint32_t t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
+    w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+    return w;
+  }
 
-static uint32_t rand_xorshift()
-{
-  static uint32_t x = 123456789;
-  static uint32_t y = 362436069;
-  static uint32_t z = 521288629;
-  static uint32_t w = 88675123;
-  uint32_t t = x ^ (x << 11);
-  x = y;
-  y = z;
-  z = w;
-  w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-  return w;
-}
+  static double rand_01()
+  {
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
+  }
 
-static double rand_01()
-{
-  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
-}
+  static double rand_range(double l, double r)
+  {
+    return l + (r - l) * rand_01();
+  }
 
-static double rand_range(double l, double r)
-{
-  return l + (r - l) * rand_01();
-}
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
+    return l + rand_xorshift() % (r - l + 1); // [l, r]
+  }
 
-static uint32_t rand_range(uint32_t l, uint32_t r)
-{
-  return l + rand_xorshift() % (r - l + 1); // [l, r]
-}
-
-void shuffle_array(int* arr, int n)
-{
-  for (int i = n - 1; i >= 0; i--) {
-    int j = rand_xorshift() % (i + 1);
-    int swa = arr[i];
-    arr[i] = arr[j];
-    arr[j] = swa;
+  void shuffle_array(int* arr, int n)
+  {
+    for (int i = n - 1; i >= 0; i--) {
+      int j = rand_xorshift() % (i + 1);
+      int swa = arr[i];
+      arr[i] = arr[j];
+      arr[j] = swa;
+    }
   }
 }
 
@@ -96,7 +104,6 @@ const int INT_INF = 1001001001;
 
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
-
 
 double TIME_LIMIT = 2.9;
 int exec_mode;
@@ -118,20 +125,26 @@ public:
   Pattern(vector<int> p) : pattern(p), merged_count(1) {}
 };
 
-class PatternsManager
+struct Patterns
 {
-private:
-  const int MERGE_UNUSE_LENGTH = 1;
 public:
-  vector<vector<Pattern>> initial_vv_patterns;
-  int initial_pattern_count = 0;
-
   vector<vector<Pattern>> vv_patterns;
   int pattern_count = 0;
+};
 
+class PatternsManager
+{
+public:
+  Patterns initial_patterns;
+  Patterns merged_patterns;
+
+private:
+  const int MERGE_UNUSE_LENGTH = 1;
+
+public:
   void initialize(vector<string> strs) {
-    vv_patterns.clear();
-    vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
+    initial_patterns.vv_patterns.clear();
+    initial_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = 0; i < strs.size(); i++) {
       string s = strs[i];
       int len = s.size();
@@ -139,29 +152,20 @@ public:
       for (int j = 0; j < len; j++) {
         tmp[j] = s[j] - 'A';
       }
-      vv_patterns[len].emplace_back(tmp);
+      initial_patterns.vv_patterns[len].emplace_back(tmp);
     }
-    pattern_count = 0;
-    for (auto& v_patterns : vv_patterns) {
+    initial_patterns.pattern_count = 0;
+    for (auto& v_patterns : initial_patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
-        pattern_count += pattern.merged_count;
+        initial_patterns.pattern_count += pattern.merged_count;
       }
     }
-
-    initial_pattern_count = pattern_count;
-    initial_vv_patterns = vv_patterns;
   }
 
-  void clear() {
-    pattern_count = 0;
-    vv_patterns.clear();
-    vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
-  }
-
-  void merge(double time_limit) {
+  void build_merge_patterns(double time_limit) {
     vector<Pattern> patterns_tmp;
     vector<Pattern> patterns_keep;
-    for (auto& v_patterns : vv_patterns) {
+    for (auto& v_patterns : initial_patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
         if (pattern.pattern.size() < MERGE_UNUSE_LENGTH) {
           patterns_keep.emplace_back(pattern);
@@ -260,24 +264,25 @@ public:
       patterns_tmp.push_back(merged_pattern);
     }
 
-    clear();
+    merged_patterns.vv_patterns.clear();
+    merged_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
     for (auto& pattern : patterns_keep) {
-      vv_patterns[pattern.pattern.size()].push_back(pattern);
+      merged_patterns.vv_patterns[pattern.pattern.size()].push_back(pattern);
     }
     for (auto& pattern : patterns_tmp) {
-      vv_patterns[pattern.pattern.size()].push_back(pattern);
+      merged_patterns.vv_patterns[pattern.pattern.size()].push_back(pattern);
     }
 
-    pattern_count = 0;
-    for (auto& v_patterns : vv_patterns) {
+    merged_patterns.pattern_count = 0;
+    for (auto& v_patterns : merged_patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
-        pattern_count += pattern.merged_count;
+        merged_patterns.pattern_count += pattern.merged_count;
       }
     }
   }
 };
 
-class MatchedFlags
+class MatchedFlag
 {
 private:
   int count;
@@ -285,7 +290,7 @@ private:
   bool col_flags[N][N];
 
 public:
-  MatchedFlags() {
+  MatchedFlag() {
     clear();
   }
 
@@ -317,8 +322,6 @@ public:
   }
 };
 
-PatternsManager patterns_manager;
-
 class State
 {
 public:
@@ -326,7 +329,7 @@ public:
 
   int matched_count;
   int grid[N][N];
-  vector<vector<MatchedFlags>> matched_flags;
+  vector<vector<MatchedFlag>> matched_flags;
 
   State() = delete;
   State(PatternsManager& p) : patterns(p) {
@@ -336,15 +339,7 @@ public:
       }
     }
 
-    matched_flags.resize(MAX_PATTERN_LENGTH + 1);
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      matched_flags[i].resize(patterns.vv_patterns[i].size());
-      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
-        matched_flags[i][j].clear();
-      }
-    }
-
-    matched_count = 0;
+    reset_matched_flags(patterns.initial_patterns);
   }
 
   void generate_random() {
@@ -365,7 +360,7 @@ public:
     }
   }
 
-  void generate_greedy() {
+  void generate_greedy(const Patterns& patterns) {
     for (auto& v_patterns : patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
         int row = rand_xorshift() % N;
@@ -377,7 +372,21 @@ public:
     }
   }
 
-  void recalc_all() {
+  void reset_matched_flags(const Patterns& patterns) {
+    matched_flags.resize(MAX_PATTERN_LENGTH + 1);
+    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
+      matched_flags[i].resize(patterns.vv_patterns[i].size());
+      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
+        matched_flags[i][j].clear();
+      }
+    }
+
+    matched_count = 0;
+  }
+
+  void recalc_all(const Patterns& patterns) {
+    reset_matched_flags(patterns);
+
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         matched_flags[i][j].clear();
@@ -400,7 +409,7 @@ public:
     }
   }
 
-  void update_one_point(int row, int col) {
+  void update_one_point(int row, int col, const Patterns& patterns) {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         if (matched_flags[i][j].get_count() > 0) {
@@ -417,46 +426,11 @@ public:
     }
   }
 
-  ll get_score() {
+  ll get_score(const Patterns& patterns) {
     return PERFECT_SCORE * matched_count / patterns.pattern_count;
   }
 
-  void recalc_all_keep() {
-    matched_flags.resize(MAX_PATTERN_LENGTH + 1);
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      matched_flags[i].resize(patterns.initial_vv_patterns[i].size());
-      for (int j = 0; j < patterns.initial_vv_patterns[i].size(); j++) {
-        matched_flags[i][j].clear();
-      }
-    }
-
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.initial_vv_patterns[i].size(); j++) {
-        matched_flags[i][j].clear();
-        rep(k, N) {
-          rep(l, N) {
-            matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.initial_vv_patterns[i][j].pattern, 0));
-            matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.initial_vv_patterns[i][j].pattern, 1));
-          }
-        }
-      }
-    }
-
-    matched_count = 0;
-    for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.initial_vv_patterns[i].size(); j++) {
-        if (matched_flags[i][j].get_count() > 0) {
-          matched_count += patterns.initial_vv_patterns[i][j].merged_count;
-        }
-      }
-    }
-  }
-
-  ll get_score_keep() {
-    return PERFECT_SCORE * matched_count / patterns.initial_pattern_count;
-  }
-
-  void assemble() {
+  void assemble(const Patterns& patterns) {
     vector<vector<int>> vv;
     drep(i, MAX_PATTERN_LENGTH + 1) {
       for (auto& pattern : patterns.vv_patterns[i]) {
@@ -793,7 +767,7 @@ private:
   }
 };
 
-void input_data(int case_num)
+void input_data(int case_num, PatternsManager& patterns_manager)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
@@ -877,7 +851,7 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-void run_simulated_annealing(AnnealingParams annealingParams, State& state)
+void run_simulated_annealing(AnnealingParams annealingParams, State& state, const Patterns& patterns)
 {
   double now_time = get_elapsed_time();
   const double START_TEMP = annealingParams.start_temperature[0];
@@ -900,7 +874,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
-    ll current_score = state.get_score();
+    ll current_score = state.get_score(patterns);
 
     int row = rand_xorshift() % N;
     int col = rand_xorshift() % N;
@@ -909,10 +883,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     int old_value = state.grid[row][col];
 
     int len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
-    while (patterns_manager.vv_patterns[len].size() == 0) {
+    while (patterns.vv_patterns[len].size() == 0) {
       len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
     }
-    int index = rand_xorshift() % patterns_manager.vv_patterns[len].size();
+    int index = rand_xorshift() % patterns.vv_patterns[len].size();
     int dir = rand_xorshift() % 2;
 
     int row2 = rand_xorshift() % N;
@@ -933,18 +907,18 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
       // 近傍操作1
       state.grid[row][col] = candidate_value;
-      state.update_one_point(row, col);
+      state.update_one_point(row, col, patterns);
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
       // 近傍操作2
       for (int i = 0; i < len; i++) {
         if (dir == 0) {
-          state.grid[row][(col + i) % N] = patterns_manager.vv_patterns[len][index].pattern[i];
-          state.update_one_point(row, (col + i) % N);
+          state.grid[row][(col + i) % N] = patterns.vv_patterns[len][index].pattern[i];
+          state.update_one_point(row, (col + i) % N, patterns);
         }
         else {
-          state.grid[(row + i) % N][col] = patterns_manager.vv_patterns[len][index].pattern[i];;
-          state.update_one_point((row + i) % N, col);
+          state.grid[(row + i) % N][col] = patterns.vv_patterns[len][index].pattern[i];;
+          state.update_one_point((row + i) % N, col, patterns);
         }
       }
     }
@@ -956,16 +930,16 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
       }
       for (int i = 0; i < N; i++) {
         state.grid[row][i] = state.grid[row2][i];
-        state.update_one_point(row, i);
+        state.update_one_point(row, i, patterns);
       }
       for (int i = 0; i < N; i++) {
         state.grid[row2][i] = keep[i];
-        state.update_one_point(row2, i);
+        state.update_one_point(row2, i, patterns);
       }
     }
 
     // スコア計算
-    double tmp_score = state.get_score();
+    double tmp_score = state.get_score(patterns);
 
     // 焼きなましで採用判定
     double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
@@ -978,18 +952,18 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
         state.grid[row][col] = old_value;
-        state.update_one_point(row, col);
+        state.update_one_point(row, col, patterns);
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
         for (int i = 0; i < len; i++) {
           if (dir == 0) {
             state.grid[row][(col + i) % N] = old_values[i];
-            state.update_one_point(row, (col + i) % N);
+            state.update_one_point(row, (col + i) % N, patterns);
           }
           else {
             state.grid[(row + i) % N][col] = old_values[i];
-            state.update_one_point((row + i) % N, col);
+            state.update_one_point((row + i) % N, col, patterns);
           }
         }
       }
@@ -1001,11 +975,11 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state)
         }
         for (int i = 0; i < N; i++) {
           state.grid[row][i] = state.grid[row2][i];
-          state.update_one_point(row, i);
+          state.update_one_point(row, i, patterns);
         }
         for (int i = 0; i < N; i++) {
           state.grid[row2][i] = keep[i];
-          state.update_one_point(row2, i);
+          state.update_one_point(row2, i, patterns);
         }
       }
     }
@@ -1020,20 +994,22 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 {
   start_timer();
 
-  input_data(case_num);
+  PatternsManager patterns_manager;
 
-  patterns_manager.merge(TIME_LIMIT * 0.6);
+  input_data(case_num, patterns_manager);
+
+  patterns_manager.build_merge_patterns(TIME_LIMIT * 0.6);
 
   if (exec_mode == 3) {
-    cerr << get_elapsed_time() << " sec" << endl;
-    for (int i = 0; i < patterns_manager.vv_patterns.size(); i++) {
+    for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
       cerr << setw(3) << i << " ";
     }
     cerr << endl;
-    for (int i = 0; i < patterns_manager.vv_patterns.size(); i++) {
-      cerr << setw(3) << patterns_manager.vv_patterns[i].size() << " ";
+    for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
+      cerr << setw(3) << patterns_manager.merged_patterns.vv_patterns[i].size() << " ";
     }
     cerr << endl;
+    cerr << "パターンマージ処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 
   ofstream ofs;
@@ -1041,7 +1017,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   State state(patterns_manager);
 
-  state.assemble();
+  state.assemble(patterns_manager.merged_patterns);
 
   rep(i, N)
   {
@@ -1056,14 +1032,14 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
     }
     cerr << endl;
   }
-  cerr << get_elapsed_time() << " sec" << endl;
+  cerr << "完全復元処理終了 : " << get_elapsed_time() << " sec" << endl;
 
   state.generate_random_empty();
-  state.recalc_all();
+  state.recalc_all(patterns_manager.merged_patterns);
 
-  if (state.get_score() < PERFECT_SCORE) {
+  if (state.get_score(patterns_manager.merged_patterns) < PERFECT_SCORE) {
     // 焼きなまし実行
-    run_simulated_annealing(annealingParams, state);
+    run_simulated_annealing(annealingParams, state, patterns_manager.merged_patterns);
   }
 
   // 解答を出力
@@ -1075,8 +1051,8 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   ll score = 0;
   if (exec_mode != 0) {
-    state.recalc_all_keep();
-    score = state.get_score_keep();
+    state.recalc_all(patterns_manager.merged_patterns);
+    score = state.get_score(patterns_manager.merged_patterns);
   }
   return score;
 }
@@ -1116,13 +1092,18 @@ int main()
     ll sum_score = 0;
     srep(i, 0, 100)
     {
+      if (exec_mode == 1) {
+      }
+      else {
+        cerr << endl;
+      }
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
-        cout << score << endl;
+        cerr << score << endl;
       }
       else {
-        cout << "case = " << setw(2) << i << ", "
+        cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
           << "sum = " << setw(5) << sum_score << ", "
           << "time = " << setw(5) << get_elapsed_time() << ", "
@@ -1154,7 +1135,7 @@ int main()
         }
       }
 
-      cout << "loop_count = " << loop_count
+      cerr << "loop_count = " << loop_count
         << ", sum_score = " << sum_score
         << ", start_temperature = " << new_annealingParams.start_temperature[0]
         << ", end_temperature = " << new_annealingParams.end_temperature
