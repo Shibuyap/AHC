@@ -1027,10 +1027,11 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     }
   }
 
+  if (exec_mode >= 3) {
+    cerr << "iteration_count = " << iteration_count << endl;
+  }
   if (exec_mode >= 2) {
     cerr << "焼きなまし処理終了 : " << get_elapsed_time() << " sec" << endl;
-    cerr << "iteration_count = " << iteration_count << endl;
-    cerr << "score = " << state.get_score(patterns) << endl;
   }
 }
 
@@ -1044,7 +1045,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   patterns_manager.build_merge_patterns(TIME_LIMIT * 0.6);
 
-  if (exec_mode >= 2) {
+  if (exec_mode >= 3) {
     for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
       cerr << setw(3) << i << " ";
     }
@@ -1053,6 +1054,8 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
       cerr << setw(3) << patterns_manager.merged_patterns.vv_patterns[i].size() << " ";
     }
     cerr << endl;
+  }
+  if (exec_mode >= 2) {
     cerr << "パターンマージ処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 
@@ -1063,7 +1066,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   state.assemble(TIME_LIMIT * 0.7, patterns_manager.merged_patterns);
 
-  if (exec_mode >= 2) {
+  if (exec_mode >= 3) {
     rep(i, N)
     {
       rep(j, N)
@@ -1077,6 +1080,8 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
       }
       cerr << endl;
     }
+  }
+  if (exec_mode >= 2) {
     cerr << "完全復元処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 
@@ -1118,7 +1123,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
 int main()
 {
-  exec_mode = 1;
+  exec_mode = 2;
 
   AnnealingParams annealingParams;
   annealingParams.start_temperature[0] = 2048.0;
