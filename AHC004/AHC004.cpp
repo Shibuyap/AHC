@@ -360,13 +360,55 @@ public:
     }
   }
 
-  void generate_greedy(const Patterns& patterns) {
-    for (auto& v_patterns : patterns.vv_patterns) {
-      for (auto& pattern : v_patterns) {
-        int row = rand_xorshift() % N;
-        int col = rand_xorshift() % N;
-        for (int i = 0; i < pattern.pattern.size(); i++) {
-          grid[row][(col + i) % N] = pattern.pattern[i];
+  void greedy_after_assemble(const Patterns& patterns) {
+    recalc_all(patterns);
+
+    // 置けてないパターンを長い順に置けるところに置いていく
+    for (int len = MAX_PATTERN_LENGTH; len >= MIN_PATTERN_LENGTH; len--) {
+      for (int pat_index = 0; pat_index < patterns.vv_patterns[len].size(); pat_index++) {
+        if (matched_flags[len][pat_index].get_count() > 0) {
+          continue;
+        }
+
+        int ok = 0;
+        rep(i, N) {
+          rep(j, N) {
+            // 行に置けるか
+            {
+              ok = 1;
+              rep(k, len) {
+                if (patterns.vv_patterns[len][pat_index].pattern[k] != grid[i][(j + k) % N] && grid[i][(j + k) % N] != CHARACTER_SIZE) {
+                  ok = 0;
+                  break;
+                }
+              }
+              if (ok) {
+                rep(k, len) {
+                  grid[i][(j + k) % N] = patterns.vv_patterns[len][pat_index].pattern[k];
+                }
+                break;
+              }
+            }
+            // 列に置けるか
+            {
+              ok = 1;
+              rep(k, len) {
+                if (patterns.vv_patterns[len][pat_index].pattern[k] != grid[(i + k) % N][j] && grid[(i + k) % N][j] != CHARACTER_SIZE) {
+                  ok = 0;
+                  break;
+                }
+              }
+              if (ok) {
+                rep(k, len) {
+                  grid[(i + k) % N][j] = patterns.vv_patterns[len][pat_index].pattern[k];
+                }
+                break;
+              }
+            }
+          }
+          if (ok) {
+            break;
+          }
         }
       }
     }
@@ -430,7 +472,7 @@ public:
     return PERFECT_SCORE * matched_count / patterns.pattern_count;
   }
 
-  void assemble(const Patterns& patterns) {
+  void assemble(double time_limit, const Patterns& patterns) {
     vector<vector<int>> vv;
     drep(i, MAX_PATTERN_LENGTH + 1) {
       for (auto& pattern : patterns.vv_patterns[i]) {
@@ -734,7 +776,7 @@ public:
       if (best_score >= (N - 3) * 100) {
         break;
       }
-      if (get_elapsed_time() > TIME_LIMIT * 0.9) {
+      if (get_elapsed_time() > time_limit) {
         break;
       }
     }
@@ -985,8 +1027,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     }
   }
 
-  if (exec_mode != 0) {
-    cout << iteration_count << endl;
+  if (exec_mode >= 2) {
+    cerr << "焼きなまし処理終了 : " << get_elapsed_time() << " sec" << endl;
+    cerr << "iteration_count = " << iteration_count << endl;
+    cerr << "score = " << state.get_score(patterns) << endl;
   }
 }
 
@@ -1000,7 +1044,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   patterns_manager.build_merge_patterns(TIME_LIMIT * 0.6);
 
-  if (exec_mode == 3) {
+  if (exec_mode >= 2) {
     for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
       cerr << setw(3) << i << " ";
     }
@@ -1017,29 +1061,44 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   State state(patterns_manager);
 
-  state.assemble(patterns_manager.merged_patterns);
+  state.assemble(TIME_LIMIT * 0.7, patterns_manager.merged_patterns);
 
-  rep(i, N)
-  {
-    rep(j, N)
+  if (exec_mode >= 2) {
+    rep(i, N)
     {
-      if (state.grid[i][j] == CHARACTER_SIZE) {
-        cerr << '.';
+      rep(j, N)
+      {
+        if (state.grid[i][j] == CHARACTER_SIZE) {
+          cerr << '.';
+        }
+        else {
+          cerr << (char)(state.grid[i][j] + 'A');
+        }
       }
-      else {
-        cerr << (char)(state.grid[i][j] + 'A');
-      }
+      cerr << endl;
     }
-    cerr << endl;
+    cerr << "完全復元処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
-  cerr << "完全復元処理終了 : " << get_elapsed_time() << " sec" << endl;
 
-  state.generate_random_empty();
   state.recalc_all(patterns_manager.merged_patterns);
-
   if (state.get_score(patterns_manager.merged_patterns) < PERFECT_SCORE) {
-    // 焼きなまし実行
-    run_simulated_annealing(annealingParams, state, patterns_manager.merged_patterns);
+    //state.recalc_all(patterns_manager.initial_patterns);
+    //cerr << state.get_score(patterns_manager.initial_patterns) << endl;
+
+    state.greedy_after_assemble(patterns_manager.merged_patterns);
+    //state.recalc_all(patterns_manager.initial_patterns);
+    //cerr << state.get_score(patterns_manager.initial_patterns) << endl;
+
+    state.greedy_after_assemble(patterns_manager.initial_patterns);
+    //state.recalc_all(patterns_manager.initial_patterns);
+    //cerr << state.get_score(patterns_manager.initial_patterns) << endl;
+
+    state.generate_random_empty();
+    state.recalc_all(patterns_manager.initial_patterns);
+    if (state.get_score(patterns_manager.initial_patterns) < PERFECT_SCORE) {
+      // 焼きなまし実行
+      run_simulated_annealing(annealingParams, state, patterns_manager.initial_patterns);
+    }
   }
 
   // 解答を出力
@@ -1051,15 +1110,15 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   ll score = 0;
   if (exec_mode != 0) {
-    state.recalc_all(patterns_manager.merged_patterns);
-    score = state.get_score(patterns_manager.merged_patterns);
+    state.recalc_all(patterns_manager.initial_patterns);
+    score = state.get_score(patterns_manager.initial_patterns);
   }
   return score;
 }
 
 int main()
 {
-  exec_mode = 3;
+  exec_mode = 1;
 
   AnnealingParams annealingParams;
   annealingParams.start_temperature[0] = 2048.0;
