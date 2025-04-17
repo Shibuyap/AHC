@@ -169,6 +169,50 @@ inline void push_move(int& loop, int x, int y, int nx, int ny)
   ++loop;
 }
 
+inline void some_operation(int& loop) {
+  rep(ball, BALL_COUNT)
+  {
+    int x = -1, y = -1;
+    x = ball_pos[ball][0];
+    y = ball_pos[ball][1];
+
+    while (loop < MAX_LOOP) {
+      if (x == 0) {
+        break;
+      }
+      int diff = 0;
+      int nx = -1;
+      int ny = -1;
+      if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
+        diff = board[x - 1][y - 1] - board[x][y];
+        nx = x - 1;
+        ny = y - 1;
+      }
+      if (y != x && board[x - 1][y] - board[x][y] > diff) {
+        diff = board[x - 1][y] - board[x][y];
+        nx = x - 1;
+        ny = y;
+      }
+      if (diff == 0) {
+        break;
+      }
+      moves[loop][0] = x;
+      moves[loop][1] = y;
+      moves[loop][2] = nx;
+      moves[loop][3] = ny;
+      int ball2 = board[moves[loop][2]][moves[loop][3]];
+      ball_pos[ball][0] = moves[loop][2];
+      ball_pos[ball][1] = moves[loop][3];
+      ball_pos[ball2][0] = moves[loop][0];
+      ball_pos[ball2][1] = moves[loop][1];
+      swap(board[x][y], board[nx][ny]);
+      x = nx;
+      y = ny;
+      loop++;
+    }
+  }
+}
+
 void greedy_swap_max_delta_with_tie(bool with_tie)
 {
   init_board();
@@ -305,43 +349,8 @@ void random_prefix_greedy()
       }
     }
 
-    rep(ball, BALL_COUNT)
-    {
-      int x = -1, y = -1;
-      x = ball_pos[ball][0];
-      y = ball_pos[ball][1];
+    some_operation(loop);
 
-      while (loop < MAX_LOOP) {
-        if (x == 0) break;
-        int diff = 0;
-        int nx = -1;
-        int ny = -1;
-        if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-          diff = board[x - 1][y - 1] - board[x][y];
-          nx = x - 1;
-          ny = y - 1;
-        }
-        if (y != x && board[x - 1][y] - board[x][y] > diff) {
-          diff = board[x - 1][y] - board[x][y];
-          nx = x - 1;
-          ny = y;
-        }
-        if (diff == 0) break;
-        moves[loop][0] = x;
-        moves[loop][1] = y;
-        moves[loop][2] = nx;
-        moves[loop][3] = ny;
-        int ball2 = board[moves[loop][2]][moves[loop][3]];
-        ball_pos[ball][0] = moves[loop][2];
-        ball_pos[ball][1] = moves[loop][3];
-        ball_pos[ball2][0] = moves[loop][0];
-        ball_pos[ball2][1] = moves[loop][1];
-        swap(board[x][y], board[nx][ny]);
-        x = nx;
-        y = ny;
-        loop++;
-      }
-    }
     move_cnt = loop;
 
     if (move_cnt <= best_move_cnt) {
@@ -409,47 +418,8 @@ void adaptive_prefix_greedy()
       break;
     }
 
-    rep(ball, BALL_COUNT)
-    {
-      int x = -1, y = -1;
-      x = ball_pos[ball][0];
-      y = ball_pos[ball][1];
+    some_operation(loop);
 
-      while (loop < MAX_LOOP) {
-        if (x == 0) {
-          break;
-        }
-        int diff = 0;
-        int nx = -1;
-        int ny = -1;
-        if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-          diff = board[x - 1][y - 1] - board[x][y];
-          nx = x - 1;
-          ny = y - 1;
-        }
-        if (y != x && board[x - 1][y] - board[x][y] > diff) {
-          diff = board[x - 1][y] - board[x][y];
-          nx = x - 1;
-          ny = y;
-        }
-        if (diff == 0) {
-          break;
-        }
-        moves[loop][0] = x;
-        moves[loop][1] = y;
-        moves[loop][2] = nx;
-        moves[loop][3] = ny;
-        int ball2 = board[moves[loop][2]][moves[loop][3]];
-        ball_pos[ball][0] = moves[loop][2];
-        ball_pos[ball][1] = moves[loop][3];
-        ball_pos[ball2][0] = moves[loop][0];
-        ball_pos[ball2][1] = moves[loop][1];
-        swap(board[x][y], board[nx][ny]);
-        x = nx;
-        y = ny;
-        loop++;
-      }
-    }
     move_cnt = loop;
 
     if (move_cnt < best_move_cnt) {
@@ -458,6 +428,13 @@ void adaptive_prefix_greedy()
 
     update_best_moves();
   }
+}
+
+inline int apply_prefix(int len, int loop = 0) {
+  for (int i = 0; i < len; ++i) {
+    push_move(loop, best_moves[i][0], best_moves[i][1], best_moves[i][2], best_moves[i][3]);
+  }
+  return loop; // V‚µ‚¢ loop ‚ð•Ô‹p
 }
 
 void prefix_lock_local_search()
@@ -487,18 +464,7 @@ void prefix_lock_local_search()
 
     int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
     int randomOpe = 0;
-    int loop = 0;
-
-    rep(_, LOCK_PREFIX)
-    {
-      int x = best_moves[loop][0];
-      int y = best_moves[loop][1];
-      int nx = best_moves[loop][2];
-      int ny = best_moves[loop][3];
-      swap_ball(x, y, nx, ny);
-      rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
-      loop++;
-    }
+    int loop = apply_prefix(LOCK_PREFIX);
 
     rep(ball, BALL_COUNT)
     {
@@ -606,20 +572,7 @@ void random_local_search_v1()
 
   int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
   int randomOpe = 0;
-  int loop = 0;
-
-  rep(_, LOCK_PREFIX)
-  {
-    int x = best_moves[loop][0];
-    int y = best_moves[loop][1];
-    int nx = best_moves[loop][2];
-    int ny = best_moves[loop][3];
-    swap_ball(x, y, nx, ny);
-    rep(j, 4) {
-      moves[loop][j] = best_moves[loop][j];
-    }
-    loop++;
-  }
+  int loop = apply_prefix(LOCK_PREFIX);
 
   rep(ball, BALL_COUNT)
   {
@@ -722,20 +675,7 @@ void random_local_search_v2()
 
   int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
   int randomOpe = 0;
-  int loop = 0;
-
-  rep(_, LOCK_PREFIX)
-  {
-    int x = best_moves[loop][0];
-    int y = best_moves[loop][1];
-    int nx = best_moves[loop][2];
-    int ny = best_moves[loop][3];
-    swap_ball(x, y, nx, ny);
-    rep(j, 4) {
-      moves[loop][j] = best_moves[loop][j];
-    }
-    loop++;
-  }
+  int loop = apply_prefix(LOCK_PREFIX);
 
   rep(ball, BALL_COUNT)
   {
