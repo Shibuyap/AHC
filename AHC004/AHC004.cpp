@@ -168,9 +168,6 @@ public:
   Patterns initial_patterns;
   Patterns merged_patterns;
 
-private:
-  const int MERGE_UNUSE_LENGTH = 1;
-
 public:
   void initialize(vector<string> strs) {
     initial_patterns.vv_patterns.clear();
@@ -194,16 +191,48 @@ public:
 
   void build_merge_patterns(double time_limit, int need_length) {
     vector<Pattern> patterns_tmp;
-    vector<Pattern> patterns_keep;
     for (auto& v_patterns : initial_patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
-        if (pattern.pattern.size() < MERGE_UNUSE_LENGTH) {
-          patterns_keep.emplace_back(pattern);
+        patterns_tmp.emplace_back(pattern);
+      }
+    }
+
+    {
+      vector<Pattern> patterns_tmp_2;
+      rep(i, patterns_tmp.size()) {
+        bool skip = false;
+        rep(j, patterns_tmp.size()) {
+          if (i == j) {
+            continue;
+          }
+          const auto& p1 = patterns_tmp[i].pattern;
+          const auto& p2 = patterns_tmp[j].pattern;
+          if (p1.size() > p2.size()) {
+            continue;
+          }
+          rep(k, p2.size() - p1.size() + 1) {
+            bool ok = true;
+            for (int l = 0; l < p1.size(); l++) {
+              if (p1[l] != p2[l + k]) {
+                ok = false;
+                break;
+              }
+            }
+            if (ok) {
+              skip = true;
+              break;
+            }
+          }
+          if (skip) {
+            break;
+          }
         }
-        else {
-          patterns_tmp.emplace_back(pattern);
+        if (!skip) {
+          patterns_tmp_2.push_back(patterns_tmp[i]);
         }
       }
+
+      patterns_tmp = patterns_tmp_2;
     }
 
     while (true) {
@@ -314,9 +343,6 @@ public:
 
     merged_patterns.vv_patterns.clear();
     merged_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
-    for (auto& pattern : patterns_keep) {
-      merged_patterns.vv_patterns[pattern.pattern.size()].push_back(pattern);
-    }
     for (auto& pattern : patterns_tmp) {
       merged_patterns.vv_patterns[pattern.pattern.size()].push_back(pattern);
     }
@@ -482,7 +508,7 @@ public:
     matched_count = 0;
   }
 
-  void recalc_all(const Patterns& patterns) {
+  void recalc_all(const Patterns& patterns, bool rough = false) {
     reset_matched_flags(patterns);
 
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
@@ -492,6 +518,12 @@ public:
           rep(l, N) {
             matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 0));
             matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 1));
+            if (rough && matched_flags[i][j].get_count() > 0) {
+              break;
+            }
+          }
+          if (rough && matched_flags[i][j].get_count() > 0) {
+            break;
           }
         }
       }
@@ -576,10 +608,6 @@ public:
       }
     }
 
-    //if (vv.size() < N * 2 || vv.back().size() != MAX_PATTERN_LENGTH) {
-    //  return;
-    //}
-
     int used[N * 2] = {};
     int used_version = 0;
     int decided_col[N] = {};
@@ -607,9 +635,9 @@ public:
               break;
             }
             rep(l, N) {
-              if (get_elapsed_time() > time_limit) {
-                break;
-              }
+              //if (get_elapsed_time() > time_limit) {
+              //  break;
+              //}
 
               // 2行目と3行目をセット
               rep(m, N) {
@@ -626,14 +654,6 @@ public:
               rep(m, vv[j].size()) {
                 g[2][(l + m) % N] = vv[j][m];
               }
-
-              //srep(m1, 3, N) {
-              //  rep(m2, N) {
-              //    if (g[m1][m2] != CHARACTER_SIZE) {
-              //      cout << "NGc" << endl;
-              //    }
-              //  }
-              //}
 
               // 各列を決定していく
               rep(m, N) {
@@ -656,7 +676,6 @@ public:
                     continue;
                   }
                   if (g[0][m] == CHARACTER_SIZE || g[1][m] == CHARACTER_SIZE || g[2][m] == CHARACTER_SIZE) {
-                    //cout << "NGb" << endl;
                     continue;
                   }
                   int num = g[0][m] * CHARACTER_SIZE * CHARACTER_SIZE + g[1][m] * CHARACTER_SIZE + g[2][m];
@@ -714,8 +733,6 @@ public:
                 continue;
               }
 
-              //cout << i << " " << j << " " << k << " " << l << " decided_col_count: " << decided_col_count << endl;
-
               // 行決定に使う列を決定する
               const int COL_LENGTH = 1;
               int start_col = -1;
@@ -744,7 +761,6 @@ public:
                       g[n][m] = vv[decided_col[m]][idx];
                     }
                     else {
-                      //cout << "NGd" << endl;
                       g[n][m] = CHARACTER_SIZE;
                     }
 
@@ -774,7 +790,6 @@ public:
                   rep(n, COL_LENGTH) {
                     if (g[m][(start_col + n) % N] == CHARACTER_SIZE) {
                       is_blank = true;
-                      //cout << "NGf" << endl;
                       break;
                     }
                     num *= CHARACTER_SIZE;
@@ -871,12 +886,10 @@ public:
                   }
                 }
 
-                recalc_all(patterns);
+                recalc_all(patterns, true);
                 score = get_score(patterns);
               }
 
-              //if (ng_count <= 10000 && decided_col_count + decided_row_count * 100 > best_score) {
-              //  best_score = decided_col_count + decided_row_count * 100;
               if (score > best_score) {
                 best_score = score;
                 rep(n, N) {
@@ -933,8 +946,6 @@ public:
           }
         }
       }
-
-      //cerr << no_start_count << endl;
 
       if (best_score == PERFECT_SCORE) {
         break;
@@ -1304,32 +1315,16 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
 }
 
 ll solve_2(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state) {
-  ll best_score = -1;
-  Patterns best_patterns;
-
-  const double TIME_LIMIT_ASSEMBLE = TIME_LIMIT * 0.5;
-  const int SET_COUNT = 1;
-  rep(i, SET_COUNT) {
-    double tl = TIME_LIMIT_ASSEMBLE / SET_COUNT * (i + 1);
-    patterns_manager.build_merge_patterns(tl - 0.1, i);
-    //cout << "build_merge_patterns " << i << " : " << get_elapsed_time() << " sec" << endl;
-    state.assemble(tl, patterns_manager.merged_patterns);
-    //cout << "assemble " << i << " : " << get_elapsed_time() << " sec" << endl;
-    state.recalc_all(patterns_manager.merged_patterns);
-    //cout << "recalc_all " << i << " : " << get_elapsed_time() << " sec" << endl;
-    ll score = state.get_score(patterns_manager.merged_patterns);
-    if (score == PERFECT_SCORE) {
-      return PERFECT_SCORE;
-    }
-
-    if (score > best_score) {
-      best_score = score;
-      best_patterns = patterns_manager.merged_patterns;
-    }
-  }
-
-  patterns_manager.merged_patterns = best_patterns;
+  patterns_manager.build_merge_patterns(TIME_LIMIT * 0.4, 0);
+  cout << "build_merge_patterns : " << get_elapsed_time() << " sec" << endl;
+  state.assemble(TIME_LIMIT * 0.5, patterns_manager.merged_patterns);
+  cout << "assemble : " << get_elapsed_time() << " sec" << endl;
   state.recalc_all(patterns_manager.merged_patterns);
+  cout << "recalc_all : " << get_elapsed_time() << " sec" << endl;
+  ll score = state.get_score(patterns_manager.merged_patterns);
+  if (score == PERFECT_SCORE) {
+    return PERFECT_SCORE;
+  }
 
   if (exec_mode >= 3) {
     for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
@@ -1457,7 +1452,7 @@ int main()
   }
   else if (exec_mode < 100) {
     ll sum_score = 0;
-    srep(i, 0, 100)
+    srep(i, 0, 3)
     {
       if (exec_mode == 1) {
       }
