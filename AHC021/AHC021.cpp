@@ -61,12 +61,16 @@ namespace /* óêêîÉâÉCÉuÉâÉä */
 }  // namespace
 
 constexpr int BOARD_SIZE = 30;
-int board[30][30];
+constexpr int MAX_LOOP = 10000;
+constexpr int BALL_COUNT = BOARD_SIZE * (BOARD_SIZE + 1) / 2; // ÅÅBALL_COUNT
+constexpr int LOCK_PREFIX = 52;
+
+int board[BOARD_SIZE][BOARD_SIZE];
 int ball_pos[1000][2];
 int move_cnt;
 int moves[11000][4];
 
-int initial_board[30][30];
+int initial_board[BOARD_SIZE][BOARD_SIZE];
 int best_move_cnt;
 int best_moves[11000][4];
 int global_best_move_cnt;
@@ -140,7 +144,7 @@ void restore_global_best()
 void greedy_swap_max_delta()
 {
   int loop = 0;
-  while (loop < 10000) {
+  while (loop < MAX_LOOP) {
     int tmp[4] = {};
     int diff = 0;
     rep(i, BOARD_SIZE - 1)
@@ -184,7 +188,7 @@ void greedy_swap_max_delta_with_tie()
   init_board();
 
   int loop = 0;
-  while (loop < 10000) {
+  while (loop < MAX_LOOP) {
     int tmp[4] = {};
     int diff = 0;
     rep(i, BOARD_SIZE - 1)
@@ -222,12 +226,20 @@ void greedy_swap_max_delta_with_tie()
   update_best_moves();
 }
 
+inline void swap_ball(int x1, int y1, int x2, int y2) {
+  int ball1 = board[x1][y1];
+  int ball2 = board[x2][y2];
+  std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
+  std::swap(ball_pos[ball1][1], ball_pos[ball2][1]);
+  std::swap(board[x1][y1], board[x2][y2]);
+}
+
 void ball_wise_ascent_greedy()
 {
   init_board();
 
   int loop = 0;
-  rep(ball, 465)
+  rep(ball, BALL_COUNT)
   {
     int x = -1, y = -1;
     drep(i, BOARD_SIZE)
@@ -242,7 +254,7 @@ void ball_wise_ascent_greedy()
       }
       if (x != -1) break;
     }
-    while (loop < 10000) {
+    while (loop < MAX_LOOP) {
       if (x == 0) break;
       int diff = 0;
       int nx = -1;
@@ -317,11 +329,7 @@ void random_prefix_greedy()
         moves[loop][1] = y;
         moves[loop][2] = nx;
         moves[loop][3] = ny;
-        int ball1 = board[x][y];
-        int ball2 = board[nx][ny];
-        swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-        swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-        swap(board[x][y], board[nx][ny]);
+        swap_ball(x, y, nx, ny);
         x = nx;
         y = ny;
         loop++;
@@ -329,13 +337,13 @@ void random_prefix_greedy()
       }
     }
 
-    rep(ball, 465)
+    rep(ball, BALL_COUNT)
     {
       int x = -1, y = -1;
       x = ball_pos[ball][0];
       y = ball_pos[ball][1];
 
-      while (loop < 10000) {
+      while (loop < MAX_LOOP) {
         if (x == 0) break;
         int diff = 0;
         int nx = -1;
@@ -401,11 +409,7 @@ void adaptive_prefix_greedy()
       int y = best_moves[loop][1];
       int nx = best_moves[loop][2];
       int ny = best_moves[loop][3];
-      int ball1 = board[x][y];
-      int ball2 = board[nx][ny];
-      swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-      swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-      swap(board[x][y], board[nx][ny]);
+      swap_ball(x, y, nx, ny);
       rep(j, 4) {
         moves[loop][j] = best_moves[loop][j];
       }
@@ -435,24 +439,20 @@ void adaptive_prefix_greedy()
       moves[loop][1] = y;
       moves[loop][2] = nx;
       moves[loop][3] = ny;
-      int ball1 = board[x][y];
-      int ball2 = board[nx][ny];
-      swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-      swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-      swap(board[x][y], board[nx][ny]);
+      swap_ball(x, y, nx, ny);
       x = nx;
       y = ny;
       loop++;
       break;
     }
 
-    rep(ball, 465)
+    rep(ball, BALL_COUNT)
     {
       int x = -1, y = -1;
       x = ball_pos[ball][0];
       y = ball_pos[ball][1];
 
-      while (loop < 10000) {
+      while (loop < MAX_LOOP) {
         if (x == 0) {
           break;
         }
@@ -522,32 +522,28 @@ void prefix_lock_local_search()
 
     init_board();
 
-    int ra = rand() % (best_move_cnt - 52) + 52;
+    int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
     int randomOpe = 0;
     int loop = 0;
 
-    rep(_, 52)
+    rep(_, LOCK_PREFIX)
     {
       int x = best_moves[loop][0];
       int y = best_moves[loop][1];
       int nx = best_moves[loop][2];
       int ny = best_moves[loop][3];
-      int ball1 = board[x][y];
-      int ball2 = board[nx][ny];
-      swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-      swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-      swap(board[x][y], board[nx][ny]);
+      swap_ball(x, y, nx, ny);
       rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
       loop++;
     }
 
-    rep(ball, 465)
+    rep(ball, BALL_COUNT)
     {
       int x = -1, y = -1;
       x = ball_pos[ball][0];
       y = ball_pos[ball][1];
 
-      while (loop < 10000) {
+      while (loop < MAX_LOOP) {
         if (loop < ra) {
           if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
             rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
@@ -645,33 +641,29 @@ void random_local_search_v1()
 {
   init_board();
 
-  int ra = rand() % (best_move_cnt - 52) + 52;
+  int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
   int randomOpe = 0;
   int loop = 0;
 
-  rep(_, 52)
+  rep(_, LOCK_PREFIX)
   {
     int x = best_moves[loop][0];
     int y = best_moves[loop][1];
     int nx = best_moves[loop][2];
     int ny = best_moves[loop][3];
-    int ball1 = board[x][y];
-    int ball2 = board[nx][ny];
-    swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-    swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-    swap(board[x][y], board[nx][ny]);
+    swap_ball(x, y, nx, ny);
     rep(j, 4) {
       moves[loop][j] = best_moves[loop][j];
     }
     loop++;
   }
 
-  rep(ball, 465)
+  rep(ball, BALL_COUNT)
   {
     int x = -1, y = -1;
     x = ball_pos[ball][0];
     y = ball_pos[ball][1];
-    while (loop < 10000) {
+    while (loop < MAX_LOOP) {
       if (loop < ra) {
         if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
           rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
@@ -765,33 +757,29 @@ void random_local_search_v2()
 {
   init_board();
 
-  int ra = rand() % (best_move_cnt - 52) + 52;
+  int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
   int randomOpe = 0;
   int loop = 0;
 
-  rep(_, 52)
+  rep(_, LOCK_PREFIX)
   {
     int x = best_moves[loop][0];
     int y = best_moves[loop][1];
     int nx = best_moves[loop][2];
     int ny = best_moves[loop][3];
-    int ball1 = board[x][y];
-    int ball2 = board[nx][ny];
-    swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-    swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-    swap(board[x][y], board[nx][ny]);
+    swap_ball(x, y, nx, ny);
     rep(j, 4) {
       moves[loop][j] = best_moves[loop][j];
     }
     loop++;
   }
 
-  rep(ball, 465)
+  rep(ball, BALL_COUNT)
   {
     int x = -1, y = -1;
     x = ball_pos[ball][0];
     y = ball_pos[ball][1];
-    while (loop < 10000) {
+    while (loop < MAX_LOOP) {
       if (loop < ra) {
         if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
           rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
@@ -985,9 +973,9 @@ int solve_single_problem(int mode, int probNum)
 {
   load_input(probNum);
 
-  move_cnt = 10000;
-  best_move_cnt = 10000;
-  global_best_move_cnt = 10000;
+  move_cnt = MAX_LOOP;
+  best_move_cnt = MAX_LOOP;
+  global_best_move_cnt = MAX_LOOP;
 
   greedy_swap_max_delta();
 
