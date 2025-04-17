@@ -141,6 +141,24 @@ void restore_global_best()
   }
 }
 
+inline void swap_ball(int x1, int y1, int x2, int y2) {
+  int ball1 = board[x1][y1];
+  int ball2 = board[x2][y2];
+  std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
+  std::swap(ball_pos[ball1][1], ball_pos[ball2][1]);
+  std::swap(board[x1][y1], board[x2][y2]);
+}
+
+inline void push_move(int& loop, int x, int y, int nx, int ny)
+{
+  moves[loop][0] = x;
+  moves[loop][1] = y;
+  moves[loop][2] = nx;
+  moves[loop][3] = ny;
+  swap_ball(x, y, nx, ny);
+  ++loop;
+}
+
 void greedy_swap_max_delta()
 {
   int loop = 0;
@@ -226,14 +244,6 @@ void greedy_swap_max_delta_with_tie()
   update_best_moves();
 }
 
-inline void swap_ball(int x1, int y1, int x2, int y2) {
-  int ball1 = board[x1][y1];
-  int ball2 = board[x2][y2];
-  std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-  std::swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-  std::swap(board[x1][y1], board[x2][y2]);
-}
-
 void ball_wise_ascent_greedy()
 {
   init_board();
@@ -270,14 +280,9 @@ void ball_wise_ascent_greedy()
         ny = y;
       }
       if (diff == 0) break;
-      moves[loop][0] = x;
-      moves[loop][1] = y;
-      moves[loop][2] = nx;
-      moves[loop][3] = ny;
-      swap(board[x][y], board[nx][ny]);
+      push_move(loop, x, y, nx, ny);
       x = nx;
       y = ny;
-      loop++;
     }
   }
   move_cnt = loop;
@@ -325,14 +330,9 @@ void random_prefix_greedy()
           ny = y;
         }
         if (diff == 0) continue;
-        moves[loop][0] = x;
-        moves[loop][1] = y;
-        moves[loop][2] = nx;
-        moves[loop][3] = ny;
-        swap_ball(x, y, nx, ny);
+        push_move(loop, x, y, nx, ny);
         x = nx;
         y = ny;
-        loop++;
         break;
       }
     }
@@ -435,14 +435,9 @@ void adaptive_prefix_greedy()
       if (diff == 0) {
         continue;
       }
-      moves[loop][0] = x;
-      moves[loop][1] = y;
-      moves[loop][2] = nx;
-      moves[loop][3] = ny;
-      swap_ball(x, y, nx, ny);
+      push_move(loop, x, y, nx, ny);
       x = nx;
       y = ny;
-      loop++;
       break;
     }
 
@@ -1039,7 +1034,7 @@ int main()
   }
   else {
     int sum = 0;
-    rep(_, 15) {
+    rep(_, 1) {
       sum += solve_single_problem(1, _);
     }
     cout << sum << endl;
