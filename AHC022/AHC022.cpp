@@ -27,27 +27,34 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define srep(i, s, t) for (int i = (s); i < (t); ++i)
+#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
+
 using namespace std;
+
 typedef long long int ll;
 typedef pair<int, int> PAIR;
+
+// -------------------- constants --------------------
 const int INF = 1001001001;
+const int DIR4_X[4] = { -1, 0, 1, 0 };
+const int DIR4_Y[4] = { 0, -1, 0, 1 };
+const int F_ARRAY_SIZE = 10000;
+const double TIME_LIMIT_SEC = 3.8;
+const int SET_SIZE = 20;
 
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
-
-namespace /* 乱数ライブラリ */
+// -------------------- random helpers --------------------
+namespace /* random helpers */
 {
-  static uint32_t Rand()
+  static uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
     static uint32_t w = 88675123;
     uint32_t t;
-
     t = x ^ (x << 11);
     x = y;
     y = z;
@@ -55,495 +62,301 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
+  static double rand_unit() { return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX); }
+} // namespace
 
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
-  }
-}  // namespace
+// -------------------- global state --------------------
+int io_mode;                           // 0: interact, 1: file
+std::mt19937 rng_engine;               // RNG engine
+std::normal_distribution<> normal_dist; // N(0,S)
 
+// input
+int board_size;          // L
+int wormhole_count;      // N
+int square_area;         // S
+int effective_size;      // L - 10
+int sqrt_s_minus1;       // sqrt(S) - 1
+int wormhole_y[110];
+int wormhole_x[110];
+int wormhole_perm[110];
+int noise_table[F_ARRAY_SIZE];
 
-// 汎用変数
-int mode;
-std::mt19937 engine;
-std::normal_distribution<> dist;
+// grid & answer tracking
+int grid[55][55];                      // P
+int guessed_perm[110];                 // E
+int answer_perm[110];                  // AA
 
-// 入力用変数
-int L, N, S, LL, SS;
-int Y[110], X[110];
-int A[110];
-const int F_SIZE = 10000;
-int f[11000];
+// annealing helpers
+int SEARCH_WINDOW_SIZE = 9;            // TansakuSize
+int f_SA[110][SET_SIZE][11][11];
 
-// 本番解答用変数
-int keisokuCount;
-int P[55][55];
-int E[110];
+ll max_score;
+ll max_layout_cost;
+ll max_measurement_cost;
+int candidate_perm_set[SET_SIZE][110];       // EE
+int diff_cache[SET_SIZE][110][110];
 
-// InputFile用変数
-ll inputFileKeisokuCost;
+// rollback / best snapshot
+ll best_score;
+ll best_layout_cost;
+ll best_measurement_cost;
+int best_grid[55][55];
+int best_candidate_perm_set[SET_SIZE][110];
+int best_diff_cache[SET_SIZE][110][110];
 
-// ハイパラ
-const double TL = 3.8;
-const int SetSize = 20;
-int TansakuSize = 9;
+// runtime stats
+int method_stat[20][10];
+int measurement_count;
+ll input_file_measure_cost;
 
-// 焼きなまし用
-int AA[110];
-int f_SA[110][SetSize][11][11];
+// helpers for window tests
+int is_within_window_iy;
+int is_within_window_ix;
 
-ll maxScore;
-ll maxHaitiCost;
-ll maxKeisokuCost;
-int EE[SetSize][110];
-int DIFFS[SetSize][110][110];
-
-int KEEP_EE[SetSize][110];
-int KEEP_DIFFS[SetSize][110][110];
-
-ll real_maxScore;
-ll real_maxHaitiCost;
-ll real_maxKeisokuCost;
-int real_P[55][55];
-int real_EE[SetSize][110];
-int real_DIFFS[SetSize][110][110];
-
-// 情報
-int MethodCount[20][10];
-
-void InitDist()
+// -------------------- utility functions --------------------
+void init_normal_dist()
 {
-  // 平均0.0、標準偏差Sで分布させる
-  std::normal_distribution<>::param_type param(0.0, S);
-  dist.param(param);
+  std::normal_distribution<>::param_type param(0.0, square_area);
+  normal_dist.param(param);
 }
 
-inline int Dist()
+inline int sample_normal_int() { return round(normal_dist(rng_engine)); }
+
+void init_counters()
 {
-  return round(dist(engine));
+  measurement_count = 0;
+  rep(i, 20) rep(j, 10) method_stat[i][j] = 0;
 }
 
-void Init()
+void load_problem(int problem_num)
 {
-  keisokuCount = 0;
-  rep(i, 20)
-  {
-    rep(j, 10)
-    {
-      MethodCount[i][j] = 0;
-    }
-  }
-}
+  string file_name = "./in/";
+  string num = to_string(10000 + problem_num).substr(1);
+  file_name += num + ".txt";
 
-void Input(int problemNum)
-{
-  string fileNameIfs = "./in/";
-  string strNum;
-  rep(i, 4)
-  {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
+  ifstream ifs(file_name);
 
-  ifstream ifs(fileNameIfs);
-
-  // 標準入力する
   if (!ifs.is_open()) {
-    cin >> L >> N >> S;
-    rep(i, N) { cin >> Y[i] >> X[i]; }
-  }
-  // ファイル入力する
-  else {
-    ifs >> L >> N >> S;
-    rep(i, N) { ifs >> Y[i] >> X[i]; }
-    rep(i, N) { ifs >> A[i]; }
-    rep(i, F_SIZE) { ifs >> f[i]; }
-  }
-
-
-  LL = L - 10;
-  SS = 0;
-  srep(i, 1, 31)
-  {
-    if (i * i == S) {
-      SS = i - 1;
-      break;
-    }
-  }
-
-  InitDist();
-}
-
-void OpenOfs(int probNum, ofstream& ofs)
-{
-  if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    rep(i, 4)
-    {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofs.open(fileNameOfs);
-  }
-}
-
-ll CalcHaitiCost()
-{
-  ll haitiCost = 0;
-  rep(i, L)
-  {
-    rep(j, L)
-    {
-      haitiCost += (P[i][j] - P[(i + 1) % L][j]) * (P[i][j] - P[(i + 1) % L][j]);
-      haitiCost += (P[i][j] - P[i][(j + 1) % L]) * (P[i][j] - P[i][(j + 1) % L]);
-    }
-  }
-  return haitiCost;
-}
-
-void InitHaiti()
-{
-  rep(i, L)
-  {
-    rep(j, L) { P[i][j] = 0; }
-  }
-}
-
-// ランダムに0か1000
-void InitHaiti2()
-{
-  rep(i, L)
-  {
-    rep(j, L) { P[i][j] = Rand() % 2 * 1000; }
-  }
-}
-
-void InitHaiti3()
-{
-  rep(i, L)
-  {
-    rep(j, L) { P[i][j] = 500; }
-  }
-}
-
-// 一様ランダム
-void InitHaiti4()
-{
-  rep(i, L)
-  {
-    rep(j, L) { P[i][j] = Rand() % 1001; }
-  }
-}
-
-void InitHaiti5()
-{
-  rep(i, L)
-  {
-    rep(j, L) { P[i][j] = 250 + Rand() % 2 * 500; }
-  }
-}
-
-void PrintHaiti(ofstream& ofs)
-{
-  if (mode == 0) {
-    rep(i, L)
-    {
-      rep(j, L) { cout << P[i][j] << ' '; }
-      cout << endl;
-      fflush(stdout);
-    }
+    cin >> board_size >> wormhole_count >> square_area;
+    rep(i, wormhole_count) cin >> wormhole_y[i] >> wormhole_x[i];
   }
   else {
-    rep(i, L)
-    {
-      rep(j, L) { ofs << P[i][j] << ' '; }
-      ofs << endl;
-    }
+    ifs >> board_size >> wormhole_count >> square_area;
+    rep(i, wormhole_count) ifs >> wormhole_y[i] >> wormhole_x[i];
+    rep(i, wormhole_count) ifs >> wormhole_perm[i];
+    rep(i, F_ARRAY_SIZE) ifs >> noise_table[i];
   }
+
+  effective_size = board_size - 10;
+  sqrt_s_minus1 = 0;
+  srep(i, 1, 31) if (i * i == square_area) {
+    sqrt_s_minus1 = i - 1;
+    break;
+  }
+
+  init_normal_dist();
 }
 
-int Keisoku(int i, int y, int x, ofstream& ofs)
+void open_output_stream(int prob_num, ofstream& ofs)
 {
-  if (mode == 0) {
-    cout << i << ' ' << y << ' ' << x << endl;
+  if (io_mode == 0) return;
+  string file_name = "./out/" + to_string(10000 + prob_num).substr(1) + ".txt";
+  ofs.open(file_name);
+}
+
+ll calc_layout_cost()
+{
+  ll cost = 0;
+  rep(i, board_size) rep(j, board_size) {
+    cost += (grid[i][j] - grid[(i + 1) % board_size][j]) * (grid[i][j] - grid[(i + 1) % board_size][j]);
+    cost += (grid[i][j] - grid[i][(j + 1) % board_size]) * (grid[i][j] - grid[i][(j + 1) % board_size]);
+  }
+  return cost;
+}
+
+// ---- various initial layouts ----
+void init_layout_zero() { rep(i, board_size) rep(j, board_size) grid[i][j] = 0; }
+void init_layout_random_binary() { rep(i, board_size) rep(j, board_size) grid[i][j] = rand_xorshift() % 2 * 1000; }
+void init_layout_constant_500() { rep(i, board_size) rep(j, board_size) grid[i][j] = 500; }
+void init_layout_uniform() { rep(i, board_size) rep(j, board_size) grid[i][j] = rand_xorshift() % 1001; }
+void init_layout_quarter_half() { rep(i, board_size) rep(j, board_size) grid[i][j] = 250 + rand_xorshift() % 2 * 500; }
+
+void output_layout(ofstream& ofs)
+{
+  auto& out = (io_mode == 0 ? cout : ofs);
+  rep(i, board_size) {
+    rep(j, board_size) out << grid[i][j] << ' ';
+    out << '\n';
+  }
+  if (io_mode == 0) fflush(stdout);
+}
+
+// -------- measurement wrappers --------
+int measure_cell(int i, int y, int x, ofstream& ofs)
+{
+  if (io_mode == 0) {
+    cout << i << ' ' << y << ' ' << x << '\n';
     fflush(stdout);
   }
   else {
-    ofs << i << ' ' << y << ' ' << x << endl;
+    ofs << i << ' ' << y << ' ' << x << '\n';
   }
 
   int m = 0;
-  if (mode == 0) {
+  if (io_mode == 0) {
     cin >> m;
   }
   else {
-    int yy = (Y[A[i]] + y + L * 10) % L;
-    int xx = (X[A[i]] + x + L * 10) % L;
-    m = std::max(0, std::min(1000, (int)round(P[yy][xx] + f[keisokuCount])));
-    keisokuCount++;
+    int yy = (wormhole_y[wormhole_perm[i]] + y + board_size * 10) % board_size;
+    int xx = (wormhole_x[wormhole_perm[i]] + x + board_size * 10) % board_size;
+    m = std::max(0, std::min(1000, (int)round(grid[yy][xx] + noise_table[measurement_count])));
+    measurement_count++;
   }
 
-  inputFileKeisokuCost += 100LL * (10LL + abs(y) + abs(x));
-
+  input_file_measure_cost += 100LL * (10LL + abs(y) + abs(x));
   return m;
 }
 
-int SA_Keisoku(int i, int y, int x, int se)
+int sa_measure_cell(int i, int y, int x, int se)
 {
-  int slide = (TansakuSize - 1) / 2;
-  int m = 0;
-
-  int yy = (Y[AA[i]] + y + L * 10) % L;
-  int xx = (X[AA[i]] + x + L * 10) % L;
-  m = std::max(0, std::min(1000, (int)round(P[yy][xx] + f_SA[i][se][y + slide][x + slide])));
-
-  return m;
+  int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
+  int yy = (wormhole_y[answer_perm[i]] + y + board_size * 10) % board_size;
+  int xx = (wormhole_x[answer_perm[i]] + x + board_size * 10) % board_size;
+  return std::max(0, std::min(1000, (int)round(grid[yy][xx] + f_SA[i][se][y + slide][x + slide])));
 }
 
-inline int SA_Keisoku_Value(int i, int y, int x, int se, int value)
+inline int sa_measure_value(int i, int y, int x, int se, int value)
 {
-  int slide = (TansakuSize - 1) / 2;
+  int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
   return std::max(0, std::min(1000, (int)round(value + f_SA[i][se][y + slide][x + slide])));
 }
 
-void PrintKeisoku(ofstream& ofs)
+void output_measurements(ofstream& ofs)
 {
-  int slide = (TansakuSize - 1) / 2;
-  rep(i, N)
-  {
+  int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
+  rep(i, wormhole_count) {
     int scores[31][31];
-    srep(j, -slide, -slide + TansakuSize)
-    {
-      srep(k, -slide, -slide + TansakuSize)
-      {
-        scores[j + slide][k + slide] = Keisoku(i, j, k, ofs);
-      }
+    srep(j, -slide, -slide + SEARCH_WINDOW_SIZE) srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) {
+      scores[j + slide][k + slide] = measure_cell(i, j, k, ofs);
     }
 
     int minDiff = INF;
-    rep(j, N)
-    {
+    rep(j, wormhole_count) {
       int sumDiff = 0;
-      srep(k, -slide, -slide + TansakuSize)
-      {
-        srep(l, -slide, -slide + TansakuSize)
-        {
-          int y = (Y[j] + k) % L;
-          int x = (X[j] + l) % L;
-          sumDiff += abs(P[y][x] - scores[k + slide][l + slide]);
-        }
+      srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
+        int y = (wormhole_y[j] + k) % board_size;
+        int x = (wormhole_x[j] + l) % board_size;
+        sumDiff += abs(grid[y][x] - scores[k + slide][l + slide]);
       }
-
       if (sumDiff < minDiff) {
         minDiff = sumDiff;
-        E[i] = j;
+        guessed_perm[i] = j;
       }
     }
   }
 }
 
-void PrintKaitou(ofstream& ofs)
+void output_answer(ofstream& ofs)
 {
-  if (mode == 0) {
-    cout << "-1 -1 -1" << endl;
-    fflush(stdout);
-    rep(i, N)
-    {
-      cout << E[i] << endl;
-      fflush(stdout);
-    }
-  }
-  else {
-    ofs << "-1 -1 -1" << endl;
-    rep(i, N) { ofs << E[i] << endl; }
-  }
+  auto& out = (io_mode == 0 ? cout : ofs);
+  out << "-1 -1 -1\n";
+  rep(i, wormhole_count) out << guessed_perm[i] << '\n';
+  if (io_mode == 0) fflush(stdout);
 }
 
-ll CalcInputFileScore()
+ll calc_offline_score()
 {
   double score = 1e14;
-  rep(i, N)
-  {
-    if (E[i] != A[i]) {
-      score *= 0.8;
-    }
-  }
-  score = score / (1e5 + CalcHaitiCost() + inputFileKeisokuCost);
+  rep(i, wormhole_count) if (guessed_perm[i] != wormhole_perm[i]) score *= 0.8;
+  score = score / (1e5 + calc_layout_cost() + input_file_measure_cost);
   return ceil(score);
 }
 
-void KeepReal()
+void snapshot_best_state()
 {
-  real_maxScore = maxScore;
-  real_maxHaitiCost = maxHaitiCost;
-  real_maxKeisokuCost = maxKeisokuCost;
-  rep(i, L)
-  {
-    rep(j, L)
-    {
-      real_P[i][j] = P[i][j];
-    }
-  }
-  rep(i, SetSize)
-  {
-    rep(j, N)
-    {
-      real_EE[i][j] = EE[i][j];
-    }
-    rep(j, N)
-    {
-      rep(k, N)
-      {
-        real_DIFFS[i][j][k] = DIFFS[i][j][k];
-      }
-    }
+  best_score = max_score; best_layout_cost = max_layout_cost; best_measurement_cost = max_measurement_cost;
+  rep(i, board_size) rep(j, board_size) best_grid[i][j] = grid[i][j];
+  rep(s, SET_SIZE) {
+    rep(i, wormhole_count) best_candidate_perm_set[s][i] = candidate_perm_set[s][i];
+    rep(i, wormhole_count) rep(j, wormhole_count) best_diff_cache[s][i][j] = diff_cache[s][i][j];
   }
 }
 
-void RollBackReal()
+void restore_best_state()
 {
-  maxScore = real_maxScore;
-  maxHaitiCost = real_maxHaitiCost;
-  maxKeisokuCost = real_maxKeisokuCost;
-  rep(i, L)
-  {
-    rep(j, L)
-    {
-      P[i][j] = real_P[i][j];
-    }
-  }
-  rep(i, SetSize)
-  {
-    rep(j, N)
-    {
-      EE[i][j] = real_EE[i][j];
-    }
-    rep(j, N)
-    {
-      rep(k, N)
-      {
-        DIFFS[i][j][k] = real_DIFFS[i][j][k];
-      }
-    }
+  max_score = best_score; max_layout_cost = best_layout_cost; max_measurement_cost = best_measurement_cost;
+  rep(i, board_size) rep(j, board_size) grid[i][j] = best_grid[i][j];
+  rep(s, SET_SIZE) {
+    rep(i, wormhole_count) candidate_perm_set[s][i] = best_candidate_perm_set[s][i];
+    rep(i, wormhole_count) rep(j, wormhole_count) diff_cache[s][i][j] = best_diff_cache[s][i][j];
   }
 }
 
-int scores_SA_Keisoku[SetSize][31][31];
-void InitSA_Keisoku()
+int scores_sa_measurements[SET_SIZE][31][31];
+void init_sa_measurements()
 {
-  maxKeisokuCost = 0;
-
-  int slide = (TansakuSize - 1) / 2;
-  rep(i, N)
-  {
-    srep(k, -slide, -slide + TansakuSize)
-    {
-      srep(l, -slide, -slide + TansakuSize)
-      {
-        rep(m, SetSize)
-        {
-          scores_SA_Keisoku[m][k + slide][l + slide] = SA_Keisoku(i, k, l, m);
-        }
-        maxKeisokuCost += 100LL * (10LL + abs(k) + abs(l));
+  max_measurement_cost = 0;
+  int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
+  rep(i, wormhole_count) {
+    srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
+      rep(m, SET_SIZE) {
+        scores_sa_measurements[m][k + slide][l + slide] = sa_measure_cell(i, k, l, m);
       }
+      max_measurement_cost += 100LL * (10LL + abs(k) + abs(l));
     }
-
-    rep(m, SetSize)
-    {
+    rep(m, SET_SIZE) {
       int minDiff = INF;
-      rep(j, N)
-      {
-        DIFFS[m][i][j] = 0;
-        srep(k, -slide, -slide + TansakuSize)
-        {
-          srep(l, -slide, -slide + TansakuSize)
-          {
-            int y = (Y[j] + k + L) % L;
-            int x = (X[j] + l + L) % L;
-            DIFFS[m][i][j] += abs(P[y][x] - scores_SA_Keisoku[m][k + slide][l + slide]);
-          }
+      rep(j, wormhole_count) {
+        diff_cache[m][i][j] = 0;
+        srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
+          int y = (wormhole_y[j] + k + board_size) % board_size;
+          int x = (wormhole_x[j] + l + board_size) % board_size;
+          diff_cache[m][i][j] += abs(grid[y][x] - scores_sa_measurements[m][k + slide][l + slide]);
         }
-
-        if (DIFFS[m][i][j] < minDiff) {
-          minDiff = DIFFS[m][i][j];
-          EE[m][i] = j;
+        if (diff_cache[m][i][j] < minDiff) {
+          minDiff = diff_cache[m][i][j];
+          candidate_perm_set[m][i] = j;
         }
       }
     }
   }
 }
 
-void InitSA()
+void init_simulated_annealing()
 {
-  // 焼きなまし用データ作成
-  rep(i, N)
-  {
-    AA[i] = i; // 答え
-  }
-  // ノイズ作成
-  InitDist();
-  rep(i, N)
-  {
-    rep(j, SetSize)
-    {
-      rep(k, TansakuSize)
-      {
-        rep(l, TansakuSize)
-        {
-          f_SA[i][j][k][l] = Dist();
-        }
-      }
-    }
-  }
+  rep(i, wormhole_count) answer_perm[i] = i;
+  init_normal_dist();
+  rep(i, wormhole_count) rep(j, SET_SIZE) rep(k, SEARCH_WINDOW_SIZE) rep(l, SEARCH_WINDOW_SIZE) f_SA[i][j][k][l] = sample_normal_int();
 
-  maxHaitiCost = CalcHaitiCost();
+  max_layout_cost = calc_layout_cost();
+  init_sa_measurements();
 
-  maxKeisokuCost = 0;
-  InitSA_Keisoku();
-
-  maxScore = 0;
-  rep(m, SetSize)
-  {
+  max_score = 0;
+  rep(m, SET_SIZE) {
     double score = 1e14;
-    rep(i, N)
-    {
-      if (EE[m][i] != AA[i]) {
-        score *= 0.8;
-      }
-    }
-    score = score / (1e5 + maxHaitiCost + maxKeisokuCost);
-    maxScore += ceil(score);
+    rep(i, wormhole_count) if (candidate_perm_set[m][i] != answer_perm[i]) score *= 0.8;
+    score /= (1e5 + max_layout_cost + max_measurement_cost);
+    max_score += ceil(score);
   }
-
-  KeepReal();
+  snapshot_best_state();
 }
 
-int IsNear_iy;
-int IsNear_ix;
-inline bool IsNear(int i, int y, int x)
+bool is_within_window(int i, int y, int x)
 {
-  int slide = (TansakuSize - 1) / 2;
-
-  int iy = Y[i];
-  int ix = X[i];
-  int iU = Y[i] - slide;
-  int iD = iU + TansakuSize;
-  int iL = X[i] - slide;
-  int iR = iL + TansakuSize;
-  srep(j, -1, 2)
-  {
-    srep(k, -1, 2)
-    {
-      int yy = y + L * j;
-      int xx = x * L * k;
+  int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
+  int iy = wormhole_y[i];
+  int ix = wormhole_x[i];
+  int iU = iy - slide;
+  int iD = iU + SEARCH_WINDOW_SIZE;
+  int iL = ix - slide;
+  int iR = iL + SEARCH_WINDOW_SIZE;
+  srep(j, -1, 2) {
+    srep(k, -1, 2) {
+      int yy = y + board_size * j;
+      int xx = x + board_size * k;
       if (iU <= yy && yy < iD && iL <= xx && xx < iR) {
-        IsNear_iy = yy - iU - slide;
-        IsNear_ix = xx - iL - slide;
+        is_within_window_iy = yy - iU - slide;
+        is_within_window_ix = xx - iL - slide;
         return true;
       }
     }
@@ -551,251 +364,161 @@ inline bool IsNear(int i, int y, int x)
   return false;
 }
 
-ll CalcDiffHaitiCost(int y, int x, int beforeP, int afterP)
+ll calc_delta_layout_cost(int y, int x, int beforeP, int afterP)
 {
   ll ret = 0;
-  rep(i, 4)
-  {
-    int ny = (y + dy[i] + L) % L;
-    int nx = (x + dx[i] + L) % L;
-    ret -= (beforeP - P[ny][nx]) * (beforeP - P[ny][nx]);
-    ret += (afterP - P[ny][nx]) * (afterP - P[ny][nx]);
+  rep(i, 4) {
+    int ny = (y + DIR4_Y[i] + board_size) % board_size;
+    int nx = (x + DIR4_X[i] + board_size) % board_size;
+    ret -= (beforeP - grid[ny][nx]) * (beforeP - grid[ny][nx]);
+    ret += (afterP - grid[ny][nx]) * (afterP - grid[ny][nx]);
   }
   return ret;
 }
 
-// ランダムな1マスのPを少し変える
-int Method1Vector[110];
-void Method1(double temperature)
+// ----- tweak method 1: single cell change -----
+int tweak_single_cell_vector[110];
+void tweak_single_cell(double temperature)
 {
-  MethodCount[1][0]++;
+  method_stat[1][0]++;
 
-  int y = Rand() % L;
-  int x = Rand() % L;
+  int y = rand_xorshift() % board_size;
+  int x = rand_xorshift() % board_size;
   int diff = rand() % 201 - 100;
-  int beforeP = P[y][x];
-  int afterP = max(0, min(1000, P[y][x] + diff));
+  int beforeP = grid[y][x];
+  int afterP = max(0, min(1000, grid[y][x] + diff));
 
   int cnt = 0;
 
-  // 探索範囲に入っているワームホールの差分更新
-  rep(i, N)
-  {
-    if (!IsNear(i, y, x)) {
-      continue;
-    }
-    int iy = IsNear_iy;
-    int ix = IsNear_ix;
+  rep(i, wormhole_count) {
+    if (!is_within_window(i, y, x)) continue;
+    int iy = is_within_window_iy;
+    int ix = is_within_window_ix;
 
-
-    rep(m, SetSize)
-    {
-      KEEP_EE[m][i] = EE[m][i];
-      rep(j, N)
-      {
-        KEEP_DIFFS[m][i][j] = DIFFS[m][i][j];
-      }
+    rep(m, SET_SIZE) {
+      rep(j, wormhole_count) diff_cache[m][i][j] -= abs(grid[(wormhole_y[j] + iy + board_size) % board_size][(wormhole_x[j] + ix + board_size) % board_size] - sa_measure_value(i, iy, ix, m, beforeP));
     }
 
-    rep(m, SetSize)
-    {
-      int beforeValue = SA_Keisoku_Value(i, iy, ix, m, beforeP);
-      rep(j, N)
-      {
-        int beforeDiff = abs(P[(Y[j] + iy + L) % L][(X[j] + ix + L) % L] - beforeValue);
-        DIFFS[m][i][j] -= beforeDiff;
-      }
+    grid[y][x] = afterP;
+
+    rep(m, SET_SIZE) {
+      rep(j, wormhole_count) diff_cache[m][i][j] += abs(grid[(wormhole_y[j] + iy + board_size) % board_size][(wormhole_x[j] + ix + board_size) % board_size] - sa_measure_value(i, iy, ix, m, afterP));
     }
+    grid[y][x] = beforeP;
 
-    P[y][x] = afterP;
-
-    rep(m, SetSize)
-    {
-      int afterValue = SA_Keisoku_Value(i, iy, ix, m, afterP);
-      rep(j, N)
-      {
-        int afterDiff = abs(P[(Y[j] + iy + L) % L][(X[j] + ix + L) % L] - afterValue);
-        DIFFS[m][i][j] += afterDiff;
-      }
-    }
-
-    P[y][x] = beforeP;
-
-    // EE[m][i]を更新
-    rep(m, SetSize)
-    {
+    rep(m, SET_SIZE) {
       int minDiff = INF;
-      rep(j, N)
-      {
-        if (DIFFS[m][i][j] < minDiff) {
-          minDiff = DIFFS[m][i][j];
-          EE[m][i] = j;
-        }
-      }
+      rep(j, wormhole_count) if (diff_cache[m][i][j] < minDiff) { minDiff = diff_cache[m][i][j]; candidate_perm_set[m][i] = j; }
     }
-
-    Method1Vector[cnt] = i;
-    cnt++;
+    tweak_single_cell_vector[cnt++] = i;
   }
 
-  if (cnt == 0) {
-    return;
+  if (cnt == 0) return;
+  method_stat[1][1]++;
+
+  grid[y][x] = afterP;
+
+  ll delta_layout = calc_delta_layout_cost(y, x, beforeP, afterP);
+  ll delta_measure = 0; // simplified (kept as 0)
+
+  ll tmp_total = 0;
+  rep(m, SET_SIZE) {
+    double score = 1e14;
+    rep(i, wormhole_count) if (candidate_perm_set[m][i] != answer_perm[i]) score *= 0.8;
+    score /= (1e5 + max_layout_cost + delta_layout + max_measurement_cost + delta_measure);
+    tmp_total += ceil(score);
   }
-  MethodCount[1][1]++;
 
-  P[y][x] = afterP;
-
-  // スコア更新
-  ll haitiDiff = CalcDiffHaitiCost(y, x, beforeP, afterP);
-  ll keisokudiff = 0;
-  ll tmpSumScore = 0;
-  rep(m, SetSize)
-  {
-    double dTmpScore = 1e14;
-    rep(i, N)
-    {
-      if (EE[m][i] != AA[i]) {
-        dTmpScore *= 0.8;
+  ll diffScore = tmp_total - max_score;
+  if (exp((double)diffScore / temperature) > rand_unit()) {
+    method_stat[1][2]++;
+    max_score += diffScore;
+    max_layout_cost += delta_layout;
+    max_measurement_cost += delta_measure;
+    if (max_score > best_score) {
+      method_stat[1][3]++;
+      if (method_stat[1][3] % 100 == 0) {
+        cout << max_score << ' ' << best_score << '\n';
       }
-    }
-    dTmpScore = dTmpScore / (1e5 + maxHaitiCost + haitiDiff + maxKeisokuCost + keisokudiff);
-    ll tmpScore = ceil(dTmpScore);
-    tmpSumScore += tmpScore;
-  }
-
-  ll diffScore = tmpSumScore - maxScore;
-  double prob = exp((double)diffScore / temperature);
-  if (prob > Rand01()) {
-    MethodCount[1][2]++;
-    maxScore += diffScore;
-    maxHaitiCost += haitiDiff;
-    maxKeisokuCost += keisokudiff;
-
-    if (maxScore > real_maxScore) {
-      MethodCount[1][3]++;
-      if (MethodCount[1][3] % 100 == 0) {
-        cout << maxScore << ' ' << real_maxScore << endl;
-        KeepReal();
-      }
+      snapshot_best_state();
     }
   }
   else {
-    // 元に戻す
-    P[y][x] = beforeP;
-    rep(ii, cnt)
-    {
-      int i = Method1Vector[ii];
-      rep(m, SetSize)
-      {
-        EE[m][i] = KEEP_EE[m][i];
-        rep(j, N)
-        {
-          DIFFS[m][i][j] = KEEP_DIFFS[m][i][j];
+    grid[y][x] = beforeP; // rollback grid
+    // rollback diff_cache and candidate_perm_set
+    rep(ii, cnt) {
+      int i_idx = tweak_single_cell_vector[ii];
+      // recompute minimal EE for i_idx
+      rep(m, SET_SIZE) {
+        int minDiff = INF;
+        rep(j, wormhole_count) {
+          diff_cache[m][i_idx][j] = 0;
+          int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
+          srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
+            int y_ = (wormhole_y[j] + k + board_size) % board_size;
+            int x_ = (wormhole_x[j] + l + board_size) % board_size;
+            diff_cache[m][i_idx][j] += abs(grid[y_][x_] - sa_measure_cell(i_idx, k, l, m));
+          }
+          if (diff_cache[m][i_idx][j] < minDiff) {
+            minDiff = diff_cache[m][i_idx][j];
+            candidate_perm_set[m][i_idx] = j;
+          }
         }
       }
     }
   }
 }
 
-ll Solve(int probNum)
+// -------------- main solver per instance --------------
+ll solve_problem(int prob_num)
 {
-  Init();
-
+  init_counters();
   ofstream ofs;
-  Input(probNum);
-  OpenOfs(probNum, ofs);
-  //InitHaiti();
-  InitHaiti2();
-  //InitHaiti3();
-  //InitHaiti4();
-  //InitHaiti5();
+  load_problem(prob_num);
+  open_output_stream(prob_num, ofs);
 
-  // 焼きなまし
-  InitSA();
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
-  double startTemperature = 2000;
-  double endTemperature = 0;
+  init_layout_random_binary(); // choose one of the initial layouts
+  init_simulated_annealing();
+
+  clock_t start_clock = clock();
   int loopCount = 0;
-  double nowProgress = 0;
   while (true) {
-    break;
-    if (loopCount % 100 == 0) {
-      endTime = clock();
-      double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-      if (nowTime > TL) {
-        break;
-      }
-      nowProgress = nowTime / TL;
-    }
-
-    loopCount++;
-
-    double temperature =
-      startTemperature + (endTemperature - startTemperature) * nowProgress;
-
-
-    Method1(temperature);
+    double elapsed = (double)(clock() - start_clock) / CLOCKS_PER_SEC;
+    if (elapsed > TIME_LIMIT_SEC) break;
+    double progress = elapsed / TIME_LIMIT_SEC;
+    double temperature = 2000 * (1.0 - progress);
+    tweak_single_cell(temperature);
+    ++loopCount;
   }
 
-  // 戻す
-  RollBackReal();
+  restore_best_state();
 
-  // 配置を回答
-  PrintHaiti(ofs);
+  output_layout(ofs);
+  output_measurements(ofs);
+  output_answer(ofs);
 
-  // 計測
-  PrintKeisoku(ofs);
-
-  // 解答を回答
-  PrintKaitou(ofs);
-
-  if (ofs.is_open()) {
-    ofs.close();
-  }
-
-  ll score = 0;
-  if (mode != 0) {
-    score = CalcInputFileScore();
-  }
-  return score;
+  if (ofs.is_open()) ofs.close();
+  if (io_mode == 0) return 0;
+  return calc_offline_score();
 }
 
-
+// ----------------------------- main -----------------------------
 int main()
 {
   srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-  std::random_device rnd;
-  engine.seed(rnd());
+  while (rand() % 100) rand_xorshift();
+  std::random_device rnd; rng_engine.seed(rnd());
 
-  mode = 0;
+  io_mode = 1; // 0: interactive, 1: file batch
 
-  if (mode == 0) {
-    Solve(0);
+  if (io_mode == 0) {
+    solve_problem(0);
   }
-  else if (mode == 1) {
-    srep(i, 0, 100)
-    {
-      ll score = Solve(i);
-      cout << "num = " << i << ", ";
-      cout << "score = " << score << endl;
-      //cout << "Method1 : ";
-      //rep(j, 4) {
-      //  cout << MethodCount[1][j] << ' ';
-      //}
-      //cout << endl;
-      //rep(i, N) {
-      //  rep(j, SetSize) {
-      //    cout << EE[j][i] << ' ';
-      //  }
-      //  cout << endl;
-      //}
+  else if (io_mode == 1) {
+    srep(i, 0, 100) {
+      ll score = solve_problem(i);
+      cout << "num = " << i << ", score = " << score << '\n';
     }
   }
-
   return 0;
 }
