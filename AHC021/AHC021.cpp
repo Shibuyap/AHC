@@ -68,16 +68,16 @@ constexpr int LOCK_PREFIX = 52;
 int board[BOARD_SIZE][BOARD_SIZE];
 int ball_pos[1000][2];
 int move_cnt;
-int moves[11000][4];
+int moves[MAX_LOOP][4];
 
 int initial_board[BOARD_SIZE][BOARD_SIZE];
 int best_move_cnt;
-int best_moves[11000][4];
+int best_moves[MAX_LOOP][4];
 int global_best_move_cnt;
-int global_best_moves[11000][4];
+int global_best_moves[MAX_LOOP][4];
 
 int saved_move_cnt;
-int saved_moves[11000][4];
+int saved_moves[MAX_LOOP][4];
 
 void init_board()
 {
@@ -98,7 +98,9 @@ void update_best_moves()
     best_move_cnt = move_cnt;
     rep(i, move_cnt)
     {
-      rep(j, 4) { best_moves[i][j] = moves[i][j]; }
+      rep(j, 4) {
+        best_moves[i][j] = moves[i][j];
+      }
     }
   }
 }
@@ -109,7 +111,9 @@ void update_global_best_moves()
     global_best_move_cnt = best_move_cnt;
     rep(i, best_move_cnt)
     {
-      rep(j, 4) { global_best_moves[i][j] = best_moves[i][j]; }
+      rep(j, 4) {
+        global_best_moves[i][j] = best_moves[i][j];
+      }
     }
   }
 }
@@ -119,7 +123,9 @@ void save_current_best()
   saved_move_cnt = best_move_cnt;
   rep(i, best_move_cnt)
   {
-    rep(j, 4) { saved_moves[i][j] = best_moves[i][j]; }
+    rep(j, 4) {
+      saved_moves[i][j] = best_moves[i][j];
+    }
   }
 }
 
@@ -128,7 +134,9 @@ void restore_best()
   move_cnt = best_move_cnt;
   rep(i, move_cnt)
   {
-    rep(j, 4) { moves[i][j] = best_moves[i][j]; }
+    rep(j, 4) {
+      moves[i][j] = best_moves[i][j];
+    }
   }
 }
 
@@ -137,7 +145,9 @@ void restore_global_best()
   best_move_cnt = global_best_move_cnt;
   rep(i, best_move_cnt)
   {
-    rep(j, 4) { best_moves[i][j] = global_best_moves[i][j]; }
+    rep(j, 4) {
+      best_moves[i][j] = global_best_moves[i][j];
+    }
   }
 }
 
@@ -159,49 +169,7 @@ inline void push_move(int& loop, int x, int y, int nx, int ny)
   ++loop;
 }
 
-void greedy_swap_max_delta()
-{
-  int loop = 0;
-  while (loop < MAX_LOOP) {
-    int tmp[4] = {};
-    int diff = 0;
-    rep(i, BOARD_SIZE - 1)
-    {
-      rep(j, i + 1)
-      {
-        if (board[i][j] - board[i + 1][j] > diff) {
-          diff = board[i][j] - board[i + 1][j];
-          tmp[0] = i;
-          tmp[1] = j;
-          tmp[2] = i + 1;
-          tmp[3] = j;
-        }
-        if (board[i][j] - board[i + 1][j + 1] > diff) {
-          diff = board[i][j] - board[i + 1][j + 1];
-          tmp[0] = i;
-          tmp[1] = j;
-          tmp[2] = i + 1;
-          tmp[3] = j + 1;
-        }
-      }
-    }
-    if (diff == 0) {
-      break;
-    }
-    rep(j, 4) { moves[loop][j] = tmp[j]; }
-    swap(board[tmp[0]][tmp[1]], board[tmp[2]][tmp[3]]);
-    loop++;
-  }
-
-  move_cnt = loop;
-  best_move_cnt = move_cnt;
-  rep(i, move_cnt)
-  {
-    rep(j, 4) { best_moves[i][j] = moves[i][j]; }
-  }
-}
-
-void greedy_swap_max_delta_with_tie()
+void greedy_swap_max_delta_with_tie(bool with_tie)
 {
   init_board();
 
@@ -213,14 +181,14 @@ void greedy_swap_max_delta_with_tie()
     {
       rep(j, i + 1)
       {
-        if (board[i][j] - board[i + 1][j] >= diff) {
+        if (board[i][j] - board[i + 1][j] > diff || (board[i][j] - board[i + 1][j] == diff && with_tie)) {
           diff = board[i][j] - board[i + 1][j];
           tmp[0] = i;
           tmp[1] = j;
           tmp[2] = i + 1;
           tmp[3] = j;
         }
-        if (board[i][j] - board[i + 1][j + 1] >= diff) {
+        if (board[i][j] - board[i + 1][j + 1] > diff || (board[i][j] - board[i + 1][j + 1] == diff && with_tie)) {
           diff = board[i][j] - board[i + 1][j + 1];
           tmp[0] = i;
           tmp[1] = j;
@@ -972,9 +940,8 @@ int solve_single_problem(int mode, int probNum)
   best_move_cnt = MAX_LOOP;
   global_best_move_cnt = MAX_LOOP;
 
-  greedy_swap_max_delta();
-
-  greedy_swap_max_delta_with_tie();
+  greedy_swap_max_delta_with_tie(false);
+  greedy_swap_max_delta_with_tie(true);
 
   ball_wise_ascent_greedy();
 
