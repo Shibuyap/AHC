@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -39,68 +40,71 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-std::chrono::steady_clock::time_point start_time_clock;
-
-void start_timer()
+// タイマー
+namespace
 {
-  start_time_clock = std::chrono::steady_clock::now();
-}
+  std::chrono::steady_clock::time_point start_time_clock;
 
-double get_elapsed_time()
-{
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
-  return elapsed.count();
-}
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
 
-static uint32_t rand_xorshift()
-{
-  static uint32_t x = 123456789;
-  static uint32_t y = 362436069;
-  static uint32_t z = 521288629;
-  static uint32_t w = 88675123;
-  uint32_t t = x ^ (x << 11);
-  x = y;
-  y = z;
-  z = w;
-  w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-  return w;
-}
-
-static double rand_01()
-{
-  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
-}
-
-static double rand_range(double l, double r)
-{
-  return l + (r - l) * rand_01();
-}
-
-static uint32_t rand_range(uint32_t l, uint32_t r)
-{
-  return l + rand_xorshift() % (r - l + 1); // [l, r]
-}
-
-void shuffle_array(int* arr, int n)
-{
-  for (int i = n - 1; i >= 0; i--) {
-    int j = rand_xorshift() % (i + 1);
-    int swa = arr[i];
-    arr[i] = arr[j];
-    arr[j] = swa;
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
   }
 }
 
-std::random_device seed_gen;
-std::mt19937 engine(seed_gen());
-// std::shuffle(v.begin(), v.end(), engine);
+// 乱数
+namespace
+{
+  static uint32_t rand_xorshift()
+  {
+    static uint32_t x = 123456789;
+    static uint32_t y = 362436069;
+    static uint32_t z = 521288629;
+    static uint32_t w = 88675123;
+    uint32_t t = x ^ (x << 11);
+    x = y;
+    y = z;
+    z = w;
+    w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+    return w;
+  }
+
+  static double rand_01()
+  {
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
+  }
+
+  static double rand_range(double l, double r)
+  {
+    return l + (r - l) * rand_01();
+  }
+
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
+    return l + rand_xorshift() % (r - l + 1); // [l, r]
+  }
+
+  void shuffle_array(int* arr, int n)
+  {
+    for (int i = n - 1; i >= 0; i--) {
+      int j = rand_xorshift() % (i + 1);
+      int swa = arr[i];
+      arr[i] = arr[j];
+      arr[j] = swa;
+    }
+  }
+}
 
 const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
 
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
-
 
 const double TIME_LIMIT = 1.8;
 int exec_mode;
