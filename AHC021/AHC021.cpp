@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -29,18 +29,11 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
-
 using namespace std;
 
 typedef long long int ll;
-typedef pair<int, int> P;
-typedef pair<P, P> PP;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -57,7 +50,7 @@ namespace
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace
 {
   static uint32_t rand_xorshift()
@@ -109,21 +102,47 @@ const int DY[4] = { 0, -1, 0, 1 };
 const double TIME_LIMIT = 1.8;
 int exec_mode;
 
-int n;
+constexpr int BOARD_SIZE = 30;
+constexpr int MAX_LOOP = 10000;
+constexpr int BALL_COUNT = BOARD_SIZE * (BOARD_SIZE + 1) / 2; // ï¼BALL_COUNT
 
-int current_score;
+class State {
+public:
+  int board[BOARD_SIZE][BOARD_SIZE];
+  int ball_pos[1000][2];
+  int move_cnt;
+  int moves[MAX_LOOP][4];
 
-int best_score;
+  State() {
+    move_cnt = 0;
+  }
 
-void store_best_score()
-{
-  best_score = current_score;
-}
+  int get_score() {
+    return 100000 - 5 * move_cnt;
+  }
 
-void restore_best_score()
-{
-  current_score = best_score;
-}
+  inline void swap_ball(int x1, int y1, int x2, int y2) {
+    int ball1 = board[x1][y1];
+    int ball2 = board[x2][y2];
+    std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
+    std::swap(ball_pos[ball1][1], ball_pos[ball2][1]);
+    std::swap(board[x1][y1], board[x2][y2]);
+  }
+
+  inline void push_move(int x1, int y1, int x2, int y2)
+  {
+    moves[move_cnt][0] = x1;
+    moves[move_cnt][1] = y1;
+    moves[move_cnt][2] = x2;
+    moves[move_cnt][3] = y2;
+    swap_ball(x1, y1, x2, y2);
+    ++move_cnt;
+  }
+
+  inline int get_diff(int x1, int y1, int x2, int y2) {
+    return board[x1][y1] - board[x2][y2];
+  }
+};
 
 bool is_out_of_range(int x, int y)
 {
@@ -131,23 +150,36 @@ bool is_out_of_range(int x, int y)
   return false;
 }
 
-void initialize_state()
+State input_data(int case_num)
 {
-  current_score = 0;
-}
+  State state;
 
-void input_data(int case_num)
-{
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
+    for (int i = 0; i < BOARD_SIZE; i++)
+    {
+      for (int j = 0; j < i + 1; j++)
+      {
+        cin >> state.board[i][j];
+      }
+    }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
+    for (int i = 0; i < BOARD_SIZE; i++)
+    {
+      for (int j = 0; j < i + 1; j++)
+      {
+        ifs >> state.board[i][j];
+      }
+    }
   }
+
+  return state;
 }
 
 void open_ofs(int case_num, ofstream& ofs)
@@ -159,117 +191,88 @@ void open_ofs(int case_num, ofstream& ofs)
   }
 }
 
-ll calculate_score()
-{
-  ll res = 0;
-  return res;
-}
-
-void output_data(ofstream& ofs)
+void output_data(ofstream& ofs, const State& state)
 {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
+    cout << state.move_cnt << endl;
+    for (int i = 0; i < state.move_cnt; i++)
+    {
+      for (int j = 0; j < 4; j++) {
+        cout << state.moves[i][j] << ' ';
+      }
+      cout << endl;
+    }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
+    ofs << state.move_cnt << endl;
+    for (int i = 0; i < state.move_cnt; i++)
+    {
+      for (int j = 0; j < 4; j++) {
+        ofs << state.moves[i][j] << ' ';
+      }
+      ofs << endl;
+    }
   }
 }
 
-void build_initial_solution()
+State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie)
 {
-}
+  State state = initial_state;
 
-struct AnnealingParams
-{
-  double start_temperature[10];
-  double end_temperature;
-  double score_scale;
-  int operation_thresholds[10];
-};
-
-void run_simulated_annealing(AnnealingParams annealingParams)
-{
-  store_best_score();
-
-  double now_time = get_elapsed_time();
-  const double START_TEMP = annealingParams.start_temperature[0];
-  const double END_TEMP = annealingParams.end_temperature;
-
-  int loop = 0;
   while (true) {
-    loop++;
-
-    if (loop % 100 == 0) {
-      now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT) break;
-    }
-
-    double progress_ratio = now_time / TIME_LIMIT;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
-
-    // ‹ß–T‰ğì¬
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
-
-    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ‹ß–T‘€ì1
-    }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ‹ß–T‘€ì2
-    }
-
-    // ƒXƒRƒAŒvZ
-    double tmp_score = calculate_score();
-
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
-    double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
-    double prob = exp(diff_score / temp);
-    if (prob > rand_01()) {
-      // Ì—p
-      current_score = tmp_score;
-
-      // ƒxƒXƒgXV
-      if (current_score > best_score) {
-        store_best_score();
+    int x1, y1, x2, y2;
+    int diff = 0;
+    for (int i = 0; i < BOARD_SIZE - 1; i++)
+    {
+      for (int j = 0; j < i + 1; j++)
+      {
+        int diff1 = state.get_diff(i, j, i + 1, j);
+        if (diff1 > diff || (diff1 == diff && with_tie)) {
+          diff = diff1;
+          x1 = i;
+          y1 = j;
+          x2 = i + 1;
+          y2 = j;
+        }
+        int diff2 = state.get_diff(i, j, i + 1, j + 1);
+        if (diff2 > diff || (diff2 == diff && with_tie)) {
+          diff = diff2;
+          x1 = i;
+          y1 = j;
+          x2 = i + 1;
+          y2 = j + 1;
+        }
       }
     }
-    else {
-      // Œ³‚É–ß‚·
-      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
-      }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
-      }
+    if (diff == 0) {
+      break;
     }
+    state.push_move(x1, y1, x2, y2);
   }
 
-  if (exec_mode != 0 && exec_mode != 3) {
-    cerr << loop << endl;
-  }
-
-  restore_best_score();
+  return state;
 }
 
-ll solve_case(int case_num, AnnealingParams annealingParams)
+ll solve_case(int case_num)
 {
   start_timer();
 
-  initialize_state();
+  State initial_state = input_data(case_num);
+  State best_state;
 
-  input_data(case_num);
+  State greedy1_state = greedy_swap_max_delta_with_tie(initial_state, false);
+  best_state = greedy1_state;
+  State greedy2_state = greedy_swap_max_delta_with_tie(initial_state, true);
+  if (greedy2_state.get_score() > best_state.get_score()) {
+    best_state = greedy2_state;
+  }
 
+  // è§£ç­”ã‚’å‡ºåŠ›
   ofstream ofs;
   open_ofs(case_num, ofs);
-
-  build_initial_solution();
-
-  // Ä‚«‚È‚Ü‚µÀs
-  // run_simulated_annealing(annealingParams);
-
-  // ‰ğ“š‚ğo—Í
-  output_data(ofs);
+  output_data(ofs, best_state);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -277,7 +280,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   ll score = 0;
   if (exec_mode != 0) {
-    score = calculate_score();
+    score = best_state.get_score();
   }
   return score;
 }
@@ -286,38 +289,14 @@ int main()
 {
   exec_mode = 2;
 
-  AnnealingParams annealingParams;
-  annealingParams.start_temperature[0] = 2048.0;
-  annealingParams.start_temperature[1] = 2048.0;
-  annealingParams.start_temperature[2] = 2048.0;
-  annealingParams.start_temperature[3] = 2048.0;
-  annealingParams.start_temperature[4] = 2048.0;
-  annealingParams.start_temperature[5] = 2048.0;
-  annealingParams.start_temperature[6] = 2048.0;
-  annealingParams.start_temperature[7] = 2048.0;
-  annealingParams.start_temperature[8] = 2048.0;
-  annealingParams.start_temperature[9] = 2048.0;
-  annealingParams.end_temperature = 0.0;
-  annealingParams.score_scale = 12345.0;
-  annealingParams.operation_thresholds[0] = 100;
-  annealingParams.operation_thresholds[1] = 200;
-  annealingParams.operation_thresholds[2] = 300;
-  annealingParams.operation_thresholds[3] = 400;
-  annealingParams.operation_thresholds[4] = 500;
-  annealingParams.operation_thresholds[5] = 600;
-  annealingParams.operation_thresholds[6] = 700;
-  annealingParams.operation_thresholds[7] = 800;
-  annealingParams.operation_thresholds[8] = 900;
-  annealingParams.operation_thresholds[9] = 1000;
-
   if (exec_mode == 0) {
-    solve_case(0, annealingParams);
+    solve_case(0);
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    srep(i, 0, 15)
+    for (int i = 0; i < 15; i++)
     {
-      ll score = solve_case(i, annealingParams);
+      ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
         cerr << score << endl;
@@ -329,46 +308,6 @@ int main()
           << "time = " << setw(5) << get_elapsed_time() << ", "
           << endl;
       }
-    }
-  }
-  else if (exec_mode == 3) {
-    int loop_count = 0;
-    AnnealingParams best_annealingParams;
-    ll best_sum_score = 0;
-
-    while (true) {
-      AnnealingParams new_annealingParams;
-      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
-      new_annealingParams.end_temperature = 0.0;
-      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
-      new_annealingParams.operation_thresholds[0] = rand() % 101;
-
-      ll sum_score = 0;
-      srep(i, 0, 15)
-      {
-        ll score = solve_case(i, new_annealingParams);
-        sum_score += score;
-
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
-        if (i == 0 && score < 0) {
-          break;
-        }
-      }
-
-      cerr << "loop_count = " << loop_count
-        << ", sum_score = " << sum_score
-        << ", start_temperature = " << new_annealingParams.start_temperature[0]
-        << ", end_temperature = " << new_annealingParams.end_temperature
-        << ", score_scale = " << new_annealingParams.score_scale
-        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
-        << endl;
-
-      if (sum_score > best_sum_score) {
-        best_sum_score = sum_score;
-        best_annealingParams = new_annealingParams;
-      }
-
-      loop_count++;
     }
   }
 

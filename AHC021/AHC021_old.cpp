@@ -171,13 +171,13 @@ void restore_global_best()
   }
 }
 
-inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff) {
-  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
+inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff, bool with_tie = false) {
+  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff || (board[x - 1][y - 1] - board[x][y] == diff && with_tie)) {
     diff = board[x - 1][y - 1] - board[x][y];
     nx = x - 1;
     ny = y - 1;
   }
-  if (y != x && board[x - 1][y] - board[x][y] > diff) {
+  if (y != x && board[x - 1][y] - board[x][y] > diff || (board[x - 1][y] - board[x][y] == diff && with_tie)) {
     diff = board[x - 1][y] - board[x][y];
     nx = x - 1;
     ny = y;
