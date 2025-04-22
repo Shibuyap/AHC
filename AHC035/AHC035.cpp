@@ -77,11 +77,6 @@ bool IsNG(int x, int y, int n)
   return false;
 }
 
-// 配列シャッフル
-std::random_device seed_gen;
-std::mt19937 engine(seed_gen());
-// std::shuffle(v.begin(), v.end(), engine);
-
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
@@ -154,7 +149,9 @@ void Input(int problemNum)
         {
           string sss;
           ifs >> sss;
-          rep(l, M) { uuu[i][j][k][l] = sss[l] - '0'; }
+          rep(l, M) {
+            uuu[i][j][k][l] = sss[l] - '0';
+          }
         }
       }
       rep(j, N - 1)
@@ -163,16 +160,22 @@ void Input(int problemNum)
         {
           string sss;
           ifs >> sss;
-          rep(l, M) { vvv[i][j][k][l] = sss[l] - '0'; }
+          rep(l, M) {
+            vvv[i][j][k][l] = sss[l] - '0';
+          }
         }
       }
     }
   }
 
-  rep(j, M) maxX[j] = 0;
+  rep(j, M) {
+    maxX[j] = 0;
+  }
   rep(i, NN)
   {
-    rep(j, M) { maxX[j] = max(maxX[j], X[i][j]); }
+    rep(j, M) {
+      maxX[j] = max(maxX[j], X[i][j]);
+    }
   }
 }
 
@@ -198,30 +201,22 @@ void OpenOfs(int probNum, ofstream& ofs)
 ll CalcScore()
 {
   ll sumX = 0;
-  rep(j, M) sumX += maxX[j];
+  rep(j, M) {
+    sumX += maxX[j];
+  }
 
   int ma = 0;
   rep(i, NN)
   {
     int tmp = 0;
-    rep(j, M) { tmp += X[i][j]; }
+    rep(j, M) {
+      tmp += X[i][j];
+    }
     ma = max(ma, tmp);
   }
 
   ll res = round(1000000.0 * ma / sumX);
   return res;
-}
-
-// 初期解生成
-void Initialize() {}
-
-// 解答出力
-void Output(ofstream& ofs)
-{
-  if (mode == 0) {
-  }
-  else {
-  }
 }
 
 void GetReturn(int turn)
@@ -266,19 +261,27 @@ void Convert()
   vector<P> v[M];
   rep(i, NN)
   {
-    rep(j, M) { v[j].push_back(P(X[i][j], i)); }
+    rep(j, M) {
+      v[j].push_back(P(X[i][j], i));
+    }
   }
-  rep(i, M) { sort(v[i].begin(), v[i].end(), greater<P>()); }
+  rep(i, M) {
+    sort(v[i].begin(), v[i].end(), greater<P>());
+  }
   int val[NN][M];
   rep(i, NN)
   {
-    rep(j, M) { val[v[j][i].second][j] = i; }
+    rep(j, M) {
+      val[v[j][i].second][j] = i;
+    }
   }
 
   int ma[M] = {};
   rep(i, NN)
   {
-    rep(j, M) { ma[j] = max(ma[j], X[i][j]); }
+    rep(j, M) {
+      ma[j] = max(ma[j], X[i][j]);
+    }
   }
 
   rep(i, NN)
@@ -286,7 +289,6 @@ void Convert()
     rep(j, M)
     {
       XX[i][j] = X[i][j];
-      // if (X[i][j] == ma[j]) X[i][j] * 5;
       X[i][j] = X[i][j] * X[i][j] * X[i][j];
     }
   }
@@ -297,15 +299,18 @@ void Convert2()
   vector<P> v[M];
   rep(i, NN)
   {
-    rep(j, M) { v[j].push_back(P(X[i][j], i)); }
+    rep(j, M) {
+      v[j].push_back(P(X[i][j], i));
+    }
   }
-  rep(i, M) { sort(v[i].begin(), v[i].end(), greater<P>()); }
+  rep(i, M) {
+    sort(v[i].begin(), v[i].end(), greater<P>());
+  }
   int val[NN][M];
   rep(i, NN)
   {
     rep(j, M)
     {
-      // cout << i << ' ' << j << ' ' << v[j][i].second << endl;
       val[v[j][i].second][j] = NN - i;
     }
   }
@@ -330,7 +335,9 @@ void Sort()
     vp.push_back(P(sum, i));
   }
   sort(vp.begin(), vp.end(), greater<P>());
-  rep(i, vp.size()) { order[i] = vp[i].second; }
+  rep(i, vp.size()) {
+    order[i] = vp[i].second;
+  }
 }
 
 int o[6][6] = {
@@ -349,7 +356,9 @@ void InitGuruGuru()
   vector<pair<int, P>> vp;
   rep(i, 6)
   {
-    rep(j, 6) { vp.push_back(make_pair(o[i][j], P(i, j))); }
+    rep(j, 6) {
+      vp.push_back(make_pair(o[i][j], P(i, j)));
+    }
   }
   sort(vp.begin(), vp.end());
   for (auto p : vp) {
@@ -439,9 +448,13 @@ void GuruGuru(int t)
         {
           int nx = x + dx[i];
           int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) continue;
+          if (IsNG(nx, ny, N)) {
+            continue;
+          }
           int nd = A[nx][ny];
-          rep(j, M) { before += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]); }
+          rep(j, M) {
+            before += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
+          }
         }
         x = ra3;
         y = ra4;
@@ -450,9 +463,13 @@ void GuruGuru(int t)
         {
           int nx = x + dx[i];
           int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) continue;
+          if (IsNG(nx, ny, N)) {
+            continue;
+          }
           int nd = A[nx][ny];
-          rep(j, M) { before += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]); }
+          rep(j, M) {
+            before += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
+          }
         }
       }
 
@@ -467,9 +484,13 @@ void GuruGuru(int t)
         {
           int nx = x + dx[i];
           int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) continue;
+          if (IsNG(nx, ny, N)) {
+            continue;
+          }
           int nd = A[nx][ny];
-          rep(j, M) { after += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]); }
+          rep(j, M) {
+            after += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
+          }
         }
         x = ra3;
         y = ra4;
@@ -478,9 +499,13 @@ void GuruGuru(int t)
         {
           int nx = x + dx[i];
           int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) continue;
+          if (IsNG(nx, ny, N)) {
+            continue;
+          }
           int nd = A[nx][ny];
-          rep(j, M) { after += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]); }
+          rep(j, M) {
+            after += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
+          }
         }
       }
 
@@ -499,66 +524,18 @@ ll InnerGuruGuru(int x, int y)
   {
     int nx = x + dx[i];
     int ny = y + dy[i];
-    if (IsNG(nx, ny, N)) continue;
-    int nd = A[nx][ny];
-    rep(j, M) { res += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]); }
-    // rep(j, M) {
-    //   res +=
-    //       X[id][j] * 100 + max(X[id][j], X[nd][j]) + abs(X[id][j] -
-    //       X[nd][j]);
-    // }
-  }
-  return res;
-}
-
-vector<ll> InnerGuruGuru3(int x, int y)
-{
-  vector<ll> res;
-  int id = A[x][y];
-  rep(i, 4)
-  {
-    int nx = x + dx[i];
-    int ny = y + dy[i];
-    if (IsNG(nx, ny, N)) continue;
-    int nd = A[nx][ny];
-
-    ll tmp = 0;
-    rep(j, M) { tmp += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]); }
-  }
-  return res;
-}
-
-ll InnerGuruGuru2(int x, int y)
-{
-  ll res = 0;
-  int id = A[x][y];
-  rep(i, 4)
-  {
-    int nx = x + dx[i];
-    int ny = y + dy[i];
-    if (IsNG(nx, ny, N)) continue;
-    int nd = A[nx][ny];
-    ll ma = 0;
-    rep(loop, 5)
-    {
-      ll tmp = 0;
-      rep(j, M)
-      {
-        if (Rand() % 2) {
-          tmp += X[id][j];
-        }
-        else {
-          tmp += X[nd][j];
-        }
-      }
-      ma = max(ma, tmp);
+    if (IsNG(nx, ny, N)) {
+      continue;
     }
-    res = max(res, ma);
+    int nd = A[nx][ny];
+    rep(j, M) {
+      res += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
+    }
   }
   return res;
 }
 
-void GuruGuru2(int t)
+void GuruGuru()
 {
   rep(i, 36)
   {
@@ -567,90 +544,31 @@ void GuruGuru2(int t)
     A[x][y] = order[i];
   }
 
-  // vector<P> vp1, vp2;
-  // rep(i, NN) {
-  //   ll sum1 = 0, sum2 = 0;
-  //   rep(j, M) {
-  //     if (j % 2 == 0) {
-  //       sum1 += X[i][j];
-  //     } else {
-  //       sum2 += X[i][j];
-  //     }
-  //   }
-  //   vp1.push_back(P(sum1, i));
-  //   vp2.push_back(P(sum2, i));
-  // }
+  const int LOOP_COUNT = 250000;
+  rep(_, LOOP_COUNT)
+  {
+    int ra1 = Rand() % 6;
+    int ra2 = Rand() % 6;
+    int ra3 = Rand() % 6;
+    int ra4 = Rand() % 6;
 
-  // sort(vp1.begin(), vp1.end(), greater<P>());
-  // sort(vp2.begin(), vp2.end(), greater<P>());
-  // int use[NN] = {};
-  // int itr1 = 0, itr2 = 0;
-  // rep(i, N) {
-  //   rep(j, N) {
-  //     if ((i + j) % 2 == 0) {
-  //       while (true) {
-  //         int id = vp1[itr1].second;
-  //         if (use[id]) {
-  //           itr1++;
-  //           continue;
-  //         } else {
-  //           A[i][j] = id;
-  //           use[id] = 1;
-  //           break;
-  //         }
-  //       }
-  //     } else {
-  //       while (true) {
-  //         int id = vp2[itr2].second;
-  //         if (use[id]) {
-  //           itr2++;
-  //           continue;
-  //         } else {
-  //           A[i][j] = id;
-  //           use[id] = 1;
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+    int before = 0;
+    before += InnerGuruGuru(ra1, ra2);
+    before += InnerGuruGuru(ra3, ra4);
 
-  if (t < 100) {
-    rep(_, 50000)
-    {
-      int ra1 = Rand() % 6;
-      int ra2 = Rand() % 6;
-      int ra3 = Rand() % 6;
-      int ra4 = Rand() % 6;
-      if (t < 109) {
-      }
-      else {
-        ra1 = Rand() % 4 + 1;
-        ra2 = Rand() % 4 + 1;
-        ra3 = Rand() % 4 + 1;
-        ra4 = Rand() % 4 + 1;
-      }
+    swap(A[ra1][ra2], A[ra3][ra4]);
 
-      // if ((ra1 + ra2) % 2 != (ra3 + ra4) % 2) continue;
+    int after = 0;
+    after += InnerGuruGuru(ra1, ra2);
+    after += InnerGuruGuru(ra3, ra4);
 
-      int before = 0;
-      before += InnerGuruGuru(ra1, ra2);
-      before += InnerGuruGuru(ra3, ra4);
+    double temp = (double)(LOOP_COUNT - _) / LOOP_COUNT * 10;
+    const double prob = exp((double)(after - before) / temp);
 
+    if (prob > Rand01()) {
+    }
+    else {
       swap(A[ra1][ra2], A[ra3][ra4]);
-
-      int after = 0;
-      after += InnerGuruGuru(ra1, ra2);
-      after += InnerGuruGuru(ra3, ra4);
-
-      double temp = (50000 - _) / 50000.0 * 10;
-      const double prob = exp((double)(after - before) / temp);
-
-      if (prob > Rand01()) {
-      }
-      else {
-        swap(A[ra1][ra2], A[ra3][ra4]);
-      }
     }
   }
 }
@@ -678,13 +596,12 @@ ll Solve(int probNum)
 
     Convert();
     Sort();
-    GuruGuru2(t);
+    GuruGuru();
 
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         if (mode == 0) {
           cout << A[i][j];
-
           if (j < N - 1) {
             cout << " ";
           }
@@ -694,7 +611,6 @@ ll Solve(int probNum)
         }
         else {
           ofs << A[i][j];
-
           if (j < N - 1) {
             ofs << " ";
           }
@@ -707,7 +623,6 @@ ll Solve(int probNum)
 
     if (mode == 0) {
       cout.flush();
-
       for (int i = 0; i < NN; i++) {
         for (int j = 0; j < M; j++) {
           cin >> X[i][j];
@@ -729,14 +644,6 @@ ll Solve(int probNum)
   }
 
   return score;
-
-  // 初期解生成
-  Initialize();
-
-  // 解答を出力
-  Output(ofs);
-
-  return score;
 }
 
 int main()
@@ -746,7 +653,7 @@ int main()
     Rand();
   }
 
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
