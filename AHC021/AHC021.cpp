@@ -658,19 +658,11 @@ void random_local_search(int version)
   update_best_moves();
 }
 
-void load_input(int problemNum)
+void load_input(int case_num)
 {
-  string fileNameIfs = "./in/";
-  string strNum;
-  rep(i, 4)
-  {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ifstream ifs(oss.str());
 
   // •W€“ü—Í‚·‚é
   if (!ifs.is_open()) {
