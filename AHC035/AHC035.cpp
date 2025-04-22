@@ -294,37 +294,6 @@ void Convert()
   }
 }
 
-void Convert2()
-{
-  vector<P> v[M];
-  rep(i, NN)
-  {
-    rep(j, M) {
-      v[j].push_back(P(X[i][j], i));
-    }
-  }
-  rep(i, M) {
-    sort(v[i].begin(), v[i].end(), greater<P>());
-  }
-  int val[NN][M];
-  rep(i, NN)
-  {
-    rep(j, M)
-    {
-      val[v[j][i].second][j] = NN - i;
-    }
-  }
-
-  rep(i, NN)
-  {
-    rep(j, M)
-    {
-      XX[i][j] = X[i][j];
-      X[i][j] = val[i][j] * val[i][j] * val[i][j];
-    }
-  }
-}
-
 void Sort()
 {
   vector<P> vp;
@@ -340,7 +309,7 @@ void Sort()
   }
 }
 
-int o[6][6] = {
+const int o[6][6] = {
     {21, 20, 19, 18, 17, 16},
     {22,  7,  6,  5, 16, 35},
     {23,  8,  1,  4, 15, 34},
@@ -363,156 +332,6 @@ void InitGuruGuru()
   sort(vp.begin(), vp.end());
   for (auto p : vp) {
     guruguruOrder.push_back(p.second);
-  }
-}
-
-void GuruGuru(int t)
-{
-  rep(i, 36)
-  {
-    int x = guruguruOrder[i].first;
-    int y = guruguruOrder[i].second;
-    A[x][y] = order[i];
-  }
-
-  vector<P> vp1, vp2;
-  rep(i, NN)
-  {
-    ll sum1 = 0, sum2 = 0;
-    rep(j, M)
-    {
-      if (j % 2 == 0) {
-        sum1 += X[i][j];
-      }
-      else {
-        sum2 += X[i][j];
-      }
-    }
-    vp1.push_back(P(sum1, i));
-    vp2.push_back(P(sum2, i));
-  }
-
-  sort(vp1.begin(), vp1.end(), greater<P>());
-  sort(vp2.begin(), vp2.end(), greater<P>());
-  int use[NN] = {};
-  int itr1 = 0, itr2 = 0;
-  rep(i, N)
-  {
-    rep(j, N)
-    {
-      if ((i + j) % 2 == 0) {
-        while (true) {
-          int id = vp1[itr1].second;
-          if (use[id]) {
-            itr1++;
-            continue;
-          }
-          else {
-            A[i][j] = id;
-            use[id] = 1;
-            break;
-          }
-        }
-      }
-      else {
-        while (true) {
-          int id = vp2[itr2].second;
-          if (use[id]) {
-            itr2++;
-            continue;
-          }
-          else {
-            A[i][j] = id;
-            use[id] = 1;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  if (t < 100) {
-    rep(_, 30000)
-    {
-      int ra1 = Rand() % 6;
-      int ra2 = Rand() % 6;
-      int ra3 = Rand() % 6;
-      int ra4 = Rand() % 6;
-
-      int before = 0;
-      {
-        int x = ra1;
-        int y = ra2;
-        int id = A[x][y];
-        rep(i, 4)
-        {
-          int nx = x + dx[i];
-          int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) {
-            continue;
-          }
-          int nd = A[nx][ny];
-          rep(j, M) {
-            before += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
-          }
-        }
-        x = ra3;
-        y = ra4;
-        id = A[x][y];
-        rep(i, 4)
-        {
-          int nx = x + dx[i];
-          int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) {
-            continue;
-          }
-          int nd = A[nx][ny];
-          rep(j, M) {
-            before += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
-          }
-        }
-      }
-
-      swap(A[ra1][ra2], A[ra3][ra4]);
-
-      int after = 0;
-      {
-        int x = ra1;
-        int y = ra2;
-        int id = A[x][y];
-        rep(i, 4)
-        {
-          int nx = x + dx[i];
-          int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) {
-            continue;
-          }
-          int nd = A[nx][ny];
-          rep(j, M) {
-            after += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
-          }
-        }
-        x = ra3;
-        y = ra4;
-        id = A[x][y];
-        rep(i, 4)
-        {
-          int nx = x + dx[i];
-          int ny = y + dy[i];
-          if (IsNG(nx, ny, N)) {
-            continue;
-          }
-          int nd = A[nx][ny];
-          rep(j, M) {
-            after += 10 * X[id][j] + 2 * abs(X[id][j] - X[nd][j]);
-          }
-        }
-      }
-
-      if (before > after) {
-        swap(A[ra1][ra2], A[ra3][ra4]);
-      }
-    }
   }
 }
 
