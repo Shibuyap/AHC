@@ -151,6 +151,32 @@ void restore_global_best()
   }
 }
 
+inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff) {
+  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
+    diff = board[x - 1][y - 1] - board[x][y];
+    nx = x - 1;
+    ny = y - 1;
+  }
+  if (y != x && board[x - 1][y] - board[x][y] > diff) {
+    diff = board[x - 1][y] - board[x][y];
+    nx = x - 1;
+    ny = y;
+  }
+}
+
+inline void search_parent_2(const int x, const int y, int& nx, int& ny, int& diff1, int& diff2) {
+  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff1) {
+    diff1 = board[x - 1][y - 1] - board[x][y];
+    nx = x - 1;
+    ny = y - 1;
+  }
+  if (y != x && board[x - 1][y] - board[x][y] > diff2) {
+    diff2 = board[x - 1][y] - board[x][y];
+    nx = x - 1;
+    ny = y;
+  }
+}
+
 inline void swap_ball(int x1, int y1, int x2, int y2) {
   int ball1 = board[x1][y1];
   int ball2 = board[x2][y2];
@@ -169,6 +195,20 @@ inline void push_move(int& loop, int x, int y, int nx, int ny)
   ++loop;
 }
 
+inline bool one_move(int& x, int& y, int& loop) {
+  int diff = 0;
+  int nx = -1;
+  int ny = -1;
+  search_parent(x, y, nx, ny, diff);
+  if (diff == 0) {
+    return false;
+  }
+  push_move(loop, x, y, nx, ny);
+  x = nx;
+  y = ny;
+  return true;
+}
+
 inline void some_operation(int& loop) {
   rep(ball, BALL_COUNT)
   {
@@ -180,25 +220,10 @@ inline void some_operation(int& loop) {
       if (x == 0) {
         break;
       }
-      int diff = 0;
-      int nx = -1;
-      int ny = -1;
-      if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-        diff = board[x - 1][y - 1] - board[x][y];
-        nx = x - 1;
-        ny = y - 1;
-      }
-      if (y != x && board[x - 1][y] - board[x][y] > diff) {
-        diff = board[x - 1][y] - board[x][y];
-        nx = x - 1;
-        ny = y;
-      }
-      if (diff == 0) {
+      bool result = one_move(x, y, loop);
+      if (!result) {
         break;
       }
-      push_move(loop, x, y, nx, ny);
-      x = nx;
-      y = ny;
     }
   }
 }
@@ -253,7 +278,8 @@ void ball_wise_ascent_greedy()
   int loop = 0;
   rep(ball, BALL_COUNT)
   {
-    int x = -1, y = -1;
+    int x = -1;
+    int y = -1;
     drep(i, BOARD_SIZE)
     {
       drep(j, i + 1)
@@ -264,27 +290,18 @@ void ball_wise_ascent_greedy()
           break;
         }
       }
-      if (x != -1) break;
+      if (x != -1) {
+        break;
+      }
     }
     while (loop < MAX_LOOP) {
-      if (x == 0) break;
-      int diff = 0;
-      int nx = -1;
-      int ny = -1;
-      if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-        diff = board[x - 1][y - 1] - board[x][y];
-        nx = x - 1;
-        ny = y - 1;
+      if (x == 0) {
+        break;
       }
-      if (y != x && board[x - 1][y] - board[x][y] > diff) {
-        diff = board[x - 1][y] - board[x][y];
-        nx = x - 1;
-        ny = y;
+      bool result = one_move(x, y, loop);
+      if (!result) {
+        break;
       }
-      if (diff == 0) break;
-      push_move(loop, x, y, nx, ny);
-      x = nx;
-      y = ny;
     }
   }
   move_cnt = loop;
@@ -318,24 +335,10 @@ void random_prefix_greedy()
       while (true) {
         int x = Rand() % (BOARD_SIZE - 1);
         int y = Rand() % (x + 1);
-        int diff = 0;
-        int nx = -1;
-        int ny = -1;
-        if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-          diff = board[x - 1][y - 1] - board[x][y];
-          nx = x - 1;
-          ny = y - 1;
+        bool result = one_move(x, y, loop);
+        if (result) {
+          break;
         }
-        if (y != x && board[x - 1][y] - board[x][y] > diff) {
-          diff = board[x - 1][y] - board[x][y];
-          nx = x - 1;
-          ny = y;
-        }
-        if (diff == 0) continue;
-        push_move(loop, x, y, nx, ny);
-        x = nx;
-        y = ny;
-        break;
       }
     }
 
@@ -376,36 +379,16 @@ void adaptive_prefix_greedy()
       int y = best_moves[loop][1];
       int nx = best_moves[loop][2];
       int ny = best_moves[loop][3];
-      swap_ball(x, y, nx, ny);
-      rep(j, 4) {
-        moves[loop][j] = best_moves[loop][j];
-      }
-      loop++;
+      push_move(loop, x, y, nx, ny);
     }
 
     while (true) {
       int x = Rand() % (BOARD_SIZE - 1);
       int y = Rand() % (x + 1);
-      int diff = 0;
-      int nx = -1;
-      int ny = -1;
-      if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-        diff = board[x - 1][y - 1] - board[x][y];
-        nx = x - 1;
-        ny = y - 1;
+      bool result = one_move(x, y, loop);
+      if (result) {
+        break;
       }
-      if (y != x && board[x - 1][y] - board[x][y] > diff) {
-        diff = board[x - 1][y] - board[x][y];
-        nx = x - 1;
-        ny = y;
-      }
-      if (diff == 0) {
-        continue;
-      }
-      push_move(loop, x, y, nx, ny);
-      x = nx;
-      y = ny;
-      break;
     }
 
     some_operation(loop);
@@ -486,46 +469,32 @@ void prefix_lock_local_search()
         int diff2 = 0;
         int nx = -1;
         int ny = -1;
-        if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff1) {
-          diff1 = board[x - 1][y - 1] - board[x][y];
-          nx = x - 1;
-          ny = y - 1;
-        }
-        if (y != x && board[x - 1][y] - board[x][y] > diff2) {
-          diff2 = board[x - 1][y] - board[x][y];
-          nx = x - 1;
-          ny = y;
-        }
+        search_parent_2(x, y, nx, ny, diff1, diff2);
         if (diff1 == 0 && diff2 == 0) {
           break;
         }
+        nx = x - 1;
         if (diff2 == 0) {
-          nx = x - 1;
           ny = y - 1;
         }
         else if (diff1 == 0) {
-          nx = x - 1;
           ny = y;
         }
         else {
           if (loop >= ra && randomOpe == 0) {
             if (diff1 > diff2) {
-              nx = x - 1;
               ny = y;
             }
             else {
-              nx = x - 1;
               ny = y - 1;
             }
             randomOpe = 1;
           }
           else {
             if (diff1 < diff2) {
-              nx = x - 1;
               ny = y;
             }
             else {
-              nx = x - 1;
               ny = y - 1;
             }
           }
@@ -548,46 +517,32 @@ bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, con
   int diff2 = 0;
   int nx = -1;
   int ny = -1;
-  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff1) {
-    diff1 = board[x - 1][y - 1] - board[x][y];
-    nx = x - 1;
-    ny = y - 1;
-  }
-  if (y != x && board[x - 1][y] - board[x][y] > diff2) {
-    diff2 = board[x - 1][y] - board[x][y];
-    nx = x - 1;
-    ny = y;
-  }
+  search_parent_2(x, y, nx, ny, diff1, diff2);
   if (diff1 == 0 && diff2 == 0) {
     return false;
   }
+  nx = x - 1;
   if (diff2 == 0) {
-    nx = x - 1;
     ny = y - 1;
   }
   else if (diff1 == 0) {
-    nx = x - 1;
     ny = y;
   }
   else {
     if (loop >= ra && randomOpe == 0) {
       if (diff1 > diff2) {
-        nx = x - 1;
         ny = y;
       }
       else {
-        nx = x - 1;
         ny = y - 1;
       }
       randomOpe = 1;
     }
     else {
       if (diff1 < diff2) {
-        nx = x - 1;
         ny = y;
       }
       else {
-        nx = x - 1;
         ny = y - 1;
       }
     }
@@ -600,30 +555,25 @@ bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, con
 }
 
 bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe) {
-  int diff1 = 0;
-  int diff2 = 0;
   int nx = -1;
   int ny = -1;
 
   if (loop >= ra && randomOpe == 0) {
+    nx = x;
     int dir = Rand() % 2;
     if (dir == 0) {
       if (y != 0) {
-        nx = x;
         ny = y - 1;
       }
       else {
-        nx = x;
         ny = y + 1;
       }
     }
     else {
       if (y != x) {
-        nx = x;
         ny = y + 1;
       }
       else {
-        nx = x;
         ny = y - 1;
       }
     }
@@ -638,36 +588,18 @@ bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, con
     }
   }
 
-  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff1) {
-    diff1 = board[x - 1][y - 1] - board[x][y];
-    nx = x - 1;
-    ny = y - 1;
-  }
-  if (y != x && board[x - 1][y] - board[x][y] > diff2) {
-    diff2 = board[x - 1][y] - board[x][y];
-    nx = x - 1;
-    ny = y;
-  }
+  int diff1 = 0;
+  int diff2 = 0;
+  search_parent_2(x, y, nx, ny, diff1, diff2);
   if (diff1 == 0 && diff2 == 0) {
     return false;
   }
-  if (diff2 == 0) {
-    nx = x - 1;
-    ny = y - 1;
-  }
-  else if (diff1 == 0) {
-    nx = x - 1;
+  nx = x - 1;
+  if (diff1 < diff2) {
     ny = y;
   }
   else {
-    if (diff1 < diff2) {
-      nx = x - 1;
-      ny = y;
-    }
-    else {
-      nx = x - 1;
-      ny = y - 1;
-    }
+    ny = y - 1;
   }
   push_move(loop, x, y, nx, ny);
   x = nx;
