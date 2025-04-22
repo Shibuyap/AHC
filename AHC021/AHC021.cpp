@@ -196,19 +196,9 @@ inline void some_operation(int& loop) {
       if (diff == 0) {
         break;
       }
-      moves[loop][0] = x;
-      moves[loop][1] = y;
-      moves[loop][2] = nx;
-      moves[loop][3] = ny;
-      int ball2 = board[moves[loop][2]][moves[loop][3]];
-      ball_pos[ball][0] = moves[loop][2];
-      ball_pos[ball][1] = moves[loop][3];
-      ball_pos[ball2][0] = moves[loop][0];
-      ball_pos[ball2][1] = moves[loop][1];
-      swap(board[x][y], board[nx][ny]);
+      push_move(loop, x, y, nx, ny);
       x = nx;
       y = ny;
-      loop++;
     }
   }
 }
@@ -540,20 +530,9 @@ void prefix_lock_local_search()
             }
           }
         }
-        moves[loop][0] = x;
-        moves[loop][1] = y;
-        moves[loop][2] = nx;
-        moves[loop][3] = ny;
-        //int ball2 = board[moves[loop][2]][moves[loop][3]];
-        //ball_pos[ball][0] = moves[loop][2];
-        //ball_pos[ball][1] = moves[loop][3];
-        //ball_pos[ball2][0] = moves[loop][0];
-        //ball_pos[ball2][1] = moves[loop][1];
-        //swap(board[x][y], board[nx][ny]);
-        swap_ball(x, y, nx, ny);
+        push_move(loop, x, y, nx, ny);
         x = nx;
         y = ny;
-        loop++;
       }
     }
     move_cnt = loop;
@@ -613,14 +592,9 @@ bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, con
       }
     }
   }
-  moves[loop][0] = x;
-  moves[loop][1] = y;
-  moves[loop][2] = nx;
-  moves[loop][3] = ny;
-  swap_ball(x, y, nx, ny);
+  push_move(loop, x, y, nx, ny);
   x = nx;
   y = ny;
-  loop++;
 
   return true;
 }
@@ -654,17 +628,12 @@ bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, con
       }
     }
 
-    moves[loop][0] = x;
-    moves[loop][1] = y;
-    moves[loop][2] = nx;
-    moves[loop][3] = ny;
-    int ball2 = board[moves[loop][2]][moves[loop][3]];
+    int ball2 = board[nx][ny];
     randomOpe = 1;
     if (ball2 > ball) {
-      swap_ball(x, y, nx, ny);
+      push_move(loop, x, y, nx, ny);
       x = nx;
       y = ny;
-      loop++;
       return true;
     }
   }
@@ -700,14 +669,9 @@ bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, con
       ny = y - 1;
     }
   }
-  moves[loop][0] = x;
-  moves[loop][1] = y;
-  moves[loop][2] = nx;
-  moves[loop][3] = ny;
-  swap_ball(x, y, nx, ny);
+  push_move(loop, x, y, nx, ny);
   x = nx;
   y = ny;
-  loop++;
 
   return true;
 }
