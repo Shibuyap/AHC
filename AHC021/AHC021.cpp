@@ -430,7 +430,8 @@ void adaptive_prefix_greedy()
   }
 }
 
-inline int apply_prefix(int len, int loop = 0) {
+inline int apply_prefix(int len) {
+  int loop = 0;
   for (int i = 0; i < len; ++i) {
     push_move(loop, best_moves[i][0], best_moves[i][1], best_moves[i][2], best_moves[i][3]);
   }
@@ -475,16 +476,12 @@ void prefix_lock_local_search()
       while (loop < MAX_LOOP) {
         if (loop < ra) {
           if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
-            rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
+            rep(j, 4) {
+              moves[loop][j] = best_moves[loop][j];
+            }
             x = moves[loop][2];
             y = moves[loop][3];
-
-            int ball2 = board[moves[loop][2]][moves[loop][3]];
-            ball_pos[ball][0] = moves[loop][2];
-            ball_pos[ball][1] = moves[loop][3];
-            ball_pos[ball2][0] = moves[loop][0];
-            ball_pos[ball2][1] = moves[loop][1];
-            swap(board[moves[loop][0]][moves[loop][1]], board[moves[loop][2]][moves[loop][3]]);
+            swap_ball(moves[loop][0], moves[loop][1], moves[loop][2], moves[loop][3]);
             loop++;
             continue;
           }
@@ -547,12 +544,13 @@ void prefix_lock_local_search()
         moves[loop][1] = y;
         moves[loop][2] = nx;
         moves[loop][3] = ny;
-        int ball2 = board[moves[loop][2]][moves[loop][3]];
-        ball_pos[ball][0] = moves[loop][2];
-        ball_pos[ball][1] = moves[loop][3];
-        ball_pos[ball2][0] = moves[loop][0];
-        ball_pos[ball2][1] = moves[loop][1];
-        swap(board[x][y], board[nx][ny]);
+        //int ball2 = board[moves[loop][2]][moves[loop][3]];
+        //ball_pos[ball][0] = moves[loop][2];
+        //ball_pos[ball][1] = moves[loop][3];
+        //ball_pos[ball2][0] = moves[loop][0];
+        //ball_pos[ball2][1] = moves[loop][1];
+        //swap(board[x][y], board[nx][ny]);
+        swap_ball(x, y, nx, ny);
         x = nx;
         y = ny;
         loop++;
@@ -619,12 +617,7 @@ bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, con
   moves[loop][1] = y;
   moves[loop][2] = nx;
   moves[loop][3] = ny;
-  int ball2 = board[moves[loop][2]][moves[loop][3]];
-  ball_pos[ball][0] = moves[loop][2];
-  ball_pos[ball][1] = moves[loop][3];
-  ball_pos[ball2][0] = moves[loop][0];
-  ball_pos[ball2][1] = moves[loop][1];
-  swap(board[x][y], board[nx][ny]);
+  swap_ball(x, y, nx, ny);
   x = nx;
   y = ny;
   loop++;
@@ -668,11 +661,7 @@ bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, con
     int ball2 = board[moves[loop][2]][moves[loop][3]];
     randomOpe = 1;
     if (ball2 > ball) {
-      ball_pos[ball][0] = moves[loop][2];
-      ball_pos[ball][1] = moves[loop][3];
-      ball_pos[ball2][0] = moves[loop][0];
-      ball_pos[ball2][1] = moves[loop][1];
-      swap(board[x][y], board[nx][ny]);
+      swap_ball(x, y, nx, ny);
       x = nx;
       y = ny;
       loop++;
@@ -715,12 +704,7 @@ bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, con
   moves[loop][1] = y;
   moves[loop][2] = nx;
   moves[loop][3] = ny;
-  int ball2 = board[moves[loop][2]][moves[loop][3]];
-  ball_pos[ball][0] = moves[loop][2];
-  ball_pos[ball][1] = moves[loop][3];
-  ball_pos[ball2][0] = moves[loop][0];
-  ball_pos[ball2][1] = moves[loop][1];
-  swap(board[x][y], board[nx][ny]);
+  swap_ball(x, y, nx, ny);
   x = nx;
   y = ny;
   loop++;
@@ -744,15 +728,12 @@ void random_local_search(int version)
     while (loop < MAX_LOOP) {
       if (loop < ra) {
         if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
-          rep(j, 4) { moves[loop][j] = best_moves[loop][j]; }
+          rep(j, 4) {
+            moves[loop][j] = best_moves[loop][j];
+          }
           x = moves[loop][2];
           y = moves[loop][3];
-          int ball2 = board[moves[loop][2]][moves[loop][3]];
-          ball_pos[ball][0] = moves[loop][2];
-          ball_pos[ball][1] = moves[loop][3];
-          ball_pos[ball2][0] = moves[loop][0];
-          ball_pos[ball2][1] = moves[loop][1];
-          swap(board[moves[loop][0]][moves[loop][1]], board[moves[loop][2]][moves[loop][3]]);
+          swap_ball(moves[loop][0], moves[loop][1], moves[loop][2], moves[loop][3]);
           loop++;
           continue;
         }
@@ -828,7 +809,9 @@ void write_output(int mode, int problemNum)
     cout << move_cnt << endl;
     rep(i, move_cnt)
     {
-      rep(j, 4) { cout << moves[i][j] << ' '; }
+      rep(j, 4) {
+        cout << moves[i][j] << ' ';
+      }
       cout << endl;
     }
   }
@@ -850,7 +833,9 @@ void write_output(int mode, int problemNum)
     ofs << move_cnt << endl;
     rep(i, move_cnt)
     {
-      rep(j, 4) { ofs << moves[i][j] << ' '; }
+      rep(j, 4) {
+        ofs << moves[i][j] << ' ';
+      }
       ofs << endl;
     }
     ofs.close();
