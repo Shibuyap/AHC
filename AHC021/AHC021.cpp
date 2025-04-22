@@ -310,7 +310,7 @@ void ball_wise_ascent_greedy()
 }
 
 int random_prefix_len = 0;
-void random_prefix_greedy()
+void random_prefix_greedy(double time_limit)
 {
   clock_t startTime, endTime;
   startTime = clock();
@@ -320,7 +320,7 @@ void random_prefix_greedy()
   while (true) {
     endTime = clock();
     double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > 0.2) {
+    if (nowTime > time_limit) {
       break;
     }
     loopCount++;
@@ -353,7 +353,7 @@ void random_prefix_greedy()
   }
 }
 
-void adaptive_prefix_greedy()
+void adaptive_prefix_greedy(double time_limit)
 {
   clock_t startTime, endTime;
   startTime = clock();
@@ -364,7 +364,7 @@ void adaptive_prefix_greedy()
   while (random_prefix_len < 50) {
     endTime = clock();
     double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > 0.3) {
+    if (nowTime > time_limit) {
       break;
     }
     loopCount++;
@@ -411,7 +411,7 @@ inline int apply_prefix(int len) {
   return loop; // V‚µ‚¢ loop ‚ð•Ô‹p
 }
 
-void prefix_lock_local_search()
+void prefix_lock_local_search(double time_limit)
 {
   clock_t startTime, endTime;
   startTime = clock();
@@ -429,7 +429,7 @@ void prefix_lock_local_search()
   while (true) {
     endTime = clock();
     double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > 0.01) {
+    if (nowTime > time_limit) {
       break;
     }
     cnt++;
@@ -751,13 +751,13 @@ int solve_single_problem(int mode, int probNum)
 
   ball_wise_ascent_greedy();
 
-  random_prefix_greedy();
-  adaptive_prefix_greedy();
+  random_prefix_greedy(0.2);
+  adaptive_prefix_greedy(0.3);
 
   save_current_best();
 
   rep(_, 50) {
-    prefix_lock_local_search();
+    prefix_lock_local_search(0.01);
   }
 
   restore_global_best();
