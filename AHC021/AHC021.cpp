@@ -57,744 +57,320 @@ namespace
   }
 }
 
-namespace /* 乱数ライブラリ */
+// 乱数
+namespace
 {
-  static uint32_t Rand()
+  static uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
     static uint32_t w = 88675123;
-    uint32_t t;
-
-    t = x ^ (x << 11);
+    uint32_t t = x ^ (x << 11);
     x = y;
     y = z;
     z = w;
-    return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+    w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+    return w;
   }
 
-
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
-  }
-}  // namespace
-
-constexpr int BOARD_SIZE = 30;
-constexpr int MAX_LOOP = 10000;
-constexpr int BALL_COUNT = BOARD_SIZE * (BOARD_SIZE + 1) / 2; // ＝BALL_COUNT
-constexpr int LOCK_PREFIX = 52;
-
-int board[BOARD_SIZE][BOARD_SIZE];
-int ball_pos[1000][2];
-int move_cnt;
-int moves[MAX_LOOP][4];
-
-int initial_board[BOARD_SIZE][BOARD_SIZE];
-int best_move_cnt;
-int best_moves[MAX_LOOP][4];
-int global_best_move_cnt;
-int global_best_moves[MAX_LOOP][4];
-
-int saved_move_cnt;
-int saved_moves[MAX_LOOP][4];
-
-void init_board()
-{
-  rep(i, BOARD_SIZE)
+  static double rand_01()
   {
-    rep(j, i + 1)
-    {
-      board[i][j] = initial_board[i][j];
-      ball_pos[board[i][j]][0] = i;
-      ball_pos[board[i][j]][1] = j;
-    }
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
-}
 
-void update_best_moves()
-{
-  if (move_cnt <= best_move_cnt) {
-    best_move_cnt = move_cnt;
-    rep(i, move_cnt)
-    {
-      rep(j, 4) {
-        best_moves[i][j] = moves[i][j];
-      }
-    }
-  }
-}
-
-void update_global_best_moves()
-{
-  if (best_move_cnt <= global_best_move_cnt) {
-    global_best_move_cnt = best_move_cnt;
-    rep(i, best_move_cnt)
-    {
-      rep(j, 4) {
-        global_best_moves[i][j] = best_moves[i][j];
-      }
-    }
-  }
-}
-
-void save_current_best()
-{
-  saved_move_cnt = best_move_cnt;
-  rep(i, best_move_cnt)
+  static double rand_range(double l, double r)
   {
-    rep(j, 4) {
-      saved_moves[i][j] = best_moves[i][j];
-    }
+    return l + (r - l) * rand_01();
   }
-}
 
-void restore_best()
-{
-  move_cnt = best_move_cnt;
-  rep(i, move_cnt)
+  static uint32_t rand_range(uint32_t l, uint32_t r)
   {
-    rep(j, 4) {
-      moves[i][j] = best_moves[i][j];
-    }
+    return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
-}
 
-void restore_global_best()
-{
-  best_move_cnt = global_best_move_cnt;
-  rep(i, best_move_cnt)
+  void shuffle_array(int* arr, int n)
   {
-    rep(j, 4) {
-      best_moves[i][j] = global_best_moves[i][j];
+    for (int i = n - 1; i >= 0; i--) {
+      int j = rand_xorshift() % (i + 1);
+      int swa = arr[i];
+      arr[i] = arr[j];
+      arr[j] = swa;
     }
   }
 }
 
-inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff) {
-  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff) {
-    diff = board[x - 1][y - 1] - board[x][y];
-    nx = x - 1;
-    ny = y - 1;
-  }
-  if (y != x && board[x - 1][y] - board[x][y] > diff) {
-    diff = board[x - 1][y] - board[x][y];
-    nx = x - 1;
-    ny = y;
-  }
-}
+const ll INF = 1001001001001001001LL;
+const int INT_INF = 1001001001;
 
-inline void search_parent_2(const int x, const int y, int& nx, int& ny, int& diff1, int& diff2) {
-  if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff1) {
-    diff1 = board[x - 1][y - 1] - board[x][y];
-    nx = x - 1;
-    ny = y - 1;
-  }
-  if (y != x && board[x - 1][y] - board[x][y] > diff2) {
-    diff2 = board[x - 1][y] - board[x][y];
-    nx = x - 1;
-    ny = y;
-  }
-}
+const int DX[4] = { -1, 0, 1, 0 };
+const int DY[4] = { 0, -1, 0, 1 };
 
-inline void swap_ball(int x1, int y1, int x2, int y2) {
-  int ball1 = board[x1][y1];
-  int ball2 = board[x2][y2];
-  std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
-  std::swap(ball_pos[ball1][1], ball_pos[ball2][1]);
-  std::swap(board[x1][y1], board[x2][y2]);
-}
+const double TIME_LIMIT = 1.8;
+int exec_mode;
 
-inline void push_move(int& loop, int x, int y, int nx, int ny)
+int n;
+
+int current_score;
+
+int best_score;
+
+void store_best_score()
 {
-  moves[loop][0] = x;
-  moves[loop][1] = y;
-  moves[loop][2] = nx;
-  moves[loop][3] = ny;
-  swap_ball(x, y, nx, ny);
-  ++loop;
+  best_score = current_score;
 }
 
-inline bool one_move(int& x, int& y, int& loop) {
-  int diff = 0;
-  int nx = -1;
-  int ny = -1;
-  search_parent(x, y, nx, ny, diff);
-  if (diff == 0) {
-    return false;
-  }
-  push_move(loop, x, y, nx, ny);
-  x = nx;
-  y = ny;
-  return true;
-}
-
-inline void some_operation(int& loop) {
-  rep(ball, BALL_COUNT)
-  {
-    int x = -1, y = -1;
-    x = ball_pos[ball][0];
-    y = ball_pos[ball][1];
-
-    while (loop < MAX_LOOP) {
-      if (x == 0) {
-        break;
-      }
-      bool result = one_move(x, y, loop);
-      if (!result) {
-        break;
-      }
-    }
-  }
-}
-
-void greedy_swap_max_delta_with_tie(bool with_tie)
+void restore_best_score()
 {
-  init_board();
-
-  int loop = 0;
-  while (loop < MAX_LOOP) {
-    int tmp[4] = {};
-    int diff = 0;
-    rep(i, BOARD_SIZE - 1)
-    {
-      rep(j, i + 1)
-      {
-        if (board[i][j] - board[i + 1][j] > diff || (board[i][j] - board[i + 1][j] == diff && with_tie)) {
-          diff = board[i][j] - board[i + 1][j];
-          tmp[0] = i;
-          tmp[1] = j;
-          tmp[2] = i + 1;
-          tmp[3] = j;
-        }
-        if (board[i][j] - board[i + 1][j + 1] > diff || (board[i][j] - board[i + 1][j + 1] == diff && with_tie)) {
-          diff = board[i][j] - board[i + 1][j + 1];
-          tmp[0] = i;
-          tmp[1] = j;
-          tmp[2] = i + 1;
-          tmp[3] = j + 1;
-        }
-      }
-    }
-    if (diff == 0) {
-      break;
-    }
-    rep(j, 4) {
-      moves[loop][j] = tmp[j];
-    }
-    swap(board[tmp[0]][tmp[1]], board[tmp[2]][tmp[3]]);
-    loop++;
-  }
-
-  move_cnt = loop;
-
-  update_best_moves();
+  current_score = best_score;
 }
 
-void ball_wise_ascent_greedy()
+bool is_out_of_range(int x, int y)
 {
-  init_board();
-
-  int loop = 0;
-  rep(ball, BALL_COUNT)
-  {
-    int x = -1;
-    int y = -1;
-    drep(i, BOARD_SIZE)
-    {
-      drep(j, i + 1)
-      {
-        if (board[i][j] == ball) {
-          x = i;
-          y = j;
-          break;
-        }
-      }
-      if (x != -1) {
-        break;
-      }
-    }
-    while (loop < MAX_LOOP) {
-      if (x == 0) {
-        break;
-      }
-      bool result = one_move(x, y, loop);
-      if (!result) {
-        break;
-      }
-    }
-  }
-  move_cnt = loop;
-
-  update_best_moves();
+  //if (x < 0 || n <= x || y < 0 || n <= y) return true;
+  return false;
 }
 
-int random_prefix_len = 0;
-void random_prefix_greedy(double time_limit)
+void initialize_state()
 {
-  start_timer();
-
-  int loopCount = 0;
-  while (true) {
-    if (get_elapsed_time() > time_limit) {
-      break;
-    }
-    loopCount++;
-
-    init_board();
-
-    int loop = 0;
-
-    int random = Rand() % 20 + 1;
-    rep(_, random)
-    {
-      while (true) {
-        int x = Rand() % (BOARD_SIZE - 1);
-        int y = Rand() % (x + 1);
-        bool result = one_move(x, y, loop);
-        if (result) {
-          break;
-        }
-      }
-    }
-
-    some_operation(loop);
-
-    move_cnt = loop;
-
-    if (move_cnt <= best_move_cnt) {
-      random_prefix_len = random;
-    }
-    update_best_moves();
-  }
+  current_score = 0;
 }
 
-void adaptive_prefix_greedy(double time_limit)
-{
-  start_timer();
-
-  int loopCount = 0;
-
-  while (random_prefix_len < 50) {
-    if (get_elapsed_time() > time_limit) {
-      break;
-    }
-    loopCount++;
-
-    init_board();
-
-    int loop = 0;
-
-    rep(_, random_prefix_len)
-    {
-      int x = best_moves[loop][0];
-      int y = best_moves[loop][1];
-      int nx = best_moves[loop][2];
-      int ny = best_moves[loop][3];
-      push_move(loop, x, y, nx, ny);
-    }
-
-    while (true) {
-      int x = Rand() % (BOARD_SIZE - 1);
-      int y = Rand() % (x + 1);
-      bool result = one_move(x, y, loop);
-      if (result) {
-        break;
-      }
-    }
-
-    some_operation(loop);
-
-    move_cnt = loop;
-
-    if (move_cnt < best_move_cnt) {
-      random_prefix_len++;
-    }
-
-    update_best_moves();
-  }
-}
-
-inline int apply_prefix(int len) {
-  int loop = 0;
-  for (int i = 0; i < len; ++i) {
-    push_move(loop, best_moves[i][0], best_moves[i][1], best_moves[i][2], best_moves[i][3]);
-  }
-  return loop;
-}
-
-void prefix_lock_local_search(double time_limit)
-{
-  start_timer();
-
-  best_move_cnt = saved_move_cnt;
-  rep(i, best_move_cnt)
-  {
-    rep(j, 4) {
-      best_moves[i][j] = saved_moves[i][j];
-    }
-  }
-
-  int cnt = 0;
-  while (true) {
-    if (get_elapsed_time() > time_limit) {
-      break;
-    }
-    cnt++;
-
-    init_board();
-
-    int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
-    int randomOpe = 0;
-    int loop = apply_prefix(LOCK_PREFIX);
-
-    rep(ball, BALL_COUNT)
-    {
-      int x = -1, y = -1;
-      x = ball_pos[ball][0];
-      y = ball_pos[ball][1];
-
-      while (loop < MAX_LOOP) {
-        if (loop < ra) {
-          if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
-            x = best_moves[loop][2];
-            y = best_moves[loop][3];
-            push_move(loop, best_moves[loop][0], best_moves[loop][1], best_moves[loop][2], best_moves[loop][3]);
-            continue;
-          }
-          break;
-        }
-
-        if (x == 0) {
-          break;
-        }
-
-        int diff1 = 0;
-        int diff2 = 0;
-        int nx = -1;
-        int ny = -1;
-        search_parent_2(x, y, nx, ny, diff1, diff2);
-        if (diff1 == 0 && diff2 == 0) {
-          break;
-        }
-        nx = x - 1;
-        if (diff2 == 0) {
-          ny = y - 1;
-        }
-        else if (diff1 == 0) {
-          ny = y;
-        }
-        else {
-          if (loop >= ra && randomOpe == 0) {
-            if (diff1 > diff2) {
-              ny = y;
-            }
-            else {
-              ny = y - 1;
-            }
-            randomOpe = 1;
-          }
-          else {
-            if (diff1 < diff2) {
-              ny = y;
-            }
-            else {
-              ny = y - 1;
-            }
-          }
-        }
-        push_move(loop, x, y, nx, ny);
-        x = nx;
-        y = ny;
-      }
-    }
-    move_cnt = loop;
-
-    update_best_moves();
-  }
-
-  update_global_best_moves();
-}
-
-bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe) {
-  int diff1 = 0;
-  int diff2 = 0;
-  int nx = -1;
-  int ny = -1;
-  search_parent_2(x, y, nx, ny, diff1, diff2);
-  if (diff1 == 0 && diff2 == 0) {
-    return false;
-  }
-  nx = x - 1;
-  if (diff2 == 0) {
-    ny = y - 1;
-  }
-  else if (diff1 == 0) {
-    ny = y;
-  }
-  else {
-    if (loop >= ra && randomOpe == 0) {
-      if (diff1 > diff2) {
-        ny = y;
-      }
-      else {
-        ny = y - 1;
-      }
-      randomOpe = 1;
-    }
-    else {
-      if (diff1 < diff2) {
-        ny = y;
-      }
-      else {
-        ny = y - 1;
-      }
-    }
-  }
-  push_move(loop, x, y, nx, ny);
-  x = nx;
-  y = ny;
-
-  return true;
-}
-
-bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe) {
-  int nx = -1;
-  int ny = -1;
-
-  if (loop >= ra && randomOpe == 0) {
-    nx = x;
-    int dir = Rand() % 2;
-    if (dir == 0) {
-      if (y != 0) {
-        ny = y - 1;
-      }
-      else {
-        ny = y + 1;
-      }
-    }
-    else {
-      if (y != x) {
-        ny = y + 1;
-      }
-      else {
-        ny = y - 1;
-      }
-    }
-
-    int ball2 = board[nx][ny];
-    randomOpe = 1;
-    if (ball2 > ball) {
-      push_move(loop, x, y, nx, ny);
-      x = nx;
-      y = ny;
-      return true;
-    }
-  }
-
-  int diff1 = 0;
-  int diff2 = 0;
-  search_parent_2(x, y, nx, ny, diff1, diff2);
-  if (diff1 == 0 && diff2 == 0) {
-    return false;
-  }
-  nx = x - 1;
-  if (diff1 < diff2) {
-    ny = y;
-  }
-  else {
-    ny = y - 1;
-  }
-  push_move(loop, x, y, nx, ny);
-  x = nx;
-  y = ny;
-
-  return true;
-}
-
-void random_local_search(int version)
-{
-  init_board();
-
-  int ra = Rand() % (best_move_cnt - LOCK_PREFIX) + LOCK_PREFIX;
-  int randomOpe = 0;
-  int loop = apply_prefix(LOCK_PREFIX);
-
-  rep(ball, BALL_COUNT)
-  {
-    int x = ball_pos[ball][0];
-    int y = ball_pos[ball][1];
-    while (loop < MAX_LOOP) {
-      if (loop < ra) {
-        if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
-          x = best_moves[loop][2];
-          y = best_moves[loop][3];
-          push_move(loop, best_moves[loop][0], best_moves[loop][1], best_moves[loop][2], best_moves[loop][3]);
-          continue;
-        }
-        break;
-      }
-
-      if (x == 0) {
-        break;
-      }
-
-      if (version == 1) {
-        bool b = random_local_search_v1_inner(loop, x, y, ball, ra, randomOpe);
-        if (!b) {
-          break;
-        }
-      }
-      else if (version == 2) {
-        bool b = random_local_search_v2_inner(loop, x, y, ball, ra, randomOpe);
-        if (!b) {
-          break;
-        }
-      }
-    }
-  }
-  move_cnt = loop;
-
-  update_best_moves();
-}
-
-void load_input(int case_num)
+void input_data(int case_num)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
-  // 標準入力する
   if (!ifs.is_open()) {
-    rep(i, BOARD_SIZE)
-    {
-      rep(j, i + 1)
-      {
-        cin >> board[i][j];
-        initial_board[i][j] = board[i][j];
-      }
-    }
+    // 標準入力
   }
-  // ファイル入力する
   else {
-    rep(i, BOARD_SIZE)
-    {
-      rep(j, i + 1)
-      {
-        ifs >> board[i][j];
-        initial_board[i][j] = board[i][j];
-      }
-    }
+    // ファイル入力
   }
 }
 
-void write_output(int mode, int problemNum)
+void open_ofs(int case_num, ofstream& ofs)
 {
-  if (mode == 0) {
-    cout << move_cnt << endl;
-    rep(i, move_cnt)
-    {
-      rep(j, 4) {
-        cout << moves[i][j] << ' ';
-      }
-      cout << endl;
-    }
-  }
-
-  // ファイル出力
-  if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    rep(i, 4)
-    {
-      strNum += (char)(problemNum % 10 + '0');
-      problemNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofstream ofs(fileNameOfs);
-
-    ofs << move_cnt << endl;
-    rep(i, move_cnt)
-    {
-      rep(j, 4) {
-        ofs << moves[i][j] << ' ';
-      }
-      ofs << endl;
-    }
-    ofs.close();
+  if (exec_mode != 0) {
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofs.open(oss.str());
   }
 }
 
-int solve_single_problem(int mode, int probNum)
+ll calculate_score()
 {
-  load_input(probNum);
+  ll res = 0;
+  return res;
+}
 
-  move_cnt = MAX_LOOP;
-  best_move_cnt = MAX_LOOP;
-  global_best_move_cnt = MAX_LOOP;
-
-  greedy_swap_max_delta_with_tie(false);
-  greedy_swap_max_delta_with_tie(true);
-
-  ball_wise_ascent_greedy();
-
-  random_prefix_greedy(0.2);
-  adaptive_prefix_greedy(0.3);
-
-  save_current_best();
-
-  rep(_, 50) {
-    prefix_lock_local_search(0.01);
+void output_data(ofstream& ofs)
+{
+  if (exec_mode == 0) {
+    // 標準出力
   }
+  else {
+    // ファイル出力
+  }
+}
 
-  restore_global_best();
-  restore_best();
+void build_initial_solution()
+{
+}
 
-  start_timer();
-  int loopCount = 0;
+struct AnnealingParams
+{
+  double start_temperature[10];
+  double end_temperature;
+  double score_scale;
+  int operation_thresholds[10];
+};
+
+void run_simulated_annealing(AnnealingParams annealingParams)
+{
+  store_best_score();
+
+  double now_time = get_elapsed_time();
+  const double START_TEMP = annealingParams.start_temperature[0];
+  const double END_TEMP = annealingParams.end_temperature;
+
+  int loop = 0;
   while (true) {
-    if (get_elapsed_time() > 0.8) {
-      break;
+    loop++;
+
+    if (loop % 100 == 0) {
+      now_time = get_elapsed_time();
+      if (now_time > TIME_LIMIT) break;
     }
-    loopCount++;
-    if (Rand() % 2 == 0) {
-      random_local_search(1);
+
+    double progress_ratio = now_time / TIME_LIMIT;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+
+    // 近傍解作成
+    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
+    int ra1, ra2, ra3, ra4, ra5;
+    int keep1, keep2, keep3, keep4, keep5;
+
+    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+      // 近傍操作1
+    }
+    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+      // 近傍操作2
+    }
+
+    // スコア計算
+    double tmp_score = calculate_score();
+
+    // 焼きなましで採用判定
+    double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
+    double prob = exp(diff_score / temp);
+    if (prob > rand_01()) {
+      // 採用
+      current_score = tmp_score;
+
+      // ベスト更新
+      if (current_score > best_score) {
+        store_best_score();
+      }
     }
     else {
-      random_local_search(2);
+      // 元に戻す
+      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+        // 近傍操作1 の巻き戻し
+      }
+      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+        // 近傍操作2 の巻き戻し
+      }
     }
   }
 
-  // 戻して出力
-  restore_best();
-
-  if (mode != 0) {
-    cout << probNum << ' ' << loopCount << ' ' << move_cnt << endl;
+  if (exec_mode != 0 && exec_mode != 3) {
+    cerr << loop << endl;
   }
 
-  write_output(mode, probNum);
-  return 100000 - 5 * move_cnt;
+  restore_best_score();
+}
+
+ll solve_case(int case_num, AnnealingParams annealingParams)
+{
+  start_timer();
+
+  initialize_state();
+
+  input_data(case_num);
+
+  ofstream ofs;
+  open_ofs(case_num, ofs);
+
+  build_initial_solution();
+
+  // 焼きなまし実行
+  // run_simulated_annealing(annealingParams);
+
+  // 解答を出力
+  output_data(ofs);
+
+  if (ofs.is_open()) {
+    ofs.close();
+  }
+
+  ll score = 0;
+  if (exec_mode != 0) {
+    score = calculate_score();
+  }
+  return score;
 }
 
 int main()
 {
-  int mode = 2;
+  exec_mode = 2;
 
-  if (mode == 0) {
-    solve_single_problem(mode, 0);
+  AnnealingParams annealingParams;
+  annealingParams.start_temperature[0] = 2048.0;
+  annealingParams.start_temperature[1] = 2048.0;
+  annealingParams.start_temperature[2] = 2048.0;
+  annealingParams.start_temperature[3] = 2048.0;
+  annealingParams.start_temperature[4] = 2048.0;
+  annealingParams.start_temperature[5] = 2048.0;
+  annealingParams.start_temperature[6] = 2048.0;
+  annealingParams.start_temperature[7] = 2048.0;
+  annealingParams.start_temperature[8] = 2048.0;
+  annealingParams.start_temperature[9] = 2048.0;
+  annealingParams.end_temperature = 0.0;
+  annealingParams.score_scale = 12345.0;
+  annealingParams.operation_thresholds[0] = 100;
+  annealingParams.operation_thresholds[1] = 200;
+  annealingParams.operation_thresholds[2] = 300;
+  annealingParams.operation_thresholds[3] = 400;
+  annealingParams.operation_thresholds[4] = 500;
+  annealingParams.operation_thresholds[5] = 600;
+  annealingParams.operation_thresholds[6] = 700;
+  annealingParams.operation_thresholds[7] = 800;
+  annealingParams.operation_thresholds[8] = 900;
+  annealingParams.operation_thresholds[9] = 1000;
+
+  if (exec_mode == 0) {
+    solve_case(0, annealingParams);
   }
-  else if (mode == 1) {
-    int probNum;
-    cin >> probNum;
-    solve_single_problem(mode, probNum);
-  }
-  else {
-    int sum = 0;
-    rep(_, 1) {
-      sum += solve_single_problem(1, _);
+  else if (exec_mode <= 2) {
+    ll sum_score = 0;
+    srep(i, 0, 15)
+    {
+      ll score = solve_case(i, annealingParams);
+      sum_score += score;
+      if (exec_mode == 1) {
+        cerr << score << endl;
+      }
+      else {
+        cerr << "case = " << setw(2) << i << ", "
+          << "score = " << setw(4) << score << ", "
+          << "sum = " << setw(5) << sum_score << ", "
+          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << endl;
+      }
     }
-    cout << sum << endl;
   }
+  else if (exec_mode == 3) {
+    int loop_count = 0;
+    AnnealingParams best_annealingParams;
+    ll best_sum_score = 0;
+
+    while (true) {
+      AnnealingParams new_annealingParams;
+      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
+      new_annealingParams.end_temperature = 0.0;
+      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
+      new_annealingParams.operation_thresholds[0] = rand() % 101;
+
+      ll sum_score = 0;
+      srep(i, 0, 15)
+      {
+        ll score = solve_case(i, new_annealingParams);
+        sum_score += score;
+
+        // シード0が悪ければ打ち切り
+        if (i == 0 && score < 0) {
+          break;
+        }
+      }
+
+      cerr << "loop_count = " << loop_count
+        << ", sum_score = " << sum_score
+        << ", start_temperature = " << new_annealingParams.start_temperature[0]
+        << ", end_temperature = " << new_annealingParams.end_temperature
+        << ", score_scale = " << new_annealingParams.score_scale
+        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
+        << endl;
+
+      if (sum_score > best_sum_score) {
+        best_sum_score = sum_score;
+        best_annealingParams = new_annealingParams;
+      }
+
+      loop_count++;
+    }
+  }
+
+  return 0;
 }
