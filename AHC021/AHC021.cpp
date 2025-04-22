@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -27,15 +28,34 @@
 #include <string>
 #include <utility>
 #include <vector>
-// #include <atcoder/all>
+
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
+
 using namespace std;
-// using namespace atcoder;
+
 typedef long long int ll;
 typedef pair<int, int> P;
-#define MAX_N 200005
+typedef pair<P, P> PP;
+
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
 
 namespace /* 乱数ライブラリ */
 {
@@ -312,15 +332,11 @@ void ball_wise_ascent_greedy()
 int random_prefix_len = 0;
 void random_prefix_greedy(double time_limit)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
 
   int loopCount = 0;
   while (true) {
-    endTime = clock();
-    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > time_limit) {
+    if (get_elapsed_time() > time_limit) {
       break;
     }
     loopCount++;
@@ -355,16 +371,12 @@ void random_prefix_greedy(double time_limit)
 
 void adaptive_prefix_greedy(double time_limit)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
 
   int loopCount = 0;
 
   while (random_prefix_len < 50) {
-    endTime = clock();
-    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > time_limit) {
+    if (get_elapsed_time() > time_limit) {
       break;
     }
     loopCount++;
@@ -408,14 +420,12 @@ inline int apply_prefix(int len) {
   for (int i = 0; i < len; ++i) {
     push_move(loop, best_moves[i][0], best_moves[i][1], best_moves[i][2], best_moves[i][3]);
   }
-  return loop; // 新しい loop を返却
+  return loop;
 }
 
 void prefix_lock_local_search(double time_limit)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
 
   best_move_cnt = saved_move_cnt;
   rep(i, best_move_cnt)
@@ -427,9 +437,7 @@ void prefix_lock_local_search(double time_limit)
 
   int cnt = 0;
   while (true) {
-    endTime = clock();
-    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > time_limit) {
+    if (get_elapsed_time() > time_limit) {
       break;
     }
     cnt++;
@@ -449,22 +457,18 @@ void prefix_lock_local_search(double time_limit)
       while (loop < MAX_LOOP) {
         if (loop < ra) {
           if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
-            rep(j, 4) {
-              moves[loop][j] = best_moves[loop][j];
-            }
-            x = moves[loop][2];
-            y = moves[loop][3];
-            swap_ball(moves[loop][0], moves[loop][1], moves[loop][2], moves[loop][3]);
-            loop++;
+            x = best_moves[loop][2];
+            y = best_moves[loop][3];
+            push_move(loop, best_moves[loop][0], best_moves[loop][1], best_moves[loop][2], best_moves[loop][3]);
             continue;
           }
-          else {
-            break;
-          }
+          break;
         }
+
         if (x == 0) {
           break;
         }
+
         int diff1 = 0;
         int diff2 = 0;
         int nx = -1;
@@ -618,24 +622,17 @@ void random_local_search(int version)
 
   rep(ball, BALL_COUNT)
   {
-    int x = -1, y = -1;
-    x = ball_pos[ball][0];
-    y = ball_pos[ball][1];
+    int x = ball_pos[ball][0];
+    int y = ball_pos[ball][1];
     while (loop < MAX_LOOP) {
       if (loop < ra) {
         if (best_moves[loop][0] == x && best_moves[loop][1] == y) {
-          rep(j, 4) {
-            moves[loop][j] = best_moves[loop][j];
-          }
-          x = moves[loop][2];
-          y = moves[loop][3];
-          swap_ball(moves[loop][0], moves[loop][1], moves[loop][2], moves[loop][3]);
-          loop++;
+          x = best_moves[loop][2];
+          y = best_moves[loop][3];
+          push_move(loop, best_moves[loop][0], best_moves[loop][1], best_moves[loop][2], best_moves[loop][3]);
           continue;
         }
-        else {
-          break;
-        }
+        break;
       }
 
       if (x == 0) {
@@ -763,14 +760,10 @@ int solve_single_problem(int mode, int probNum)
   restore_global_best();
   restore_best();
 
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
   int loopCount = 0;
   while (true) {
-    endTime = clock();
-    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > 0.8) {
+    if (get_elapsed_time() > 0.8) {
       break;
     }
     loopCount++;
