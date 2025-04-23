@@ -5,6 +5,7 @@
     <ClInclude Include="自作キュー.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AHCTemplate.cpp" />
+    <ClCompile Include="AHCTemplate_短期.cpp" />
+    <ClCompile Include="AHCTemplate_長期.cpp" />
   </ItemGroup>
 </Project>

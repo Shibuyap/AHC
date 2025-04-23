@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AHC038_new.cpp" />
     <ClCompile Include="AHC038.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

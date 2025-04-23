@@ -2,5 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="AHC045.cpp" />
+    <ClCompile Include="AHC045_new.cpp" />
   </ItemGroup>
 </Project>

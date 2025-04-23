@@ -182,16 +182,7 @@ State input_data(int case_num)
   return state;
 }
 
-void open_ofs(int case_num, ofstream& ofs)
-{
-  if (exec_mode != 0) {
-    std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-    ofs.open(oss.str());
-  }
-}
-
-void output_data(ofstream& ofs, const State& state)
+void output_data(int case_num, const State& state)
 {
   if (exec_mode == 0) {
     // 標準出力
@@ -206,6 +197,10 @@ void output_data(ofstream& ofs, const State& state)
   }
   else {
     // ファイル出力
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
+
     ofs << state.move_cnt << endl;
     for (int i = 0; i < state.move_cnt; i++)
     {
@@ -213,6 +208,10 @@ void output_data(ofstream& ofs, const State& state)
         ofs << state.moves[i][j] << ' ';
       }
       ofs << endl;
+    }
+
+    if (ofs.is_open()) {
+      ofs.close();
     }
   }
 }
@@ -269,14 +268,7 @@ ll solve_case(int case_num)
     best_state = greedy2_state;
   }
 
-  // 解答を出力
-  ofstream ofs;
-  open_ofs(case_num, ofs);
-  output_data(ofs, best_state);
-
-  if (ofs.is_open()) {
-    ofs.close();
-  }
+  output_data(case_num, best_state);
 
   ll score = 0;
   if (exec_mode != 0) {

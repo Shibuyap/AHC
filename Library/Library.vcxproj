@@ -23,7 +23,11 @@
     <ClInclude Include="自作キュー.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AHCTemplate.cpp" />
+    <ClCompile Include="AHCTemplate_短期.cpp" />
+    <ClCompile Include="AHCTemplate_長期.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
