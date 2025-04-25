@@ -691,13 +691,8 @@ ll Solve(int problem_num)
 
 */
 /////////////////////////////////////////////////////////////////////////
-int main()
+int main_old()
 {
-  srand((unsigned)time(NULL));  // 乱数のシードを設定
-  while (rand() % 100) {
-    Rand();  // 乱数のウォームアップ
-  }
-
   mode = 2;
 
   if (mode == 0) {
