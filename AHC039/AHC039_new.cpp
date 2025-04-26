@@ -38,8 +38,12 @@ typedef long long int ll;
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
-  void start_timer() { start_time_clock = std::chrono::steady_clock::now(); }
-  double get_elapsed_time() { std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock; return elapsed.count(); }
+  void start_timer() {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+  double get_elapsed_time() {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock; return elapsed.count();
+  }
 }
 
 // 乱数
@@ -52,16 +56,32 @@ namespace
     w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
     return w;
   }
-  static double rand_01() { return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX); }
-  static double rand_range(double l, double r) { return l + (r - l) * rand_01(); }
-  static uint32_t rand_range(uint32_t l, uint32_t r) { return l + rand_xorshift() % (r - l + 1); }
-  void shuffle_array(int* arr, int n) { for (int i = n - 1; i >= 0; i--) { int j = rand_xorshift() % (i + 1); swap(arr[i], arr[j]); } }
+  static double rand_01() {
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
+  }
+  static double rand_range(double l, double r) {
+    return l + (r - l) * rand_01();
+  }
+  static uint32_t rand_range(uint32_t l, uint32_t r) {
+    return l + rand_xorshift() % (r - l + 1);
+  }
+  void shuffle_array(int* arr, int n) {
+    for (int i = n - 1; i >= 0; i--) {
+      int j = rand_xorshift() % (i + 1); swap(arr[i], arr[j]);
+    }
+  }
 }
 
-struct Point { int x, y; };
+struct Point {
+  int x, y;
+};
 
-enum class FishType : uint8_t { MACKEREL = 0, SARDINE = 1 };
-struct Fish { Point p; FishType type; };
+enum class FishType : uint8_t {
+  MACKEREL = 0, SARDINE = 1
+};
+struct Fish {
+  Point p; FishType type;
+};
 
 // 入力データ
 int N_fish_half;                   // 「サバ」と「イワシ」それぞれの匹数 (最大 1000)
@@ -76,26 +96,32 @@ vector<Point> polygon;             // 時計回り（反時計でも OK）頂点
 // ─────────────────────────────────────────────
 class Field
 {
-  const vector<Fish>& fs;
+  const vector<Fish>& fish;
 public:
-  explicit Field(const vector<Fish>& f) : fs(f) {}
+  explicit Field(const vector<Fish>& f) : fish(f) {
+  }
 
   /**
    * @brief [x1,x2]×[y1,y2] に含まれる (サバ,イワシ) を数える
    */
   pair<int, int> countRect(int x1, int y1, int x2, int y2) const {
     int a = 0, b = 0;
-    for (const auto& f : fs) {
+    for (const auto& f : fish) {
       if (f.p.x >= x1 && f.p.x <= x2 && f.p.y >= y1 && f.p.y <= y2) {
         (f.type == FishType::MACKEREL ? a : b)++;
       }
     }
-    return { a,b };
+    return { a, b };
   }
 
   vector<Point> getMackerelCoords() const {
-    vector<Point> res; res.reserve(fs.size() / 2);
-    for (const auto& f : fs) if (f.type == FishType::MACKEREL) res.push_back(f.p);
+    vector<Point> res;
+    res.reserve(fish.size() / 2);
+    for (const auto& f : fish) {
+      if (f.type == FishType::MACKEREL) {
+        res.push_back(f.p);
+      }
+    }
     return res;
   }
 };
@@ -110,25 +136,33 @@ class Solver
   vector<Point> bestPoly;
   ll bestScore = -1e18;
 public:
-  explicit Solver(const Field& f) : fld(f) {}
+  explicit Solver(const Field& f) : fld(f) {
+  }
 
   /** sc = max(0, a - b + 1) */
-  static ll score(int a, int b) { return max(0, a - b + 1); }
+  static ll score(int a, int b) {
+    return max(0, a - b + 1);
+  }
 
   /** 初期長方形を作成 */
   void buildInitial() {
     auto mac = fld.getMackerelCoords();
     if (mac.empty()) {
       bestPoly = { {0,0},{0,1},{1,1},{1,0} };
-      bestScore = 1; return;
+      bestScore = 1;
+      return;
     }
     int minx = INT_MAX, miny = INT_MAX, maxx = INT_MIN, maxy = INT_MIN;
     for (auto& p : mac) {
       minx = min(minx, p.x); maxx = max(maxx, p.x);
       miny = min(miny, p.y); maxy = max(maxy, p.y);
     }
-    if (minx == maxx) maxx++; // 幅ゼロ回避
-    if (miny == maxy) maxy++;
+    if (minx == maxx) {
+      maxx++; // 幅ゼロ回避
+    }
+    if (miny == maxy) {
+      maxy++;
+    }
     auto cnt_ab = fld.countRect(minx, miny, maxx, maxy);
     int a_m = cnt_ab.first;
     int b_m = cnt_ab.second;
@@ -148,7 +182,13 @@ public:
     int right = bestPoly[2].x, top = bestPoly[2].y; // 座標系: y 上向きでも下向きでも長方形なら OK
 
     auto allMacInside = [&](int l, int b, int r, int t) {
-      for (auto& p : mac) { if (p.x<l || p.x>r || p.y<b || p.y>t) return false; } return true; };
+      for (auto& p : mac) {
+        if (p.x < l || p.x > r || p.y < b || p.y > t) {
+          return false;
+        }
+      }
+      return true;
+      };
 
     while (get_elapsed_time() < timelimit_sec) {
       bool improved = false;
@@ -162,8 +202,12 @@ public:
       for (const auto& tpl : cand) {
         int cl, cb, cr, ct;
         std::tie(cl, cb, cr, ct) = tpl;   // tuple → 個別変数へ展開
-        if (cl >= cr || cb >= ct) continue;
-        if (!allMacInside(cl, cb, cr, ct)) continue;
+        if (cl >= cr || cb >= ct) {
+          continue;
+        }
+        if (!allMacInside(cl, cb, cr, ct)) {
+          continue;
+        }
         auto cnt = fld.countRect(cl, cb, cr, ct);
         int a_m = cnt.first;
         int sard_m = cnt.second;
@@ -175,7 +219,9 @@ public:
           break;
         }
       }
-      if (!improved) break;
+      if (!improved) {
+        break;
+      }
     }
     bestPoly = { {left,bottom},{left,top},{right,top},{right,bottom} };
     return bestPoly;
