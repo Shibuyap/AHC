@@ -797,4 +797,5 @@ int main_old()
     }
     cout << sum << endl;
   }
+  return 0;
 }
