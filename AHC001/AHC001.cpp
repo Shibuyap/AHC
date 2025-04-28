@@ -578,6 +578,14 @@ inline void hukuramashi(int ite)
   }
 }
 
+inline void store_best() {
+  real_maxScore = maxScore;
+  rep(i, n)
+  {
+    best_rects[i] = rects[i];
+  }
+}
+
 inline void Extend(int ite, double temp)
 {
   Rect keep = rects[ite];
@@ -587,15 +595,15 @@ inline void Extend(int ite, double temp)
 
   int tmpScore = calc(ite);
 
-  if (tmpScore >= maxScore) {
+  int tmp = tmpScore - maxScore;
+  const double prob = exp((double)tmp / temp);
+
+  if (prob > Rand01()) {
+  //if (tmpScore >= maxScore) {
     modeCount[4]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
     }
   }
   else {
@@ -613,21 +621,16 @@ int ui_tei_maxScore = -1;
 
 inline void Tubusu(int tubusu)
 {
+  // tubusu個つぶす
   rep(i, tubusu)
-  { // tubusu個つぶす
+  { 
     int ite = Rand() % n;
     init_rect(rects[ite], target_points[ite]);
   }
 
-  int tmpScore = calc(-1);
-
-  maxScore = tmpScore;
+  maxScore = calc(-1);
   if (maxScore > real_maxScore) {
-    real_maxScore = maxScore;
-    rep(i, n)
-    {
-      best_rects[i] = rects[i];
-    }
+    store_best();
   }
 }
 
@@ -645,27 +648,21 @@ inline void TubusuWorst(int tubusu_worst)
     init_rect(rects[ite], target_points[ite]);
   }
 
-  int tmpScore = calc(-1);
-
-  maxScore = tmpScore;
+  maxScore = calc(-1);
   if (maxScore > real_maxScore) {
-    real_maxScore = maxScore;
-    rep(i, n)
-    {
-      best_rects[i] = rects[i];
-    }
+    store_best();
   }
 }
 
-inline void AnaWoAkeru(int hole)
+inline void AnaWoAkeru(int hole = 100)
 {
   int ite = Rand() % n;
   vector<int> keep;
   keep.emplace_back(ite);
-  rects[ite].p1.x -= 100;
-  rects[ite].p1.y -= 100;
-  rects[ite].p2.x += 100;
-  rects[ite].p2.y += 100;
+  rects[ite].p1.x -= hole;
+  rects[ite].p1.y -= hole;
+  rects[ite].p2.x += hole;
+  rects[ite].p2.y += hole;
   rep(i, n)
   {
     if (i == ite) continue;
@@ -677,15 +674,9 @@ inline void AnaWoAkeru(int hole)
     init_rect(rects[keep[i]], target_points[keep[i]]);
   }
 
-  int tmpScore = calc(-1);
-
-  maxScore = tmpScore;
+  maxScore = calc(-1);
   if (maxScore > real_maxScore) {
-    real_maxScore = maxScore;
-    rep(i, n)
-    {
-      best_rects[i] = rects[i];
-    }
+    store_best();
   }
 }
 
@@ -931,11 +922,7 @@ inline void ExtendKing(int ite)
 
   maxScore = calc(-1);
   if (maxScore > real_maxScore) {
-    real_maxScore = maxScore;
-    rep(i, n)
-    {
-      best_rects[i] = rects[i];
-    }
+    store_best();
   }
 }
 
@@ -967,11 +954,7 @@ inline void oneChange(int ite, double temp)
     modeCount[0]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
     }
   }
   else {
@@ -1013,11 +996,7 @@ inline void fourChange(int ite, double temp)
     modeCount[3]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
     }
   }
   else {
@@ -1063,11 +1042,7 @@ inline void Slide(int ite)
     modeCount[1]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
     }
   }
   else {
@@ -1124,11 +1099,7 @@ inline void aspectChange(int ite)
     modeCount[2]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
     }
   }
   else {
@@ -1357,11 +1328,7 @@ inline void zurasi2(int ite, double temp)
     modeCount[5]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
     }
   }
   else {
@@ -1388,15 +1355,10 @@ inline void shokiInit()
   {
     init_rect(rects[i], target_points[i]);
   }
-  int tmpScore = calc(-1);
 
-  maxScore = tmpScore;
+  maxScore = calc(-1);
   if (maxScore > real_maxScore) {
-    real_maxScore = maxScore;
-    rep(i, n)
-    {
-      best_rects[i] = rects[i];
-    }
+    store_best();
   }
 }
 
@@ -1427,11 +1389,7 @@ inline void Ui_Tei()
 
       // 初期スコア計算
       maxScore = calc(-1);
-      real_maxScore = maxScore;
-      rep(i, n)
-      {
-        best_rects[i] = rects[i];
-      }
+      store_best();
 
       // 焼きなまし
       start = clock();
@@ -1716,11 +1674,8 @@ int solve(int teisyutu, int fileNum)
 
           // 計算誤差解消?
           if (loop % 10000 == 1) {
-            int tmpScore = calc(-1);
-            // cout << fixed << setprecision(10) << tmpScore - maxScore << endl;
-            maxScore = tmpScore;
+            maxScore = calc(-1);
           }
-
         }
 
         // 焼きなまし戻す
@@ -1747,10 +1702,6 @@ int solve(int teisyutu, int fileNum)
           c4[asai][i] = rects[i].p2.x;
           d4[asai][i] = rects[i].p2.y;
         }
-
-        // cout << loop << ' ';
-        // cout << temp << ' ' << temp2 << endl;
-        // cout << real_real_maxScore << endl;
       }
 
       // 次の世代に継承
@@ -1771,21 +1722,11 @@ int solve(int teisyutu, int fileNum)
         }
       }
 
-      /*
-      rep(i,6) cout << modeCount[i] << ' ';
-      cout << endl;
-      */
-
-
       // 提出時以下は消す
       if (teisyutu == 0 && _ % 10 == 0) {
         cout << "_ = " << _;
         cout << ", vBeam[0] = (" << vBeam[0].first << ", " << vBeam[0].second << ")" << endl;
-        // cout << ", vBeam[1] = (" << vBeam[1].first << ", " << vBeam[1].second << ")" << endl;
       }
-
-
-      // FileKakikomi(fileNum);
 
       // エスケープ
       end = clock();
@@ -1885,11 +1826,11 @@ inline void AllClear()
     rects[i].p1.x = 0, rects[i].p1.y = 0, rects[i].p2.x = 0, rects[i].p2.y = 0;
     clear_rect(rects[i]);
     area_sizes[i] = 0;
-    best_rects[i].p1.x = 0, best_rects[i].p1.y = 0, best_rects[i].p2.x = 0, best_rects[i].p2.y = 0;
+    clear_rect(best_rects[i]);
     p[i] = 0;
     sort_x[i] = 0, sort_y[i] = 0;
     arg_sort_x[i] = 0, arg_sort_y[i] = 0;
-    best_best_rects[i].p1.x = 0, best_best_rects[i].p1.y = 0, best_best_rects[i].p2.x = 0, best_best_rects[i].p2.y = 0;
+    clear_rect(best_best_rects[i]);
     ui_tei_a[i] = 0, ui_tei_b[i] = 0, ui_tei_c[i] = 0, ui_tei_d[i] = 0;
     clear_rect(best_best_best_rects[i]);
   }
