@@ -94,7 +94,7 @@ struct Rect
 
 int allLoopTimes = 1;
 int n;
-Point point[MAX_N];
+Point target_points[MAX_N];
 int target_sizes[MAX_N];
 Rect rects[MAX_N];
 int area_sizes[MAX_N];
@@ -112,11 +112,11 @@ inline void nyuuryokuInit(int fileNum)
   ifstream ifs(oss.str());
   if (!ifs.is_open()) { // 標準入力する
     cin >> n;
-    rep(i, n) cin >> point[i].x >> point[i].y >> target_sizes[i];
+    rep(i, n) cin >> target_points[i].x >> target_points[i].y >> target_sizes[i];
   }
   else { // ファイル入力する
     ifs >> n;
-    rep(i, n) ifs >> point[i].x >> point[i].y >> target_sizes[i];
+    rep(i, n) ifs >> target_points[i].x >> target_points[i].y >> target_sizes[i];
   }
 }
 
@@ -196,7 +196,7 @@ inline void sortInit()
   vector<P> v;
   rep(i, n)
   {
-    v.emplace_back(P(point[i].x, i));
+    v.emplace_back(P(target_points[i].x, i));
   }
   sort(v.begin(), v.end());
   rep(i, n)
@@ -208,7 +208,7 @@ inline void sortInit()
   v.clear();
   rep(i, n)
   {
-    v.emplace_back(P(point[i].y, i));
+    v.emplace_back(P(target_points[i].y, i));
   }
   sort(v.begin(), v.end());
   rep(i, n)
@@ -239,8 +239,8 @@ inline int isOK2(int ite)
     }
     rep(i, n)
     {
-      if (point[i].x < rects[i].p1.x || rects[i].p2.x <= point[i].x) return 0;
-      if (point[i].y < rects[i].p1.y || rects[i].p2.y <= point[i].y) return 0;
+      if (target_points[i].x < rects[i].p1.x || rects[i].p2.x <= target_points[i].x) return 0;
+      if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
     rep(i, n)
     {
@@ -257,8 +257,8 @@ inline int isOK2(int ite)
     if (rects[ite].p2.y < 0 || 10000 < rects[ite].p2.y) return 0;
     if (rects[ite].p2.x <= rects[ite].p1.x) return 0;
     if (rects[ite].p2.y <= rects[ite].p1.y) return 0;
-    if (point[ite].x < rects[ite].p1.x || rects[ite].p2.x <= point[ite].x) return 0;
-    if (point[ite].y < rects[ite].p1.y || rects[ite].p2.y <= point[ite].y) return 0;
+    if (target_points[ite].x < rects[ite].p1.x || rects[ite].p2.x <= target_points[ite].x) return 0;
+    if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 0;
     rep(i, n)
     {
       if (i == ite) continue;
@@ -285,8 +285,8 @@ inline int isOK(int ite)
     }
     rep(i, n)
     {
-      if (point[i].x < rects[i].p1.x || rects[i].p2.x <= point[i].x) return 0;
-      if (point[i].y < rects[i].p1.y || rects[i].p2.y <= point[i].y) return 0;
+      if (target_points[i].x < rects[i].p1.x || rects[i].p2.x <= target_points[i].x) return 0;
+      if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
     rep(i, n)
     {
@@ -303,8 +303,8 @@ inline int isOK(int ite)
     if (rects[ite].p2.y < 0 || 10000 < rects[ite].p2.y) return 0;
     if (rects[ite].p2.x <= rects[ite].p1.x) return 0;
     if (rects[ite].p2.y <= rects[ite].p1.y) return 0;
-    if (point[ite].x < rects[ite].p1.x || rects[ite].p2.x <= point[ite].x) return 0;
-    if (point[ite].y < rects[ite].p1.y || rects[ite].p2.y <= point[ite].y) return 0;
+    if (target_points[ite].x < rects[ite].p1.x || rects[ite].p2.x <= target_points[ite].x) return 0;
+    if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 0;
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
     drep(ii, argX)
@@ -330,13 +330,17 @@ inline int isOK(int ite)
   return 1;
 }
 
+inline void init_rect(Rect& rect, Point& point) {
+  rect.p1.x = point.x;
+  rect.p1.y = point.y;
+  rect.p2.x = point.x + 1;
+  rect.p2.y = point.y + 1;
+}
+
 Rect vExtend;
 inline void hukuramashi(int ite)
 {
-  vExtend.p1.x = point[ite].x;
-  vExtend.p1.y = point[ite].y;
-  vExtend.p2.x = point[ite].x + 1;
-  vExtend.p2.y = point[ite].y + 1;
+  init_rect(vExtend, target_points[ite]);
 
   int flagTateYoko = Rand() % 2;
   if (flagTateYoko == 0) {
@@ -350,7 +354,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
       if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
+        if (target_points[i].x <= target_points[ite].x) {
           vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
         }
         else {
@@ -366,7 +370,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
       if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
+        if (target_points[i].x <= target_points[ite].x) {
           vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
         }
         else {
@@ -387,7 +391,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
       if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
+        if (target_points[i].y <= target_points[ite].y) {
           vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
         }
         else {
@@ -408,7 +412,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
       if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
+        if (target_points[i].y <= target_points[ite].y) {
           vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
         }
         else {
@@ -432,7 +436,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
       if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
+        if (target_points[i].y <= target_points[ite].y) {
           vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
         }
         else {
@@ -448,7 +452,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
       if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
+        if (target_points[i].y <= target_points[ite].y) {
           vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
         }
         else {
@@ -469,7 +473,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
       if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
+        if (target_points[i].x <= target_points[ite].x) {
           vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
         }
         else {
@@ -489,7 +493,7 @@ inline void hukuramashi(int ite)
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
       if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
+        if (target_points[i].x <= target_points[ite].x) {
           vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
         }
         else {
@@ -516,7 +520,7 @@ inline void hukuramashi(int ite)
     if (shuf[i] == 0) {
       int ma = target_sizes[ite] / (vExtend.p2.y - vExtend.p1.y) + yure;
       int diff = (vExtend.p2.x - vExtend.p1.x) - ma;
-      int capa = point[ite].x - vExtend.p1.x;
+      int capa = target_points[ite].x - vExtend.p1.x;
       if (capa >= diff) {
         vExtend.p1.x += diff;
       }
@@ -527,7 +531,7 @@ inline void hukuramashi(int ite)
     else if (shuf[i] == 1) {
       int ma = target_sizes[ite] / (vExtend.p2.x - vExtend.p1.x) + yure;
       int diff = (vExtend.p2.y - vExtend.p1.y) - ma;
-      int capa = point[ite].y - vExtend.p1.y;
+      int capa = target_points[ite].y - vExtend.p1.y;
       if (capa >= diff) {
         vExtend.p1.y += diff;
       }
@@ -538,7 +542,7 @@ inline void hukuramashi(int ite)
     else if (shuf[i] == 2) {
       int ma = target_sizes[ite] / (vExtend.p2.y - vExtend.p1.y) + yure;
       int diff = (vExtend.p2.x - vExtend.p1.x) - ma;
-      int capa = vExtend.p2.x - (point[ite].x + 1);
+      int capa = vExtend.p2.x - (target_points[ite].x + 1);
       if (capa >= diff) {
         vExtend.p2.x -= diff;
       }
@@ -549,7 +553,7 @@ inline void hukuramashi(int ite)
     else if (shuf[i] == 3) {
       int ma = target_sizes[ite] / (vExtend.p2.x - vExtend.p1.x) + yure;
       int diff = (vExtend.p2.y - vExtend.p1.y) - ma;
-      int capa = vExtend.p2.y - (point[ite].y + 1);
+      int capa = vExtend.p2.y - (target_points[ite].y + 1);
       if (capa >= diff) {
         vExtend.p2.y -= diff;
       }
@@ -566,14 +570,11 @@ inline void hukuramashi(int ite)
   if (vExtend.p2.y < 0 || 10000 < vExtend.p2.y) ng = 1;
   if (vExtend.p2.x <= vExtend.p1.x) ng = 1;
   if (vExtend.p2.y <= vExtend.p1.y) ng = 1;
-  if (point[ite].x < vExtend.p1.x || vExtend.p2.x <= point[ite].x) ng = 1;
-  if (point[ite].y < vExtend.p1.y || vExtend.p2.y <= point[ite].y) ng = 1;
+  if (target_points[ite].x < vExtend.p1.x || vExtend.p2.x <= target_points[ite].x) ng = 1;
+  if (target_points[ite].y < vExtend.p1.y || vExtend.p2.y <= target_points[ite].y) ng = 1;
 
   if (ng) {
-    vExtend.p1.x = point[ite].x; 
-    vExtend.p2.x = point[ite].x + 1;
-    vExtend.p1.y = point[ite].y; 
-    vExtend.p2.y = point[ite].y + 1;
+    init_rect(vExtend, target_points[ite]);
   }
 }
 
@@ -604,7 +605,7 @@ inline void Extend(int ite, double temp)
   }
 }
 
-Rect best_best_rect[MAX_N];
+Rect best_best_rects[MAX_N];
 int real_real_maxScore = -1;
 
 int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
@@ -615,10 +616,7 @@ inline void Tubusu(int tubusu)
   rep(i, tubusu)
   { // tubusu個つぶす
     int ite = Rand() % n;
-    rects[ite].p1.x = point[ite].x;
-    rects[ite].p1.y = point[ite].y;
-    rects[ite].p2.x = point[ite].x + 1;
-    rects[ite].p2.y = point[ite].y + 1;
+    init_rect(rects[ite], target_points[ite]);
   }
 
   int tmpScore = calc(-1);
@@ -644,10 +642,7 @@ inline void TubusuWorst(int tubusu_worst)
   rep(i, tubusu_worst)
   {
     int ite = v[i].second;
-    rects[ite].p1.x = point[ite].x;
-    rects[ite].p1.y = point[ite].y;
-    rects[ite].p2.x = point[ite].x + 1;
-    rects[ite].p2.y = point[ite].y + 1;
+    init_rect(rects[ite], target_points[ite]);
   }
 
   int tmpScore = calc(-1);
@@ -679,10 +674,7 @@ inline void AnaWoAkeru(int hole)
   int keepSize = keep.size();
   rep(i, keepSize)
   {
-    rects[keep[i]].p1.x = point[keep[i]].x;
-    rects[keep[i]].p1.y = point[keep[i]].y;
-    rects[keep[i]].p2.x = point[keep[i]].x + 1;
-    rects[keep[i]].p2.y = point[keep[i]].y + 1;
+    init_rect(rects[keep[i]], target_points[keep[i]]);
   }
 
   int tmpScore = calc(-1);
@@ -700,10 +692,10 @@ inline void AnaWoAkeru(int hole)
 Rect vExtendKing;
 inline void hukuramashiKing(int ite)
 {
-  vExtendKing.p1.x = max(0, (int)(point[ite].x - Rand() % 1000));
-  vExtendKing.p1.y = max(0, (int)(point[ite].y - Rand() % 1000));
-  vExtendKing.p2.x = min(10000, (int)(point[ite].x + 1 + Rand() % 1000));
-  vExtendKing.p2.y = min(10000, (int)(point[ite].y + 1 + Rand() % 1000));
+  vExtendKing.p1.x = max(0, (int)(target_points[ite].x - Rand() % 1000));
+  vExtendKing.p1.y = max(0, (int)(target_points[ite].y - Rand() % 1000));
+  vExtendKing.p2.x = min(10000, (int)(target_points[ite].x + 1 + Rand() % 1000));
+  vExtendKing.p2.y = min(10000, (int)(target_points[ite].y + 1 + Rand() % 1000));
 
   int tateyoko = Rand() % 2;
 
@@ -712,32 +704,32 @@ inline void hukuramashiKing(int ite)
     drep(ii, argX)
     {
       int i = sort_x[ii];
-      if (point[i].x == point[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
-      if (point[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < point[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= point[i].y && point[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
+      if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, point[i].x + 1);
+        if (target_points[i].x <= target_points[ite].x) {
+          vExtendKing.p1.x = max(vExtendKing.p1.x, target_points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, point[i].x);
+          vExtendKing.p2.x = min(vExtendKing.p2.x, target_points[i].x);
         }
       }
     }
     srep(ii, argX + 1, n)
     {
       int i = sort_x[ii];
-      if (point[i].x == point[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
-      if (point[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < point[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= point[i].y && point[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
+      if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, point[i].x + 1);
+        if (target_points[i].x <= target_points[ite].x) {
+          vExtendKing.p1.x = max(vExtendKing.p1.x, target_points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, point[i].x);
+          vExtendKing.p2.x = min(vExtendKing.p2.x, target_points[i].x);
         }
       }
     }
@@ -746,32 +738,32 @@ inline void hukuramashiKing(int ite)
     drep(ii, argY)
     {
       int i = sort_y[ii];
-      if (point[i].y == point[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
-      if (point[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < point[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= point[i].x && point[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
+      if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, point[i].y + 1);
+        if (target_points[i].y <= target_points[ite].y) {
+          vExtendKing.p1.y = max(vExtendKing.p1.y, target_points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, point[i].y);
+          vExtendKing.p2.y = min(vExtendKing.p2.y, target_points[i].y);
         }
       }
     }
     srep(ii, argY + 1, n)
     {
       int i = sort_y[ii];
-      if (point[i].y == point[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
-      if (point[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < point[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= point[i].x && point[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
+      if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, point[i].y + 1);
+        if (target_points[i].y <= target_points[ite].y) {
+          vExtendKing.p1.y = max(vExtendKing.p1.y, target_points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, point[i].y);
+          vExtendKing.p2.y = min(vExtendKing.p2.y, target_points[i].y);
         }
       }
     }
@@ -781,32 +773,32 @@ inline void hukuramashiKing(int ite)
     drep(ii, argY)
     {
       int i = sort_y[ii];
-      if (point[i].y == point[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
-      if (point[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < point[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= point[i].x && point[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
+      if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, point[i].y + 1);
+        if (target_points[i].y <= target_points[ite].y) {
+          vExtendKing.p1.y = max(vExtendKing.p1.y, target_points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, point[i].y);
+          vExtendKing.p2.y = min(vExtendKing.p2.y, target_points[i].y);
         }
       }
     }
     srep(ii, argY + 1, n)
     {
       int i = sort_y[ii];
-      if (point[i].y == point[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
-      if (point[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < point[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= point[i].x && point[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
+      if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].y <= point[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, point[i].y + 1);
+        if (target_points[i].y <= target_points[ite].y) {
+          vExtendKing.p1.y = max(vExtendKing.p1.y, target_points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, point[i].y);
+          vExtendKing.p2.y = min(vExtendKing.p2.y, target_points[i].y);
         }
       }
     }
@@ -815,32 +807,32 @@ inline void hukuramashiKing(int ite)
     drep(ii, argX)
     {
       int i = sort_x[ii];
-      if (point[i].x == point[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
-      if (point[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < point[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= point[i].y && point[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
+      if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, point[i].x + 1);
+        if (target_points[i].x <= target_points[ite].x) {
+          vExtendKing.p1.x = max(vExtendKing.p1.x, target_points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, point[i].x);
+          vExtendKing.p2.x = min(vExtendKing.p2.x, target_points[i].x);
         }
       }
     }
     srep(ii, argX + 1, n)
     {
       int i = sort_x[ii];
-      if (point[i].x == point[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
-      if (point[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < point[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= point[i].y && point[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
+      if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (point[i].x <= point[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, point[i].x + 1);
+        if (target_points[i].x <= target_points[ite].x) {
+          vExtendKing.p1.x = max(vExtendKing.p1.x, target_points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, point[i].x);
+          vExtendKing.p2.x = min(vExtendKing.p2.x, target_points[i].x);
         }
       }
     }
@@ -862,7 +854,7 @@ inline void hukuramashiKing(int ite)
       int ma = target_sizes[ite] / (vExtendKing.p2.y - vExtendKing.p1.y) + yure;
       int diff = (vExtendKing.p2.x - vExtendKing.p1.x) - ma;
       if (diff < 0) diff = 0;
-      int capa = point[ite].x - vExtendKing.p1.x;
+      int capa = target_points[ite].x - vExtendKing.p1.x;
       if (capa >= diff) {
         vExtendKing.p1.x += diff;
       }
@@ -874,7 +866,7 @@ inline void hukuramashiKing(int ite)
       int ma = target_sizes[ite] / (vExtendKing.p2.x - vExtendKing.p1.x) + yure;
       int diff = (vExtendKing.p2.y - vExtendKing.p1.y) - ma;
       if (diff < 0) diff = 0;
-      int capa = point[ite].y - vExtendKing.p1.y;
+      int capa = target_points[ite].y - vExtendKing.p1.y;
       if (capa >= diff) {
         vExtendKing.p1.y += diff;
       }
@@ -886,7 +878,7 @@ inline void hukuramashiKing(int ite)
       int ma = target_sizes[ite] / (vExtendKing.p2.y - vExtendKing.p1.y) + yure;
       int diff = (vExtendKing.p2.x - vExtendKing.p1.x) - ma;
       if (diff < 0) diff = 0;
-      int capa = vExtendKing.p2.x - (point[ite].x + 1);
+      int capa = vExtendKing.p2.x - (target_points[ite].x + 1);
       if (capa >= diff) {
         vExtendKing.p2.x -= diff;
       }
@@ -898,7 +890,7 @@ inline void hukuramashiKing(int ite)
       int ma = target_sizes[ite] / (vExtendKing.p2.x - vExtendKing.p1.x) + yure;
       int diff = (vExtendKing.p2.y - vExtendKing.p1.y) - ma;
       if (diff < 0) diff = 0;
-      int capa = vExtendKing.p2.y - (point[ite].y + 1);
+      int capa = vExtendKing.p2.y - (target_points[ite].y + 1);
       if (capa >= diff) {
         vExtendKing.p2.y -= diff;
       }
@@ -915,12 +907,11 @@ inline void hukuramashiKing(int ite)
   if (vExtendKing.p2.y < 0 || 10000 < vExtendKing.p2.y) ng = 1;
   if (vExtendKing.p2.x <= vExtendKing.p1.x) ng = 1;
   if (vExtendKing.p2.y <= vExtendKing.p1.y) ng = 1;
-  if (point[ite].x < vExtendKing.p1.x || vExtendKing.p2.x <= point[ite].x) ng = 1;
-  if (point[ite].y < vExtendKing.p1.y || vExtendKing.p2.y <= point[ite].y) ng = 1;
+  if (target_points[ite].x < vExtendKing.p1.x || vExtendKing.p2.x <= target_points[ite].x) ng = 1;
+  if (target_points[ite].y < vExtendKing.p1.y || vExtendKing.p2.y <= target_points[ite].y) ng = 1;
 
   if (ng) {
-    vExtendKing.p1.x = point[ite].x; vExtendKing.p2.x = point[ite].x + 1;
-    vExtendKing.p1.y = point[ite].y; vExtendKing.p2.y = point[ite].y + 1;
+    init_rect(vExtendKing, target_points[ite]);
   }
 
 }
@@ -934,10 +925,7 @@ inline void ExtendKing(int ite)
   {
     if (i == ite) continue;
     if (kasanarihantei(i, ite)) {
-      rects[i].p1.x = point[i].x;
-      rects[i].p1.y = point[i].y;
-      rects[i].p2.x = point[i].x + 1;
-      rects[i].p2.y = point[i].y + 1;
+      init_rect(rects[i], target_points[i]);
     }
   }
 
@@ -1110,13 +1098,13 @@ inline void aspectChange(int ite)
 
   Rect keep = rects[ite];
 
-  int leftA = max(0, point[ite].x - (yoko - 1));
-  int rightA = min(point[ite].x, 10000 - yoko);
+  int leftA = max(0, target_points[ite].x - (yoko - 1));
+  int rightA = min(target_points[ite].x, 10000 - yoko);
   int rangeA = rightA - leftA + 1;
   if (rangeA < 1) return;
 
-  int leftB = max(0, point[ite].y - (tate - 1));
-  int rightB = min(point[ite].y, 10000 - tate);
+  int leftB = max(0, target_points[ite].y - (tate - 1));
+  int rightB = min(target_points[ite].y, 10000 - tate);
   int rangeB = rightB - leftB + 1;
   if (rangeB < 1) return;
 
@@ -1158,8 +1146,8 @@ inline int selfNg(int ite)
   if (rects[ite].p2.y < 0 || 10000 < rects[ite].p2.y) return 1;
   if (rects[ite].p2.x <= rects[ite].p1.x) return 1;
   if (rects[ite].p2.y <= rects[ite].p1.y) return 1;
-  if (point[ite].x < rects[ite].p1.x || rects[ite].p2.x <= point[ite].x) return 1;
-  if (point[ite].y < rects[ite].p1.y || rects[ite].p2.y <= point[ite].y) return 1;
+  if (target_points[ite].x < rects[ite].p1.x || rects[ite].p2.x <= target_points[ite].x) return 1;
+  if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 1;
   return 0;
 }
 
@@ -1193,7 +1181,7 @@ inline void kasanaritati(int ite, int abcd)
     {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) {
-        if (rects[ite].p1.x <= point[i].x) {
+        if (rects[ite].p1.x <= target_points[i].x) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
           return;
@@ -1219,7 +1207,7 @@ inline void kasanaritati(int ite, int abcd)
     {
       int i = sort_y[ii];
       if (kasanarihantei(i, ite)) {
-        if (rects[ite].p1.y <= point[i].y) {
+        if (rects[ite].p1.y <= target_points[i].y) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
           return;
@@ -1245,7 +1233,7 @@ inline void kasanaritati(int ite, int abcd)
     {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) {
-        if (point[i].x < rects[ite].p2.x) {
+        if (target_points[i].x < rects[ite].p2.x) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
           return;
@@ -1271,7 +1259,7 @@ inline void kasanaritati(int ite, int abcd)
     {
       int i = sort_y[ii];
       if (kasanarihantei(i, ite)) {
-        if (point[i].y < rects[ite].p2.y) {
+        if (target_points[i].y < rects[ite].p2.y) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
           return;
@@ -1398,10 +1386,7 @@ inline void shokiInit()
 {
   rep(i, n)
   {
-    rects[i].p1.x = point[i].x;
-    rects[i].p1.y = point[i].y;
-    rects[i].p2.x = point[i].x + 1;
-    rects[i].p2.y = point[i].y + 1;
+    init_rect(rects[i], target_points[i]);
   }
   int tmpScore = calc(-1);
 
@@ -1415,7 +1400,7 @@ inline void shokiInit()
   }
 }
 
-Rect best_best_best_rect[MAX_N];
+Rect best_best_best_rects[MAX_N];
 int real_real_real_maxScore = -1;
 
 int a2[100][MAX_N], b2[100][MAX_N], c2[100][MAX_N], d2[100][MAX_N];
@@ -1432,8 +1417,7 @@ inline void Ui_Tei()
     // 左上(x,y)、右下(x+1,y+1)
     rep(i, n)
     {
-      rects[i].p1.x = point[i].x; rects[i].p2.x = point[i].x + 1;
-      rects[i].p1.y = point[i].y; rects[i].p2.y = point[i].y + 1;
+      init_rect(rects[i], target_points[i]);
     }
 
     int T = 5;
@@ -1498,7 +1482,7 @@ inline void Ui_Tei()
         real_real_maxScore = maxScore;
         rep(i, n)
         {
-          best_best_rect[i] = rects[i];
+          best_best_rects[i] = rects[i];
         }
       }
     }
@@ -1508,7 +1492,7 @@ inline void Ui_Tei()
     real_real_maxScore = 0;
     rep(i, n)
     {
-      rects[i] = best_best_rect[i];
+      rects[i] = best_best_rects[i];
     }
     calc(-1);
 
@@ -1591,15 +1575,9 @@ inline void Ui_Tei()
   real_real_maxScore = 0;
   rep(i, n)
   {
-    rects[i].p1.x = point[i].x; 
-    rects[i].p2.x = point[i].x + 1;
-    rects[i].p1.y = point[i].y; 
-    rects[i].p2.y = point[i].y + 1;
+    init_rect(rects[i], target_points[i]);
     best_rects[i] = rects[i];
-    best_best_rect[i].p1.x = rects[i].p1.x; 
-    best_best_rect[i].p1.y = rects[i].p1.y; 
-    best_best_rect[i].p2.x = rects[i].p2.x; 
-    best_best_rect[i].p2.y = rects[i].p2.y;
+    best_best_rects[i] = rects[i];
   }
 }
 
@@ -1756,10 +1734,7 @@ int solve(int teisyutu, int fileNum)
           real_real_maxScore = maxScore;
           rep(i, n)
           {
-            best_best_rect[i].p1.x = rects[i].p1.x;
-            best_best_rect[i].p1.y = rects[i].p1.y;
-            best_best_rect[i].p2.x = rects[i].p2.x;
-            best_best_rect[i].p2.y = rects[i].p2.y;
+            best_best_rects[i] = rects[i];
           }
         }
 
@@ -1821,10 +1796,7 @@ int solve(int teisyutu, int fileNum)
     maxScore = real_real_maxScore;
     rep(i, n)
     {
-      rects[i].p1.x = best_best_rect[i].p1.x;
-      rects[i].p1.y = best_best_rect[i].p1.y;
-      rects[i].p2.x = best_best_rect[i].p2.x;
-      rects[i].p2.y = best_best_rect[i].p2.y;
+      rects[i] = best_best_rects[i];
     }
     calc(-1);
 
@@ -1843,10 +1815,7 @@ int solve(int teisyutu, int fileNum)
       real_real_real_maxScore = maxScore;
       rep(i, n)
       {
-        best_best_best_rect[i].p1.x = rects[i].p1.x;
-        best_best_best_rect[i].p1.y = rects[i].p1.y;
-        best_best_best_rect[i].p2.x = rects[i].p2.x;
-        best_best_best_rect[i].p2.y = rects[i].p2.y;
+        best_best_best_rects[i] = rects[i];
       }
     }
 
@@ -1857,10 +1826,9 @@ int solve(int teisyutu, int fileNum)
     real_real_maxScore = 0;
     rep(i, n)
     {
-      rects[i].p1.x = point[i].x; rects[i].p2.x = point[i].x + 1;
-      rects[i].p1.y = point[i].y; rects[i].p2.y = point[i].y + 1;
-      best_rects[i].p1.x = rects[i].p1.x; best_rects[i].p1.y = rects[i].p1.y; best_rects[i].p2.x = rects[i].p2.x; best_rects[i].p2.y = rects[i].p2.y;
-      best_best_rect[i].p1.x = rects[i].p1.x; best_best_rect[i].p1.y = rects[i].p1.y; best_best_rect[i].p2.x = rects[i].p2.x; best_best_rect[i].p2.y = rects[i].p2.y;
+      init_rect(rects[i], target_points[i]);
+      best_rects[i] = rects[i];
+      best_best_rects[i] = rects[i];
     }
   }
 
@@ -1869,10 +1837,7 @@ int solve(int teisyutu, int fileNum)
   maxScore = real_real_real_maxScore;
   rep(i, n)
   {
-    rects[i].p1.x = best_best_best_rect[i].p1.x;
-    rects[i].p1.y = best_best_best_rect[i].p1.y;
-    rects[i].p2.x = best_best_best_rect[i].p2.x;
-    rects[i].p2.y = best_best_best_rect[i].p2.y;
+    rects[i] = best_best_best_rects[i];
   }
   calc(-1);
 
@@ -1916,7 +1881,7 @@ inline void AllClear()
   real_real_real_maxScore = -1;
   rep(i, MAX_N)
   {
-    point[i].x = 0, point[i].y = 0, target_sizes[i] = 0;
+    target_points[i].x = 0, target_points[i].y = 0, target_sizes[i] = 0;
     rects[i].p1.x = 0, rects[i].p1.y = 0, rects[i].p2.x = 0, rects[i].p2.y = 0;
     clear_rect(rects[i]);
     area_sizes[i] = 0;
@@ -1924,9 +1889,9 @@ inline void AllClear()
     p[i] = 0;
     sort_x[i] = 0, sort_y[i] = 0;
     arg_sort_x[i] = 0, arg_sort_y[i] = 0;
-    best_best_rect[i].p1.x = 0, best_best_rect[i].p1.y = 0, best_best_rect[i].p2.x = 0, best_best_rect[i].p2.y = 0;
+    best_best_rects[i].p1.x = 0, best_best_rects[i].p1.y = 0, best_best_rects[i].p2.x = 0, best_best_rects[i].p2.y = 0;
     ui_tei_a[i] = 0, ui_tei_b[i] = 0, ui_tei_c[i] = 0, ui_tei_d[i] = 0;
-    clear_rect(best_best_best_rect[i]);
+    clear_rect(best_best_best_rects[i]);
   }
 }
 
