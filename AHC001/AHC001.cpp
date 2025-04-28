@@ -1,4 +1,4 @@
-#pragma GCC target("avx2")
+ï»¿#pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <algorithm>
@@ -50,13 +50,13 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-// 0ˆÈã1–¢–‚Ì¬”‚ğ‚Æ‚é—”
+// 0ä»¥ä¸Š1æœªæº€ã®å°æ•°ã‚’ã¨ã‚‹ä¹±æ•°
 static double Rand01()
 {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-// ƒnƒCƒpƒ‰‚Í‚±‚±‚É‚¨‚­
+// ãƒã‚¤ãƒ‘ãƒ©ã¯ã“ã“ã«ãŠã
 int haipara_hoge;
 int haipara_oya = 1;
 int haipara_TT = 1;
@@ -68,7 +68,7 @@ int shuffles[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, 
                    {3, 0, 1, 2}, {3, 0, 2, 1}, {3, 1, 0, 2}, {3, 1, 2, 0}, {3, 2, 0, 1}, {3, 2, 1, 0} };
 
 /*
-‚¢‚ë‚¢‚ë
+ã„ã‚ã„ã‚
 int x = Rand()%100;
 double x = Rand01();
 mt19937 get_rand_mt;
@@ -106,15 +106,15 @@ inline void calc_area(int idx) {
 
 inline void nyuuryokuInit(int fileNum)
 {
-  // “ü—Í
+  // å…¥åŠ›
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << fileNum << ".txt";
   ifstream ifs(oss.str());
-  if (!ifs.is_open()) { // •W€“ü—Í‚·‚é
+  if (!ifs.is_open()) { // æ¨™æº–å…¥åŠ›ã™ã‚‹
     cin >> n;
     rep(i, n) cin >> target_points[i].x >> target_points[i].y >> target_sizes[i];
   }
-  else { // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  else { // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     ifs >> n;
     rep(i, n) ifs >> target_points[i].x >> target_points[i].y >> target_sizes[i];
   }
@@ -218,10 +218,10 @@ inline void sortInit()
   }
 }
 
-// 0~10000‚ğo‚Ä‚¢‚È‚¢‚©
-// –ÊÏ‚Í1ˆÈã‚©
-// (x[i]+0.5,y[i]+0.5)‚ğŠÜ‚ñ‚Å‚¢‚é‚©
-// d‚È‚è‚ª‚È‚¢‚©
+// 0~10000ã‚’å‡ºã¦ã„ãªã„ã‹
+// é¢ç©ã¯1ä»¥ä¸Šã‹
+// (x[i]+0.5,y[i]+0.5)ã‚’å«ã‚“ã§ã„ã‚‹ã‹
+// é‡ãªã‚ŠãŒãªã„ã‹
 inline int isOK2(int ite)
 {
   if (ite == -1) {
@@ -597,9 +597,8 @@ inline void Extend(int ite, double temp)
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-
-  if (prob > Rand01()) {
   //if (tmpScore >= maxScore) {
+  if (prob > Rand01()) {
     modeCount[4]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -607,7 +606,7 @@ inline void Extend(int ite, double temp)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     rects[ite] = keep;
     calc(ite);
   }
@@ -621,7 +620,7 @@ int ui_tei_maxScore = -1;
 
 inline void Tubusu(int tubusu)
 {
-  // tubusuŒÂ‚Â‚Ô‚·
+  // tubusuå€‹ã¤ã¶ã™
   rep(i, tubusu)
   { 
     int ite = Rand() % n;
@@ -949,7 +948,7 @@ inline void oneChange(int ite, double temp)
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-
+  //if (tmpScore >= maxScore) {
   if (prob > Rand01()) {
     modeCount[0]++;
     maxScore = tmpScore;
@@ -958,7 +957,7 @@ inline void oneChange(int ite, double temp)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     if (abcd == 0) rects[ite].p1.x -= diff;
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
@@ -990,8 +989,8 @@ inline void fourChange(int ite, double temp)
   int tmpScore = calc(ite);
 
   int tmp = tmpScore - maxScore;
-
   const double prob = exp((double)tmp / temp);
+  //if (tmpScore >= maxScore) {
   if (prob > Rand01()) {
     modeCount[3]++;
     maxScore = tmpScore;
@@ -1000,7 +999,7 @@ inline void fourChange(int ite, double temp)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     rects[ite].p1.x -= diffA;
     rects[ite].p1.y -= diffB;
     rects[ite].p2.x -= diffC;
@@ -1009,7 +1008,7 @@ inline void fourChange(int ite, double temp)
   }
 }
 
-inline void Slide(int ite)
+inline void Slide(int ite, double temp)
 {
   int diff = 0;
   while (diff == 0) diff = Rand() % 101 - 50;
@@ -1038,7 +1037,10 @@ inline void Slide(int ite)
 
   int tmpScore = calc(ite);
 
+  int tmp = tmpScore - maxScore;
+  const double prob = exp((double)tmp / temp);
   if (tmpScore >= maxScore) {
+  //if (prob > Rand01()) {
     modeCount[1]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -1046,7 +1048,7 @@ inline void Slide(int ite)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     if (ab == 0) {
       rects[ite].p1.x -= diff;
       rects[ite].p2.x -= diff;
@@ -1059,7 +1061,7 @@ inline void Slide(int ite)
   }
 }
 
-inline void aspectChange(int ite)
+inline void aspectChange(int ite, double temp)
 {
   int yokoRatio = Rand() % 9 + 1; // 1 ~ 9;
   int tateRatio = 10 - yokoRatio;
@@ -1095,7 +1097,10 @@ inline void aspectChange(int ite)
 
   int tmpScore = calc(ite);
 
+  int tmp = tmpScore - maxScore;
+  const double prob = exp((double)tmp / temp);
   if (tmpScore >= maxScore) {
+  //if (prob > Rand01()) {
     modeCount[2]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -1103,7 +1108,7 @@ inline void aspectChange(int ite)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     rects[ite] = keep;
     calc(ite);
   }
@@ -1310,7 +1315,7 @@ inline void zurasi2(int ite, double temp)
       rects[arrKasanari[i]].p2.x = keepvC[i];
       rects[arrKasanari[i]].p2.y = keepvD[i];
     }
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     if (abcd == 0) rects[ite].p1.x -= diff;
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
@@ -1340,7 +1345,7 @@ inline void zurasi2(int ite, double temp)
       rects[arrKasanari[i]].p2.y = keepvD[i];
       calc(arrKasanari[i]);
     }
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     if (abcd == 0) rects[ite].p1.x -= diff;
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
@@ -1375,8 +1380,8 @@ inline void Ui_Tei()
   rep(ui_tei, 5)
   {
 
-    // ‰Šú‰ğ
-    // ¶ã(x,y)A‰E‰º(x+1,y+1)
+    // åˆæœŸè§£
+    // å·¦ä¸Š(x,y)ã€å³ä¸‹(x+1,y+1)
     rep(i, n)
     {
       init_rect(rects[i], target_points[i]);
@@ -1387,11 +1392,11 @@ inline void Ui_Tei()
     {
       start = clock();
 
-      // ‰ŠúƒXƒRƒAŒvZ
+      // åˆæœŸã‚¹ã‚³ã‚¢è¨ˆç®—
       maxScore = calc(-1);
       store_best();
 
-      // Ä‚«‚È‚Ü‚µ
+      // ç„¼ããªã¾ã—
       start = clock();
       end = clock();
       double now_time = ((double)end - start) / CLOCKS_PER_SEC;
@@ -1416,11 +1421,11 @@ inline void Ui_Tei()
         }
         else if (mode == 1) {
           int ite = Rand() % n;
-          Slide(ite);
+          Slide(ite, temp);
         }
         else if (now_time > 2.0 / T && mode == 2) {
           int ite = Rand() % n;
-          aspectChange(ite);
+          aspectChange(ite, temp);
         }
         else if (mode == -3) {
           int ite = Rand() % n;
@@ -1428,7 +1433,7 @@ inline void Ui_Tei()
         }
       }
 
-      // Ä‚«‚È‚Ü‚µ–ß‚·
+      // ç„¼ããªã¾ã—æˆ»ã™
       maxScore = real_maxScore;
       rep(i, n)
       {
@@ -1445,7 +1450,7 @@ inline void Ui_Tei()
       }
     }
 
-    // real_real_maxScore–ß‚·
+    // real_real_maxScoreæˆ»ã™
     maxScore = real_real_maxScore;
     real_real_maxScore = 0;
     rep(i, n)
@@ -1454,7 +1459,7 @@ inline void Ui_Tei()
     }
     calc(-1);
 
-    // ‰ŠúƒXƒRƒAŒvZ
+    // åˆæœŸã‚¹ã‚³ã‚¢è¨ˆç®—
     maxScore = calc(-1);
     real_maxScore = maxScore;
 
@@ -1464,7 +1469,7 @@ inline void Ui_Tei()
     }
 
 
-    // Ä‚«‚È‚Ü‚µ(2‰ñ–Ú)
+    // ç„¼ããªã¾ã—(2å›ç›®)
     clock_t start, end;
     start = clock();
     end = clock();
@@ -1485,29 +1490,29 @@ inline void Ui_Tei()
       }
 
       int mode = loop % 5;
-      if (mode == 0) { // a,b,c,d‚Ì‚¤‚¿1‚Â•ÏX
+      if (mode == 0) { // a,b,c,dã®ã†ã¡1ã¤å¤‰æ›´
         int ite = Rand() % n;
         oneChange(ite, temp);
       }
-      else if (kouhan && mode == 1) { // ˆÊ’u‚ğƒXƒ‰ƒCƒh
+      else if (kouhan && mode == 1) { // ä½ç½®ã‚’ã‚¹ãƒ©ã‚¤ãƒ‰
         int ite = Rand() % n;
-        Slide(ite);
+        Slide(ite, temp);
       }
-      else if (mode == 2 && kouhan && now_time > 2.0 / T) { // ƒ‰ƒ“ƒ_ƒ€‚ÉƒAƒXƒyƒNƒg”ä‚ğ•ÏX
+      else if (mode == 2 && kouhan && now_time > 2.0 / T) { // ãƒ©ãƒ³ãƒ€ãƒ ã«ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”ã‚’å¤‰æ›´
         int ite = Rand() % n;
-        aspectChange(ite);
+        aspectChange(ite, temp);
       }
-      else if (mode == -3) { // a,b,c,d‚ğ4‚Â“¯‚É•ÏX
+      else if (mode == -3) { // a,b,c,dã‚’4ã¤åŒæ™‚ã«å¤‰æ›´
         int ite = Rand() % n;
         fourChange(ite, temp);
       }
-      else if (mode == 4) { // –c‚ç‚Ü‚µ‚Äk‚ß‚é
+      else if (mode == 4) { // è†¨ã‚‰ã¾ã—ã¦ç¸®ã‚ã‚‹
         int ite = Rand() % n;
         Extend(ite, temp);
       }
     }
 
-    // Ä‚«‚È‚Ü‚µ–ß‚·
+    // ç„¼ããªã¾ã—æˆ»ã™
     maxScore = real_maxScore;
     rep(i, n)
     {
@@ -1527,7 +1532,7 @@ inline void Ui_Tei()
     }
   }
 
-  // Œ³‚É–ß‚µ‚Ä‚¨‚­
+  // å…ƒã«æˆ»ã—ã¦ãŠã
   maxScore = 0;
   real_maxScore = 0;
   real_real_maxScore = 0;
@@ -1555,7 +1560,7 @@ int solve(int teisyutu, int fileNum)
 
     Ui_Tei();
 
-    // ui_tei_maxScore–ß‚·
+    // ui_tei_maxScoreæˆ»ã™
     maxScore = ui_tei_maxScore;
     rep(i, n)
     {
@@ -1566,7 +1571,7 @@ int solve(int teisyutu, int fileNum)
     }
     calc(-1);
 
-    // ‰ŠúƒXƒRƒAŒvZ
+    // åˆæœŸã‚¹ã‚³ã‚¢è¨ˆç®—
     maxScore = calc(-1);
     real_maxScore = maxScore;
 
@@ -1589,8 +1594,8 @@ int solve(int teisyutu, int fileNum)
       }
     }
 
-    // Ä‚«‚È‚Ü‚µ2
-    // ‹Ø‚Ì‚¢‚¢‚â‚Â‚ğ’Ç‚¤
+    // ç„¼ããªã¾ã—2
+    // ç­‹ã®ã„ã„ã‚„ã¤ã‚’è¿½ã†
     int T = 250 / allLoopTimes;
     rep(_, T)
     {
@@ -1608,7 +1613,7 @@ int solve(int teisyutu, int fileNum)
           rects[i].p2.y = d2[kiyoshi][i];
         }
 
-        // ‰ŠúƒXƒRƒAŒvZ
+        // åˆæœŸã‚¹ã‚³ã‚¢è¨ˆç®—
         maxScore = calc(-1);
         real_maxScore = maxScore;
 
@@ -1617,7 +1622,7 @@ int solve(int teisyutu, int fileNum)
           best_rects[i] = rects[i];
         }
 
-        // Ä‚«‚È‚Ü‚µ(2‰ñ–Ú)
+        // ç„¼ããªã¾ã—(2å›ç›®)
         start = clock();
         end = clock();
         startClock = system_clock::now();
@@ -1635,34 +1640,34 @@ int solve(int teisyutu, int fileNum)
           if (loop % 100 == 1) {
             const double time = duration_cast<microseconds>(system_clock::now() - startClock).count() * 1e-6;
             if (time > TL) break;
-            const double progressRatio = time / TL;   // i’»BŠJn‚ª0.0AI—¹‚ª1.0
+            const double progressRatio = time / TL;   // é€²æ—ã€‚é–‹å§‹æ™‚ãŒ0.0ã€çµ‚äº†æ™‚ãŒ1.0
             temp = start_temp + (end_temp - start_temp) * progressRatio;
           }
 
 
           int mode = loop % 6;
 
-          if (mode == -1) { // a,b,c,d‚Ì‚¤‚¿1‚Â•ÏX
+          if (mode == -1) { // a,b,c,dã®ã†ã¡1ã¤å¤‰æ›´
             int ite = Rand() % n;
             oneChange(ite, temp);
           }
-          else if (mode == 1) { // ˆÊ’u‚ğƒXƒ‰ƒCƒh
+          else if (mode == 1) { // ä½ç½®ã‚’ã‚¹ãƒ©ã‚¤ãƒ‰
             int ite = Rand() % n;
-            Slide(ite);
+            Slide(ite, temp);
           }
-          else if (mode == -2 && kouhan && now_time > 2.0 / T) { // ƒ‰ƒ“ƒ_ƒ€‚ÉƒAƒXƒyƒNƒg”ä‚ğ•ÏX
+          else if (mode == -2 && kouhan && now_time > 2.0 / T) { // ãƒ©ãƒ³ãƒ€ãƒ ã«ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”ã‚’å¤‰æ›´
             int ite = Rand() % n;
-            aspectChange(ite);
+            aspectChange(ite, temp);
           }
-          else if (mode == -3) { // a,b,c,d‚ğ4‚Â“¯‚É•ÏX
+          else if (mode == -3) { // a,b,c,dã‚’4ã¤åŒæ™‚ã«å¤‰æ›´
             int ite = Rand() % n;
             fourChange(ite, temp);
           }
-          else if (mode == 4) { // –c‚ç‚Ü‚µ‚Äk‚ß‚é
+          else if (mode == 4) { // è†¨ã‚‰ã¾ã—ã¦ç¸®ã‚ã‚‹
             int ite = Rand() % n;
             Extend(ite, temp);
           }
-          else if (mode == 5) { // ‹«ŠE‚ğ‚¸‚ç‚·
+          else if (mode == 5) { // å¢ƒç•Œã‚’ãšã‚‰ã™
             int ite = Rand() % n;
             zurasi2(ite, temp);
           }
@@ -1672,13 +1677,13 @@ int solve(int teisyutu, int fileNum)
             ExtendKing(ite);
           }
 
-          // ŒvZŒë·‰ğÁ?
+          // è¨ˆç®—èª¤å·®è§£æ¶ˆ?
           if (loop % 10000 == 1) {
             maxScore = calc(-1);
           }
         }
 
-        // Ä‚«‚È‚Ü‚µ–ß‚·
+        // ç„¼ããªã¾ã—æˆ»ã™
         maxScore = real_maxScore;
         rep(i, n)
         {
@@ -1693,7 +1698,7 @@ int solve(int teisyutu, int fileNum)
           }
         }
 
-        // ƒr[ƒ€ƒT[ƒ`‚ÌŸ‚Ìí‚É‚·‚é
+        // ãƒ“ãƒ¼ãƒ ã‚µãƒ¼ãƒã®æ¬¡ã®ç¨®ã«ã™ã‚‹
         maxScore4[asai] = maxScore;
         rep(i, n)
         {
@@ -1704,7 +1709,7 @@ int solve(int teisyutu, int fileNum)
         }
       }
 
-      // Ÿ‚Ì¢‘ã‚ÉŒp³
+      // æ¬¡ã®ä¸–ä»£ã«ç¶™æ‰¿
       vector<P> vBeam;
       rep(asai, TT) vBeam.emplace_back(P(maxScore4[asai], asai));
       sort(vBeam.begin(), vBeam.end(), greater<P>());
@@ -1722,18 +1727,18 @@ int solve(int teisyutu, int fileNum)
         }
       }
 
-      // ’ñoˆÈ‰º‚ÍÁ‚·
+      // æå‡ºæ™‚ä»¥ä¸‹ã¯æ¶ˆã™
       if (teisyutu == 0 && _ % 10 == 0) {
         cout << "_ = " << _;
         cout << ", vBeam[0] = (" << vBeam[0].first << ", " << vBeam[0].second << ")" << endl;
       }
 
-      // ƒGƒXƒP[ƒv
+      // ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—
       end = clock();
       if (((double)end - real_start) / CLOCKS_PER_SEC > realTL) break;
     }
 
-    // real_real_maxScore–ß‚·
+    // real_real_maxScoreæˆ»ã™
     maxScore = real_real_maxScore;
     rep(i, n)
     {
@@ -1751,7 +1756,7 @@ int solve(int teisyutu, int fileNum)
       FileKakikomiERROR(fileNum);
     }
 
-    // real_real_real“ü‚ê‚é
+    // real_real_realå…¥ã‚Œã‚‹
     if (maxScore > real_real_real_maxScore && maxScore < 1000000007) {
       real_real_real_maxScore = maxScore;
       rep(i, n)
@@ -1761,7 +1766,7 @@ int solve(int teisyutu, int fileNum)
     }
 
 
-    // ‚·‚×‚Ä”’†‚ÉƒŠƒZƒbƒg‚·‚é
+    // ã™ã¹ã¦ç™½ç´™ã«ãƒªã‚»ãƒƒãƒˆã™ã‚‹
     maxScore = 0;
     real_maxScore = 0;
     real_real_maxScore = 0;
@@ -1774,7 +1779,7 @@ int solve(int teisyutu, int fileNum)
   }
 
 
-  // real_real_real_maxScore–ß‚·
+  // real_real_real_maxScoreæˆ»ã™
   maxScore = real_real_real_maxScore;
   rep(i, n)
   {
@@ -1782,7 +1787,7 @@ int solve(int teisyutu, int fileNum)
   }
   calc(-1);
 
-  // ÅIo—Í
+  // æœ€çµ‚å‡ºåŠ›
   if (teisyutu) {
     rep(i, n)
     {
@@ -1792,7 +1797,7 @@ int solve(int teisyutu, int fileNum)
 
   FileKakikomi(fileNum);
 
-  // ’ñoˆÈ‰º‚ÍÁ‚·
+  // æå‡ºæ™‚ä»¥ä¸‹ã¯æ¶ˆã™
   if (teisyutu == 0) {
     cout << "file No. = " << fileNum << ", maxScore = " << maxScore << endl;
   }
@@ -1845,11 +1850,11 @@ int main()
   }
   else {
     int mode = 0;
-    if (mode == 0) { // ƒR[ƒhƒeƒXƒg—p
+    if (mode == 0) { // ã‚³ãƒ¼ãƒ‰ãƒ†ã‚¹ãƒˆç”¨
       solve(teisyutu, 0);
     }
 
-    if (mode == 1) { // ƒXƒRƒAŠm”F—p
+    if (mode == 1) { // ã‚¹ã‚³ã‚¢ç¢ºèªç”¨
       rep(i, 1000)
       {
         srep(i, 0, 50)
@@ -1863,7 +1868,7 @@ int main()
       }
     }
 
-    if (mode == 2) { // ƒnƒCƒpƒ‰‚¢‚¶‚è—p
+    if (mode == 2) { // ãƒã‚¤ãƒ‘ãƒ©ã„ã˜ã‚Šç”¨
       string fileName = "haipara_hoge.txt";
       const char* cstr = fileName.c_str();
       ofstream ofs(cstr);
