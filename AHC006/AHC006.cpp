@@ -77,6 +77,10 @@ struct Point
   int x;
   int y;
 
+  Point() {
+
+  }
+
   Point(int _x, int _y) {
     x = _x;
     y = _y;
@@ -89,42 +93,41 @@ namespace /* 変数 */
 
   // 入力用変数
   int n = 1000;
-  int m = 60;
-  vector<int> start_x(INIT_N), start_y(INIT_N), goal_x(INIT_N), goal_y(INIT_N);
-  vector<int> argA;
+  const int m = 55;
+  vector<Point> start_points(INIT_N), goal_points(INIT_N);
+  vector<int> orig_indices;
 
   // 解答用変数
-  ll maxScore;
-  ll minTime;
+  ll curr_score;
+  ll curr_length;
   vector<Point> current_path;
-  vector<int> argAns(140);
-  vector<int> argAns2(140);
-  vector<int> use(1100);
-  vector<int> pair_(2100);
+  vector<int> sel_pair_idx(m * 2);
+  vector<int> reduced_pair_idx(m * 2);
+  vector<int> is_used(INIT_N);
+  vector<int> partner_idx(INIT_N * 2);
 
   // 焼きなまし用変数
-  ll real_maxScore;
-  ll real_minTime;
+  ll best_score;
+  ll best_length;
   vector<Point> best_path;
-  vector<int> real_argAns(140);
-  vector<int> real_argAns2(140);
-  vector<int> real_use(1100);
-  vector<int> real_pair_(2100);
+  vector<int> best_sel_pair_idx;
+  vector<int> best_reduced_pair_idx;
+  vector<int> best_is_used;
+  vector<int> best_partner_idx;
 
   void ResetParam() {
-    argA.clear();
-    maxScore = 0;
-    minTime = 0;
+    orig_indices.clear();
+    curr_score = 0;
+    curr_length = 0;
     current_path.clear();
-    argAns.resize(140);
-    argAns2.resize(140);
-    use.resize(1100);
-    pair_.resize(2100);
-    real_maxScore = 0;
-    real_minTime = 0;
+    sel_pair_idx.resize(m * 2);
+    reduced_pair_idx.resize(m * 2);
+    is_used.resize(INIT_N);
+    partner_idx.resize(INIT_N * 2);
+    best_score = 0;
+    best_length = 0;
     best_path.clear();
   }
-
 }  // namespace
 
 // スコア計算
@@ -133,25 +136,29 @@ ll CalcScore(ll time) {
   return res;
 }
 
+inline int manhattan(const Point& a, const Point& b) {
+  return abs(a.x - b.x) + abs(a.y - b.y);
+}
+
 ll compute_path_time() {
   ll timeSum = 0;
   srep(i, 1, current_path.size()) {
-    timeSum += abs(current_path[i].x - current_path[i - 1].x) + abs(current_path[i].y - current_path[i - 1].y);
+    timeSum += manhattan(current_path[i], current_path[i - 1]);
   }
   return timeSum;
 }
 
 inline bool is_inside_rect(int ite, int L, int R, int U, int D) {
-  if (start_x[ite] < L || R < start_x[ite]) return false;
-  if (start_y[ite] < U || D < start_y[ite]) return false;
-  if (goal_x[ite] < L || R < goal_x[ite]) return false;
-  if (goal_y[ite] < U || D < goal_y[ite]) return false;
+  if (start_points[ite].x < L || R < start_points[ite].x) return false;
+  if (start_points[ite].y < U || D < start_points[ite].y) return false;
+  if (goal_points[ite].x < L || R < goal_points[ite].x) return false;
+  if (goal_points[ite].y < U || D < goal_points[ite].y) return false;
   return true;
 }
 
 void filter_input_points() {
   // --- 収集済みの最良データを保持 ---
-  vector<int> best_start_x, best_start_y, best_goal_x, best_goal_y;
+  vector<Point> best_start_points, best_goal_points;
   int         best_metric = 1'001'001;   // 今のところ最小の「矩形スコア」
   int         iter_count = 0;
 
@@ -161,7 +168,8 @@ void filter_input_points() {
     if (iter_count % 100 == 1 && get_elapsed_time() > 0.2) break;
 
     // 候補データを一時的に保持
-    vector<int> cand_start_x, cand_start_y, cand_goal_x, cand_goal_y, cand_indices;
+    vector<Point> cand_start_points, cand_goal_points;
+    vector<int> cand_indices;
 
     // ランダムに矩形を生成
     int rect_left = Rand() % 801;
@@ -178,32 +186,26 @@ void filter_input_points() {
     // 矩形内に収まる点を抽出
     rep(i, n) {
       if (is_inside_rect(i, rect_left, rect_right, rect_upper, rect_lower)) {
-        cand_start_x.push_back(start_x[i]);
-        cand_start_y.push_back(start_y[i]);
-        cand_goal_x.push_back(goal_x[i]);
-        cand_goal_y.push_back(goal_y[i]);
+        cand_start_points.push_back(start_points[i]);
+        cand_goal_points.push_back(goal_points[i]);
         cand_indices.push_back(i);
       }
     }
 
     // 十分な点数があり、しかも指標が更新されたら採用
-    if (cand_start_x.size() >= m + 1) {
-      best_start_x = std::move(cand_start_x);
-      best_start_y = std::move(cand_start_y);
-      best_goal_x = std::move(cand_goal_x);
-      best_goal_y = std::move(cand_goal_y);
-      argA = std::move(cand_indices);
+    if (cand_start_points.size() >= m + 1) {
+      best_start_points = std::move(cand_start_points);
+      best_goal_points = std::move(cand_goal_points);
+      orig_indices = std::move(cand_indices);
       best_metric = rect_metric;
     }
   }
 
   // ベスト結果でグローバルを更新
-  if (best_start_x.size() >= m) {
-    start_x.swap(best_start_x);
-    start_y.swap(best_start_y);
-    goal_x.swap(best_goal_x);
-    goal_y.swap(best_goal_y);
-    n = static_cast<int>(start_x.size());
+  if (best_start_points.size() >= m) {
+    start_points.swap(best_start_points);
+    goal_points.swap(best_goal_points);
+    n = static_cast<int>(start_points.size());
   }
 }
 
@@ -215,13 +217,13 @@ void input_data(int case_num) {
   if (!ifs.is_open()) {
     // 標準入力
     rep(i, n) {
-      cin >> start_x[i] >> start_y[i] >> goal_x[i] >> goal_y[i];
+      cin >> start_points[i].x >> start_points[i].y >> goal_points[i].x >> goal_points[i].y;
     }
   }
   else {
     // ファイル入力
     rep(i, n) {
-      ifs >> start_x[i] >> start_y[i] >> goal_x[i] >> goal_y[i];
+      ifs >> start_points[i].x >> start_points[i].y >> goal_points[i].x >> goal_points[i].y;
     }
   }
 }
@@ -231,8 +233,8 @@ void output_data(int case_num) {
     // 標準出力
     cout << 50;
     rep(i, 50) {
-      if (argAns[i] < INIT_N) {
-        cout << " " << argA[argAns[i]] + 1;
+      if (sel_pair_idx[i] < INIT_N) {
+        cout << " " << orig_indices[sel_pair_idx[i]] + 1;
       }
     }
     cout << endl;
@@ -250,8 +252,8 @@ void output_data(int case_num) {
 
     ofs << 50;
     rep(i, 50) {
-      if (argAns[i] < INIT_N) {
-        ofs << " " << argA[argAns[i]] + 1;
+      if (sel_pair_idx[i] < INIT_N) {
+        ofs << " " << orig_indices[sel_pair_idx[i]] + 1;
       }
     }
     ofs << endl;
@@ -267,88 +269,79 @@ void output_data(int case_num) {
   }
 }
 
-inline int manhattan(const Point& a, const Point& b) {
-  return abs(a.x - b.x) + abs(a.y - b.y);
-}
-
-int Solve(int mode) {
-  start_timer();
-
-  input_data(0);
-
-  filter_input_points();
-
+void build_initial_path() {
   // 愚直解
   current_path.push_back(Point(400, 400));
   rep(i, m) {
-    current_path.push_back(Point(start_x[i], start_y[i]));
-    argAns[i] = i;
-    use[i] = 1;
+    current_path.push_back(Point(start_points[i].x, start_points[i].y));
+    sel_pair_idx[i] = i;
+    is_used[i] = 1;
   }
   rep(i, m) {
-    current_path.push_back(Point(goal_x[i], goal_y[i]));
+    current_path.push_back(Point(goal_points[i].x, goal_points[i].y));
   }
   current_path.push_back(Point(400, 400));
-  minTime = compute_path_time();
-  maxScore = CalcScore(minTime);
+  curr_length = compute_path_time();
+  curr_score = CalcScore(curr_length);
 
   best_path = current_path;
-  real_minTime = minTime;
-  real_maxScore = maxScore;
+  best_length = curr_length;
+  best_score = curr_score;
+}
 
+void sa_point_swap() {
   // 山登り解、焼きなまし解
-  double TL = 1.8;
-  double start_temp = 48;
-  double end_temp = 0.0001;
+  double time_limit = 0.4;
+  double start_temp = 4800;
+  double end_temp = 1000;
   int loop = 0;
   double now_time = get_elapsed_time();
   while (true) {
     loop++;
     if (loop % 100 == 1) {
       now_time = get_elapsed_time();
-      if (now_time > 0.4) {
+      if (now_time > time_limit) {
         break;
       }
     }
 
-    int x = Rand() % n;
-    while (use[x]) {
-      x = Rand() % n;
+    int cand_idx = Rand() % n;
+    while (is_used[cand_idx]) {
+      cand_idx = Rand() % n;
     }
 
-    int ite = Rand() % m;
+    int path_pos = Rand() % m;
 
-    int keepNum = argAns[ite];
+    int keepNum = sel_pair_idx[path_pos];
     int diff = 0;
-    diff += abs(start_x[x] - current_path[ite].x) + abs(start_y[x] - current_path[ite].y);
-    diff += abs(start_x[x] - current_path[ite + 2].x) + abs(start_y[x] - current_path[ite + 2].y);
-    diff += abs(goal_x[x] - current_path[ite + m].x) + abs(goal_y[x] - current_path[ite + m].y);
-    diff += abs(goal_x[x] - current_path[ite + m + 2].x) + abs(goal_y[x] - current_path[ite + m + 2].y);
+    diff += manhattan(start_points[cand_idx], current_path[path_pos]);
+    diff += manhattan(start_points[cand_idx], current_path[path_pos + 2]);
+    diff += manhattan(goal_points[cand_idx], current_path[path_pos + m]);
+    diff += manhattan(goal_points[cand_idx], current_path[path_pos + m + 2]);
+    diff -= manhattan(current_path[path_pos + 1], current_path[path_pos]);
+    diff -= manhattan(current_path[path_pos + 1], current_path[path_pos + 2]);
+    diff -= manhattan(current_path[path_pos + m + 1], current_path[path_pos + m]);
+    diff -= manhattan(current_path[path_pos + m + 1], current_path[path_pos + m + 2]);
 
-    diff -= abs(current_path[ite + 1].x - current_path[ite].x) + abs(current_path[ite + 1].y - current_path[ite].y);
-    diff -= abs(current_path[ite + 1].x - current_path[ite + 2].x) + abs(current_path[ite + 1].y - current_path[ite + 2].y);
-    diff -= abs(current_path[ite + m + 1].x - current_path[ite + m].x) + abs(current_path[ite + m + 1].y - current_path[ite + m].y);
-    diff -= abs(current_path[ite + m + 1].x - current_path[ite + m + 2].x) + abs(current_path[ite + m + 1].y - current_path[ite + m + 2].y);
-
-    int tmpTime = minTime + diff;
+    int new_length = curr_length + diff;
     int diffScore = -diff;
 
-    double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+    double temp = start_temp + (end_temp - start_temp) * now_time / time_limit;
     double prob = exp((double)diffScore / temp);
     if (prob > Rand01()) {
-      minTime = tmpTime;
-      use[argAns[ite]] = 0;
-      use[x] = 1;
-      argAns[ite] = x;
-      current_path[ite + 1] = Point(start_x[x], start_y[x]);
-      current_path[ite + m + 1] = Point(goal_x[x], goal_y[x]);
-      maxScore = CalcScore(minTime);
-      if (maxScore > real_maxScore) {
-        real_minTime = minTime;
-        real_maxScore = maxScore;
+      curr_length = new_length;
+      is_used[sel_pair_idx[path_pos]] = 0;
+      is_used[cand_idx] = 1;
+      sel_pair_idx[path_pos] = cand_idx;
+      current_path[path_pos + 1] = Point(start_points[cand_idx].x, start_points[cand_idx].y);
+      current_path[path_pos + m + 1] = Point(goal_points[cand_idx].x, goal_points[cand_idx].y);
+      curr_score = CalcScore(curr_length);
+      if (curr_score > best_score) {
+        best_length = curr_length;
+        best_score = curr_score;
         best_path = current_path;
-        real_argAns = argAns;
-        real_use = use;
+        best_sel_pair_idx = sel_pair_idx;
+        best_is_used = is_used;
       }
     }
     else {
@@ -359,23 +352,33 @@ int Solve(int mode) {
 
   // 最高スコアを戻す
   current_path = best_path;
-  minTime = real_minTime;
-  maxScore = real_maxScore;
-  argAns = real_argAns;
-  use = real_use;
+  curr_length = best_length;
+  curr_score = best_score;
+  sel_pair_idx = best_sel_pair_idx;
+  is_used = best_is_used;
 
   rep(i, m) {
-    pair_[argAns[i]] = i + m;
-    pair_[argAns[i] + INIT_N] = i;
+    partner_idx[sel_pair_idx[i]] = i + m;
+    partner_idx[sel_pair_idx[i] + INIT_N] = i;
   }
   rep(i, m) {
-    argAns[i + m] = argAns[i] + INIT_N;
+    sel_pair_idx[i + m] = sel_pair_idx[i] + INIT_N;
   }
-  real_argAns = argAns;
-  real_pair_ = pair_;
+  best_sel_pair_idx = sel_pair_idx;
+  best_partner_idx = partner_idx;
 
-  argAns2 = argAns;
-  real_argAns2 = argAns2;
+  reduced_pair_idx = sel_pair_idx;
+  best_reduced_pair_idx = reduced_pair_idx;
+}
+
+void sa_two_opt_path() {
+  double start_temp = 48;
+  double end_temp = 0.0001;
+
+  double time_limit = 1.8;
+
+  int loop = 0;
+  double now_time = get_elapsed_time();
 
   // それぞれをTSP
   rep(ui_tei, 10) {
@@ -384,7 +387,7 @@ int Solve(int mode) {
       if (loop % 100 == 1) {
         now_time = get_elapsed_time();
       }
-      if (now_time > (TL / 15) * (6 + ui_tei)) break;
+      if (now_time > (time_limit / 15) * (6 + ui_tei)) break;
 
       int ite1 = Rand() % (m * 2);
       int ite2 = Rand() % (m * 2);
@@ -394,15 +397,15 @@ int Solve(int mode) {
       if (ite1 > ite2) swap(ite1, ite2);
       if (ite2 - ite1 == 1) continue;
 
-      if (argAns[ite1] + INIT_N == argAns[ite2]) continue;
-      if (argAns[ite1] < INIT_N) {
-        int pa = pair_[argAns[ite1]];
+      if (sel_pair_idx[ite1] + INIT_N == sel_pair_idx[ite2]) continue;
+      if (sel_pair_idx[ite1] < INIT_N) {
+        int pa = partner_idx[sel_pair_idx[ite1]];
         if (pa < ite2) {
           continue;
         }
       }
-      if (argAns[ite2] >= INIT_N) {
-        int pa = pair_[argAns[ite2]];
+      if (sel_pair_idx[ite2] >= INIT_N) {
+        int pa = partner_idx[sel_pair_idx[ite2]];
         if (ite1 < pa) {
           continue;
         }
@@ -411,45 +414,44 @@ int Solve(int mode) {
       int diff = 0;
 
       if (true || loop % 2 == 0) {
-        diff += abs(current_path[ite1 + 1].x - current_path[ite2].x) + abs(current_path[ite1 + 1].y - current_path[ite2].y);
-        diff += abs(current_path[ite1 + 1].x - current_path[ite2 + 2].x) + abs(current_path[ite1 + 1].y - current_path[ite2 + 2].y);
-        diff -= abs(current_path[ite1 + 1].x - current_path[ite1].x) + abs(current_path[ite1 + 1].y - current_path[ite1].y);
-        diff -= abs(current_path[ite1 + 1].x - current_path[ite1 + 2].x) + abs(current_path[ite1 + 1].y - current_path[ite1 + 2].y);
+        diff += manhattan(current_path[ite1 + 1], current_path[ite2]);
+        diff += manhattan(current_path[ite1 + 1], current_path[ite2 + 2]);
+        diff -= manhattan(current_path[ite1 + 1], current_path[ite1]);
+        diff -= manhattan(current_path[ite1 + 1], current_path[ite1 + 2]);
+        diff += manhattan(current_path[ite2 + 1], current_path[ite1]);
+        diff += manhattan(current_path[ite2 + 1], current_path[ite1 + 2]);
+        diff -= manhattan(current_path[ite2 + 1], current_path[ite2]);
+        diff -= manhattan(current_path[ite2 + 1], current_path[ite2 + 2]);
 
-        diff += abs(current_path[ite2 + 1].x - current_path[ite1].x) + abs(current_path[ite2 + 1].y - current_path[ite1].y);
-        diff += abs(current_path[ite2 + 1].x - current_path[ite1 + 2].x) + abs(current_path[ite2 + 1].y - current_path[ite1 + 2].y);
-        diff -= abs(current_path[ite2 + 1].x - current_path[ite2].x) + abs(current_path[ite2 + 1].y - current_path[ite2].y);
-        diff -= abs(current_path[ite2 + 1].x - current_path[ite2 + 2].x) + abs(current_path[ite2 + 1].y - current_path[ite2 + 2].y);
-
-        int tmpTime = minTime + diff;
+        int new_length = curr_length + diff;
         int diffScore = -diff;
 
-        double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+        double temp = start_temp + (end_temp - start_temp) * now_time / time_limit;
         double prob = exp((double)diffScore / temp);
         if (prob > Rand01()) {
-          minTime = tmpTime;
-          if (argAns[ite1] < INIT_N) {
-            pair_[argAns[ite1] + INIT_N] = ite2;
+          curr_length = new_length;
+          if (sel_pair_idx[ite1] < INIT_N) {
+            partner_idx[sel_pair_idx[ite1] + INIT_N] = ite2;
           }
           else {
-            pair_[argAns[ite1] - INIT_N] = ite2;
+            partner_idx[sel_pair_idx[ite1] - INIT_N] = ite2;
           }
-          if (argAns[ite2] < INIT_N) {
-            pair_[argAns[ite2] + INIT_N] = ite1;
+          if (sel_pair_idx[ite2] < INIT_N) {
+            partner_idx[sel_pair_idx[ite2] + INIT_N] = ite1;
           }
           else {
-            pair_[argAns[ite2] - INIT_N] = ite1;
+            partner_idx[sel_pair_idx[ite2] - INIT_N] = ite1;
           }
-          swap(argAns[ite1], argAns[ite2]);
+          swap(sel_pair_idx[ite1], sel_pair_idx[ite2]);
           swap(current_path[ite1 + 1], current_path[ite2 + 1]);
-          maxScore = CalcScore(minTime);
-          if (maxScore > real_maxScore) {
-            real_minTime = minTime;
-            real_maxScore = maxScore;
+          curr_score = CalcScore(curr_length);
+          if (curr_score > best_score) {
+            best_length = curr_length;
+            best_score = curr_score;
             best_path = current_path;
-            real_argAns = argAns;
-            real_use = use;
-            real_pair_ = pair_;
+            best_sel_pair_idx = sel_pair_idx;
+            best_is_used = is_used;
+            best_partner_idx = partner_idx;
           }
         }
         else {
@@ -461,103 +463,121 @@ int Solve(int mode) {
 
     // 最高スコアを戻す
     current_path = best_path;
-    minTime = real_minTime;
-    maxScore = real_maxScore;
-    argAns = real_argAns;
-    argAns2 = real_argAns2;
-    use = real_use;
-    pair_ = real_pair_;
+    curr_length = best_length;
+    curr_score = best_score;
+    sel_pair_idx = best_sel_pair_idx;
+    reduced_pair_idx = best_reduced_pair_idx;
+    is_used = best_is_used;
+    partner_idx = best_partner_idx;
   }
+}
 
-  TL = 1.95;
+void sa_path_pruning() {
+  double time_limit = 1.95;
 
   const int INF = 1001001001;
   int mi = INF;
-  argAns2 = argAns;
+  reduced_pair_idx = sel_pair_idx;
   vector<Point> ans2 = current_path;
 
   random_device seed_gen;
   mt19937 engine(seed_gen());
 
-  vector<int> v;
+  vector<int> rand_order;
   rep(i, m) {
-    v.push_back(i);
+    rand_order.push_back(i);
   }
 
+  int loop = 0;
+  double now_time = get_elapsed_time();
   while (true) {
     loop++;
     if (loop % 100 == 1) {
       now_time = get_elapsed_time();
     }
-    if (now_time > TL) break;
+    if (now_time > time_limit) break;
 
-    std::shuffle(v.begin(), v.end(), engine);
-    vector<int> vv;
-    rep(i, 50) vv.push_back(v[i]);
-    sort(vv.begin(), vv.end());
+    std::shuffle(rand_order.begin(), rand_order.end(), engine);
+    vector<int> pick_order;
+    rep(i, 50) pick_order.push_back(rand_order[i]);
+    sort(pick_order.begin(), pick_order.end());
 
-    set<int> useIte;
+    set<int> pick_set;
     int cnt = 0;
     int now = 0;
     rep(i, m * 2) {
-      if (argAns[i] < INIT_N) {
-        if (cnt == vv[now]) {
-          useIte.insert(argAns[i]);
+      if (sel_pair_idx[i] < INIT_N) {
+        if (cnt == pick_order[now]) {
+          pick_set.insert(sel_pair_idx[i]);
           now++;
         }
         cnt++;
       }
     }
 
-    int tmpTime = 0;
-    int nowx = 400;
-    int nowy = 400;
+    int new_length = 0;
+    int cur_x = 400;
+    int cur_y = 400;
     vector<Point> ans3;
     ans3.push_back(Point(400, 400));
     rep(i, m * 2) {
-      int ite = argAns[i];
+      int ite = sel_pair_idx[i];
       if (ite >= INIT_N) ite -= INIT_N;
-      if (useIte.find(ite) != useIte.end()) {
+      if (pick_set.find(ite) != pick_set.end()) {
         ans3.push_back(current_path[i + 1]);
-        tmpTime += abs(nowx - current_path[i + 1].x) + abs(nowy - current_path[i + 1].y);
-        nowx = current_path[i + 1].x;
-        nowy = current_path[i + 1].y;
+        new_length += abs(cur_x - current_path[i + 1].x) + abs(cur_y - current_path[i + 1].y);
+        cur_x = current_path[i + 1].x;
+        cur_y = current_path[i + 1].y;
       }
     }
     ans3.push_back(Point(400, 400));
 
-    if (tmpTime < mi) {
-      mi = tmpTime;
+    if (new_length < mi) {
+      mi = new_length;
       ans2 = ans3;
-      argAns2.clear();
+      reduced_pair_idx.clear();
 
-      for (auto ite : useIte) {
-        argAns2.push_back(ite);
+      for (auto ite : pick_set) {
+        reduced_pair_idx.push_back(ite);
       }
     }
   }
 
   current_path = ans2;
-  argAns = argAns2;
+  sel_pair_idx = reduced_pair_idx;
 
-  minTime = compute_path_time();
-  maxScore = CalcScore(minTime);
+  curr_length = compute_path_time();
+  curr_score = CalcScore(curr_length);
+}
+
+int Solve(int mode) {
+  start_timer();
+
+  input_data(0);
+
+  filter_input_points();
+
+  build_initial_path();
+
+  sa_point_swap();
+
+  sa_two_opt_path();
+
+  sa_path_pruning();
 
   output_data(0);
 
   // デバッグ用
   if (mode != 0) {
-    cout << "loop = " << loop << endl;
-    cout << maxScore << endl;
+    cout << curr_score << endl;
     cout << get_elapsed_time() << "sec." << endl;
   }
 
-  return maxScore;
+  return curr_score;
 }
 
 int main() {
   exec_mode = 1;
-  m = 55;
   if (exec_mode == 0) {
     Solve(exec_mode);
   }
