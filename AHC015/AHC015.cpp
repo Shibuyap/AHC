@@ -460,35 +460,38 @@ int tilt_and_score_work(int dir)
   return score_work_board();
 }
 
-int simulate_rollout(int startTurn, int simBias)
+int simulate_rollout(int start_turn, int sim_bias)
 {
-  int simTurn = 10 + simBias;
-  srep(_, startTurn, startTurn + simTurn)
+  int sim_turn = 10 + sim_bias;
+  srep(turn, start_turn, start_turn + sim_turn)
   {
-    if (_ == n) break;
-    // 場所決め
-    int po = random_empty_index(_);
-    P p = find_empty_cell(po);
-    int wx = p.first;
-    int wy = p.second;
-    if (board[wx][wy] != 0) {
-      cout << "NG" << endl;
-    }
-    board[wx][wy] = flavor_at_turn[_];
+    if (turn == n) break;
 
-    int tmpMax = -1;
-    int tmpAns = -1;
-    rep(i, 4)
+    //――― キャンディー配置 ―――//
+    int empty_index = random_empty_index(turn);
+    P   cell = find_empty_cell(empty_index);
+    int row = cell.first;
+    int col = cell.second;
+
+    if (board[row][col] != 0) {
+      std::cout << "NG" << std::endl;
+    }
+    board[row][col] = flavor_at_turn[turn];
+
+    //――― 4 方向シミュレートして最良を選択 ―――//
+    int best_score = -1;
+    int best_dir = -1;
+    rep(dir, 4)
     {
       copy_board_to_work();
-      int tmp = tilt_and_score_work(i);
-      if (tmp > tmpMax) {
-        tmpMax = tmp;
-        tmpAns = i;
+      int score = tilt_and_score_work(dir);
+      if (score > best_score) {
+        best_score = score;
+        best_dir = dir;
       }
     }
 
-    tilt_board(tmpAns);
+    tilt_board(best_dir);   // 本盤面を更新
   }
 
   return score_board();
@@ -496,104 +499,113 @@ int simulate_rollout(int startTurn, int simBias)
 
 int run_solver(int mode)
 {
-  ofstream ofs2("debug.txt");
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  std::ofstream debug_ofs("debug.txt");
 
+  clock_t clk_start = clock();
+  clock_t clk_end = clk_start;
+
+  //――― 入力 ―――//
   if (mode == 0) {
-    rep(i, n) { cin >> flavor_at_turn[i]; }
+    rep(i, n) std::cin >> flavor_at_turn[i];
   }
   else {
     load_testcase(mode - 1);
   }
+  rep(i, n) flavor_total[flavor_at_turn[i]]++;
 
-  rep(i, n) { flavor_total[flavor_at_turn[i]]++; }
-
-  rep(_, n)
+  //――― 100 ターン回す ―――//
+  rep(turn, n)
   {
-    int ite;
+    /*---------- 空マスインデックス取得 ----------*/
+    int empty_index;
     if (mode == 0) {
-      cin >> ite;
+      std::cin >> empty_index;
     }
     else {
-      ite = input_index_list[_];
+      empty_index = input_index_list[turn];
     }
 
-    P p = find_empty_cell(ite);
-    int wx = p.first;
-    int wy = p.second;
-    if (board[wx][wy] != 0) {
-      cout << "NG" << endl;
-    }
-    board[wx][wy] = flavor_at_turn[_];
+    P   cell = find_empty_cell(empty_index);   // (row,col)
+    int row = cell.first;
+    int col = cell.second;
 
-    backup_board();
+    if (board[row][col] != 0) std::cout << "NG\n";
+    board[row][col] = flavor_at_turn[turn];
 
-    // ここで探索
-    startTime = clock();
-    endTime = clock();
-    double tl = TL / 100;
-    int loop = 0;
+    backup_board();            // 現盤面を保存
 
-    double ave[4] = {};
-    int cnt[4] = {};
-    int simBias = 0;
+    /*---------- モンテカルロ探索 ----------*/
+    clk_start = clock();
+    clk_end = clk_start;
+    const double turn_time_limit = TL / 100.0;
+
+    int    trial_cnt = 0;
+    double dir_score_avg[4] = {};
+    int    dir_trial_cnt[4] = {};
+    int    sim_bias = 0;
+
     while (true) {
-      if (loop % 8 == 0) {
-        endTime = clock();
-        double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-        if (nowTime > tl) break;
+      if (trial_cnt % 8 == 0) {
+        clk_end = clock();
+        double elapsed =
+          static_cast<double>(clk_end - clk_start) / CLOCKS_PER_SEC;
+        if (elapsed > turn_time_limit) break;
       }
-
-      if (loop % 4 == 0) {
-        simBias = xor_shift32() % 3 - 1;
+      if (trial_cnt % 4 == 0) {
+        sim_bias = static_cast<int>(xor_shift32() % 3) - 1;
       }
 
       restore_board();
 
-      int dir = loop % 4;
+      int dir = trial_cnt % 4;
       tilt_board(dir);
-      ave[dir] = (ave[dir] * cnt[dir] + simulate_rollout(_ + 1, simBias)) / (cnt[dir] + 1);
-      cnt[dir]++;
 
-      loop++;
+      double score =
+        simulate_rollout(turn + 1, sim_bias);
+
+      dir_score_avg[dir] =
+        (dir_score_avg[dir] * dir_trial_cnt[dir] + score) /
+        (dir_trial_cnt[dir] + 1);
+      dir_trial_cnt[dir]++;
+
+      ++trial_cnt;
     }
 
-    int tmpMax = -1;
-    int tmpAns = -1;
-    rep(i, 4)
+    /*---------- ベスト方向の決定 ----------*/
+    int best_dir = -1;
+    int best_score = -1;
+    rep(dir, 4)
     {
-      if (ave[i] > tmpMax) {
-        tmpMax = ave[i];
-        tmpAns = i;
+      if (dir_score_avg[dir] > best_score) {
+        best_score = static_cast<int>(dir_score_avg[dir]);
+        best_dir = dir;
       }
     }
 
+    /*---------- 出力 ----------*/
     if (mode == 0) {
-      std::cout << dir_char[tmpAns] << endl;
+      std::cout << dir_char[best_dir] << '\n';
       std::fflush(stdout);
     }
     else {
-      output_dir_list[_] = dir_char[tmpAns];
+      output_dir_list[turn] = dir_char[best_dir];
     }
 
+    /*---------- 盤面を進める ----------*/
     restore_board();
-    tilt_board(tmpAns);
+    tilt_board(best_dir);
 
     if (mode != 0) {
-      ofs2 << std::right << std::setw(7) << loop << ' ' << score_board() << endl;
+      debug_ofs << std::right << std::setw(7) << trial_cnt << ' '
+        << score_board() << '\n';
     }
   }
 
+  /*---------- ファイル保存＆最終スコア表示 ----------*/
   if (mode != 0) {
     save_answer(mode - 1);
+    std::cout << "Score = " << score_board() << '\n';
   }
-
-  if (mode != 0) {
-    cout << "Score = " << score_board() << endl;
-  }
-
   return 0;
 }
 
