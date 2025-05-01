@@ -36,6 +36,23 @@ typedef pair<int, int> P;
 
 int run_mode;
 
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t rand_u32()
@@ -187,9 +204,9 @@ ll outer_kruskal_lns()
     loop++;
     {
       endTime = clock();
-      double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-      double nowProgress = nowTime / TL;
-      if (nowProgress > 1.0) break;
+      double sec_elapsed = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+      double ratio_elapsed = sec_elapsed / TL;
+      if (ratio_elapsed > 1.0) break;
     }
 
     int num = rand_u32() % (node_cnt - 1) + 1;
@@ -506,91 +523,8 @@ void sa_single_power_perturb(double temperature)
   }
 }
 
-void solve_all_max()
-{
-  // 解1
-  rep(i, node_cnt) { power_rad[i] = 5000; }
-  rep(i, edge_cnt) { res_y[i] = 1; }
-}
-
-void solve_greedy_sa()
-{
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
-
-  outer_kruskal();
-  rep(i, edge_cnt) { res_y[i] = mst_edge_use[i]; }
-
-  int flag[MAX_K] = {};
-  vector<P> farest;
-  rep(i, res_cnt) { farest.push_back(res_near_nodes[i][0]); }
-  sort(farest.begin(), farest.end());
-
-  drep(i, res_cnt)
-  {
-    int num = farest[i].second;
-    int power = farest[i].first;
-    if (power_rad[num] != 0) {
-      continue;
-    }
-    ll need = 0;
-    rep(j, res_cnt)
-    {
-      if (!flag[j] && res_node_dist[j][num] <= power) {
-        flag[j] = 1;
-        need = max(need, res_node_dist[j][num]);
-      }
-    }
-    power_rad[num] = need;
-  }
-
-  // 焼きなまし
-  best_score_cur = calc_score();
-  best_score = best_score_cur;
-  rep(i, node_cnt) { best_power_rad[i] = power_rad[i]; }
-  rep(i, edge_cnt) { best_edge_sel[i] = edge_sel[i]; }
-
-  double TL = 1.5;
-  int loop = 0;
-  double startTemperature = 200048;
-  double endTemperature = 0;
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  double nowProgress = nowTime / TL;
-  while (true) {
-    loop++;
-    if (loop % 100 == 0) {
-      endTime = clock();
-      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-      nowProgress = nowTime / TL;
-      if (nowProgress > 1.0) break;
-    }
-
-    double temperature =
-      startTemperature + (endTemperature - startTemperature) * nowProgress;
-
-    sa_single_power_perturb(temperature);
-  }
-
-  if (run_mode != 0) {
-    cout << loop << endl;
-  }
-
-  best_score_cur = best_score;
-  rep(i, node_cnt) { power_rad[i] = best_power_rad[i]; }
-  rep(i, edge_cnt) { edge_sel[i] = best_edge_sel[i]; }
-
-  outer_kruskal_lns();
-  rep(i, edge_cnt) { res_y[i] = mst_edge_use[i]; }
-}
-
 void solve_layered_sa()
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
-
   outer_kruskal();
   rep(i, edge_cnt) { res_y[i] = mst_edge_use[i]; }
 
@@ -635,26 +569,24 @@ void solve_layered_sa()
   int SET_COUNT = 2;
   rep(haibara, SET_COUNT)
   {
-    startTime = clock();
+    start_timer();
     double TL = TL_ALL / SET_COUNT;
 
     int loop = 0;
     double startTemperature = 1000;
     double endTemperature = 0;
-    endTime = clock();
-    double sec_elapsed = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    double nowProgress = sec_elapsed / TL;
+    double sec_elapsed =get_elapsed_time();
+    double ratio_elapsed = sec_elapsed / TL;
     while (true) {
       loop++;
       if (loop % 10 == 0) {
-        endTime = clock();
-        sec_elapsed = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-        nowProgress = sec_elapsed / TL;
-        if (nowProgress > 1.0) break;
+        sec_elapsed =get_elapsed_time();
+        ratio_elapsed = sec_elapsed / TL;
+        if (ratio_elapsed > 1.0) break;
       }
 
       double temperature =
-        startTemperature + (endTemperature - startTemperature) * nowProgress;
+        startTemperature + (endTemperature - startTemperature) * ratio_elapsed;
 
       int pre_maxPowers[MAX_N];
       rep(i, node_cnt)
@@ -771,224 +703,11 @@ ll outer_kruskal_with_score()
   return res;
 }
 
-void solve_sa_edge_toggle()
-{
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
-
-  outer_kruskal();
-  rep(i, edge_cnt) { res_y[i] = mst_edge_use[i]; }
-
-  int flag[MAX_K] = {};
-
-  rep(i, res_cnt)
-  {
-    power_cap[res_near_nodes[i][0].second] =
-      max(power_cap[res_near_nodes[i][0].second], res_near_nodes[i][0].first);
-  }
-  vector<P> farest;
-  rep(i, node_cnt) { farest.push_back(P(power_cap[i], i)); }
-  sort(farest.begin(), farest.end());
-
-  drep(i, node_cnt)
-  {
-    int num = farest[i].second;
-    int power = farest[i].first;
-    if (power_rad[num] != 0) {
-      continue;
-    }
-    ll need = 0;
-    rep(j, res_cnt)
-    {
-      if (!flag[j] && res_node_dist[j][num] <= power) {
-        flag[j] = 1;
-        need = max(need, res_node_dist[j][num]);
-      }
-    }
-    power_rad[num] = need;
-  }
-
-  outer_kruskal_lns();
-  rep(i, edge_cnt) { res_y[i] = mst_edge_use[i]; }
-
-  // 焼きなまし
-  best_score_cur = calc_score();
-  best_score = best_score_cur;
-  rep(i, node_cnt) { best_power_rad[i] = power_rad[i]; }
-  rep(i, edge_cnt) { best_edge_sel[i] = edge_sel[i]; }
-  rep(i, node_cnt) { best_power_cap[i] = power_cap[i]; }
-  rep(i, node_cnt)
-  {
-    best_mst_node_req[i] = mst_node_req[i];
-  }
-
-  double TL_ALL = 1.5;
-  int SET_COUNT = 2;
-  rep(haibara, SET_COUNT)
-  {
-    startTime = clock();
-    double TL = TL_ALL / SET_COUNT;
-
-    int loop = 0;
-    double startTemperature = 1000;
-    double endTemperature = 0;
-    endTime = clock();
-    double sec_elapsed = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    double nowProgress = sec_elapsed / TL;
-    while (true) {
-      loop++;
-      if (loop % 10 == 0) {
-        endTime = clock();
-        sec_elapsed = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-        nowProgress = sec_elapsed / TL;
-        if (nowProgress > 1.0) break;
-      }
-
-      double temperature =
-        startTemperature + (endTemperature - startTemperature) * nowProgress;
-
-      if (rand_u32() % 10 != 0) {
-        int pre_maxPowers[MAX_N];
-        int pre_p[MAX_N];
-        rep(i, node_cnt)
-        {
-          pre_p[i] = power_rad[i];
-          power_rad[i] = 0;
-          pre_maxPowers[i] = power_cap[i];
-        }
-
-        int num = rand_u32() % node_cnt;
-
-
-        power_cap[num] += rand_u32() % 101 - 50;
-        power_cap[num] = max(0, power_cap[num]);
-        power_cap[num] = min(5000, power_cap[num]);
-
-        rep(i, res_cnt) { flag[i] = 0; }
-
-        farest.clear();
-        rep(i, node_cnt) { farest.push_back(P(power_cap[i], i)); }
-        sort(farest.begin(), farest.end());
-
-        drep(i, node_cnt)
-        {
-          int num = farest[i].second;
-          int power = farest[i].first;
-          if (power_rad[num] != 0) {
-            continue;
-          }
-          ll need = 0;
-          for (const auto& pa : node_near_res[num]) {
-            int j = pa.second;
-            ll kyori = pa.first;
-            if (kyori > power) {
-              break;
-            }
-            if (!flag[j]) {
-              flag[j] = 1;
-              need = max(need, kyori);
-            }
-          }
-          power_rad[num] = need;
-        }
-
-        int isUpdate = 0;
-        vector<int> isNeedKeep;
-        rep(i, node_cnt)
-        {
-          if (pre_p[i] == 0 && power_rad[i] > 0 && mst_node_req[i] == 0) {
-            mst_node_req[i] = 1;
-            isNeedKeep.push_back(i);
-            isUpdate = 1;
-            break;
-          }
-        }
-        ll tmpScore = 0;
-        if (isUpdate) {
-          tmpScore = outer_kruskal_with_score();
-        }
-        else {
-          tmpScore = calc_score(false);
-        }
-
-
-        ll diffScore = tmpScore - best_score_cur;
-
-        double prob = exp((double)diffScore / temperature);
-        if (prob > rand_unit()) {
-          best_score_cur += diffScore;
-          if (best_score_cur > best_score) {
-            snapshot_best();
-          }
-        }
-        else {
-          // 元に戻す
-          rep(i, node_cnt) { power_cap[i] = pre_maxPowers[i]; }
-          for (auto ite : isNeedKeep) {
-            mst_node_req[ite] = 0;
-          }
-        }
-      }
-      else {
-        int num = rand_u32() % (node_cnt - 1) + 1;
-        if (power_rad[num] != 0) {
-          continue;
-        }
-        mst_node_req[num] = 1 - mst_node_req[num];
-        ll tmpScore = outer_kruskal_with_score();
-
-        ll diffScore = tmpScore - best_score_cur;
-
-        double prob = exp((double)diffScore / temperature);
-        if (prob > rand_unit()) {
-          best_score_cur += diffScore;
-          if (best_score_cur > best_score) {
-            if (run_mode != 0) {
-              cout << best_score_cur << ' ' << best_score << endl;
-            }
-            snapshot_best();
-          }
-        }
-        else {
-          // 元に戻す
-          mst_node_req[num] = 1 - mst_node_req[num];
-        }
-      }
-    }
-
-    if (run_mode != 0) {
-      cout << loop << endl;
-    }
-
-    best_score_cur = best_score;
-    rep(i, node_cnt) { power_rad[i] = best_power_rad[i]; }
-    rep(i, edge_cnt) { edge_sel[i] = best_edge_sel[i]; }
-    rep(i, node_cnt)
-    {
-      power_cap[i] = best_power_cap[i];
-    }
-    rep(i, node_cnt)
-    {
-      mst_node_req[i] = best_mst_node_req[i];
-    }
-  }
-
-  outer_kruskal_lns();
-  rep(i, edge_cnt) { res_y[i] = mst_edge_use[i]; }
-}
-
-
 double solve_case(int mode, int problemNum = 0)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
 
-  // solve_all_max();
-  // solve_greedy_sa();
   solve_layered_sa();
-  //solve_sa_edge_toggle();
 
   check_coverage();
 
