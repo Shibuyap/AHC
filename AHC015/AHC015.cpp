@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -121,50 +122,29 @@ int input_index_list[n];
 char output_dir_list[n];
 int flavor_total[4];
 
-int board[H][W];
-int work_board[H][W];
-int backup_board_buf[H][W];
+using board_t = std::array<std::array<int, W>, H>;
+
+board_t board{};            
+board_t work_board{};
+board_t backup_board_buf{};
+
 const double TL = 1.8;
 
 inline void copy_board_to_work()
 {
-  rep(i, H)
-  {
-    rep(j, W)
-    {
-      work_board[i][j] = board[i][j];
-    }
-  }
+  work_board = board;
 }
 inline void copy_work_to_board()
 {
-  rep(i, H)
-  {
-    rep(j, W)
-    {
-      board[i][j] = work_board[i][j];
-    }
-  }
+  board = work_board;
 }
 inline void backup_board()
 {
-  rep(i, H)
-  {
-    rep(j, W)
-    {
-      backup_board_buf[i][j] = board[i][j];
-    }
-  }
+  backup_board_buf = board;
 }
 inline void restore_board()
 {
-  rep(i, H)
-  {
-    rep(j, W)
-    {
-      board[i][j] = backup_board_buf[i][j];
-    }
-  }
+  board = backup_board_buf;
 }
 
 inline int random_empty_index(int turn) { return xor_shift32() % (n - turn) + 1; }
@@ -281,9 +261,10 @@ int score_work_board()
   return round(res);
 }
 
-
 int score_board()
-{  // スコア計算
+{ 
+  // スコア計算
+  que2d.clear_queue();
   double res = 0;
   rep(i, H) rep(j, W) visited[i][j] = 0;
   rep(i, H)
@@ -324,72 +305,7 @@ int score_board()
   return round(res);
 }
 
-void tilt_work_board(int dir)
-{
-  // 場所移動
-  if (dir == 0) {
-    rep(j, W)
-    {
-      int now = 0;
-      rep(i, H)
-      {
-        if (work_board[i][j] != 0) {
-          int tmp = work_board[i][j];
-          work_board[i][j] = 0;
-          work_board[now][j] = tmp;
-          now++;
-        }
-      }
-    }
-  }
-  else if (dir == 1) {
-    rep(i, H)
-    {
-      int now = 0;
-      rep(j, W)
-      {
-        if (work_board[i][j] != 0) {
-          int tmp = work_board[i][j];
-          work_board[i][j] = 0;
-          work_board[i][now] = tmp;
-          now++;
-        }
-      }
-    }
-  }
-  else if (dir == 2) {
-    rep(j, W)
-    {
-      int now = 9;
-      drep(i, H)
-      {
-        if (work_board[i][j] != 0) {
-          int tmp = work_board[i][j];
-          work_board[i][j] = 0;
-          work_board[now][j] = tmp;
-          now--;
-        }
-      }
-    }
-  }
-  else if (dir == 3) {
-    rep(i, H)
-    {
-      int now = 9;
-      drep(j, W)
-      {
-        if (work_board[i][j] != 0) {
-          int tmp = work_board[i][j];
-          work_board[i][j] = 0;
-          work_board[i][now] = tmp;
-          now--;
-        }
-      }
-    }
-  }
-}
-
-void tilt_board(int dir)
+void tilt_board(int dir, board_t& board)
 {
   // 場所移動
   if (dir == 0) {
@@ -456,7 +372,7 @@ void tilt_board(int dir)
 
 int tilt_and_score_work(int dir)
 {
-  tilt_work_board(dir);
+  tilt_board(dir, work_board);
   return score_work_board();
 }
 
@@ -491,7 +407,7 @@ int simulate_rollout(int start_turn, int sim_bias)
       }
     }
 
-    tilt_board(best_dir);   // 本盤面を更新
+        tilt_board(best_dir, board);   // 本盤面を更新
   }
 
   return score_board();
@@ -512,6 +428,8 @@ int run_solver(int mode)
     load_testcase(mode - 1);
   }
   rep(i, n) flavor_total[flavor_at_turn[i]]++;
+
+  int iter = 0;
 
   //――― 100 ターン回す ―――//
   rep(turn, n)
@@ -551,6 +469,7 @@ int run_solver(int mode)
           static_cast<double>(clk_end - clk_start) / CLOCKS_PER_SEC;
         if (elapsed > turn_time_limit) break;
       }
+      iter++;
       if (trial_cnt % 4 == 0) {
         sim_bias = static_cast<int>(xor_shift32() % 3) - 1;
       }
@@ -558,7 +477,7 @@ int run_solver(int mode)
       restore_board();
 
       int dir = trial_cnt % 4;
-      tilt_board(dir);
+      tilt_board(dir, board);
 
       double score =
         simulate_rollout(turn + 1, sim_bias);
@@ -593,17 +512,17 @@ int run_solver(int mode)
 
     /*---------- 盤面を進める ----------*/
     restore_board();
-    tilt_board(best_dir);
+    tilt_board(best_dir, board);
 
     if (mode != 0) {
-      debug_ofs << std::right << std::setw(7) << trial_cnt << ' '
-        << score_board() << '\n';
+      debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board() << '\n';
     }
   }
 
   /*---------- ファイル保存＆最終スコア表示 ----------*/
   if (mode != 0) {
     save_answer(mode - 1);
+    cout << "iter = " << iter << endl;
     std::cout << "Score = " << score_board() << '\n';
   }
   return 0;
