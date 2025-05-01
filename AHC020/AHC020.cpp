@@ -99,7 +99,7 @@ vector<Edge> edges;
 int node_cnt, edge_cnt, res_cnt;
 Point nodes[MAX_N];
 ll edge_u[MAX_M], edge_v[MAX_M], edge_cost_raw[MAX_M];
-ll res_x[MAX_K], res_y[MAX_K];
+Point ress[MAX_K];
 ll node_res_dist[MAX_N][MAX_K];
 ll res_node_dist[MAX_K][MAX_N];
 ll node_node_dist[MAX_N][MAX_N];
@@ -162,7 +162,10 @@ namespace
   }
 }  // namespace
 
-bool comp(const Edge& e1, const Edge& e2) { return e1.cost < e2.cost; }
+bool comp(const Edge& e1, const Edge& e2)
+{
+  return e1.cost < e2.cost;
+}
 
 int mst_node_req[MAX_N];
 int best_mst_node_req[MAX_N];
@@ -203,7 +206,10 @@ long long kruskal(int vertex_cnt)
   return mst_cost;
 }
 
-ll outer_kruskal() { return kruskal(node_cnt); }
+ll outer_kruskal()
+{
+  return kruskal(node_cnt);
+}
 
 /*----------  LNS-style toggle search  ----------*/
 ll outer_kruskal_lns()
@@ -287,12 +293,15 @@ ll calc_score(bool isALL = true)
   }
 
   double S = 0;
-  rep(i, node_cnt) { S += power_rad[i] * power_rad[i]; }
+  rep(i, node_cnt)
+  {
+    S += power_rad[i] * power_rad[i];
+  }
   if (isALL) {
     keepW = 0;
     rep(i, edge_cnt)
     {
-      if (res_y[i]) {
+      if (ress[i].y) {
         S += edge_cost_raw[i];
         keepW += edge_cost_raw[i];
       }
@@ -314,12 +323,15 @@ ll calc_score_partial(int nn, bool isALL = true)
   }
 
   double S = 0;
-  rep(i, node_cnt) { S += power_rad[i] * power_rad[i]; }
+  rep(i, node_cnt)
+  {
+    S += power_rad[i] * power_rad[i];
+  }
   if (isALL) {
     keepW = 0;
     rep(i, edge_cnt)
     {
-      if (res_y[i]) {
+      if (ress[i].y) {
         S += edge_cost_raw[i];
         keepW += edge_cost_raw[i];
       }
@@ -328,7 +340,6 @@ ll calc_score_partial(int nn, bool isALL = true)
   else {
     S += keepW;
   }
-
 
   ll point = round(1e6 * (1.0 + 1e8 / (S + 1e7)));
   return point;
@@ -362,9 +373,18 @@ ll min_radius_le_5000(ll x1, ll y1, ll x2, ll y2)
 
 void init_state()
 {
-  rep(i, node_cnt) { power_rad[i] = 0; }
-  rep(i, edge_cnt) { res_y[i] = 0; }
-  rep(i, node_cnt) { mst_node_req[i] = 1; }
+  rep(i, node_cnt)
+  {
+    power_rad[i] = 0;
+  }
+  rep(i, edge_cnt)
+  {
+    ress[i].y = 0;
+  }
+  rep(i, node_cnt)
+  {
+    mst_node_req[i] = 1;
+  }
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
@@ -385,17 +405,35 @@ void read_input(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> node_cnt >> edge_cnt >> res_cnt;
-    rep(i, node_cnt) { cin >> nodes[i].x >> nodes[i].y; }
-    rep(i, edge_cnt) { cin >> edge_u[i] >> edge_v[i] >> edge_cost_raw[i]; }
-    rep(i, res_cnt) { cin >> res_x[i] >> res_y[i]; }
+    rep(i, node_cnt)
+    {
+      cin >> nodes[i].x >> nodes[i].y;
+    }
+    rep(i, edge_cnt)
+    {
+      cin >> edge_u[i] >> edge_v[i] >> edge_cost_raw[i];
+    }
+    rep(i, res_cnt)
+    {
+      cin >> ress[i].x >> ress[i].y;
+    }
 
   }
   // ファイル入力する
   else {
     ifs >> node_cnt >> edge_cnt >> res_cnt;
-    rep(i, node_cnt) { ifs >> nodes[i].x >> nodes[i].y; }
-    rep(i, edge_cnt) { ifs >> edge_u[i] >> edge_v[i] >> edge_cost_raw[i]; }
-    rep(i, res_cnt) { ifs >> res_x[i] >> res_y[i]; }
+    rep(i, node_cnt)
+    {
+      ifs >> nodes[i].x >> nodes[i].y;
+    }
+    rep(i, edge_cnt)
+    {
+      ifs >> edge_u[i] >> edge_v[i] >> edge_cost_raw[i];
+    }
+    rep(i, res_cnt)
+    {
+      ifs >> ress[i].x >> ress[i].y;
+    }
   }
 
   rep(i, node_cnt)
@@ -415,13 +453,16 @@ void read_input(int problemNum)
     node_node_cost[edge_v[i]][edge_u[i]] = edge_cost_raw[i];
   }
 
-  rep(i, res_cnt) { res_near_nodes[i].clear(); }
+  rep(i, res_cnt)
+  {
+    res_near_nodes[i].clear();
+  }
 
   rep(i, node_cnt)
   {
     rep(j, res_cnt)
     {
-      node_res_dist[i][j] = min_radius_le_5000(nodes[i].x, nodes[i].y, res_x[j], res_y[j]);
+      node_res_dist[i][j] = min_radius_le_5000(nodes[i].x, nodes[i].y, ress[j].x, ress[j].y);
       res_node_dist[j][i] = node_res_dist[i][j];
       if (res_node_dist[j][i] <= 5000) {
         res_near_nodes[j].push_back(P(res_node_dist[j][i], i));
@@ -429,7 +470,10 @@ void read_input(int problemNum)
     }
   }
 
-  rep(i, res_cnt) { sort(res_near_nodes[i].begin(), res_near_nodes[i].end()); }
+  rep(i, res_cnt)
+  {
+    sort(res_near_nodes[i].begin(), res_near_nodes[i].end());
+  }
 
   rep(i, edge_cnt)
   {
@@ -465,11 +509,16 @@ void read_input(int problemNum)
 void write_output(int mode, int problemNum)
 {
   if (mode == 0) {
-    rep(i, node_cnt) { cout << power_rad[i] << ' '; }
+    rep(i, node_cnt)
+    {
+      cout << power_rad[i] << ' ';
+    }
     cout << endl;
-    rep(i, edge_cnt) { cout << res_y[i] << ' '; }
+    rep(i, edge_cnt)
+    {
+      cout << ress[i].y << ' ';
+    }
     cout << endl;
-
   }
   else {
     // ファイル出力
@@ -485,9 +534,15 @@ void write_output(int mode, int problemNum)
 
     ofstream ofs(fileNameOfs);
 
-    rep(i, node_cnt) { ofs << power_rad[i] << ' '; }
+    rep(i, node_cnt)
+    {
+      ofs << power_rad[i] << ' ';
+    }
     ofs << endl;
-    rep(i, edge_cnt) { ofs << res_y[i] << ' '; }
+    rep(i, edge_cnt)
+    {
+      ofs << ress[i].y << ' ';
+    }
     ofs << endl;
 
     ofs.close();
@@ -497,9 +552,18 @@ void write_output(int mode, int problemNum)
 void snapshot_best()
 {
   best_score = best_score_cur;
-  rep(i, node_cnt) { best_power_rad[i] = power_rad[i]; }
-  rep(i, edge_cnt) { best_edge_sel[i] = edge_sel[i]; }
-  rep(i, node_cnt) { best_power_cap[i] = power_cap[i]; }
+  rep(i, node_cnt)
+  {
+    best_power_rad[i] = power_rad[i];
+  }
+  rep(i, edge_cnt)
+  {
+    best_edge_sel[i] = edge_sel[i];
+  }
+  rep(i, node_cnt)
+  {
+    best_power_cap[i] = power_cap[i];
+  }
   rep(i, node_cnt)
   {
     best_mst_node_req[i] = mst_node_req[i];
@@ -537,9 +601,9 @@ void solve_layered_sa()
 {
   /*--- 初期 MST & 半径決定 ---*/
   outer_kruskal();
-  rep(edge_idx, edge_cnt) { res_y[edge_idx] = mst_edge_use[edge_idx]; }
+  rep(edge_idx, edge_cnt) { ress[edge_idx].y = mst_edge_use[edge_idx]; }
 
-  int res_cover_flag[MAX_K] = {};          
+  int res_cover_flag[MAX_K] = {};
 
   /* 各住民の最も近い頂点で power_cap を下限設定 */
   rep(res_idx, res_cnt)
@@ -549,7 +613,7 @@ void solve_layered_sa()
       max(power_cap[node_id], res_near_nodes[res_idx][0].first);
   }
 
-  vector<P> farthest;                       
+  vector<P> farthest;
   rep(node_idx, node_cnt) { farthest.emplace_back(power_cap[node_idx], node_idx); }
   sort(farthest.begin(), farthest.end());
 
@@ -557,10 +621,10 @@ void solve_layered_sa()
   drep(f_idx, node_cnt)
   {
     int node_id = farthest[f_idx].second;
-    int cap_value = farthest[f_idx].first; 
+    int cap_value = farthest[f_idx].first;
     if (power_rad[node_id] != 0) continue;
 
-    ll need_radius = 0;                  
+    ll need_radius = 0;
     rep(res_idx, res_cnt)
     {
       if (!res_cover_flag[res_idx] && res_node_dist[res_idx][node_id] <= cap_value) {
@@ -580,16 +644,16 @@ void solve_layered_sa()
 
   /*--- 多段 SA ---*/
   const double tl_total = 1.5;
-  const int    stage_cnt = 2;  
+  const int    stage_cnt = 2;
 
   rep(stage_idx, stage_cnt)
   {
     start_timer();
     double tl_stage = tl_total / stage_cnt;
 
-    int    iter_cnt = 0;      
+    int    iter_cnt = 0;
     double temp_ini = 1000.0;
-    double temp_fin = 0.0;   
+    double temp_fin = 0.0;
 
     /* -------- SA 本体 -------- */
     while (true) {
@@ -671,23 +735,10 @@ void solve_layered_sa()
 
   /*--- LNS で接続を再最適化 ---*/
   outer_kruskal_lns();
-  rep(edge_idx, edge_cnt) { res_y[edge_idx] = mst_edge_use[edge_idx]; }
-}
-
-ll outer_kruskal_with_score()
-{
-
-  ll tmp = outer_kruskal();
-
-  ll res = 0;
-  if (tmp != INF) {
-
-    res = calc_score();
-    cout << res << endl;
+  rep(edge_idx, edge_cnt)
+  {
+    ress[edge_idx].y = mst_edge_use[edge_idx];
   }
-
-
-  return res;
 }
 
 double solve_case(int mode, int problemNum = 0)
