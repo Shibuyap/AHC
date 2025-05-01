@@ -38,6 +38,22 @@ const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 const char cc[4] = { 'U','L','D','R' };
 
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
 
 namespace /* 乱数ライブラリ */
 {
@@ -63,14 +79,17 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
+int exec_mode;
+
 namespace /* 変数 */
 {
   // 入力用変数
-  int n = 20;
+  const int n = 20;
+  const int MAX_LENGTH = 200;
   int sx, sy, tx, ty;
   double pro;
-  int h[20][20];
-  int v[20][20];
+  int h[n][n];
+  int v[n][n];
 
   // 解答用変数
   ll maxScore;
@@ -81,6 +100,86 @@ namespace /* 変数 */
   vector<int> real_ans;
 
 }  // namespace
+
+void input_data(int case_num)
+{
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ifstream ifs(oss.str());
+
+  if (!ifs.is_open()) {
+    // 標準入力
+    cin >> sx >> sy >> tx >> ty >> pro;
+    rep(i, n)
+    {
+      rep(j, n-1)
+      {
+        char ccc;
+        cin >> ccc;
+        h[i][j] = ccc - '0';
+      }
+    }
+    rep(i, n-1)
+    {
+      rep(j, n)
+      {
+        char ccc;
+        cin >> ccc;
+        v[i][j] = ccc - '0';
+      }
+    }
+  }
+  else {
+    // ファイル入力
+    ifs >> sx >> sy >> tx >> ty >> pro;
+    rep(i, n)
+    {
+      rep(j, n-1)
+      {
+        char ccc;
+        ifs >> ccc;
+        h[i][j] = ccc - '0';
+      }
+    }
+    rep(i, n-1)
+    {
+      rep(j, n)
+      {
+        char ccc;
+        ifs >> ccc;
+        v[i][j] = ccc - '0';
+      }
+    }
+  }
+}
+
+void output_data(int case_num)
+{
+  if (exec_mode == 0) {
+    // 標準出力
+    rep(i, min((int)ans.size(), MAX_LENGTH))
+    {
+      cout << cc[ans[i]];
+    }
+    cout << endl;
+  }
+  else {
+    // ファイル出力
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
+
+    rep(i, min((int)ans.size(), MAX_LENGTH))
+    {
+      ofs << cc[ans[i]];
+    }
+    ofs << endl;
+
+    if (ofs.is_open()) {
+      ofs.close();
+    }
+  }
+}
 
 // スコア計算
 ll CalcScore(vector<int>& vec)
@@ -123,88 +222,26 @@ ll CalcScore(vector<int>& vec)
   return (ret / times) * 250000.0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// 始まったらやること
-// 1. 入力部
-// 2. maxScoreとans
-// 3. 出力部
-// 4. 愚直解
-// 5. スコア計算関数
-// 6. 貪欲解
-// 7. 山登り
-// 8. 焼きなまし
-///////////////////////////////////////////////////////////////////////////////
-int Solve(int mode, int num)
+int Solve(int num)
 {
-  srand((unsigned)time(NULL));
-  clock_t start_time, end_time;
-  start_time = clock();
-  end_time = clock();
-  while (rand() % 100) {
-    Rand();
-  }
+  start_timer();
 
-  // 入力部
-  string fileNameIfs = "./in/000" + to_string(num) + ".txt";
-  ifstream ifs(fileNameIfs.c_str());
-  if (!ifs.is_open()) {  // 標準入力する
-    cin >> sx >> sy >> tx >> ty >> pro;
-    rep(i, 20)
-    {
-      rep(j, 19)
-      {
-        char ccc;
-        cin >> ccc;
-        h[i][j] = ccc - '0';
-      }
-    }
-    rep(i, 19)
-    {
-      rep(j, 20)
-      {
-        char ccc;
-        cin >> ccc;
-        v[i][j] = ccc - '0';
-      }
-    }
-  }
-  else {  // ファイル入力する
-    mode = 1;
-    ifs >> sx >> sy >> tx >> ty >> pro;
-    rep(i, 20)
-    {
-      rep(j, 19)
-      {
-        char ccc;
-        ifs >> ccc;
-        h[i][j] = ccc - '0';
-      }
-    }
-    rep(i, 19)
-    {
-      rep(j, 20)
-      {
-        char ccc;
-        ifs >> ccc;
-        v[i][j] = ccc - '0';
-      }
-    }
-  }
+  input_data(num);
 
   ans.clear();
-  rep(i, 200)
+  rep(i, MAX_LENGTH)
   {
     ans.push_back(Rand() % 4);
   }
   maxScore = CalcScore(ans);
 
 
-  int dp[20][20];
+  int dp[n][n];
   int dir[21][21];
-  int dist[20][20];
-  rep(i, 20)
+  int dist[n][n];
+  rep(i, n)
   {
-    rep(j, 20)
+    rep(j, n)
     {
       dp[i][j] = INF;
       dir[20][20] = -1;
@@ -220,23 +257,18 @@ int Solve(int mode, int num)
   tmp.second.second = sy;
   que.push(tmp);
   while (que.size()) {
-    //cout << "     " << que.size() << endl;
     tmp = que.top();
     que.pop();
     int x = tmp.second.first;
     int y = tmp.second.second;
-    //cout << x << y << endl;
     if (tmp.first > dp[x][y]) continue;
     if (dp[x][y] > 250) continue;
     rep(i, 4)
     {
-      //cout << i;
       int nx = x, ny = y;
       int cnt = 0;
       if (i == 0) {
         while (nx != 0 && v[nx - 1][ny] == 0) {
-          //cout << i;
-          //cout << nx << ' ' << ny << endl;
           nx--;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -246,7 +278,6 @@ int Solve(int mode, int num)
       }
       if (i == 1) {
         while (ny != 0 && h[nx][ny - 1] == 0) {
-          //cout << i;
           ny--;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -256,7 +287,6 @@ int Solve(int mode, int num)
       }
       if (i == 2) {
         while (nx != 19 && v[nx][ny] == 0) {
-          //cout << i;
           nx++;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -266,7 +296,6 @@ int Solve(int mode, int num)
       }
       if (i == 3) {
         while (ny != 19 && h[nx][ny] == 0) {
-          //cout << i;
           ny++;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -275,7 +304,6 @@ int Solve(int mode, int num)
         }
       }
       if (nx == x && ny == y) continue;
-      //cout << "OK";
       if (dp[nx][ny] > dp[x][y] + cnt + pro * 15) {
         dp[nx][ny] = dp[x][y] + cnt + pro * 15;
         dist[nx][ny] = cnt;
@@ -288,13 +316,13 @@ int Solve(int mode, int num)
     }
   }
 
-  rep(i, 210)
+  rep(i, MAX_LENGTH + 10)
   {
     ans.push_back(rand() % 4);
   }
 
 
-  if (dp[tx][ty] <= 200) {
+  if (dp[tx][ty] <= MAX_LENGTH) {
     ans.clear();
     int x = tx, y = ty;
     while (x != sx || y != sy) {
@@ -310,7 +338,7 @@ int Solve(int mode, int num)
 
     reverse(ans.begin(), ans.end());
 
-    while (ans.size() < 200) {
+    while (ans.size() < MAX_LENGTH) {
       ans.push_back(rand() % 4);
     }
 
@@ -319,7 +347,7 @@ int Solve(int mode, int num)
   }
   int aaa = 0;
   real_maxScore = -1;
-  if (ans.size() > 200) {
+  if (ans.size() > MAX_LENGTH) {
     int ok = 0;
     rep(i, 10)
     {
@@ -327,7 +355,7 @@ int Solve(int mode, int num)
       {
         ans.clear();
         int x = tx - i, y = ty - j;
-        if (dp[x][y] >= 200) continue;
+        if (dp[x][y] >= MAX_LENGTH) continue;
         while (x != sx || y != sy) {
           int nx = x - dx[dir[x][y]] * dist[x][y];
           int ny = y - dy[dir[x][y]] * dist[x][y];
@@ -341,10 +369,10 @@ int Solve(int mode, int num)
 
         reverse(ans.begin(), ans.end());
 
-        while (ans.size() < 200) {
+        while (ans.size() < MAX_LENGTH) {
           ans.push_back(rand() % 4);
         }
-        if (ans.size() == 200) {
+        if (ans.size() == MAX_LENGTH) {
           ok = 1;
           aaa = 1;
           maxScore = CalcScore(ans);
@@ -358,7 +386,7 @@ int Solve(int mode, int num)
 
     if (ok == 0) {
       ans.clear();
-      rep(i, 210)
+      rep(i, MAX_LENGTH + 10)
       {
         ans.push_back(rand() % 4);
       }
@@ -367,7 +395,7 @@ int Solve(int mode, int num)
       ans = real_ans;
       maxScore = real_maxScore;
       if (maxScore == -1) {
-        rep(i, 210)
+        rep(i, MAX_LENGTH + 10)
         {
           ans.push_back(rand() % 4);
         }
@@ -376,11 +404,11 @@ int Solve(int mode, int num)
   }
 
   int loop = 0;
-  if (aaa || ans.size() > 200) {
+  if (aaa || ans.size() > MAX_LENGTH) {
     // 愚直解
     if (aaa == 0) {
       ans.clear();
-      rep(i, 200)
+      rep(i, MAX_LENGTH)
       {
         ans.push_back(Rand() % 4);
       }
@@ -392,21 +420,19 @@ int Solve(int mode, int num)
     real_maxScore = maxScore;
 
     // 山登り解、焼きなまし解
-    double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    double now_time = get_elapsed_time();
     double TL = 1.9;
     double start_temp = 2048;
     double end_temp = 0.0001;
-    // int loop          = 0;
     int keep[1000][3];
     while (true) {
       loop++;
       if (loop % 100 == 1) {
-        end_time = clock();
-        now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+        now_time = get_elapsed_time();
       }
       if (now_time > TL) break;
 
-      int x = Rand() % 200;
+      int x = Rand() % MAX_LENGTH;
       int y = Rand() % 4;
       int keepy = ans[x];
       ans[x] = y;
@@ -417,9 +443,7 @@ int Solve(int mode, int num)
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       double prob = exp((double)diffScore / temp);
-      // if (tmp > 0) {
       if (prob > Rand01()) {
-        // cout << tmpScore << endl;
         maxScore += diffScore;
         if (maxScore > real_maxScore) {
           real_maxScore = maxScore;
@@ -435,37 +459,16 @@ int Solve(int mode, int num)
     // 最高スコアを戻す
     ans = real_ans;
     maxScore = real_maxScore;
-
   }
 
-  // 解の出力
-  if (mode == 0) {
-    rep(i, min((int)ans.size(), 200))
-    {
-      cout << cc[ans[i]];
-    }
-    cout << endl;
-  }
+  output_data(num);
 
   // デバッグ用
-  if (mode != 0) {
+  if (exec_mode != 0) {
     cout << "ans.size() = " << ans.size() << endl;
     cout << "loop = " << loop << endl;
     cout << maxScore << endl;
-    end_time = clock();
-    cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << "sec." << endl;
-  }
-
-  // ファイル出力
-  if (mode != 0) {
-    string fileNameOfs = "sample_out.txt";
-    ofstream ofs(fileNameOfs);
-    rep(i, min((int)ans.size(), 200))
-    {
-      ofs << cc[ans[i]];
-    }
-    ofs << endl;
-    ofs.close();
+    cout << get_elapsed_time() << "sec." << endl;
   }
 
   return 0;
@@ -473,17 +476,17 @@ int Solve(int mode, int num)
 
 int main()
 {
-  int mode = 0;
+  exec_mode = 1;
 
-  if (mode == 0) {
-    Solve(mode, 8);
+  if (exec_mode == 0) {
+    Solve(8);
   }
-  else if (mode == 1) {
+  else if (exec_mode == 1) {
 
     srep(i, 1, 10)
     {
       cout << i << endl;
-      Solve(mode, i);
+      Solve(i);
     }
   }
 

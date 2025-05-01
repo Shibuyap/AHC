@@ -118,10 +118,6 @@ ll calculate_score()
 
 void output_data(int case_num)
 {
-  if (exec_mode != 0) {
-
-  }
-
   if (exec_mode == 0) {
     // •W€o—Í
   }
