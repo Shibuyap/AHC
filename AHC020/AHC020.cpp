@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 
 int run_mode;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -53,7 +53,7 @@ namespace
   }
 }
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t rand_u32()
   {
@@ -86,7 +86,7 @@ const int MAX_N = 100;
 const int MAX_M = 300;
 const int MAX_K = 5000;
 
-// ’è”
+// å®šæ•°
 vector<edge> edges;
 int node_cnt, edge_cnt, res_cnt;
 ll node_x[MAX_N], node_y[MAX_N];
@@ -99,7 +99,7 @@ ll node_node_cost[MAX_N][MAX_N];
 vector<P> res_near_nodes[MAX_K];
 vector<P> node_near_res[MAX_N];
 
-// XV‚·‚é•Ï”
+// æ›´æ–°ã™ã‚‹å¤‰æ•°
 ll best_score_cur;
 ll best_score;
 ll power_rad[MAX_N];
@@ -120,7 +120,7 @@ namespace
     }
   }
 
-  // –Ø‚Ìª‚ğ‹‚ß‚é
+  // æœ¨ã®æ ¹ã‚’æ±‚ã‚ã‚‹
   int find(vector<int>& par, int x)
   {
     if (par[x] == x) {
@@ -131,7 +131,7 @@ namespace
     }
   }
 
-  // x‚Æy‚Ì‘®‚·‚éW‡‚ğ•¹‡
+  // xã¨yã®å±ã™ã‚‹é›†åˆã‚’ä½µåˆ
   void unite(vector<int>& par, vector<int>& rank, int x, int y)
   {
     x = find(par, x);
@@ -147,7 +147,7 @@ namespace
     }
   }
 
-  // x‚Æy‚ª“¯‚¶W‡‚É‘®‚·‚é‚©”Û‚©
+  // xã¨yãŒåŒã˜é›†åˆã«å±ã™ã‚‹ã‹å¦ã‹
   bool same(vector<int>& par, int x, int y)
   {
     return find(par, x) == find(par, y);
@@ -159,112 +159,114 @@ bool comp(const edge& e1, const edge& e2) { return e1.cost < e2.cost; }
 int mst_node_req[MAX_N];
 int best_mst_node_req[MAX_N];
 int mst_edge_use[MAX_K];
-long long int kruscal(int V)
+/*----------  Kruskal core  ----------*/
+long long kruskal(int vertex_cnt)
 {
-  int needCount = 0;
-  rep(i, V) { needCount += mst_node_req[i]; }
-  int E = edges.size();
-  rep(i, E) mst_edge_use[i] = 0;
+  int need_cnt = 0;
+  rep(v_idx, vertex_cnt)
+  {                            
+    need_cnt += mst_node_req[v_idx];
+  }
 
-  vector<int> par(V + 10);   // e
-  vector<int> rank(V + 10);  // –Ø‚Ì[‚³
-  init(par, rank, V + 10);   // Union-Find‚Ì‰Šú‰»
-  long long int res = 0;
-  int uniteCount = 0;
-  for (int i = 0; i < E; i++) {
-    edge e = edges[i];
-    if (!mst_node_req[e.u] || !mst_node_req[e.v]) {
-      continue;
-    }
-    if (!same(par, e.u, e.v)) {
-      mst_edge_use[e.id] = 1;
-      unite(par, rank, e.u, e.v);
-      res += e.cost;
-      uniteCount++;
+  int edge_cnt = edges.size();                    
+  rep(e_idx, edge_cnt) mst_edge_use[e_idx] = 0;
+
+  /* Union-Find work arrays */
+  vector<int> uf_parent(vertex_cnt + 10);
+  vector<int> uf_rank(vertex_cnt + 10);
+  init(uf_parent, uf_rank, vertex_cnt + 10);
+
+  long long mst_cost = 0;                         
+  int unite_cnt = 0;
+
+  for (int e_idx = 0; e_idx < edge_cnt; ++e_idx) {
+    const edge& ed = edges[e_idx];                  
+    if (!mst_node_req[ed.u] || !mst_node_req[ed.v]) continue;
+
+    if (!same(uf_parent, ed.u, ed.v)) {
+      mst_edge_use[ed.id] = 1;
+      unite(uf_parent, uf_rank, ed.u, ed.v);
+      mst_cost += ed.cost;
+      ++unite_cnt;
     }
   }
 
-  if (uniteCount != needCount - 1) res = INF;
-  return res;
+  if (unite_cnt != need_cnt - 1) mst_cost = INF;
+  return mst_cost;
 }
 
-ll outer_kruskal() { return kruscal(node_cnt); }
+ll outer_kruskal() { return kruskal(node_cnt); }
 
+/*----------  LNS-style toggle search  ----------*/
 ll outer_kruskal_lns()
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
 
-  rep(i, node_cnt) { mst_node_req[i] = 1; }
-  ll mi = outer_kruskal();
-  int loop = 0;
-  double TL = 0.1;
+  rep(v_idx, node_cnt) mst_node_req[v_idx] = 1;
+
+  ll best_cost = outer_kruskal();                    
+  int iter_cnt = 0;
+  const double time_limit = 0.1;                      
+
   while (true) {
-    loop++;
-    {
-      endTime = clock();
-      double sec_elapsed = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-      double ratio_elapsed = sec_elapsed / TL;
-      if (ratio_elapsed > 1.0) break;
-    }
+    ++iter_cnt;
 
-    int num = rand_u32() % (node_cnt - 1) + 1;
-    if (power_rad[num] != 0) {
-      continue;
-    }
+    /* ã‚¿ã‚¤ãƒ ãƒªãƒŸãƒƒãƒˆç›£è¦– */
+    double sec_elapsed = get_elapsed_time();
+    double ratio_elapsed = sec_elapsed / time_limit;
+    if (ratio_elapsed > 1.0) break;
 
-    mst_node_req[num] = 1 - mst_node_req[num];
-    ll tmp = outer_kruskal();
-    if (tmp <= mi) {
-      mi = tmp;
+    /* ãƒ©ãƒ³ãƒ€ãƒ é ‚ç‚¹ã‚’ãƒˆã‚°ãƒ« */
+    int node_id = rand_u32() % (node_cnt - 1) + 1; 
+    if (power_rad[node_id] != 0) continue;
+
+    mst_node_req[node_id] ^= 1;                     
+    ll cur_cost = outer_kruskal();
+
+    if (cur_cost <= best_cost) {
+      best_cost = cur_cost;
     }
     else {
-      mst_node_req[num] = 1 - mst_node_req[num];
+      mst_node_req[node_id] ^= 1;                
     }
   }
-
-  return mi;
+  return best_cost;
 }
 
 bool check_coverage()
 {
-  rep(i, res_cnt)
+  rep(res_idx, res_cnt)                        
   {
-    int ok = 0;
-    int sz = res_near_nodes[i].size();
-    rep(j, sz)
+    bool is_covered = false;               
+    int near_sz = res_near_nodes[res_idx].size();  
+    rep(near_idx, near_sz)               
     {
-      int jj = res_near_nodes[i][j].second;
-      if (res_node_dist[i][jj] <= power_rad[jj]) {
-        ok = 1;
+      int node_id = res_near_nodes[res_idx][near_idx].second;  
+      if (res_node_dist[res_idx][node_id] <= power_rad[node_id]) {
+        is_covered = true;
         break;
       }
     }
-    if (!ok) {
-      return false;
-    }
+    if (!is_covered) return false;
   }
   return true;
 }
 
-bool check_coverage_node(int nn)
+bool check_coverage_node(int target_node)
 {
-  for (auto ii : node_near_res[nn]) {
-    int i = ii.second;
-    int ok = 0;
-    int sz = res_near_nodes[i].size();
-    rep(j, sz)
+  for (auto near_pair : node_near_res[target_node]) {
+    int res_idx = near_pair.second;               
+    bool is_covered = false;                       
+    int near_sz = res_near_nodes[res_idx].size();  
+    rep(near_idx, near_sz)                        
     {
-      int jj = res_near_nodes[i][j].second;
-      if (res_node_dist[i][jj] <= power_rad[jj]) {
-        ok = 1;
+      int node_id = res_near_nodes[res_idx][near_idx].second;  
+      if (res_node_dist[res_idx][node_id] <= power_rad[node_id]) {
+        is_covered = true;
         break;
       }
     }
-    if (!ok) {
-      return false;
-    }
+    if (!is_covered) return false;
   }
   return true;
 }
@@ -357,7 +359,7 @@ void init_state()
   rep(i, node_cnt) { mst_node_req[i] = 1; }
 }
 
-// “ü—Íó‚¯æ‚èiÀs’†ˆê“x‚µ‚©ŒÄ‚Î‚ê‚È‚¢‚±‚Æ‚ğ‘z’èj
+// å…¥åŠ›å—ã‘å–ã‚Šï¼ˆå®Ÿè¡Œä¸­ä¸€åº¦ã—ã‹å‘¼ã°ã‚Œãªã„ã“ã¨ã‚’æƒ³å®šï¼‰
 void read_input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -372,7 +374,7 @@ void read_input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     cin >> node_cnt >> edge_cnt >> res_cnt;
     rep(i, node_cnt) { cin >> node_x[i] >> node_y[i]; }
@@ -380,7 +382,7 @@ void read_input(int problemNum)
     rep(i, res_cnt) { cin >> res_x[i] >> res_y[i]; }
 
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     ifs >> node_cnt >> edge_cnt >> res_cnt;
     rep(i, node_cnt) { ifs >> node_x[i] >> node_y[i]; }
@@ -431,7 +433,7 @@ void read_input(int problemNum)
     edges.push_back(e);
   }
 
-  sort(edges.begin(), edges.end(), comp);  // edge.cost‚ª¬‚³‚¢‡‚Éƒ\[ƒg‚·‚é
+  sort(edges.begin(), edges.end(), comp);  // edge.costãŒå°ã•ã„é †ã«ã‚½ãƒ¼ãƒˆã™ã‚‹
 
   rep(i, node_cnt)
   {
@@ -451,7 +453,7 @@ void read_input(int problemNum)
   init_state();
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void write_output(int mode, int problemNum)
 {
   if (mode == 0) {
@@ -462,7 +464,7 @@ void write_output(int mode, int problemNum)
 
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     string fileNameOfs = "./out/";
     string strNum;
     rep(i, 4)
@@ -496,7 +498,7 @@ void snapshot_best()
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€‚É1‚ÂŠg‘åk¬‚·‚é
+// ãƒ©ãƒ³ãƒ€ãƒ ã«1ã¤æ‹¡å¤§ç¸®å°ã™ã‚‹
 void sa_single_power_perturb(double temperature)
 {
   int num = rand_u32() % node_cnt;
@@ -518,7 +520,7 @@ void sa_single_power_perturb(double temperature)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     power_rad[num] = pre;
   }
 }
@@ -557,7 +559,7 @@ void solve_layered_sa()
     power_rad[num] = need;
   }
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   best_score_cur = calc_score();
   best_score = best_score_cur;
   rep(i, node_cnt) { best_power_rad[i] = power_rad[i]; }
@@ -664,7 +666,7 @@ void solve_layered_sa()
         }
       }
       else {
-        // Œ³‚É–ß‚·
+        // å…ƒã«æˆ»ã™
         rep(i, node_cnt) { power_cap[i] = pre_maxPowers[i]; }
       }
     }
@@ -719,12 +721,12 @@ double solve_case(int mode, int problemNum = 0)
 
 double run_with_io(int mode, int problemNum = 0)
 {
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   read_input(problemNum);
 
   double score = solve_case(mode, problemNum);
 
-  // ‰ğ“š‚Ìo—Í
+  // è§£ç­”ã®å‡ºåŠ›
   write_output(mode, problemNum);
 
   return score;
@@ -734,15 +736,15 @@ int main()
 {
   run_mode = 2;
 
-  // ’ño—p
+  // æå‡ºç”¨
   if (run_mode == 0) {
     run_with_io(run_mode);
   }
-  // 1ƒP[ƒX‚·
+  // 1ã‚±ãƒ¼ã‚¹è©¦ã™
   else if (run_mode == 1) {
     run_with_io(run_mode, 9);
   }
-  // •¡”ƒP[ƒX‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹è©¦ã™
   else if (run_mode == 2) {
     rep(i, 10) { run_with_io(run_mode, i); }
   }
