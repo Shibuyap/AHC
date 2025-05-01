@@ -34,11 +34,11 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-int mode;
+int run_mode;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand_u32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -53,8 +53,8 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  static double rand_unit() {
+    return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -65,28 +65,32 @@ struct edge
   int id;
 };
 
+const int MAX_N = 100;
+const int MAX_M = 300;
+const int MAX_K = 5000;
+
 // 定数
 vector<edge> edges;
-ll n, m, k;
-ll x[110], y[110];
-ll u[330], v[330], w[330];
-ll a[5500], b[5500];
-ll distn[110][5500];
-ll distk[5500][110];
-ll ndist[110][110];
-ll ncost[110][110];
-vector<P> nears[5500];
-vector<P> nearsn[110];
+int node_cnt, edge_cnt, res_cnt;
+ll node_x[MAX_N], node_y[MAX_N];
+ll u[MAX_M], v[MAX_M], w[MAX_M];
+ll res_x[MAX_K], res_y[MAX_K];
+ll distn[MAX_N][MAX_K];
+ll distk[MAX_K][MAX_N];
+ll ndist[MAX_N][MAX_N];
+ll ncost[MAX_N][MAX_N];
+vector<P> nears[MAX_K];
+vector<P> nearsn[MAX_N];
 
 // 更新する変数
 ll maxScore;
 ll real_maxScore;
-ll p[110];
-ll B[330];
-ll real_p[110];
-ll real_B[330];
-int maxPowers[110] = {};
-int real_maxPowers[110] = {};
+ll p[MAX_N];
+ll B[MAX_M];
+ll real_p[MAX_N];
+ll real_B[MAX_M];
+int maxPowers[MAX_N] = {};
+int real_maxPowers[MAX_N] = {};
 
 // Union-Find
 namespace
@@ -135,9 +139,9 @@ namespace
 
 bool comp(const edge& e1, const edge& e2) { return e1.cost < e2.cost; }
 
-int isNeed[110];
-int real_isNeed[110];
-int isUse[5500];
+int isNeed[MAX_N];
+int real_isNeed[MAX_N];
+int isUse[MAX_K];
 long long int kruscal(int V)
 {
   int needCount = 0;
@@ -167,16 +171,16 @@ long long int kruscal(int V)
   return res;
 }
 
-ll OuterKruscal() { return kruscal(n); }
+ll outer_kruskal() { return kruscal(node_cnt); }
 
-ll OuterKruscal2()
+ll outer_kruskal_lns()
 {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
 
-  rep(i, n) { isNeed[i] = 1; }
-  ll mi = OuterKruscal();
+  rep(i, node_cnt) { isNeed[i] = 1; }
+  ll mi = outer_kruskal();
   int loop = 0;
   double TL = 0.1;
   while (true) {
@@ -188,15 +192,14 @@ ll OuterKruscal2()
       if (nowProgress > 1.0) break;
     }
 
-    int num = Rand() % (n - 1) + 1;
+    int num = rand_u32() % (node_cnt - 1) + 1;
     if (p[num] != 0) {
       continue;
     }
 
     isNeed[num] = 1 - isNeed[num];
-    ll tmp = OuterKruscal();
+    ll tmp = outer_kruskal();
     if (tmp <= mi) {
-      // cout << mi << ' ' << tmp << endl;
       mi = tmp;
     }
     else {
@@ -204,18 +207,12 @@ ll OuterKruscal2()
     }
   }
 
-  // if (mode != 0) {
-  //   cout << "kruscal loop = " << loop << endl;
-  // }
-
   return mi;
 }
 
-
-
-bool Check()
+bool check_coverage()
 {
-  rep(i, k)
+  rep(i, res_cnt)
   {
     int ok = 0;
     int sz = nears[i].size();
@@ -234,7 +231,7 @@ bool Check()
   return true;
 }
 
-bool Check2(int nn)
+bool check_coverage_node(int nn)
 {
   for (auto ii : nearsn[nn]) {
     int i = ii.second;
@@ -256,19 +253,19 @@ bool Check2(int nn)
 }
 
 ll keepW;
-ll CalcScore(bool isALL = true)
+ll calc_score(bool isALL = true)
 {
-  if (!Check()) {
+  if (!check_coverage()) {
     return -1;
   }
 
   double S = 0;
-  rep(i, n) { S += p[i] * p[i]; }
+  rep(i, node_cnt) { S += p[i] * p[i]; }
   if (isALL) {
     keepW = 0;
-    rep(i, m)
+    rep(i, edge_cnt)
     {
-      if (b[i]) {
+      if (res_y[i]) {
         S += w[i];
         keepW += w[i];
       }
@@ -283,19 +280,19 @@ ll CalcScore(bool isALL = true)
   return point;
 }
 
-ll CalcScore2(int nn, bool isALL = true)
+ll calc_score_partial(int nn, bool isALL = true)
 {
-  if (!Check2(nn)) {
+  if (!check_coverage_node(nn)) {
     return -1;
   }
 
   double S = 0;
-  rep(i, n) { S += p[i] * p[i]; }
+  rep(i, node_cnt) { S += p[i] * p[i]; }
   if (isALL) {
     keepW = 0;
-    rep(i, m)
+    rep(i, edge_cnt)
     {
-      if (b[i]) {
+      if (res_y[i]) {
         S += w[i];
         keepW += w[i];
       }
@@ -310,23 +307,23 @@ ll CalcScore2(int nn, bool isALL = true)
   return point;
 }
 
-ll Dist(ll x1, ll y1, ll x2, ll y2)
+ll sq_dist(ll x1, ll y1, ll x2, ll y2)
 {
   return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
 
-ll DistSquare(ll x1, ll y1, ll x2, ll y2)
+ll min_radius_le_5000(ll x1, ll y1, ll x2, ll y2)
 {
-  if (Dist(x1, y1, x2, y2) > 25000000) {
+  if (sq_dist(x1, y1, x2, y2) > 25000000) {
     return INF;
   }
-  if (Dist(x1, y1, x2, y2) == 0) {
+  if (sq_dist(x1, y1, x2, y2) == 0) {
     return 0;
   }
   int ng = 0, ok = 5000;
   while (ng + 1 < ok) {
     int mid = (ok + ng) / 2;
-    if (Dist(x1, y1, x2, y2) <= mid * mid) {
+    if (sq_dist(x1, y1, x2, y2) <= mid * mid) {
       ok = mid;
     }
     else {
@@ -336,15 +333,15 @@ ll DistSquare(ll x1, ll y1, ll x2, ll y2)
   return ok;
 }
 
-void Init()
+void init_state()
 {
-  rep(i, n) { p[i] = 0; }
-  rep(i, m) { b[i] = 0; }
-  rep(i, n) { isNeed[i] = 1; }
+  rep(i, node_cnt) { p[i] = 0; }
+  rep(i, edge_cnt) { res_y[i] = 0; }
+  rep(i, node_cnt) { isNeed[i] = 1; }
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
-void Input(int problemNum)
+void read_input(int problemNum)
 {
   string fileNameIfs = "./in/";
   string strNum;
@@ -360,30 +357,30 @@ void Input(int problemNum)
 
   // 標準入力する
   if (!ifs.is_open()) {
-    cin >> n >> m >> k;
-    rep(i, n) { cin >> x[i] >> y[i]; }
-    rep(i, m) { cin >> u[i] >> v[i] >> w[i]; }
-    rep(i, k) { cin >> a[i] >> b[i]; }
+    cin >> node_cnt >> edge_cnt >> res_cnt;
+    rep(i, node_cnt) { cin >> node_x[i] >> node_y[i]; }
+    rep(i, edge_cnt) { cin >> u[i] >> v[i] >> w[i]; }
+    rep(i, res_cnt) { cin >> res_x[i] >> res_y[i]; }
 
   }
   // ファイル入力する
   else {
-    ifs >> n >> m >> k;
-    rep(i, n) { ifs >> x[i] >> y[i]; }
-    rep(i, m) { ifs >> u[i] >> v[i] >> w[i]; }
-    rep(i, k) { ifs >> a[i] >> b[i]; }
+    ifs >> node_cnt >> edge_cnt >> res_cnt;
+    rep(i, node_cnt) { ifs >> node_x[i] >> node_y[i]; }
+    rep(i, edge_cnt) { ifs >> u[i] >> v[i] >> w[i]; }
+    rep(i, res_cnt) { ifs >> res_x[i] >> res_y[i]; }
   }
 
-  rep(i, n)
+  rep(i, node_cnt)
   {
-    rep(j, n)
+    rep(j, node_cnt)
     {
       ndist[i][j] = INF;
       ncost[i][j] = INF;
     }
   }
 
-  rep(i, m)
+  rep(i, edge_cnt)
   {
     u[i]--;
     v[i]--;
@@ -391,13 +388,13 @@ void Input(int problemNum)
     ncost[v[i]][u[i]] = w[i];
   }
 
-  rep(i, k) { nears[i].clear(); }
+  rep(i, res_cnt) { nears[i].clear(); }
 
-  rep(i, n)
+  rep(i, node_cnt)
   {
-    rep(j, k)
+    rep(j, res_cnt)
     {
-      distn[i][j] = DistSquare(x[i], y[i], a[j], b[j]);
+      distn[i][j] = min_radius_le_5000(node_x[i], node_y[i], res_x[j], res_y[j]);
       distk[j][i] = distn[i][j];
       if (distk[j][i] <= 5000) {
         nears[j].push_back(P(distk[j][i], i));
@@ -405,9 +402,9 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, k) { sort(nears[i].begin(), nears[i].end()); }
+  rep(i, res_cnt) { sort(nears[i].begin(), nears[i].end()); }
 
-  rep(i, m)
+  rep(i, edge_cnt)
   {
     edge e;
     e.u = u[i];
@@ -419,9 +416,9 @@ void Input(int problemNum)
 
   sort(edges.begin(), edges.end(), comp);  // edge.costが小さい順にソートする
 
-  rep(i, n)
+  rep(i, node_cnt)
   {
-    rep(j, k)
+    rep(j, res_cnt)
     {
       if (distn[i][j] <= 5000) {
         nearsn[i].push_back(P(distn[i][j], j));
@@ -429,21 +426,21 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, n)
+  rep(i, node_cnt)
   {
     sort(nearsn[i].begin(), nearsn[i].end());
   }
 
-  Init();
+  init_state();
 }
 
 // 解答出力
-void Output(int mode, int problemNum)
+void write_output(int mode, int problemNum)
 {
   if (mode == 0) {
-    rep(i, n) { cout << p[i] << ' '; }
+    rep(i, node_cnt) { cout << p[i] << ' '; }
     cout << endl;
-    rep(i, m) { cout << b[i] << ' '; }
+    rep(i, edge_cnt) { cout << res_y[i] << ' '; }
     cout << endl;
 
   }
@@ -461,46 +458,46 @@ void Output(int mode, int problemNum)
 
     ofstream ofs(fileNameOfs);
 
-    rep(i, n) { ofs << p[i] << ' '; }
+    rep(i, node_cnt) { ofs << p[i] << ' '; }
     ofs << endl;
-    rep(i, m) { ofs << b[i] << ' '; }
+    rep(i, edge_cnt) { ofs << res_y[i] << ' '; }
     ofs << endl;
 
     ofs.close();
   }
 }
 
-void SetReal()
+void snapshot_best()
 {
   real_maxScore = maxScore;
-  rep(i, n) { real_p[i] = p[i]; }
-  rep(i, m) { real_B[i] = B[i]; }
-  rep(i, n) { real_maxPowers[i] = maxPowers[i]; }
-  rep(i, n)
+  rep(i, node_cnt) { real_p[i] = p[i]; }
+  rep(i, edge_cnt) { real_B[i] = B[i]; }
+  rep(i, node_cnt) { real_maxPowers[i] = maxPowers[i]; }
+  rep(i, node_cnt)
   {
     real_isNeed[i] = isNeed[i];
   }
 }
 
 // ランダムに1つ拡大縮小する
-void Method1(double temperature)
+void sa_single_power_perturb(double temperature)
 {
-  int num = Rand() % n;
+  int num = rand_u32() % node_cnt;
   int pre = p[num];
 
-  p[num] += Rand() % 51 - 25;
+  p[num] += rand_u32() % 51 - 25;
   p[num] = max(0LL, p[num]);
   p[num] = min(5000LL, p[num]);
 
-  ll tmpScore = CalcScore();
+  ll tmpScore = calc_score();
 
   ll diffScore = tmpScore - maxScore;
 
   double prob = exp((double)diffScore / temperature);
-  if (prob > Rand01()) {
+  if (prob > rand_unit()) {
     maxScore += diffScore;
     if (maxScore > real_maxScore) {
-      SetReal();
+      snapshot_best();
     }
   }
   else {
@@ -509,28 +506,28 @@ void Method1(double temperature)
   }
 }
 
-void Solve1()
+void solve_all_max()
 {
   // 解1
-  rep(i, n) { p[i] = 5000; }
-  rep(i, m) { b[i] = 1; }
+  rep(i, node_cnt) { p[i] = 5000; }
+  rep(i, edge_cnt) { res_y[i] = 1; }
 }
 
-void Solve2()
+void solve_greedy_sa()
 {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
 
-  OuterKruscal();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 
-  int flag[5500] = {};
+  int flag[MAX_K] = {};
   vector<P> farest;
-  rep(i, k) { farest.push_back(nears[i][0]); }
+  rep(i, res_cnt) { farest.push_back(nears[i][0]); }
   sort(farest.begin(), farest.end());
 
-  drep(i, k)
+  drep(i, res_cnt)
   {
     int num = farest[i].second;
     int power = farest[i].first;
@@ -538,7 +535,7 @@ void Solve2()
       continue;
     }
     ll need = 0;
-    rep(j, k)
+    rep(j, res_cnt)
     {
       if (!flag[j] && distk[j][num] <= power) {
         flag[j] = 1;
@@ -549,10 +546,10 @@ void Solve2()
   }
 
   // 焼きなまし
-  maxScore = CalcScore();
+  maxScore = calc_score();
   real_maxScore = maxScore;
-  rep(i, n) { real_p[i] = p[i]; }
-  rep(i, m) { real_B[i] = B[i]; }
+  rep(i, node_cnt) { real_p[i] = p[i]; }
+  rep(i, edge_cnt) { real_B[i] = B[i]; }
 
   double TL = 1.5;
   int loop = 0;
@@ -573,42 +570,42 @@ void Solve2()
     double temperature =
       startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-    Method1(temperature);
+    sa_single_power_perturb(temperature);
   }
 
-  if (mode != 0) {
+  if (run_mode != 0) {
     cout << loop << endl;
   }
 
   maxScore = real_maxScore;
-  rep(i, n) { p[i] = real_p[i]; }
-  rep(i, m) { B[i] = real_B[i]; }
+  rep(i, node_cnt) { p[i] = real_p[i]; }
+  rep(i, edge_cnt) { B[i] = real_B[i]; }
 
-  OuterKruscal2();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal_lns();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 }
 
-void Solve3()
+void solve_layered_sa()
 {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
 
-  OuterKruscal();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 
-  int flag[5500] = {};
+  int flag[MAX_K] = {};
 
-  rep(i, k)
+  rep(i, res_cnt)
   {
     maxPowers[nears[i][0].second] =
       max(maxPowers[nears[i][0].second], nears[i][0].first);
   }
   vector<P> farest;
-  rep(i, n) { farest.push_back(P(maxPowers[i], i)); }
+  rep(i, node_cnt) { farest.push_back(P(maxPowers[i], i)); }
   sort(farest.begin(), farest.end());
 
-  drep(i, n)
+  drep(i, node_cnt)
   {
     int num = farest[i].second;
     int power = farest[i].first;
@@ -616,7 +613,7 @@ void Solve3()
       continue;
     }
     ll need = 0;
-    rep(j, k)
+    rep(j, res_cnt)
     {
       if (!flag[j] && distk[j][num] <= power) {
         flag[j] = 1;
@@ -627,12 +624,12 @@ void Solve3()
   }
 
   // 焼きなまし
-  maxScore = CalcScore();
+  maxScore = calc_score();
   real_maxScore = maxScore;
-  rep(i, n) { real_p[i] = p[i]; }
-  rep(i, m) { real_B[i] = B[i]; }
+  rep(i, node_cnt) { real_p[i] = p[i]; }
+  rep(i, edge_cnt) { real_B[i] = B[i]; }
 
-  rep(i, n) { real_maxPowers[i] = maxPowers[i]; }
+  rep(i, node_cnt) { real_maxPowers[i] = maxPowers[i]; }
 
   double TL_ALL = 1.5;
   int SET_COUNT = 2;
@@ -659,47 +656,47 @@ void Solve3()
       double temperature =
         startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-      int pre_maxPowers[110];
-      rep(i, n)
+      int pre_maxPowers[MAX_N];
+      rep(i, node_cnt)
       {
         p[i] = 0;
         pre_maxPowers[i] = maxPowers[i];
       }
 
-      int num = Rand() % n;
+      int num = rand_u32() % node_cnt;
 
 
-      maxPowers[num] += Rand() % 101 - 50;
-      if (Rand() % 10 == 0) {
-        maxPowers[num] += Rand() % 1001 - 500;
+      maxPowers[num] += rand_u32() % 101 - 50;
+      if (rand_u32() % 10 == 0) {
+        maxPowers[num] += rand_u32() % 1001 - 500;
       }
-      if (Rand() % 100 == 0) {
-        maxPowers[num] += Rand() % 10001 - 5000;
+      if (rand_u32() % 100 == 0) {
+        maxPowers[num] += rand_u32() % 10001 - 5000;
       }
       maxPowers[num] = max(0, maxPowers[num]);
       maxPowers[num] = min(5000, maxPowers[num]);
 
       if (rand() % 10 == 0) {
-        int num2 = Rand() % n;
-        maxPowers[num2] += Rand() % 101 - 50;
-        if (Rand() % 10 == 0) {
-          maxPowers[num2] += Rand() % 1001 - 500;
+        int num2 = rand_u32() % node_cnt;
+        maxPowers[num2] += rand_u32() % 101 - 50;
+        if (rand_u32() % 10 == 0) {
+          maxPowers[num2] += rand_u32() % 1001 - 500;
         }
-        if (Rand() % 100 == 0) {
-          maxPowers[num2] += Rand() % 10001 - 5000;
+        if (rand_u32() % 100 == 0) {
+          maxPowers[num2] += rand_u32() % 10001 - 5000;
         }
         maxPowers[num2] = max(0, maxPowers[num2]);
         maxPowers[num2] = min(5000, maxPowers[num2]);
       }
 
 
-      rep(i, k) { flag[i] = 0; }
+      rep(i, res_cnt) { flag[i] = 0; }
 
       farest.clear();
-      rep(i, n) { farest.push_back(P(maxPowers[i], i)); }
+      rep(i, node_cnt) { farest.push_back(P(maxPowers[i], i)); }
       sort(farest.begin(), farest.end());
 
-      drep(i, n)
+      drep(i, node_cnt)
       {
         int num = farest[i].second;
         int power = farest[i].first;
@@ -718,62 +715,55 @@ void Solve3()
             need = max(need, kyori);
           }
         }
-        //rep(j, k) {
-        //  if (!flag[j] && distk[j][num] <= power) {
-        //    flag[j] = 1;
-        //    need = max(need, distk[j][num]);
-        //  }
-        //}
         p[num] = need;
       }
 
-      ll tmpScore = CalcScore(false);
+      ll tmpScore = calc_score(false);
 
       ll diffScore = tmpScore - maxScore;
 
       double prob = exp((double)diffScore / temperature);
-      if (prob > Rand01()) {
+      if (prob > rand_unit()) {
         maxScore += diffScore;
         if (maxScore > real_maxScore) {
-          if (mode != 0) {
-            //cout << maxScore << ' ' << real_maxScore << endl;
+          if (run_mode != 0) {
           }
-          SetReal();
+          snapshot_best();
         }
       }
       else {
         // 元に戻す
-        rep(i, n) { maxPowers[i] = pre_maxPowers[i]; }
+        rep(i, node_cnt) { maxPowers[i] = pre_maxPowers[i]; }
       }
     }
 
-    if (mode != 0) {
+    if (run_mode != 0) {
       cout << loop << endl;
     }
 
     maxScore = real_maxScore;
-    rep(i, n) { p[i] = real_p[i]; }
-    rep(i, m) { B[i] = real_B[i]; }
-    rep(i, n)
+    rep(i, node_cnt) { p[i] = real_p[i]; }
+    rep(i, edge_cnt) { B[i] = real_B[i]; }
+    rep(i, node_cnt)
     {
       maxPowers[i] = real_maxPowers[i];
     }
   }
 
-  OuterKruscal2();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal_lns();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 }
 
 
-ll OuterKruscal3()
+ll outer_kruskal_with_score()
 {
 
-  ll tmp = OuterKruscal();
+  ll tmp = outer_kruskal();
 
   ll res = 0;
   if (tmp != INF) {
 
-    res = CalcScore();
+    res = calc_score();
     cout << res << endl;
   }
 
@@ -781,27 +771,27 @@ ll OuterKruscal3()
   return res;
 }
 
-void Solve4()
+void solve_sa_edge_toggle()
 {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
 
-  OuterKruscal();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 
-  int flag[5500] = {};
+  int flag[MAX_K] = {};
 
-  rep(i, k)
+  rep(i, res_cnt)
   {
     maxPowers[nears[i][0].second] =
       max(maxPowers[nears[i][0].second], nears[i][0].first);
   }
   vector<P> farest;
-  rep(i, n) { farest.push_back(P(maxPowers[i], i)); }
+  rep(i, node_cnt) { farest.push_back(P(maxPowers[i], i)); }
   sort(farest.begin(), farest.end());
 
-  drep(i, n)
+  drep(i, node_cnt)
   {
     int num = farest[i].second;
     int power = farest[i].first;
@@ -809,7 +799,7 @@ void Solve4()
       continue;
     }
     ll need = 0;
-    rep(j, k)
+    rep(j, res_cnt)
     {
       if (!flag[j] && distk[j][num] <= power) {
         flag[j] = 1;
@@ -819,16 +809,16 @@ void Solve4()
     p[num] = need;
   }
 
-  OuterKruscal2();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal_lns();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 
   // 焼きなまし
-  maxScore = CalcScore();
+  maxScore = calc_score();
   real_maxScore = maxScore;
-  rep(i, n) { real_p[i] = p[i]; }
-  rep(i, m) { real_B[i] = B[i]; }
-  rep(i, n) { real_maxPowers[i] = maxPowers[i]; }
-  rep(i, n)
+  rep(i, node_cnt) { real_p[i] = p[i]; }
+  rep(i, edge_cnt) { real_B[i] = B[i]; }
+  rep(i, node_cnt) { real_maxPowers[i] = maxPowers[i]; }
+  rep(i, node_cnt)
   {
     real_isNeed[i] = isNeed[i];
   }
@@ -858,30 +848,30 @@ void Solve4()
       double temperature =
         startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-      if (Rand() % 10 != 0) {
-        int pre_maxPowers[110];
-        int pre_p[110];
-        rep(i, n)
+      if (rand_u32() % 10 != 0) {
+        int pre_maxPowers[MAX_N];
+        int pre_p[MAX_N];
+        rep(i, node_cnt)
         {
           pre_p[i] = p[i];
           p[i] = 0;
           pre_maxPowers[i] = maxPowers[i];
         }
 
-        int num = Rand() % n;
+        int num = rand_u32() % node_cnt;
 
 
-        maxPowers[num] += Rand() % 101 - 50;
+        maxPowers[num] += rand_u32() % 101 - 50;
         maxPowers[num] = max(0, maxPowers[num]);
         maxPowers[num] = min(5000, maxPowers[num]);
 
-        rep(i, k) { flag[i] = 0; }
+        rep(i, res_cnt) { flag[i] = 0; }
 
         farest.clear();
-        rep(i, n) { farest.push_back(P(maxPowers[i], i)); }
+        rep(i, node_cnt) { farest.push_back(P(maxPowers[i], i)); }
         sort(farest.begin(), farest.end());
 
-        drep(i, n)
+        drep(i, node_cnt)
         {
           int num = farest[i].second;
           int power = farest[i].first;
@@ -900,18 +890,12 @@ void Solve4()
               need = max(need, kyori);
             }
           }
-          //rep(j, k) {
-          //  if (!flag[j] && distk[j][num] <= power) {
-          //    flag[j] = 1;
-          //    need = max(need, distk[j][num]);
-          //  }
-          //}
           p[num] = need;
         }
 
         int isUpdate = 0;
         vector<int> isNeedKeep;
-        rep(i, n)
+        rep(i, node_cnt)
         {
           if (pre_p[i] == 0 && p[i] > 0 && isNeed[i] == 0) {
             isNeed[i] = 1;
@@ -922,51 +906,48 @@ void Solve4()
         }
         ll tmpScore = 0;
         if (isUpdate) {
-          tmpScore = OuterKruscal3();
+          tmpScore = outer_kruskal_with_score();
         }
         else {
-          tmpScore = CalcScore(false);
+          tmpScore = calc_score(false);
         }
 
 
         ll diffScore = tmpScore - maxScore;
 
         double prob = exp((double)diffScore / temperature);
-        if (prob > Rand01()) {
+        if (prob > rand_unit()) {
           maxScore += diffScore;
           if (maxScore > real_maxScore) {
-            if (mode != 0) {
-              //cout << maxScore << ' ' << real_maxScore << endl;
-            }
-            SetReal();
+            snapshot_best();
           }
         }
         else {
           // 元に戻す
-          rep(i, n) { maxPowers[i] = pre_maxPowers[i]; }
+          rep(i, node_cnt) { maxPowers[i] = pre_maxPowers[i]; }
           for (auto ite : isNeedKeep) {
             isNeed[ite] = 0;
           }
         }
       }
       else {
-        int num = Rand() % (n - 1) + 1;
+        int num = rand_u32() % (node_cnt - 1) + 1;
         if (p[num] != 0) {
           continue;
         }
         isNeed[num] = 1 - isNeed[num];
-        ll tmpScore = OuterKruscal3();
+        ll tmpScore = outer_kruskal_with_score();
 
         ll diffScore = tmpScore - maxScore;
 
         double prob = exp((double)diffScore / temperature);
-        if (prob > Rand01()) {
+        if (prob > rand_unit()) {
           maxScore += diffScore;
           if (maxScore > real_maxScore) {
-            if (mode != 0) {
+            if (run_mode != 0) {
               cout << maxScore << ' ' << real_maxScore << endl;
             }
-            SetReal();
+            snapshot_best();
           }
         }
         else {
@@ -976,81 +957,75 @@ void Solve4()
       }
     }
 
-    if (mode != 0) {
+    if (run_mode != 0) {
       cout << loop << endl;
     }
 
     maxScore = real_maxScore;
-    rep(i, n) { p[i] = real_p[i]; }
-    rep(i, m) { B[i] = real_B[i]; }
-    rep(i, n)
+    rep(i, node_cnt) { p[i] = real_p[i]; }
+    rep(i, edge_cnt) { B[i] = real_B[i]; }
+    rep(i, node_cnt)
     {
       maxPowers[i] = real_maxPowers[i];
     }
-    rep(i, n)
+    rep(i, node_cnt)
     {
       isNeed[i] = real_isNeed[i];
     }
   }
 
-  OuterKruscal2();
-  rep(i, m) { b[i] = isUse[i]; }
+  outer_kruskal_lns();
+  rep(i, edge_cnt) { res_y[i] = isUse[i]; }
 }
 
 
-double Solve(int mode, int problemNum = 0)
+double solve_case(int mode, int problemNum = 0)
 {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
 
-  // Solve1();
-  // Solve2();
-  Solve3();
-  //Solve4();
+  // solve_all_max();
+  // solve_greedy_sa();
+  solve_layered_sa();
+  //solve_sa_edge_toggle();
 
-  Check();
+  check_coverage();
 
   if (mode != 0) {
-    cout << CalcScore() << endl;
+    cout << calc_score() << endl;
   }
-  return CalcScore();
+  return calc_score();
 }
 
-double SolveOuter(int mode, int problemNum = 0)
+double run_with_io(int mode, int problemNum = 0)
 {
   // 入力受け取り
-  Input(problemNum);
+  read_input(problemNum);
 
-  double score = Solve(mode, problemNum);
+  double score = solve_case(mode, problemNum);
 
   // 解答の出力
-  Output(mode, problemNum);
+  write_output(mode, problemNum);
 
   return score;
 }
 
 int main()
 {
-  // 乱数調整
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
-  mode = 0;
+  run_mode = 2;
 
   // 提出用
-  if (mode == 0) {
-    SolveOuter(mode);
+  if (run_mode == 0) {
+    run_with_io(run_mode);
   }
   // 1ケース試す
-  else if (mode == 1) {
-    SolveOuter(mode, 9);
+  else if (run_mode == 1) {
+    run_with_io(run_mode, 9);
   }
   // 複数ケース試す
-  else if (mode == 2) {
-    rep(i, 10) { SolveOuter(mode, i); }
+  else if (run_mode == 2) {
+    rep(i, 10) { run_with_io(run_mode, i); }
   }
 
   return 0;
