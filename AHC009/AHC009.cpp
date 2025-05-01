@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 const int INF = 1001001001;
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
-const char cc[4] = { 'U','L','D','R' };
+const char DIR_CHAR[4] = { 'U','L','D','R' };
 
 // タイマー
 namespace
@@ -84,20 +84,20 @@ int exec_mode;
 namespace /* 変数 */
 {
   // 入力用変数
-  const int n = 20;
-  const int MAX_LENGTH = 200;
+  const int BOARD_SIZE = 20;
+  const int MAX_ROUTE_LEN = 200;
   int sx, sy, tx, ty;
-  double pro;
-  int h[n][n];
-  int v[n][n];
+  double forgetProb;
+  int hWall[BOARD_SIZE][BOARD_SIZE];
+  int vWall[BOARD_SIZE][BOARD_SIZE];
 
   // 解答用変数
-  ll maxScore;
-  vector<int> ans;
+  ll cur_score;
+  vector<int> route;
 
   // 焼きなまし用変数
-  ll real_maxScore;
-  vector<int> real_ans;
+  ll best_score;
+  vector<int> best_route;
 
 }  // namespace
 
@@ -109,45 +109,45 @@ void input_data(int case_num)
 
   if (!ifs.is_open()) {
     // 標準入力
-    cin >> sx >> sy >> tx >> ty >> pro;
-    rep(i, n)
+    cin >> sx >> sy >> tx >> ty >> forgetProb;
+    rep(i, BOARD_SIZE)
     {
-      rep(j, n-1)
+      rep(j, BOARD_SIZE-1)
       {
         char ccc;
         cin >> ccc;
-        h[i][j] = ccc - '0';
+        hWall[i][j] = ccc - '0';
       }
     }
-    rep(i, n-1)
+    rep(i, BOARD_SIZE-1)
     {
-      rep(j, n)
+      rep(j, BOARD_SIZE)
       {
         char ccc;
         cin >> ccc;
-        v[i][j] = ccc - '0';
+        vWall[i][j] = ccc - '0';
       }
     }
   }
   else {
     // ファイル入力
-    ifs >> sx >> sy >> tx >> ty >> pro;
-    rep(i, n)
+    ifs >> sx >> sy >> tx >> ty >> forgetProb;
+    rep(i, BOARD_SIZE)
     {
-      rep(j, n-1)
+      rep(j, BOARD_SIZE-1)
       {
         char ccc;
         ifs >> ccc;
-        h[i][j] = ccc - '0';
+        hWall[i][j] = ccc - '0';
       }
     }
-    rep(i, n-1)
+    rep(i, BOARD_SIZE-1)
     {
-      rep(j, n)
+      rep(j, BOARD_SIZE)
       {
         char ccc;
         ifs >> ccc;
-        v[i][j] = ccc - '0';
+        vWall[i][j] = ccc - '0';
       }
     }
   }
@@ -157,9 +157,9 @@ void output_data(int case_num)
 {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, min((int)ans.size(), MAX_LENGTH))
+    rep(i, min((int)route.size(), MAX_ROUTE_LEN))
     {
-      cout << cc[ans[i]];
+      cout << DIR_CHAR[route[i]];
     }
     cout << endl;
   }
@@ -169,9 +169,9 @@ void output_data(int case_num)
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    rep(i, min((int)ans.size(), MAX_LENGTH))
+    rep(i, min((int)route.size(), MAX_ROUTE_LEN))
     {
-      ofs << cc[ans[i]];
+      ofs << DIR_CHAR[route[i]];
     }
     ofs << endl;
 
@@ -182,7 +182,7 @@ void output_data(int case_num)
 }
 
 // スコア計算
-ll CalcScore(vector<int>& vec)
+ll simulate_score(vector<int>& vec)
 {
   int times = 100;
   double ret = 0;
@@ -192,22 +192,22 @@ ll CalcScore(vector<int>& vec)
     int x = sx, y = sy;
     rep(i, le)
     {
-      if (Rand01() < pro) {
+      if (Rand01() < forgetProb) {
         ;
       }
       else {
         int z = vec[i];
         if (z == 0) {
-          if (x == 0 || v[x - 1][y]) continue;
+          if (x == 0 || vWall[x - 1][y]) continue;
         }
         if (z == 1) {
-          if (y == 0 || h[x][y - 1]) continue;
+          if (y == 0 || hWall[x][y - 1]) continue;
         }
         if (z == 2) {
-          if (x == 19 || v[x][y]) continue;
+          if (x == 19 || vWall[x][y]) continue;
         }
         if (z == 3) {
-          if (y == 19 || h[x][y]) continue;
+          if (y == 19 || hWall[x][y]) continue;
         }
 
         x += dx[z];
@@ -228,23 +228,23 @@ int Solve(int num)
 
   input_data(num);
 
-  ans.clear();
-  rep(i, MAX_LENGTH)
+  route.clear();
+  rep(i, MAX_ROUTE_LEN)
   {
-    ans.push_back(Rand() % 4);
+    route.push_back(Rand() % 4);
   }
-  maxScore = CalcScore(ans);
+  cur_score = simulate_score(route);
 
 
-  int dp[n][n];
-  int dir[21][21];
-  int dist[n][n];
-  rep(i, n)
+  int dp[BOARD_SIZE][BOARD_SIZE];
+  int prev_dir[21][21];
+  int dist[BOARD_SIZE][BOARD_SIZE];
+  rep(i, BOARD_SIZE)
   {
-    rep(j, n)
+    rep(j, BOARD_SIZE)
     {
       dp[i][j] = INF;
-      dir[20][20] = -1;
+      prev_dir[20][20] = -1;
       dist[i][j] = -1;
     }
   }
@@ -268,7 +268,7 @@ int Solve(int num)
       int nx = x, ny = y;
       int cnt = 0;
       if (i == 0) {
-        while (nx != 0 && v[nx - 1][ny] == 0) {
+        while (nx != 0 && vWall[nx - 1][ny] == 0) {
           nx--;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -277,7 +277,7 @@ int Solve(int num)
         }
       }
       if (i == 1) {
-        while (ny != 0 && h[nx][ny - 1] == 0) {
+        while (ny != 0 && hWall[nx][ny - 1] == 0) {
           ny--;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -286,7 +286,7 @@ int Solve(int num)
         }
       }
       if (i == 2) {
-        while (nx != 19 && v[nx][ny] == 0) {
+        while (nx != 19 && vWall[nx][ny] == 0) {
           nx++;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -295,7 +295,7 @@ int Solve(int num)
         }
       }
       if (i == 3) {
-        while (ny != 19 && h[nx][ny] == 0) {
+        while (ny != 19 && hWall[nx][ny] == 0) {
           ny++;
           cnt++;
           if (nx == tx && ny == ty) {
@@ -304,10 +304,10 @@ int Solve(int num)
         }
       }
       if (nx == x && ny == y) continue;
-      if (dp[nx][ny] > dp[x][y] + cnt + pro * 15) {
-        dp[nx][ny] = dp[x][y] + cnt + pro * 15;
+      if (dp[nx][ny] > dp[x][y] + cnt + forgetProb * 15) {
+        dp[nx][ny] = dp[x][y] + cnt + forgetProb * 15;
         dist[nx][ny] = cnt;
-        dir[nx][ny] = i;
+        prev_dir[nx][ny] = i;
         tmp.first = dp[nx][ny];
         tmp.second.first = nx;
         tmp.second.second = ny;
@@ -316,108 +316,108 @@ int Solve(int num)
     }
   }
 
-  rep(i, MAX_LENGTH + 10)
+  rep(i, MAX_ROUTE_LEN + 10)
   {
-    ans.push_back(rand() % 4);
+    route.push_back(rand() % 4);
   }
 
 
-  if (dp[tx][ty] <= MAX_LENGTH) {
-    ans.clear();
+  if (dp[tx][ty] <= MAX_ROUTE_LEN) {
+    route.clear();
     int x = tx, y = ty;
     while (x != sx || y != sy) {
-      int nx = x - dx[dir[x][y]] * dist[x][y];
-      int ny = y - dy[dir[x][y]] * dist[x][y];
-      rep(i, (dist[x][y] * (1.0 / (1.0 - pro))) + pro * 15)
+      int nx = x - dx[prev_dir[x][y]] * dist[x][y];
+      int ny = y - dy[prev_dir[x][y]] * dist[x][y];
+      rep(i, (dist[x][y] * (1.0 / (1.0 - forgetProb))) + forgetProb * 15)
       {
-        ans.push_back(dir[x][y]);
+        route.push_back(prev_dir[x][y]);
       }
       x = nx;
       y = ny;
     }
 
-    reverse(ans.begin(), ans.end());
+    reverse(route.begin(), route.end());
 
-    while (ans.size() < MAX_LENGTH) {
-      ans.push_back(rand() % 4);
+    while (route.size() < MAX_ROUTE_LEN) {
+      route.push_back(rand() % 4);
     }
 
-    maxScore = CalcScore(ans);
+    cur_score = simulate_score(route);
 
   }
   int aaa = 0;
-  real_maxScore = -1;
-  if (ans.size() > MAX_LENGTH) {
+  best_score = -1;
+  if (route.size() > MAX_ROUTE_LEN) {
     int ok = 0;
     rep(i, 10)
     {
       rep(j, 10)
       {
-        ans.clear();
+        route.clear();
         int x = tx - i, y = ty - j;
-        if (dp[x][y] >= MAX_LENGTH) continue;
+        if (dp[x][y] >= MAX_ROUTE_LEN) continue;
         while (x != sx || y != sy) {
-          int nx = x - dx[dir[x][y]] * dist[x][y];
-          int ny = y - dy[dir[x][y]] * dist[x][y];
-          rep(i, (dist[x][y] * (1.0 / (1.0 - pro))) + pro * 15)
+          int nx = x - dx[prev_dir[x][y]] * dist[x][y];
+          int ny = y - dy[prev_dir[x][y]] * dist[x][y];
+          rep(i, (dist[x][y] * (1.0 / (1.0 - forgetProb))) + forgetProb * 15)
           {
-            ans.push_back(dir[x][y]);
+            route.push_back(prev_dir[x][y]);
           }
           x = nx;
           y = ny;
         }
 
-        reverse(ans.begin(), ans.end());
+        reverse(route.begin(), route.end());
 
-        while (ans.size() < MAX_LENGTH) {
-          ans.push_back(rand() % 4);
+        while (route.size() < MAX_ROUTE_LEN) {
+          route.push_back(rand() % 4);
         }
-        if (ans.size() == MAX_LENGTH) {
+        if (route.size() == MAX_ROUTE_LEN) {
           ok = 1;
           aaa = 1;
-          maxScore = CalcScore(ans);
-          if (maxScore > real_maxScore) {
-            real_maxScore = maxScore;
-            real_ans = ans;
+          cur_score = simulate_score(route);
+          if (cur_score > best_score) {
+            best_score = cur_score;
+            best_route = route;
           }
         }
       }
     }
 
     if (ok == 0) {
-      ans.clear();
-      rep(i, MAX_LENGTH + 10)
+      route.clear();
+      rep(i, MAX_ROUTE_LEN + 10)
       {
-        ans.push_back(rand() % 4);
+        route.push_back(rand() % 4);
       }
     }
     else {
-      ans = real_ans;
-      maxScore = real_maxScore;
-      if (maxScore == -1) {
-        rep(i, MAX_LENGTH + 10)
+      route = best_route;
+      cur_score = best_score;
+      if (cur_score == -1) {
+        rep(i, MAX_ROUTE_LEN + 10)
         {
-          ans.push_back(rand() % 4);
+          route.push_back(rand() % 4);
         }
       }
     }
   }
 
   int loop = 0;
-  if (aaa || ans.size() > MAX_LENGTH) {
+  if (aaa || route.size() > MAX_ROUTE_LEN) {
     // 愚直解
     if (aaa == 0) {
-      ans.clear();
-      rep(i, MAX_LENGTH)
+      route.clear();
+      rep(i, MAX_ROUTE_LEN)
       {
-        ans.push_back(Rand() % 4);
+        route.push_back(Rand() % 4);
       }
     }
 
-    maxScore = CalcScore(ans);
+    cur_score = simulate_score(route);
 
-    real_ans = ans;
-    real_maxScore = maxScore;
+    best_route = route;
+    best_score = cur_score;
 
     // 山登り解、焼きなまし解
     double now_time = get_elapsed_time();
@@ -432,42 +432,42 @@ int Solve(int num)
       }
       if (now_time > TL) break;
 
-      int x = Rand() % MAX_LENGTH;
+      int x = Rand() % MAX_ROUTE_LEN;
       int y = Rand() % 4;
-      int keepy = ans[x];
-      ans[x] = y;
+      int keepy = route[x];
+      route[x] = y;
 
-      int tmpScore = CalcScore(ans);
+      int tmpScore = simulate_score(route);
 
-      int diffScore = tmpScore - maxScore;
+      int diffScore = tmpScore - cur_score;
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       double prob = exp((double)diffScore / temp);
       if (prob > Rand01()) {
-        maxScore += diffScore;
-        if (maxScore > real_maxScore) {
-          real_maxScore = maxScore;
-          real_ans = ans;
+        cur_score += diffScore;
+        if (cur_score > best_score) {
+          best_score = cur_score;
+          best_route = route;
         }
       }
       else {
         // 元に戻す
-        ans[x] = keepy;
+        route[x] = keepy;
       }
     }
 
     // 最高スコアを戻す
-    ans = real_ans;
-    maxScore = real_maxScore;
+    route = best_route;
+    cur_score = best_score;
   }
 
   output_data(num);
 
   // デバッグ用
   if (exec_mode != 0) {
-    cout << "ans.size() = " << ans.size() << endl;
+    cout << "route.size() = " << route.size() << endl;
     cout << "loop = " << loop << endl;
-    cout << maxScore << endl;
+    cout << cur_score << endl;
     cout << get_elapsed_time() << "sec." << endl;
   }
 
