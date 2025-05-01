@@ -39,7 +39,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t xor_shift32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -55,59 +55,74 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  static double rand_unit()
+  {
+    return (xor_shift32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
-const char cc[4] = { 'F', 'L', 'B', 'R' };
+const int dir_row[4] = { -1, 0, 1, 0 };
+const int dir_col[4] = { 0, -1, 0, 1 };
+const char dir_char[4] = { 'F', 'L', 'B', 'R' };
 
-int n = 100;
-int f[100];
-int iteLocal[100];
-char outLocal[100];
-int countAll[4];
+const int n = 100;
+const int H = 10;
+const int W = 10;
+int flavor_at_turn[n];
+int input_index_list[n];
+char output_dir_list[n];
+int flavor_total[4];
 
-int a[10][10];
-int aa[10][10];
-int keepA[10][10];
+int board[H][W];
+int work_board[H][W];
+int backup_board_buf[H][W];
 const double TL = 1.8;
 
-inline void CopyAtoAA()
+inline void copy_board_to_work()
 {
-  rep(i, 10)
+  rep(i, H)
   {
-    rep(j, 10) { aa[i][j] = a[i][j]; }
+    rep(j, W)
+    {
+      work_board[i][j] = board[i][j];
+    }
   }
 }
-inline void CopyAAtoA()
+inline void copy_work_to_board()
 {
-  rep(i, 10)
+  rep(i, H)
   {
-    rep(j, 10) { a[i][j] = aa[i][j]; }
+    rep(j, W)
+    {
+      board[i][j] = work_board[i][j];
+    }
   }
 }
-inline void CopyAtoKeepA()
+inline void backup_board()
 {
-  rep(i, 10)
+  rep(i, H)
   {
-    rep(j, 10) { keepA[i][j] = a[i][j]; }
+    rep(j, W)
+    {
+      backup_board_buf[i][j] = board[i][j];
+    }
   }
 }
-inline void CopyKeepAtoA()
+inline void restore_board()
 {
-  rep(i, 10)
+  rep(i, H)
   {
-    rep(j, 10) { a[i][j] = keepA[i][j]; }
+    rep(j, W)
+    {
+      board[i][j] = backup_board_buf[i][j];
+    }
   }
 }
 
-inline int RandomPoint(int turn) { return Rand() % (100 - turn) + 1; }
+inline int random_empty_index(int turn) { return xor_shift32() % (n - turn) + 1; }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
-void Input(int problemNum)
+void load_testcase(int problemNum)
 {
   string fileNameIfs = "./in/";
   string strNum;
@@ -121,12 +136,12 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  rep(i, 100) ifs >> f[i];
-  rep(i, 100) ifs >> iteLocal[i];
+  rep(i, n) ifs >> flavor_at_turn[i];
+  rep(i, n) ifs >> input_index_list[i];
 }
 
 // 解答出力
-void Output(int problemNum)
+void save_answer(int problemNum)
 {
   string fileNameOfs = "./out/";
   string strNum;
@@ -140,25 +155,25 @@ void Output(int problemNum)
 
   ofstream ofs(fileNameOfs);
 
-  rep(i, 100) ofs << outLocal[i] << endl;
+  rep(i, n) ofs << output_dir_list[i] << endl;
 
   ofs.close();
 }
 
-inline bool IsNG(int x, int y)
+inline bool is_out_of_board(int x, int y)
 {
   if (x < 0 || x >= 10 || y < 0 || y >= 10) return true;
   return false;
 }
 
-P Where(int ite)
+P find_empty_cell(int ite)
 {
   int cnt = 1;
-  rep(i, 10)
+  rep(i, H)
   {
-    rep(j, 10)
+    rep(j, W)
     {
-      if (a[i][j] == 0) {
+      if (board[i][j] == 0) {
         if (cnt == ite) {
           return P(i, j);
         }
@@ -173,39 +188,39 @@ P Where(int ite)
   return P(-1, -1);
 }
 
-int calcVisit[10][10];
-int qX[1000], qY[1000];
-int CalcAA()
+int visited[H][W];
+int queue_row[1000], queue_col[1000];
+int score_work_board()
 {  // スコア計算
-  int qI = 0;
-  int qSz = 0;
+  int q_head = 0;
+  int q_tail = 0;
   double res = 0;
-  rep(i, 10) rep(j, 10) calcVisit[i][j] = 0;
-  rep(i, 10)
+  rep(i, H) rep(j, W) visited[i][j] = 0;
+  rep(i, H)
   {
-    rep(j, 10)
+    rep(j, W)
     {
-      if (aa[i][j] == 0) continue;
-      if (calcVisit[i][j]) continue;
-      qX[qSz] = i;
-      qY[qSz] = j;
-      qSz++;
-      calcVisit[i][j] = 1;
+      if (work_board[i][j] == 0) continue;
+      if (visited[i][j]) continue;
+      queue_row[q_tail] = i;
+      queue_col[q_tail] = j;
+      q_tail++;
+      visited[i][j] = 1;
       int sz = 1;
-      while (qI < qSz) {
-        int x = qX[qI];
-        int y = qY[qI];
-        qI++;
+      while (q_head < q_tail) {
+        int x = queue_row[q_head];
+        int y = queue_col[q_head];
+        q_head++;
         rep(k, 4)
         {
-          int nx = x + dx[k];
-          int ny = y + dy[k];
-          if (IsNG(nx, ny)) continue;
-          if (aa[nx][ny] == aa[i][j] && calcVisit[nx][ny] == 0) {
-            calcVisit[nx][ny] = 1;
-            qX[qSz] = nx;
-            qY[qSz] = ny;
-            qSz++;
+          int nx = x + dir_row[k];
+          int ny = y + dir_col[k];
+          if (is_out_of_board(nx, ny)) continue;
+          if (work_board[nx][ny] == work_board[i][j] && visited[nx][ny] == 0) {
+            visited[nx][ny] = 1;
+            queue_row[q_tail] = nx;
+            queue_col[q_tail] = ny;
+            q_tail++;
             sz++;
           }
         }
@@ -217,44 +232,44 @@ int CalcAA()
 
   res *= 1000000;
   int bo = 0;
-  srep(i, 1, 4) { bo += countAll[i] * countAll[i]; }
+  srep(i, 1, 4) { bo += flavor_total[i] * flavor_total[i]; }
   res /= bo;
 
   return round(res);
 }
 
 
-int CalcA()
+int score_board()
 {  // スコア計算
-  int qI = 0;
-  int qSz = 0;
+  int q_head = 0;
+  int q_tail = 0;
   double res = 0;
-  rep(i, 10) rep(j, 10) calcVisit[i][j] = 0;
-  rep(i, 10)
+  rep(i, H) rep(j, W) visited[i][j] = 0;
+  rep(i, H)
   {
-    rep(j, 10)
+    rep(j, W)
     {
-      if (a[i][j] == 0) continue;
-      if (calcVisit[i][j]) continue;
-      qX[qSz] = i;
-      qY[qSz] = j;
-      qSz++;
-      calcVisit[i][j] = 1;
+      if (board[i][j] == 0) continue;
+      if (visited[i][j]) continue;
+      queue_row[q_tail] = i;
+      queue_col[q_tail] = j;
+      q_tail++;
+      visited[i][j] = 1;
       int sz = 1;
-      while (qI < qSz) {
-        int x = qX[qI];
-        int y = qY[qI];
-        qI++;
+      while (q_head < q_tail) {
+        int x = queue_row[q_head];
+        int y = queue_col[q_head];
+        q_head++;
         rep(k, 4)
         {
-          int nx = x + dx[k];
-          int ny = y + dy[k];
-          if (IsNG(nx, ny)) continue;
-          if (a[nx][ny] == a[i][j] && calcVisit[nx][ny] == 0) {
-            calcVisit[nx][ny] = 1;
-            qX[qSz] = nx;
-            qY[qSz] = ny;
-            qSz++;
+          int nx = x + dir_row[k];
+          int ny = y + dir_col[k];
+          if (is_out_of_board(nx, ny)) continue;
+          if (board[nx][ny] == board[i][j] && visited[nx][ny] == 0) {
+            visited[nx][ny] = 1;
+            queue_row[q_tail] = nx;
+            queue_col[q_tail] = ny;
+            q_tail++;
             sz++;
           }
         }
@@ -266,70 +281,70 @@ int CalcA()
 
   res *= 1000000;
   int bo = 0;
-  srep(i, 1, 4) { bo += countAll[i] * countAll[i]; }
+  srep(i, 1, 4) { bo += flavor_total[i] * flavor_total[i]; }
   res /= bo;
 
   return round(res);
 }
 
-void MoveAA(int dir)
+void tilt_work_board(int dir)
 {
   // 場所移動
   if (dir == 0) {
-    rep(j, 10)
+    rep(j, W)
     {
       int now = 0;
-      rep(i, 10)
+      rep(i, H)
       {
-        if (aa[i][j] != 0) {
-          int tmp = aa[i][j];
-          aa[i][j] = 0;
-          aa[now][j] = tmp;
+        if (work_board[i][j] != 0) {
+          int tmp = work_board[i][j];
+          work_board[i][j] = 0;
+          work_board[now][j] = tmp;
           now++;
         }
       }
     }
   }
   else if (dir == 1) {
-    rep(i, 10)
+    rep(i, H)
     {
       int now = 0;
-      rep(j, 10)
+      rep(j, W)
       {
-        if (aa[i][j] != 0) {
-          int tmp = aa[i][j];
-          aa[i][j] = 0;
-          aa[i][now] = tmp;
+        if (work_board[i][j] != 0) {
+          int tmp = work_board[i][j];
+          work_board[i][j] = 0;
+          work_board[i][now] = tmp;
           now++;
         }
       }
     }
   }
   else if (dir == 2) {
-    rep(j, 10)
+    rep(j, W)
     {
       int now = 9;
-      drep(i, 10)
+      drep(i, H)
       {
-        if (aa[i][j] != 0) {
-          int tmp = aa[i][j];
-          aa[i][j] = 0;
-          aa[now][j] = tmp;
+        if (work_board[i][j] != 0) {
+          int tmp = work_board[i][j];
+          work_board[i][j] = 0;
+          work_board[now][j] = tmp;
           now--;
         }
       }
     }
   }
   else if (dir == 3) {
-    rep(i, 10)
+    rep(i, H)
     {
       int now = 9;
-      drep(j, 10)
+      drep(j, W)
       {
-        if (aa[i][j] != 0) {
-          int tmp = aa[i][j];
-          aa[i][j] = 0;
-          aa[i][now] = tmp;
+        if (work_board[i][j] != 0) {
+          int tmp = work_board[i][j];
+          work_board[i][j] = 0;
+          work_board[i][now] = tmp;
           now--;
         }
       }
@@ -337,64 +352,64 @@ void MoveAA(int dir)
   }
 }
 
-void MoveA(int dir)
+void tilt_board(int dir)
 {
   // 場所移動
   if (dir == 0) {
-    rep(j, 10)
+    rep(j, W)
     {
       int now = 0;
-      rep(i, 10)
+      rep(i, H)
       {
-        if (a[i][j] != 0) {
-          int tmp = a[i][j];
-          a[i][j] = 0;
-          a[now][j] = tmp;
+        if (board[i][j] != 0) {
+          int tmp = board[i][j];
+          board[i][j] = 0;
+          board[now][j] = tmp;
           now++;
         }
       }
     }
   }
   else if (dir == 1) {
-    rep(i, 10)
+    rep(i, H)
     {
       int now = 0;
-      rep(j, 10)
+      rep(j, W)
       {
-        if (a[i][j] != 0) {
-          int tmp = a[i][j];
-          a[i][j] = 0;
-          a[i][now] = tmp;
+        if (board[i][j] != 0) {
+          int tmp = board[i][j];
+          board[i][j] = 0;
+          board[i][now] = tmp;
           now++;
         }
       }
     }
   }
   else if (dir == 2) {
-    rep(j, 10)
+    rep(j, W)
     {
       int now = 9;
-      drep(i, 10)
+      drep(i, H)
       {
-        if (a[i][j] != 0) {
-          int tmp = a[i][j];
-          a[i][j] = 0;
-          a[now][j] = tmp;
+        if (board[i][j] != 0) {
+          int tmp = board[i][j];
+          board[i][j] = 0;
+          board[now][j] = tmp;
           now--;
         }
       }
     }
   }
   else if (dir == 3) {
-    rep(i, 10)
+    rep(i, H)
     {
       int now = 9;
-      drep(j, 10)
+      drep(j, W)
       {
-        if (a[i][j] != 0) {
-          int tmp = a[i][j];
-          a[i][j] = 0;
-          a[i][now] = tmp;
+        if (board[i][j] != 0) {
+          int tmp = board[i][j];
+          board[i][j] = 0;
+          board[i][now] = tmp;
           now--;
         }
       }
@@ -402,47 +417,47 @@ void MoveA(int dir)
   }
 }
 
-int MoveAndCalcAA(int dir)
+int tilt_and_score_work(int dir)
 {
-  MoveAA(dir);
-  return CalcAA();
+  tilt_work_board(dir);
+  return score_work_board();
 }
 
-int Sim(int startTurn, int simBias)
+int simulate_rollout(int startTurn, int simBias)
 {
   int simTurn = 10 + simBias;
   srep(_, startTurn, startTurn + simTurn)
   {
-    if (_ == 100) break;
+    if (_ == n) break;
     // 場所決め
-    int po = RandomPoint(_);
-    P p = Where(po);
+    int po = random_empty_index(_);
+    P p = find_empty_cell(po);
     int wx = p.first;
     int wy = p.second;
-    if (a[wx][wy] != 0) {
+    if (board[wx][wy] != 0) {
       cout << "NG" << endl;
     }
-    a[wx][wy] = f[_];
+    board[wx][wy] = flavor_at_turn[_];
 
     int tmpMax = -1;
     int tmpAns = -1;
     rep(i, 4)
     {
-      CopyAtoAA();
-      int tmp = MoveAndCalcAA(i);
+      copy_board_to_work();
+      int tmp = tilt_and_score_work(i);
       if (tmp > tmpMax) {
         tmpMax = tmp;
         tmpAns = i;
       }
     }
 
-    MoveA(tmpAns);
+    tilt_board(tmpAns);
   }
 
-  return CalcA();
+  return score_board();
 }
 
-int Solve(int mode)
+int run_solver(int mode)
 {
   ofstream ofs2("debug.txt");
   clock_t startTime, endTime;
@@ -450,33 +465,33 @@ int Solve(int mode)
   endTime = clock();
 
   if (mode == 0) {
-    rep(i, 100) { cin >> f[i]; }
+    rep(i, n) { cin >> flavor_at_turn[i]; }
   }
   else {
-    Input(mode - 1);
+    load_testcase(mode - 1);
   }
 
-  rep(i, 100) { countAll[f[i]]++; }
+  rep(i, n) { flavor_total[flavor_at_turn[i]]++; }
 
-  rep(_, 100)
+  rep(_, n)
   {
     int ite;
     if (mode == 0) {
       cin >> ite;
     }
     else {
-      ite = iteLocal[_];
+      ite = input_index_list[_];
     }
 
-    P p = Where(ite);
+    P p = find_empty_cell(ite);
     int wx = p.first;
     int wy = p.second;
-    if (a[wx][wy] != 0) {
+    if (board[wx][wy] != 0) {
       cout << "NG" << endl;
     }
-    a[wx][wy] = f[_];
+    board[wx][wy] = flavor_at_turn[_];
 
-    CopyAtoKeepA();
+    backup_board();
 
     // ここで探索
     startTime = clock();
@@ -495,14 +510,14 @@ int Solve(int mode)
       }
 
       if (loop % 4 == 0) {
-        simBias = Rand() % 3 - 1;
+        simBias = xor_shift32() % 3 - 1;
       }
 
-      CopyKeepAtoA();
+      restore_board();
 
       int dir = loop % 4;
-      MoveA(dir);
-      ave[dir] = (ave[dir] * cnt[dir] + Sim(_ + 1, simBias)) / (cnt[dir] + 1);
+      tilt_board(dir);
+      ave[dir] = (ave[dir] * cnt[dir] + simulate_rollout(_ + 1, simBias)) / (cnt[dir] + 1);
       cnt[dir]++;
 
       loop++;
@@ -519,27 +534,27 @@ int Solve(int mode)
     }
 
     if (mode == 0) {
-      std::cout << cc[tmpAns] << endl;
+      std::cout << dir_char[tmpAns] << endl;
       std::fflush(stdout);
     }
     else {
-      outLocal[_] = cc[tmpAns];
+      output_dir_list[_] = dir_char[tmpAns];
     }
 
-    CopyKeepAtoA();
-    MoveA(tmpAns);
+    restore_board();
+    tilt_board(tmpAns);
 
     if (mode != 0) {
-      ofs2 << std::right << std::setw(7) << loop << ' ' << CalcA() << endl;
+      ofs2 << std::right << std::setw(7) << loop << ' ' << score_board() << endl;
     }
   }
 
   if (mode != 0) {
-    Output(mode - 1);
+    save_answer(mode - 1);
   }
 
   if (mode != 0) {
-    cout << "Score = " << CalcA() << endl;
+    cout << "Score = " << score_board() << endl;
   }
 
   return 0;
@@ -548,7 +563,7 @@ int Solve(int mode)
 int main()
 {
   int mode = 1;
-  Solve(mode);
+  run_solver(mode);
 
   return 0;
 }
