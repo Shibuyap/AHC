@@ -61,6 +61,54 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
+// 2次元キューのクラス
+class Queue2D
+{
+private:
+  static const int MAX_SIZE = 10000;
+  int arr[MAX_SIZE][2];
+  int head;
+  int tail;
+
+public:
+  // コンストラクタ
+  Queue2D() : head(0), tail(0) {}
+
+  void clear_queue()
+  {
+    head = 0;
+    tail = 0;
+  }
+
+  int front_x() const
+  {
+    return arr[head][0];
+  }
+
+  int front_y() const
+  {
+    return arr[head][1];
+  }
+
+  void push(int x, int y)
+  {
+    arr[tail][0] = x;
+    arr[tail][1] = y;
+    tail++;
+  }
+
+  void pop()
+  {
+    head++;
+  }
+
+  int size() const
+  {
+    return tail - head;
+  }
+};
+Queue2D que2d;
+
 const int dir_row[4] = { -1, 0, 1, 0 };
 const int dir_col[4] = { 0, -1, 0, 1 };
 const char dir_char[4] = { 'F', 'L', 'B', 'R' };
@@ -189,11 +237,10 @@ P find_empty_cell(int ite)
 }
 
 int visited[H][W];
-int queue_row[1000], queue_col[1000];
 int score_work_board()
-{  // スコア計算
-  int q_head = 0;
-  int q_tail = 0;
+{
+  // スコア計算
+  que2d.clear_queue();
   double res = 0;
   rep(i, H) rep(j, W) visited[i][j] = 0;
   rep(i, H)
@@ -202,15 +249,13 @@ int score_work_board()
     {
       if (work_board[i][j] == 0) continue;
       if (visited[i][j]) continue;
-      queue_row[q_tail] = i;
-      queue_col[q_tail] = j;
-      q_tail++;
+      que2d.push(i, j);
       visited[i][j] = 1;
       int sz = 1;
-      while (q_head < q_tail) {
-        int x = queue_row[q_head];
-        int y = queue_col[q_head];
-        q_head++;
+      while (que2d.size()) {
+        int x = que2d.front_x();
+        int y = que2d.front_y();
+        que2d.pop();
         rep(k, 4)
         {
           int nx = x + dir_row[k];
@@ -218,9 +263,7 @@ int score_work_board()
           if (is_out_of_board(nx, ny)) continue;
           if (work_board[nx][ny] == work_board[i][j] && visited[nx][ny] == 0) {
             visited[nx][ny] = 1;
-            queue_row[q_tail] = nx;
-            queue_col[q_tail] = ny;
-            q_tail++;
+            que2d.push(nx, ny);
             sz++;
           }
         }
@@ -241,8 +284,6 @@ int score_work_board()
 
 int score_board()
 {  // スコア計算
-  int q_head = 0;
-  int q_tail = 0;
   double res = 0;
   rep(i, H) rep(j, W) visited[i][j] = 0;
   rep(i, H)
@@ -251,15 +292,13 @@ int score_board()
     {
       if (board[i][j] == 0) continue;
       if (visited[i][j]) continue;
-      queue_row[q_tail] = i;
-      queue_col[q_tail] = j;
-      q_tail++;
+      que2d.push(i, j);
       visited[i][j] = 1;
       int sz = 1;
-      while (q_head < q_tail) {
-        int x = queue_row[q_head];
-        int y = queue_col[q_head];
-        q_head++;
+      while (que2d.size()) {
+        int x = que2d.front_x();
+        int y = que2d.front_y();
+        que2d.pop();
         rep(k, 4)
         {
           int nx = x + dir_row[k];
@@ -267,9 +306,7 @@ int score_board()
           if (is_out_of_board(nx, ny)) continue;
           if (board[nx][ny] == board[i][j] && visited[nx][ny] == 0) {
             visited[nx][ny] = 1;
-            queue_row[q_tail] = nx;
-            queue_col[q_tail] = ny;
-            q_tail++;
+            que2d.push(nx, ny);
             sz++;
           }
         }
