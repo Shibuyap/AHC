@@ -217,51 +217,7 @@ P find_empty_cell(int ite)
 }
 
 int visited[H][W];
-int score_work_board()
-{
-  // スコア計算
-  que2d.clear_queue();
-  double res = 0;
-  rep(i, H) rep(j, W) visited[i][j] = 0;
-  rep(i, H)
-  {
-    rep(j, W)
-    {
-      if (work_board[i][j] == 0) continue;
-      if (visited[i][j]) continue;
-      que2d.push(i, j);
-      visited[i][j] = 1;
-      int sz = 1;
-      while (que2d.size()) {
-        int x = que2d.front_x();
-        int y = que2d.front_y();
-        que2d.pop();
-        rep(k, 4)
-        {
-          int nx = x + dir_row[k];
-          int ny = y + dir_col[k];
-          if (is_out_of_board(nx, ny)) continue;
-          if (work_board[nx][ny] == work_board[i][j] && visited[nx][ny] == 0) {
-            visited[nx][ny] = 1;
-            que2d.push(nx, ny);
-            sz++;
-          }
-        }
-      }
-
-      res += sz * sz;
-    }
-  }
-
-  res *= 1000000;
-  int bo = 0;
-  srep(i, 1, 4) { bo += flavor_total[i] * flavor_total[i]; }
-  res /= bo;
-
-  return round(res);
-}
-
-int score_board()
+int score_board(const board_t& board)
 { 
   // スコア計算
   que2d.clear_queue();
@@ -373,7 +329,7 @@ void tilt_board(int dir, board_t& board)
 int tilt_and_score_work(int dir)
 {
   tilt_board(dir, work_board);
-  return score_work_board();
+  return score_board(work_board);
 }
 
 int simulate_rollout(int start_turn, int sim_bias)
@@ -410,7 +366,7 @@ int simulate_rollout(int start_turn, int sim_bias)
         tilt_board(best_dir, board);   // 本盤面を更新
   }
 
-  return score_board();
+  return score_board(board);
 }
 
 int run_solver(int mode)
@@ -515,7 +471,7 @@ int run_solver(int mode)
     tilt_board(best_dir, board);
 
     if (mode != 0) {
-      debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board() << '\n';
+      debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board(board) << '\n';
     }
   }
 
@@ -523,7 +479,7 @@ int run_solver(int mode)
   if (mode != 0) {
     save_answer(mode - 1);
     cout << "iter = " << iter << endl;
-    std::cout << "Score = " << score_board() << '\n';
+    std::cout << "Score = " << score_board(board) << '\n';
   }
   return 0;
 }
