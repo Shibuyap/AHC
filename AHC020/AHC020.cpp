@@ -475,6 +475,7 @@ void read_input(int problemNum)
     sort(res_near_nodes[i].begin(), res_near_nodes[i].end());
   }
 
+  edges.clear();
   rep(i, edge_cnt)
   {
     Edge e;
