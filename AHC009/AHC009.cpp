@@ -184,42 +184,45 @@ void output_data(int case_num)
 // ÉXÉRÉAåvéZ
 ll simulate_score(vector<int>& vec)
 {
-  int times = 100;
-  double ret = 0;
-  rep(_, times)
+  const int TRIALS = 100;             
+  double totalReward = 0.0;           
+
+  rep(trial, TRIALS)
   {
-    int le = vec.size();
-    int x = sx, y = sy;
-    rep(i, le)
+    int len = vec.size();             
+    int row = sx, col = sy;       
+
+    rep(step, len)                     
     {
       if (Rand01() < forgetProb) {
-        ;
+        // ñYãpÅFÇªÇÃèÍÇ…óØÇ‹ÇÈ
       }
       else {
-        int z = vec[i];
-        if (z == 0) {
-          if (x == 0 || vWall[x - 1][y]) continue;
+        int dir = vec[step];     
+
+        if (dir == 0) {
+          if (row == 0 || vWall[row - 1][col]) continue;
         }
-        if (z == 1) {
-          if (y == 0 || hWall[x][y - 1]) continue;
+        if (dir == 1) {
+          if (col == 0 || hWall[row][col - 1]) continue;
         }
-        if (z == 2) {
-          if (x == 19 || vWall[x][y]) continue;
+        if (dir == 2) {
+          if (row == 19 || vWall[row][col]) continue;
         }
-        if (z == 3) {
-          if (y == 19 || hWall[x][y]) continue;
+        if (dir == 3) {
+          if (col == 19 || hWall[row][col]) continue;
         }
 
-        x += dx[z];
-        y += dy[z];
-        if (x == tx && y == ty) {
-          ret += 400 - i;
+        row += dx[dir];
+        col += dy[dir];
+        if (row == tx && col == ty) {
+          totalReward += 400 - step;
           break;
         }
       }
     }
   }
-  return (ret / times) * 250000.0;
+  return (totalReward / TRIALS) * 250000.0;
 }
 
 int Solve(int caseId)
@@ -260,25 +263,29 @@ int Solve(int caseId)
 
       if (d == 0) {
         while (nextRow != 0 && vWall[nextRow - 1][nextCol] == 0) {
-          --nextRow; ++steps;
+          --nextRow; 
+          ++steps;
           if (nextRow == tx && nextCol == ty) break;
         }
       }
       if (d == 1) {
         while (nextCol != 0 && hWall[nextRow][nextCol - 1] == 0) {
-          --nextCol; ++steps;
+          --nextCol; 
+          ++steps;
           if (nextRow == tx && nextCol == ty) break;
         }
       }
       if (d == 2) {
         while (nextRow != 19 && vWall[nextRow][nextCol] == 0) {
-          ++nextRow; ++steps;
+          ++nextRow; 
+          ++steps;
           if (nextRow == tx && nextCol == ty) break;
         }
       }
       if (d == 3) {
         while (nextCol != 19 && hWall[nextRow][nextCol] == 0) {
-          ++nextCol; ++steps;
+          ++nextCol; 
+          ++steps;
           if (nextRow == tx && nextCol == ty) break;
         }
       }
