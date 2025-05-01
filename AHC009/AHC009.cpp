@@ -110,19 +110,15 @@ void input_data(int case_num)
   if (!ifs.is_open()) {
     // 標準入力
     cin >> sx >> sy >> tx >> ty >> forgetProb;
-    rep(i, BOARD_SIZE)
-    {
-      rep(j, BOARD_SIZE-1)
-      {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+      for (int j = 0; j < BOARD_SIZE - 1; ++j) {
         char ccc;
         cin >> ccc;
         hWall[i][j] = ccc - '0';
       }
     }
-    rep(i, BOARD_SIZE-1)
-    {
-      rep(j, BOARD_SIZE)
-      {
+    for (int i = 0; i < BOARD_SIZE - 1; ++i) {
+      for (int j = 0; j < BOARD_SIZE; ++j) {
         char ccc;
         cin >> ccc;
         vWall[i][j] = ccc - '0';
@@ -132,19 +128,15 @@ void input_data(int case_num)
   else {
     // ファイル入力
     ifs >> sx >> sy >> tx >> ty >> forgetProb;
-    rep(i, BOARD_SIZE)
-    {
-      rep(j, BOARD_SIZE-1)
-      {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+      for (int j = 0; j < BOARD_SIZE - 1; ++j) {
         char ccc;
         ifs >> ccc;
         hWall[i][j] = ccc - '0';
       }
     }
-    rep(i, BOARD_SIZE-1)
-    {
-      rep(j, BOARD_SIZE)
-      {
+    for (int i = 0; i < BOARD_SIZE - 1; ++i) {
+      for (int j = 0; j < BOARD_SIZE; ++j) {
         char ccc;
         ifs >> ccc;
         vWall[i][j] = ccc - '0';
@@ -157,11 +149,10 @@ void output_data(int case_num)
 {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, min((int)route.size(), MAX_ROUTE_LEN))
-    {
+    for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {
       cout << DIR_CHAR[route[i]];
     }
-    cout << endl;
+    cout << '\n';
   }
   else {
     // ファイル出力
@@ -169,15 +160,10 @@ void output_data(int case_num)
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    rep(i, min((int)route.size(), MAX_ROUTE_LEN))
-    {
+    for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {
       ofs << DIR_CHAR[route[i]];
     }
-    ofs << endl;
-
-    if (ofs.is_open()) {
-      ofs.close();
-    }
+    ofs << '\n';
   }
 }
 
@@ -187,12 +173,12 @@ ll simulate_score(vector<int>& vec)
   const int TRIALS = 100;             
   double totalReward = 0.0;           
 
-  rep(trial, TRIALS)
+  for (int trial = 0; trial < TRIALS; ++trial)
   {
     int len = vec.size();             
     int row = sx, col = sy;       
 
-    rep(step, len)                     
+    for (int step = 0; step < len; ++step)
     {
       if (Rand01() < forgetProb) {
         // 忘却：その場に留まる
@@ -232,17 +218,21 @@ int Solve(int caseId)
   input_data(caseId);
 
   route.clear();
-  rep(i, MAX_ROUTE_LEN) route.push_back(Rand() % 4);
+  for (int i = 0; i < MAX_ROUTE_LEN; ++i) {
+    route.push_back(Rand() % 4);
+  }
   cur_score = simulate_score(route);
 
   /* ──────────────────────  Dijkstra 前処理  ────────────────────── */
   int cost[BOARD_SIZE][BOARD_SIZE];           
   int prevDir[21][21];                        
   int segLen[BOARD_SIZE][BOARD_SIZE];         
-  rep(r, BOARD_SIZE) rep(c, BOARD_SIZE) {
-    cost[r][c] = INF;
-    prevDir[20][20] = -1;
-    segLen[r][c] = -1;
+  for (int r = 0; r < BOARD_SIZE; ++r) {
+    for (int c = 0; c < BOARD_SIZE; ++c) {
+      cost[r][c] = INF;
+      prevDir[20][20] = -1;
+      segLen[r][c] = -1;
+    }
   }
 
   cost[sx][sy] = 0;
@@ -301,7 +291,9 @@ int Solve(int caseId)
     }
   }
 
-  rep(i, MAX_ROUTE_LEN + 10) route.push_back(rand() % 4);
+  for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) {
+    route.push_back(rand() % 4);
+  }
 
   /* ──────────────────────  最短経路ベース経路生成  ────────────────────── */
   if (cost[tx][ty] <= MAX_ROUTE_LEN) {
