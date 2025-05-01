@@ -70,7 +70,8 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  static double rand_unit() {
+  static double rand_unit()
+  {
     return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
@@ -164,11 +165,11 @@ long long kruskal(int vertex_cnt)
 {
   int need_cnt = 0;
   rep(v_idx, vertex_cnt)
-  {                            
+  {
     need_cnt += mst_node_req[v_idx];
   }
 
-  int edge_cnt = edges.size();                    
+  int edge_cnt = edges.size();
   rep(e_idx, edge_cnt) mst_edge_use[e_idx] = 0;
 
   /* Union-Find work arrays */
@@ -176,11 +177,11 @@ long long kruskal(int vertex_cnt)
   vector<int> uf_rank(vertex_cnt + 10);
   init(uf_parent, uf_rank, vertex_cnt + 10);
 
-  long long mst_cost = 0;                         
+  long long mst_cost = 0;
   int unite_cnt = 0;
 
   for (int e_idx = 0; e_idx < edge_cnt; ++e_idx) {
-    const edge& ed = edges[e_idx];                  
+    const edge& ed = edges[e_idx];
     if (!mst_node_req[ed.u] || !mst_node_req[ed.v]) continue;
 
     if (!same(uf_parent, ed.u, ed.v)) {
@@ -204,9 +205,9 @@ ll outer_kruskal_lns()
 
   rep(v_idx, node_cnt) mst_node_req[v_idx] = 1;
 
-  ll best_cost = outer_kruskal();                    
+  ll best_cost = outer_kruskal();
   int iter_cnt = 0;
-  const double time_limit = 0.1;                      
+  const double time_limit = 0.1;
 
   while (true) {
     ++iter_cnt;
@@ -217,17 +218,17 @@ ll outer_kruskal_lns()
     if (ratio_elapsed > 1.0) break;
 
     /* ランダム頂点をトグル */
-    int node_id = rand_u32() % (node_cnt - 1) + 1; 
+    int node_id = rand_u32() % (node_cnt - 1) + 1;
     if (power_rad[node_id] != 0) continue;
 
-    mst_node_req[node_id] ^= 1;                     
+    mst_node_req[node_id] ^= 1;
     ll cur_cost = outer_kruskal();
 
     if (cur_cost <= best_cost) {
       best_cost = cur_cost;
     }
     else {
-      mst_node_req[node_id] ^= 1;                
+      mst_node_req[node_id] ^= 1;
     }
   }
   return best_cost;
@@ -235,13 +236,13 @@ ll outer_kruskal_lns()
 
 bool check_coverage()
 {
-  rep(res_idx, res_cnt)                        
+  rep(res_idx, res_cnt)
   {
-    bool is_covered = false;               
-    int near_sz = res_near_nodes[res_idx].size();  
-    rep(near_idx, near_sz)               
+    bool is_covered = false;
+    int near_sz = res_near_nodes[res_idx].size();
+    rep(near_idx, near_sz)
     {
-      int node_id = res_near_nodes[res_idx][near_idx].second;  
+      int node_id = res_near_nodes[res_idx][near_idx].second;
       if (res_node_dist[res_idx][node_id] <= power_rad[node_id]) {
         is_covered = true;
         break;
@@ -255,12 +256,12 @@ bool check_coverage()
 bool check_coverage_node(int target_node)
 {
   for (auto near_pair : node_near_res[target_node]) {
-    int res_idx = near_pair.second;               
-    bool is_covered = false;                       
-    int near_sz = res_near_nodes[res_idx].size();  
-    rep(near_idx, near_sz)                        
+    int res_idx = near_pair.second;
+    bool is_covered = false;
+    int near_sz = res_near_nodes[res_idx].size();
+    rep(near_idx, near_sz)
     {
-      int node_id = res_near_nodes[res_idx][near_idx].second;  
+      int node_id = res_near_nodes[res_idx][near_idx].second;
       if (res_node_dist[res_idx][node_id] <= power_rad[node_id]) {
         is_covered = true;
         break;
@@ -577,12 +578,12 @@ void solve_layered_sa()
     int loop = 0;
     double startTemperature = 1000;
     double endTemperature = 0;
-    double sec_elapsed =get_elapsed_time();
+    double sec_elapsed = get_elapsed_time();
     double ratio_elapsed = sec_elapsed / TL;
     while (true) {
       loop++;
       if (loop % 10 == 0) {
-        sec_elapsed =get_elapsed_time();
+        sec_elapsed = get_elapsed_time();
         ratio_elapsed = sec_elapsed / TL;
         if (ratio_elapsed > 1.0) break;
       }
