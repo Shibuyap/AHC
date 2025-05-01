@@ -222,255 +222,199 @@ ll simulate_score(vector<int>& vec)
   return (ret / times) * 250000.0;
 }
 
-int Solve(int num)
+int Solve(int caseId)
 {
   start_timer();
 
-  input_data(num);
+  input_data(caseId);
 
   route.clear();
-  rep(i, MAX_ROUTE_LEN)
-  {
-    route.push_back(Rand() % 4);
-  }
+  rep(i, MAX_ROUTE_LEN) route.push_back(Rand() % 4);
   cur_score = simulate_score(route);
 
-
-  int dp[BOARD_SIZE][BOARD_SIZE];
-  int prev_dir[21][21];
-  int dist[BOARD_SIZE][BOARD_SIZE];
-  rep(i, BOARD_SIZE)
-  {
-    rep(j, BOARD_SIZE)
-    {
-      dp[i][j] = INF;
-      prev_dir[20][20] = -1;
-      dist[i][j] = -1;
-    }
+  /* ──────────────────────  Dijkstra 前処理  ────────────────────── */
+  int cost[BOARD_SIZE][BOARD_SIZE];           
+  int prevDir[21][21];                        
+  int segLen[BOARD_SIZE][BOARD_SIZE];         
+  rep(r, BOARD_SIZE) rep(c, BOARD_SIZE) {
+    cost[r][c] = INF;
+    prevDir[20][20] = -1;
+    segLen[r][c] = -1;
   }
 
-  dp[sx][sy] = 0;
-  priority_queue<pair<int, P>, vector<pair<int, P>>, greater<pair<int, P>>> que;
-  pair<int, P> tmp;
-  tmp.first = 0;
-  tmp.second.first = sx;
-  tmp.second.second = sy;
-  que.push(tmp);
-  while (que.size()) {
-    tmp = que.top();
-    que.pop();
-    int x = tmp.second.first;
-    int y = tmp.second.second;
-    if (tmp.first > dp[x][y]) continue;
-    if (dp[x][y] > 250) continue;
-    rep(i, 4)
-    {
-      int nx = x, ny = y;
-      int cnt = 0;
-      if (i == 0) {
-        while (nx != 0 && vWall[nx - 1][ny] == 0) {
-          nx--;
-          cnt++;
-          if (nx == tx && ny == ty) {
-            break;
-          }
+  cost[sx][sy] = 0;
+  using Node = pair<int, P>;                 
+  priority_queue<Node, vector<Node>, greater<Node>> pq;  
+  pq.push({ 0, {sx, sy} });
+
+  while (!pq.empty()) {
+    auto node = pq.top(); pq.pop();         
+    int row = node.second.first;            
+    int col = node.second.second;         
+    if (node.first > cost[row][col]) continue;
+    if (cost[row][col] > 250) continue;
+
+    rep(d, 4) {
+      int nextRow = row, nextCol = col;   
+      int steps = 0;                   
+
+      if (d == 0) {
+        while (nextRow != 0 && vWall[nextRow - 1][nextCol] == 0) {
+          --nextRow; ++steps;
+          if (nextRow == tx && nextCol == ty) break;
         }
       }
-      if (i == 1) {
-        while (ny != 0 && hWall[nx][ny - 1] == 0) {
-          ny--;
-          cnt++;
-          if (nx == tx && ny == ty) {
-            break;
-          }
+      if (d == 1) {
+        while (nextCol != 0 && hWall[nextRow][nextCol - 1] == 0) {
+          --nextCol; ++steps;
+          if (nextRow == tx && nextCol == ty) break;
         }
       }
-      if (i == 2) {
-        while (nx != 19 && vWall[nx][ny] == 0) {
-          nx++;
-          cnt++;
-          if (nx == tx && ny == ty) {
-            break;
-          }
+      if (d == 2) {
+        while (nextRow != 19 && vWall[nextRow][nextCol] == 0) {
+          ++nextRow; ++steps;
+          if (nextRow == tx && nextCol == ty) break;
         }
       }
-      if (i == 3) {
-        while (ny != 19 && hWall[nx][ny] == 0) {
-          ny++;
-          cnt++;
-          if (nx == tx && ny == ty) {
-            break;
-          }
+      if (d == 3) {
+        while (nextCol != 19 && hWall[nextRow][nextCol] == 0) {
+          ++nextCol; ++steps;
+          if (nextRow == tx && nextCol == ty) break;
         }
       }
-      if (nx == x && ny == y) continue;
-      if (dp[nx][ny] > dp[x][y] + cnt + forgetProb * 15) {
-        dp[nx][ny] = dp[x][y] + cnt + forgetProb * 15;
-        dist[nx][ny] = cnt;
-        prev_dir[nx][ny] = i;
-        tmp.first = dp[nx][ny];
-        tmp.second.first = nx;
-        tmp.second.second = ny;
-        que.push(tmp);
+      if (nextRow == row && nextCol == col) continue;
+
+      int newCost = cost[row][col] + steps + forgetProb * 15;
+      if (cost[nextRow][nextCol] > newCost) {
+        cost[nextRow][nextCol] = newCost;
+        segLen[nextRow][nextCol] = steps;
+        prevDir[nextRow][nextCol] = d;
+        pq.push({ newCost,{nextRow,nextCol} });
       }
     }
   }
 
-  rep(i, MAX_ROUTE_LEN + 10)
-  {
-    route.push_back(rand() % 4);
-  }
+  rep(i, MAX_ROUTE_LEN + 10) route.push_back(rand() % 4);
 
-
-  if (dp[tx][ty] <= MAX_ROUTE_LEN) {
+  /* ──────────────────────  最短経路ベース経路生成  ────────────────────── */
+  if (cost[tx][ty] <= MAX_ROUTE_LEN) {
     route.clear();
-    int x = tx, y = ty;
-    while (x != sx || y != sy) {
-      int nx = x - dx[prev_dir[x][y]] * dist[x][y];
-      int ny = y - dy[prev_dir[x][y]] * dist[x][y];
-      rep(i, (dist[x][y] * (1.0 / (1.0 - forgetProb))) + forgetProb * 15)
-      {
-        route.push_back(prev_dir[x][y]);
-      }
-      x = nx;
-      y = ny;
-    }
+    int row = tx, col = ty;
+    while (row != sx || col != sy) {
+      int d = prevDir[row][col];
+      int steps = segLen[row][col];
+      int nextRow = row - dx[d] * steps;
+      int nextCol = col - dy[d] * steps;
 
+      rep(k, static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15))
+        route.push_back(d);
+
+      row = nextRow; col = nextCol;
+    }
     reverse(route.begin(), route.end());
-
-    while (route.size() < MAX_ROUTE_LEN) {
-      route.push_back(rand() % 4);
-    }
-
+    while (route.size() < MAX_ROUTE_LEN) route.push_back(rand() % 4);
     cur_score = simulate_score(route);
-
   }
-  int aaa = 0;
+
+  bool needRandomInit = false;               
   best_score = -1;
   if (route.size() > MAX_ROUTE_LEN) {
-    int ok = 0;
-    rep(i, 10)
-    {
-      rep(j, 10)
-      {
-        route.clear();
-        int x = tx - i, y = ty - j;
-        if (dp[x][y] >= MAX_ROUTE_LEN) continue;
-        while (x != sx || y != sy) {
-          int nx = x - dx[prev_dir[x][y]] * dist[x][y];
-          int ny = y - dy[prev_dir[x][y]] * dist[x][y];
-          rep(i, (dist[x][y] * (1.0 / (1.0 - forgetProb))) + forgetProb * 15)
-          {
-            route.push_back(prev_dir[x][y]);
-          }
-          x = nx;
-          y = ny;
-        }
+    bool foundFit = false;                 
+    rep(di, 10) rep(dj, 10) {
+      route.clear();
+      int row = tx - di, col = ty - dj;
+      if (cost[row][col] >= MAX_ROUTE_LEN) continue;
 
-        reverse(route.begin(), route.end());
+      while (row != sx || col != sy) {
+        int d = prevDir[row][col];
+        int steps = segLen[row][col];
+        int nextRow = row - dx[d] * steps;
+        int nextCol = col - dy[d] * steps;
 
-        while (route.size() < MAX_ROUTE_LEN) {
-          route.push_back(rand() % 4);
-        }
-        if (route.size() == MAX_ROUTE_LEN) {
-          ok = 1;
-          aaa = 1;
-          cur_score = simulate_score(route);
-          if (cur_score > best_score) {
-            best_score = cur_score;
-            best_route = route;
-          }
+        rep(k, static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15))
+          route.push_back(d);
+
+        row = nextRow; col = nextCol;
+      }
+      reverse(route.begin(), route.end());
+      while (route.size() < MAX_ROUTE_LEN) route.push_back(rand() % 4);
+
+      if (route.size() == MAX_ROUTE_LEN) {
+        foundFit = true;
+        needRandomInit = true;
+        cur_score = simulate_score(route);
+        if (cur_score > best_score) {
+          best_score = cur_score;
+          best_route = route;
         }
       }
     }
-
-    if (ok == 0) {
+    if (!foundFit) {
       route.clear();
-      rep(i, MAX_ROUTE_LEN + 10)
-      {
-        route.push_back(rand() % 4);
-      }
+      rep(i, MAX_ROUTE_LEN + 10) route.push_back(rand() % 4);
     }
     else {
       route = best_route;
       cur_score = best_score;
-      if (cur_score == -1) {
-        rep(i, MAX_ROUTE_LEN + 10)
-        {
-          route.push_back(rand() % 4);
-        }
-      }
+      if (cur_score == -1) rep(i, MAX_ROUTE_LEN + 10) route.push_back(rand() % 4);
     }
   }
 
-  int loop = 0;
-  if (aaa || route.size() > MAX_ROUTE_LEN) {
-    // 愚直解
-    if (aaa == 0) {
+  /* ──────────────────────  焼きなまし  ────────────────────── */
+  int iter = 0;                            
+  if (needRandomInit || route.size() > MAX_ROUTE_LEN) {
+    if (!needRandomInit) {
       route.clear();
-      rep(i, MAX_ROUTE_LEN)
-      {
-        route.push_back(Rand() % 4);
-      }
+      rep(i, MAX_ROUTE_LEN) route.push_back(Rand() % 4);
     }
-
     cur_score = simulate_score(route);
-
     best_route = route;
     best_score = cur_score;
 
-    // 山登り解、焼きなまし解
-    double now_time = get_elapsed_time();
-    double TL = 1.9;
-    double start_temp = 2048;
-    double end_temp = 0.0001;
-    int keep[1000][3];
+    double elapsed = get_elapsed_time(); 
+    const double timeLimit = 1.9;           
+    const double tempInit = 2048;             
+    const double tempFinal = 0.0001;        
+
     while (true) {
-      loop++;
-      if (loop % 100 == 1) {
-        now_time = get_elapsed_time();
-      }
-      if (now_time > TL) break;
+      ++iter;
+      if (iter % 100 == 1) elapsed = get_elapsed_time();
+      if (elapsed > timeLimit) break;
 
-      int x = Rand() % MAX_ROUTE_LEN;
-      int y = Rand() % 4;
-      int keepy = route[x];
-      route[x] = y;
+      int pos = Rand() % MAX_ROUTE_LEN;
+      int newDir = Rand() % 4;
+      int backup = route[pos];
+      route[pos] = newDir;
 
-      int tmpScore = simulate_score(route);
+      int candScore = simulate_score(route);
+      int diff = candScore - cur_score;
 
-      int diffScore = tmpScore - cur_score;
+      double temp = tempInit + (tempFinal - tempInit) * elapsed / timeLimit;
+      double prob = exp(diff / temp);
 
-      double temp = start_temp + (end_temp - start_temp) * now_time / TL;
-      double prob = exp((double)diffScore / temp);
-      if (prob > Rand01()) {
-        cur_score += diffScore;
+      if (diff > 0 || prob > Rand01()) {
+        cur_score = candScore;
         if (cur_score > best_score) {
           best_score = cur_score;
           best_route = route;
         }
       }
       else {
-        // 元に戻す
-        route[x] = keepy;
+        route[pos] = backup;         
       }
     }
-
-    // 最高スコアを戻す
-    route = best_route;
+    route = best_route;             
     cur_score = best_score;
   }
 
-  output_data(num);
+  output_data(caseId);
 
-  // デバッグ用
   if (exec_mode != 0) {
-    cout << "route.size() = " << route.size() << endl;
-    cout << "loop = " << loop << endl;
-    cout << cur_score << endl;
-    cout << get_elapsed_time() << "sec." << endl;
+    cout << "route.size() = " << route.size() << '\n';
+    cout << "iter = " << iter << '\n';
+    cout << cur_score << '\n';
+    cout << get_elapsed_time() << " sec.\n";
   }
-
   return 0;
 }
 
