@@ -174,7 +174,6 @@ P Where(int ite)
 }
 
 int calcVisit[10][10];
-//queue<P> calcQue;
 int qX[1000], qY[1000];
 int CalcAA()
 {  // スコア計算
@@ -188,15 +187,12 @@ int CalcAA()
     {
       if (aa[i][j] == 0) continue;
       if (calcVisit[i][j]) continue;
-      //calcQue.push(P(i, j));
       qX[qSz] = i;
       qY[qSz] = j;
       qSz++;
       calcVisit[i][j] = 1;
       int sz = 1;
       while (qI < qSz) {
-        //P p = calcQue.front();
-        //calcQue.pop();
         int x = qX[qI];
         int y = qY[qI];
         qI++;
@@ -207,7 +203,6 @@ int CalcAA()
           if (IsNG(nx, ny)) continue;
           if (aa[nx][ny] == aa[i][j] && calcVisit[nx][ny] == 0) {
             calcVisit[nx][ny] = 1;
-            //calcQue.push(P(nx, ny));
             qX[qSz] = nx;
             qY[qSz] = ny;
             qSz++;
@@ -241,15 +236,12 @@ int CalcA()
     {
       if (a[i][j] == 0) continue;
       if (calcVisit[i][j]) continue;
-      //calcQue.push(P(i, j));
       qX[qSz] = i;
       qY[qSz] = j;
       qSz++;
       calcVisit[i][j] = 1;
       int sz = 1;
       while (qI < qSz) {
-        //P p = calcQue.front();
-        //calcQue.pop();
         int x = qX[qI];
         int y = qY[qI];
         qI++;
@@ -260,7 +252,6 @@ int CalcA()
           if (IsNG(nx, ny)) continue;
           if (a[nx][ny] == a[i][j] && calcVisit[nx][ny] == 0) {
             calcVisit[nx][ny] = 1;
-            //calcQue.push(P(nx, ny));
             qX[qSz] = nx;
             qY[qSz] = ny;
             qSz++;
@@ -511,7 +502,6 @@ int Solve(int mode)
 
       int dir = loop % 4;
       MoveA(dir);
-      // ave[dir] = max(ave[dir], (double)Sim(_ + 1));
       ave[dir] = (ave[dir] * cnt[dir] + Sim(_ + 1, simBias)) / (cnt[dir] + 1);
       cnt[dir]++;
 
@@ -550,10 +540,6 @@ int Solve(int mode)
 
   if (mode != 0) {
     cout << "Score = " << CalcA() << endl;
-    // rep(i, 10) {
-    //   rep(j, 10) { cout << a[i][j]; }
-    //   cout << endl;
-    // }
   }
 
   return 0;
@@ -561,13 +547,7 @@ int Solve(int mode)
 
 int main()
 {
-  // 乱数調整
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
-  int mode = 0;
+  int mode = 1;
   Solve(mode);
 
   return 0;
