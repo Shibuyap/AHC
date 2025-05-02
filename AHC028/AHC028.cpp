@@ -250,341 +250,191 @@ ll calc_total_score()
 void build_initial_solution()
 {
   std::random_device seed_gen;
-  std::mt19937 engine(seed_gen());
+  std::mt19937   rng(seed_gen());
 
   best_score = -1;
 
-  rep(aespa, 400)
+  /* ---------- 1 st  pass (全タスク対象) ---------- */
+  rep(attempt_idx, 400)
   {
-    // 貪欲に作る
-    int f[MAX_TASK_COUNT] = {};
-    int ti = start_i;
-    int tj = start_j;
+    int   used[MAX_TASK_COUNT]{};          // すでに選ばれたタスク
+    int   cur_i = start_i, cur_j = start_j;
 
-    vector<int> nums;
-    rep(j, task_count)nums.push_back(j);
+    std::vector<int> shuffled_tasks;
+    rep(t, task_count) shuffled_tasks.push_back(t);
+
+    rep(pos, task_count)
+    {
+      int best_delta = INF;
+      int best_task = -1;
+      int best_path_id = -1;
+
+      std::shuffle(shuffled_tasks.begin(), shuffled_tasks.end(), rng);
+
+      rep(task_idx, task_count)
+      {
+        int task_id = shuffled_tasks[task_idx];
+        if (used[task_id]) continue;
+
+        rep(path_id, MAX_BOARD_SIZE)
+        {
+          if (V[task_id].size() <= path_id) break;
+
+          int dist_start = manhattan_distance(
+            V[task_id][path_id].start_i,
+            V[task_id][path_id].start_j,
+            cur_i, cur_j);
+
+          int bonus3 = 0, bonus2 = 0;
+          if (pos > 0) {
+            bonus3 = score_when_share_last3(
+              V[task_order[pos - 1]][path_index[pos - 1]],
+              V[task_id][path_id]);
+            bonus2 = score_when_share_last2(
+              V[task_order[pos - 1]][path_index[pos - 1]],
+              V[task_id][path_id]);
+          }
+
+          int delta;
+          if (bonus3 > 0) {
+            delta = dist_start - bonus3 + V[task_id][path_id].path_cost - baseVal[task_id];
+          }
+          else if (bonus2 > 0) {
+            delta = dist_start - bonus2 + V[task_id][path_id].path_cost - baseVal[task_id];
+          }
+          else {
+            int same_cell = (pos > 0 && dist_start == 0) ? 1 : 0;
+            delta = dist_start - same_cell + V[task_id][path_id].path_cost - baseVal[task_id];
+          }
+
+          if (delta < best_delta || (delta == best_delta && rand_uint32() % 2)) {
+            best_delta = delta;
+            best_task = task_id;
+            best_path_id = path_id;
+          }
+        }
+      }
+
+      task_order[pos] = best_task;
+      path_index[pos] = best_path_id;
+      used[best_task] = 1;
+      cur_i = V[best_task][best_path_id].goal_i;
+      cur_j = V[best_task][best_path_id].goal_j;
+    }
+
+    int score = calc_total_score();
+    if (score > best_score) {
+      best_score = score;
+      rep(i, task_count)
+      {
+        best_task_order[i] = task_order[i];
+        best_path_index[i] = path_index[i];
+      }
+    }
+  }
+
+  /* ---- 以降、prefix を固定しながら 3 段階で改良 ---- */
+  auto restore_best = [&]() {
     rep(i, task_count)
     {
-      int mi = INF;
-      int miAns = -1;
-      int miId = -1;
+      task_order[i] = best_task_order[i];
+      path_index[i] = best_path_index[i];
+    }
+    };
+  restore_best();
 
-      std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, task_count)
+  const struct
+  {
+    int iterations;
+    int prefix_len;
+  } phases[] = {
+      { 400 , 150 },
+      {1000 , 180 },
+      {1000 , 190 }
+  };
+
+  for (auto [iter_cnt, prefix_len] : phases) {
+    rep(attempt_idx, iter_cnt)
+    {
+      int   used[MAX_TASK_COUNT]{};
+      int   cur_i = start_i, cur_j = start_j;
+
+      std::vector<int> shuffled_tasks;
+      rep(t, task_count) shuffled_tasks.push_back(t);
+
+      /* prefix は前のベストをそのまま固定 */
+      rep(pos, prefix_len) used[task_order[pos]] = 1;
+
+      srep(pos, prefix_len, task_count)
       {
-        int j = nums[jj];
-        if (f[j])continue;
-        rep(k, MAX_BOARD_SIZE)
-        {
-          if (V[j].size() <= k)break;
-          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
-          int same3 = 0;
-          int same2 = 0;
-          if (i > 0) {
-            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-          }
-          int tmp = 0;
-          if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
-          }
-          else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
-          }
-          else {
-            int same = 0;
-            if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
-          }
+        int best_delta = INF;
+        int best_task = -1;
+        int best_path_id = -1;
 
-          if (tmp < mi) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
-          else if (tmp == mi && rand_uint32() % 2) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
+        std::shuffle(shuffled_tasks.begin(), shuffled_tasks.end(), rng);
+
+        rep(task_idx, task_count)
+        {
+          int task_id = shuffled_tasks[task_idx];
+          if (used[task_id]) continue;
+
+          rep(path_id, MAX_BOARD_SIZE)
+          {
+            if (V[task_id].size() <= path_id) break;
+
+            int dist_start = manhattan_distance(
+              V[task_id][path_id].start_i,
+              V[task_id][path_id].start_j,
+              cur_i, cur_j);
+
+            int bonus3 = 0, bonus2 = 0;
+            if (pos > 0) {
+              bonus3 = score_when_share_last3(
+                V[task_order[pos - 1]][path_index[pos - 1]],
+                V[task_id][path_id]);
+              bonus2 = score_when_share_last2(
+                V[task_order[pos - 1]][path_index[pos - 1]],
+                V[task_id][path_id]);
+            }
+
+            int delta;
+            if (bonus3 > 0) {
+              delta = dist_start - bonus3 + V[task_id][path_id].path_cost - baseVal[task_id];
+            }
+            else if (bonus2 > 0) {
+              delta = dist_start - bonus2 + V[task_id][path_id].path_cost - baseVal[task_id];
+            }
+            else {
+              int same_cell = (pos > 0 && dist_start == 0) ? 1 : 0;
+              delta = dist_start - same_cell + V[task_id][path_id].path_cost - baseVal[task_id];
+            }
+
+            if (delta < best_delta || (delta == best_delta && rand_uint32() % 2)) {
+              best_delta = delta;
+              best_task = task_id;
+              best_path_id = path_id;
+            }
           }
         }
+
+        task_order[pos] = best_task;
+        path_index[pos] = best_path_id;
+        used[best_task] = 1;
+        cur_i = V[best_task][best_path_id].goal_i;
+        cur_j = V[best_task][best_path_id].goal_j;
       }
 
-      task_order[i] = miAns;
-      path_index[i] = miId;
-      f[miAns] = 1;
-      ti = V[miAns][miId].goal_i;
-      tj = V[miAns][miId].goal_j;
-    }
-
-    int score = calc_total_score();
-    if (score > best_score) {
-      best_score = score;
-      rep(i, task_count)
-      {
-        best_task_order[i] = task_order[i];
-        best_path_index[i] = path_index[i];
-      }
-    }
-  }
-
-  rep(i, task_count)
-  {
-    task_order[i] = best_task_order[i];
-    path_index[i] = best_path_index[i];
-  }
-
-
-  rep(aespa, 400)
-  {
-    // 貪欲に作る
-    int f[MAX_TASK_COUNT] = {};
-    int ti = start_i;
-    int tj = start_j;
-
-    vector<int> nums;
-    rep(j, task_count)nums.push_back(j);
-    rep(i, 150)
-    {
-      f[task_order[i]] = 1;
-    }
-    srep(i, 150, task_count)
-    {
-      int mi = INF;
-      int miAns = -1;
-      int miId = -1;
-
-      std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, task_count)
-      {
-        int j = nums[jj];
-        if (f[j])continue;
-        rep(k, MAX_BOARD_SIZE)
+      int score = calc_total_score();
+      if (score > best_score) {
+        best_score = score;
+        rep(i, task_count)
         {
-          if (V[j].size() <= k)break;
-          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
-          int same3 = 0;
-          int same2 = 0;
-          if (i > 0) {
-            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-          }
-          int tmp = 0;
-          if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
-          }
-          else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
-          }
-          else {
-            int same = 0;
-            if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
-          }
-
-          if (tmp < mi) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
-          else if (tmp == mi && rand_uint32() % 2) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
+          best_task_order[i] = task_order[i];
+          best_path_index[i] = path_index[i];
         }
       }
-
-      task_order[i] = miAns;
-      path_index[i] = miId;
-      f[miAns] = 1;
-      ti = V[miAns][miId].goal_i;
-      tj = V[miAns][miId].goal_j;
     }
-
-    int score = calc_total_score();
-    if (score > best_score) {
-      best_score = score;
-      rep(i, task_count)
-      {
-        best_task_order[i] = task_order[i];
-        best_path_index[i] = path_index[i];
-      }
-    }
-  }
-
-  rep(i, task_count)
-  {
-    task_order[i] = best_task_order[i];
-    path_index[i] = best_path_index[i];
-  }
-
-  rep(aespa, 1000)
-  {
-    // 貪欲に作る
-    int f[MAX_TASK_COUNT] = {};
-    int ti = start_i;
-    int tj = start_j;
-
-    vector<int> nums;
-    rep(j, task_count)nums.push_back(j);
-    rep(i, 180)
-    {
-      f[task_order[i]] = 1;
-    }
-    srep(i, 180, task_count)
-    {
-      int mi = INF;
-      int miAns = -1;
-      int miId = -1;
-
-      std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, task_count)
-      {
-        int j = nums[jj];
-        if (f[j])continue;
-        rep(k, MAX_BOARD_SIZE)
-        {
-          if (V[j].size() <= k)break;
-          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
-          int same3 = 0;
-          int same2 = 0;
-          if (i > 0) {
-            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-          }
-          int tmp = 0;
-          if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
-          }
-          else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
-          }
-          else {
-            int same = 0;
-            if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
-          }
-
-          if (tmp < mi) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
-          else if (tmp == mi && rand_uint32() % 2) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
-        }
-      }
-
-      task_order[i] = miAns;
-      path_index[i] = miId;
-      f[miAns] = 1;
-      ti = V[miAns][miId].goal_i;
-      tj = V[miAns][miId].goal_j;
-    }
-
-    int score = calc_total_score();
-    if (score > best_score) {
-      best_score = score;
-      rep(i, task_count)
-      {
-        best_task_order[i] = task_order[i];
-        best_path_index[i] = path_index[i];
-      }
-    }
-  }
-
-  rep(i, task_count)
-  {
-    task_order[i] = best_task_order[i];
-    path_index[i] = best_path_index[i];
-  }
-
-  rep(aespa, 1000)
-  {
-    // 貪欲に作る
-    int f[MAX_TASK_COUNT] = {};
-    int ti = start_i;
-    int tj = start_j;
-
-    vector<int> nums;
-    rep(j, task_count)nums.push_back(j);
-    rep(i, 190)
-    {
-      f[task_order[i]] = 1;
-    }
-    srep(i, 190, task_count)
-    {
-      int mi = INF;
-      int miAns = -1;
-      int miId = -1;
-
-      std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, task_count)
-      {
-        int j = nums[jj];
-        if (f[j])continue;
-        rep(k, MAX_BOARD_SIZE)
-        {
-          if (V[j].size() <= k)break;
-          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
-          int same3 = 0;
-          int same2 = 0;
-          if (i > 0) {
-            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
-          }
-          int tmp = 0;
-          if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
-          }
-          else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
-          }
-          else {
-            int same = 0;
-            if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
-          }
-
-          if (tmp < mi) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
-          else if (tmp == mi && rand_uint32() % 2) {
-            mi = tmp;
-            miAns = j;
-            miId = k;
-          }
-        }
-      }
-
-      task_order[i] = miAns;
-      path_index[i] = miId;
-      f[miAns] = 1;
-      ti = V[miAns][miId].goal_i;
-      tj = V[miAns][miId].goal_j;
-    }
-
-    int score = calc_total_score();
-    if (score > best_score) {
-      best_score = score;
-      rep(i, task_count)
-      {
-        best_task_order[i] = task_order[i];
-        best_path_index[i] = path_index[i];
-      }
-    }
-  }
-
-  rep(i, task_count)
-  {
-    task_order[i] = best_task_order[i];
-    path_index[i] = best_path_index[i];
+    restore_best();
   }
 }
 
