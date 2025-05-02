@@ -34,9 +34,26 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
+
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand_uint32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -52,62 +69,68 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  static double rand_01()
+  {
+    return (rand_uint32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
+const int COLOR_COUNT = 26;
+const int MAX_TASK_COUNT = 210;
+const int MAX_PATH_LENGTH = 5;
+const int MAX_BOARD_SIZE = 20;
+
 const int INF = 1001001001;
-double TL = 1.8;
+double time_limit_sec = 1.8;
 int mode;
 
-int n, m;
-int si, sj;
-string S[20];
-int a[20][20];
-string t[210];
-int b[210][5];
-vector<P> v[26];
-int vcnt[26];
+int board_size, task_count;
+int start_i, start_j;
+string board_chars[MAX_BOARD_SIZE];
+int board_color[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+string task_strings[MAX_TASK_COUNT];
+int task_colors[MAX_TASK_COUNT][5];
+vector<P> cells_by_color[COLOR_COUNT];
+int cell_count_by_color[COLOR_COUNT];
 
-int ans[210];
-int id[210];
-vector<P> answer;
-int real_ans[210];
-int real_id[210];
-int real_score;
+int task_order[MAX_TASK_COUNT];
+int path_index[MAX_TASK_COUNT];
+vector<P> final_cells;
+int best_task_order[MAX_TASK_COUNT];
+int best_path_index[MAX_TASK_COUNT];
+int best_score;
 
 struct Path
 {
-  int si;
-  int sj;
-  int ti;
-  int tj;
-  int val;
-  vector<P> path;
+  int start_i;
+  int start_j;
+  int goal_i;
+  int goal_j;
+  int path_cost;
+  vector<P> cells;
 
-  bool operator<(const Path& right) const { return val < right.val; }
+  bool operator<(const Path& right) const { return path_cost < right.path_cost; }
 };
-vector<Path> V[210];
-int baseVal[210];
+vector<Path> V[MAX_TASK_COUNT];
+int baseVal[MAX_TASK_COUNT];
 
-int Distance(int i1, int j1, int i2, int j2)
+int manhattan_distance(int i1, int j1, int i2, int j2)
 {
   return abs(i1 - i2) + abs(j1 - j2);
 }
 
 // 複数ケース回すときに内部状態を初期値に戻す
-void SetUp()
+void reset_global_state()
 {
-  rep(i, 26) { v[i].clear(); }
-  rep(i, 210) { V[i].clear(); }
+  rep(i, COLOR_COUNT) { cells_by_color[i].clear(); }
+  rep(i, MAX_TASK_COUNT) { V[i].clear(); }
 }
 
 // 入力受け取り
-void Input(int problemNum)
+void read_input(int problemNum)
 {
   string fileNameIfs = "./in/";
   string strNum;
@@ -123,37 +146,37 @@ void Input(int problemNum)
 
   // 標準入力する
   if (!ifs.is_open()) {
-    cin >> n >> m;
-    cin >> si >> sj;
-    rep(i, n) cin >> S[i];
-    rep(i, m) cin >> t[i];
+    cin >> board_size >> task_count;
+    cin >> start_i >> start_j;
+    rep(i, board_size) cin >> board_chars[i];
+    rep(i, task_count) cin >> task_strings[i];
   }
   // ファイル入力する
   else {
-    ifs >> n >> m;
-    ifs >> si >> sj;
-    rep(i, n) ifs >> S[i];
-    rep(i, m) ifs >> t[i];
+    ifs >> board_size >> task_count;
+    ifs >> start_i >> start_j;
+    rep(i, board_size) ifs >> board_chars[i];
+    rep(i, task_count) ifs >> task_strings[i];
   }
 
-  rep(i, n)
+  rep(i, board_size)
   {
-    rep(j, n) { a[i][j] = S[i][j] - 'A'; }
+    rep(j, board_size) { board_color[i][j] = board_chars[i][j] - 'A'; }
   }
-  rep(i, m)
+  rep(i, task_count)
   {
-    rep(j, 5) { b[i][j] = t[i][j] - 'A'; }
+    rep(j, 5) { task_colors[i][j] = task_strings[i][j] - 'A'; }
   }
 
-  rep(i, n)
+  rep(i, board_size)
   {
-    rep(j, n) { v[a[i][j]].push_back(P(i, j)); }
+    rep(j, board_size) { cells_by_color[board_color[i][j]].push_back(P(i, j)); }
   }
-  rep(i, 26) { vcnt[i] = v[i].size(); }
+  rep(i, COLOR_COUNT) { cell_count_by_color[i] = cells_by_color[i].size(); }
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void open_output_file(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
     string fileNameOfs = "./out/";
@@ -170,43 +193,43 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-int Same3(const Path& x, const Path& y)
+int score_when_share_last3(const Path& x, const Path& y)
 {
-  if (x.path[2] == y.path[0] && x.path[3] == y.path[1] && x.path[4] == y.path[2]) {
-    int res = Distance(x.path[4].first, x.path[4].second, y.path[0].first, y.path[0].second)
-      + Distance(y.path[0].first, y.path[0].second, y.path[1].first, y.path[1].second)
-      + Distance(y.path[1].first, y.path[1].second, y.path[2].first, y.path[2].second) + 3;
+  if (x.cells[2] == y.cells[0] && x.cells[3] == y.cells[1] && x.cells[4] == y.cells[2]) {
+    int res = manhattan_distance(x.cells[4].first, x.cells[4].second, y.cells[0].first, y.cells[0].second)
+      + manhattan_distance(y.cells[0].first, y.cells[0].second, y.cells[1].first, y.cells[1].second)
+      + manhattan_distance(y.cells[1].first, y.cells[1].second, y.cells[2].first, y.cells[2].second) + 3;
     return res;
   }
   return 0;
 }
 
-int Same2(const Path& x, const Path& y)
+int score_when_share_last2(const Path& x, const Path& y)
 {
-  if (x.path[3] == y.path[0] && x.path[4] == y.path[1]) {
-    int res = Distance(x.path[4].first, x.path[4].second, y.path[0].first, y.path[0].second)
-      + Distance(y.path[0].first, y.path[0].second, y.path[1].first, y.path[1].second) + 2;
+  if (x.cells[3] == y.cells[0] && x.cells[4] == y.cells[1]) {
+    int res = manhattan_distance(x.cells[4].first, x.cells[4].second, y.cells[0].first, y.cells[0].second)
+      + manhattan_distance(y.cells[0].first, y.cells[0].second, y.cells[1].first, y.cells[1].second) + 2;
     return res;
   }
   return 0;
 }
 
 // スコア計算
-ll CalcScore()
+ll calc_total_score()
 {
-  int score = 10000 - m * 5;
-  rep(i, m)
+  int score = 10000 - task_count * 5;
+  rep(i, task_count)
   {
     if (i == 0) {
-      score -= Distance(V[ans[i]][id[i]].si, V[ans[i]][id[i]].sj, si, sj);
+      score -= manhattan_distance(V[task_order[i]][path_index[i]].start_i, V[task_order[i]][path_index[i]].start_j, start_i, start_j);
     }
     else {
       int dist =
-        Distance(V[ans[i]][id[i]].si, V[ans[i]][id[i]].sj,
-          V[ans[i - 1]][id[i - 1]].ti, V[ans[i - 1]][id[i - 1]].tj);
+        manhattan_distance(V[task_order[i]][path_index[i]].start_i, V[task_order[i]][path_index[i]].start_j,
+          V[task_order[i - 1]][path_index[i - 1]].goal_i, V[task_order[i - 1]][path_index[i - 1]].goal_j);
       score -= dist;
-      int same3 = Same3(V[ans[i - 1]][id[i - 1]], V[ans[i]][id[i]]);
-      int same2 = Same2(V[ans[i - 1]][id[i - 1]], V[ans[i]][id[i]]);
+      int same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[task_order[i]][path_index[i]]);
+      int same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[task_order[i]][path_index[i]]);
       if (same3 > 0) {
         score += same3;
       }
@@ -218,60 +241,60 @@ ll CalcScore()
       }
     }
 
-    score -= V[ans[i]][id[i]].val;
+    score -= V[task_order[i]][path_index[i]].path_cost;
   }
   return score;
 }
 
 // 初期解生成
-void Initialize()
+void build_initial_solution()
 {
   std::random_device seed_gen;
   std::mt19937 engine(seed_gen());
 
-  real_score = -1;
+  best_score = -1;
 
   rep(aespa, 400)
   {
     // 貪欲に作る
-    int f[210] = {};
-    int ti = si;
-    int tj = sj;
+    int f[MAX_TASK_COUNT] = {};
+    int ti = start_i;
+    int tj = start_j;
 
     vector<int> nums;
-    rep(j, m)nums.push_back(j);
-    rep(i, m)
+    rep(j, task_count)nums.push_back(j);
+    rep(i, task_count)
     {
       int mi = INF;
       int miAns = -1;
       int miId = -1;
 
       std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, m)
+      rep(jj, task_count)
       {
         int j = nums[jj];
         if (f[j])continue;
-        rep(k, 20)
+        rep(k, MAX_BOARD_SIZE)
         {
           if (V[j].size() <= k)break;
-          int dist1 = Distance(V[j][k].si, V[j][k].sj, ti, tj);
+          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
           int same3 = 0;
           int same2 = 0;
           if (i > 0) {
-            same3 = Same3(V[ans[i - 1]][id[i - 1]], V[j][k]);
-            same2 = Same2(V[ans[i - 1]][id[i - 1]], V[j][k]);
+            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
+            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
           }
           int tmp = 0;
           if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
           }
           else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
           }
           else {
             int same = 0;
             if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].val - baseVal[j];
+            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
           }
 
           if (tmp < mi) {
@@ -279,7 +302,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && Rand() % 2) {
+          else if (tmp == mi && rand_uint32() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -287,76 +310,76 @@ void Initialize()
         }
       }
 
-      ans[i] = miAns;
-      id[i] = miId;
+      task_order[i] = miAns;
+      path_index[i] = miId;
       f[miAns] = 1;
-      ti = V[miAns][miId].ti;
-      tj = V[miAns][miId].tj;
+      ti = V[miAns][miId].goal_i;
+      tj = V[miAns][miId].goal_j;
     }
 
-    int score = CalcScore();
-    if (score > real_score) {
-      real_score = score;
-      rep(i, m)
+    int score = calc_total_score();
+    if (score > best_score) {
+      best_score = score;
+      rep(i, task_count)
       {
-        real_ans[i] = ans[i];
-        real_id[i] = id[i];
+        best_task_order[i] = task_order[i];
+        best_path_index[i] = path_index[i];
       }
     }
   }
 
-  rep(i, m)
+  rep(i, task_count)
   {
-    ans[i] = real_ans[i];
-    id[i] = real_id[i];
+    task_order[i] = best_task_order[i];
+    path_index[i] = best_path_index[i];
   }
 
 
   rep(aespa, 400)
   {
     // 貪欲に作る
-    int f[210] = {};
-    int ti = si;
-    int tj = sj;
+    int f[MAX_TASK_COUNT] = {};
+    int ti = start_i;
+    int tj = start_j;
 
     vector<int> nums;
-    rep(j, m)nums.push_back(j);
+    rep(j, task_count)nums.push_back(j);
     rep(i, 150)
     {
-      f[ans[i]] = 1;
+      f[task_order[i]] = 1;
     }
-    srep(i, 150, m)
+    srep(i, 150, task_count)
     {
       int mi = INF;
       int miAns = -1;
       int miId = -1;
 
       std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, m)
+      rep(jj, task_count)
       {
         int j = nums[jj];
         if (f[j])continue;
-        rep(k, 20)
+        rep(k, MAX_BOARD_SIZE)
         {
           if (V[j].size() <= k)break;
-          int dist1 = Distance(V[j][k].si, V[j][k].sj, ti, tj);
+          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
           int same3 = 0;
           int same2 = 0;
           if (i > 0) {
-            same3 = Same3(V[ans[i - 1]][id[i - 1]], V[j][k]);
-            same2 = Same2(V[ans[i - 1]][id[i - 1]], V[j][k]);
+            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
+            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
           }
           int tmp = 0;
           if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
           }
           else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
           }
           else {
             int same = 0;
             if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].val - baseVal[j];
+            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
           }
 
           if (tmp < mi) {
@@ -364,7 +387,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && Rand() % 2) {
+          else if (tmp == mi && rand_uint32() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -372,75 +395,75 @@ void Initialize()
         }
       }
 
-      ans[i] = miAns;
-      id[i] = miId;
+      task_order[i] = miAns;
+      path_index[i] = miId;
       f[miAns] = 1;
-      ti = V[miAns][miId].ti;
-      tj = V[miAns][miId].tj;
+      ti = V[miAns][miId].goal_i;
+      tj = V[miAns][miId].goal_j;
     }
 
-    int score = CalcScore();
-    if (score > real_score) {
-      real_score = score;
-      rep(i, m)
+    int score = calc_total_score();
+    if (score > best_score) {
+      best_score = score;
+      rep(i, task_count)
       {
-        real_ans[i] = ans[i];
-        real_id[i] = id[i];
+        best_task_order[i] = task_order[i];
+        best_path_index[i] = path_index[i];
       }
     }
   }
 
-  rep(i, m)
+  rep(i, task_count)
   {
-    ans[i] = real_ans[i];
-    id[i] = real_id[i];
+    task_order[i] = best_task_order[i];
+    path_index[i] = best_path_index[i];
   }
 
   rep(aespa, 1000)
   {
     // 貪欲に作る
-    int f[210] = {};
-    int ti = si;
-    int tj = sj;
+    int f[MAX_TASK_COUNT] = {};
+    int ti = start_i;
+    int tj = start_j;
 
     vector<int> nums;
-    rep(j, m)nums.push_back(j);
+    rep(j, task_count)nums.push_back(j);
     rep(i, 180)
     {
-      f[ans[i]] = 1;
+      f[task_order[i]] = 1;
     }
-    srep(i, 180, m)
+    srep(i, 180, task_count)
     {
       int mi = INF;
       int miAns = -1;
       int miId = -1;
 
       std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, m)
+      rep(jj, task_count)
       {
         int j = nums[jj];
         if (f[j])continue;
-        rep(k, 20)
+        rep(k, MAX_BOARD_SIZE)
         {
           if (V[j].size() <= k)break;
-          int dist1 = Distance(V[j][k].si, V[j][k].sj, ti, tj);
+          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
           int same3 = 0;
           int same2 = 0;
           if (i > 0) {
-            same3 = Same3(V[ans[i - 1]][id[i - 1]], V[j][k]);
-            same2 = Same2(V[ans[i - 1]][id[i - 1]], V[j][k]);
+            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
+            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
           }
           int tmp = 0;
           if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
           }
           else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
           }
           else {
             int same = 0;
             if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].val - baseVal[j];
+            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
           }
 
           if (tmp < mi) {
@@ -448,7 +471,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && Rand() % 2) {
+          else if (tmp == mi && rand_uint32() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -456,75 +479,75 @@ void Initialize()
         }
       }
 
-      ans[i] = miAns;
-      id[i] = miId;
+      task_order[i] = miAns;
+      path_index[i] = miId;
       f[miAns] = 1;
-      ti = V[miAns][miId].ti;
-      tj = V[miAns][miId].tj;
+      ti = V[miAns][miId].goal_i;
+      tj = V[miAns][miId].goal_j;
     }
 
-    int score = CalcScore();
-    if (score > real_score) {
-      real_score = score;
-      rep(i, m)
+    int score = calc_total_score();
+    if (score > best_score) {
+      best_score = score;
+      rep(i, task_count)
       {
-        real_ans[i] = ans[i];
-        real_id[i] = id[i];
+        best_task_order[i] = task_order[i];
+        best_path_index[i] = path_index[i];
       }
     }
   }
 
-  rep(i, m)
+  rep(i, task_count)
   {
-    ans[i] = real_ans[i];
-    id[i] = real_id[i];
+    task_order[i] = best_task_order[i];
+    path_index[i] = best_path_index[i];
   }
 
   rep(aespa, 1000)
   {
     // 貪欲に作る
-    int f[210] = {};
-    int ti = si;
-    int tj = sj;
+    int f[MAX_TASK_COUNT] = {};
+    int ti = start_i;
+    int tj = start_j;
 
     vector<int> nums;
-    rep(j, m)nums.push_back(j);
+    rep(j, task_count)nums.push_back(j);
     rep(i, 190)
     {
-      f[ans[i]] = 1;
+      f[task_order[i]] = 1;
     }
-    srep(i, 190, m)
+    srep(i, 190, task_count)
     {
       int mi = INF;
       int miAns = -1;
       int miId = -1;
 
       std::shuffle(nums.begin(), nums.end(), engine);
-      rep(jj, m)
+      rep(jj, task_count)
       {
         int j = nums[jj];
         if (f[j])continue;
-        rep(k, 20)
+        rep(k, MAX_BOARD_SIZE)
         {
           if (V[j].size() <= k)break;
-          int dist1 = Distance(V[j][k].si, V[j][k].sj, ti, tj);
+          int dist1 = manhattan_distance(V[j][k].start_i, V[j][k].start_j, ti, tj);
           int same3 = 0;
           int same2 = 0;
           if (i > 0) {
-            same3 = Same3(V[ans[i - 1]][id[i - 1]], V[j][k]);
-            same2 = Same2(V[ans[i - 1]][id[i - 1]], V[j][k]);
+            same3 = score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
+            same2 = score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], V[j][k]);
           }
           int tmp = 0;
           if (same3 > 0) {
-            tmp = dist1 - same3 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same3 + V[j][k].path_cost - baseVal[j];
           }
           else if (same2 > 0) {
-            tmp = dist1 - same2 + V[j][k].val - baseVal[j];
+            tmp = dist1 - same2 + V[j][k].path_cost - baseVal[j];
           }
           else {
             int same = 0;
             if (i > 0 && dist1 == 0) same++;
-            tmp = dist1 - same + V[j][k].val - baseVal[j];
+            tmp = dist1 - same + V[j][k].path_cost - baseVal[j];
           }
 
           if (tmp < mi) {
@@ -532,7 +555,7 @@ void Initialize()
             miAns = j;
             miId = k;
           }
-          else if (tmp == mi && Rand() % 2) {
+          else if (tmp == mi && rand_uint32() % 2) {
             mi = tmp;
             miAns = j;
             miId = k;
@@ -540,99 +563,71 @@ void Initialize()
         }
       }
 
-      ans[i] = miAns;
-      id[i] = miId;
+      task_order[i] = miAns;
+      path_index[i] = miId;
       f[miAns] = 1;
-      ti = V[miAns][miId].ti;
-      tj = V[miAns][miId].tj;
+      ti = V[miAns][miId].goal_i;
+      tj = V[miAns][miId].goal_j;
     }
 
-    int score = CalcScore();
-    if (score > real_score) {
-      real_score = score;
-      rep(i, m)
+    int score = calc_total_score();
+    if (score > best_score) {
+      best_score = score;
+      rep(i, task_count)
       {
-        real_ans[i] = ans[i];
-        real_id[i] = id[i];
+        best_task_order[i] = task_order[i];
+        best_path_index[i] = path_index[i];
       }
     }
   }
 
-  rep(i, m)
+  rep(i, task_count)
   {
-    ans[i] = real_ans[i];
-    id[i] = real_id[i];
+    task_order[i] = best_task_order[i];
+    path_index[i] = best_path_index[i];
   }
-
-
-  //cout << real_score << endl;
-
-
-  //// 先頭から順番に一番短いやつを入れていく
-  //rep(i, m) {
-  //  int mi = INF;
-  //  int mid = INF;
-  //  ans[i] = i;
-  //  rep(j, V[i].size()) {
-  //    if (V[i][j].val < mi) {
-  //      mi = V[i][j].val;
-  //      id[i] = j;
-  //      mid = abs(V[i][j].si - 7) + abs(V[i][j].sj - 7) + abs(V[i][j].ti - 7) + abs(V[i][j].tj - 7);
-  //    }
-  //    else if (V[i][j].val == mi) {
-  //      int tmp = abs(V[i][j].si - 7) + abs(V[i][j].sj - 7) + abs(V[i][j].ti - 7) + abs(V[i][j].tj - 7);
-  //      if (tmp < mid) {
-  //        mi = V[i][j].val;
-  //        id[i] = j;
-  //        mid = tmp;
-  //      }
-  //    }
-  //  }
-  //}
 }
 
 // 解答出力
-void Output(ofstream& ofs)
+void write_answer(ofstream& ofs)
 {
-  answer.clear();
-  rep(i, m)
+  final_cells.clear();
+  rep(i, task_count)
   {
-    Path path = V[ans[i]][id[i]];
+    Path path = V[task_order[i]][path_index[i]];
     rep(j, 5)
     {
-      if (j <= 2 && i > 0 && Same3(V[ans[i - 1]][id[i - 1]], path) > 0) {
-        //cout << answer.size() << endl;
+      if (j <= 2 && i > 0 && score_when_share_last3(V[task_order[i - 1]][path_index[i - 1]], path) > 0) {
         continue;
       }
-      else if (j <= 1 && i > 0 && Same2(V[ans[i - 1]][id[i - 1]], path) > 0) {
-        //cout << answer.size() << endl;
+      else if (j <= 1 && i > 0 && score_when_share_last2(V[task_order[i - 1]][path_index[i - 1]], path) > 0) {
         continue;
       }
-      else if (j == 0 && !answer.empty()) {
-        if (answer.back() == path.path[0]) {
+      else if (j == 0 && !final_cells.empty()) {
+        if (final_cells.back() == path.cells[0]) {
           continue;
         }
       }
-      answer.push_back(path.path[j]);
+      final_cells.push_back(path.cells[j]);
     }
   }
   if (mode == 0) {
-    for (auto p : answer) {
+    for (auto p : final_cells) {
       cout << p.first << ' ' << p.second << endl;
     }
   }
   else {
-    for (auto p : answer) {
+    for (auto p : final_cells) {
       ofs << p.first << ' ' << p.second << endl;
     }
   }
 }
 
-void Method11(double temperature)
+void two_swap(double temperature)
 {
   // 2点スワップ
-  int x1 = Rand() % m;
-  int x2 = Rand() % m;
+  int x1 = rand_uint32() % task_count;
+  int x2 = rand_uint32() % task_count;
   if (x1 > x2) swap(x1, x2);
   if (x2 - x1 <= 1) return;
   int x11 = x1 - 1;
@@ -642,16 +637,16 @@ void Method11(double temperature)
 
   int beforeScore = 0;
   int afterScore = 0;
-  if (x1 != 0 && x2 != m - 1) {
+  if (x1 != 0 && x2 != task_count - 1) {
     {
-      int dist1 = Distance(V[ans[x1]][id[x1]].si, V[ans[x1]][id[x1]].sj,
-        V[ans[x11]][id[x11]].ti, V[ans[x11]][id[x11]].tj);
-      int dist2 = Distance(V[ans[x1]][id[x1]].ti, V[ans[x1]][id[x1]].tj,
-        V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
-      int dist3 = Distance(V[ans[x2]][id[x2]].si, V[ans[x2]][id[x2]].sj,
-        V[ans[x21]][id[x21]].ti, V[ans[x21]][id[x21]].tj);
-      int dist4 = Distance(V[ans[x2]][id[x2]].ti, V[ans[x2]][id[x2]].tj,
-        V[ans[x22]][id[x22]].si, V[ans[x22]][id[x22]].sj);
+      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
+        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
+      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
+        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
+      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
+        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
+      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
+        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
       int same = 0;
       if (dist1 == 0) same++;
       if (dist2 == 0) same++;
@@ -660,14 +655,14 @@ void Method11(double temperature)
       beforeScore = dist1 + dist2 + dist3 + dist4 - same;
     }
     {
-      int dist1 = Distance(V[ans[x1]][id[x1]].si, V[ans[x1]][id[x1]].sj,
-        V[ans[x21]][id[x21]].ti, V[ans[x21]][id[x21]].tj);
-      int dist2 = Distance(V[ans[x1]][id[x1]].ti, V[ans[x1]][id[x1]].tj,
-        V[ans[x22]][id[x22]].si, V[ans[x22]][id[x22]].sj);
-      int dist3 = Distance(V[ans[x2]][id[x2]].si, V[ans[x2]][id[x2]].sj,
-        V[ans[x11]][id[x11]].ti, V[ans[x11]][id[x11]].tj);
-      int dist4 = Distance(V[ans[x2]][id[x2]].ti, V[ans[x2]][id[x2]].tj,
-        V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
+      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
+        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
+      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
+        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
+      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
+        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
+      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
+        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
 
       int same = 0;
       if (dist1 == 0) same++;
@@ -677,16 +672,16 @@ void Method11(double temperature)
       afterScore = dist1 + dist2 + dist3 + dist4 - same;
     }
   }
-  else if (x1 == 0 && x2 != m - 1) {
+  else if (x1 == 0 && x2 != task_count - 1) {
     {
       int dist1 =
-        Distance(V[ans[x1]][id[x1]].si, V[ans[x1]][id[x1]].sj, si, sj);
-      int dist2 = Distance(V[ans[x1]][id[x1]].ti, V[ans[x1]][id[x1]].tj,
-        V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
-      int dist3 = Distance(V[ans[x2]][id[x2]].si, V[ans[x2]][id[x2]].sj,
-        V[ans[x21]][id[x21]].ti, V[ans[x21]][id[x21]].tj);
-      int dist4 = Distance(V[ans[x2]][id[x2]].ti, V[ans[x2]][id[x2]].tj,
-        V[ans[x22]][id[x22]].si, V[ans[x22]][id[x22]].sj);
+        manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j, start_i, start_j);
+      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
+        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
+      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
+        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
+      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
+        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
       int same = 0;
       if (dist2 == 0) same++;
       if (dist3 == 0) same++;
@@ -694,14 +689,14 @@ void Method11(double temperature)
       beforeScore = dist1 + dist2 + dist3 + dist4 - same;
     }
     {
-      int dist1 = Distance(V[ans[x1]][id[x1]].si, V[ans[x1]][id[x1]].sj,
-        V[ans[x21]][id[x21]].ti, V[ans[x21]][id[x21]].tj);
-      int dist2 = Distance(V[ans[x1]][id[x1]].ti, V[ans[x1]][id[x1]].tj,
-        V[ans[x22]][id[x22]].si, V[ans[x22]][id[x22]].sj);
+      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
+        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
+      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
+        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
       int dist3 =
-        Distance(V[ans[x2]][id[x2]].si, V[ans[x2]][id[x2]].sj, si, sj);
-      int dist4 = Distance(V[ans[x2]][id[x2]].ti, V[ans[x2]][id[x2]].tj,
-        V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
+        manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j, start_i, start_j);
+      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
+        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
 
       int same = 0;
       if (dist1 == 0) same++;
@@ -710,14 +705,14 @@ void Method11(double temperature)
       afterScore = dist1 + dist2 + dist3 + dist4 - same;
     }
   }
-  else if (x1 != 0 && x2 == m - 1) {
+  else if (x1 != 0 && x2 == task_count - 1) {
     {
-      int dist1 = Distance(V[ans[x1]][id[x1]].si, V[ans[x1]][id[x1]].sj,
-        V[ans[x11]][id[x11]].ti, V[ans[x11]][id[x11]].tj);
-      int dist2 = Distance(V[ans[x1]][id[x1]].ti, V[ans[x1]][id[x1]].tj,
-        V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
-      int dist3 = Distance(V[ans[x2]][id[x2]].si, V[ans[x2]][id[x2]].sj,
-        V[ans[x21]][id[x21]].ti, V[ans[x21]][id[x21]].tj);
+      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
+        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
+      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
+        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
+      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
+        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
       int same = 0;
       if (dist1 == 0) same++;
       if (dist2 == 0) same++;
@@ -725,12 +720,12 @@ void Method11(double temperature)
       beforeScore = dist1 + dist2 + dist3 - same;
     }
     {
-      int dist1 = Distance(V[ans[x1]][id[x1]].si, V[ans[x1]][id[x1]].sj,
-        V[ans[x21]][id[x21]].ti, V[ans[x21]][id[x21]].tj);
-      int dist3 = Distance(V[ans[x2]][id[x2]].si, V[ans[x2]][id[x2]].sj,
-        V[ans[x11]][id[x11]].ti, V[ans[x11]][id[x11]].tj);
-      int dist4 = Distance(V[ans[x2]][id[x2]].ti, V[ans[x2]][id[x2]].tj,
-        V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
+      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
+        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
+      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
+        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
+      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
+        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
 
       int same = 0;
       if (dist1 == 0) same++;
@@ -745,61 +740,57 @@ void Method11(double temperature)
 
   int diffScore = beforeScore - afterScore;
   double prob = exp((double)diffScore / temperature);
-  //if (prob > Rand01()) {
+  //if (prob > rand_01()) {
   if (diffScore >= 0) {
-    swap(ans[x1], ans[x2]);
-    swap(id[x1], id[x2]);
+    swap(task_order[x1], task_order[x2]);
+    swap(path_index[x1], path_index[x2]);
   }
 }
 
 // ID変更
-void Method12(double temperature)
+void change_path_id(double temperature)
 {
-  int x = Rand() % m;
-  int y = Rand() % 10;
-  if (V[ans[x]].size() <= y) return;
-  if (x == 0 || x == m - 1) return;
-  if (y == id[x]) return;
+  int x = rand_uint32() % task_count;
+  int y = rand_uint32() % 10;
+  if (V[task_order[x]].size() <= y) return;
+  if (x == 0 || x == task_count - 1) return;
+  if (y == path_index[x]) return;
   int x11 = x - 1;
   int x12 = x + 1;
 
   int beforeScore = 0;
   int afterScore = 0;
   {
-    int dist1 = Distance(V[ans[x]][id[x]].si, V[ans[x]][id[x]].sj,
-      V[ans[x11]][id[x11]].ti, V[ans[x11]][id[x11]].tj);
-    int dist2 = Distance(V[ans[x]][id[x]].ti, V[ans[x]][id[x]].tj,
-      V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
+    int dist1 = manhattan_distance(V[task_order[x]][path_index[x]].start_i, V[task_order[x]][path_index[x]].start_j,
+      V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
+    int dist2 = manhattan_distance(V[task_order[x]][path_index[x]].goal_i, V[task_order[x]][path_index[x]].goal_j,
+      V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
     int same = 0;
     if (dist1 == 0) same++;
     if (dist2 == 0) same++;
-    beforeScore = dist1 + dist2 - same + V[ans[x]][id[x]].val;
+    beforeScore = dist1 + dist2 - same + V[task_order[x]][path_index[x]].path_cost;
   }
   {
-    int dist1 = Distance(V[ans[x]][y].si, V[ans[x]][y].sj,
-      V[ans[x11]][id[x11]].ti, V[ans[x11]][id[x11]].tj);
-    int dist2 = Distance(V[ans[x]][y].ti, V[ans[x]][y].tj,
-      V[ans[x12]][id[x12]].si, V[ans[x12]][id[x12]].sj);
+    int dist1 = manhattan_distance(V[task_order[x]][y].start_i, V[task_order[x]][y].start_j,
+      V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
+    int dist2 = manhattan_distance(V[task_order[x]][y].goal_i, V[task_order[x]][y].goal_j,
+      V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
     int same = 0;
     if (dist1 == 0) same++;
     if (dist2 == 0) same++;
-    afterScore = dist1 + dist2 - same + V[ans[x]][y].val;
+    afterScore = dist1 + dist2 - same + V[task_order[x]][y].path_cost;
   }
 
   int diffScore = beforeScore - afterScore;
   double prob = exp((double)diffScore / temperature);
-  //if (prob > Rand01()) {
+  //if (prob > rand_01()) {
   if (diffScore >= 0) {
-    id[x] = y;
-    // cout << y << ' ' << diffScore << endl;
+    path_index[x] = y;
   }
 }
 
-void Method1(clock_t start)
+void simulated_annealing()
 {
-  clock_t end;
-  end = clock();
-
   int loop = 0;
   double startTemperature = 2;
   double endTemperature = 0;
@@ -807,22 +798,21 @@ void Method1(clock_t start)
   while (false) {
     loop++;
     if (loop % 100 == 0) {
-      end = clock();
-      double nowTime = (double)(end - start) / CLOCKS_PER_SEC;
-      nowProgress = nowTime / TL;
+      double nowTime = get_elapsed_time();
+      nowProgress = nowTime / time_limit_sec;
       if (nowProgress > 1.0) break;
     }
 
     double temperature =
       startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-    int ra = Rand() % 100;
+    int ra = rand_uint32() % 100;
     if (ra < 50) {
       // 2点スワップ
-      Method11(temperature);
+      two_swap(temperature);
     }
     else {
-      Method12(temperature);
+      change_path_id(temperature);
     }
   }
 
@@ -831,53 +821,51 @@ void Method1(clock_t start)
   }
 }
 
-ll Solve(int probNum)
+ll solve_single_case(int probNum)
 {
-  clock_t start, end;
-  start = clock();
-  end = clock();
+  start_timer();
 
   // 複数ケース回すときに内部状態を初期値に戻す
-  SetUp();
+  reset_global_state();
 
   // 入力受け取り
-  Input(probNum);
+  read_input(probNum);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  open_output_file(probNum, ofs);
 
   // dp
   {
     int dp[5][40][40];
     int dp2[5][40][40];
-    rep(i, m)
+    rep(i, task_count)
     {
       rep(j, 5)
       {
-        int x = b[i][0];
+        int x = task_colors[i][0];
         if (j == 0) {
-          rep(k, vcnt[x])
+          rep(k, cell_count_by_color[x])
           {
-            rep(l, vcnt[x]) { dp[j][k][l] = INF; }
+            rep(l, cell_count_by_color[x]) { dp[j][k][l] = INF; }
           }
         }
         else {
-          int y = b[i][j];
-          rep(k, vcnt[x])
+          int y = task_colors[i][j];
+          rep(k, cell_count_by_color[x])
           {
-            rep(l, vcnt[y]) { dp[j][k][l] = INF; }
+            rep(l, cell_count_by_color[y]) { dp[j][k][l] = INF; }
           }
         }
       }
 
-      int x = b[i][0];
+      int x = task_colors[i][0];
       rep(j, 5)
       {
         if (j == 0) {
-          rep(k, vcnt[x])
+          rep(k, cell_count_by_color[x])
           {
-            rep(l, vcnt[x])
+            rep(l, cell_count_by_color[x])
             {
               if (k == l)
                 dp[j][k][l] = 0;
@@ -887,16 +875,16 @@ ll Solve(int probNum)
           }
         }
         else {
-          int y = b[i][j - 1];
-          int z = b[i][j];
-          rep(k, vcnt[x])
+          int y = task_colors[i][j - 1];
+          int z = task_colors[i][j];
+          rep(k, cell_count_by_color[x])
           {
-            rep(l, vcnt[y])
+            rep(l, cell_count_by_color[y])
             {
-              rep(o, vcnt[z])
+              rep(o, cell_count_by_color[z])
               {
-                int dist = abs(v[z][o].first - v[y][l].first) +
-                  abs(v[z][o].second - v[y][l].second);
+                int dist = abs(cells_by_color[z][o].first - cells_by_color[y][l].first) +
+                  abs(cells_by_color[z][o].second - cells_by_color[y][l].second);
                 if (dp[j][k][o] > dp[j - 1][k][l] + dist) {
                   dp[j][k][o] = dp[j - 1][k][l] + dist;
                   dp2[j][k][o] = l;
@@ -907,53 +895,44 @@ ll Solve(int probNum)
         }
       }
 
-      int z = b[i][4];
-      rep(j, vcnt[x])
+      int z = task_colors[i][4];
+      rep(j, cell_count_by_color[x])
       {
-        rep(k, vcnt[z])
+        rep(k, cell_count_by_color[z])
         {
           Path path;
-          path.si = v[x][j].first;
-          path.sj = v[x][j].second;
-          path.ti = v[z][k].first;
-          path.tj = v[z][k].second;
-          path.val = dp[4][j][k];
+          path.start_i = cells_by_color[x][j].first;
+          path.start_j = cells_by_color[x][j].second;
+          path.goal_i = cells_by_color[z][k].first;
+          path.goal_j = cells_by_color[z][k].second;
+          path.path_cost = dp[4][j][k];
           vector<P> tmp;
           int now = k;
           drep(l, 5)
           {
-            int y = b[i][l];
-            tmp.push_back(v[y][now]);
+            int y = task_colors[i][l];
+            tmp.push_back(cells_by_color[y][now]);
             if (l == 0) break;
             now = dp2[l][j][now];
           }
           reverse(tmp.begin(), tmp.end());
-          path.path = tmp;
+          path.cells = tmp;
           V[i].push_back(path);
         }
       }
 
       sort(V[i].begin(), V[i].end());
-      baseVal[i] = V[i][0].val;
+      baseVal[i] = V[i][0].path_cost;
     }
   }
 
-
-  //rep(i, m) {
-  //  rep(j, m) {
-  //    if (b[i][2] == b[j][0] && b[i][3] == b[j][1] && b[i][4] == b[j][2]) {
-  //      cout << t[i] << ' ' << t[j] << endl;
-  //    }
-  //  }
-  //}
-
   // 初期解生成
-  Initialize();
+  build_initial_solution();
 
-  Method1(start);
+  simulated_annealing();
 
   // 解答を出力
-  Output(ofs);
+  write_answer(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -961,7 +940,7 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = calc_total_score();
   }
   return score;
 }
@@ -970,19 +949,19 @@ int main()
 {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    Rand();
+    rand_uint32();
   }
 
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
-    Solve(0);
+    solve_single_case(0);
   }
   else if (mode == 1) {
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = Solve(i);
+      ll score = solve_single_case(i);
       sum += score;
       cout << "num = " << i << ", ";
       cout << "score = " << score << ", ";
