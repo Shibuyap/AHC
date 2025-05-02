@@ -117,7 +117,7 @@ struct Path
 vector<Path> task_paths[TASK_COUNT];
 int min_path_cost[TASK_COUNT];
 
-int manhattan_distance(int i1, int j1, int i2, int j2)
+inline int manhattan_distance(int i1, int j1, int i2, int j2)
 {
   return abs(i1 - i2) + abs(j1 - j2);
 }
@@ -831,6 +831,7 @@ ll solve_single_case(int probNum)
   ll score = 0;
   if (mode != 0) {
     score = calc_total_score();
+    cerr << get_elapsed_time() << " sec" << endl;
   }
   return score;
 }
