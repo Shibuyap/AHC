@@ -114,6 +114,7 @@ struct Path
 
   bool operator<(const Path& right) const { return path_cost < right.path_cost; }
 };
+
 vector<Path> V[MAX_TASK_COUNT];
 int baseVal[MAX_TASK_COUNT];
 
@@ -473,127 +474,154 @@ void write_answer(ofstream& ofs)
   }
 }
 
+// インデックス 2 点を入れ替える近傍操作
 void two_swap(double temperature)
 {
-  // 2点スワップ
-  int x1 = rand_uint32() % task_count;
-  int x2 = rand_uint32() % task_count;
-  if (x1 > x2) swap(x1, x2);
-  if (x2 - x1 <= 1) return;
-  int x11 = x1 - 1;
-  int x12 = x1 + 1;
-  int x21 = x2 - 1;
-  int x22 = x2 + 1;
+  /* --- スワップ対象インデックスを無作為に決定 --- */
+  int idx_a = rand_uint32() % task_count;
+  int idx_b = rand_uint32() % task_count;
+  if (idx_a > idx_b) std::swap(idx_a, idx_b);
+  if (idx_b - idx_a <= 1) return;                 // 連続要素は無視
 
-  int beforeScore = 0;
-  int afterScore = 0;
-  if (x1 != 0 && x2 != task_count - 1) {
-    {
-      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
-        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
-      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
-        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
-      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
-        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
-      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
-        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
-      int same = 0;
-      if (dist1 == 0) same++;
-      if (dist2 == 0) same++;
-      if (dist3 == 0) same++;
-      if (dist4 == 0) same++;
-      beforeScore = dist1 + dist2 + dist3 + dist4 - same;
+  int prev_a = idx_a - 1;
+  int next_a = idx_a + 1;
+  int prev_b = idx_b - 1;
+  int next_b = idx_b + 1;
+
+  int cost_before = 0;
+  int cost_after = 0;
+
+  /* ---------- ケース①: どちらも端要素ではない ---------- */
+  if (idx_a != 0 && idx_b != task_count - 1) {
+    { // 交換前コスト
+      int d1 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].start_i,
+        V[task_order[idx_a]][path_index[idx_a]].start_j,
+        V[task_order[prev_a]][path_index[prev_a]].goal_i,
+        V[task_order[prev_a]][path_index[prev_a]].goal_j);
+      int d2 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].goal_i,
+        V[task_order[idx_a]][path_index[idx_a]].goal_j,
+        V[task_order[next_a]][path_index[next_a]].start_i,
+        V[task_order[next_a]][path_index[next_a]].start_j);
+      int d3 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].start_i,
+        V[task_order[idx_b]][path_index[idx_b]].start_j,
+        V[task_order[prev_b]][path_index[prev_b]].goal_i,
+        V[task_order[prev_b]][path_index[prev_b]].goal_j);
+      int d4 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].goal_i,
+        V[task_order[idx_b]][path_index[idx_b]].goal_j,
+        V[task_order[next_b]][path_index[next_b]].start_i,
+        V[task_order[next_b]][path_index[next_b]].start_j);
+      int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0) + (d4 == 0);
+      cost_before = d1 + d2 + d3 + d4 - same_cnt;
     }
-    {
-      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
-        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
-      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
-        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
-      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
-        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
-      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
-        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
-
-      int same = 0;
-      if (dist1 == 0) same++;
-      if (dist2 == 0) same++;
-      if (dist3 == 0) same++;
-      if (dist4 == 0) same++;
-      afterScore = dist1 + dist2 + dist3 + dist4 - same;
+    { // 交換後コスト
+      int d1 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].start_i,
+        V[task_order[idx_a]][path_index[idx_a]].start_j,
+        V[task_order[prev_b]][path_index[prev_b]].goal_i,
+        V[task_order[prev_b]][path_index[prev_b]].goal_j);
+      int d2 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].goal_i,
+        V[task_order[idx_a]][path_index[idx_a]].goal_j,
+        V[task_order[next_b]][path_index[next_b]].start_i,
+        V[task_order[next_b]][path_index[next_b]].start_j);
+      int d3 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].start_i,
+        V[task_order[idx_b]][path_index[idx_b]].start_j,
+        V[task_order[prev_a]][path_index[prev_a]].goal_i,
+        V[task_order[prev_a]][path_index[prev_a]].goal_j);
+      int d4 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].goal_i,
+        V[task_order[idx_b]][path_index[idx_b]].goal_j,
+        V[task_order[next_a]][path_index[next_a]].start_i,
+        V[task_order[next_a]][path_index[next_a]].start_j);
+      int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0) + (d4 == 0);
+      cost_after = d1 + d2 + d3 + d4 - same_cnt;
     }
   }
-  else if (x1 == 0 && x2 != task_count - 1) {
-    {
-      int dist1 =
-        manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j, start_i, start_j);
-      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
-        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
-      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
-        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
-      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
-        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
-      int same = 0;
-      if (dist2 == 0) same++;
-      if (dist3 == 0) same++;
-      if (dist4 == 0) same++;
-      beforeScore = dist1 + dist2 + dist3 + dist4 - same;
+  /* ---------- ケース②: idx_a が先頭 ---------- */
+  else if (idx_a == 0 && idx_b != task_count - 1) {
+    { // 交換前
+      int d1 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].start_i,
+        V[task_order[idx_a]][path_index[idx_a]].start_j,
+        start_i, start_j);
+      int d2 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].goal_i,
+        V[task_order[idx_a]][path_index[idx_a]].goal_j,
+        V[task_order[next_a]][path_index[next_a]].start_i,
+        V[task_order[next_a]][path_index[next_a]].start_j);
+      int d3 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].start_i,
+        V[task_order[idx_b]][path_index[idx_b]].start_j,
+        V[task_order[prev_b]][path_index[prev_b]].goal_i,
+        V[task_order[prev_b]][path_index[prev_b]].goal_j);
+      int d4 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].goal_i,
+        V[task_order[idx_b]][path_index[idx_b]].goal_j,
+        V[task_order[next_b]][path_index[next_b]].start_i,
+        V[task_order[next_b]][path_index[next_b]].start_j);
+      int same_cnt = (d2 == 0) + (d3 == 0) + (d4 == 0);
+      cost_before = d1 + d2 + d3 + d4 - same_cnt;
     }
-    {
-      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
-        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
-      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
-        V[task_order[x22]][path_index[x22]].start_i, V[task_order[x22]][path_index[x22]].start_j);
-      int dist3 =
-        manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j, start_i, start_j);
-      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
-        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
-
-      int same = 0;
-      if (dist1 == 0) same++;
-      if (dist2 == 0) same++;
-      if (dist4 == 0) same++;
-      afterScore = dist1 + dist2 + dist3 + dist4 - same;
+    { // 交換後
+      int d1 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].start_i,
+        V[task_order[idx_a]][path_index[idx_a]].start_j,
+        V[task_order[prev_b]][path_index[prev_b]].goal_i,
+        V[task_order[prev_b]][path_index[prev_b]].goal_j);
+      int d2 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].goal_i,
+        V[task_order[idx_a]][path_index[idx_a]].goal_j,
+        V[task_order[next_b]][path_index[next_b]].start_i,
+        V[task_order[next_b]][path_index[next_b]].start_j);
+      int d3 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].start_i,
+        V[task_order[idx_b]][path_index[idx_b]].start_j,
+        start_i, start_j);
+      int d4 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].goal_i,
+        V[task_order[idx_b]][path_index[idx_b]].goal_j,
+        V[task_order[next_a]][path_index[next_a]].start_i,
+        V[task_order[next_a]][path_index[next_a]].start_j);
+      int same_cnt = (d1 == 0) + (d2 == 0) + (d4 == 0);
+      cost_after = d1 + d2 + d3 + d4 - same_cnt;
     }
   }
-  else if (x1 != 0 && x2 == task_count - 1) {
-    {
-      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
-        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
-      int dist2 = manhattan_distance(V[task_order[x1]][path_index[x1]].goal_i, V[task_order[x1]][path_index[x1]].goal_j,
-        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
-      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
-        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
-      int same = 0;
-      if (dist1 == 0) same++;
-      if (dist2 == 0) same++;
-      if (dist3 == 0) same++;
-      beforeScore = dist1 + dist2 + dist3 - same;
+  /* ---------- ケース③: idx_b が末尾 ---------- */
+  else if (idx_a != 0 && idx_b == task_count - 1) {
+    { // 交換前
+      int d1 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].start_i,
+        V[task_order[idx_a]][path_index[idx_a]].start_j,
+        V[task_order[prev_a]][path_index[prev_a]].goal_i,
+        V[task_order[prev_a]][path_index[prev_a]].goal_j);
+      int d2 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].goal_i,
+        V[task_order[idx_a]][path_index[idx_a]].goal_j,
+        V[task_order[next_a]][path_index[next_a]].start_i,
+        V[task_order[next_a]][path_index[next_a]].start_j);
+      int d3 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].start_i,
+        V[task_order[idx_b]][path_index[idx_b]].start_j,
+        V[task_order[prev_b]][path_index[prev_b]].goal_i,
+        V[task_order[prev_b]][path_index[prev_b]].goal_j);
+      int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0);
+      cost_before = d1 + d2 + d3 - same_cnt;
     }
-    {
-      int dist1 = manhattan_distance(V[task_order[x1]][path_index[x1]].start_i, V[task_order[x1]][path_index[x1]].start_j,
-        V[task_order[x21]][path_index[x21]].goal_i, V[task_order[x21]][path_index[x21]].goal_j);
-      int dist3 = manhattan_distance(V[task_order[x2]][path_index[x2]].start_i, V[task_order[x2]][path_index[x2]].start_j,
-        V[task_order[x11]][path_index[x11]].goal_i, V[task_order[x11]][path_index[x11]].goal_j);
-      int dist4 = manhattan_distance(V[task_order[x2]][path_index[x2]].goal_i, V[task_order[x2]][path_index[x2]].goal_j,
-        V[task_order[x12]][path_index[x12]].start_i, V[task_order[x12]][path_index[x12]].start_j);
-
-      int same = 0;
-      if (dist1 == 0) same++;
-      if (dist3 == 0) same++;
-      if (dist4 == 0) same++;
-      afterScore = dist1 + dist3 + dist4 - same;
+    { // 交換後
+      int d1 = manhattan_distance(V[task_order[idx_a]][path_index[idx_a]].start_i,
+        V[task_order[idx_a]][path_index[idx_a]].start_j,
+        V[task_order[prev_b]][path_index[prev_b]].goal_i,
+        V[task_order[prev_b]][path_index[prev_b]].goal_j);
+      int d3 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].start_i,
+        V[task_order[idx_b]][path_index[idx_b]].start_j,
+        V[task_order[prev_a]][path_index[prev_a]].goal_i,
+        V[task_order[prev_a]][path_index[prev_a]].goal_j);
+      int d4 = manhattan_distance(V[task_order[idx_b]][path_index[idx_b]].goal_i,
+        V[task_order[idx_b]][path_index[idx_b]].goal_j,
+        V[task_order[next_a]][path_index[next_a]].start_i,
+        V[task_order[next_a]][path_index[next_a]].start_j);
+      int same_cnt = (d1 == 0) + (d3 == 0) + (d4 == 0);
+      cost_after = d1 + d3 + d4 - same_cnt;
     }
   }
   else {
     return;
   }
 
-  int diffScore = beforeScore - afterScore;
-  double prob = exp((double)diffScore / temperature);
-  //if (prob > rand_01()) {
-  if (diffScore >= 0) {
-    swap(task_order[x1], task_order[x2]);
-    swap(path_index[x1], path_index[x2]);
+  int    delta_cost = cost_before - cost_after;
+  double accept_prob = std::exp(static_cast<double>(delta_cost) / temperature);
+
+  // 焼きなまし：改善 or 非改善でも確率で受理
+  // if (rand_01() < accept_prob)
+  if (delta_cost >= 0) {
+    std::swap(task_order[idx_a], task_order[idx_b]);
+    std::swap(path_index[idx_a], path_index[idx_b]);
   }
 }
 
