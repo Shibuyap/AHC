@@ -1,3 +1,6 @@
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <algorithm>
 #include <bitset>
 #include <cassert>
@@ -64,6 +67,15 @@ static double rand_unit_double() {
   return (rand_xorshift32() + 0.5) * (1.0 / UINT_MAX);
 }
 
+void shuffle_array(int* arr, int n) {
+  for (int i = n - 1; i >= 0; i--) {
+    int j = rand_xorshift32() % (i + 1);
+    int swa = arr[i];
+    arr[i] = arr[j];
+    arr[j] = swa;
+  }
+}
+
 int next_directions[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
                    {1, 0, 2, 3}, {1, 0, 3, 2}, {1, 2, 0, 3}, {1, 2, 3, 0}, {1, 3, 0, 2}, {1, 3, 2, 0},
                    {2, 0, 1, 3}, {2, 0, 3, 1}, {2, 1, 0, 3}, {2, 1, 3, 0}, {2, 3, 0, 1}, {2, 3, 1, 0},
@@ -74,6 +86,7 @@ int dy[4] = { 0, -1, 0, 1 };
 char next_char[4] = { 'U','L','D','R' };
 
 int exec_mode = 0;
+bool show_log = true;
 
 const int GRID_SIZE = 50;
 const int MAX_PATH_LENGTH = GRID_SIZE * GRID_SIZE;
@@ -109,6 +122,11 @@ public:
     direction[length - 1] = d;
     score += cell_value[x[length]][y[length]];
     length++;
+  }
+
+  void pop() {
+    length--;
+    score -= cell_value[x[length]][y[length]];
   }
 
   void reverse() {
@@ -310,123 +328,195 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2) {
       break;
     }
   }
-
-  cerr << "build_from_best_prefix : iter = " << iter << endl;
 }
 
-void anneal_path_segment(double time_limit) {
+struct AnnealParam
+{
+  double time_limit;
+  double start_temp;
+  double end_temp;
+  double score_scale;
+  int min_segment_len;
+  int range_segment_len;
+};
+
+class DfsSolver
+{
+public:
+  bool connected;
+  Path best_path;
+  Path path;
+  int goal_x;
+  int goal_y;
+  int remaining_search_cnt;
+
+  void start(int sx, int sy, int gx, int gy) {
+    goal_x = gx;
+    goal_y = gy;
+    connected = false;
+    path.init(sx, sy);
+    best_path.init(sx, sy);
+    remaining_search_cnt = 500;
+    dfs(sx, sy);
+  }
+
+  void dfs(int x, int y) {
+    int legal_dir[4];
+    if (remaining_search_cnt == 0) {
+      return;
+    }
+    remaining_search_cnt--;
+
+    int cnt = 0;
+    rep(i, 4) {
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+      if (nx == goal_x && ny == goal_y) {
+        connected = true;
+        path.add(i);
+        if (path.score > best_path.score) {
+          best_path.copy(path);
+        }
+        path.pop();
+      }
+      else  if (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
+        legal_dir[cnt] = i;
+        cnt++;
+      }
+    }
+
+    shuffle_array(legal_dir, cnt);
+    rep(ii, cnt) {
+      int i = legal_dir[ii];
+      int nx = x + dx[i];
+      int ny = y + dy[i];
+
+      path.add(i);
+      visited[tile_id[nx][ny]] = visited_version;
+      dfs(nx, ny);
+      visited[tile_id[nx][ny]] = -1;
+      path.pop();
+    }
+  }
+};
+
+bool search_best_path_2(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param) {
+  DfsSolver dfsSolver;
+  int ra = rand_xorshift32() % 2;
+  if (ra == 0) {
+    dfsSolver.start(seg_start_x, seg_start_y, seg_goal_x, seg_goal_y);
+  }
+  else {
+    dfsSolver.start(seg_goal_x, seg_goal_y, seg_start_x, seg_start_y);
+  }
+
+  if (dfsSolver.connected) {
+    keep_path.copy(dfsSolver.best_path);
+    if (ra == 1) {
+      keep_path.reverse();
+    }
+    return true;
+  }
+
+  return false;
+}
+
+void anneal_path_segment(const AnnealParam& param) {
   Path current_path;
   current_path.copy(best_path);
 
-  // [left, right)‹æŠÔ‚ÌŒo˜H‚ðÄ¶¬‚·‚é‚½‚ßA
-  // ‚»‚êˆÈ‘O‚ð before_keep_pathAŠY“–‹æŠÔ‚ð keep_pathA
-  // ‚»‚êˆÈ~‚ð after_keep_path ‚Æ‚µ‚ÄŠÇ—B
+  // „Ÿ„Ÿ ‹æŠÔ [seg_left, seg_right) ‚ðÄ‚«“Ý‚µ‚ÄÄ¶¬ „Ÿ„Ÿ
   Path before_keep_path, keep_path, after_keep_path;
-  int iter = 0;
-  const double START_TEMP = 4000048.0;
-  const double END_TEMP = 0.1;
-  const double SCORE_SCALE = 12345.6;
-  double syori3_start_time = get_elapsed_time();
+
+  int iteration_cnt = 0;
+
+  double anneal_start_time = get_elapsed_time();
+
   while (true) {
-    iter++;
+    ++iteration_cnt;
 
     reset_visited_all();
 
-    int m = current_path.length;
-    int len = rand_xorshift32() % 40 + 3;
-    int left = rand_xorshift32() % (m - len);
-    int right = left + len;
+    int path_len = current_path.length;
+    int segment_len = rand_xorshift32() % param.range_segment_len + param.min_segment_len;
+    int seg_left = rand_xorshift32() % (path_len - segment_len);
+    int seg_right = seg_left + segment_len;
 
-    int sx = current_path.x[left];
-    int sy = current_path.y[left];
-    int gx = current_path.x[right];
-    int gy = current_path.y[right];
+    int seg_start_x = current_path.x[seg_left];
+    int seg_start_y = current_path.y[seg_left];
+    int seg_goal_x = current_path.x[seg_right];
+    int seg_goal_y = current_path.y[seg_right];
 
+    /* „Ÿ before_keep_path „Ÿ */
     before_keep_path.init(si, sj);
-    rep(i, left) {
+    rep(i, seg_left) {
       before_keep_path.add(current_path.direction[i]);
-      int x = before_keep_path.x[before_keep_path.length - 1];
-      int y = before_keep_path.y[before_keep_path.length - 1];
-      visited[tile_id[x][y]] = visited_version;
+      int cx = before_keep_path.x[before_keep_path.length - 1];
+      int cy = before_keep_path.y[before_keep_path.length - 1];
+      visited[tile_id[cx][cy]] = visited_version;
     }
 
-    keep_path.init(sx, sy);
-    srep(i, left, right) {
+    /* „Ÿ keep_path (‹Œ‹æŠÔ) „Ÿ */
+    keep_path.init(seg_start_x, seg_start_y);
+    srep(i, seg_left, seg_right) {
       keep_path.add(current_path.direction[i]);
-      int x = keep_path.x[keep_path.length - 1];
-      int y = keep_path.y[keep_path.length - 1];
-      visited[tile_id[x][y]] = -1;
+      int cx = keep_path.x[keep_path.length - 1];
+      int cy = keep_path.y[keep_path.length - 1];
+      visited[tile_id[cx][cy]] = -1;
     }
 
-    visited[tile_id[gx][gy]] = visited_version;
+    visited[tile_id[seg_goal_x][seg_goal_y]] = visited_version;
 
-    after_keep_path.init(gx, gy);
-    srep(i, right, m - 1) {
+    /* „Ÿ after_keep_path „Ÿ */
+    after_keep_path.init(seg_goal_x, seg_goal_y);
+    srep(i, seg_right, path_len - 1) {
       after_keep_path.add(current_path.direction[i]);
-      int x = after_keep_path.x[after_keep_path.length - 1];
-      int y = after_keep_path.y[after_keep_path.length - 1];
-      visited[tile_id[x][y]] = visited_version;
+      int cx = after_keep_path.x[after_keep_path.length - 1];
+      int cy = after_keep_path.y[after_keep_path.length - 1];
+      visited[tile_id[cx][cy]] = visited_version;
     }
 
-    bool first_better_found = true;
-    Path new_path;
-    rep(_, 100) {
-      int is_reverse = rand_xorshift32() % 2;
-      bool is_connect = false;
-      if (is_reverse == 0) {
-        is_connect = try_connect_path(new_path, sx, sy, gx, gy);
-      }
-      else {
-        is_connect = try_connect_path(new_path, gx, gy, sx, sy);
-      }
-
-      if (is_connect && (first_better_found || new_path.score > keep_path.score)) {
-        if (is_reverse == 1) {
-          new_path.reverse();
-        }
-        keep_path.copy(new_path);
-        first_better_found = false;
-      }
-      rep(i, new_path.length) {
-        int x = new_path.x[i];
-        int y = new_path.y[i];
-        if (x == sx && y == sy)continue;
-        if (x == gx && y == gy)continue;
-        visited[tile_id[x][y]] = -1;
-      }
+    bool res = search_best_path_2(seg_start_x, seg_start_y, seg_goal_x, seg_goal_y, keep_path, param);
+    if (!res) {
+      continue;
     }
 
     double now_time = get_elapsed_time();
+    double progress_ratio = (now_time - anneal_start_time) / (param.time_limit - anneal_start_time);
+    double temp = param.start_temp + (param.end_temp - param.start_temp) * progress_ratio;
 
-    double progress_ratio = (now_time - syori3_start_time) / (time_limit - syori3_start_time);
+    double new_score = before_keep_path.score + keep_path.score + after_keep_path.score
+      - (cell_value[seg_start_x][seg_start_y] + cell_value[seg_goal_x][seg_goal_y]);
+    double diff_score = (new_score - current_path.score) * param.score_scale;
+    double accept_prob = exp(diff_score / temp);
 
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
-    double new_score = before_keep_path.score + keep_path.score + after_keep_path.score - (cell_value[sx][sy] + cell_value[gx][gy]);
-    double diff_score = (new_score - current_path.score) * SCORE_SCALE;
-    double prob = exp(diff_score / temp);
-    if (prob > rand_unit_double()) {
+    if (accept_prob > rand_unit_double()) {
+      /* accept */
       current_path.copy(before_keep_path);
-      rep(i, keep_path.length - 1) {
-        current_path.add(keep_path.direction[i]);
-      }
-      rep(i, after_keep_path.length - 1) {
-        current_path.add(after_keep_path.direction[i]);
-      }
+      rep(i, keep_path.length - 1) current_path.add(keep_path.direction[i]);
+      rep(i, after_keep_path.length - 1) current_path.add(after_keep_path.direction[i]);
+
+      //rep(i, current_path.length) {
+      //  int x = current_path.x[i];
+      //  int y = current_path.y[i];
+      //  if (is_out_of_bounds(x, y)) {
+      //    cerr << "out of bounds " << seg_left << ' ' << seg_right << ' ' << current_path.length << endl;
+      //  }
+      //}
 
       if (current_path.score > best_path.score) {
         best_path.copy(current_path);
       }
     }
 
-    if (now_time > time_limit) {
-      break;
-    }
+    if (now_time > param.time_limit) break;
   }
-
-  cerr << "anneal_path_segment : iter = " << iter << endl;
+  if (show_log) {
+    cerr << "anneal_path_segment : iter = " << iteration_cnt << endl;
+  }
 }
 
-int solve_case(int case_num) {
+int solve_case(int case_num, const AnnealParam& param) {
   start_timer();
 
   read_case_input(case_num);
@@ -435,13 +525,13 @@ int solve_case(int case_num) {
 
   const double TIME_LIMIT_STAGE1 = 0.2;
   const double TIME_LIMIT_STAGE2 = 0.5;
-  const double TIME_LIMIT_FINAL = 1.9;
-
   build_from_best_prefix(TIME_LIMIT_STAGE1, TIME_LIMIT_STAGE2);
 
-  anneal_path_segment(TIME_LIMIT_FINAL);
+  anneal_path_segment(param);
 
-  cerr << "best_score = " << best_path.score << endl;
+  if (show_log) {
+    cerr << "best_score = " << best_path.score << ", time = " << get_elapsed_time() << "sec." << endl;
+  }
 
   write_case_output(case_num);
 
@@ -450,13 +540,76 @@ int solve_case(int case_num) {
 
 int main() {
   exec_mode = 1;
+  show_log = true;
+
+  AnnealParam param;
+  param.time_limit = 1.9;
+  param.start_temp = 20000048.0;
+  param.end_temp = 0.1;
+  param.score_scale = 12345.6;
+  param.range_segment_len = 50;
+  param.min_segment_len = 3;
 
   if (exec_mode == 0) {
-    solve_case(0);
+    solve_case(0, param);
   }
   else if (exec_mode == 1) {
-    rep(i, 5) {
-      solve_case(i);
+    int sum = 0;
+    rep(i, 10) {
+      sum += solve_case(i, param);
+      cout << i << ' ' << sum << endl;
+    }
+    cout << "sum = " << sum << endl;
+  }
+  else if (exec_mode == 2) {
+    show_log = false;
+
+    int best_score = 0;
+    AnnealParam best_param = param;
+
+    int iter = 0;
+    while (true) {
+      iter++;
+      int new_score = 0;
+      AnnealParam new_param = best_param;
+
+      if (iter > 10) {
+        int ra = rand_xorshift32() % 5;
+        switch (ra) {
+        case 0:
+          new_param.start_temp *= rand_unit_double() * 2;
+          break;
+        case 1:
+          new_param.score_scale *= rand_unit_double() * 2;
+          break;
+        case 3:
+          new_param.range_segment_len *= rand_unit_double() * 2;
+          new_param.range_segment_len = max(new_param.range_segment_len, 5);
+          break;
+        case 4:
+          new_param.min_segment_len *= rand_unit_double() * 2;
+          new_param.min_segment_len = max(new_param.range_segment_len, 0);
+          break;
+        }
+      }
+
+      rep(i, 1) {
+        new_score += solve_case(i, new_param);
+      }
+
+      if (new_score >= best_score) {
+        best_score = new_score;
+        best_param = new_param;
+
+        cout << "iter = " << iter << ", score = " << best_score << endl;
+        cout << "param.time_limit = " << best_param.time_limit << endl;
+        cout << setprecision(10) << "param.start_temp = " << best_param.start_temp << endl;
+        cout << "param.end_temp = " << best_param.end_temp << endl;
+        cout << "param.score_scale = " << best_param.score_scale << endl;
+        cout << "param.range_segment_len = " << best_param.range_segment_len << endl;
+        cout << "param.min_segment_len = " << best_param.min_segment_len << endl;
+        cout << endl;
+      }
     }
   }
 }
