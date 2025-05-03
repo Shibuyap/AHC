@@ -91,42 +91,63 @@ namespace /* 変数 */
 {
   const int INIT_N = 1000;
 
-  // 入力用変数
   int n = 1000;
   const int m = 55;
   vector<Point> start_points(INIT_N), goal_points(INIT_N);
   vector<int> orig_indices;
 
-  // 解答用変数
   ll curr_score;
   ll curr_length;
   vector<Point> current_path;
+
   vector<int> sel_pair_idx(m * 2);
   vector<int> reduced_pair_idx(m * 2);
   vector<int> is_used(INIT_N);
   vector<int> partner_idx(INIT_N * 2);
 
-  // 焼きなまし用変数
   ll best_score;
   ll best_length;
   vector<Point> best_path;
+
   vector<int> best_sel_pair_idx;
   vector<int> best_reduced_pair_idx;
   vector<int> best_is_used;
   vector<int> best_partner_idx;
 
   void ResetParam() {
+    n = INIT_N;
+
+    start_points.resize(INIT_N);
+    goal_points.resize(INIT_N);
     orig_indices.clear();
+
     curr_score = 0;
     curr_length = 0;
     current_path.clear();
+
+    sel_pair_idx.clear();
+    reduced_pair_idx.clear();
+    is_used.clear();
+    partner_idx.clear();
+
     sel_pair_idx.resize(m * 2);
     reduced_pair_idx.resize(m * 2);
     is_used.resize(INIT_N);
     partner_idx.resize(INIT_N * 2);
+
     best_score = 0;
     best_length = 0;
     best_path.clear();
+
+    //best_sel_pair_idx.clear();
+    //best_reduced_pair_idx.clear();
+    //best_is_used.clear();
+    //best_partner_idx.clear();
+
+    //best_sel_pair_idx.resize(m * 2);
+    //best_reduced_pair_idx.resize(m * 2);
+    //best_is_used.resize(INIT_N);
+    //best_partner_idx.resize(INIT_N * 2);
   }
 }  // namespace
 
@@ -550,10 +571,12 @@ void sa_path_pruning() {
   curr_score = CalcScore(curr_length);
 }
 
-int Solve(int mode) {
+int Solve(int case_num) {
   start_timer();
 
-  input_data(0);
+  ResetParam();
+
+  input_data(case_num);
 
   filter_input_points();
 
@@ -565,13 +588,10 @@ int Solve(int mode) {
 
   sa_path_pruning();
 
-  output_data(0);
+  output_data(case_num);
 
-  // デバッグ用
-  if (mode != 0) {
-    cout << curr_score << endl;
-    cout << get_elapsed_time() << "sec." << endl;
-  }
+  cerr << curr_score << endl;
+  cerr << get_elapsed_time() << "sec." << endl;
 
   return curr_score;
 }
@@ -579,10 +599,12 @@ int Solve(int mode) {
 int main() {
   exec_mode = 1;
   if (exec_mode == 0) {
-    Solve(exec_mode);
+    Solve(0);
   }
   else if (exec_mode == 1) {
-    Solve(exec_mode);
+    srep(i, 0, 10) {
+      Solve(i);
+    }
   }
 
   return 0;
