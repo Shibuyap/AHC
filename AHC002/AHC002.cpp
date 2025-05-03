@@ -55,7 +55,7 @@ const double TIME_LIMIT_STAGE2 = 0.5;
 const double TIME_LIMIT_STAGE3 = 1.0;
 const double TIME_LIMIT_FINAL = 1.9;
 
-static uint32_t Rand()
+static uint32_t rand_xorshift32()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -68,9 +68,9 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double Rand01()
+static double rand_unit_double()
 {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  return (rand_xorshift32() + 0.5) * (1.0 / UINT_MAX);
 }
 
 int next_directions[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
@@ -174,13 +174,13 @@ public:
 Path current_path;
 Path best_path;
 
-bool is_out_of_range(int x, int y)
+bool is_out_of_bounds(int x, int y)
 {
   if (x < 0 || GRID_SIZE <= x || y < 0 || GRID_SIZE <= y) return true;
   return false;
 }
 
-static void input_data(int case_num) {
+static void read_case_input(int case_num) {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -221,7 +221,7 @@ static void input_data(int case_num) {
   }
 }
 
-void output_data(int case_num) {
+void write_case_output(int case_num) {
   string best_string;
   rep(i, best_path.length - 1) {
     best_string += next_char[best_path.direction[i]];
@@ -245,17 +245,17 @@ void output_data(int case_num) {
   }
 }
 
-void extend_random_path(Path& path) {
+void extend_path_randomly(Path& path) {
   int x = path.x[path.length - 1];
   int y = path.y[path.length - 1];
   while (true) {
-    int ra = Rand() % 24;
+    int ra = rand_xorshift32() % 24;
     bool ok = false;
     rep(i, 4)
     {
       int nx = x + dx[next_directions[ra][i]];
       int ny = y + dy[next_directions[ra][i]];
-      if (!is_out_of_range(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
+      if (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
         visited[tile_id[nx][ny]] = visited_version;
         path.add(next_directions[ra][i]);
         x = nx;
@@ -268,13 +268,13 @@ void extend_random_path(Path& path) {
   }
 }
 
-void init_visited()
+void reset_visited_all()
 {
   visited_version++;
   visited[tile_id[si][sj]] = visited_version;
 }
 
-void init_visited(const Path& path)
+void mark_path_as_visited(const Path& path)
 {
   visited_version++;
   rep(i, path.length) {
@@ -282,13 +282,13 @@ void init_visited(const Path& path)
   }
 }
 
-bool attempt_connect(Path& path, int sx, int sy, int gx, int gy) {
+bool try_connect_path(Path& path, int sx, int sy, int gx, int gy) {
   path.init(sx, sy);
   int x = sx;
   int y = sy;
 
   while (x != gx || y != gy) {
-    int ra = Rand() % 24;
+    int ra = rand_xorshift32() % 24;
     bool ok = false;
 
     rep(i, 4)
@@ -296,7 +296,7 @@ bool attempt_connect(Path& path, int sx, int sy, int gx, int gy) {
       int nx = x + dx[next_directions[ra][i]];
       int ny = y + dy[next_directions[ra][i]];
 
-      if ((nx == gx && ny == gy) || (!is_out_of_range(nx, ny) && visited[tile_id[nx][ny]] != visited_version)) {
+      if ((nx == gx && ny == gy) || (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version)) {
         x = nx;
         y = ny;
         path.add(next_directions[ra][i]);
@@ -313,16 +313,16 @@ bool attempt_connect(Path& path, int sx, int sy, int gx, int gy) {
 }
 
 // ‰Šú‰ð
-void build_initial_solution() {
+void build_initial_path() {
   int loop1 = 0;
 
   rep(i, 100000) {
     loop1++;
 
-    init_visited();
+    reset_visited_all();
 
     current_path.init(si, sj);
-    extend_random_path(current_path);
+    extend_path_randomly(current_path);
 
     if (current_path.score > best_path.score) {
       best_path.copy(current_path);
@@ -336,16 +336,16 @@ void build_initial_solution() {
   cerr << "loop1 = " << loop1 << endl;
 }
 
-void build2() {
+void build_from_best_prefix() {
   int loop2 = 0;
   while (true) {
     loop2++;
 
-    init_visited();
+    reset_visited_all();
 
     current_path.init(si, sj);
 
-    int m = Rand() % best_path.length;
+    int m = rand_xorshift32() % best_path.length;
     rep(i, m) {
       current_path.add(best_path.direction[i]);
       int x = current_path.x[current_path.length - 1];
@@ -353,7 +353,7 @@ void build2() {
       visited[tile_id[x][y]] = visited_version;
     }
 
-    extend_random_path(current_path);
+    extend_path_randomly(current_path);
 
     if (current_path.score > best_path.score) {
       best_path.copy(current_path);
@@ -367,7 +367,7 @@ void build2() {
   cerr << "loop2 = " << loop2 << endl;
 }
 
-void build3() {
+void anneal_path_segment() {
   current_path.copy(best_path);
 
   // [left, right)‹æŠÔ‚ÌŒo˜H‚ðÄ¶¬‚·‚é‚½‚ßA
@@ -382,11 +382,11 @@ void build3() {
   while (true) {
     loop3++;
 
-    init_visited();
+    reset_visited_all();
 
     int m = current_path.length;
-    int len = Rand() % 40 + 3;
-    int left = Rand() % (m - len);
+    int len = rand_xorshift32() % 40 + 3;
+    int left = rand_xorshift32() % (m - len);
     int right = left + len;
 
     int sx = current_path.x[left];
@@ -423,13 +423,13 @@ void build3() {
     bool is_first = true;
     Path new_path;
     rep(_, 100) {
-      int is_reverse = Rand() % 2;
+      int is_reverse = rand_xorshift32() % 2;
       bool is_connect = false;
       if (is_reverse == 0) {
-        is_connect = attempt_connect(new_path, sx, sy, gx, gy);
+        is_connect = try_connect_path(new_path, sx, sy, gx, gy);
       }
       else {
-        is_connect = attempt_connect(new_path, gx, gy, sx, sy);
+        is_connect = try_connect_path(new_path, gx, gy, sx, sy);
       }
 
       if (is_connect && (is_first || new_path.score > keep_path.score)) {
@@ -456,7 +456,7 @@ void build3() {
     double new_score = before_keep_path.score + keep_path.score + after_keep_path.score - (cell_value[sx][sy] + cell_value[gx][gy]);
     double diff_score = (new_score - current_path.score) * SCORE_SCALE;
     double prob = exp(diff_score / temp);
-    if (prob > Rand01()) {
+    if (prob > rand_unit_double()) {
       current_path.copy(before_keep_path);
       rep(i, keep_path.length - 1) {
         current_path.add(keep_path.direction[i]);
@@ -478,23 +478,23 @@ void build3() {
   cerr << "loop3 = " << loop3 << endl;
 }
 
-int solve(int case_num)
+int solve_case(int case_num)
 {
   start_timer();
 
-  input_data(case_num);
+  read_case_input(case_num);
 
   best_path.init(si, sj);
 
-  build_initial_solution();
+  build_initial_path();
 
-  build2();
+  build_from_best_prefix();
 
-  build3();
+  anneal_path_segment();
 
   cerr << "best_score = " << best_path.score << endl;
 
-  output_data(case_num);
+  write_case_output(case_num);
 
   return best_path.score;
 }
@@ -503,11 +503,11 @@ int main() {
   exec_mode = 1;
 
   if (exec_mode == 0) {
-    solve(0);
+    solve_case(0);
   }
   else if (exec_mode == 1) {
     rep(i, 5) {
-      solve(i);
+      solve_case(i);
     }
   }
 }
