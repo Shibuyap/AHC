@@ -523,11 +523,13 @@ int solve_case(int case_num, const AnnealParam& param) {
 
   best_path.init(si, sj);
 
-  const double TIME_LIMIT_STAGE1 = 0.2;
-  const double TIME_LIMIT_STAGE2 = 0.5;
+  const double TIME_LIMIT_STAGE1 = 0.05;
+  const double TIME_LIMIT_STAGE2 = 0.1;
   build_from_best_prefix(TIME_LIMIT_STAGE1, TIME_LIMIT_STAGE2);
 
   anneal_path_segment(param);
+
+  build_from_best_prefix(0.1, 1.95);
 
   if (show_log) {
     cerr << "best_score = " << best_path.score << ", time = " << get_elapsed_time() << "sec." << endl;
@@ -543,7 +545,7 @@ int main() {
   show_log = true;
 
   AnnealParam param;
-  param.time_limit = 1.9;
+  param.time_limit = 1.8;
   param.start_temp = 20000048.0;
   param.end_temp = 0.1;
   param.score_scale = 12345.6;
