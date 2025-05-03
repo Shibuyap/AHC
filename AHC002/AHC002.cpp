@@ -172,7 +172,6 @@ public:
 };
 
 Path current_path;
-Path candidate_path;
 Path best_path;
 
 bool is_out_of_range(int x, int y)
@@ -325,8 +324,8 @@ void build_initial_solution() {
     current_path.init(si, sj);
     extend_random_path(current_path);
 
-    if (current_path.score > candidate_path.score) {
-      candidate_path.copy(current_path);
+    if (current_path.score > best_path.score) {
+      best_path.copy(current_path);
     }
 
     if (get_elapsed_time() > TIME_LIMIT_STAGE1) {
@@ -346,9 +345,9 @@ void build2() {
 
     current_path.init(si, sj);
 
-    int m = Rand() % candidate_path.length;
+    int m = Rand() % best_path.length;
     rep(i, m) {
-      current_path.add(candidate_path.direction[i]);
+      current_path.add(best_path.direction[i]);
       int x = current_path.x[current_path.length - 1];
       int y = current_path.y[current_path.length - 1];
       visited[tile_id[x][y]] = visited_version;
@@ -356,8 +355,8 @@ void build2() {
 
     extend_random_path(current_path);
 
-    if (current_path.score > candidate_path.score) {
-      candidate_path.copy(current_path);
+    if (current_path.score > best_path.score) {
+      best_path.copy(current_path);
     }
 
     if (get_elapsed_time() > TIME_LIMIT_STAGE2) {
@@ -365,12 +364,12 @@ void build2() {
     }
   }
 
-  best_path.copy(candidate_path);
-
   cerr << "loop2 = " << loop2 << endl;
 }
 
 void build3() {
+  current_path.copy(best_path);
+
   // [left, right)‹æŠÔ‚ÌŒo˜H‚ðÄ¶¬‚·‚é‚½‚ßA
   // ‚»‚êˆÈ‘O‚ð before_keep_pathAŠY“–‹æŠÔ‚ð keep_pathA
   // ‚»‚êˆÈ~‚ð after_keep_path ‚Æ‚µ‚ÄŠÇ—B
@@ -385,19 +384,19 @@ void build3() {
 
     init_visited();
 
-    int m = candidate_path.length;
+    int m = current_path.length;
     int len = Rand() % 40 + 3;
     int left = Rand() % (m - len);
     int right = left + len;
 
-    int sx = candidate_path.x[left];
-    int sy = candidate_path.y[left];
-    int gx = candidate_path.x[right];
-    int gy = candidate_path.y[right];
+    int sx = current_path.x[left];
+    int sy = current_path.y[left];
+    int gx = current_path.x[right];
+    int gy = current_path.y[right];
 
     before_keep_path.init(si, sj);
     rep(i, left) {
-      before_keep_path.add(candidate_path.direction[i]);
+      before_keep_path.add(current_path.direction[i]);
       int x = before_keep_path.x[before_keep_path.length - 1];
       int y = before_keep_path.y[before_keep_path.length - 1];
       visited[tile_id[x][y]] = visited_version;
@@ -405,7 +404,7 @@ void build3() {
 
     keep_path.init(sx, sy);
     srep(i, left, right) {
-      keep_path.add(candidate_path.direction[i]);
+      keep_path.add(current_path.direction[i]);
       int x = keep_path.x[keep_path.length - 1];
       int y = keep_path.y[keep_path.length - 1];
       visited[tile_id[x][y]] = -1;
@@ -415,7 +414,7 @@ void build3() {
 
     after_keep_path.init(gx, gy);
     srep(i, right, m - 1) {
-      after_keep_path.add(candidate_path.direction[i]);
+      after_keep_path.add(current_path.direction[i]);
       int x = after_keep_path.x[after_keep_path.length - 1];
       int y = after_keep_path.y[after_keep_path.length - 1];
       visited[tile_id[x][y]] = visited_version;
@@ -455,19 +454,19 @@ void build3() {
 
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
     double new_score = before_keep_path.score + keep_path.score + after_keep_path.score - (cell_value[sx][sy] + cell_value[gx][gy]);
-    double diff_score = (new_score - candidate_path.score) * SCORE_SCALE;
+    double diff_score = (new_score - current_path.score) * SCORE_SCALE;
     double prob = exp(diff_score / temp);
     if (prob > Rand01()) {
-      candidate_path.copy(before_keep_path);
+      current_path.copy(before_keep_path);
       rep(i, keep_path.length - 1) {
-        candidate_path.add(keep_path.direction[i]);
+        current_path.add(keep_path.direction[i]);
       }
       rep(i, after_keep_path.length - 1) {
-        candidate_path.add(after_keep_path.direction[i]);
+        current_path.add(after_keep_path.direction[i]);
       }
 
-      if (candidate_path.score > best_path.score) {
-        best_path.copy(candidate_path);
+      if (current_path.score > best_path.score) {
+        best_path.copy(current_path);
       }
     }
 
@@ -485,7 +484,6 @@ int solve(int case_num)
 
   input_data(case_num);
 
-  candidate_path.init(si, sj);
   best_path.init(si, sj);
 
   build_initial_solution();
@@ -502,7 +500,7 @@ int solve(int case_num)
 }
 
 int main() {
-  exec_mode = 0;
+  exec_mode = 1;
 
   if (exec_mode == 0) {
     solve(0);
