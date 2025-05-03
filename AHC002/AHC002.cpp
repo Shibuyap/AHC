@@ -82,6 +82,8 @@ int dx[4] = { -1, 0, 1, 0 };
 int dy[4] = { 0, -1, 0, 1 };
 char next_char[4] = { 'U','L','D','R' };
 
+int exec_mode = 0;
+
 const int GRID_SIZE = 50;
 const int MAX_PATH_LENGTH = GRID_SIZE * GRID_SIZE;
 int si, sj;
@@ -183,10 +185,11 @@ bool is_out_of_range(int x, int y)
   return false;
 }
 
-static void input_data() {
-  string fileNameIfs = "1120.txt";
-  const char* cstrIfs = fileNameIfs.c_str();
-  ifstream ifs(cstrIfs);
+static void input_data(int case_num) {
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ifstream ifs(oss.str());
+
   if (!ifs.is_open()) { // 標準入力する
     cin >> si >> sj;
     rep(i, GRID_SIZE)
@@ -221,9 +224,29 @@ static void input_data() {
       }
     }
   }
+}
 
-  if (ifs.is_open()) {
-    ifs.close();
+void output_data(int case_num) {
+  string best_string;
+  rep(i, best_path.length - 1) {
+    best_string += next_char[best_path.direction[i]];
+  }
+
+  if (exec_mode == 0) {
+    // 標準出力
+    cout << best_string << endl;
+  }
+  else {
+    // ファイル出力
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
+
+    ofs << best_string << endl;
+
+    if (ofs.is_open()) {
+      ofs.close();
+    }
   }
 }
 
@@ -294,21 +317,11 @@ bool attempt_connect(Path& path, int sx, int sy, int gx, int gy) {
   return x == gx && y == gy;
 }
 
-int solve()
-{
-  input_data();
-
-  start_timer();
-
-  rep(i, CANDIDATE_SIZE) {
-    candidate_paths[i].init(si, sj);
-  }
-  best_path.init(si, sj);
-
+// 初期解
+void build_initial_solution() {
   int loop1 = 0;
-  // 初期解
-  rep(i, 100000)
-  {
+
+  rep(i, 100000) {
     loop1++;
 
     init_visited();
@@ -321,12 +334,15 @@ int solve()
       candidate_paths[num].copy(current_path);
     }
 
-    if (get_elapsed_time() > TIME_LIMIT_STAGE1)
-    {
+    if (get_elapsed_time() > TIME_LIMIT_STAGE1) {
       break;
     }
   }
 
+  cerr << "loop1 = " << loop1 << endl;
+}
+
+void build2() {
   int loop2 = 0;
   while (true) {
     loop2++;
@@ -351,8 +367,7 @@ int solve()
       candidate_paths[num].copy(current_path);
     }
 
-    if (get_elapsed_time() > TIME_LIMIT_STAGE2)
-    {
+    if (get_elapsed_time() > TIME_LIMIT_STAGE2) {
       break;
     }
   }
@@ -360,6 +375,10 @@ int solve()
   sort(candidate_paths, candidate_paths + CANDIDATE_SIZE, greater<Path>());
   best_path.copy(candidate_paths[0]);
 
+  cerr << "loop2 = " << loop2 << endl;
+}
+
+void build3() {
   bool is_sorted = false;
 
   // [left, right)区間の経路を再生成するため、
@@ -397,8 +416,7 @@ int solve()
     }
 
     keep_path.init(sx, sy);
-    srep(i, left, right)
-    {
+    srep(i, left, right) {
       keep_path.add(candidate_paths[num].direction[i]);
       int x = keep_path.x[keep_path.length - 1];
       int y = keep_path.y[keep_path.length - 1];
@@ -408,8 +426,7 @@ int solve()
     visited[tile_id[gx][gy]] = visited_version;
 
     after_keep_path.init(gx, gy);
-    srep(i, right, m - 1)
-    {
+    srep(i, right, m - 1) {
       after_keep_path.add(candidate_paths[num].direction[i]);
       int x = after_keep_path.x[after_keep_path.length - 1];
       int y = after_keep_path.y[after_keep_path.length - 1];
@@ -418,8 +435,7 @@ int solve()
 
     bool is_first = true;
     Path new_path;
-    rep(_, 100)
-    {
+    rep(_, 100) {
       int is_reverse = Rand() % 2;
       bool is_connect = false;
       if (is_reverse == 0) {
@@ -436,8 +452,7 @@ int solve()
         keep_path.copy(new_path);
         is_first = false;
       }
-      rep(i, new_path.length)
-      {
+      rep(i, new_path.length) {
         int x = new_path.x[i];
         int y = new_path.y[i];
         if (x == sx && y == sy)continue;
@@ -468,40 +483,52 @@ int solve()
       }
     }
 
-    if (!is_sorted && now_time > TIME_LIMIT_STAGE3)
-    {
+    if (!is_sorted && now_time > TIME_LIMIT_STAGE3) {
       sort(candidate_paths, candidate_paths + CANDIDATE_SIZE_2, greater<Path>());
       is_sorted = true;
     }
 
-    if (now_time > TIME_LIMIT_FINAL)
-    {
+    if (now_time > TIME_LIMIT_FINAL) {
       break;
     }
   }
 
-  cerr << "loop1 = " << loop1 << endl;
-  cerr << "loop2 = " << loop2 << endl;
   cerr << "loop3 = " << loop3 << endl;
+}
+
+int solve(int case_num)
+{
+  start_timer();
+
+  input_data(case_num);
+
+  rep(i, CANDIDATE_SIZE) {
+    candidate_paths[i].init(si, sj);
+  }
+  best_path.init(si, sj);
+
+  build_initial_solution();
+
+  build2();
+
+  build3();
+
   cerr << "best_score = " << best_path.score << endl;
 
-  string best_string;
-  rep(i, best_path.length - 1) {
-    best_string += next_char[best_path.direction[i]];
-  }
-  cout << best_string << endl;
+  output_data(case_num);
+
   return best_path.score;
 }
 
 int main() {
-  int exec_mode = 0;
+  exec_mode = 0;
 
   if (exec_mode == 0) {
-    solve();
+    solve(0);
   }
   else if (exec_mode == 1) {
     rep(i, 5) {
-      solve();
+      solve(i);
     }
   }
 }

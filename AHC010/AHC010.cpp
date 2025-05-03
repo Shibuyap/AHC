@@ -152,7 +152,7 @@ ll solve_case(int case_num)
   return score;
 }
 
-int main_new()
+int main()
 {
   exec_mode = 2;
 
