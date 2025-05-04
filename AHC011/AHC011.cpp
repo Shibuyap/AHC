@@ -33,6 +33,21 @@ typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 100
 
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer() {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time() {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
+
 ///////////////////////////////////////////
 // 上：2
 // 下：8
@@ -82,7 +97,6 @@ namespace /* 変数 */
   int keepAns[2100];
 
   // 焼きなまし用変数
-  double now_time;
   double TL = 2.9;
   double start_temp = 2048;
   double end_temp = 0.0001;
@@ -225,7 +239,7 @@ bool IsOKRoute(const vector<int>& ope) {
 }
 
 // kから後ろを全リセット
-void op_shuffle_suffix() {
+void op_shuffle_suffix(double temp) {
   int ite = Rand() % t;
 
   int x = startX;
@@ -252,11 +266,8 @@ void op_shuffle_suffix() {
 
   int diffScore = tmpScore - maxScore;
 
-  double temp = start_temp + (end_temp - start_temp) * now_time / TL;
   double prob = exp((double)diffScore / temp);
-  // if (tmp > 0) {
   if (prob > Rand01()) {
-    // cout << tmpScore << endl;
     maxScore += diffScore;
     if (maxScore > best_maxScore) {
       best_maxScore = maxScore;
@@ -272,7 +283,7 @@ void op_shuffle_suffix() {
 }
 
 // kとkの直後をスワップ
-void op_swap_adjacent() {
+void op_swap_adjacent(double temp) {
   int ite = Rand() % (t - 1);
 
   swap(ans[ite], ans[ite + 1]);
@@ -286,11 +297,8 @@ void op_swap_adjacent() {
 
   int diffScore = tmpScore - maxScore;
 
-  double temp = start_temp + (end_temp - start_temp) * now_time / TL;
   double prob = exp((double)diffScore / temp);
-  // if (tmp > 0) {
   if (prob > Rand01()) {
-    // cout << tmpScore << endl;
     maxScore += diffScore;
     if (maxScore > best_maxScore) {
       best_maxScore = maxScore;
@@ -587,8 +595,6 @@ bool FindTreeAni(bool isReset = false) {
     }
   }
 
-  // cout << "loopAni = " << loopAni << ", maxAniScore = " << maxAniScore << endl;
-
   if (maxAniScore == n * n - 1) {
     return true;
   }
@@ -654,7 +660,6 @@ bool CheckInversion() {
     }
   }
 
-  // cout << "cnt = " << cnt << endl;
   if (cnt % 2 == 0) {
     return true;
   }
@@ -1459,33 +1464,18 @@ void output_data(int case_num) {
 }
 
 int Solve(int mode, int problemNum = 0) {
-  srand((unsigned)time(NULL));
-  clock_t start_time, end_time;
-  start_time = clock();
-  end_time = clock();
-  while (rand() % 100) {
-    Rand();
-  }
+  start_timer();
 
   // 入力部
   Input(problemNum);
 
   // 木を1つ見つける
   bool isFind = false;
-  int findTreeMode = 1;
-  if (findTreeMode == 0) {
-    // DFSで全探索
-    DfsInit();
-    dfs_search(0);
-    // PrintDfs();
-  }
-  else if (findTreeMode == 1) {
+  {
     // 焼きなまし
     rep(_, 25) {
       bool isReset = true;
-      // if (_ % 5 != 0) { isReset = true; }
       if (FindTreeAni(isReset)) {
-        // cout << "Find tree." << endl;
         isFind = true;
         break;
       }
@@ -1495,8 +1485,6 @@ int Solve(int mode, int problemNum = 0) {
         dfsBoard[i][j] = aniBoard[i][j];
       }
     }
-
-    // if (CheckAllDfs()) { cout << "OK tree." << endl; }
   }
 
   if (isFind) {
@@ -1512,10 +1500,10 @@ int Solve(int mode, int problemNum = 0) {
     best_maxScore = maxScore;
 
     int loop = 0;
+    double now_time = get_elapsed_time();
     while (true) {
       if (loop % 10 == 1) {
-        end_time = clock();
-        now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+        now_time = get_elapsed_time();
         if (now_time > TL) break;
       }
       pair<P, P> pp[2];
@@ -1535,7 +1523,6 @@ int Solve(int mode, int problemNum = 0) {
         maxScore = tmpScore;
 
         if (maxScore > best_maxScore) {
-          // cout << maxScore << endl;
           best_maxScore = maxScore;
           best_ans = ans;
         }
@@ -1548,7 +1535,6 @@ int Solve(int mode, int problemNum = 0) {
       }
       loop++;
     }
-    // cout << "loop = " << loop << endl;
   }
   else {
     // 愚直解
@@ -1572,20 +1558,20 @@ int Solve(int mode, int problemNum = 0) {
     best_maxScore = maxScore;
 
     // 山登り解、焼きなまし解
-    now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    double now_time = get_elapsed_time();
     int loop = 0;
     while (true) {
       if (loop % 100 == 1) {
-        end_time = clock();
-        now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+        now_time = get_elapsed_time();
         if (now_time > TL) break;
       }
 
+      double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       if (loop % 10 == 0) {
-        op_shuffle_suffix();
+        op_shuffle_suffix(temp);
       }
       else {
-        op_swap_adjacent();
+        op_swap_adjacent(temp);
       }
 
       loop++;
@@ -1598,10 +1584,8 @@ int Solve(int mode, int problemNum = 0) {
 
   // デバッグ用
   if (mode != 0) {
-    // cout << "loop = " << loop << endl;
     cout << maxScore << endl;
-    end_time = clock();
-    cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << "sec." << endl;
+    cout << get_elapsed_time() << "sec." << endl;
   }
 
   output_data(problemNum);
