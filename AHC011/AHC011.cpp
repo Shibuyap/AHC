@@ -86,8 +86,8 @@ namespace /* 変数 */
   double TL = 2.9;
   double start_temp = 2048;
   double end_temp = 0.0001;
-  ll real_maxScore;
-  vector<int> real_ans;
+  ll best_maxScore;
+  vector<int> best_ans;
 
 }  // namespace
 
@@ -225,7 +225,7 @@ bool IsOKRoute(const vector<int>& ope) {
 }
 
 // kから後ろを全リセット
-void Operation1() {
+void op_shuffle_suffix() {
   int ite = Rand() % t;
 
   int x = startX;
@@ -258,9 +258,9 @@ void Operation1() {
   if (prob > Rand01()) {
     // cout << tmpScore << endl;
     maxScore += diffScore;
-    if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      real_ans = ans;
+    if (maxScore > best_maxScore) {
+      best_maxScore = maxScore;
+      best_ans = ans;
     }
   }
   else {
@@ -272,7 +272,7 @@ void Operation1() {
 }
 
 // kとkの直後をスワップ
-void Operation2() {
+void op_swap_adjacent() {
   int ite = Rand() % (t - 1);
 
   swap(ans[ite], ans[ite + 1]);
@@ -292,9 +292,9 @@ void Operation2() {
   if (prob > Rand01()) {
     // cout << tmpScore << endl;
     maxScore += diffScore;
-    if (maxScore > real_maxScore) {
-      real_maxScore = maxScore;
-      real_ans = ans;
+    if (maxScore > best_maxScore) {
+      best_maxScore = maxScore;
+      best_ans = ans;
     }
   }
   else {
@@ -419,7 +419,7 @@ namespace
     return false;
   }
 
-  int Dfs1(int ite) {
+  int dfs_search(int ite) {
     int x = ite / n;
     int y = ite % n;
     if (ite == n * n - 1) {
@@ -443,7 +443,7 @@ namespace
         dfsCnt[i]++;
         continue;
       }
-      if (Dfs1(ite + 1)) {
+      if (dfs_search(ite + 1)) {
         return 1;
       }
       dfsCnt[i]++;
@@ -451,7 +451,7 @@ namespace
     return 0;
   }
 
-  void PrintDfs() {
+  void dfs_print_board() {
     rep(i, n) {
       rep(j, n) {
         cout << dfsBoard[i][j] << ' ';
@@ -463,7 +463,7 @@ namespace
 
 // 木を焼きなましで見つける
 int aniBoard[10][10];
-int realMaxAniBoard[10][10];
+int bestMaxAniBoard[10][10];
 int CalcAniScore() {
   UFinit(n * n);
   // 横の繋がり
@@ -519,10 +519,10 @@ bool FindTreeAni(bool isReset = false) {
   swap(aniBoard[startX][startY], aniBoard[n - 1][n - 1]);
 
   int maxAniScore = CalcAniScore();
-  int realMaxAniScore = maxAniScore;
+  int bestMaxAniScore = maxAniScore;
   rep(i, n) {
     rep(j, n) {
-      realMaxAniBoard[i][j] = aniBoard[i][j];
+      bestMaxAniBoard[i][j] = aniBoard[i][j];
     }
   }
 
@@ -560,11 +560,11 @@ bool FindTreeAni(bool isReset = false) {
     double prob = exp((double)diffScore / temp);
     if (prob > Rand01()) {
       maxAniScore += diffScore;
-      if (maxAniScore > realMaxAniScore) {
-        realMaxAniScore = maxAniScore;
+      if (maxAniScore > bestMaxAniScore) {
+        bestMaxAniScore = maxAniScore;
         rep(i, n) {
           rep(j, n) {
-            realMaxAniBoard[i][j] = aniBoard[i][j];
+            bestMaxAniBoard[i][j] = aniBoard[i][j];
           }
         }
       }
@@ -575,15 +575,15 @@ bool FindTreeAni(bool isReset = false) {
     }
 
     loopAni++;
-    if (realMaxAniScore == n * n - 1) {
+    if (bestMaxAniScore == n * n - 1) {
       break;
     }
   }
 
-  maxAniScore = realMaxAniScore;
+  maxAniScore = bestMaxAniScore;
   rep(i, n) {
     rep(j, n) {
-      aniBoard[i][j] = realMaxAniBoard[i][j];
+      aniBoard[i][j] = bestMaxAniBoard[i][j];
     }
   }
 
@@ -662,7 +662,7 @@ bool CheckInversion() {
 }
 
 // ピースに番号を振る
-void InitPeaceNum() {
+void init_piece_numbers() {
   int ite[16] = {};
   rep(i, n) {
     rep(j, n) {
@@ -697,7 +697,7 @@ void InitPeaceNum() {
   }
 }
 
-pair<P, P> ShufflePiece() {
+pair<P, P> shuffle_same_kind_piece() {
   int ite = Rand() % 16;
   while (originNum[ite].size() <= 1) {
     ite = Rand() % 16;
@@ -719,14 +719,14 @@ pair<P, P> ShufflePiece() {
 }
 
 // 木を作成する手順を1つ作成する
-void Move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   ansDfs.push_back(nd);
   swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
   x += dx[nd];
   y += dy[nd];
 }
 
-void OneMove(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs, int mode = 0) {
+void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs, int mode = 0) {
   int dp[10][10];
   int dir[10][10];
   if (mode == 0) {
@@ -818,7 +818,7 @@ void OneMove(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, v
 
 // 3×2マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
-void SwapTwoPiece(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   while (y != yy + 1) {
     ansDfs.push_back(3);
     swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
@@ -836,9 +836,9 @@ void SwapTwoPiece(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard,
 
 // 2×3マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
-void SwapTwoPiece2(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   while (x != n - 1) {
-    Move(x, y, 2, tmpBoard, ansDfs);
+    apply_move(x, y, 2, tmpBoard, ansDfs);
   }
   // 上左下右
   vector<int> order = { 1, 0, 3, 2, 3, 0, 1, 1, 2, 3, 0, 3, 2, 1, 1, 0, 3 };
@@ -850,7 +850,7 @@ void SwapTwoPiece2(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard
   }
 }
 
-void MoveTwoPiece(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   // カーソル移動
   int dp[10][10];
   int dir[10][10];
@@ -922,7 +922,7 @@ void MoveTwoPiece(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<
   }
 }
 
-void MoveTwoPiece2(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   // カーソル移動
   int dp[10][10];
   int dir[10][10];
@@ -1034,14 +1034,14 @@ vector<int> FindAnsDfs() {
       while (xx != i || yy != j) {
         if (yy != j) {
           if (yy < j) {
-            OneMove(x, y, xx, yy, xx, yy + 1, i, j, tmpBoard, ansDfs);
+            route_move_cursor(x, y, xx, yy, xx, yy + 1, i, j, tmpBoard, ansDfs);
           }
           else {
-            OneMove(x, y, xx, yy, xx, yy - 1, i, j, tmpBoard, ansDfs);
+            route_move_cursor(x, y, xx, yy, xx, yy - 1, i, j, tmpBoard, ansDfs);
           }
         }
         else if (xx != i) {
-          OneMove(x, y, xx, yy, xx - 1, yy, i, j, tmpBoard, ansDfs);
+          route_move_cursor(x, y, xx, yy, xx - 1, yy, i, j, tmpBoard, ansDfs);
         }
       }
     }
@@ -1053,7 +1053,7 @@ vector<int> FindAnsDfs() {
 
     // 最後の2個を揃える
     if (tmpBoard[i][n - 1] == i * n + n - 2) {
-      SwapTwoPiece(x, y, i, n - 2, tmpBoard, ansDfs);
+      swap_vertical_pair(x, y, i, n - 2, tmpBoard, ansDfs);
     }
     else {
       int num = i * n + n - 2;
@@ -1073,17 +1073,17 @@ vector<int> FindAnsDfs() {
       while (xx != i + 1 || yy != n - 2) {
         if (yy != n - 2) {
           if (yy < n - 2) {
-            OneMove(x, y, xx, yy, xx, yy + 1, i, n - 1, tmpBoard, ansDfs);
+            route_move_cursor(x, y, xx, yy, xx, yy + 1, i, n - 1, tmpBoard, ansDfs);
           }
           else {
-            OneMove(x, y, xx, yy, xx, yy - 1, i, n - 1, tmpBoard, ansDfs);
+            route_move_cursor(x, y, xx, yy, xx, yy - 1, i, n - 1, tmpBoard, ansDfs);
           }
         }
         else if (xx != i + 1) {
-          OneMove(x, y, xx, yy, xx - 1, yy, i, n - 1, tmpBoard, ansDfs);
+          route_move_cursor(x, y, xx, yy, xx - 1, yy, i, n - 1, tmpBoard, ansDfs);
         }
       }
-      MoveTwoPiece(x, y, i, tmpBoard, ansDfs);
+      fix_last_two_in_row(x, y, i, tmpBoard, ansDfs);
     }
   }
 
@@ -1108,14 +1108,14 @@ vector<int> FindAnsDfs() {
     while (xx != n - 2 || yy != j) {
       if (yy != j) {
         if (yy < j) {
-          OneMove(x, y, xx, yy, xx, yy + 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy + 1, n - 2, j, tmpBoard, ansDfs, 2);
         }
         else {
-          OneMove(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
         }
       }
       else if (xx != n - 2) {
-        OneMove(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs);
+        route_move_cursor(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs);
       }
     }
 
@@ -1127,7 +1127,7 @@ vector<int> FindAnsDfs() {
 
     // 最後の2個を揃える
     if (tmpBoard[n - 1][j] == (n - 2) * n + j) {
-      SwapTwoPiece2(x, y, n - 2, j, tmpBoard, ansDfs);
+      swap_horizontal_pair(x, y, n - 2, j, tmpBoard, ansDfs);
     }
     else {
       int num = (n - 2) * n + j;
@@ -1147,27 +1147,27 @@ vector<int> FindAnsDfs() {
       while (xx != n - 2 || yy != j + 1) {
         if (xx != n - 2) {
           if (xx < n - 2) {
-            OneMove(x, y, xx, yy, xx + 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx + 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
           }
           else {
-            OneMove(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
           }
         }
         else if (yy != j + 1) {
-          OneMove(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
         }
       }
-      MoveTwoPiece2(x, y, j, tmpBoard, ansDfs);
+      fix_last_two_in_col(x, y, j, tmpBoard, ansDfs);
     }
   }
 
   // カーソルを右下に持ってくる
   while (x != n - 1 || y != n - 1) {
     if (y != n - 1) {
-      Move(x, y, 3, tmpBoard, ansDfs);
+      apply_move(x, y, 3, tmpBoard, ansDfs);
     }
     else {
-      Move(x, y, 2, tmpBoard, ansDfs);
+      apply_move(x, y, 2, tmpBoard, ansDfs);
     }
   }
 
@@ -1230,14 +1230,14 @@ vector<int> FindAnsDfs2() {
         while (xx != i || yy != j) {
           if (yy != j) {
             if (yy < j) {
-              OneMove(x, y, xx, yy, xx, yy + 1, i, j, tmptmpBoard, tmpVec);
+              route_move_cursor(x, y, xx, yy, xx, yy + 1, i, j, tmptmpBoard, tmpVec);
             }
             else {
-              OneMove(x, y, xx, yy, xx, yy - 1, i, j, tmptmpBoard, tmpVec);
+              route_move_cursor(x, y, xx, yy, xx, yy - 1, i, j, tmptmpBoard, tmpVec);
             }
           }
           else if (xx != i) {
-            OneMove(x, y, xx, yy, xx - 1, yy, i, j, tmptmpBoard, tmpVec);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, i, j, tmptmpBoard, tmpVec);
           }
         }
 
@@ -1266,7 +1266,7 @@ vector<int> FindAnsDfs2() {
 
     // 最後の2個を揃える
     if (tmpBoard[i][n - 1] == aniBoard[i][n - 2]) {
-      SwapTwoPiece(x, y, i, n - 2, tmpBoard, ansDfs);
+      swap_vertical_pair(x, y, i, n - 2, tmpBoard, ansDfs);
     }
     else {
       int num = aniBoard[i][n - 2];
@@ -1302,14 +1302,14 @@ vector<int> FindAnsDfs2() {
         while (xx != i + 1 || yy != n - 2) {
           if (yy != n - 2) {
             if (yy < n - 2) {
-              OneMove(x, y, xx, yy, xx, yy + 1, i, n - 1, tmptmpBoard, tmpVec);
+              route_move_cursor(x, y, xx, yy, xx, yy + 1, i, n - 1, tmptmpBoard, tmpVec);
             }
             else {
-              OneMove(x, y, xx, yy, xx, yy - 1, i, n - 1, tmptmpBoard, tmpVec);
+              route_move_cursor(x, y, xx, yy, xx, yy - 1, i, n - 1, tmptmpBoard, tmpVec);
             }
           }
           else if (xx != i + 1) {
-            OneMove(x, y, xx, yy, xx - 1, yy, i, n - 1, tmptmpBoard, tmpVec);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, i, n - 1, tmptmpBoard, tmpVec);
           }
         }
 
@@ -1329,7 +1329,7 @@ vector<int> FindAnsDfs2() {
       y = miniY;
       tmpBoard = keeptmpBoard;
 
-      MoveTwoPiece(x, y, i, tmpBoard, ansDfs);
+      fix_last_two_in_row(x, y, i, tmpBoard, ansDfs);
     }
   }
 
@@ -1360,14 +1360,14 @@ vector<int> FindAnsDfs2() {
     while (xx != n - 2 || yy != j) {
       if (yy != j) {
         if (yy < j) {
-          OneMove(x, y, xx, yy, xx, yy + 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy + 1, n - 2, j, tmpBoard, ansDfs, 2);
         }
         else {
-          OneMove(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
         }
       }
       else if (xx != n - 2) {
-        OneMove(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs);
+        route_move_cursor(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs);
       }
     }
 
@@ -1379,7 +1379,7 @@ vector<int> FindAnsDfs2() {
 
     // 最後の2個を揃える
     if (tmpBoard[n - 1][j] == aniBoard[n - 2][j]) {
-      SwapTwoPiece2(x, y, n - 2, j, tmpBoard, ansDfs);
+      swap_horizontal_pair(x, y, n - 2, j, tmpBoard, ansDfs);
     }
     else {
       int num = aniBoard[n - 2][j];
@@ -1405,27 +1405,27 @@ vector<int> FindAnsDfs2() {
       while (xx != n - 2 || yy != j + 1) {
         if (xx != n - 2) {
           if (xx < n - 2) {
-            OneMove(x, y, xx, yy, xx + 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx + 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
           }
           else {
-            OneMove(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
           }
         }
         else if (yy != j + 1) {
-          OneMove(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
         }
       }
-      MoveTwoPiece2(x, y, j, tmpBoard, ansDfs);
+      fix_last_two_in_col(x, y, j, tmpBoard, ansDfs);
     }
   }
 
   // カーソルを右下に持ってくる
   while (x != n - 1 || y != n - 1) {
     if (y != n - 1) {
-      Move(x, y, 3, tmpBoard, ansDfs);
+      apply_move(x, y, 3, tmpBoard, ansDfs);
     }
     else {
-      Move(x, y, 2, tmpBoard, ansDfs);
+      apply_move(x, y, 2, tmpBoard, ansDfs);
     }
   }
 
@@ -1434,6 +1434,28 @@ vector<int> FindAnsDfs2() {
   }
 
   return ansDfs;
+}
+
+int exec_mode = 0; // 0: 標準出力, 1: ファイル出力
+void output_data(int case_num) {
+  if (exec_mode == 0) {
+    // 標準出力
+    rep(i, ans.size()) {
+      cout << cc[ans[i]];
+    }
+    cout << endl;
+  }
+  else {
+    // ファイル出力
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
+
+    rep(i, ans.size()) {
+      ofs << cc[ans[i]];
+    }
+    ofs << endl;
+  }
 }
 
 int Solve(int mode, int problemNum = 0) {
@@ -1454,7 +1476,7 @@ int Solve(int mode, int problemNum = 0) {
   if (findTreeMode == 0) {
     // DFSで全探索
     DfsInit();
-    Dfs1(0);
+    dfs_search(0);
     // PrintDfs();
   }
   else if (findTreeMode == 1) {
@@ -1480,14 +1502,14 @@ int Solve(int mode, int problemNum = 0) {
   if (isFind) {
     // それぞれのピースに番号を付ける
     InitKindNumbers();
-    InitPeaceNum();
+    init_piece_numbers();
 
     vector<int> ansDfs = FindAnsDfs2();
     ans = ansDfs;
     maxScore = CalcScore(ans);
 
-    real_ans = ans;
-    real_maxScore = maxScore;
+    best_ans = ans;
+    best_maxScore = maxScore;
 
     int loop = 0;
     while (true) {
@@ -1498,7 +1520,7 @@ int Solve(int mode, int problemNum = 0) {
       }
       pair<P, P> pp[2];
       rep(i, 2) {
-        pp[i] = ShufflePiece();
+        pp[i] = shuffle_same_kind_piece();
       }
 
       vector<int> tmpAns = FindAnsDfs2();
@@ -1512,10 +1534,10 @@ int Solve(int mode, int problemNum = 0) {
         ans = tmpAns;
         maxScore = tmpScore;
 
-        if (maxScore > real_maxScore) {
+        if (maxScore > best_maxScore) {
           // cout << maxScore << endl;
-          real_maxScore = maxScore;
-          real_ans = ans;
+          best_maxScore = maxScore;
+          best_ans = ans;
         }
       }
       else {
@@ -1546,8 +1568,8 @@ int Solve(int mode, int problemNum = 0) {
 
     maxScore = CalcScore(ans);
 
-    real_ans = ans;
-    real_maxScore = maxScore;
+    best_ans = ans;
+    best_maxScore = maxScore;
 
     // 山登り解、焼きなまし解
     now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
@@ -1560,18 +1582,18 @@ int Solve(int mode, int problemNum = 0) {
       }
 
       if (loop % 10 == 0) {
-        Operation1();
+        op_shuffle_suffix();
       }
       else {
-        Operation2();
+        op_swap_adjacent();
       }
 
       loop++;
     }
 
     // 最高スコアを戻す
-    ans = real_ans;
-    maxScore = real_maxScore;
+    ans = best_ans;
+    maxScore = best_maxScore;
   }
 
   // デバッグ用
@@ -1582,40 +1604,23 @@ int Solve(int mode, int problemNum = 0) {
     cout << (double)(end_time - start_time) / CLOCKS_PER_SEC << "sec." << endl;
   }
 
-  // 解の出力
-  if (mode == 0) {
-    rep(i, ans.size()) {
-      cout << cc[ans[i]];
-    }
-    cout << endl;
-  }
-
-  // ファイル出力
-  if (mode != 0) {
-    string fileNameOfs = "sample_out.txt";
-    ofstream ofs(fileNameOfs);
-    rep(i, ans.size()) {
-      ofs << cc[ans[i]];
-    }
-    ofs << endl;
-    ofs.close();
-  }
+  output_data(problemNum);
 
   return 0;
 }
 
 int main() {
-  int mode = 0;
+  exec_mode = 10;
 
-  if (mode == 0) {
-    Solve(mode);
+  if (exec_mode == 0) {
+    Solve(exec_mode);
   }
-  else if (mode == 1) {
-    Solve(mode, 0);
+  else if (exec_mode == 1) {
+    Solve(exec_mode, 0);
   }
-  else if (mode == 10) {
+  else if (exec_mode == 10) {
     rep(_, 100) {
-      Solve(mode, _);
+      Solve(exec_mode, _);
       ResetAll();
     }
   }
@@ -1677,7 +1682,7 @@ void Input(int problemNum) {
 
 void ResetAll() {
   ans.clear();
-  real_ans.clear();
+  best_ans.clear();
   rep(i, 16) {
     kindNumbers[i].clear();
     originNum[i].clear();
