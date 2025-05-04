@@ -523,13 +523,13 @@ bool anneal_find_tree(bool isReset = false) {
   return false;
 }
 
-int peaceNum[10][10];
+int piece_number[10][10];
 // 作成した盤面の転倒数をチェックする
 bool is_even_inversion() {
   int tmp_board[10][10];
   rep(i, board_size) {
     rep(j, board_size) {
-      tmp_board[i][j] = peaceNum[i][j];
+      tmp_board[i][j] = piece_number[i][j];
     }
   }
   int cnt = 0;
@@ -578,23 +578,22 @@ bool is_even_inversion() {
 
 // 作成した木からピースの種類ごとの番号を決定する
 vector<int> kindNumbers[16];
-vector<P> originNum[16];
+vector<P> origin_positions[16];
 void init_kind_indices() {
   rep(i, board_size) {
     rep(j, board_size) {
       kindNumbers[dfsBoard[i][j]].push_back(i * board_size + j);
-      originNum[board[i][j]].push_back(P(i, j));
+      origin_positions[board[i][j]].push_back(P(i, j));
     }
   }
 }
-
 
 void reset_state() {
   route.clear();
   best_route.clear();
   rep(i, 16) {
     kindNumbers[i].clear();
-    originNum[i].clear();
+    origin_positions[i].clear();
   }
 }
 
@@ -603,7 +602,7 @@ void init_piece_numbers() {
   int ite[16] = {};
   rep(i, board_size) {
     rep(j, board_size) {
-      peaceNum[i][j] = kindNumbers[board[i][j]][ite[board[i][j]]];
+      piece_number[i][j] = kindNumbers[board[i][j]][ite[board[i][j]]];
       ite[board[i][j]]++;
     }
   }
@@ -617,17 +616,17 @@ void init_piece_numbers() {
         int x1, y1, x2, y2;
         rep(j, board_size) {
           rep(k, board_size) {
-            if (peaceNum[j][k] == num1) {
+            if (piece_number[j][k] == num1) {
               x1 = j;
               y1 = k;
             }
-            if (peaceNum[j][k] == num2) {
+            if (piece_number[j][k] == num2) {
               x2 = j;
               y2 = k;
             }
           }
         }
-        swap(peaceNum[x1][y1], peaceNum[x2][y2]);
+        swap(piece_number[x1][y1], piece_number[x2][y2]);
         break;
       }
     }
@@ -636,21 +635,21 @@ void init_piece_numbers() {
 
 pair<P, P> shuffle_same_kind_piece() {
   int ite = rand32() % 16;
-  while (originNum[ite].size() <= 1) {
+  while (origin_positions[ite].size() <= 1) {
     ite = rand32() % 16;
   }
 
-  int a = rand32() % originNum[ite].size();
-  int b = rand32() % originNum[ite].size();
+  int a = rand32() % origin_positions[ite].size();
+  int b = rand32() % origin_positions[ite].size();
   while (a == b) {
-    b = rand32() % originNum[ite].size();
+    b = rand32() % origin_positions[ite].size();
   }
 
-  int x1 = originNum[ite][a].first;
-  int y1 = originNum[ite][a].second;
-  int x2 = originNum[ite][b].first;
-  int y2 = originNum[ite][b].second;
-  swap(peaceNum[x1][y1], peaceNum[x2][y2]);
+  int x1 = origin_positions[ite][a].first;
+  int y1 = origin_positions[ite][a].second;
+  int x2 = origin_positions[ite][b].first;
+  int y2 = origin_positions[ite][b].second;
+  swap(piece_number[x1][y1], piece_number[x2][y2]);
 
   return pair<P, P>({ {x1, y1}, {x2, y2} });
 }
@@ -1285,7 +1284,7 @@ int solve_case(int mode, int problemNum = 0) {
       else {
         // 元に戻す
         rep(i, 2) {
-          swap(peaceNum[pp[i].first.first][pp[i].first.second], peaceNum[pp[i].second.first][pp[i].second.second]);
+          swap(piece_number[pp[i].first.first][pp[i].first.second], piece_number[pp[i].second.first][pp[i].second.second]);
         }
       }
       loop++;
