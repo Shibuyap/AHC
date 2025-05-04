@@ -57,13 +57,13 @@ namespace
 ///////////////////////////////////////////
 
 const int INF = 1001001001;
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
-const char cc[4] = { 'U', 'L', 'D', 'R' };
+const int DX[4] = { -1, 0, 1, 0 };
+const int DY[4] = { 0, -1, 0, 1 };
+const char DIR_CHAR[4] = { 'U', 'L', 'D', 'R' };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand() {
+  static uint32_t rand32() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -78,30 +78,31 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  static double rand_unit() {
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
 namespace /* 変数 */
 {
   // 入力用変数
-  int n, t;
+  int board_size;
+  int turn_limit;
   int board[10][10];
   int startX, startY;
-  int cnt[16];
+  int kind_count[16];
 
   // 解答用変数
-  ll maxScore;
-  vector<int> ans;
-  int keepAns[2100];
+  ll cur_score;
+  vector<int> route;
+  int route_backup[2100];
 
   // 焼きなまし用変数
   double TL = 2.9;
   double start_temp = 2048;
   double end_temp = 0.0001;
-  ll best_maxScore;
-  vector<int> best_ans;
+  ll best_score;
+  vector<int> best_route;
 
 }  // namespace
 
@@ -117,7 +118,7 @@ namespace /* Union Find*/
       parUF[i] = i;
       rankUF[i] = 0;
       cntUF[i] = 1;
-      int val = board[i / n][i % n];
+      int val = board[i / board_size][i % board_size];
       if (val == 1 || val == 2 || val == 4 || val == 8) {
         cntUF[i] = 1;
       }
@@ -159,36 +160,36 @@ namespace /* Union Find*/
 
 // スコア計算
 int boardForCalc[10][10];
-int CalcScore(const vector<int>& ope) {
-  UFinit(n * n);
+int calc_score(const vector<int>& ope) {
+  UFinit(board_size * board_size);
 
   int x = startX, y = startY;
-  rep(i, n) {
-    rep(j, n) {
+  rep(i, board_size) {
+    rep(j, board_size) {
       boardForCalc[i][j] = board[i][j];
     }
   }
 
   rep(i, ope.size()) {
-    swap(boardForCalc[x][y], boardForCalc[x + dx[ope[i]]][y + dy[ope[i]]]);
-    x += dx[ope[i]];
-    y += dy[ope[i]];
+    swap(boardForCalc[x][y], boardForCalc[x + DX[ope[i]]][y + DY[ope[i]]]);
+    x += DX[ope[i]];
+    y += DY[ope[i]];
   }
 
   // 横の繋がり
-  rep(i, n) {
-    rep(j, n - 1) {
+  rep(i, board_size) {
+    rep(j, board_size - 1) {
       if ((boardForCalc[i][j] & (1 << 2)) && (boardForCalc[i][j + 1] & (1 << 0))) {
-        uniteUF(i * n + j, i * n + j + 1);
+        uniteUF(i * board_size + j, i * board_size + j + 1);
       }
     }
   }
 
   // 縦の繋がり
-  rep(i, n - 1) {
-    rep(j, n) {
+  rep(i, board_size - 1) {
+    rep(j, board_size) {
       if ((boardForCalc[i][j] & (1 << 3)) && (boardForCalc[i + 1][j] & (1 << 1))) {
-        uniteUF(i * n + j, (i + 1) * n + j);
+        uniteUF(i * board_size + j, (i + 1) * board_size + j);
       }
     }
   }
@@ -196,16 +197,16 @@ int CalcScore(const vector<int>& ope) {
   int res = 0;
 
   // スコア計算
-  rep(i, n) {
-    rep(j, n) {
-      int ij = i * n + j;
+  rep(i, board_size) {
+    rep(j, board_size) {
+      int ij = i * board_size + j;
       if (findUF(ij) == ij) {
-        if (cntUF[ij] == n * n - 1) {
-          res = 500000.0 * (2.0 - (double)ope.size() / t);
+        if (cntUF[ij] == board_size * board_size - 1) {
+          res = 500000.0 * (2.0 - (double)ope.size() / turn_limit);
           return res;
         }
         else {
-          res = max(res, (int)round(500000.0 * cntUF[ij] / (n * n - 1)));
+          res = max(res, (int)round(500000.0 * cntUF[ij] / (board_size * board_size - 1)));
         }
       }
     }
@@ -214,24 +215,72 @@ int CalcScore(const vector<int>& ope) {
   return res;
 }
 
-// 入力受け取り
-void Input(int);
-void ResetAll();
+void read_input(int problemNum) {
+  std::ostringstream sout;
+  sout << std::setfill('0') << std::setw(4) << problemNum;
+  std::string numStr = sout.str();
+  string fileNameIfs = "in/" + numStr + ".txt ";
+  ifstream ifs(fileNameIfs.c_str());
+  if (!ifs.is_open()) {  // 標準入力する
+    cin >> board_size >> turn_limit;
+    rep(i, board_size) {
+      string str;
+      cin >> str;
+      rep(j, board_size) {
+        if ('0' <= str[j] && str[j] <= '9') {
+          board[i][j] = str[j] - '0';
+        }
+        else {
+          board[i][j] = str[j] - 'a' + 10;
+        }
+        if (board[i][j] == 0) {
+          startX = i;
+          startY = j;
+        }
+      }
+    }
+  }
+  else {  // ファイル入力する
+    ifs >> board_size >> turn_limit;
+    rep(i, board_size) {
+      string str;
+      ifs >> str;
+      rep(j, board_size) {
+        if ('0' <= str[j] && str[j] <= '9') {
+          board[i][j] = str[j] - '0';
+        }
+        else {
+          board[i][j] = str[j] - 'a' + 10;
+        }
+        if (board[i][j] == 0) {
+          startX = i;
+          startY = j;
+        }
+      }
+    }
+  }
 
-bool IsOK(int x, int y) {
-  if (x < 0 || n <= x || y < 0 || n <= y) {
+  rep(i, board_size) {
+    rep(j, board_size) {
+      kind_count[board[i][j]]++;
+    }
+  }
+}
+
+bool in_bounds(int x, int y) {
+  if (x < 0 || board_size <= x || y < 0 || board_size <= y) {
     return false;
   }
   return true;
 }
 
-bool IsOKRoute(const vector<int>& ope) {
+bool route_in_bounds(const vector<int>& ope) {
   int x = startX;
   int y = startY;
   rep(i, ope.size()) {
-    x += dx[ope[i]];
-    y += dy[ope[i]];
-    if (!IsOK(x, y)) {
+    x += DX[ope[i]];
+    y += DY[ope[i]];
+    if (!in_bounds(x, y)) {
       return false;
     }
   }
@@ -239,75 +288,75 @@ bool IsOKRoute(const vector<int>& ope) {
 }
 
 // kから後ろを全リセット
-void op_shuffle_suffix(double temp) {
-  int ite = Rand() % t;
+void shuffle_suffix(double temp) {
+  int ite = rand32() % turn_limit;
 
   int x = startX;
   int y = startY;
-  rep(i, t) {
-    keepAns[i] = ans[i];
+  rep(i, turn_limit) {
+    route_backup[i] = route[i];
     if (i < ite) {
-      x += dx[ans[i]];
-      y += dy[ans[i]];
+      x += DX[route[i]];
+      y += DY[route[i]];
     }
     else {
-      int val = Rand() % 4;
-      while (!IsOK(x + dx[val], y + dy[val])) {
-        val = Rand() % 4;
+      int val = rand32() % 4;
+      while (!in_bounds(x + DX[val], y + DY[val])) {
+        val = rand32() % 4;
       }
 
-      ans[i] = val;
-      x += dx[val];
-      y += dy[val];
+      route[i] = val;
+      x += DX[val];
+      y += DY[val];
     }
   }
 
-  int tmpScore = CalcScore(ans);
+  int tmpScore = calc_score(route);
 
-  int diffScore = tmpScore - maxScore;
+  int diffScore = tmpScore - cur_score;
 
   double prob = exp((double)diffScore / temp);
-  if (prob > Rand01()) {
-    maxScore += diffScore;
-    if (maxScore > best_maxScore) {
-      best_maxScore = maxScore;
-      best_ans = ans;
+  if (prob > rand_unit()) {
+    cur_score += diffScore;
+    if (cur_score > best_score) {
+      best_score = cur_score;
+      best_route = route;
     }
   }
   else {
     // 元に戻す
-    rep(i, t) {
-      ans[i] = keepAns[i];
+    rep(i, turn_limit) {
+      route[i] = route_backup[i];
     }
   }
 }
 
 // kとkの直後をスワップ
-void op_swap_adjacent(double temp) {
-  int ite = Rand() % (t - 1);
+void swap_adjacent(double temp) {
+  int ite = rand32() % (turn_limit - 1);
 
-  swap(ans[ite], ans[ite + 1]);
+  swap(route[ite], route[ite + 1]);
 
-  if (!IsOKRoute(ans)) {
-    swap(ans[ite], ans[ite + 1]);
+  if (!route_in_bounds(route)) {
+    swap(route[ite], route[ite + 1]);
     return;
   }
 
-  int tmpScore = CalcScore(ans);
+  int tmpScore = calc_score(route);
 
-  int diffScore = tmpScore - maxScore;
+  int diffScore = tmpScore - cur_score;
 
   double prob = exp((double)diffScore / temp);
-  if (prob > Rand01()) {
-    maxScore += diffScore;
-    if (maxScore > best_maxScore) {
-      best_maxScore = maxScore;
-      best_ans = ans;
+  if (prob > rand_unit()) {
+    cur_score += diffScore;
+    if (cur_score > best_score) {
+      best_score = cur_score;
+      best_route = route;
     }
   }
   else {
     // 元に戻す
-    swap(ans[ite], ans[ite + 1]);
+    swap(route[ite], route[ite + 1]);
   }
 }
 
@@ -315,28 +364,27 @@ void op_swap_adjacent(double temp) {
 namespace
 {
   int dfsBoard[10][10];
-  int dfsCnt[16];
   bool CheckAllDfs(const vector<vector<int>>& vec) {
-    UFinit(n * n);
+    UFinit(board_size * board_size);
     // 横の繋がり
-    rep(i, n) {
-      rep(j, n - 1) {
+    rep(i, board_size) {
+      rep(j, board_size - 1) {
         if ((vec[i][j] & (1 << 2)) && (vec[i][j + 1] & (1 << 0))) {
-          uniteUF(i * n + j, i * n + j + 1);
+          uniteUF(i * board_size + j, i * board_size + j + 1);
         }
       }
     }
 
     // 縦の繋がり
-    rep(i, n - 1) {
-      rep(j, n) {
+    rep(i, board_size - 1) {
+      rep(j, board_size) {
         if ((vec[i][j] & (1 << 3)) && (vec[i + 1][j] & (1 << 1))) {
-          uniteUF(i * n + j, (i + 1) * n + j);
+          uniteUF(i * board_size + j, (i + 1) * board_size + j);
         }
       }
     }
 
-    if (cntUF[findUF(0)] == n * n - 1) {
+    if (cntUF[findUF(0)] == board_size * board_size - 1) {
       return true;
     }
     return false;
@@ -346,32 +394,32 @@ namespace
 // 木を焼きなましで見つける
 int aniBoard[10][10];
 int bestMaxAniBoard[10][10];
-int CalcAniScore() {
-  UFinit(n * n);
+int calc_anneal_score() {
+  UFinit(board_size * board_size);
   // 横の繋がり
-  rep(i, n) {
-    rep(j, n - 1) {
+  rep(i, board_size) {
+    rep(j, board_size - 1) {
       if ((aniBoard[i][j] & (1 << 2)) && (aniBoard[i][j + 1] & (1 << 0))) {
-        uniteUF(i * n + j, i * n + j + 1);
+        uniteUF(i * board_size + j, i * board_size + j + 1);
       }
     }
   }
 
   // 縦の繋がり
-  rep(i, n - 1) {
-    rep(j, n) {
+  rep(i, board_size - 1) {
+    rep(j, board_size) {
       if ((aniBoard[i][j] & (1 << 3)) && (aniBoard[i + 1][j] & (1 << 1))) {
-        uniteUF(i * n + j, (i + 1) * n + j);
+        uniteUF(i * board_size + j, (i + 1) * board_size + j);
       }
     }
   }
 
   int MaxSize = 0;
-  rep(i, n) {
-    rep(j, n) {
-      MaxSize = max(MaxSize, cntUF[findUF(i * n + j)]);
+  rep(i, board_size) {
+    rep(j, board_size) {
+      MaxSize = max(MaxSize, cntUF[findUF(i * board_size + j)]);
     }
-    if (MaxSize >= n * n / 2) {
+    if (MaxSize >= board_size * board_size / 2) {
       break;
     }
   }
@@ -379,7 +427,7 @@ int CalcAniScore() {
   return MaxSize;
 }
 
-bool FindTreeAni(bool isReset = false) {
+bool anneal_find_tree(bool isReset = false) {
   clock_t startAniTime, endAniTime;
   const double AniTL = 0.1;
   startAniTime = clock();
@@ -390,20 +438,20 @@ bool FindTreeAni(bool isReset = false) {
   double endAniTemp = 0.0;
 
   if (isReset) {
-    rep(i, n) {
-      rep(j, n) {
+    rep(i, board_size) {
+      rep(j, board_size) {
         aniBoard[i][j] = board[i][j];
       }
     }
   }
 
   // カーソルは右下固定
-  swap(aniBoard[startX][startY], aniBoard[n - 1][n - 1]);
+  swap(aniBoard[startX][startY], aniBoard[board_size - 1][board_size - 1]);
 
-  int maxAniScore = CalcAniScore();
+  int maxAniScore = calc_anneal_score();
   int bestMaxAniScore = maxAniScore;
-  rep(i, n) {
-    rep(j, n) {
+  rep(i, board_size) {
+    rep(j, board_size) {
       bestMaxAniBoard[i][j] = aniBoard[i][j];
     }
   }
@@ -415,37 +463,37 @@ bool FindTreeAni(bool isReset = false) {
       if (nowAniTime > AniTL) break;
     }
 
-    int x1 = Rand() % n;
-    int y1 = Rand() % n;
-    int x2 = Rand() % n;
+    int x1 = rand32() % board_size;
+    int y1 = rand32() % board_size;
+    int x2 = rand32() % board_size;
     while (x1 == x2) {
-      x2 = Rand() % n;
+      x2 = rand32() % board_size;
     }
-    int y2 = Rand() % n;
+    int y2 = rand32() % board_size;
     while (y1 == y2) {
-      y2 = Rand() % n;
+      y2 = rand32() % board_size;
     }
 
-    if (x1 == n - 1 && y1 == n - 1) {
+    if (x1 == board_size - 1 && y1 == board_size - 1) {
       continue;
     }
-    if (x2 == n - 1 && y2 == n - 1) {
+    if (x2 == board_size - 1 && y2 == board_size - 1) {
       continue;
     }
 
     swap(aniBoard[x1][y1], aniBoard[x2][y2]);
-    int newPoint = CalcAniScore();
+    int newPoint = calc_anneal_score();
 
     int diffScore = newPoint - maxAniScore;
 
     double temp = startAniTemp + (endAniTemp - startAniTemp) * nowAniTime / AniTL;
     double prob = exp((double)diffScore / temp);
-    if (prob > Rand01()) {
+    if (prob > rand_unit()) {
       maxAniScore += diffScore;
       if (maxAniScore > bestMaxAniScore) {
         bestMaxAniScore = maxAniScore;
-        rep(i, n) {
-          rep(j, n) {
+        rep(i, board_size) {
+          rep(j, board_size) {
             bestMaxAniBoard[i][j] = aniBoard[i][j];
           }
         }
@@ -457,55 +505,43 @@ bool FindTreeAni(bool isReset = false) {
     }
 
     loopAni++;
-    if (bestMaxAniScore == n * n - 1) {
+    if (bestMaxAniScore == board_size * board_size - 1) {
       break;
     }
   }
 
   maxAniScore = bestMaxAniScore;
-  rep(i, n) {
-    rep(j, n) {
+  rep(i, board_size) {
+    rep(j, board_size) {
       aniBoard[i][j] = bestMaxAniBoard[i][j];
     }
   }
 
-  if (maxAniScore == n * n - 1) {
+  if (maxAniScore == board_size * board_size - 1) {
     return true;
   }
   return false;
 }
 
-// 作成した木からピースの種類ごとの番号を決定する
-vector<int> kindNumbers[16];
-vector<P> originNum[16];
-void InitKindNumbers() {
-  rep(i, n) {
-    rep(j, n) {
-      kindNumbers[dfsBoard[i][j]].push_back(i * n + j);
-      originNum[board[i][j]].push_back(P(i, j));
-    }
-  }
-}
-
 int peaceNum[10][10];
 // 作成した盤面の転倒数をチェックする
-bool CheckInversion() {
-  int tmpBoard[10][10];
-  rep(i, n) {
-    rep(j, n) {
-      tmpBoard[i][j] = peaceNum[i][j];
+bool is_even_inversion() {
+  int tmp_board[10][10];
+  rep(i, board_size) {
+    rep(j, board_size) {
+      tmp_board[i][j] = peaceNum[i][j];
     }
   }
   int cnt = 0;
 
-  rep(i, n) {
-    rep(j, n) {
-      int num = i * n + j;
+  rep(i, board_size) {
+    rep(j, board_size) {
+      int num = i * board_size + j;
       int x = -1;
       int y = -1;
-      rep(k, n) {
-        rep(l, n) {
-          if (tmpBoard[k][l] == num) {
+      rep(k, board_size) {
+        rep(l, board_size) {
+          if (tmp_board[k][l] == num) {
             x = k;
             y = j;
           }
@@ -513,22 +549,22 @@ bool CheckInversion() {
       }
       while (y < i) {
         cnt++;
-        swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
+        swap(tmp_board[x][y], tmp_board[x][y + 1]);
         y++;
       }
       while (y > i) {
         cnt++;
-        swap(tmpBoard[x][y], tmpBoard[x][y - 1]);
+        swap(tmp_board[x][y], tmp_board[x][y - 1]);
         y--;
       }
       while (x < i) {
         cnt++;
-        swap(tmpBoard[x][y], tmpBoard[x + 1][y]);
+        swap(tmp_board[x][y], tmp_board[x + 1][y]);
         x++;
       }
       while (x > i) {
         cnt++;
-        swap(tmpBoard[x][y], tmpBoard[x - 1][y]);
+        swap(tmp_board[x][y], tmp_board[x - 1][y]);
         x--;
       }
     }
@@ -540,25 +576,47 @@ bool CheckInversion() {
   return false;
 }
 
+// 作成した木からピースの種類ごとの番号を決定する
+vector<int> kindNumbers[16];
+vector<P> originNum[16];
+void init_kind_indices() {
+  rep(i, board_size) {
+    rep(j, board_size) {
+      kindNumbers[dfsBoard[i][j]].push_back(i * board_size + j);
+      originNum[board[i][j]].push_back(P(i, j));
+    }
+  }
+}
+
+
+void reset_state() {
+  route.clear();
+  best_route.clear();
+  rep(i, 16) {
+    kindNumbers[i].clear();
+    originNum[i].clear();
+  }
+}
+
 // ピースに番号を振る
 void init_piece_numbers() {
   int ite[16] = {};
-  rep(i, n) {
-    rep(j, n) {
+  rep(i, board_size) {
+    rep(j, board_size) {
       peaceNum[i][j] = kindNumbers[board[i][j]][ite[board[i][j]]];
       ite[board[i][j]]++;
     }
   }
 
   // もし転倒数が奇数なら1箇所スワップする
-  if (!CheckInversion()) {
+  if (!is_even_inversion()) {
     rep(i, 16) {
       if (kindNumbers[i].size() >= 2) {
         int num1 = kindNumbers[i][0];
         int num2 = kindNumbers[i][1];
         int x1, y1, x2, y2;
-        rep(j, n) {
-          rep(k, n) {
+        rep(j, board_size) {
+          rep(k, board_size) {
             if (peaceNum[j][k] == num1) {
               x1 = j;
               y1 = k;
@@ -577,15 +635,15 @@ void init_piece_numbers() {
 }
 
 pair<P, P> shuffle_same_kind_piece() {
-  int ite = Rand() % 16;
+  int ite = rand32() % 16;
   while (originNum[ite].size() <= 1) {
-    ite = Rand() % 16;
+    ite = rand32() % 16;
   }
 
-  int a = Rand() % originNum[ite].size();
-  int b = Rand() % originNum[ite].size();
+  int a = rand32() % originNum[ite].size();
+  int b = rand32() % originNum[ite].size();
   while (a == b) {
-    b = Rand() % originNum[ite].size();
+    b = rand32() % originNum[ite].size();
   }
 
   int x1 = originNum[ite][a].first;
@@ -598,19 +656,19 @@ pair<P, P> shuffle_same_kind_piece() {
 }
 
 // 木を作成する手順を1つ作成する
-void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
-  ansDfs.push_back(nd);
-  swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-  x += dx[nd];
-  y += dy[nd];
+void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& route_tmp) {
+  route_tmp.push_back(nd);
+  swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+  x += DX[nd];
+  y += DY[nd];
 }
 
 void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs, int mode = 0) {
   int dp[10][10];
   int dir[10][10];
   if (mode == 0) {
-    rep(i, n) {
-      rep(j, n) {
+    rep(i, board_size) {
+      rep(j, board_size) {
         if (i < ii) {
           dp[i][j] = -1;
         }
@@ -624,8 +682,8 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
     }
   }
   else if (mode == 2) {
-    rep(i, n) {
-      rep(j, n) {
+    rep(i, board_size) {
+      rep(j, board_size) {
         if (i < ii) {
           dp[i][j] = -1;
         }
@@ -650,9 +708,9 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
     que.pop();
     bool isFinish = false;
     rep(i, 4) {
-      int na = a + dx[i];
-      int nb = b + dy[i];
-      if (IsOK(na, nb) && dp[na][nb] > dp[a][b] + 1) {
+      int na = a + DX[i];
+      int nb = b + DY[i];
+      if (in_bounds(na, nb) && dp[na][nb] > dp[a][b] + 1) {
         dp[na][nb] = dp[a][b] + 1;
         que.push(P(na, nb));
         dir[na][nb] = i;
@@ -672,20 +730,20 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
   while (revX != x || revY != y) {
     int revD = dir[revX][revY];
     rev.push_back(revD);
-    revX -= dx[revD];
-    revY -= dy[revD];
+    revX -= DX[revD];
+    revY -= DY[revD];
   }
 
   reverse(rev.begin(), rev.end());
 
   for (auto nd : rev) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
   rep(i, 4) {
-    if (x + dx[i] == xx && y + dy[i] == yy) {
+    if (x + DX[i] == xx && y + DY[i] == yy) {
       swap(tmpBoard[x][y], tmpBoard[xx][yy]);
       swap(x, xx);
       swap(y, yy);
@@ -707,25 +765,25 @@ void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmp
   vector<int> order = { 0, 1, 2, 3, 2, 1, 0, 0, 3, 2, 1, 2, 3, 0, 0, 1, 2 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
 }
 
 // 2×3マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
 void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
-  while (x != n - 1) {
+  while (x != board_size - 1) {
     apply_move(x, y, 2, tmpBoard, ansDfs);
   }
   // 上左下右
   vector<int> order = { 1, 0, 3, 2, 3, 0, 1, 1, 2, 3, 0, 3, 2, 1, 1, 0, 3 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
 }
 
@@ -733,8 +791,8 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
   // カーソル移動
   int dp[10][10];
   int dir[10][10];
-  rep(i, n) {
-    rep(j, n) {
+  rep(i, board_size) {
+    rep(j, board_size) {
       if (i <= ii) {
         dp[i][j] = -1;
       }
@@ -747,8 +805,8 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
   queue<P> que;
   que.push(P(x, y));
   dp[x][y] = 0;
-  dp[ii + 1][n - 2] = -1;
-  dp[ii][n - 1] = INF;
+  dp[ii + 1][board_size - 2] = -1;
+  dp[ii][board_size - 1] = INF;
   dir[x][y] = -1;
   while (que.size()) {
     int a = que.front().first;
@@ -756,13 +814,13 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
     que.pop();
     bool isFinish = false;
     rep(i, 4) {
-      int na = a + dx[i];
-      int nb = b + dy[i];
-      if (IsOK(na, nb) && dp[na][nb] > dp[a][b] + 1) {
+      int na = a + DX[i];
+      int nb = b + DY[i];
+      if (in_bounds(na, nb) && dp[na][nb] > dp[a][b] + 1) {
         dp[na][nb] = dp[a][b] + 1;
         que.push(P(na, nb));
         dir[na][nb] = i;
-        if (na == ii && nb == n - 1) {
+        if (na == ii && nb == board_size - 1) {
           isFinish = true;
           break;
         }
@@ -774,30 +832,30 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
   }
 
   vector<int> rev;
-  int revX = ii, revY = n - 1;
+  int revX = ii, revY = board_size - 1;
   while (revX != x || revY != y) {
     int revD = dir[revX][revY];
     rev.push_back(revD);
-    revX -= dx[revD];
-    revY -= dy[revD];
+    revX -= DX[revD];
+    revY -= DY[revD];
   }
 
   reverse(rev.begin(), rev.end());
 
   for (auto nd : rev) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
 
   // 上左下右
   vector<int> order = { 1, 2 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
 }
 
@@ -805,9 +863,9 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
   // カーソル移動
   int dp[10][10];
   int dir[10][10];
-  rep(i, n) {
-    rep(j, n) {
-      if (i < n - 2) {
+  rep(i, board_size) {
+    rep(j, board_size) {
+      if (i < board_size - 2) {
         dp[i][j] = -1;
       }
       else if (j <= jj) {
@@ -822,8 +880,8 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
   queue<P> que;
   que.push(P(x, y));
   dp[x][y] = 0;
-  dp[n - 2][jj + 1] = -1;
-  dp[n - 1][jj] = INF;
+  dp[board_size - 2][jj + 1] = -1;
+  dp[board_size - 1][jj] = INF;
   dir[x][y] = -1;
   while (que.size()) {
     int a = que.front().first;
@@ -831,13 +889,13 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
     que.pop();
     bool isFinish = false;
     rep(i, 4) {
-      int na = a + dx[i];
-      int nb = b + dy[i];
-      if (IsOK(na, nb) && dp[na][nb] > dp[a][b] + 1) {
+      int na = a + DX[i];
+      int nb = b + DY[i];
+      if (in_bounds(na, nb) && dp[na][nb] > dp[a][b] + 1) {
         dp[na][nb] = dp[a][b] + 1;
         que.push(P(na, nb));
         dir[na][nb] = i;
-        if (na == n - 1 && nb == jj) {
+        if (na == board_size - 1 && nb == jj) {
           isFinish = true;
           break;
         }
@@ -849,37 +907,37 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
   }
 
   vector<int> rev;
-  int revX = n - 1, revY = jj;
+  int revX = board_size - 1, revY = jj;
   while (revX != x || revY != y) {
     int revD = dir[revX][revY];
     rev.push_back(revD);
-    revX -= dx[revD];
-    revY -= dy[revD];
+    revX -= DX[revD];
+    revY -= DY[revD];
   }
 
   reverse(rev.begin(), rev.end());
 
   for (auto nd : rev) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
 
   // 上左下右
   vector<int> order = { 0, 3 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
-    swap(tmpBoard[x][y], tmpBoard[x + dx[nd]][y + dy[nd]]);
-    x += dx[nd];
-    y += dy[nd];
+    swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
+    x += DX[nd];
+    y += DY[nd];
   }
 }
 
-vector<int> FindAnsDfs2() {
+vector<int> build_route() {
   vector<vector<int>> tmpBoard(10, vector<int>(10));
-  rep(i, n) {
-    rep(j, n) {
+  rep(i, board_size) {
+    rep(j, board_size) {
       tmpBoard[i][j] = board[i][j];
     }
   }
@@ -890,16 +948,16 @@ vector<int> FindAnsDfs2() {
   int y = startY;
 
   // 1列目から下から3列目まで完成させる
-  rep(i, n - 2) {
-    rep(j, n - 1) {
+  rep(i, board_size - 2) {
+    rep(j, board_size - 1) {
       int num = aniBoard[i][j];
-      if (j == n - 2) {
-        num = aniBoard[i][n - 1];
+      if (j == board_size - 2) {
+        num = aniBoard[i][board_size - 1];
       }
 
       vector<int> vxx, vyy;
-      rep(k, n) {
-        rep(l, n) {
+      rep(k, board_size) {
+        rep(l, board_size) {
           if (k < i) {
             continue;
           }
@@ -943,7 +1001,7 @@ vector<int> FindAnsDfs2() {
           }
         }
 
-        if (tmpVec.size() < miniScore || Rand() % 100 == 0) {
+        if (tmpVec.size() < miniScore || rand32() % 100 == 0) {
           miniScore = tmpVec.size();
           miniVec = tmpVec;
           keeptmpBoard = tmptmpBoard;
@@ -960,21 +1018,21 @@ vector<int> FindAnsDfs2() {
       tmpBoard = keeptmpBoard;
     }
 
-    if (x == i && y == n - 1) {
+    if (x == i && y == board_size - 1) {
       ansDfs.push_back(2);
       swap(tmpBoard[x][y], tmpBoard[x + 1][y]);
       x++;
     }
 
     // 最後の2個を揃える
-    if (tmpBoard[i][n - 1] == aniBoard[i][n - 2]) {
-      swap_vertical_pair(x, y, i, n - 2, tmpBoard, ansDfs);
+    if (tmpBoard[i][board_size - 1] == aniBoard[i][board_size - 2]) {
+      swap_vertical_pair(x, y, i, board_size - 2, tmpBoard, ansDfs);
     }
     else {
-      int num = aniBoard[i][n - 2];
+      int num = aniBoard[i][board_size - 2];
       vector<int> vxx, vyy;
-      rep(k, n) {
-        rep(l, n) {
+      rep(k, board_size) {
+        rep(l, board_size) {
           if (k <= i) {
             continue;
           }
@@ -1001,21 +1059,21 @@ vector<int> FindAnsDfs2() {
         vector<vector<int>> tmptmpBoard = tmpBoard;
 
         // 適切な位置にピースを移動させる
-        while (xx != i + 1 || yy != n - 2) {
-          if (yy != n - 2) {
-            if (yy < n - 2) {
-              route_move_cursor(x, y, xx, yy, xx, yy + 1, i, n - 1, tmptmpBoard, tmpVec);
+        while (xx != i + 1 || yy != board_size - 2) {
+          if (yy != board_size - 2) {
+            if (yy < board_size - 2) {
+              route_move_cursor(x, y, xx, yy, xx, yy + 1, i, board_size - 1, tmptmpBoard, tmpVec);
             }
             else {
-              route_move_cursor(x, y, xx, yy, xx, yy - 1, i, n - 1, tmptmpBoard, tmpVec);
+              route_move_cursor(x, y, xx, yy, xx, yy - 1, i, board_size - 1, tmptmpBoard, tmpVec);
             }
           }
           else if (xx != i + 1) {
-            route_move_cursor(x, y, xx, yy, xx - 1, yy, i, n - 1, tmptmpBoard, tmpVec);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, i, board_size - 1, tmptmpBoard, tmpVec);
           }
         }
 
-        if (tmpVec.size() < miniScore || Rand() % 100 == 0) {
+        if (tmpVec.size() < miniScore || rand32() % 100 == 0) {
           miniScore = tmpVec.size();
           miniVec = tmpVec;
           keeptmpBoard = tmptmpBoard;
@@ -1036,13 +1094,13 @@ vector<int> FindAnsDfs2() {
   }
 
   // 下2列をそろえる
-  rep(j, n - 2) {
+  rep(j, board_size - 2) {
     // 下のマスを上のマスの位置に持ってくる
-    int num = aniBoard[n - 1][j];
+    int num = aniBoard[board_size - 1][j];
     int xx = -1, yy = -1;
-    rep(k, n) {
-      rep(l, n) {
-        if (k < n - 2) {
+    rep(k, board_size) {
+      rep(l, board_size) {
+        if (k < board_size - 2) {
           continue;
         }
         if (l < j) {
@@ -1059,36 +1117,36 @@ vector<int> FindAnsDfs2() {
     }
 
     // 適切な位置にピースを移動させる
-    while (xx != n - 2 || yy != j) {
+    while (xx != board_size - 2 || yy != j) {
       if (yy != j) {
         if (yy < j) {
-          route_move_cursor(x, y, xx, yy, xx, yy + 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy + 1, board_size - 2, j, tmpBoard, ansDfs, 2);
         }
         else {
-          route_move_cursor(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, board_size - 2, j, tmpBoard, ansDfs, 2);
         }
       }
-      else if (xx != n - 2) {
-        route_move_cursor(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs);
+      else if (xx != board_size - 2) {
+        route_move_cursor(x, y, xx, yy, xx - 1, yy, board_size - 2, j, tmpBoard, ansDfs);
       }
     }
 
-    if (x == n - 1 && y == j) {
+    if (x == board_size - 1 && y == j) {
       ansDfs.push_back(3);
       swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
       y++;
     }
 
     // 最後の2個を揃える
-    if (tmpBoard[n - 1][j] == aniBoard[n - 2][j]) {
-      swap_horizontal_pair(x, y, n - 2, j, tmpBoard, ansDfs);
+    if (tmpBoard[board_size - 1][j] == aniBoard[board_size - 2][j]) {
+      swap_horizontal_pair(x, y, board_size - 2, j, tmpBoard, ansDfs);
     }
     else {
-      int num = aniBoard[n - 2][j];
+      int num = aniBoard[board_size - 2][j];
       int xx = -1, yy = -1;
-      rep(k, n) {
-        rep(l, n) {
-          if (k < n - 2) {
+      rep(k, board_size) {
+        rep(l, board_size) {
+          if (k < board_size - 2) {
             continue;
           }
           if (l <= j) {
@@ -1104,17 +1162,17 @@ vector<int> FindAnsDfs2() {
         }
       }
       // 適切な位置にピースを移動させる
-      while (xx != n - 2 || yy != j + 1) {
-        if (xx != n - 2) {
-          if (xx < n - 2) {
-            route_move_cursor(x, y, xx, yy, xx + 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
+      while (xx != board_size - 2 || yy != j + 1) {
+        if (xx != board_size - 2) {
+          if (xx < board_size - 2) {
+            route_move_cursor(x, y, xx, yy, xx + 1, yy, board_size - 2, j, tmpBoard, ansDfs, 2);
           }
           else {
-            route_move_cursor(x, y, xx, yy, xx - 1, yy, n - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, board_size - 2, j, tmpBoard, ansDfs, 2);
           }
         }
         else if (yy != j + 1) {
-          route_move_cursor(x, y, xx, yy, xx, yy - 1, n - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, board_size - 2, j, tmpBoard, ansDfs, 2);
         }
       }
       fix_last_two_in_col(x, y, j, tmpBoard, ansDfs);
@@ -1122,8 +1180,8 @@ vector<int> FindAnsDfs2() {
   }
 
   // カーソルを右下に持ってくる
-  while (x != n - 1 || y != n - 1) {
-    if (y != n - 1) {
+  while (x != board_size - 1 || y != board_size - 1) {
+    if (y != board_size - 1) {
       apply_move(x, y, 3, tmpBoard, ansDfs);
     }
     else {
@@ -1142,8 +1200,8 @@ int exec_mode = 0; // 0: 標準出力, 1: ファイル出力
 void output_data(int case_num) {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, ans.size()) {
-      cout << cc[ans[i]];
+    rep(i, route.size()) {
+      cout << DIR_CHAR[route[i]];
     }
     cout << endl;
   }
@@ -1153,18 +1211,18 @@ void output_data(int case_num) {
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    rep(i, ans.size()) {
-      ofs << cc[ans[i]];
+    rep(i, route.size()) {
+      ofs << DIR_CHAR[route[i]];
     }
     ofs << endl;
   }
 }
 
-int Solve(int mode, int problemNum = 0) {
+int solve_case(int mode, int problemNum = 0) {
   start_timer();
 
   // 入力部
-  Input(problemNum);
+  read_input(problemNum);
 
   // 木を1つ見つける
   bool isFind = false;
@@ -1172,13 +1230,13 @@ int Solve(int mode, int problemNum = 0) {
     // 焼きなまし
     rep(_, 25) {
       bool isReset = true;
-      if (FindTreeAni(isReset)) {
+      if (anneal_find_tree(isReset)) {
         isFind = true;
         break;
       }
     }
-    rep(i, n) {
-      rep(j, n) {
+    rep(i, board_size) {
+      rep(j, board_size) {
         dfsBoard[i][j] = aniBoard[i][j];
       }
     }
@@ -1186,15 +1244,15 @@ int Solve(int mode, int problemNum = 0) {
 
   if (isFind) {
     // それぞれのピースに番号を付ける
-    InitKindNumbers();
+    init_kind_indices();
     init_piece_numbers();
 
-    vector<int> ansDfs = FindAnsDfs2();
-    ans = ansDfs;
-    maxScore = CalcScore(ans);
+    vector<int> ansDfs = build_route();
+    route = ansDfs;
+    cur_score = calc_score(route);
 
-    best_ans = ans;
-    best_maxScore = maxScore;
+    best_route = route;
+    best_score = cur_score;
 
     int loop = 0;
     double now_time = get_elapsed_time();
@@ -1208,20 +1266,20 @@ int Solve(int mode, int problemNum = 0) {
         pp[i] = shuffle_same_kind_piece();
       }
 
-      vector<int> tmpAns = FindAnsDfs2();
-      int tmpScore = CalcScore(tmpAns);
+      vector<int> tmpAns = build_route();
+      int tmpScore = calc_score(tmpAns);
 
-      int diffScore = tmpScore - maxScore;
+      int diffScore = tmpScore - cur_score;
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       double prob = exp((double)diffScore / temp);
-      if (prob > Rand01()) {
-        ans = tmpAns;
-        maxScore = tmpScore;
+      if (prob > rand_unit()) {
+        route = tmpAns;
+        cur_score = tmpScore;
 
-        if (maxScore > best_maxScore) {
-          best_maxScore = maxScore;
-          best_ans = ans;
+        if (cur_score > best_score) {
+          best_score = cur_score;
+          best_route = route;
         }
       }
       else {
@@ -1238,21 +1296,21 @@ int Solve(int mode, int problemNum = 0) {
     {
       int x = startX;
       int y = startY;
-      rep(i, t) {
-        int val = Rand() % 4;
-        while (!IsOK(x + dx[val], y + dy[val])) {
-          val = Rand() % 4;
+      rep(i, turn_limit) {
+        int val = rand32() % 4;
+        while (!in_bounds(x + DX[val], y + DY[val])) {
+          val = rand32() % 4;
         }
-        ans.push_back(val);
-        x += dx[val];
-        y += dy[val];
+        route.push_back(val);
+        x += DX[val];
+        y += DY[val];
       }
     }
 
-    maxScore = CalcScore(ans);
+    cur_score = calc_score(route);
 
-    best_ans = ans;
-    best_maxScore = maxScore;
+    best_route = route;
+    best_score = cur_score;
 
     // 山登り解、焼きなまし解
     double now_time = get_elapsed_time();
@@ -1265,23 +1323,23 @@ int Solve(int mode, int problemNum = 0) {
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;
       if (loop % 10 == 0) {
-        op_shuffle_suffix(temp);
+        shuffle_suffix(temp);
       }
       else {
-        op_swap_adjacent(temp);
+        swap_adjacent(temp);
       }
 
       loop++;
     }
 
     // 最高スコアを戻す
-    ans = best_ans;
-    maxScore = best_maxScore;
+    route = best_route;
+    cur_score = best_score;
   }
 
   // デバッグ用
   if (mode != 0) {
-    cout << maxScore << endl;
+    cout << cur_score << endl;
     cout << get_elapsed_time() << "sec." << endl;
   }
 
@@ -1294,78 +1352,17 @@ int main() {
   exec_mode = 10;
 
   if (exec_mode == 0) {
-    Solve(exec_mode);
+    solve_case(exec_mode);
   }
   else if (exec_mode == 1) {
-    Solve(exec_mode, 0);
+    solve_case(exec_mode, 0);
   }
   else if (exec_mode == 10) {
     srep(_, 4, 5) {
-      Solve(exec_mode, _);
-      ResetAll();
+      solve_case(exec_mode, _);
+      reset_state();
     }
   }
 
   return 0;
-}
-
-void Input(int problemNum) {
-  std::ostringstream sout;
-  sout << std::setfill('0') << std::setw(4) << problemNum;
-  std::string numStr = sout.str();
-  string fileNameIfs = "in/" + numStr + ".txt ";
-  ifstream ifs(fileNameIfs.c_str());
-  if (!ifs.is_open()) {  // 標準入力する
-    cin >> n >> t;
-    rep(i, n) {
-      string str;
-      cin >> str;
-      rep(j, n) {
-        if ('0' <= str[j] && str[j] <= '9') {
-          board[i][j] = str[j] - '0';
-        }
-        else {
-          board[i][j] = str[j] - 'a' + 10;
-        }
-        if (board[i][j] == 0) {
-          startX = i;
-          startY = j;
-        }
-      }
-    }
-  }
-  else {  // ファイル入力する
-    ifs >> n >> t;
-    rep(i, n) {
-      string str;
-      ifs >> str;
-      rep(j, n) {
-        if ('0' <= str[j] && str[j] <= '9') {
-          board[i][j] = str[j] - '0';
-        }
-        else {
-          board[i][j] = str[j] - 'a' + 10;
-        }
-        if (board[i][j] == 0) {
-          startX = i;
-          startY = j;
-        }
-      }
-    }
-  }
-
-  rep(i, n) {
-    rep(j, n) {
-      cnt[board[i][j]]++;
-    }
-  }
-}
-
-void ResetAll() {
-  ans.clear();
-  best_ans.clear();
-  rep(i, 16) {
-    kindNumbers[i].clear();
-    originNum[i].clear();
-  }
 }
