@@ -2912,25 +2912,6 @@ int Solve(int mode, int problemNum = 0)
     }
     cout << "MethodSum = " << methodSum[0] << " / " << methodSum[1] << endl;
     cout << endl;
-
-    // rep(i, n) {
-    //   rep(j, n) {
-    //     if (0 <= a[i][j] && a[i][j] < K100) {
-    //       cout << parent[a[i][j]] << ' ';
-    //     } else {
-    //       cout << -1 << ' ';
-    //     }
-    //   }
-    //   cout << endl;
-    // }
-    // for (auto p : vp) {
-    //   cout << p.second << ' ' << -p.first << endl;
-    // }
-    // rep(i, K * 100) {
-    //   if (unionSize[i] > 0) {
-    //     cout << "i = " << i << " : " << unionSize[i] << endl;
-    //   }
-    // }
   }
 
   return maxScore;
@@ -2966,7 +2947,7 @@ int main()
     SolveOuter(mode);
   }
   else if (mode == 1) {
-    SolveOuter(mode, 0);
+    SolveOuter(mode, 1);
   }
   else if (mode == 2) {
     int sum = 0;
