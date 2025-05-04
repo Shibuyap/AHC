@@ -66,14 +66,6 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
-// 配列シャッフル
-std::random_device seed_gen;
-std::mt19937 engine(seed_gen());
-// std::shuffle(v.begin(), v.end(), engine);
-
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
-
 double TL = 1.9;
 int mode;
 clock_t startTime, endTime;
@@ -88,40 +80,40 @@ const int n = 9;
 const int m = 20;
 const int T = 81;
 const int MOD = 998244353;
-int a[n][n];
-int initA[n][n];
-int s[m][3][3];
-int ans[T + 100][3];
-ll ansScore;
+int board[n][n];
+int initial_board[n][n];
+int magic_pattern[m][3][3];
+int current_solution[T][3];
+ll current_score;
 
-int best_a[n][n];
-ll best_ans[T][3];
-ll best_ansScore;
+int best_board[n][n];
+ll best_solution[T][3];
+ll best_score;
 
 void CopyToBest() {
-  best_ansScore = ansScore;
+  best_score = current_score;
   rep(i, T) {
     rep(j, 3) {
-      best_ans[i][j] = ans[i][j];
+      best_solution[i][j] = current_solution[i][j];
     }
   }
   rep(i, n) {
     rep(j, n) {
-      best_a[i][j] = a[i][j];
+      best_board[i][j] = board[i][j];
     }
   }
 }
 
 void CopyFromBest() {
-  ansScore = best_ansScore;
+  current_score = best_score;
   rep(i, T) {
     rep(j, 3) {
-      ans[i][j] = best_ans[i][j];
+      current_solution[i][j] = best_solution[i][j];
     }
   }
   rep(i, n) {
     rep(j, n) {
-      a[i][j] = best_a[i][j];
+      board[i][j] = best_board[i][j];
     }
   }
 }
@@ -132,7 +124,7 @@ ll CalcScore() {
 
   rep(i, n) {
     rep(j, n) {
-      res += a[i][j] % MOD;
+      res += board[i][j] % MOD;
     }
   }
 
@@ -143,7 +135,7 @@ ll CalcScore() {
 void SetUp() {
   rep(i, T) {
     rep(j, 3) {
-      ans[i][j] = -1;
+      current_solution[i][j] = -1;
     }
   }
 }
@@ -151,15 +143,15 @@ void SetUp() {
 void InitializeAns() {
   rep(i, T) {
     rep(j, 3) {
-      ans[i][j] = -1;
+      current_solution[i][j] = -1;
     }
   }
   rep(i, n) {
     rep(j, n) {
-      a[i][j] = initA[i][j];
+      board[i][j] = initial_board[i][j];
     }
   }
-  ansScore = CalcScore();
+  current_score = CalcScore();
 }
 
 // 入力受け取り
@@ -181,13 +173,13 @@ void Input(int problemNum) {
     cin >> _n >> _m >> _k;
     rep(i, n) {
       rep(j, n) {
-        cin >> a[i][j];
+        cin >> board[i][j];
       }
     }
     rep(i, m) {
       rep(j, 3) {
         rep(k, 3) {
-          cin >> s[i][j][k];
+          cin >> magic_pattern[i][j][k];
         }
       }
     }
@@ -198,13 +190,13 @@ void Input(int problemNum) {
     ifs >> _n >> _m >> _k;
     rep(i, n) {
       rep(j, n) {
-        ifs >> a[i][j];
+        ifs >> board[i][j];
       }
     }
     rep(i, m) {
       rep(j, 3) {
         rep(k, 3) {
-          ifs >> s[i][j][k];
+          ifs >> magic_pattern[i][j][k];
         }
       }
     }
@@ -212,7 +204,7 @@ void Input(int problemNum) {
 
   rep(i, n) {
     rep(j, n) {
-      initA[i][j] = a[i][j];
+      initial_board[i][j] = board[i][j];
     }
   }
 }
@@ -236,9 +228,9 @@ void OpenOfs(int probNum, ofstream& ofs) {
 // 初期解生成
 void Initialize() {
   rep(i, T) {
-    ans[i][0] = -1;
+    current_solution[i][0] = -1;
   }
-  ansScore = CalcScore();
+  current_score = CalcScore();
   CopyToBest();
 }
 
@@ -246,22 +238,22 @@ void Initialize() {
 void Output(ofstream& ofs) {
   int L = 0;
   rep(i, T) {
-    if (ans[i][0] == -1) continue;
+    if (current_solution[i][0] == -1) continue;
     L++;
   }
   if (mode == 0) {
     cout << L << endl;
     rep(i, T) {
-      if (ans[i][0] == -1) continue;
-      rep(j, 3) cout << ans[i][j] << ' ';
+      if (current_solution[i][0] == -1) continue;
+      rep(j, 3) cout << current_solution[i][j] << ' ';
       cout << endl;
     }
   }
   else {
     ofs << L << endl;
     rep(i, T) {
-      if (ans[i][0] == -1) continue;
-      rep(j, 3) ofs << ans[i][j] << ' ';
+      if (current_solution[i][0] == -1) continue;
+      rep(j, 3) ofs << current_solution[i][j] << ' ';
       ofs << endl;
     }
   }
@@ -278,13 +270,13 @@ void Method1_1() {
   if (Rand() % 2 == 0) {
     raM = -1;
   }
-  if (ans[raT][0] == raM) return;
+  if (current_solution[raT][0] == raM) return;
   ll diff = 0;
-  if (ans[raT][0] != -1) {
+  if (current_solution[raT][0] != -1) {
     rep(i, 3) {
       rep(j, 3) {
-        diff -= s[ans[raT][0]][i][j];
-        if (s[ans[raT][0]][i][j] > a[ans[raT][1] + i][ans[raT][2] + j]) {
+        diff -= magic_pattern[current_solution[raT][0]][i][j];
+        if (magic_pattern[current_solution[raT][0]][i][j] > board[current_solution[raT][1] + i][current_solution[raT][2] + j]) {
           diff += MOD;
         }
       }
@@ -293,8 +285,8 @@ void Method1_1() {
   if (raM != -1) {
     rep(i, 3) {
       rep(j, 3) {
-        diff += s[raM][i][j];
-        if (s[raM][i][j] + a[raX + i][raY + j] > MOD) diff -= MOD;
+        diff += magic_pattern[raM][i][j];
+        if (magic_pattern[raM][i][j] + board[raX + i][raY + j] > MOD) diff -= MOD;
       }
     }
   }
@@ -303,12 +295,12 @@ void Method1_1() {
   const double prob = exp((double)diff / temp);
   // if (prob > Rand01()) {
   if (diff >= 0) {
-    if (ans[raT][0] != -1) {
+    if (current_solution[raT][0] != -1) {
       rep(i, 3) {
         rep(j, 3) {
-          a[ans[raT][1] + i][ans[raT][2] + j] -= s[ans[raT][0]][i][j];
-          if (a[ans[raT][1] + i][ans[raT][2] + j] < 0) {
-            a[ans[raT][1] + i][ans[raT][2] + j] += MOD;
+          board[current_solution[raT][1] + i][current_solution[raT][2] + j] -= magic_pattern[current_solution[raT][0]][i][j];
+          if (board[current_solution[raT][1] + i][current_solution[raT][2] + j] < 0) {
+            board[current_solution[raT][1] + i][current_solution[raT][2] + j] += MOD;
           }
         }
       }
@@ -316,19 +308,19 @@ void Method1_1() {
     if (raM != -1) {
       rep(i, 3) {
         rep(j, 3) {
-          a[raX + i][raY + j] += s[raM][i][j];
-          if (a[raX + i][raY + j] > MOD) a[raX + i][raY + j] -= MOD;
+          board[raX + i][raY + j] += magic_pattern[raM][i][j];
+          if (board[raX + i][raY + j] > MOD) board[raX + i][raY + j] -= MOD;
         }
       }
     }
 
-    ans[raT][0] = raM;
-    ans[raT][1] = raX;
-    ans[raT][2] = raY;
+    current_solution[raT][0] = raM;
+    current_solution[raT][1] = raX;
+    current_solution[raT][2] = raY;
 
-    ansScore += diff;
-    cout << ansScore << endl;
-    if (ansScore > best_ansScore) {
+    current_score += diff;
+    cout << current_score << endl;
+    if (current_score > best_score) {
       CopyToBest();
     }
   }
@@ -482,7 +474,7 @@ void Method2DFS(int mm, int cnt, int lim) {
     ll tmpSum = 0;
     rep(p, 3) {
       rep(q, 3) {
-        now[p][q] = (now[p][q] + s[i][p][q]) % MOD;
+        now[p][q] = (now[p][q] + magic_pattern[i][p][q]) % MOD;
         if (use[p][q]) tmpSum += now[p][q];
       }
     }
@@ -532,7 +524,7 @@ void Method2(double timeLimit) {
         maxSum = 0;
         rep(k, 3) {
           rep(l, 3) {
-            ma[k][l] = a[i + k][j + l];
+            ma[k][l] = board[i + k][j + l];
             now[k][l] = ma[k][l];
           }
         }
@@ -552,7 +544,7 @@ void Method2(double timeLimit) {
           if (maxSum < hosyou) {
             rep(p, 3) {
               rep(q, 3) {
-                now[p][q] = a[i + p][j + q];
+                now[p][q] = board[i + p][j + q];
               }
             }
             Method2DFS(0, 0, 2);
@@ -571,9 +563,9 @@ void Method2(double timeLimit) {
 
         rep(k, maAnsCount) {
           int ansM = maAnssArr[k];
-          ans[cnt][0] = ansM;
-          ans[cnt][1] = i;
-          ans[cnt][2] = j;
+          current_solution[cnt][0] = ansM;
+          current_solution[cnt][1] = i;
+          current_solution[cnt][2] = j;
           cnt++;
         }
         if (cnt > T) {
@@ -582,7 +574,7 @@ void Method2(double timeLimit) {
         }
         rep(k, 3) {
           rep(l, 3) {
-            a[i + k][j + l] = ma[k][l];
+            board[i + k][j + l] = ma[k][l];
           }
         }
       }
@@ -590,9 +582,8 @@ void Method2(double timeLimit) {
     }
     if (ng) continue;
 
-    ansScore = CalcScore();
-    if (ansScore > best_ansScore) {
-      // cout << hosyou << ' ' << ansScore << endl;
+    current_score = CalcScore();
+    if (current_score > best_score) {
       CopyToBest();
     }
   }
@@ -640,7 +631,7 @@ void Method3(double timeLimit) {
       maxSum = 0;
       rep(k, 3) {
         rep(l, 3) {
-          ma[k][l] = a[i + k][j + l];
+          ma[k][l] = board[i + k][j + l];
           now[k][l] = ma[k][l];
         }
       }
@@ -668,7 +659,7 @@ void Method3(double timeLimit) {
         if (maxSum < hosyou) {
           rep(p, 3) {
             rep(q, 3) {
-              now[p][q] = a[i + p][j + q];
+              now[p][q] = board[i + p][j + q];
             }
           }
           Method2DFS(0, 0, 2);
@@ -687,9 +678,9 @@ void Method3(double timeLimit) {
 
       rep(k, maAnsCount) {
         int ansM = maAnssArr[k];
-        ans[cnt][0] = ansM;
-        ans[cnt][1] = i;
-        ans[cnt][2] = j;
+        current_solution[cnt][0] = ansM;
+        current_solution[cnt][1] = i;
+        current_solution[cnt][2] = j;
         cnt++;
       }
       if (cnt > T) {
@@ -698,16 +689,15 @@ void Method3(double timeLimit) {
       }
       rep(k, 3) {
         rep(l, 3) {
-          a[i + k][j + l] = ma[k][l];
+          board[i + k][j + l] = ma[k][l];
         }
       }
     }
 
     if (ng) continue;
 
-    ansScore = CalcScore();
-    if (ansScore > best_ansScore) {
-      // cout << hosyou << ' ' << ansScore << endl;
+    current_score = CalcScore();
+    if (current_score > best_score) {
       CopyToBest();
     }
   }
@@ -748,7 +738,7 @@ void Method4(double timeLimit) {
       int maCntTail = 0;
       rep(p, n) {
         rep(q, n) {
-          baseA[p][q] = a[p][q];
+          baseA[p][q] = board[p][q];
         }
       }
 
@@ -762,7 +752,7 @@ void Method4(double timeLimit) {
           maxSum = 0;
           rep(k, 3) {
             rep(l, 3) {
-              ma[k][l] = a[i + k][j + l];
+              ma[k][l] = board[i + k][j + l];
               now[k][l] = ma[k][l];
             }
           }
@@ -782,7 +772,7 @@ void Method4(double timeLimit) {
             if (maxSum < hosyou && Rand() % 3 != 0) {
               rep(p, 3) {
                 rep(q, 3) {
-                  now[p][q] = a[i + p][j + q];
+                  now[p][q] = board[i + p][j + q];
                 }
               }
               Method2DFS(0, 0, 2);
@@ -801,9 +791,9 @@ void Method4(double timeLimit) {
 
           rep(k, maAnsCount) {
             int ansM = maAnssArr[k];
-            ans[cnt][0] = ansM;
-            ans[cnt][1] = i;
-            ans[cnt][2] = j;
+            current_solution[cnt][0] = ansM;
+            current_solution[cnt][1] = i;
+            current_solution[cnt][2] = j;
             cnt++;
           }
           if (cnt > T) {
@@ -812,7 +802,7 @@ void Method4(double timeLimit) {
           }
           rep(k, 3) {
             rep(l, 3) {
-              a[i + k][j + l] = ma[k][l];
+              board[i + k][j + l] = ma[k][l];
             }
           }
         }
@@ -825,7 +815,7 @@ void Method4(double timeLimit) {
           maxSum = 0;
           rep(k, 3) {
             rep(l, 3) {
-              ma[k][l] = a[i + k][j + l];
+              ma[k][l] = board[i + k][j + l];
               now[k][l] = ma[k][l];
             }
           }
@@ -845,7 +835,7 @@ void Method4(double timeLimit) {
             if (maxSum < hosyou && Rand() % 3 != 0) {
               rep(p, 3) {
                 rep(q, 3) {
-                  now[p][q] = a[i + p][j + q];
+                  now[p][q] = board[i + p][j + q];
                 }
               }
               Method2DFS(0, 0, 2);
@@ -864,9 +854,9 @@ void Method4(double timeLimit) {
 
           rep(k, maAnsCount) {
             int ansM = maAnssArr[k];
-            ans[cnt][0] = ansM;
-            ans[cnt][1] = i;
-            ans[cnt][2] = j;
+            current_solution[cnt][0] = ansM;
+            current_solution[cnt][1] = i;
+            current_solution[cnt][2] = j;
             cnt++;
           }
           if (cnt > T) {
@@ -875,7 +865,7 @@ void Method4(double timeLimit) {
           }
           rep(k, 3) {
             rep(l, 3) {
-              a[i + k][j + l] = ma[k][l];
+              board[i + k][j + l] = ma[k][l];
             }
           }
         }
@@ -886,7 +876,7 @@ void Method4(double timeLimit) {
           maxSum = 0;
           rep(k, 3) {
             rep(l, 3) {
-              ma[k][l] = a[i + k][j + l];
+              ma[k][l] = board[i + k][j + l];
               now[k][l] = ma[k][l];
             }
           }
@@ -907,7 +897,7 @@ void Method4(double timeLimit) {
             if (maxSum < hosyou && Rand() % 3 != 0) {
               rep(p, 3) {
                 rep(q, 3) {
-                  now[p][q] = a[i + p][j + q];
+                  now[p][q] = board[i + p][j + q];
                 }
               }
               Method2DFS(0, 0, 2);
@@ -927,9 +917,9 @@ void Method4(double timeLimit) {
 
           rep(k, maAnsCount) {
             int ansM = maAnssArr[k];
-            ans[cnt][0] = ansM;
-            ans[cnt][1] = i;
-            ans[cnt][2] = j;
+            current_solution[cnt][0] = ansM;
+            current_solution[cnt][1] = i;
+            current_solution[cnt][2] = j;
             cnt++;
           }
           if (cnt > T) {
@@ -938,7 +928,7 @@ void Method4(double timeLimit) {
           }
           rep(k, 3) {
             rep(l, 3) {
-              a[i + k][j + l] = ma[k][l];
+              board[i + k][j + l] = ma[k][l];
             }
           }
         }
@@ -949,34 +939,34 @@ void Method4(double timeLimit) {
 
         if (dir1 == 0) {
           rep(j, n) {
-            tmpPosSum += a[i][j];
+            tmpPosSum += board[i][j];
           }
           if (i == n - 3) {
             rep(j, n) {
-              tmpPosSum += a[i + 1][j];
-              tmpPosSum += a[i + 2][j];
+              tmpPosSum += board[i + 1][j];
+              tmpPosSum += board[i + 2][j];
             }
           }
         }
         else {
           rep(j, n) {
-            tmpPosSum += a[i + 2][j];
+            tmpPosSum += board[i + 2][j];
           }
           if (i == 0) {
             rep(j, n) {
-              tmpPosSum += a[i][j];
-              tmpPosSum += a[i + 1][j];
+              tmpPosSum += board[i][j];
+              tmpPosSum += board[i + 1][j];
             }
           }
         }
         if (tmpPosSum > maPosSum) {
           maPosSum = tmpPosSum;
           srep(t, nowCnt, cnt) {
-            rep(k, 3) keepAns[t][k] = ans[t][k];
+            rep(k, 3) keepAns[t][k] = current_solution[t][k];
           }
           rep(p, n) {
             rep(q, n) {
-              keepA[p][q] = a[p][q];
+              keepA[p][q] = board[p][q];
             }
           }
           maCntTail = cnt;
@@ -985,7 +975,7 @@ void Method4(double timeLimit) {
         cnt = nowCnt;
         rep(p, n) {
           rep(q, n) {
-            a[p][q] = baseA[p][q];
+            board[p][q] = baseA[p][q];
           }
         }
       }
@@ -994,23 +984,21 @@ void Method4(double timeLimit) {
 
       srep(t, nowCnt, maCntTail) {
         rep(k, 3) {
-          ans[t][k] = keepAns[t][k];
+          current_solution[t][k] = keepAns[t][k];
         }
       }
       cnt = maCntTail;
       rep(p, n) {
         rep(q, n) {
-          a[p][q] = keepA[p][q];
+          board[p][q] = keepA[p][q];
         }
       }
     }
     if (ng) continue;
 
-    srep(t, cnt, T) ans[t][0] = -1;
-    ansScore = CalcScore();
-    // cout << ansScore << endl;
-    if (ansScore > best_ansScore) {
-      // cout << hosyou << ' ' << ansScore << endl;
+    srep(t, cnt, T) current_solution[t][0] = -1;
+    current_score = CalcScore();
+    if (current_score > best_score) {
       CopyToBest();
     }
   }
