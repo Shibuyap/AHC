@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
@@ -201,17 +201,16 @@ void Input(int problemNum, ifstream& ifs)
 {
   if (!ifs.is_open()) {
     // 標準入力
-    rep(i, n) cin >> x[i] >> y[i];
-    rep(i, m) cin >> u[i] >> v[i];
+    for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];
+    for (int i = 0; i < m; ++i) cin >> u[i] >> v[i];
   }
   else {
     // ファイル入力
-    rep(i, n) ifs >> x[i] >> y[i];
-    rep(i, m) ifs >> u[i] >> v[i];
+    for (int i = 0; i < n; ++i) ifs >> x[i] >> y[i];
+    for (int i = 0; i < m; ++i) ifs >> u[i] >> v[i];
   }
 
-  rep(i, m)
-  {
+  for (int i = 0; i < m; ++i) {
     distances[i] = GetDistance(u[i], v[i]);
   }
 }
@@ -246,11 +245,9 @@ void Output(ofstream& ofs)
 
 void Prepare()
 {
-  rep(_, repeat)
-  {
+  for (int _ = 0; _ < repeat; ++_) {
     vector<P> tmpVec(m);
-    rep(i, m)
-    {
+    for (int i = 0; i < m; ++i) {
       tmpVec[i] = make_pair(round(RandRange(minCostRatio, maxCostRatio) * distances[i]), i);
     }
     sort(tmpVec.begin(), tmpVec.end());
@@ -282,8 +279,7 @@ bool MonteCarlo(UnionFind uf, int start)
   // ここに来た時点でu[start]とv[start]は繋がっていない
 
   int sum_costs = 0;
-  rep(i, repeat)
-  {
+  for (int i = 0; i < repeat; ++i) {
     sum_costs += Kruskal(uf, start, i);
     if (i == 0 && sum_costs == -1) {
       // 辺startを採用しないと連結にならない
@@ -300,8 +296,7 @@ void Method1(ifstream& ifs, ofstream& ofs)
 
   UnionFind uf(n);
 
-  rep(i, m)
-  {
+  for (int i = 0; i < m; ++i) {
     if (mode == 0) {
       cin >> distances[i];
     }

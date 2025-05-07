@@ -25,7 +25,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -103,10 +103,8 @@ namespace /* ユーティリティ */
   {
     int dp[N][N];
     int dir[N][N];
-    rep(i, N)
-    {
-      rep(j, N)
-      {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         dp[i][j] = INF;
         dir[i][j] = -1;
       }
@@ -121,8 +119,7 @@ namespace /* ユーティリティ */
       int y = que.front().second;
       que.pop();
       if (x == gx && y == gy) break;
-      rep(i, 4)
-      {
+      for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
         int ny = y + dy[i];
         if (NgXY(nx, ny)) continue;
@@ -149,14 +146,12 @@ namespace /* ユーティリティ */
     if (NgXY(x, y)) { return false; }
     if (grid[x][y] == 1) { return false; }
     // ペットとのマンハッタン距離が0or1ならNG
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       int dist = abs(x - px[i]) + abs(y - py[i]);
       if (dist <= 1) { return false; }
     }
     // 人間とのマンハッタン距離が0ならNG
-    rep(i, m)
-    {
+    for (int i = 0; i < m; ++i) {
       if (hx[i] == x && hy[i] == y) { return false; }
     }
     return true;
@@ -168,8 +163,7 @@ namespace /* ユーティリティ */
   {
     if (CanMakeFence(hx[id] - 1, hy[id])) {
       int ok = 1;
-      rep(i, hx[id])
-      {
+      for (int i = 0; i < hx[id]; ++i) {
         if (hy[id] != 0 && grid[i][hy[id] - 1] != 1) {
           ok = 0;
           break;
@@ -178,8 +172,7 @@ namespace /* ユーティリティ */
           ok = 0;
           break;
         }
-        rep(j, m)
-        {
+        for (int j = 0; j < m; ++j) {
           if (hx[j] == i && hy[j] == hy[id]) {
             ok = 0;
             break;
@@ -189,10 +182,8 @@ namespace /* ユーティリティ */
       }
 
       if (ok) {
-        rep(i, hx[id])
-        {
-          rep(j, n)
-          {
+        for (int i = 0; i < hx[id]; ++i) {
+          for (int j = 0; j < n; ++j) {
             if (px[j] == i && py[j] == hy[id]) { return 1; }
           }
         }
@@ -210,8 +201,7 @@ namespace /* ユーティリティ */
           ok = 0;
           break;
         }
-        rep(j, m)
-        {
+        for (int j = 0; j < m; ++j) {
           if (hx[j] == i && hy[j] == hy[id]) {
             ok = 0;
             break;
@@ -221,8 +211,7 @@ namespace /* ユーティリティ */
       }
       if (ok) {
         for (int i = N - 1; i > hx[id]; i--) {
-          rep(j, n)
-          {
+          for (int j = 0; j < n; ++j) {
             if (px[j] == i && py[j] == hy[id]) { return 2; }
           }
         }
@@ -247,21 +236,18 @@ namespace /* ユーティリティ */
       int x = que.front().first;
       int y = que.front().second;
       que.pop();
-      rep(i, 4)
-      {
+      for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
         int ny = y + dy[i];
         if (NgXY(nx, ny)) continue;
         if (grid[nx][ny]) continue;
-        rep(j, m)
-        {
+        for (int j = 0; j < m; ++j) {
           if (hx[j] == nx && hy[j] == ny) {
             personFlag = 1;
           }
         }
         if (personFlag) break;
-        rep(j, n)
-        {
+        for (int j = 0; j < n; ++j) {
           if (px[j] == nx && py[j] == ny) {
             petFlag = 1;
           }
@@ -306,8 +292,7 @@ public:
     int humanMode[MAX_HUMAN] = {};
     // 目的の柵の列番号
     int myFence[MAX_HUMAN] = {};
-    rep(i, MAX_HUMAN)
-    {
+    for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
     // 徘徊する方向
@@ -322,24 +307,20 @@ public:
     */
     int finishFenceCount = 0;
     int fence[N] = {};
-    rep(i, N)
-    {
+    for (int i = 0; i < N; ++i) {
       if (i % 4 != 1) {
         fence[i] = 10;
         finishFenceCount++;
       }
     }
 
-    rep(turn, T)
-    {
+    for (int turn = 0; turn < T; ++turn) {
       string outStr;
       // 人間の行動
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (finishFenceCount < N) {
           if (humanMode[i] == 0) {
-            rep(j, N)
-            {
+            for (int j = 0; j < N; ++j) {
               if (fence[j] == 0) {
                 myFence[i] = j;
                 humanMode[i] = 1;
@@ -475,8 +456,7 @@ public:
       }
 
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -509,7 +489,7 @@ public:
 
       // このターンの人間と柵の干渉チェック
       // 柵作成を優先するためコメントアウト
-      // rep(i, m) {
+      // for (int i = 0; i < m; ++i) {
       //   int x = -1, y = -1;
       //   if (outStr[i] == 'u') {
       //     x = hx[i] - 1;
@@ -528,7 +508,7 @@ public:
       //     y = hy[i] + 1;
       //   }
       //   if (x == -1) continue;
-      //   rep(j, m) {
+      //   for (int j = 0; j < m; ++j) {
       //     if (hx[j] == x && hy[j] == y) {
       //       outStr[i]  = '.';
       //       grid[x][y] = 0;
@@ -539,12 +519,10 @@ public:
       cout << outStr << endl;
       fflush(stdout);
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -603,12 +581,9 @@ public:
       {8,0,0,8,0,0,7,0,0,7,0,0,7,0,0,7,0,0,6,0,0,6,0,0,6,0,0,6,0,0}
     };
 
-    rep(i, N)
-    {
-      rep(j, N)
-      {
-        rep(k, 4)
-        {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
+        for (int k = 0; k < 4; ++k) {
           touch[i][j][k] = 0;
         }
       }
@@ -644,8 +619,7 @@ public:
     int humanMode[MAX_HUMAN] = {};
     // 目的の柵の列番号
     int myFence[MAX_HUMAN] = {};
-    rep(i, MAX_HUMAN)
-    {
+    for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
     // 徘徊する方向
@@ -660,8 +634,7 @@ public:
     */
     int finishFenceCount = 0;
     int fence[N] = {};
-    rep(i, N)
-    {
+    for (int i = 0; i < N; ++i) {
       if (i % 4 != 1) {
         fence[i] = 10;
         finishFenceCount++;
@@ -673,12 +646,10 @@ public:
       // cout << "# Solve2" << endl;
       string outStr;
       // 人間の行動
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         int getPetFlag = -1;
         grid[hx[i]][hy[i]] = 1;
-        rep(j, 4)
-        {
+        for (int j = 0; j < 4; ++j) {
           int nx = hx[i] + dx[j];
           int ny = hy[i] + dy[j];
           if (NgXY(nx, ny)) continue;
@@ -698,8 +669,7 @@ public:
         else if (finishFenceCount < N) {
           if (humanMode[i] == 0) {
             if (i % 2 == 0) {
-              rep(j, N)
-              {
+              for (int j = 0; j < N; ++j) {
                 if (fence[j] == 0) {
                   myFence[i] = j;
                   humanMode[i] = 1;
@@ -835,8 +805,7 @@ public:
       }
 
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -867,11 +836,9 @@ public:
         }
       }
 
-      rep(i, N)
-      {
+      for (int i = 0; i < N; ++i) {
         cout << "# ";
-        rep(j, N)
-        {
+        for (int j = 0; j < N; ++j) {
           cout << grid[i][j];
         }
         cout << endl;
@@ -880,12 +847,10 @@ public:
       cout << outStr << endl;
       fflush(stdout);
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -907,8 +872,7 @@ public:
       }
       else if (finish == 2) {
         int ok = 1;
-        rep(i, n)
-        {
+        for (int i = 0; i < n; ++i) {
           if (pt[i] != 4) continue;
           if (px[i] != 0) {
             ok = 0;
@@ -938,8 +902,7 @@ public:
         }
       }
       else {
-        rep(i, m)
-        {
+        for (int i = 0; i < m; ++i) {
           if (finish == 0) {
             if (i == 0) {
               int gx = -1, gy = -1;
@@ -1049,8 +1012,7 @@ public:
 
 
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -1090,8 +1052,7 @@ public:
       }
       else if (finish == 1) {
         int ok = 1;
-        rep(i, m)
-        {
+        for (int i = 0; i < m; ++i) {
           if (i % 2 == 0) {
             if (hx[i] != 0 || hy[i] != 0) {
               ok = 0;
@@ -1108,12 +1069,10 @@ public:
         }
       }
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -1146,8 +1105,7 @@ public:
     int humanMode[MAX_HUMAN] = {};
     // 目的の柵の列番号
     int myFence[MAX_HUMAN] = {};
-    rep(i, MAX_HUMAN)
-    {
+    for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
     // 徘徊する方向
@@ -1163,8 +1121,7 @@ public:
     int finishFenceCount = 0;
     int fenceU[N] = {};
     int fenceD[N] = {};
-    rep(i, N)
-    {
+    for (int i = 0; i < N; ++i) {
       if (i % 4 != 1) {
         fenceU[i] = 10;
         finishFenceCount++;
@@ -1178,12 +1135,10 @@ public:
       // cout << "# Solve2" << endl;
       string outStr;
       // 人間の行動
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         int getPetFlag = -1;
         grid[hx[i]][hy[i]] = 1;
-        rep(j, 4)
-        {
+        for (int j = 0; j < 4; ++j) {
           int nx = hx[i] + dx[j];
           int ny = hy[i] + dy[j];
           if (NgXY(nx, ny)) continue;
@@ -1203,8 +1158,7 @@ public:
         else if (finishFenceCount < N * 2) {
           if (humanMode[i] == 0) {
             if (i % 2 == 0) {
-              rep(j, N)
-              {
+              for (int j = 0; j < N; ++j) {
                 if (fenceU[j] == 0) {
                   myFence[i] = j;
                   humanMode[i] = 1;
@@ -1370,8 +1324,7 @@ public:
       }
 
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -1402,11 +1355,9 @@ public:
         }
       }
 
-      rep(i, N)
-      {
+      for (int i = 0; i < N; ++i) {
         cout << "# ";
-        rep(j, N)
-        {
+        for (int j = 0; j < N; ++j) {
           cout << grid[i][j];
         }
         cout << endl;
@@ -1415,12 +1366,10 @@ public:
       cout << outStr << endl;
       fflush(stdout);
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -1442,8 +1391,7 @@ public:
       }
       else if (finish == 2) {
         int ok = 1;
-        rep(i, n)
-        {
+        for (int i = 0; i < n; ++i) {
           if (pt[i] != 4) continue;
           if (px[i] != 0) {
             ok = 0;
@@ -1473,8 +1421,7 @@ public:
         }
       }
       else {
-        rep(i, m)
-        {
+        for (int i = 0; i < m; ++i) {
           if (finish == 0) {
             if (i == 0) {
               int gx = -1, gy = -1;
@@ -1584,8 +1531,7 @@ public:
 
 
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -1625,8 +1571,7 @@ public:
       }
       else if (finish == 1) {
         int ok = 1;
-        rep(i, m)
-        {
+        for (int i = 0; i < m; ++i) {
           if (i % 2 == 0) {
             if (hx[i] != 0 || hy[i] != 0) {
               ok = 0;
@@ -1643,12 +1588,10 @@ public:
         }
       }
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -1681,8 +1624,7 @@ public:
     int humanMode[MAX_HUMAN] = {};
     // 目的の柵の列番号
     int myFence[MAX_HUMAN] = {};
-    rep(i, MAX_HUMAN)
-    {
+    for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
     // 徘徊する方向
@@ -1698,8 +1640,7 @@ public:
     int finishFenceCount = 0;
     int fenceU[N] = {};
     int fenceD[N] = {};
-    rep(i, N)
-    {
+    for (int i = 0; i < N; ++i) {
       if (i % 4 != 1) {
         fenceU[i] = 10;
         finishFenceCount++;
@@ -1713,12 +1654,10 @@ public:
       // cout << "# Solve2" << endl;
       string outStr;
       // 人間の行動
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         int getPetFlag = -1;
         grid[hx[i]][hy[i]] = 1;
-        rep(j, 4)
-        {
+        for (int j = 0; j < 4; ++j) {
           int nx = hx[i] + dx[j];
           int ny = hy[i] + dy[j];
           if (NgXY(nx, ny)) continue;
@@ -1738,8 +1677,7 @@ public:
         else if (finishFenceCount < N * 2) {
           if (humanMode[i] == 0) {
             if (i % 2 == 0) {
-              rep(j, N)
-              {
+              for (int j = 0; j < N; ++j) {
                 if (fenceU[j] == 0) {
                   myFence[i] = j;
                   humanMode[i] = 1;
@@ -1905,8 +1843,7 @@ public:
       }
 
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -1937,11 +1874,9 @@ public:
         }
       }
 
-      rep(i, N)
-      {
+      for (int i = 0; i < N; ++i) {
         cout << "# ";
-        rep(j, N)
-        {
+        for (int j = 0; j < N; ++j) {
           cout << grid[i][j];
         }
         cout << endl;
@@ -1950,12 +1885,10 @@ public:
       cout << outStr << endl;
       fflush(stdout);
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -1977,8 +1910,7 @@ public:
       }
       else if (finish == 2) {
         int ok = 1;
-        rep(i, n)
-        {
+        for (int i = 0; i < n; ++i) {
           if (pt[i] != 4) continue;
           if (px[i] != 0) {
             ok = 0;
@@ -2008,8 +1940,7 @@ public:
         }
       }
       else {
-        rep(i, m)
-        {
+        for (int i = 0; i < m; ++i) {
           if (finish == 0) {
             if (i == 0) {
               int gx = -1, gy = -1;
@@ -2116,11 +2047,8 @@ public:
         }
       }
 
-
-
       // このターンの人間と柵の干渉チェック
-      rep(i, m)
-      {
+      for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
           if (grid[hx[i]][hy[i]] == 1) {
@@ -2160,8 +2088,7 @@ public:
       }
       else if (finish == 1) {
         int ok = 1;
-        rep(i, m)
-        {
+        for (int i = 0; i < m; ++i) {
           if (i % 2 == 0) {
             if (hx[i] != 0 || hy[i] != 0) {
               ok = 0;
@@ -2178,12 +2105,10 @@ public:
         }
       }
 
-      rep(i, n)
-      {
+      for (int i = 0; i < n; ++i) {
         string petMove;
         cin >> petMove;
-        rep(j, petMove.size())
-        {
+        for (int j = 0; j < petMove.size(); ++j) {
           if (petMove[j] == 'U') { px[i]--; }
           if (petMove[j] == 'D') { px[i]++; }
           if (petMove[j] == 'L') { py[i]--; }
@@ -2196,8 +2121,6 @@ public:
   }
 };
 
-
-
 // 入力受け取り
 void Input()
 {
@@ -2205,8 +2128,7 @@ void Input()
   ifstream ifs(fileNameIfs.c_str());
   if (!ifs.is_open()) {  // 標準入力する
     cin >> n;
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       int x, y, t;
       cin >> x >> y >> t;
       x--;
@@ -2216,8 +2138,7 @@ void Input()
       pt.push_back(t);
     }
     cin >> m;
-    rep(i, m)
-    {
+    for (int i = 0; i < m; ++i) {
       int x, y;
       cin >> x >> y;
       x--;
@@ -2228,8 +2149,7 @@ void Input()
   }
   else {  // ファイル入力する
     ifs >> n;
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       int x, y, t;
       ifs >> x >> y >> t;
       px.push_back(x);
@@ -2237,8 +2157,7 @@ void Input()
       pt.push_back(t);
     }
     ifs >> m;
-    rep(i, m)
-    {
+    for (int i = 0; i < m; ++i) {
       int x, y;
       ifs >> x >> y;
       hx.push_back(x);
@@ -2246,8 +2165,7 @@ void Input()
     }
   }
 
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     if (pt[i] == 4) {
       dogCount++;
     }
@@ -2285,9 +2203,6 @@ int Solve(int mode)
   return 0;
 }
 
-
-
-
 int main()
 {
   int mode = 0;
@@ -2300,4 +2215,3 @@ int main()
 
   return 0;
 }
-

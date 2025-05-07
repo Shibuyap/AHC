@@ -28,12 +28,9 @@
 #include <utility>
 #include <vector>
 
-// #include <atcoder/all>
-#define rep(i,n) for(int i = 0; i < (n); ++i)
 #define srep(i,s,t) for(int i = s; i < t; ++i)
 #define drep(i,n) for(int i = (n)-1; i >= 0; --i)
 using namespace std;
-// using namespace atcoder;
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<double, P> PDP;
@@ -131,26 +128,26 @@ namespace /* 行、列、切れ目の構造 */
 void ClearGlobalVariables()
 {
   scoreSumGlobal = 0;
-  rep(i, 2)rep(j, n + 1)rep(k, n + 1) dReal[i][j][k] = 0;
-  rep(i, Q)
+  for (int i = 0; i < 2; ++i)for (int j = 0; j < n + 1; ++j)for (int k = 0; k < n + 1; ++k) dReal[i][j][k] = 0;
+  for (int i = 0; i < Q; ++i)
   {
-    rep(j, n + 1)
+    for (int j = 0; j < n + 1; ++j)
     {
-      rep(k, n + 1)
+      for (int k = 0; k < n + 1; ++k)
       {
         VerticalSum[i][j][k] = 0;
         HorizontalSum[i][j][k] = 0;
       }
     }
   }
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     TurnUD[i].clear();
     TurnLR[i].clear();
   }
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       PathIDVectorLR[i][j].clear();
       PathIDVectorUD[i][j].clear();
@@ -170,7 +167,7 @@ int CalcScore(const int sx, const int sy, const string& ans, const double aValue
 {
   int x = sx, y = sy;
   int res = 0;
-  rep(i, ans.size())
+  for (int i = 0; i < ans.size(); ++i)
   {
     if (ans[i] == 'U') {
       res += dReal[0][x][y];
@@ -198,7 +195,7 @@ int nxt[n][n];
 
 void Dijkstra(int sx, int sy, int gx, int gy)
 {
-  rep(i, n) rep(j, n) dp[i][j] = INF;
+  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) dp[i][j] = INF;
   dp[sx][sy] = 0;
   priority_queue<PDP, vector<PDP>, greater<PDP>> que;
   p.first = 0;
@@ -213,7 +210,7 @@ void Dijkstra(int sx, int sy, int gx, int gy)
     double val = p.first;
     if (x == gx && y == gy) break;
     if (val > dp[x][y]) continue;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       int nx = x + dx[i];
       int ny = y + dy[i];
@@ -249,7 +246,7 @@ void Dijkstra(int sx, int sy, int gx, int gy)
 
 void Dijkstra2(int sx, int sy, int gx, int gy)
 {
-  rep(i, n) rep(j, n) dp[i][j] = INF;
+  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) dp[i][j] = INF;
   dp[sx][sy] = 0;
   priority_queue<PDP, vector<PDP>, greater<PDP>> que;
   p.first = 0;
@@ -264,7 +261,7 @@ void Dijkstra2(int sx, int sy, int gx, int gy)
     double val = p.first;
     if (x == gx && y == gy) break;
     if (val > dp[x][y]) continue;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       int nx = x + dx[i];
       int ny = y + dy[i];
@@ -327,15 +324,15 @@ int Solve(string iunputFileNum)
     inputMode = 0;
   }
   else {
-    rep(i, n) srep(j, 1, n) ifs >> dReal[1][i][j];
-    srep(i, 1, n) rep(j, n) ifs >> dReal[0][i][j];
+    for (int i = 0; i < n; ++i) srep(j, 1, n) ifs >> dReal[1][i][j];
+    srep(i, 1, n) for (int j = 0; j < n; ++j) ifs >> dReal[0][i][j];
   }
 
   string fileName = (string)"./out/" + iunputFileNum + "_out.txt";
   const char* cstr = fileName.c_str();
   ofstream ofs(cstr);
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     Upper[i] = initialD;
     Downer[i] = initialD;
@@ -346,7 +343,7 @@ int Solve(string iunputFileNum)
   }
   int timeOverFlag = 0;
   int ALLloop = 0;
-  rep(turn, Q)
+  for (int turn = 0; turn < Q; ++turn)
   {
     int sx, sy, gx, gy;
 
@@ -416,15 +413,15 @@ int Solve(string iunputFileNum)
     // 新しいデータ構造更新
     int tatePath[n + 1][n + 1];
     int yokoPath[n + 1][n + 1];
-    rep(i, n + 1)
+    for (int i = 0; i < n + 1; ++i)
     {
-      rep(j, n + 1)
+      for (int j = 0; j < n + 1; ++j)
       {
         tatePath[i][j] = 0;
         yokoPath[i][j] = 0;
       }
     }
-    rep(i, length)
+    for (int i = 0; i < length; ++i)
     {
       int nsx = sx;
       int nsy = sy;
@@ -444,7 +441,7 @@ int Solve(string iunputFileNum)
       sy += dy[v[i]];
     }
     sx = keepSx; sy = keepSy;
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       srep(i, 1, n)
       {
@@ -452,7 +449,7 @@ int Solve(string iunputFileNum)
       }
       if (VerticalSum[turn][n - 1][j]) TurnUD[j].push_back(turn);
     }
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       srep(j, 1, n)
       {
@@ -462,36 +459,36 @@ int Solve(string iunputFileNum)
     }
 
     DifferenceSum = 0;
-    rep(i, Q) DistEstimate[i] = 0;
-    rep(j, n)
+    for (int i = 0; i < Q; ++i) DistEstimate[i] = 0;
+    for (int j = 0; j < n; ++j)
     {
-      rep(i, TurnUD[j].size())
+      for (int i = 0; i < TurnUD[j].size(); ++i)
       {
         int turnID = TurnUD[j][i];
         DistEstimate[turnID] += Upper[j] * VerticalSum[turnID][CutUD[j]][j] + Downer[j] * (VerticalSum[turnID][n - 1][j] - VerticalSum[turnID][CutUD[j]][j]);
       }
     }
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(i, TurnLR[j].size())
+      for (int i = 0; i < TurnLR[j].size(); ++i)
       {
         int turnID = TurnLR[j][i];
         DistEstimate[turnID] += Lefter[j] * HorizontalSum[turnID][j][CutLR[j]] + Righter[j] * (HorizontalSum[turnID][j][n - 1] - HorizontalSum[turnID][j][CutLR[j]]);
       }
     }
-    rep(i, turn + 1)
+    for (int i = 0; i < turn + 1; ++i)
     {
       DifferenceSum += std::abs(DistResponce[i] - DistEstimate[i]) * (40000.0 / DistResponce[i]);
     }
 
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       DifferenceSum += std::abs(Upper[i] - Downer[i]) * SabunCostMultiple;
       DifferenceSum += std::abs(Lefter[i] - Righter[i]) * SabunCostMultiple;
     }
 
     double BestDifferenceSum = DifferenceSum;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       BestUpper[i] = Upper[i];
       BestDowner[i] = Downer[i];
@@ -506,7 +503,7 @@ int Solve(string iunputFileNum)
     double now_time = (double)(end - start) / CLOCKS_PER_SEC;
     double TL = 1.8;
 
-    rep(loop, loopTimes)
+    for (int loop = 0; loop < loopTimes; ++loop)
     {
       ALLloop++;
       if (loop % 100 == 1) {
@@ -539,7 +536,7 @@ int Solve(string iunputFileNum)
         double diff = 0;
 
         if (rULDR == 0) {
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = rA * VerticalSum[turnID][CutUD[rN]][rN];
@@ -548,7 +545,7 @@ int Solve(string iunputFileNum)
           diff += std::abs(Upper[rN] - Downer[rN]) * SabunCostMultiple - std::abs((Upper[rN] + rA) - Downer[rN]) * SabunCostMultiple;
         }
         if (rULDR == 1) {
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = rA * HorizontalSum[turnID][rN][CutLR[rN]];
@@ -557,7 +554,7 @@ int Solve(string iunputFileNum)
           diff += std::abs(Lefter[rN] - Righter[rN]) * SabunCostMultiple - std::abs((Lefter[rN] + rA) - Righter[rN]) * SabunCostMultiple;
         }
         if (rULDR == 2) {
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = rA * (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][CutUD[rN]][rN]);
@@ -566,7 +563,7 @@ int Solve(string iunputFileNum)
           diff += std::abs(Upper[rN] - Downer[rN]) * SabunCostMultiple - std::abs(Upper[rN] - (Downer[rN] + rA)) * SabunCostMultiple;
         }
         if (rULDR == 3) {
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = rA * (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][CutLR[rN]]);
@@ -581,7 +578,7 @@ int Solve(string iunputFileNum)
 
         if (prob > Rand01()) {
           if (rULDR == 0) {
-            rep(i, TurnUD[rN].size())
+            for (int i = 0; i < TurnUD[rN].size(); ++i)
             {
               int turnID = TurnUD[rN][i];
               double tmpDiff = rA * VerticalSum[turnID][CutUD[rN]][rN];
@@ -589,7 +586,7 @@ int Solve(string iunputFileNum)
             }
           }
           if (rULDR == 1) {
-            rep(i, TurnLR[rN].size())
+            for (int i = 0; i < TurnLR[rN].size(); ++i)
             {
               int turnID = TurnLR[rN][i];
               double tmpDiff = rA * HorizontalSum[turnID][rN][CutLR[rN]];
@@ -597,7 +594,7 @@ int Solve(string iunputFileNum)
             }
           }
           if (rULDR == 2) {
-            rep(i, TurnUD[rN].size())
+            for (int i = 0; i < TurnUD[rN].size(); ++i)
             {
               int turnID = TurnUD[rN][i];
               double tmpDiff = rA * (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][CutUD[rN]][rN]);
@@ -605,7 +602,7 @@ int Solve(string iunputFileNum)
             }
           }
           if (rULDR == 3) {
-            rep(i, TurnLR[rN].size())
+            for (int i = 0; i < TurnLR[rN].size(); ++i)
             {
               int turnID = TurnLR[rN][i];
               double tmpDiff = rA * (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][CutLR[rN]]);
@@ -636,7 +633,7 @@ int Solve(string iunputFileNum)
         double diff = 0;
 
         if (rUL == 0) {
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = rA * VerticalSum[turnID][n - 1][rN];
@@ -644,7 +641,7 @@ int Solve(string iunputFileNum)
           }
         }
         if (rUL == 1) {
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = rA * HorizontalSum[turnID][rN][n - 1];
@@ -658,7 +655,7 @@ int Solve(string iunputFileNum)
 
         if (prob > Rand01()) {
           if (rUL == 0) {
-            rep(i, TurnUD[rN].size())
+            for (int i = 0; i < TurnUD[rN].size(); ++i)
             {
               int turnID = TurnUD[rN][i];
               double tmpDiff = rA * VerticalSum[turnID][n - 1][rN];
@@ -666,7 +663,7 @@ int Solve(string iunputFileNum)
             }
           }
           if (rUL == 1) {
-            rep(i, TurnLR[rN].size())
+            for (int i = 0; i < TurnLR[rN].size(); ++i)
             {
               int turnID = TurnLR[rN][i];
               double tmpDiff = rA * HorizontalSum[turnID][rN][n - 1];
@@ -693,7 +690,7 @@ int Solve(string iunputFileNum)
         double diff = 0;
 
         if (rUL == 0) {
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = 0;
@@ -707,7 +704,7 @@ int Solve(string iunputFileNum)
           }
         }
         if (rUL == 1) {
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = 0;
@@ -728,7 +725,7 @@ int Solve(string iunputFileNum)
 
         if (prob > Rand01()) {
           if (rUL == 0) {
-            rep(i, TurnUD[rN].size())
+            for (int i = 0; i < TurnUD[rN].size(); ++i)
             {
               int turnID = TurnUD[rN][i];
               double tmpDiff = 0;
@@ -742,7 +739,7 @@ int Solve(string iunputFileNum)
             }
           }
           if (rUL == 1) {
-            rep(i, TurnLR[rN].size())
+            for (int i = 0; i < TurnLR[rN].size(); ++i)
             {
               int turnID = TurnLR[rN][i];
               double tmpDiff = 0;
@@ -769,7 +766,7 @@ int Solve(string iunputFileNum)
         int rN = Rand() % n;
         if (rUL == 0) {
           vector<double> amari;
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             amari.push_back(DistResponce[turnID] - (DistEstimate[turnID] - (Upper[rN] * VerticalSum[turnID][CutUD[rN]][rN] + Downer[rN] * (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][CutUD[rN]][rN]))));
@@ -778,7 +775,7 @@ int Solve(string iunputFileNum)
           int argmaxCutUD = CutUD[rN];
           double maxDiff = 0;
           int changeFlag = 0;
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             maxDiff += (abs(amari[i]) - std::abs(DistResponce[turnID] - DistEstimate[turnID])) * (40000.0 / DistResponce[turnID]);
@@ -786,12 +783,12 @@ int Solve(string iunputFileNum)
           double keepMaxDiff = maxDiff;
           srep(kugiri, 3, 27)
           {
-            rep(randomChallenge, 20)
+            for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge)
             {
               double rA = Rand() % 8001 + 1000;
 
               double countSum = 0;
-              rep(i, TurnUD[rN].size())
+              for (int i = 0; i < TurnUD[rN].size(); ++i)
               {
                 int turnID = TurnUD[rN][i];
                 if (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][kugiri][rN] == 0) vec[i].first = 1001001;
@@ -819,7 +816,7 @@ int Solve(string iunputFileNum)
               double DownValue = vec[ite].first;
               DownValue = max(DownValue, 1000.0);
               DownValue = min(DownValue, 9000.0);
-              rep(i, TurnUD[rN].size())
+              for (int i = 0; i < TurnUD[rN].size(); ++i)
               {
                 int turnID = TurnUD[rN][i];
                 tmpDiff += (abs(amari[i]) - std::abs(amari[i] - (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][kugiri][rN]) * DownValue)) * (40000.0 / DistResponce[turnID]);
@@ -837,7 +834,7 @@ int Solve(string iunputFileNum)
           }
           if (changeFlag == 0) continue;
           int kugiriDiff = argmaxCutUD - CutUD[rN];
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = 0;
@@ -851,7 +848,7 @@ int Solve(string iunputFileNum)
           }
           CutUD[rN] = argmaxCutUD;
           double UpperDiff = argmaxUpper - Upper[rN];
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = UpperDiff * VerticalSum[turnID][CutUD[rN]][rN];
@@ -859,7 +856,7 @@ int Solve(string iunputFileNum)
           }
           Upper[rN] = argmaxUpper;
           double DownerDiff = argmaxDowner - Downer[rN];
-          rep(i, TurnUD[rN].size())
+          for (int i = 0; i < TurnUD[rN].size(); ++i)
           {
             int turnID = TurnUD[rN][i];
             double tmpDiff = DownerDiff * (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][CutUD[rN]][rN]);
@@ -870,7 +867,7 @@ int Solve(string iunputFileNum)
         }
         else {
           vector<double> amari;
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             amari.push_back(DistResponce[turnID] - (DistEstimate[turnID] - (Lefter[rN] * HorizontalSum[turnID][rN][CutLR[rN]] + Righter[rN] * (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][CutLR[rN]]))));
@@ -879,7 +876,7 @@ int Solve(string iunputFileNum)
           int argmaxCutLR = CutLR[rN];
           double maxDiff = 0;
           int changeFlag = 0;
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             maxDiff += (abs(amari[i]) - std::abs(DistResponce[turnID] - DistEstimate[turnID])) * (40000.0 / DistResponce[turnID]);
@@ -887,11 +884,11 @@ int Solve(string iunputFileNum)
           double keepMaxDiff = maxDiff;
           srep(kugiri, 3, 27)
           {
-            rep(randomChallenge, 20)
+            for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge)
             {
               double rA = Rand() % 8001 + 1000;
               double countSum = 0;
-              rep(i, TurnLR[rN].size())
+              for (int i = 0; i < TurnLR[rN].size(); ++i)
               {
                 int turnID = TurnLR[rN][i];
                 if (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][kugiri] == 0) vec[i].first = 1001001;
@@ -919,7 +916,7 @@ int Solve(string iunputFileNum)
               double RightValue = vec[ite].first;
               RightValue = max(RightValue, 1000.0);
               RightValue = min(RightValue, 9000.0);
-              rep(i, TurnLR[rN].size())
+              for (int i = 0; i < TurnLR[rN].size(); ++i)
               {
                 int turnID = TurnLR[rN][i];
                 tmpDiff += (abs(amari[i]) - std::abs(amari[i] - (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][kugiri]) * RightValue)) * (40000.0 / DistResponce[turnID]);
@@ -937,7 +934,7 @@ int Solve(string iunputFileNum)
           }
           if (changeFlag == 0) continue;
           int kugiriDiff = argmaxCutLR - CutLR[rN];
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = 0;
@@ -951,7 +948,7 @@ int Solve(string iunputFileNum)
           }
           CutLR[rN] = argmaxCutLR;
           double LefterDiff = argmaxLefter - Lefter[rN];
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = LefterDiff * HorizontalSum[turnID][rN][CutLR[rN]];
@@ -959,7 +956,7 @@ int Solve(string iunputFileNum)
           }
           Lefter[rN] = argmaxLefter;
           double RighterDiff = argmaxRighter - Righter[rN];
-          rep(i, TurnLR[rN].size())
+          for (int i = 0; i < TurnLR[rN].size(); ++i)
           {
             int turnID = TurnLR[rN][i];
             double tmpDiff = RighterDiff * (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][CutLR[rN]]);
@@ -977,7 +974,7 @@ int Solve(string iunputFileNum)
     if (BestDifferenceSum < DifferenceSum) {
 
       DifferenceSum = BestDifferenceSum;
-      rep(i, n)
+      for (int i = 0; i < n; ++i)
       {
         Upper[i] = BestUpper[i];
         Downer[i] = BestDowner[i];
@@ -989,16 +986,16 @@ int Solve(string iunputFileNum)
 
     }
 
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         dUD[i][j] = 0;
         dLR[i][j] = 0;
       }
     }
 
-    rep(_, 20000)
+    for (int _ = 0; _ < 20000; ++_)
     {
       int rv = Rand() % 2;
       int rx = 0, ry = 0;
@@ -1031,14 +1028,14 @@ int Solve(string iunputFileNum)
       double diff = 0;
 
       if (rv == 0) {
-        rep(i, PathIDVectorUD[rx][ry].size())
+        for (int i = 0; i < PathIDVectorUD[rx][ry].size(); ++i)
         {
           int pathID = PathIDVectorUD[rx][ry][i];
           diff += (std::abs(DistResponce[pathID] - DistEstimate[pathID]) - std::abs(DistResponce[pathID] - (DistEstimate[pathID] + ra))) * (40000.0 / DistResponce[pathID]);
         }
       }
       else {
-        rep(i, PathIDVectorLR[rx][ry].size())
+        for (int i = 0; i < PathIDVectorLR[rx][ry].size(); ++i)
         {
           int pathID = PathIDVectorLR[rx][ry][i];
           diff += (std::abs(DistResponce[pathID] - DistEstimate[pathID]) - std::abs(DistResponce[pathID] - (DistEstimate[pathID] + ra))) * (40000.0 / DistResponce[pathID]);
@@ -1047,14 +1044,14 @@ int Solve(string iunputFileNum)
 
       if (diff > 0) {
         if (rv == 0) {
-          rep(i, PathIDVectorUD[rx][ry].size())
+          for (int i = 0; i < PathIDVectorUD[rx][ry].size(); ++i)
           {
             int pathID = PathIDVectorUD[rx][ry][i];
             DistEstimate[pathID] += ra;
           }
         }
         else {
-          rep(i, PathIDVectorLR[rx][ry].size())
+          for (int i = 0; i < PathIDVectorLR[rx][ry].size(); ++i)
           {
             int pathID = PathIDVectorLR[rx][ry][i];
             DistEstimate[pathID] += ra;
@@ -1075,23 +1072,23 @@ int Solve(string iunputFileNum)
     const char* cstrParam = fileNameParam.c_str();
     ofstream ofsParam(cstrParam);
     ofsParam << "Upper / Downer" << endl;
-    rep(i, n) ofsParam << i << ' ' << CutUD[i] << ' ' << Upper[i] << ' ' << Downer[i] << endl;
+    for (int i = 0; i < n; ++i) ofsParam << i << ' ' << CutUD[i] << ' ' << Upper[i] << ' ' << Downer[i] << endl;
     ofsParam << "Lefter / Righter" << endl;
-    rep(i, n) ofsParam << i << ' ' << CutLR[i] << ' ' << Lefter[i] << ' ' << Righter[i] << endl;
+    for (int i = 0; i < n; ++i) ofsParam << i << ' ' << CutLR[i] << ' ' << Lefter[i] << ' ' << Righter[i] << endl;
 
     ofsParam << "dUD" << endl;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         ofsParam << dUD[i][j] << ' ';
       }
       ofsParam << endl;
     }
     ofsParam << "dLR" << endl;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         ofsParam << dLR[i][j] << ' ';
       }
@@ -1137,7 +1134,7 @@ int main()
       ClearGlobalVariables();
     }
     sort(ranking.begin(), ranking.end());
-    rep(i, 10) cout << ranking[i].first << ' ' << ranking[i].second << endl;
+    for (int i = 0; i < 10; ++i) cout << ranking[i].first << ' ' << ranking[i].second << endl;
     cout << allScore << endl;
   }
 

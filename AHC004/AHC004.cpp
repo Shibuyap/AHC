@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -126,14 +125,14 @@ void generate_true_genome(int l, int m)
     }
   }
   true_genome_strs.clear();
-  rep(_, m) {
+  for (int _ = 0; _ < m; ++_) {
     string s;
 
     int i = rand_xorshift() % N;
     int j = rand_xorshift() % N;
     int dir = rand_xorshift() % 2;
     int len = rand_range((uint32_t)l - 2, (uint32_t)l + 2);
-    rep(k, len) {
+    for (int k = 0; k < len; ++k) {
       if (dir == 0) {
         s += true_genome[i][(j + k) % N];
       }
@@ -169,7 +168,8 @@ public:
   Patterns merged_patterns;
 
 public:
-  void initialize(vector<string> strs) {
+  void initialize(vector<string> strs)
+  {
     initial_patterns.vv_patterns.clear();
     initial_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = 0; i < strs.size(); i++) {
@@ -189,7 +189,8 @@ public:
     }
   }
 
-  void build_merge_patterns(double time_limit, int need_length) {
+  void build_merge_patterns(double time_limit, int need_length)
+  {
     vector<Pattern> patterns_tmp;
     for (auto& v_patterns : initial_patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
@@ -199,9 +200,9 @@ public:
 
     {
       vector<Pattern> patterns_tmp_2;
-      rep(i, patterns_tmp.size()) {
+      for (int i = 0; i < patterns_tmp.size(); ++i) {
         bool skip = false;
-        rep(j, patterns_tmp.size()) {
+        for (int j = 0; j < patterns_tmp.size(); ++j) {
           if (i == j) {
             continue;
           }
@@ -210,7 +211,7 @@ public:
           if (p1.size() > p2.size()) {
             continue;
           }
-          rep(k, p2.size() - p1.size() + 1) {
+          for (int k = 0; k < p2.size() - p1.size() + 1; ++k) {
             bool ok = true;
             for (int l = 0; l < p1.size(); l++) {
               if (p1[l] != p2[l + k]) {
@@ -245,17 +246,19 @@ public:
       int diff = 0;
       int max_len = 0;
       int max_min_len = 9999;
-      drep(i, patterns_tmp.size()) {
+      drep(i, patterns_tmp.size())
+      {
         int size_i = patterns_tmp[i].pattern.size();
         if (size_i < max_len) {
           continue;
         }
-        drep(j, patterns_tmp.size()) {
+        drep(j, patterns_tmp.size())
+        {
           if (i == j) {
             continue;
           }
           int size_j = patterns_tmp[j].pattern.size();
-          rep(k, size_i) {
+          for (int k = 0; k < size_i; ++k) {
             int new_len = min(size_i - k, size_j);
             int new_len2 = max(0, size_j + k - N);
             if (new_len + new_len2 <= max_len) {
@@ -293,7 +296,7 @@ public:
                 idx2 = j;
                 diff = k;
               }
-              else if (new_len + new_len2 == max_len && max(size_j,size_j) < max_min_len) {
+              else if (new_len + new_len2 == max_len && max(size_j, size_j) < max_min_len) {
                 max_len = new_len + new_len2;
                 max_min_len = max(size_i, size_j);
                 idx1 = i;
@@ -314,7 +317,7 @@ public:
 
       Pattern merged_pattern = patterns_tmp[idx1];
       int size_j = patterns_tmp[idx2].pattern.size();
-      rep(k, size_j) {
+      for (int k = 0; k < size_j; ++k) {
         if (merged_pattern.pattern.size() >= MAX_PATTERN_LENGTH) {
           break;
         }
@@ -364,11 +367,13 @@ private:
   bool col_flags[N][N];
 
 public:
-  MatchedFlag() {
+  MatchedFlag()
+  {
     clear();
   }
 
-  void clear() {
+  void clear()
+  {
     count = 0;
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
@@ -378,7 +383,8 @@ public:
     }
   }
 
-  void set_flag(int row, int col, int dir, bool b) {
+  void set_flag(int row, int col, int dir, bool b)
+  {
     if (dir == 0) {
       count -= row_flags[row][col];
       row_flags[row][col] = b;
@@ -391,7 +397,8 @@ public:
     }
   }
 
-  int get_count() {
+  int get_count()
+  {
     return count;
   }
 };
@@ -406,7 +413,8 @@ public:
   vector<vector<MatchedFlag>> matched_flags;
 
   State() = delete;
-  State(PatternsManager& p) : patterns(p) {
+  State(PatternsManager& p) : patterns(p)
+  {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         grid[i][j] = 0;
@@ -416,7 +424,8 @@ public:
     reset_matched_flags(patterns.initial_patterns);
   }
 
-  void generate_empty() {
+  void generate_empty()
+  {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         grid[i][j] = CHARACTER_SIZE;
@@ -424,7 +433,8 @@ public:
     }
   }
 
-  void generate_random() {
+  void generate_random()
+  {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         grid[i][j] = rand_xorshift() % CHARACTER_SIZE;
@@ -432,7 +442,8 @@ public:
     }
   }
 
-  void generate_random_empty() {
+  void generate_random_empty()
+  {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         if (grid[i][j] == CHARACTER_SIZE) {
@@ -442,7 +453,8 @@ public:
     }
   }
 
-  void greedy_after_assemble(const Patterns& patterns) {
+  void greedy_after_assemble(const Patterns& patterns)
+  {
     recalc_all(patterns);
 
     // 置けてないパターンを長い順に置けるところに置いていく
@@ -453,19 +465,19 @@ public:
         }
 
         int ok = 0;
-        rep(i, N) {
-          rep(j, N) {
+        for (int i = 0; i < N; ++i) {
+          for (int j = 0; j < N; ++j) {
             // 行に置けるか
             {
               ok = 1;
-              rep(k, len) {
+              for (int k = 0; k < len; ++k) {
                 if (patterns.vv_patterns[len][pat_index].pattern[k] != grid[i][(j + k) % N] && grid[i][(j + k) % N] != CHARACTER_SIZE) {
                   ok = 0;
                   break;
                 }
               }
               if (ok) {
-                rep(k, len) {
+                for (int k = 0; k < len; ++k) {
                   grid[i][(j + k) % N] = patterns.vv_patterns[len][pat_index].pattern[k];
                 }
                 break;
@@ -474,14 +486,14 @@ public:
             // 列に置けるか
             {
               ok = 1;
-              rep(k, len) {
+              for (int k = 0; k < len; ++k) {
                 if (patterns.vv_patterns[len][pat_index].pattern[k] != grid[(i + k) % N][j] && grid[(i + k) % N][j] != CHARACTER_SIZE) {
                   ok = 0;
                   break;
                 }
               }
               if (ok) {
-                rep(k, len) {
+                for (int k = 0; k < len; ++k) {
                   grid[(i + k) % N][j] = patterns.vv_patterns[len][pat_index].pattern[k];
                 }
                 break;
@@ -496,7 +508,8 @@ public:
     }
   }
 
-  void reset_matched_flags(const Patterns& patterns) {
+  void reset_matched_flags(const Patterns& patterns)
+  {
     matched_flags.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       matched_flags[i].resize(patterns.vv_patterns[i].size());
@@ -508,14 +521,15 @@ public:
     matched_count = 0;
   }
 
-  void recalc_all(const Patterns& patterns, bool rough = false) {
+  void recalc_all(const Patterns& patterns, bool rough = false)
+  {
     reset_matched_flags(patterns);
 
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         matched_flags[i][j].clear();
-        rep(k, N) {
-          rep(l, N) {
+        for (int k = 0; k < N; ++k) {
+          for (int l = 0; l < N; ++l) {
             matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 0));
             matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 1));
             if (rough && matched_flags[i][j].get_count() > 0) {
@@ -539,13 +553,14 @@ public:
     }
   }
 
-  void update_one_point(int row, int col, const Patterns& patterns) {
+  void update_one_point(int row, int col, const Patterns& patterns)
+  {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         if (matched_flags[i][j].get_count() > 0) {
           matched_count -= patterns.vv_patterns[i][j].merged_count;
         }
-        rep(k, i) {
+        for (int k = 0; k < i; ++k) {
           matched_flags[i][j].set_flag(row, (col + N - k) % N, 0, is_matched(row, (col + N - k) % N, patterns.vv_patterns[i][j].pattern, 0));
           matched_flags[i][j].set_flag((row + N - k) % N, col, 1, is_matched((row + N - k) % N, col, patterns.vv_patterns[i][j].pattern, 1));
         }
@@ -556,13 +571,16 @@ public:
     }
   }
 
-  ll get_score(const Patterns& patterns) {
+  ll get_score(const Patterns& patterns)
+  {
     return PERFECT_SCORE * matched_count / patterns.pattern_count;
   }
 
-  void assemble(double time_limit, const Patterns& patterns) {
+  void assemble(double time_limit, const Patterns& patterns)
+  {
     vector<vector<int>> vv;
-    drep(i, MAX_PATTERN_LENGTH + 1) {
+    drep(i, MAX_PATTERN_LENGTH + 1)
+    {
       for (auto& pattern : patterns.vv_patterns[i]) {
         vv.push_back(pattern.pattern);
         if (vv.size() == N * 2) {
@@ -575,15 +593,15 @@ public:
     }
 
     vector<vector<vector<P>>> prefixMaps;
-    rep(i, 6) {
+    for (int i = 0; i < 6; ++i) {
       prefixMaps.push_back(vector<vector<P>>(1 << (i * 3)));
       if (i == 0) {
         continue;
       }
-      rep(j, vv.size()) {
-        rep(k, vv[j].size()) {
+      for (int j = 0; j < vv.size(); ++j) {
+        for (int k = 0; k < vv[j].size(); ++k) {
           int num = 0;
-          rep(l, i) {
+          for (int l = 0; l < i; ++l) {
             num *= CHARACTER_SIZE;
             num += vv[j][(k + l) % vv[j].size()];
           }
@@ -600,8 +618,8 @@ public:
     int best_score = -1;
 
     int g[N][N];
-    rep(i, N) {
-      rep(j, N) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         g[i][j] = CHARACTER_SIZE;
         best_g[i][j] = CHARACTER_SIZE;
         grid[i][j] = 0;
@@ -619,48 +637,50 @@ public:
 
     int ii_num = vv.size();
 
-    rep(ii, ii_num) {
+    for (int ii = 0; ii < ii_num; ++ii) {
       int no_start_count = 0;
 
-      srep(i, 0, vv.size()) {
-        srep(j, 0, vv.size()) {
+      srep(i, 0, vv.size())
+      {
+        srep(j, 0, vv.size())
+        {
           if (i == j || ii == i || ii == j) {
             continue;
           }
           if (get_elapsed_time() > time_limit) {
             break;
           }
-          rep(k, N) {
+          for (int k = 0; k < N; ++k) {
             if (get_elapsed_time() > time_limit) {
               break;
             }
-            rep(l, N) {
+            for (int l = 0; l < N; ++l) {
               //if (get_elapsed_time() > time_limit) {
               //  break;
               //}
 
               // 2行目と3行目をセット
-              rep(m, N) {
+              for (int m = 0; m < N; ++m) {
                 g[0][m] = CHARACTER_SIZE;
                 g[1][m] = CHARACTER_SIZE;
                 g[2][m] = CHARACTER_SIZE;
               }
-              rep(j, vv[ii].size()) {
+              for (int j = 0; j < vv[ii].size(); ++j) {
                 g[0][j] = vv[ii][j];
               }
-              rep(m, vv[i].size()) {
+              for (int m = 0; m < vv[i].size(); ++m) {
                 g[1][(k + m) % N] = vv[i][m];
               }
-              rep(m, vv[j].size()) {
+              for (int m = 0; m < vv[j].size(); ++m) {
                 g[2][(l + m) % N] = vv[j][m];
               }
 
               // 各列を決定していく
-              rep(m, N) {
+              for (int m = 0; m < N; ++m) {
                 decided_col[m] = -1;
               }
               decided_col_count = 0;
-              rep(m, N * 2) {
+              for (int m = 0; m < N * 2; ++m) {
                 used[m] = -1;
               }
               used_version++;
@@ -671,7 +691,7 @@ public:
               const int NG_SAFE = 0;
               while (true) {
                 bool has_change = false;
-                rep(m, N) {
+                for (int m = 0; m < N; ++m) {
                   if (decided_col[m] != -1) {
                     continue;
                   }
@@ -723,10 +743,10 @@ public:
 
               // 失敗したら元に戻す
               if (ng_count > NG_SAFE) {
-                rep(m, vv[i].size()) {
+                for (int m = 0; m < vv[i].size(); ++m) {
                   g[1][(k + m) % N] = CHARACTER_SIZE;
                 }
-                rep(m, vv[j].size()) {
+                for (int m = 0; m < vv[j].size(); ++m) {
                   g[2][(l + m) % N] = CHARACTER_SIZE;
                 }
                 used_version++;
@@ -736,9 +756,9 @@ public:
               // 行決定に使う列を決定する
               const int COL_LENGTH = 1;
               int start_col = -1;
-              rep(m, N) {
+              for (int m = 0; m < N; ++m) {
                 bool ok = true;
-                rep(n, COL_LENGTH) {
+                for (int n = 0; n < COL_LENGTH; ++n) {
                   if (decided_col[(m + n) % N] == -1) {
                     ok = false;
                     break;
@@ -750,9 +770,9 @@ public:
                 }
               }
               if (start_col != -1) {
-                rep(mm, COL_LENGTH) {
+                for (int mm = 0; mm < COL_LENGTH; ++mm) {
                   int m = (start_col + mm) % N;
-                  rep(n, N) {
+                  for (int n = 0; n < N; ++n) {
                     int idx = (decided_col_2[m] + n) % N;
                     if (idx < vv[decided_col[m]].size()) {
                       if (g[n][m] != vv[decided_col[m]][idx] && g[n][m] != CHARACTER_SIZE) {
@@ -773,21 +793,22 @@ public:
               }
 
               // 各行を決定していく
-              rep(m, N) {
+              for (int m = 0; m < N; ++m) {
                 decided_row[m] = -1;
               }
               decided_row_count = 0;
               ng_count = start_col == -1;
               while (ng_count == 0) {
                 bool has_change = false;
-                srep(m, 3, N) {
+                srep(m, 3, N)
+                {
                   if (decided_row[m] != -1) {
                     continue;
                   }
 
                   bool is_blank = false;
                   int num = 0;
-                  rep(n, COL_LENGTH) {
+                  for (int n = 0; n < COL_LENGTH; ++n) {
                     if (g[m][(start_col + n) % N] == CHARACTER_SIZE) {
                       is_blank = true;
                       break;
@@ -808,7 +829,7 @@ public:
 
                     bool is_ok = true;
 
-                    rep(n, N) {
+                    for (int n = 0; n < N; ++n) {
                       if (decided_col[n] != -1) {
                         int idx_col = (decided_col_2[n] + m) % N;
                         int idx_row = (pre.second + n + N - start_col) % N;
@@ -856,14 +877,14 @@ public:
 
               int score = 0;
               if (ng_count == 0) {
-                rep(n, N) {
+                for (int n = 0; n < N; ++n) {
                   if (n < 3) {
-                    rep(m, N) {
+                    for (int m = 0; m < N; ++m) {
                       grid[n][m] = g[n][m];
                     }
                   }
                   else {
-                    rep(m, N) {
+                    for (int m = 0; m < N; ++m) {
                       if (decided_col[m] != -1) {
                         int idx = (decided_col_2[m] + n) % N;
                         grid[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
@@ -875,9 +896,10 @@ public:
                   }
                 }
 
-                srep(n, 3, N) {
+                srep(n, 3, N)
+                {
                   if (decided_row[n] != -1) {
-                    rep(m, N) {
+                    for (int m = 0; m < N; ++m) {
                       int idx = (decided_row_2[n] + m) % N;
                       if (idx < vv[decided_row[n]].size()) {
                         grid[n][(start_col + m) % N] = vv[decided_row[n]][idx];
@@ -892,14 +914,14 @@ public:
 
               if (score > best_score) {
                 best_score = score;
-                rep(n, N) {
+                for (int n = 0; n < N; ++n) {
                   if (n < 3) {
-                    rep(m, N) {
+                    for (int m = 0; m < N; ++m) {
                       best_g[n][m] = g[n][m];
                     }
                   }
                   else {
-                    rep(m, N) {
+                    for (int m = 0; m < N; ++m) {
                       if (decided_col[m] != -1) {
                         int idx = (decided_col_2[m] + n) % N;
                         best_g[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
@@ -911,9 +933,10 @@ public:
                   }
                 }
 
-                srep(n, 3, N) {
+                srep(n, 3, N)
+                {
                   if (decided_row[n] != -1) {
-                    rep(m, N) {
+                    for (int m = 0; m < N; ++m) {
                       int idx = (decided_row_2[n] + m) % N;
                       if (idx < vv[decided_row[n]].size()) {
                         best_g[n][(start_col + m) % N] = vv[decided_row[n]][idx];
@@ -928,16 +951,17 @@ public:
               }
 
               // 後片付け
-              rep(m, vv[i].size()) {
+              for (int m = 0; m < vv[i].size(); ++m) {
                 g[1][(k + m) % N] = CHARACTER_SIZE;
               }
-              rep(m, vv[j].size()) {
+              for (int m = 0; m < vv[j].size(); ++m) {
                 g[2][(l + m) % N] = CHARACTER_SIZE;
               }
               if (start_col != -1) {
-                rep(m, COL_LENGTH) {
+                for (int m = 0; m < COL_LENGTH; ++m) {
                   int m2 = (start_col + m) % N;
-                  srep(n, 1, N) {
+                  srep(n, 1, N)
+                  {
                     g[n][m2] = CHARACTER_SIZE;
                   }
                 }
@@ -955,15 +979,16 @@ public:
       }
     }
 
-    rep(i, N) {
-      rep(j, N) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         grid[i][j] = best_g[i][j];
       }
     }
   }
 
 private:
-  bool is_matched(int row, int col, const vector<int>& vec, int dir) {
+  bool is_matched(int row, int col, const vector<int>& vec, int dir)
+  {
     if (dir == 0) {
       for (int i = 0; i < vec.size(); i++) {
         if (grid[row][(col + i) % N] != vec[i]) {
@@ -981,15 +1006,16 @@ private:
     return true;
   }
 
-  void check_true_genome() {
+  void check_true_genome()
+  {
     int ma = 0;
     int ma_grid[N][N];
 
-    rep(si, N) {
-      rep(sj, N) {
+    for (int si = 0; si < N; ++si) {
+      for (int sj = 0; sj < N; ++sj) {
         int tmp = 0;
-        rep(i, N) {
-          rep(j, N) {
+        for (int i = 0; i < N; ++i) {
+          for (int j = 0; j < N; ++j) {
             if (grid[(si + i) % N][(sj + j) % N] != true_genome[i][j] - 'A') {
             }
             else {
@@ -1000,8 +1026,8 @@ private:
 
         if (tmp > ma) {
           ma = tmp;
-          rep(i, N) {
-            rep(j, N) {
+          for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
               ma_grid[i][j] = grid[(si + i) % N][(sj + j) % N];
             }
           }
@@ -1019,11 +1045,11 @@ private:
       }
     }
 
-    rep(si, N) {
-      rep(sj, N) {
+    for (int si = 0; si < N; ++si) {
+      for (int sj = 0; sj < N; ++sj) {
         int tmp = 0;
-        rep(i, N) {
-          rep(j, N) {
+        for (int i = 0; i < N; ++i) {
+          for (int j = 0; j < N; ++j) {
             if (grid[(si + i) % N][(sj + j) % N] != true_genome[i][j] - 'A') {
             }
             else {
@@ -1034,8 +1060,8 @@ private:
 
         if (tmp > ma) {
           ma = tmp;
-          rep(i, N) {
-            rep(j, N) {
+          for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
               ma_grid[i][j] = grid[(si + i) % N][(sj + j) % N];
             }
           }
@@ -1053,12 +1079,12 @@ private:
     }
 
     cout << "Best Score: " << ma << endl;
-    rep(i, N) {
-      rep(j, N) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         cout << (char)(ma_grid[i][j] + 'A');
       }
       cout << ' ';
-      rep(j, N) {
+      for (int j = 0; j < N; ++j) {
         cout << true_genome[i][j];
       }
       cout << endl;
@@ -1085,8 +1111,7 @@ void input_data(int case_num, PatternsManager& patterns_manager)
   else if (!ifs.is_open()) {
     // 標準入力
     cin >> _n >> _m;
-    rep(i, _m)
-    {
+    for (int i = 0; i < _m; ++i) {
       string s;
       cin >> s;
       vs.push_back(s);
@@ -1095,8 +1120,7 @@ void input_data(int case_num, PatternsManager& patterns_manager)
   else {
     // ファイル入力
     ifs >> _n >> _m;
-    rep(i, _m)
-    {
+    for (int i = 0; i < _m; ++i) {
       string s;
       ifs >> s;
       vs.push_back(s);
@@ -1132,10 +1156,8 @@ void output_data(ofstream& ofs, State& state)
 {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, N)
-    {
-      rep(j, N)
-      {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         if (state.grid[i][j] == CHARACTER_SIZE) {
           cout << '.';
         }
@@ -1148,10 +1170,8 @@ void output_data(ofstream& ofs, State& state)
   }
   else {
     // ファイル出力
-    rep(i, N)
-    {
-      rep(j, N)
-      {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         if (state.grid[i][j] == CHARACTER_SIZE) {
           ofs << '.';
         }
@@ -1314,7 +1334,8 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
   }
 }
 
-ll solve_2(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state) {
+ll solve_2(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state)
+{
   patterns_manager.build_merge_patterns(TIME_LIMIT * 0.4, 0);
   cout << "build_merge_patterns : " << get_elapsed_time() << " sec" << endl;
   state.assemble(TIME_LIMIT * 0.5, patterns_manager.merged_patterns);
@@ -1341,10 +1362,8 @@ ll solve_2(AnnealingParams annealingParams, PatternsManager& patterns_manager, S
   }
 
   if (exec_mode >= 3 && exec_mode != 4) {
-    rep(i, N)
-    {
-      rep(j, N)
-      {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         if (state.grid[i][j] == CHARACTER_SIZE) {
           cerr << '.';
         }
