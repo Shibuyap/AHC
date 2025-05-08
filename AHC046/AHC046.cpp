@@ -1,4 +1,4 @@
-#include <algorithm>
+Ôªø#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -35,7 +35,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// É^ÉCÉ}Å[
+// „Çø„Ç§„Éû„Éº
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -50,7 +50,7 @@ namespace
   }
 }
 
-// óêêî
+// ‰π±Êï∞
 namespace
 {
   static uint32_t rand_xorshift() {
@@ -88,7 +88,7 @@ namespace
   }
 }
 
-// 2éüå≥ÉLÉÖÅ[ÇÃÉNÉâÉX
+// 2Ê¨°ÂÖÉ„Ç≠„É•„Éº„ÅÆ„ÇØ„É©„Çπ
 class Queue2D
 {
 private:
@@ -98,7 +98,7 @@ private:
   int tail;
 
 public:
-  // ÉRÉìÉXÉgÉâÉNÉ^
+  // „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
   Queue2D() : head(0), tail(0) {
   }
 
@@ -299,14 +299,14 @@ static Board input_data(int case_num) {
 
   int _n, _m;
   if (!ifs.is_open()) {
-    // ïWèÄì¸óÕ
+    // Ê®ôÊ∫ñÂÖ•Âäõ
     cin >> _n >> _m;
     for (int i = 0; i < (m); ++i) {
       cin >> board.X[i] >> board.Y[i];
     }
   }
   else {
-    // ÉtÉ@ÉCÉãì¸óÕ
+    // „Éï„Ç°„Ç§„É´ÂÖ•Âäõ
     ifs >> _n >> _m;
     for (int i = 0; i < (m); ++i) {
       ifs >> board.X[i] >> board.Y[i];
@@ -327,13 +327,13 @@ static int calculate_score(const Answer& answer) {
 
 static void output_data(int case_num, const Answer& answer) {
   if (exec_mode == 0) {
-    // ïWèÄèoóÕ
+    // Ê®ôÊ∫ñÂá∫Âäõ
     for (int i = 0; i < (answer.ans_count); ++i) {
       cout << C[answer.ans[i][0]] << ' ' << MOVE[answer.ans[i][1]] << endl;
     }
   }
   else {
-    // ÉtÉ@ÉCÉãèoóÕ
+    // „Éï„Ç°„Ç§„É´Âá∫Âäõ
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -499,6 +499,41 @@ private:
     return calculate_score(answer);
   }
 
+  void eliminate_unused_rock(Board& board, Answer& answer) {
+    board.init_board();
+    create_ans(answer, board);
+
+    for (int i = 0; i < m; i++) {
+      int x = board.X[i];
+      int y = board.Y[i];
+      for (int j = 0; j < (4); ++j) {
+        if (answer.add_flags[i][j] == 1) {
+          int nx = x + DX[j];
+          int ny = y + DY[j];
+          if (board.board[nx][ny] != -2) {
+            answer.add_flags[i][j] = 0;
+          }
+        }
+      }
+    }
+
+    for (int i = 0; i < n + 2; ++i) {
+      for (int j = 0; j < n + 2; ++j) {
+        for (int k = 0; k < m; ++k) {
+          for (int l = 0; l < 4; ++l) {
+            if (answer.add_flags_2[i][j][k][l] == 1) {
+              int nx = i + DX[l];
+              int ny = j + DY[l];
+              if (board.board[nx][ny] != -2) {
+                answer.add_flags_2[i][j][k][l] = 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   Answer build_initial_solution_2(Board& board) {
     Answer answer;
     answer.initialize_state();
@@ -544,83 +579,121 @@ private:
     }
   }
 
-  void run_simulated_annealing(Board& board, Answer& answer, const AnnealingParams& annealingParams) {
-    Answer best_answer;
-    best_answer.Copy(answer);
+  //------------------------------------------------------------------------------
+  // Helper types
+  //------------------------------------------------------------------------------
+  enum class OpType
+  {
+    OP1, OP2, OP3
+  };
 
-    double now_time = get_elapsed_time();
-    const double START_TEMP = annealingParams.start_temperature[0];
-    const double END_TEMP = annealingParams.end_temperature;
+  struct OperationCtx
+  {
+    OpType type;
+    int a1{ -1 }, a2{ -1 }, a3{ -1 }, a4{ -1 }, a5{ -1 }; // indices used by each op
+  };
+
+  // Pick an operation type from thresholds
+  inline OpType pick_op(uint32_t rnd, const int th[3]) {
+    return (rnd < th[0]) ? OpType::OP1
+      : (rnd < th[1]) ? OpType::OP2
+      : OpType::OP3;
+  }
+
+  //------------------------------------------------------------------------------
+  // "Apply" & "Rollback" of neighbourhood moves ------------------------------
+  //------------------------------------------------------------------------------
+
+  // Return false when OP3 aborts (ra2 == -1)
+  bool apply_op(OperationCtx& ctx, Answer& ans, const Answer& best, Board& board, uint32_t(*rnd)()) {
+    switch (ctx.type) {
+    case OpType::OP1:
+    {
+      ctx.a1 = rnd() % (m - 1);
+      ctx.a2 = rnd() % 4;
+      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
+      return true;
+    }
+    case OpType::OP2:
+    {
+      ctx.a1 = rnd() % (best.ans_count - 1);
+      ctx.a2 = rnd() % 4;
+      int _1, _2, _3, _4;
+      simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a5, ctx.a1, _1, _2, _3, _4);
+      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      return true;
+    }
+    case OpType::OP3:
+    {
+      ctx.a1 = rnd() % (best.ans_count - 1);
+      int _1, _2, _3;
+      simulate_best(board, ans, best, _1, _2, _3, ctx.a1, ctx.a2, ctx.a3, ctx.a4, ctx.a5);
+      if (ctx.a2 == -1) return false;              // abort ‚Äì same as original
+      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+      return true;
+    }
+    }
+    return false; // never reached
+  }
+
+  // Rollback ‚Äì mirror image of apply_op()
+  void rollback_op(const OperationCtx& ctx, Answer& ans) {
+    switch (ctx.type) {
+    case OpType::OP1:
+      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
+      break;
+    case OpType::OP2:
+      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      break;
+    case OpType::OP3:
+      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+      break;
+    }
+  }
+
+  //==============================================================================
+  //  Main function ‚Äì behaviour‚Äëpreserving refactor
+  //==============================================================================
+  void run_simulated_annealing(Board& board, Answer& answer, const AnnealingParams& param) {
+    Answer best = answer;               // working best solution
+
+    const double START_TEMP = param.start_temperature[0];
+    const double END_TEMP = param.end_temperature;
 
     int loop = 0;
     while (true) {
-      loop++;
-
-      if (loop % 1 == 0) {
-        now_time = get_elapsed_time();
-        if (now_time > TIME_LIMIT) break;
+      ++loop;
+      if ((loop & 0xFF) == 0) {       // update every 256 iters
+        if (get_elapsed_time() > TIME_LIMIT) break;
       }
 
-      double progress_ratio = now_time / TIME_LIMIT;
-      double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+      const double progress = get_elapsed_time() / TIME_LIMIT;
+      const double temp = std::lerp(START_TEMP, END_TEMP, progress);
 
-      // ãﬂñTâçÏê¨
-      int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[2];
-      int ra1, ra2, ra3, ra4, ra5;
-
-      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ãﬂñTëÄçÏ1
-        ra1 = rand_xorshift() % (m - 1);
-        ra2 = rand_xorshift() % 4;
-        answer.add_flags[ra1][ra2] = 1 - answer.add_flags[ra1][ra2];
-      }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ãﬂñTëÄçÏ2
-        ra1 = rand_xorshift() % (best_answer.ans_count - 10);
-        ra2 = rand_xorshift() % 4;
-        int _1, _2, _3, _4;
-        simulate_best(board, answer, best_answer, ra3, ra4, ra5, ra1, _1, _2, _3, _4);
-        answer.add_flags_2[ra3][ra4][ra5][ra2] = 1 - answer.add_flags_2[ra3][ra4][ra5][ra2];
-      }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-        // ãﬂñTëÄçÏ3
-        ra1 = rand_xorshift() % (best_answer.ans_count - 10);
-        int _1, _2, _3;
-        simulate_best(board, answer, best_answer, _1, _2, _3, ra1, ra2, ra3, ra4, ra5);
-        if (ra2 == -1)continue;
-        answer.add_flags_2[ra2][ra3][ra5][ra4] = 1 - answer.add_flags_2[ra2][ra3][ra5][ra4];
+      if (rand_xorshift() % 100 == 0) {
+        eliminate_unused_rock(board, answer);
+        continue;
       }
 
-      // ÉXÉRÉAåvéZ
+      // ---------- generate & apply neighbourhood move ----------
+      OperationCtx op;
+      op.type = pick_op(rand_xorshift() % param.operation_thresholds[2], param.operation_thresholds);
+      if (!apply_op(op, answer, best, board, rand_xorshift)) continue;
+
+      // ---------- evaluate new solution ----------
       board.init_board();
-      double tmp_score = create_ans(answer, board);
+      double new_score = create_ans(answer, board);
 
-      // èƒÇ´Ç»Ç‹ÇµÇ≈çÃópîªíË
-      double diff_score = (tmp_score - answer.current_score) * annealingParams.score_scale;
-      double prob = exp(diff_score / temp);
-      if (prob > rand_01()) {
-        // çÃóp
-        answer.current_score = tmp_score;
+      // ---------- metropolis criterion ----------
+      double diff = (new_score - answer.current_score) * param.score_scale;
+      const bool accept = std::exp(diff / temp) > rand_01();
 
-        // ÉxÉXÉgçXêV
-        if (answer.current_score > best_answer.current_score) {
-          best_answer.Copy(answer);
-        }
+      if (accept) {
+        answer.current_score = new_score;
+        if (new_score > best.current_score) best.Copy(answer);
       }
       else {
-        // å≥Ç…ñﬂÇ∑
-        if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-          // ãﬂñTëÄçÏ1 ÇÃä™Ç´ñﬂÇµ
-          answer.add_flags[ra1][ra2] = 1 - answer.add_flags[ra1][ra2];
-        }
-        else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-          // ãﬂñTëÄçÏ2 ÇÃä™Ç´ñﬂÇµ
-          answer.add_flags_2[ra3][ra4][ra5][ra2] = 1 - answer.add_flags_2[ra3][ra4][ra5][ra2];
-        }
-        else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-          // ãﬂñTëÄçÏ3 ÇÃä™Ç´ñﬂÇµ
-          answer.add_flags_2[ra2][ra3][ra5][ra4] = 1 - answer.add_flags_2[ra2][ra3][ra5][ra4];
-        }
+        rollback_op(op, answer);
       }
     }
 
@@ -628,7 +701,7 @@ private:
       cerr << loop << endl;
     }
 
-    answer.Copy(best_answer);
+    answer.Copy(best);
   }
 
 public:
@@ -636,7 +709,7 @@ public:
     Answer answer = build_initial_solution_2(board);
     answer.current_score = calculate_score(answer);
 
-    // èƒÇ´Ç»Ç‹Çµé¿çs
+    // ÁÑº„Åç„Å™„Åæ„ÅóÂÆüË°å
     run_simulated_annealing(board, answer, annealingParams);
 
     return answer;
@@ -650,7 +723,7 @@ static ll solve_case(const int case_num, const AnnealingParams& annealingParams)
 
   Answer answer = Solver().Solve(board, annealingParams);
 
-  output_data(case_num,answer);
+  output_data(case_num, answer);
 
   ll score = 0;
   if (exec_mode != 0) {
@@ -723,7 +796,7 @@ int main() {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 
-        // ÉVÅ[Éh0Ç™à´ÇØÇÍÇŒë≈ÇøêÿÇË
+        // „Ç∑„Éº„Éâ0„ÅåÊÇ™„Åë„Çå„Å∞Êâì„Å°Âàá„Çä
         if (i == 0 && score < 0) {
           break;
         }
