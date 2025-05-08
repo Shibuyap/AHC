@@ -39,8 +39,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t Rand()
-{
+static uint32_t Rand() {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -58,20 +57,17 @@ static double Rand01() {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-static double RandRange(double l, double r)
-{
+static double RandRange(double l, double r) {
   return l + (r - l) * Rand01();
 }
 
 // [l, r]
-static uint32_t RandRange(uint32_t l, uint32_t r)
-{
+static uint32_t RandRange(uint32_t l, uint32_t r) {
   return l + Rand() % (r - l + 1);
 }
 
 
-void FisherYates(int* data, int n)
-{
+void FisherYates(int* data, int n) {
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
     int swa = data[i];
@@ -79,11 +75,6 @@ void FisherYates(int* data, int n)
     data[j] = swa;
   }
 }
-
-// ランダムデバイスとメルセンヌ・ツイスタ
-std::random_device seed_gen;
-std::mt19937 engine(seed_gen());
-// std::shuffle(v.begin(), v.end(), engine);
 
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
@@ -96,18 +87,14 @@ int mode;
 
 std::chrono::steady_clock::time_point startTimeClock;
 
-void ResetTime()
-{
+void ResetTime() {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-double GetNowTime()
-{
+double GetNowTime() {
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
-
-//const int MAX_N = 30;
 
 const int n = 100;
 const int L = 500000;
@@ -116,53 +103,37 @@ int t[n];
 int searchT[n];
 
 int ansScore;
-int ansScore2;
 int a[n], b[n];
 double cntDouble[n];
 double cntDoubleAns[n];
 
 int best_ansScore;
-int best_ansScore2;
 int best_a[n], best_b[n];
 
-void CopyToBest()
-{
+void CopyToBest() {
   best_ansScore = ansScore;
-  best_ansScore2 = ansScore2;
   rep(i, n) {
     best_a[i] = a[i];
     best_b[i] = b[i];
   }
 }
 
-void CopyToAns()
-{
+void CopyToAns() {
   ansScore = best_ansScore;
-  ansScore2 = best_ansScore2;
   rep(i, n) {
     a[i] = best_a[i];
     b[i] = best_b[i];
   }
 }
 
-bool IsNG(int x, int y)
-{
-  //if (x < 0 || n <= x || y < 0 || n <= y)return true;
-  return false;
-}
-
 // 複数のケースを処理する際に、内部状態を初期化する関数
-void SetUp()
-{
+void SetUp() {
   ansScore = 0;
-  ansScore2 = 0;
   best_ansScore = 0;
-  best_ansScore2 = 0;
 }
 
 // 入力を受け取る関数
-void Input(int problemNum)
-{
+void Input(int problemNum) {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());
@@ -192,8 +163,7 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs)
-{
+void OpenOfs(int probNum, ofstream& ofs) {
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
@@ -202,8 +172,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // スコアを計算する関数
-int CalcScore()
-{
+int CalcScore() {
   int cnt[n] = {};
   int now = 0;
   rep(i, L) {
@@ -223,8 +192,7 @@ int CalcScore()
   return res;
 }
 
-int CalcScoreEasy(int k)
-{
+int CalcScoreEasy(int k) {
   int cnt[n] = {};
   int now = 0;
   rep(i, k) {
@@ -310,6 +278,7 @@ void ClearEarlyCheckArr() {
     earlyCheckArr[i] = cntDoubleAns[i];
   }
 }
+
 void UpdateEarlyCheck(int s, double diff) {
   earlyCheckNumArr[0] = s;
   int tail = 1;
@@ -330,6 +299,7 @@ void UpdateEarlyCheck(int s, double diff) {
     diff /= 2;
   }
 }
+
 double CalcEarlyCheck() {
   double res = 1000000;
   rep(i, n) {
@@ -339,8 +309,7 @@ double CalcEarlyCheck() {
 }
 
 // 解答を出力する関数
-void Output(ofstream& ofs)
-{
+void Output(ofstream& ofs) {
   int aaaa[n] = {};
   int bbbb[n] = {};
   rep(i, n) {
@@ -358,19 +327,7 @@ void Output(ofstream& ofs)
   }
 }
 
-// ハイパーパラメータ
-struct Hypers
-{
-  double StartTemp;
-  double EndTemp;
-  double MultipleValue;
-  int Partition[10];
-};
-
-void SimulatedAnnealing(Hypers hypers)
-{
-  CopyToBest();
-
+void build_initial_solution() {
   // ランダムに初期解作成
   double nowTime = GetNowTime();
   int loop1 = 0;
@@ -412,7 +369,6 @@ void SimulatedAnnealing(Hypers hypers)
     }
   }
 
-
   CopyToAns();
   int k = 25000;
   ansScore = SortEasy(k);
@@ -427,6 +383,21 @@ void SimulatedAnnealing(Hypers hypers)
   if (mode != 0 && mode != 3) {
     cout << loop1 << endl;
   }
+}
+
+// ハイパーパラメータ
+struct Hypers
+{
+  double StartTemp;
+  double EndTemp;
+  double MultipleValue;
+  int Partition[10];
+};
+
+void SimulatedAnnealing(Hypers hypers) {
+  CopyToBest();
+
+  build_initial_solution();
 
   int saitakuCount[10][2];
   rep(i, 10) {
@@ -435,7 +406,7 @@ void SimulatedAnnealing(Hypers hypers)
     }
   }
 
-  nowTime = GetNowTime();
+  double nowTime = GetNowTime();
   const double START_TEMP = hypers.StartTemp;
   const double END_TEMP = hypers.EndTemp;
   int loop2 = 0;
@@ -446,11 +417,6 @@ void SimulatedAnnealing(Hypers hypers)
       nowTime = GetNowTime();
       if (nowTime > TL) break;
     }
-
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
 
     int ok = 1;
 
@@ -622,11 +588,11 @@ void SimulatedAnnealing(Hypers hypers)
     }
 
     // スコア計算
+    int k = 25000;
     double tmpScore2 = 0;
     if (ok) {
       tmpScore2 = SortEasy(k);
 
-      // 焼きなまし
       double diffScore2 = (tmpScore2 - ansScore) * hypers.MultipleValue;
       double prob2 = exp(diffScore2 / temp);
       ok = prob2 > Rand01();
@@ -635,7 +601,6 @@ void SimulatedAnnealing(Hypers hypers)
     if (ok) {
       // 採用
       ansScore = tmpScore2;
-      //ansScore2 = tmpScore2;
       rep(i, n) {
         a[i] = sortedA[i];
         b[i] = sortedB[i];
@@ -644,7 +609,6 @@ void SimulatedAnnealing(Hypers hypers)
 
       // Best解よりもいいか
       if (ansScore > best_ansScore) {
-        //cout << nowTime << ' ' << ansScore << endl;
         CopyToBest();
       }
     }
@@ -704,10 +668,8 @@ void SimulatedAnnealing(Hypers hypers)
   CopyToAns();
 }
 
-
 // 問題を解く関数
-ll Solve(int problem_num, Hypers hypers)
-{
+ll Solve(int problem_num, Hypers hypers) {
   ResetTime();
 
   // 複数ケース回すときに内部状態を初期値に戻す
@@ -737,14 +699,7 @@ ll Solve(int problem_num, Hypers hypers)
   return score;
 }
 
-/////////////////////////////////////////////////////////////////////////
-/*
-メモ
-
-*/
-/////////////////////////////////////////////////////////////////////////
-int main()
-{
+int main() {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     Rand();
@@ -772,8 +727,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 15)
-    {
+    srep(i, 0, 15) {
       ll score = Solve(i, HYPERS);
       sum += score;
       if (mode == 1) {
@@ -786,47 +740,6 @@ int main()
         cout << "time = " << setw(5) << GetNowTime() << ", ";
         cout << endl;
       }
-    }
-  }
-  else if (mode == 3) {
-    int loop = 0;
-    Hypers bestHypers;
-    ll bestSumScore = 0;
-
-    while (true) {
-      Hypers hypers;
-      hypers.StartTemp = pow(2.0, Rand01() * 20);
-      hypers.EndTemp = 0.0;
-      hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition[0] = Rand() % 101;
-
-      ll sum = 0;
-      srep(i, 0, 4)
-      {
-        ll score = Solve(i, hypers);
-        sum += score;
-
-        // シード0が悪ければ打ち切り
-        if (i == 0 && score < 0) {
-          break;
-        }
-      }
-
-      cout
-        << "Loop = " << loop
-        << ", Sum = " << sum
-        << ", StartTemp = " << hypers.StartTemp
-        << ", EndTemp = " << hypers.EndTemp
-        << ", MultipleValue = " << hypers.MultipleValue
-        << ", Partition1 = " << hypers.Partition[0]
-        << endl;
-
-      if (sum > bestSumScore) {
-        bestSumScore = sum;
-        bestHypers = hypers;
-      }
-
-      loop++;
     }
   }
 
