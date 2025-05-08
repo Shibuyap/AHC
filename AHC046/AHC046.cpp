@@ -151,17 +151,11 @@ public:
   int current_score;
   int ans[2000][2];
   int ans_count;
-  int add_flags[m][4];
   int add_flags_2[n + 2][n + 2][4];
 
   void initialize_state() {
     current_score = 0;
     ans_count = 0;
-    for (int i = 0; i < (m); ++i) {
-      for (int j = 0; j < (4); ++j) {
-        add_flags[i][j] = 0;
-      }
-    }
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
         for (int l = 0; l < (4); ++l) {
@@ -177,11 +171,6 @@ public:
     for (int i = 0; i < (ans_count); ++i) {
       for (int j = 0; j < (2); ++j) {
         ans[i][j] = src.ans[i][j];
-      }
-    }
-    for (int i = 0; i < (m); ++i) {
-      for (int j = 0; j < (4); ++j) {
-        add_flags[i][j] = src.add_flags[i][j];
       }
     }
     for (int i = 0; i < (n + 2); ++i) {
@@ -486,11 +475,6 @@ private:
       if (i == m - 1) {
         break;
       }
-      for (int j = 0; j < (4); ++j) {
-        if (answer.add_flags[i][j] == 1) {
-          add_one(board, answer, j, x, y);
-        }
-      }
     }
     return calculate_score(answer);
   }
@@ -498,20 +482,6 @@ private:
   void eliminate_unused_rock(Board& board, Answer& answer) {
     board.init_board();
     create_ans(answer, board);
-
-    for (int i = 0; i < m; i++) {
-      int x = board.X[i];
-      int y = board.Y[i];
-      for (int j = 0; j < (4); ++j) {
-        if (answer.add_flags[i][j] == 1) {
-          int nx = x + DX[j];
-          int ny = y + DY[j];
-          if (board.board[nx][ny] != -2) {
-            answer.add_flags[i][j] = 0;
-          }
-        }
-      }
-    }
 
     for (int i = 0; i < n + 2; ++i) {
       for (int j = 0; j < n + 2; ++j) {
@@ -570,7 +540,7 @@ private:
   //------------------------------------------------------------------------------
   enum class OpType
   {
-    OP1, OP2, OP3
+    OP1, OP2
   };
 
   struct OperationCtx
@@ -580,27 +550,18 @@ private:
   };
 
   // Pick an operation type from thresholds
-  inline OpType pick_op(uint32_t rnd, const int th[3]) {
-    return (rnd < th[0]) ? OpType::OP1
-      : (rnd < th[1]) ? OpType::OP2
-      : OpType::OP3;
+  inline OpType pick_op(uint32_t rnd, const int th[2]) {
+    return  (rnd < th[0]) ? OpType::OP1 : OpType::OP2;
   }
 
   //------------------------------------------------------------------------------
   // "Apply" & "Rollback" of neighbourhood moves ------------------------------
   //------------------------------------------------------------------------------
 
-  // Return false when OP3 aborts (ra2 == -1)
+  // Return false when OP2 aborts (ra2 == -1)
   bool apply_op(OperationCtx& ctx, Answer& ans, const Answer& best, Board& board, uint32_t(*rnd)()) {
     switch (ctx.type) {
     case OpType::OP1:
-    {
-      ctx.a1 = rnd() % (m - 1);
-      ctx.a2 = rnd() % 4;
-      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
-      return true;
-    }
-    case OpType::OP2:
     {
       ctx.a1 = rnd() % (best.ans_count - 1);
       ctx.a2 = rnd() % 4;
@@ -609,7 +570,7 @@ private:
       ans.add_flags_2[ctx.a3][ctx.a4][ctx.a2] ^= 1;
       return true;
     }
-    case OpType::OP3:
+    case OpType::OP2:
     {
       ctx.a1 = rnd() % (best.ans_count - 1);
       int _1, _2, _3;
@@ -626,12 +587,9 @@ private:
   void rollback_op(const OperationCtx& ctx, Answer& ans) {
     switch (ctx.type) {
     case OpType::OP1:
-      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
-      break;
-    case OpType::OP2:
       ans.add_flags_2[ctx.a3][ctx.a4][ctx.a2] ^= 1;
       break;
-    case OpType::OP3:
+    case OpType::OP2:
       ans.add_flags_2[ctx.a2][ctx.a3][ctx.a4] ^= 1;
       break;
     }
@@ -663,7 +621,7 @@ private:
 
       // ---------- generate & apply neighbourhood move ----------
       OperationCtx op;
-      op.type = pick_op(rand_xorshift() % param.operation_thresholds[2], param.operation_thresholds);
+      op.type = pick_op(rand_xorshift() % param.operation_thresholds[1], param.operation_thresholds);
       if (!apply_op(op, answer, best, board, rand_xorshift)) continue;
 
       // ---------- evaluate new solution ----------
@@ -734,8 +692,8 @@ int main() {
   annealingParams.start_temperature[9] = 2048.0;
   annealingParams.end_temperature = 0.0;
   annealingParams.score_scale = 12345.0;
-  annealingParams.operation_thresholds[0] = 100;
-  annealingParams.operation_thresholds[1] = 200;
+  annealingParams.operation_thresholds[0] = 200;
+  annealingParams.operation_thresholds[1] = 300;
   annealingParams.operation_thresholds[2] = 300;
   annealingParams.operation_thresholds[3] = 400;
   annealingParams.operation_thresholds[4] = 500;
@@ -763,45 +721,6 @@ int main() {
           << "time = " << setw(5) << get_elapsed_time() << ", "
           << endl;
       }
-    }
-  }
-  else if (exec_mode == 3) {
-    int loop_count = 0;
-    AnnealingParams best_annealingParams;
-    ll best_sum_score = 0;
-
-    while (true) {
-      AnnealingParams new_annealingParams;
-      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
-      new_annealingParams.end_temperature = 0.0;
-      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
-      new_annealingParams.operation_thresholds[0] = rand() % 101;
-
-      ll sum_score = 0;
-      for (int i = 0; i < 15; ++i) {
-        ll score = solve_case(i, new_annealingParams);
-        sum_score += score;
-
-        // シード0が悪ければ打ち切り
-        if (i == 0 && score < 0) {
-          break;
-        }
-      }
-
-      cerr << "loop_count = " << loop_count
-        << ", sum_score = " << sum_score
-        << ", start_temperature = " << new_annealingParams.start_temperature[0]
-        << ", end_temperature = " << new_annealingParams.end_temperature
-        << ", score_scale = " << new_annealingParams.score_scale
-        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
-        << endl;
-
-      if (sum_score > best_sum_score) {
-        best_sum_score = sum_score;
-        best_annealingParams = new_annealingParams;
-      }
-
-      loop_count++;
     }
   }
 
