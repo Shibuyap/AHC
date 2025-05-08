@@ -252,7 +252,9 @@ int SortEasy(int k) {
   }
 
   rep(i, n) {
-    if (sortVec[i].first > 0)break;
+    if (sortVec[i].first > 0) {
+      break;
+    }
     if (t[i] > 100) {
       return 0;
     }
