@@ -92,7 +92,7 @@ namespace
 class Queue2D
 {
 private:
-  static const int MAX_SIZE = 10000;
+  static const int MAX_SIZE = 1000;
   int arr[MAX_SIZE][2];
   int head;
   int tail;
@@ -290,50 +290,6 @@ public:
   }
 };
 
-static void move_one(Board& board, Answer& answer, int dir, int& x, int& y) {
-  int nx = x;
-  int ny = y;
-  if (!board.attempt_move(dir, x, y, nx, ny)) {
-    return;
-  }
-  answer.ans[answer.ans_count][0] = 0;
-  answer.ans[answer.ans_count][1] = dir;
-  x += DX[dir];
-  y += DY[dir];
-  answer.ans_count++;
-}
-
-static void skate_one(Board& board, Answer& answer, int dir, int& x, int& y) {
-  int nx = x;
-  int ny = y;
-  if (!board.attempt_skate(dir, x, y, nx, ny)) {
-    return;
-  }
-  answer.ans[answer.ans_count][0] = 1;
-  answer.ans[answer.ans_count][1] = dir;
-  x = nx;
-  y = ny;
-  answer.ans_count++;
-}
-
-static void add_one(Board& board, Answer& answer, int dir, int x, int y, bool isSim = false) {
-  int nx = x + DX[dir];
-  int ny = y + DY[dir];
-  if (board.board[nx][ny] != 0) {
-    return;
-  }
-  board.board[nx][ny] = -2;
-  board.rock_row[nx][board.rock_row_count[nx]] = ny;
-  board.rock_row_count[nx]++;
-  board.rock_col[ny][board.rock_col_count[ny]] = nx;
-  board.rock_col_count[ny]++;
-  if (!isSim) {
-    answer.ans[answer.ans_count][0] = 2;
-    answer.ans[answer.ans_count][1] = dir;
-    answer.ans_count++;
-  }
-}
-
 static Board input_data(int case_num) {
   Board board;
 
@@ -364,20 +320,12 @@ static Board input_data(int case_num) {
   return board;
 }
 
-static void open_ofs(int case_num, ofstream& ofs) {
-  if (exec_mode != 0) {
-    std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-    ofs.open(oss.str());
-  }
-}
-
 static int calculate_score(const Answer& answer) {
   int res = m + 2 * n * m - answer.ans_count;
   return res;
 }
 
-static void output_data(const Answer& answer, ofstream& ofs) {
+static void output_data(int case_num, const Answer& answer) {
   if (exec_mode == 0) {
     // 標準出力
     for (int i = 0; i < (answer.ans_count); ++i) {
@@ -386,150 +334,18 @@ static void output_data(const Answer& answer, ofstream& ofs) {
   }
   else {
     // ファイル出力
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
+
     for (int i = 0; i < (answer.ans_count); ++i) {
       ofs << C[answer.ans[i][0]] << ' ' << MOVE[answer.ans[i][1]] << endl;
     }
-  }
-}
 
-Queue2D que2d;
-int dp[n + 2][n + 2];
-int dp2[n + 2][n + 2][4];
-static vector<P> bfs(Board& board, int sx, int sy, int gx, int gy) {
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
-      dp[i][j] = INT_INF;
+    if (ofs.is_open()) {
+      ofs.close();
     }
   }
-  que2d.clear_queue();
-  que2d.push(sx, sy);
-  dp[sx][sy] = 0;
-  while (que2d.size()) {
-    int x = que2d.front_x();
-    int y = que2d.front_y();
-    que2d.pop();
-    if (x == gx && y == gy) {
-      break;
-    }
-    int nx, ny;
-    for (int i = 3; i >= 0; --i) {
-      if (board.attempt_skate(i, x, y, nx, ny)) {
-        if (dp[x][y] + 1 < dp[nx][ny]) {
-          dp[nx][ny] = dp[x][y] + 1;
-          dp2[nx][ny][0] = x;
-          dp2[nx][ny][1] = y;
-          dp2[nx][ny][2] = 1;
-          dp2[nx][ny][3] = i;
-          que2d.push(nx, ny);
-        }
-      }
-      if (board.attempt_move(i, x, y, nx, ny)) {
-        if (dp[x][y] + 1 < dp[nx][ny]) {
-          dp[nx][ny] = dp[x][y] + 1;
-          dp2[nx][ny][0] = x;
-          dp2[nx][ny][1] = y;
-          dp2[nx][ny][2] = 0;
-          dp2[nx][ny][3] = i;
-          que2d.push(nx, ny);
-        }
-      }
-    }
-  }
-
-  vector<P> vp;
-  if (dp[gx][gy] == INT_INF) {
-    return vp;
-  }
-  int x = gx;
-  int y = gy;
-  while (x != sx || y != sy) {
-    int nx = dp2[x][y][0];
-    int ny = dp2[x][y][1];
-    vp.push_back(P(dp2[x][y][2], dp2[x][y][3]));
-    x = nx;
-    y = ny;
-  }
-  reverse(vp.begin(), vp.end());
-  return vp;
-}
-
-static int create_ans(Answer& answer, Board& board) {
-  answer.ans_count = 0;
-  int x = board.X[0];
-  int y = board.Y[0];
-  for (int i = 0; i < (m); ++i) {
-    auto vp = bfs(board, x, y, board.X[i], board.Y[i]);
-    for (const auto& p : vp) {
-      if (p.first == 0) {
-        move_one(board, answer, p.second, x, y);
-      }
-      else {
-        skate_one(board, answer, p.second, x, y);
-      }
-      for (int j = 0; j < (4); ++j) {
-        if (answer.add_flags_2[x][y][i][j] == 1) {
-          add_one(board, answer, j, x, y);
-        }
-      }
-    }
-    if (x != board.X[i] || y != board.Y[i]) {
-      return -1;
-    }
-    if (i == m - 1) {
-      break;
-    }
-    for (int j = 0; j < (4); ++j) {
-      if (answer.add_flags[i][j] == 1) {
-        add_one(board, answer, j, x, y);
-      }
-    }
-  }
-  return calculate_score(answer);
-}
-
-static void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int& mm, int turn, int& lastRockX, int& lastRockY, int& lastRockDir, int& lastRockMM) {
-  x = board.X[0];
-  y = board.Y[0];
-  mm = 0;
-  lastRockX = -1;
-  lastRockY = -1;
-  board.init_board();
-  for (int i = 0; i < (turn); ++i) {
-    if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
-      mm++;
-    }
-    if (best_answer.ans[i][0] == 0) {
-      x += DX[best_answer.ans[i][1]];
-      y += DY[best_answer.ans[i][1]];
-    }
-    if (best_answer.ans[i][0] == 1) {
-      int nx, ny;
-      board.attempt_skate(best_answer.ans[i][1], x, y, nx, ny);
-      x = nx;
-      y = ny;
-    }
-    if (best_answer.ans[i][0] == 2) {
-      add_one(board, answer, best_answer.ans[i][1], x, y, true);
-      int nx = x + DX[best_answer.ans[i][1]];
-      int ny = y + DY[best_answer.ans[i][1]];
-      if (board.board[nx][ny] == 2) {
-        lastRockX = x;
-        lastRockX = y;
-        lastRockDir = best_answer.ans[i][1];
-        lastRockMM = mm;
-      }
-    }
-    if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
-      mm++;
-    }
-  }
-}
-
-static Answer build_initial_solution_2(Board& board) {
-  Answer answer;
-  answer.initialize_state();
-  create_ans(answer, board);
-  return answer;
 }
 
 struct AnnealingParams
@@ -540,113 +356,301 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-static void run_simulated_annealing(Board& board, Answer& answer, AnnealingParams annealingParams) {
-  Answer best_answer;
-  best_answer.Copy(answer);
+class Solver
+{
+private:
+  Queue2D que2d;
+  int dp[n + 2][n + 2];
+  int dp2[n + 2][n + 2][4];
 
-  double now_time = get_elapsed_time();
-  const double START_TEMP = annealingParams.start_temperature[0];
-  const double END_TEMP = annealingParams.end_temperature;
-
-  int loop = 0;
-  while (true) {
-    loop++;
-
-    if (loop % 1 == 0) {
-      now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT) break;
+  void move_one(Board& board, Answer& answer, int dir, int& x, int& y) {
+    int nx = x;
+    int ny = y;
+    if (!board.attempt_move(dir, x, y, nx, ny)) {
+      return;
     }
+    answer.ans[answer.ans_count][0] = 0;
+    answer.ans[answer.ans_count][1] = dir;
+    x += DX[dir];
+    y += DY[dir];
+    answer.ans_count++;
+  }
 
-    double progress_ratio = now_time / TIME_LIMIT;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
-
-    // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[2];
-    int ra1, ra2, ra3, ra4, ra5;
-
-    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // 近傍操作1
-      ra1 = rand_xorshift() % (m - 1);
-      ra2 = rand_xorshift() % 4;
-      answer.add_flags[ra1][ra2] = 1 - answer.add_flags[ra1][ra2];
+  void skate_one(Board& board, Answer& answer, int dir, int& x, int& y) {
+    int nx = x;
+    int ny = y;
+    if (!board.attempt_skate(dir, x, y, nx, ny)) {
+      return;
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // 近傍操作2
-      ra1 = rand_xorshift() % (best_answer.ans_count - 10);
-      ra2 = rand_xorshift() % 4;
-      int _1, _2, _3, _4;
-      simulate_best(board, answer, best_answer, ra3, ra4, ra5, ra1, _1, _2, _3, _4);
-      answer.add_flags_2[ra3][ra4][ra5][ra2] = 1 - answer.add_flags_2[ra3][ra4][ra5][ra2];
+    answer.ans[answer.ans_count][0] = 1;
+    answer.ans[answer.ans_count][1] = dir;
+    x = nx;
+    y = ny;
+    answer.ans_count++;
+  }
+
+  void add_one(Board& board, Answer& answer, int dir, int x, int y, bool isSim = false) {
+    int nx = x + DX[dir];
+    int ny = y + DY[dir];
+    if (board.board[nx][ny] != 0) {
+      return;
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-      // 近傍操作3
-      ra1 = rand_xorshift() % (best_answer.ans_count - 10);
-      int _1, _2, _3;
-      simulate_best(board, answer, best_answer, _1, _2, _3, ra1, ra2, ra3, ra4, ra5);
-      if (ra2 == -1)continue;
-      answer.add_flags_2[ra2][ra3][ra5][ra4] = 1 - answer.add_flags_2[ra2][ra3][ra5][ra4];
+    board.board[nx][ny] = -2;
+    board.rock_row[nx][board.rock_row_count[nx]] = ny;
+    board.rock_row_count[nx]++;
+    board.rock_col[ny][board.rock_col_count[ny]] = nx;
+    board.rock_col_count[ny]++;
+    if (!isSim) {
+      answer.ans[answer.ans_count][0] = 2;
+      answer.ans[answer.ans_count][1] = dir;
+      answer.ans_count++;
     }
+  }
 
-    // スコア計算
-    board.init_board();
-    double tmp_score = create_ans(answer, board);
-
-    // 焼きなましで採用判定
-    double diff_score = (tmp_score - answer.current_score) * annealingParams.score_scale;
-    double prob = exp(diff_score / temp);
-    if (prob > rand_01()) {
-      // 採用
-      answer.current_score = tmp_score;
-
-      // ベスト更新
-      if (answer.current_score > best_answer.current_score) {
-        best_answer.Copy(answer);
+  vector<P> bfs(Board& board, int sx, int sy, int gx, int gy) {
+    for (int i = 0; i < (n + 2); ++i) {
+      for (int j = 0; j < (n + 2); ++j) {
+        dp[i][j] = INT_INF;
       }
     }
-    else {
-      // 元に戻す
+    que2d.clear_queue();
+    que2d.push(sx, sy);
+    dp[sx][sy] = 0;
+    while (que2d.size()) {
+      int x = que2d.front_x();
+      int y = que2d.front_y();
+      que2d.pop();
+      if (x == gx && y == gy) {
+        break;
+      }
+      int nx, ny;
+      for (int i = 3; i >= 0; --i) {
+        if (board.attempt_skate(i, x, y, nx, ny)) {
+          if (dp[x][y] + 1 < dp[nx][ny]) {
+            dp[nx][ny] = dp[x][y] + 1;
+            dp2[nx][ny][0] = x;
+            dp2[nx][ny][1] = y;
+            dp2[nx][ny][2] = 1;
+            dp2[nx][ny][3] = i;
+            que2d.push(nx, ny);
+          }
+        }
+        if (board.attempt_move(i, x, y, nx, ny)) {
+          if (dp[x][y] + 1 < dp[nx][ny]) {
+            dp[nx][ny] = dp[x][y] + 1;
+            dp2[nx][ny][0] = x;
+            dp2[nx][ny][1] = y;
+            dp2[nx][ny][2] = 0;
+            dp2[nx][ny][3] = i;
+            que2d.push(nx, ny);
+          }
+        }
+      }
+    }
+
+    vector<P> vp;
+    if (dp[gx][gy] == INT_INF) {
+      return vp;
+    }
+    int x = gx;
+    int y = gy;
+    while (x != sx || y != sy) {
+      int nx = dp2[x][y][0];
+      int ny = dp2[x][y][1];
+      vp.push_back(P(dp2[x][y][2], dp2[x][y][3]));
+      x = nx;
+      y = ny;
+    }
+    reverse(vp.begin(), vp.end());
+    return vp;
+  }
+
+  int create_ans(Answer& answer, Board& board) {
+    answer.ans_count = 0;
+    int x = board.X[0];
+    int y = board.Y[0];
+    for (int i = 0; i < (m); ++i) {
+      auto vp = bfs(board, x, y, board.X[i], board.Y[i]);
+      for (const auto& p : vp) {
+        if (p.first == 0) {
+          move_one(board, answer, p.second, x, y);
+        }
+        else {
+          skate_one(board, answer, p.second, x, y);
+        }
+        for (int j = 0; j < (4); ++j) {
+          if (answer.add_flags_2[x][y][i][j] == 1) {
+            add_one(board, answer, j, x, y);
+          }
+        }
+      }
+      if (x != board.X[i] || y != board.Y[i]) {
+        return -1;
+      }
+      if (i == m - 1) {
+        break;
+      }
+      for (int j = 0; j < (4); ++j) {
+        if (answer.add_flags[i][j] == 1) {
+          add_one(board, answer, j, x, y);
+        }
+      }
+    }
+    return calculate_score(answer);
+  }
+
+  Answer build_initial_solution_2(Board& board) {
+    Answer answer;
+    answer.initialize_state();
+    create_ans(answer, board);
+    return answer;
+  }
+
+  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int& mm, int turn, int& lastRockX, int& lastRockY, int& lastRockDir, int& lastRockMM) {
+    x = board.X[0];
+    y = board.Y[0];
+    mm = 0;
+    lastRockX = -1;
+    lastRockY = -1;
+    board.init_board();
+    for (int i = 0; i < (turn); ++i) {
+      if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
+        mm++;
+      }
+      if (best_answer.ans[i][0] == 0) {
+        x += DX[best_answer.ans[i][1]];
+        y += DY[best_answer.ans[i][1]];
+      }
+      if (best_answer.ans[i][0] == 1) {
+        int nx, ny;
+        board.attempt_skate(best_answer.ans[i][1], x, y, nx, ny);
+        x = nx;
+        y = ny;
+      }
+      if (best_answer.ans[i][0] == 2) {
+        add_one(board, answer, best_answer.ans[i][1], x, y, true);
+        int nx = x + DX[best_answer.ans[i][1]];
+        int ny = y + DY[best_answer.ans[i][1]];
+        if (board.board[nx][ny] == 2) {
+          lastRockX = x;
+          lastRockX = y;
+          lastRockDir = best_answer.ans[i][1];
+          lastRockMM = mm;
+        }
+      }
+      if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
+        mm++;
+      }
+    }
+  }
+
+  void run_simulated_annealing(Board& board, Answer& answer, const AnnealingParams& annealingParams) {
+    Answer best_answer;
+    best_answer.Copy(answer);
+
+    double now_time = get_elapsed_time();
+    const double START_TEMP = annealingParams.start_temperature[0];
+    const double END_TEMP = annealingParams.end_temperature;
+
+    int loop = 0;
+    while (true) {
+      loop++;
+
+      if (loop % 1 == 0) {
+        now_time = get_elapsed_time();
+        if (now_time > TIME_LIMIT) break;
+      }
+
+      double progress_ratio = now_time / TIME_LIMIT;
+      double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+
+      // 近傍解作成
+      int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[2];
+      int ra1, ra2, ra3, ra4, ra5;
+
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // 近傍操作1 の巻き戻し
+        // 近傍操作1
+        ra1 = rand_xorshift() % (m - 1);
+        ra2 = rand_xorshift() % 4;
         answer.add_flags[ra1][ra2] = 1 - answer.add_flags[ra1][ra2];
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // 近傍操作2 の巻き戻し
+        // 近傍操作2
+        ra1 = rand_xorshift() % (best_answer.ans_count - 10);
+        ra2 = rand_xorshift() % 4;
+        int _1, _2, _3, _4;
+        simulate_best(board, answer, best_answer, ra3, ra4, ra5, ra1, _1, _2, _3, _4);
         answer.add_flags_2[ra3][ra4][ra5][ra2] = 1 - answer.add_flags_2[ra3][ra4][ra5][ra2];
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-        // 近傍操作3 の巻き戻し
+        // 近傍操作3
+        ra1 = rand_xorshift() % (best_answer.ans_count - 10);
+        int _1, _2, _3;
+        simulate_best(board, answer, best_answer, _1, _2, _3, ra1, ra2, ra3, ra4, ra5);
+        if (ra2 == -1)continue;
         answer.add_flags_2[ra2][ra3][ra5][ra4] = 1 - answer.add_flags_2[ra2][ra3][ra5][ra4];
       }
+
+      // スコア計算
+      board.init_board();
+      double tmp_score = create_ans(answer, board);
+
+      // 焼きなましで採用判定
+      double diff_score = (tmp_score - answer.current_score) * annealingParams.score_scale;
+      double prob = exp(diff_score / temp);
+      if (prob > rand_01()) {
+        // 採用
+        answer.current_score = tmp_score;
+
+        // ベスト更新
+        if (answer.current_score > best_answer.current_score) {
+          best_answer.Copy(answer);
+        }
+      }
+      else {
+        // 元に戻す
+        if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+          // 近傍操作1 の巻き戻し
+          answer.add_flags[ra1][ra2] = 1 - answer.add_flags[ra1][ra2];
+        }
+        else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+          // 近傍操作2 の巻き戻し
+          answer.add_flags_2[ra3][ra4][ra5][ra2] = 1 - answer.add_flags_2[ra3][ra4][ra5][ra2];
+        }
+        else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
+          // 近傍操作3 の巻き戻し
+          answer.add_flags_2[ra2][ra3][ra5][ra4] = 1 - answer.add_flags_2[ra2][ra3][ra5][ra4];
+        }
+      }
     }
+
+    if (exec_mode != 0 && exec_mode != 3) {
+      cerr << loop << endl;
+    }
+
+    answer.Copy(best_answer);
   }
 
-  if (exec_mode != 0 && exec_mode != 3) {
-    cerr << loop << endl;
+public:
+  Answer Solve(Board& board, const AnnealingParams& annealingParams) {
+    Answer answer = build_initial_solution_2(board);
+    answer.current_score = calculate_score(answer);
+
+    // 焼きなまし実行
+    run_simulated_annealing(board, answer, annealingParams);
+
+    return answer;
   }
+};
 
-  answer.Copy(best_answer);
-}
-
-static ll solve_case(int case_num, AnnealingParams annealingParams) {
+static ll solve_case(const int case_num, const AnnealingParams& annealingParams) {
   start_timer();
 
   Board board = input_data(case_num);
 
-  ofstream ofs;
-  open_ofs(case_num, ofs);
+  Answer answer = Solver().Solve(board, annealingParams);
 
-  Answer answer = build_initial_solution_2(board);
-  answer.current_score = calculate_score(answer);
-
-  // 焼きなまし実行
-  run_simulated_annealing(board, answer, annealingParams);
-
-  // 解答を出力
-  output_data(answer, ofs);
-
-  if (ofs.is_open()) {
-    ofs.close();
-  }
+  output_data(case_num,answer);
 
   ll score = 0;
   if (exec_mode != 0) {
