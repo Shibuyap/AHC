@@ -152,7 +152,7 @@ public:
   int ans[2000][2];
   int ans_count;
   int add_flags[m][4];
-  int add_flags_2[n + 2][n + 2][m][4];
+  int add_flags_2[n + 2][n + 2][4];
 
   void initialize_state() {
     current_score = 0;
@@ -164,10 +164,8 @@ public:
     }
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
-        for (int k = 0; k < (m); ++k) {
-          for (int l = 0; l < (4); ++l) {
-            add_flags_2[i][j][k][l] = 0;
-          }
+        for (int l = 0; l < (4); ++l) {
+          add_flags_2[i][j][l] = 0;
         }
       }
     }
@@ -188,10 +186,8 @@ public:
     }
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
-        for (int k = 0; k < (m); ++k) {
-          for (int l = 0; l < (4); ++l) {
-            add_flags_2[i][j][k][l] = src.add_flags_2[i][j][k][l];
-          }
+        for (int l = 0; l < (4); ++l) {
+          add_flags_2[i][j][l] = src.add_flags_2[i][j][l];
         }
       }
     }
@@ -479,7 +475,7 @@ private:
           skate_one(board, answer, p.second, x, y);
         }
         for (int j = 0; j < (4); ++j) {
-          if (answer.add_flags_2[x][y][i][j] == 1) {
+          if (answer.add_flags_2[x][y][j] == 1) {
             add_one(board, answer, j, x, y);
           }
         }
@@ -519,14 +515,12 @@ private:
 
     for (int i = 0; i < n + 2; ++i) {
       for (int j = 0; j < n + 2; ++j) {
-        for (int k = 0; k < m; ++k) {
-          for (int l = 0; l < 4; ++l) {
-            if (answer.add_flags_2[i][j][k][l] == 1) {
-              int nx = i + DX[l];
-              int ny = j + DY[l];
-              if (board.board[nx][ny] != -2) {
-                answer.add_flags_2[i][j][k][l] = 0;
-              }
+        for (int l = 0; l < 4; ++l) {
+          if (answer.add_flags_2[i][j][l] == 1) {
+            int nx = i + DX[l];
+            int ny = j + DY[l];
+            if (board.board[nx][ny] != -2) {
+              answer.add_flags_2[i][j][l] = 0;
             }
           }
         }
@@ -541,17 +535,13 @@ private:
     return answer;
   }
 
-  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int& mm, int turn, int& lastRockX, int& lastRockY, int& lastRockDir, int& lastRockMM) {
+  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int turn, int& lastRockX, int& lastRockY, int& lastRockDir) {
     x = board.X[0];
     y = board.Y[0];
-    mm = 0;
     lastRockX = -1;
     lastRockY = -1;
     board.init_board();
     for (int i = 0; i < (turn); ++i) {
-      if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
-        mm++;
-      }
       if (best_answer.ans[i][0] == 0) {
         x += DX[best_answer.ans[i][1]];
         y += DY[best_answer.ans[i][1]];
@@ -570,11 +560,7 @@ private:
           lastRockX = x;
           lastRockX = y;
           lastRockDir = best_answer.ans[i][1];
-          lastRockMM = mm;
         }
-      }
-      if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
-        mm++;
       }
     }
   }
@@ -590,7 +576,7 @@ private:
   struct OperationCtx
   {
     OpType type;
-    int a1{ -1 }, a2{ -1 }, a3{ -1 }, a4{ -1 }, a5{ -1 }; // indices used by each op
+    int a1{ -1 }, a2{ -1 }, a3{ -1 }, a4{ -1 }; // indices used by each op
   };
 
   // Pick an operation type from thresholds
@@ -619,17 +605,17 @@ private:
       ctx.a1 = rnd() % (best.ans_count - 1);
       ctx.a2 = rnd() % 4;
       int _1, _2, _3, _4;
-      simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a5, ctx.a1, _1, _2, _3, _4);
-      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a1, _1, _2, _3);
+      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a2] ^= 1;
       return true;
     }
     case OpType::OP3:
     {
       ctx.a1 = rnd() % (best.ans_count - 1);
       int _1, _2, _3;
-      simulate_best(board, ans, best, _1, _2, _3, ctx.a1, ctx.a2, ctx.a3, ctx.a4, ctx.a5);
+      simulate_best(board, ans, best, _1, _2, ctx.a1, ctx.a2, ctx.a3, ctx.a4);
       if (ctx.a2 == -1) return false;              // abort – same as original
-      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a4] ^= 1;
       return true;
     }
     }
@@ -643,10 +629,10 @@ private:
       ans.add_flags[ctx.a1][ctx.a2] ^= 1;
       break;
     case OpType::OP2:
-      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a2] ^= 1;
       break;
     case OpType::OP3:
-      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a4] ^= 1;
       break;
     }
   }
