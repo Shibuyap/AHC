@@ -28,19 +28,15 @@
 #include <utility>
 #include <vector>
 
-
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
 
 using namespace std;
 
-
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
-
 
 static uint32_t Rand()
 {
@@ -58,7 +54,8 @@ static uint32_t Rand()
 }
 
 
-static double Rand01() {
+static double Rand01()
+{
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
@@ -155,9 +152,9 @@ int best_d[n + 2][n + 2];
 void CopyToBest()
 {
   best_ansScore = ansScore;
-  rep(i, n + 2)
+  for (int i = 0; i < (n + 2); ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < (n + 2); ++j)
     {
       best_d[i][j] = d[i][j];
     }
@@ -167,9 +164,9 @@ void CopyToBest()
 void CopyToAns()
 {
   ansScore = best_ansScore;
-  rep(i, n + 2)
+  for (int i = 0; i < (n + 2); ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < (n + 2); ++j)
     {
       d[i][j] = best_d[i][j];
     }
@@ -220,32 +217,32 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, n + 2)
+  for (int i = 0; i < (n + 2); ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < (n + 2); ++j)
     {
       d[i][j] = c[i][j];
     }
   }
 
-  rep(i, m + 1)
+  for (int i = 0; i < (m + 1); ++i)
   {
-    rep(j, m + 1)
+    for (int j = 0; j < (m + 1); ++j)
     {
       g[i][j] = 0;
     }
   }
-  rep(i, n + 2)
+  for (int i = 0; i < (n + 2); ++i)
   {
-    rep(j, n + 1)
+    for (int j = 0; j < (n + 1); ++j)
     {
       g[c[i][j]][c[i][j + 1]] = 1;
       g[c[i][j + 1]][c[i][j]] = 1;
     }
   }
-  rep(i, n + 1)
+  for (int i = 0; i < (n + 1); ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < (n + 2); ++j)
     {
       g[c[i][j]][c[i + 1][j]] = 1;
       g[c[i + 1][j]][c[i][j]] = 1;
@@ -312,16 +309,16 @@ int checkVisited2[m + 1];
 
 bool Check()
 {
-  rep(i, m + 1)
+  for (int i = 0; i < (m + 1); ++i)
   {
-    rep(j, m + 1)
+    for (int j = 0; j < (m + 1); ++j)
     {
       checkG[i][j] = 0;
     }
   }
-  rep(i, n + 2)
+  for (int i = 0; i < (n + 2); ++i)
   {
-    rep(j, n + 1)
+    for (int j = 0; j < (n + 1); ++j)
     {
       if (d[i][j] == d[i][j + 1])continue;
       if (g[d[i][j]][d[i][j + 1]] == 0) return false;
@@ -330,9 +327,9 @@ bool Check()
       checkG[d[i][j + 1]][d[i][j]] = 1;
     }
   }
-  rep(i, n + 1)
+  for (int i = 0; i < (n + 1); ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < (n + 2); ++j)
     {
       if (d[i][j] == d[i + 1][j])continue;
       if (g[d[i][j]][d[i + 1][j]] == 0) return false;
@@ -342,7 +339,7 @@ bool Check()
     }
   }
 
-  rep(i, m + 1)
+  for (int i = 0; i < (m + 1); ++i)
   {
     srep(j, i + 1, m + 1)
     {
@@ -350,14 +347,14 @@ bool Check()
     }
   }
 
-  rep(i, n + 2)
+  for (int i = 0; i < (n + 2); ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < (n + 2); ++j)
     {
       checkVisited[i][j] = 0;
     }
   }
-  rep(i, m + 1)
+  for (int i = 0; i < (m + 1); ++i)
   {
     checkVisited2[i] = 0;
   }
@@ -376,7 +373,7 @@ bool Check()
         int x = FrontX();
         int y = FrontY();
         Pop();
-        rep(k, 4)
+        for (int k = 0; k < (4); ++k)
         {
           int nx = x + dx[k];
           int ny = y + dy[k];
@@ -432,11 +429,6 @@ void SimulatedAnnealing(Hypers hypers)
       nowTime = GetNowTime();
       if (nowTime > TL) break;
     }
-
-    // –ß‚·
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
 
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
@@ -631,12 +623,6 @@ ll Solve(int problem_num, Hypers hypers)
   return score;
 }
 
-/////////////////////////////////////////////////////////////////////////
-/*
-ƒƒ‚
-
-*/
-/////////////////////////////////////////////////////////////////////////
 int main()
 {
   srand((unsigned)time(NULL));

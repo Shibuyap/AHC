@@ -67,7 +67,7 @@ struct Judge
     for (int i = 0; i < n; i++) {
       int64_t t, w;
       cin >> t >> w;
-      cards.push_back(Card { (CardType)t, w, 0ll });
+      cards.push_back(Card{ (CardType)t, w, 0ll });
     }
     return cards;
   }
@@ -78,7 +78,7 @@ struct Judge
     for (int i = 0; i < m; i++) {
       int64_t h, v;
       cin >> h >> v;
-      projects.push_back(Project { h, v });
+      projects.push_back(Project{ h, v });
     }
     return projects;
   }
@@ -101,7 +101,7 @@ struct Judge
     for (int i = 0; i < k; i++) {
       int64_t t, w, p;
       cin >> t >> w >> p;
-      cards.push_back(Card { (CardType)t, w, p });
+      cards.push_back(Card{ (CardType)t, w, p });
     }
     return cards;
   }

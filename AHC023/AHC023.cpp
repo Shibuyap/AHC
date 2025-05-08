@@ -27,7 +27,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -52,7 +51,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
@@ -166,13 +166,11 @@ namespace /* 関節点ライブラリ */
 void SetUp()
 {
   M = 0;
-  rep(i, 100)
-  {
+  for (int i = 0; i < (100); ++i) {
     SVec[i].clear();
     DVec[i].clear();
   }
-  rep(i, 44000)
-  {
+  for (int i = 0; i < (44000); ++i) {
     Used[i] = 0;
   }
 }
@@ -182,8 +180,7 @@ void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
   string strNum;
-  rep(i, 4)
-  {
+  for (int i = 0; i < (4); ++i) {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
@@ -196,46 +193,40 @@ void Input(int problemNum)
   if (!ifs.is_open()) {
     int TTT, HHH, WWW;
     cin >> TTT >> HHH >> WWW >> SX;
-    rep(i, H - 1)
-    {
+    for (int i = 0; i < (H - 1); ++i) {
       string str;
       cin >> str;
-      rep(j, W) { ho[i][j] = str[j] - '0'; }
+      for (int j = 0; j < (W); ++j) { ho[i][j] = str[j] - '0'; }
     }
-    rep(i, H)
-    {
+    for (int i = 0; i < (H); ++i) {
       string str;
       cin >> str;
-      rep(j, W - 1) { ve[i][j] = str[j] - '0'; }
+      for (int j = 0; j < (W - 1); ++j) { ve[i][j] = str[j] - '0'; }
     }
     cin >> K;
-    rep(i, K) { cin >> S[i] >> D[i]; }
+    for (int i = 0; i < (K); ++i) { cin >> S[i] >> D[i]; }
   }
   // ファイル入力する
   else {
     int TTT, HHH, WWW;
     ifs >> TTT >> HHH >> WWW >> SX;
-    rep(i, H - 1)
-    {
+    for (int i = 0; i < (H - 1); ++i) {
       string str;
       ifs >> str;
-      rep(j, W) { ho[i][j] = str[j] - '0'; }
+      for (int j = 0; j < (W); ++j) { ho[i][j] = str[j] - '0'; }
     }
-    rep(i, H)
-    {
+    for (int i = 0; i < (H); ++i) {
       string str;
       ifs >> str;
-      rep(j, W - 1) { ve[i][j] = str[j] - '0'; }
+      for (int j = 0; j < (W - 1); ++j) { ve[i][j] = str[j] - '0'; }
     }
     ifs >> K;
-    rep(i, K) { ifs >> S[i] >> D[i]; }
+    for (int i = 0; i < (K); ++i) { ifs >> S[i] >> D[i]; }
   }
 
-  rep(i, H)
-  {
-    rep(j, W)
-    {
-      rep(k, 4) { wall[i][j][k] = 0; }
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) {
+      for (int k = 0; k < (4); ++k) { wall[i][j][k] = 0; }
       if (i == 0) {
         wall[i][j][0] = 1;
       }
@@ -271,29 +262,26 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, K)
-  {
+  for (int i = 0; i < (K); ++i) {
     S[i]--;
     D[i]--;
     Crop crop;
     crop.id = i + 1;
     crop.s = S[i];
     crop.d = D[i];
-    rep(l, 1)
-    {
+    for (int l = 0; l < (1); ++l) {
       if (S[i] - l < 0)break;
       SVec[S[i] - l].push_back(crop);
     }
     DVec[D[i]].push_back(crop);
   }
 
-  rep(i, T)
-  {
+  for (int i = 0; i < (T); ++i) {
     sort(SVec[i].begin(), SVec[i].end(), compD);
     sort(DVec[i].begin(), DVec[i].end(), compS);
   }
 
-  // rep(i, T) {
+  // for (int i = 0; i < (T); ++i) {
   //   cout << i << " : ";
   //   for (auto x : SVec[i]) {
   //     cout << x.d << ' ';
@@ -308,8 +296,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
-    {
+    for (int i = 0; i < (4); ++i) {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
     }
@@ -324,7 +311,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 ll CalcScore()
 {
   ll sum = 0;
-  rep(i, M) { sum += D[ansK[i] - 1] - S[ansK[i] - 1] + 1; }
+  for (int i = 0; i < (M); ++i) { sum += D[ansK[i] - 1] - S[ansK[i] - 1] + 1; }
   ll res = 1000000LL * sum / HWT;
   return res;
 }
@@ -338,8 +325,7 @@ bool OKCheck(const int x, const int y, const vector<vector<int>>& use)
     return false;
   }
   int blankCount = 0;
-  rep(i, 4)
-  {
+  for (int i = 0; i < (4); ++i) {
     if (wall[x][y][i]) continue;
     int nx = x + dx[i];
     int ny = y + dy[i];
@@ -360,15 +346,12 @@ int bfsQueue[10000][2];
 bool NGCheck_BFS(const vector<vector<int>>& use)
 {
   int f[H][W];
-  rep(i, H)
-  {
-    rep(j, W) { f[i][j] = 0; }
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) { f[i][j] = 0; }
   }
   int cnt = 0;
-  rep(i, H)
-  {
-    rep(j, W)
-    {
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) {
       if (use[i][j] == -1) {
         cnt++;
       }
@@ -388,8 +371,7 @@ bool NGCheck_BFS(const vector<vector<int>>& use)
     int x = bfsQueue[head][0];
     int y = bfsQueue[head][1];
     head++;
-    rep(i, 4)
-    {
+    for (int i = 0; i < (4); ++i) {
       if (wall[x][y][i]) {
         continue;
       }
@@ -414,9 +396,8 @@ int dijkstraQueue[110][410][2];
 bool NGCheck_Dijkstra(const vector<vector<int>>& use)
 {
   int f[H][W];
-  rep(i, H)
-  {
-    rep(j, W) { f[i][j] = INF; }
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) { f[i][j] = INF; }
   }
 
   int cnt = 0;
@@ -430,15 +411,13 @@ bool NGCheck_Dijkstra(const vector<vector<int>>& use)
   dijkstraQueue[hash][tails[hash]][1] = SY;
   tails[hash]++;
 
-  rep(turn, T)
-  {
+  for (int turn = 0; turn < (T); ++turn) {
     while (heads[turn] < tails[turn]) {
       int x = dijkstraQueue[turn][heads[turn]][0];
       int y = dijkstraQueue[turn][heads[turn]][1];
       int val = turn - 1;
       heads[turn]++;
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         if (wall[x][y][i]) {
           continue;
         }
@@ -465,9 +444,8 @@ bool NGCheck_Dijkstra(const vector<vector<int>>& use)
 double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<vector<int>>& use, const int walkCount)
 {
   int f[H][W];
-  rep(i, H)
-  {
-    rep(j, W) { f[i][j] = INF; }
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) { f[i][j] = INF; }
   }
 
 
@@ -482,16 +460,14 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
 
   vector<int> days;
   int kind[110] = {};
-  rep(turn, T)
-  {
+  for (int turn = 0; turn < (T); ++turn) {
     while (heads[turn] < tails[turn]) {
       kind[turn] = 1;
       int x = dijkstraQueue[turn][heads[turn]][0];
       int y = dijkstraQueue[turn][heads[turn]][1];
       int val = turn - 1;
       heads[turn]++;
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         if (wall[x][y][i]) {
           continue;
         }
@@ -512,8 +488,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
   }
 
   double score = 1e9;
-  rep(i, days.size())
-  {
+  for (int i = 0; i < (days.size()); ++i) {
     int day = days[i];
     if (d == day) {
       score += 1e5 / ((i + 1) * (i + 1));
@@ -522,8 +497,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
       score -= (double)abs(d - day) / ((i + 1) * (i + 1));
     }
   }
-  rep(i, 110)
-  {
+  for (int i = 0; i < (110); ++i) {
     score += kind[i] * 1e6;
   }
   score += walkCount * 1e5;
@@ -536,13 +510,10 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use
   double score = 100;
   use[sx][sy] = d;
 
-  rep(i, H)
-  {
-    rep(j, W)
-    {
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) {
       if (use[i][j] != -1) {
-        rep(k, 4)
-        {
+        for (int k = 0; k < (4); ++k) {
           if (wall[i][j][k])continue;
           if (use[i + dx[k]][j + dy[k]] != -1) {
             if (use[i + dx[k]][j + dy[k]] == use[i][j]) {
@@ -565,13 +536,13 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use
 void Method1()
 {
   vector<vector<int>> use(20, vector<int>(20));
-  rep(i, H)
-  {
-    rep(j, W) { use[i][j] = -1; }
+  for (int i = 0; i < (H); ++i) {
+    for (int j = 0; j < (W); ++j) {
+      use[i][j] = -1;
+    }
   }
 
-  rep(turn, T)
-  {
+  for (int turn = 0; turn < (T); ++turn) {
     // 設置
     drep(i, SVec[turn].size())
     {
@@ -586,8 +557,7 @@ void Method1()
       map<int, P> mp;     // {頂点番号,座標}
       map<P, int> mpInv;  // {座標,頂点番号}
       // 空のグラフ作成
-      rep(i, HW)
-      {
+      for (int i = 0; i < (HW); ++i) {
         int x = i / H;
         int y = i % H;
         if (use[x][y] == -1) {
@@ -598,12 +568,10 @@ void Method1()
         }
       }
       // エッジ
-      rep(num, mp.size())
-      {
+      for (int num = 0; num < mp.size(); ++num) {
         int x = mp[num].first;
         int y = mp[num].second;
-        rep(j, 4)
-        {
+        for (int j = 0; j < (4); ++j) {
           if (wall[x][y][j]) continue;
           int nx = x + dx[j];
           int ny = y + dy[j];
@@ -621,8 +589,7 @@ void Method1()
         aps.insert(ap);
       }
       vector<P> blanks;
-      rep(i, mp.size())
-      {
+      for (int i = 0; i < mp.size(); ++i) {
         if (aps.find(i) != aps.end()) {
           continue;
         }
@@ -631,10 +598,8 @@ void Method1()
       std::shuffle(blanks.begin(), blanks.end(), engine);
 
       int walkCount[H][W];
-      rep(j, H)
-      {
-        rep(k, W)
-        {
+      for (int j = 0; j < (H); ++j) {
+        for (int k = 0; k < (W); ++k) {
           walkCount[j][k] = INF;
         }
       }
@@ -645,8 +610,7 @@ void Method1()
         int x = que.front().first;
         int y = que.front().second;
         que.pop();
-        rep(j, 4)
-        {
+        for (int j = 0; j < (4); ++j) {
           if (wall[x][y][j])continue;
           int nx = x + dx[j];
           int ny = y + dy[j];
@@ -708,10 +672,8 @@ void Method1()
     }
 
     // 収穫
-    rep(i, H)
-    {
-      rep(j, W)
-      {
+    for (int i = 0; i < (H); ++i) {
+      for (int j = 0; j < (W); ++j) {
         if (use[i][j] == turn) {
           use[i][j] = -1;
         }
@@ -725,16 +687,14 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     cout << M << endl;
-    rep(i, M)
-    {
+    for (int i = 0; i < (M); ++i) {
       cout << ansK[i] << ' ' << ansX[i] << ' ' << ansY[i] << ' ' << ansS[i] + 1
         << endl;
     }
   }
   else {
     ofs << M << endl;
-    rep(i, M)
-    {
+    for (int i = 0; i < (M); ++i) {
       ofs << ansK[i] << ' ' << ansX[i] << ' ' << ansY[i] << ' ' << ansS[i] + 1
         << endl;
     }
@@ -791,8 +751,7 @@ int main()
     ll sum = 0;
     srep(i, 0, 20)
     {
-      rep(j, 1)
-      {
+      for (int j = 0; j < (1); ++j) {
         ll score = Solve(i);
         sum += score;
         cout << "num = " << i << ", ";
