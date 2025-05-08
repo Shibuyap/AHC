@@ -283,7 +283,7 @@ public:
     return true;
   }
 
-  bool attempt_move(int dir, int x, int y, int& nx, int& ny) {
+  bool attempt_move(int dir, int x, int y, int& nx, int& ny) const {
     nx = x;
     ny = y;
     if (!is_out_of_range(nx + DX[dir], ny + DY[dir])) {
@@ -464,7 +464,7 @@ int create_ans(Answer& answer, Board& board) {
   int y = board.Y[0];
   rep(i, m) {
     auto vp = bfs(board, x, y, board.X[i], board.Y[i]);
-    for (auto p : vp) {
+    for (const auto& p : vp) {
       if (p.first == 0) {
         move_one(board, answer, p.second, x, y);
       }
@@ -530,7 +530,7 @@ static void simulate_best(Board& board, Answer& answer, const Answer& best_answe
   }
 }
 
-Answer build_initial_solution_2(Board& board) {
+static Answer build_initial_solution_2(Board& board) {
   Answer answer;
   answer.initialize_state();
   create_ans(answer, board);
@@ -545,7 +545,7 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-void run_simulated_annealing(Board& board, Answer& answer, AnnealingParams annealingParams) {
+static void run_simulated_annealing(Board& board, Answer& answer, AnnealingParams annealingParams) {
   Answer best_answer;
   best_answer.Copy(answer);
 
