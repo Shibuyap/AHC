@@ -151,15 +151,23 @@ public:
   int current_score;
   int ans[2000][2];
   int ans_count;
-  int add_flags_2[n + 2][n + 2][4];
+  int add_flags[m][4];
+  int add_flags_2[n + 2][n + 2][m][4];
 
   void initialize_state() {
     current_score = 0;
     ans_count = 0;
+    for (int i = 0; i < (m); ++i) {
+      for (int j = 0; j < (4); ++j) {
+        add_flags[i][j] = 0;
+      }
+    }
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
-        for (int l = 0; l < (4); ++l) {
-          add_flags_2[i][j][l] = 0;
+        for (int k = 0; k < (m); ++k) {
+          for (int l = 0; l < (4); ++l) {
+            add_flags_2[i][j][k][l] = 0;
+          }
         }
       }
     }
@@ -173,10 +181,17 @@ public:
         ans[i][j] = src.ans[i][j];
       }
     }
+    for (int i = 0; i < (m); ++i) {
+      for (int j = 0; j < (4); ++j) {
+        add_flags[i][j] = src.add_flags[i][j];
+      }
+    }
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
-        for (int l = 0; l < (4); ++l) {
-          add_flags_2[i][j][l] = src.add_flags_2[i][j][l];
+        for (int k = 0; k < (m); ++k) {
+          for (int l = 0; l < (4); ++l) {
+            add_flags_2[i][j][k][l] = src.add_flags_2[i][j][k][l];
+          }
         }
       }
     }
@@ -464,7 +479,7 @@ private:
           skate_one(board, answer, p.second, x, y);
         }
         for (int j = 0; j < (4); ++j) {
-          if (answer.add_flags_2[x][y][j] == 1) {
+          if (answer.add_flags_2[x][y][i][j] == 1) {
             add_one(board, answer, j, x, y);
           }
         }
@@ -475,6 +490,11 @@ private:
       if (i == m - 1) {
         break;
       }
+      for (int j = 0; j < (4); ++j) {
+        if (answer.add_flags[i][j] == 1) {
+          add_one(board, answer, j, x, y);
+        }
+      }
     }
     return calculate_score(answer);
   }
@@ -483,14 +503,30 @@ private:
     board.init_board();
     create_ans(answer, board);
 
+    for (int i = 0; i < m; i++) {
+      int x = board.X[i];
+      int y = board.Y[i];
+      for (int j = 0; j < (4); ++j) {
+        if (answer.add_flags[i][j] == 1) {
+          int nx = x + DX[j];
+          int ny = y + DY[j];
+          if (board.board[nx][ny] != -2) {
+            answer.add_flags[i][j] = 0;
+          }
+        }
+      }
+    }
+
     for (int i = 0; i < n + 2; ++i) {
       for (int j = 0; j < n + 2; ++j) {
-        for (int l = 0; l < 4; ++l) {
-          if (answer.add_flags_2[i][j][l] == 1) {
-            int nx = i + DX[l];
-            int ny = j + DY[l];
-            if (board.board[nx][ny] != -2) {
-              answer.add_flags_2[i][j][l] = 0;
+        for (int k = 0; k < m; ++k) {
+          for (int l = 0; l < 4; ++l) {
+            if (answer.add_flags_2[i][j][k][l] == 1) {
+              int nx = i + DX[l];
+              int ny = j + DY[l];
+              if (board.board[nx][ny] != -2) {
+                answer.add_flags_2[i][j][k][l] = 0;
+              }
             }
           }
         }
@@ -505,13 +541,17 @@ private:
     return answer;
   }
 
-  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int turn, int& lastRockX, int& lastRockY, int& lastRockDir) {
+  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int& mm, int turn, int& lastRockX, int& lastRockY, int& lastRockDir, int& lastRockMM) {
     x = board.X[0];
     y = board.Y[0];
+    mm = 0;
     lastRockX = -1;
     lastRockY = -1;
     board.init_board();
     for (int i = 0; i < (turn); ++i) {
+      if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
+        mm++;
+      }
       if (best_answer.ans[i][0] == 0) {
         x += DX[best_answer.ans[i][1]];
         y += DY[best_answer.ans[i][1]];
@@ -530,7 +570,11 @@ private:
           lastRockX = x;
           lastRockX = y;
           lastRockDir = best_answer.ans[i][1];
+          lastRockMM = mm;
         }
+      }
+      if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
+        mm++;
       }
     }
   }
@@ -540,43 +584,52 @@ private:
   //------------------------------------------------------------------------------
   enum class OpType
   {
-    OP1, OP2
+    OP1, OP2, OP3
   };
 
   struct OperationCtx
   {
     OpType type;
-    int a1{ -1 }, a2{ -1 }, a3{ -1 }, a4{ -1 }; // indices used by each op
+    int a1{ -1 }, a2{ -1 }, a3{ -1 }, a4{ -1 }, a5{ -1 }; // indices used by each op
   };
 
   // Pick an operation type from thresholds
-  inline OpType pick_op(uint32_t rnd, const int th[2]) {
-    return  (rnd < th[0]) ? OpType::OP1 : OpType::OP2;
+  inline OpType pick_op(uint32_t rnd, const int th[3]) {
+    return (rnd < th[0]) ? OpType::OP1
+      : (rnd < th[1]) ? OpType::OP2
+      : OpType::OP3;
   }
 
   //------------------------------------------------------------------------------
   // "Apply" & "Rollback" of neighbourhood moves ------------------------------
   //------------------------------------------------------------------------------
 
-  // Return false when OP2 aborts (ra2 == -1)
+  // Return false when OP3 aborts (ra2 == -1)
   bool apply_op(OperationCtx& ctx, Answer& ans, const Answer& best, Board& board, uint32_t(*rnd)()) {
     switch (ctx.type) {
     case OpType::OP1:
     {
-      ctx.a1 = rnd() % (best.ans_count - 1);
+      ctx.a1 = rnd() % (m - 1);
       ctx.a2 = rnd() % 4;
-      int _1, _2, _3, _4;
-      simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a1, _1, _2, _3);
-      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a2] ^= 1;
+      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
       return true;
     }
     case OpType::OP2:
     {
       ctx.a1 = rnd() % (best.ans_count - 1);
+      ctx.a2 = rnd() % 4;
+      int _1, _2, _3, _4;
+      simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a5, ctx.a1, _1, _2, _3, _4);
+      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      return true;
+    }
+    case OpType::OP3:
+    {
+      ctx.a1 = rnd() % (best.ans_count - 1);
       int _1, _2, _3;
-      simulate_best(board, ans, best, _1, _2, ctx.a1, ctx.a2, ctx.a3, ctx.a4);
+      simulate_best(board, ans, best, _1, _2, _3, ctx.a1, ctx.a2, ctx.a3, ctx.a4, ctx.a5);
       if (ctx.a2 == -1) return false;              // abort – same as original
-      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a4] ^= 1;
+      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
       return true;
     }
     }
@@ -587,10 +640,13 @@ private:
   void rollback_op(const OperationCtx& ctx, Answer& ans) {
     switch (ctx.type) {
     case OpType::OP1:
-      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a2] ^= 1;
+      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
       break;
     case OpType::OP2:
-      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a4] ^= 1;
+      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      break;
+    case OpType::OP3:
+      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
       break;
     }
   }
@@ -621,7 +677,7 @@ private:
 
       // ---------- generate & apply neighbourhood move ----------
       OperationCtx op;
-      op.type = pick_op(rand_xorshift() % param.operation_thresholds[1], param.operation_thresholds);
+      op.type = pick_op(rand_xorshift() % param.operation_thresholds[2], param.operation_thresholds);
       if (!apply_op(op, answer, best, board, rand_xorshift)) continue;
 
       // ---------- evaluate new solution ----------
@@ -692,8 +748,8 @@ int main() {
   annealingParams.start_temperature[9] = 2048.0;
   annealingParams.end_temperature = 0.0;
   annealingParams.score_scale = 12345.0;
-  annealingParams.operation_thresholds[0] = 200;
-  annealingParams.operation_thresholds[1] = 300;
+  annealingParams.operation_thresholds[0] = 100;
+  annealingParams.operation_thresholds[1] = 200;
   annealingParams.operation_thresholds[2] = 300;
   annealingParams.operation_thresholds[3] = 400;
   annealingParams.operation_thresholds[4] = 500;
@@ -721,6 +777,45 @@ int main() {
           << "time = " << setw(5) << get_elapsed_time() << ", "
           << endl;
       }
+    }
+  }
+  else if (exec_mode == 3) {
+    int loop_count = 0;
+    AnnealingParams best_annealingParams;
+    ll best_sum_score = 0;
+
+    while (true) {
+      AnnealingParams new_annealingParams;
+      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
+      new_annealingParams.end_temperature = 0.0;
+      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
+      new_annealingParams.operation_thresholds[0] = rand() % 101;
+
+      ll sum_score = 0;
+      for (int i = 0; i < 15; ++i) {
+        ll score = solve_case(i, new_annealingParams);
+        sum_score += score;
+
+        // シード0が悪ければ打ち切り
+        if (i == 0 && score < 0) {
+          break;
+        }
+      }
+
+      cerr << "loop_count = " << loop_count
+        << ", sum_score = " << sum_score
+        << ", start_temperature = " << new_annealingParams.start_temperature[0]
+        << ", end_temperature = " << new_annealingParams.end_temperature
+        << ", score_scale = " << new_annealingParams.score_scale
+        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
+        << endl;
+
+      if (sum_score > best_sum_score) {
+        best_sum_score = sum_score;
+        best_annealingParams = new_annealingParams;
+      }
+
+      loop_count++;
     }
   }
 
