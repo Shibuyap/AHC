@@ -29,11 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
-
 using namespace std;
 
 typedef long long int ll;
@@ -162,15 +157,15 @@ public:
   void initialize_state() {
     current_score = 0;
     ans_count = 0;
-    rep(i, m) {
-      rep(j, 4) {
+    for (int i = 0; i < (m); ++i) {
+      for (int j = 0; j < (4); ++j) {
         add_flags[i][j] = 0;
       }
     }
-    rep(i, n + 2) {
-      rep(j, n + 2) {
-        rep(k, m) {
-          rep(l, 4) {
+    for (int i = 0; i < (n + 2); ++i) {
+      for (int j = 0; j < (n + 2); ++j) {
+        for (int k = 0; k < (m); ++k) {
+          for (int l = 0; l < (4); ++l) {
             add_flags_2[i][j][k][l] = 0;
           }
         }
@@ -181,20 +176,20 @@ public:
   void Copy(const Answer& src) {
     current_score = src.current_score;
     ans_count = src.ans_count;
-    rep(i, ans_count) {
-      rep(j, 2) {
+    for (int i = 0; i < (ans_count); ++i) {
+      for (int j = 0; j < (2); ++j) {
         ans[i][j] = src.ans[i][j];
       }
     }
-    rep(i, m) {
-      rep(j, 4) {
+    for (int i = 0; i < (m); ++i) {
+      for (int j = 0; j < (4); ++j) {
         add_flags[i][j] = src.add_flags[i][j];
       }
     }
-    rep(i, n + 2) {
-      rep(j, n + 2) {
-        rep(k, m) {
-          rep(l, 4) {
+    for (int i = 0; i < (n + 2); ++i) {
+      for (int j = 0; j < (n + 2); ++j) {
+        for (int k = 0; k < (m); ++k) {
+          for (int l = 0; l < (4); ++l) {
             add_flags_2[i][j][k][l] = src.add_flags_2[i][j][k][l];
           }
         }
@@ -219,8 +214,8 @@ public:
   }
 
   void init_board() {
-    rep(i, n + 2) {
-      rep(j, n + 2) {
+    for (int i = 0; i < (n + 2); ++i) {
+      for (int j = 0; j < (n + 2); ++j) {
         if (i == 0 || i == n + 1 || j == 0 || j == n + 1) {
           board[i][j] = -1;
         }
@@ -229,10 +224,10 @@ public:
         }
       }
     }
-    rep(i, m) {
+    for (int i = 0; i < (m); ++i) {
       board[X[i]][Y[i]] = i;
     }
-    srep(i, 1, n + 1) {
+    for (int i = 1; i < n + 1; ++i) {
       rock_row_count[i] = 0;
       rock_col_count[i] = 0;
     }
@@ -243,7 +238,7 @@ public:
     ny = y;
     if (dir == 0) {
       int ma = 0;
-      rep(i, rock_col_count[y]) {
+      for (int i = 0; i < (rock_col_count[y]); ++i) {
         if (ma < rock_col[y][i] && rock_col[y][i] < x) {
           ma = rock_col[y][i];
         }
@@ -252,7 +247,7 @@ public:
     }
     else if (dir == 1) {
       int ma = 0;
-      rep(i, rock_row_count[x]) {
+      for (int i = 0; i < (rock_row_count[x]); ++i) {
         if (ma < rock_row[x][i] && rock_row[x][i] < y) {
           ma = rock_row[x][i];
         }
@@ -261,7 +256,7 @@ public:
     }
     else if (dir == 2) {
       int mi = n + 1;
-      rep(i, rock_col_count[y]) {
+      for (int i = 0; i < (rock_col_count[y]); ++i) {
         if (x < rock_col[y][i] && rock_col[y][i] < mi) {
           mi = rock_col[y][i];
         }
@@ -270,7 +265,7 @@ public:
     }
     else if (dir == 3) {
       int mi = n + 1;
-      rep(i, rock_row_count[x]) {
+      for (int i = 0; i < (rock_row_count[x]); ++i) {
         if (y < rock_row[x][i] && rock_row[x][i] < mi) {
           mi = rock_row[x][i];
         }
@@ -350,18 +345,18 @@ static Board input_data(int case_num) {
   if (!ifs.is_open()) {
     // 標準入力
     cin >> _n >> _m;
-    rep(i, m) {
+    for (int i = 0; i < (m); ++i) {
       cin >> board.X[i] >> board.Y[i];
     }
   }
   else {
     // ファイル入力
     ifs >> _n >> _m;
-    rep(i, m) {
+    for (int i = 0; i < (m); ++i) {
       ifs >> board.X[i] >> board.Y[i];
     }
   }
-  rep(i, m) {
+  for (int i = 0; i < (m); ++i) {
     board.X[i]++;
     board.Y[i]++;
   }
@@ -385,13 +380,13 @@ static int calculate_score(const Answer& answer) {
 static void output_data(const Answer& answer, ofstream& ofs) {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, answer.ans_count) {
+    for (int i = 0; i < (answer.ans_count); ++i) {
       cout << C[answer.ans[i][0]] << ' ' << MOVE[answer.ans[i][1]] << endl;
     }
   }
   else {
     // ファイル出力
-    rep(i, answer.ans_count) {
+    for (int i = 0; i < (answer.ans_count); ++i) {
       ofs << C[answer.ans[i][0]] << ' ' << MOVE[answer.ans[i][1]] << endl;
     }
   }
@@ -401,8 +396,8 @@ Queue2D que2d;
 int dp[n + 2][n + 2];
 int dp2[n + 2][n + 2][4];
 static vector<P> bfs(Board& board, int sx, int sy, int gx, int gy) {
-  rep(i, n + 2) {
-    rep(j, n + 2) {
+  for (int i = 0; i < (n + 2); ++i) {
+    for (int j = 0; j < (n + 2); ++j) {
       dp[i][j] = INT_INF;
     }
   }
@@ -417,7 +412,7 @@ static vector<P> bfs(Board& board, int sx, int sy, int gx, int gy) {
       break;
     }
     int nx, ny;
-    drep(i, 4) {
+    for (int i = 3; i >= 0; --i) {
       if (board.attempt_skate(i, x, y, nx, ny)) {
         if (dp[x][y] + 1 < dp[nx][ny]) {
           dp[nx][ny] = dp[x][y] + 1;
@@ -458,11 +453,11 @@ static vector<P> bfs(Board& board, int sx, int sy, int gx, int gy) {
   return vp;
 }
 
-int create_ans(Answer& answer, Board& board) {
+static int create_ans(Answer& answer, Board& board) {
   answer.ans_count = 0;
   int x = board.X[0];
   int y = board.Y[0];
-  rep(i, m) {
+  for (int i = 0; i < (m); ++i) {
     auto vp = bfs(board, x, y, board.X[i], board.Y[i]);
     for (const auto& p : vp) {
       if (p.first == 0) {
@@ -471,7 +466,7 @@ int create_ans(Answer& answer, Board& board) {
       else {
         skate_one(board, answer, p.second, x, y);
       }
-      rep(j, 4) {
+      for (int j = 0; j < (4); ++j) {
         if (answer.add_flags_2[x][y][i][j] == 1) {
           add_one(board, answer, j, x, y);
         }
@@ -483,7 +478,7 @@ int create_ans(Answer& answer, Board& board) {
     if (i == m - 1) {
       break;
     }
-    rep(j, 4) {
+    for (int j = 0; j < (4); ++j) {
       if (answer.add_flags[i][j] == 1) {
         add_one(board, answer, j, x, y);
       }
@@ -499,7 +494,7 @@ static void simulate_best(Board& board, Answer& answer, const Answer& best_answe
   lastRockX = -1;
   lastRockY = -1;
   board.init_board();
-  rep(i, turn) {
+  for (int i = 0; i < (turn); ++i) {
     if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
       mm++;
     }
@@ -692,7 +687,7 @@ int main() {
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    srep(i, 0, 15) {
+    for (int i = 0; i < 15; ++i) {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
@@ -720,7 +715,7 @@ int main() {
       new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
-      srep(i, 0, 15) {
+      for (int i = 0; i < 15; ++i) {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 
