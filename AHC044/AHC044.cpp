@@ -370,15 +370,13 @@ void build_initial_solution() {
   }
 
   CopyToAns();
-  int k = 25000;
-  ansScore = SortEasy(k);
+  ansScore = SortEasy(25000);
   rep(i, n) {
     a[i] = sortedA[i];
     b[i] = sortedB[i];
     cntDoubleAns[i] = cntDouble[i];
   }
   CopyToBest();
-
 
   if (mode != 0 && mode != 3) {
     cout << loop1 << endl;
@@ -438,39 +436,22 @@ void SimulatedAnnealing(Hypers hypers) {
           ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
         }
       }
+      ra3 = Rand() % 2;
 
       ClearEarlyCheckArr();
-      UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
-
-      keep1 = a[ra1];
-      a[ra1] = ra2;
-
-      UpdateEarlyCheck(ra2, cntDoubleAns[ra1] / 2.0);
-      double earlyScore = CalcEarlyCheck();
-      if (earlyScore < ansScore - 10000) {
-        ok = 0;
-      }
-    }
-    else if (raMode < hypers.Partition[1]) {
-      saitakuCount[1][1]++;
-      ra1 = Rand() % n;
-      if (Rand() % 2 == 0) {
-        ra2 = Rand() % n;
+      if (ra3 == 0) {
+        UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
+        keep1 = a[ra1];
+        a[ra1] = ra2;
+        UpdateEarlyCheck(ra2, cntDoubleAns[ra1] / 2.0);
       }
       else {
-        ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
-        while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
-        }
+        UpdateEarlyCheck(b[ra1], -cntDoubleAns[ra1] / 2.0);
+        keep1 = b[ra1];
+        b[ra1] = ra2;
+        UpdateEarlyCheck(ra2, cntDoubleAns[ra1] / 2.0);
       }
 
-      ClearEarlyCheckArr();
-      UpdateEarlyCheck(b[ra1], -cntDoubleAns[ra1] / 2.0);
-
-      keep1 = b[ra1];
-      b[ra1] = ra2;
-
-      UpdateEarlyCheck(ra2, cntDoubleAns[ra1] / 2.0);
       double earlyScore = CalcEarlyCheck();
       if (earlyScore < ansScore - 10000) {
         ok = 0;
@@ -488,41 +469,24 @@ void SimulatedAnnealing(Hypers hypers) {
           ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
         }
       }
+      ra3 = Rand() % 2;
 
       ClearEarlyCheckArr();
-      UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
-      UpdateEarlyCheck(a[ra2], -cntDoubleAns[ra2] / 2.0);
-
-      swap(a[ra1], a[ra2]);
-
-      UpdateEarlyCheck(a[ra1], cntDoubleAns[ra1] / 2.0);
-      UpdateEarlyCheck(a[ra2], cntDoubleAns[ra2] / 2.0);
-      double earlyScore = CalcEarlyCheck();
-      if (earlyScore < ansScore - 10000) {
-        ok = 0;
-      }
-    }
-    else if (raMode < hypers.Partition[3]) {
-      saitakuCount[3][1]++;
-      ra1 = Rand() % n;
-      if (Rand() % 10 == 0) {
-        ra2 = Rand() % n;
+      if (ra3 == 0) {
+        UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
+        UpdateEarlyCheck(a[ra2], -cntDoubleAns[ra2] / 2.0);
+        swap(a[ra1], a[ra2]);
+        UpdateEarlyCheck(a[ra1], cntDoubleAns[ra1] / 2.0);
+        UpdateEarlyCheck(a[ra2], cntDoubleAns[ra2] / 2.0);
       }
       else {
-        ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
-        while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
-        }
+        UpdateEarlyCheck(b[ra1], -cntDoubleAns[ra1] / 2.0);
+        UpdateEarlyCheck(b[ra2], -cntDoubleAns[ra2] / 2.0);
+        swap(b[ra1], b[ra2]);
+        UpdateEarlyCheck(b[ra1], cntDoubleAns[ra1] / 2.0);
+        UpdateEarlyCheck(b[ra2], cntDoubleAns[ra2] / 2.0);
       }
 
-      ClearEarlyCheckArr();
-      UpdateEarlyCheck(b[ra1], -cntDoubleAns[ra1] / 2.0);
-      UpdateEarlyCheck(b[ra2], -cntDoubleAns[ra2] / 2.0);
-
-      swap(b[ra1], b[ra2]);
-
-      UpdateEarlyCheck(b[ra1], cntDoubleAns[ra1] / 2.0);
-      UpdateEarlyCheck(b[ra2], cntDoubleAns[ra2] / 2.0);
       double earlyScore = CalcEarlyCheck();
       if (earlyScore < ansScore - 10000) {
         ok = 0;
@@ -549,9 +513,7 @@ void SimulatedAnnealing(Hypers hypers) {
       ClearEarlyCheckArr();
       UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
       UpdateEarlyCheck(b[ra2], -cntDoubleAns[ra2] / 2.0);
-
       swap(a[ra1], b[ra2]);
-
       UpdateEarlyCheck(a[ra1], cntDoubleAns[ra1] / 2.0);
       UpdateEarlyCheck(b[ra2], cntDoubleAns[ra2] / 2.0);
       double earlyScore = CalcEarlyCheck();
@@ -559,39 +521,11 @@ void SimulatedAnnealing(Hypers hypers) {
         ok = 0;
       }
     }
-    else if (raMode < hypers.Partition[6]) {
-      saitakuCount[6][1]++;
-      ra1 = Rand() % (n);
-      if (Rand() % 2 == 0) {
-        ra2 = Rand() % n;
-      }
-      else {
-        ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
-        while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
-        }
-      }
-      rep(i, n) {
-        if (a[i] == ra1) {
-          a[i] = ra2;
-        }
-        else if (a[i] == ra2) {
-          a[i] = ra1;
-        }
-        if (b[i] == ra1) {
-          b[i] = ra2;
-        }
-        else if (b[i] == ra2) {
-          b[i] = ra1;
-        }
-      }
-    }
 
     // スコア計算
-    int k = 25000;
     double tmpScore2 = 0;
     if (ok) {
-      tmpScore2 = SortEasy(k);
+      tmpScore2 = SortEasy(25000);
 
       double diffScore2 = (tmpScore2 - ansScore) * hypers.MultipleValue;
       double prob2 = exp(diffScore2 / temp);
@@ -616,19 +550,21 @@ void SimulatedAnnealing(Hypers hypers) {
       // 元に戻す
       if (raMode < hypers.Partition[0]) {
         saitakuCount[0][0]++;
-        a[ra1] = keep1;
-      }
-      else if (raMode < hypers.Partition[1]) {
-        saitakuCount[1][0]++;
-        b[ra1] = keep1;
+        if (ra3 == 0) {
+          a[ra1] = keep1;
+        }
+        else {
+          b[ra1] = keep1;
+        }
       }
       else if (raMode < hypers.Partition[2]) {
         saitakuCount[2][0]++;
-        swap(a[ra1], a[ra2]);
-      }
-      else if (raMode < hypers.Partition[3]) {
-        saitakuCount[3][0]++;
-        swap(b[ra1], b[ra2]);
+        if (ra3 == 0) {
+          swap(a[ra1], a[ra2]);
+        }
+        else {
+          swap(b[ra1], b[ra2]);
+        }
       }
       else if (raMode < hypers.Partition[4]) {
         saitakuCount[4][0]++;
@@ -637,23 +573,6 @@ void SimulatedAnnealing(Hypers hypers) {
       else if (raMode < hypers.Partition[5]) {
         saitakuCount[5][0]++;
         swap(a[ra1], b[ra2]);
-      }
-      else if (raMode < hypers.Partition[6]) {
-        saitakuCount[6][0]++;
-        rep(i, n) {
-          if (a[i] == ra1) {
-            a[i] = ra2;
-          }
-          else if (a[i] == ra2) {
-            a[i] = ra1;
-          }
-          if (b[i] == ra1) {
-            b[i] = ra2;
-          }
-          else if (b[i] == ra2) {
-            b[i] = ra1;
-          }
-        }
       }
     }
   }
@@ -711,9 +630,9 @@ int main() {
   HYPERS.StartTemp = 2000000.0;
   HYPERS.EndTemp = 0.0;
   HYPERS.MultipleValue = 12345.0;
-  HYPERS.Partition[0] = 100;
+  HYPERS.Partition[0] = 200;
   HYPERS.Partition[1] = 200;
-  HYPERS.Partition[2] = 300;
+  HYPERS.Partition[2] = 400;
   HYPERS.Partition[3] = 400;
   HYPERS.Partition[4] = 440;
   HYPERS.Partition[5] = 700;
