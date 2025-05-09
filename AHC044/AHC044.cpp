@@ -29,18 +29,14 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
-
 using namespace std;
 
 typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t rand_u32() {
+static uint32_t rand_u32()
+{
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -54,7 +50,8 @@ static uint32_t rand_u32() {
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double rand_unit() {
+static double rand_unit()
+{
   return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
 }
 
@@ -69,11 +66,13 @@ int mode;
 
 std::chrono::steady_clock::time_point startTimeClock;
 
-static void reset_timer() {
+static void reset_timer()
+{
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-static double get_elapsed_time() {
+static double get_elapsed_time()
+{
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
@@ -93,26 +92,30 @@ std::array<double, n> est_counts_cur;
 int best_score;
 std::array<int, n> best_a, best_b;
 
-static void copy_to_best() {
+static void copy_to_best()
+{
   best_score = current_score;
   best_a = a;
   best_b = b;
 }
 
-static void copy_from_best() {
+static void copy_from_best()
+{
   current_score = best_score;
   a = best_a;
   b = best_b;
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
-void init_state() {
+void init_state()
+{
   current_score = 0;
   best_score = 0;
 }
 
 // 入力を受け取る関数
-void read_input(int problemNum) {
+void read_input(int problemNum)
+{
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());
@@ -121,28 +124,29 @@ void read_input(int problemNum) {
     // 標準入力
     int nnn, lll;
     cin >> nnn >> lll;
-    rep(i, n)cin >> t[i];
+    for (int i = 0; i < n; ++i)cin >> t[i];
   }
   else {
     // ファイル入力
     int nnn, lll;
     ifs >> nnn >> lll;
-    rep(i, n)ifs >> t[i];
+    for (int i = 0; i < n; ++i)ifs >> t[i];
   }
 
   vector<P> vp;
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     vp.push_back(P(t[i], i));
   }
   sort(vp.begin(), vp.end());
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     t[i] = vp[i].first;
     orig_index[i] = vp[i].second;
   }
 }
 
 // 出力ファイルストリームを開く関数
-static void open_output_file(int probNum, ofstream& ofs) {
+static void open_output_file(int probNum, ofstream& ofs)
+{
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
@@ -151,10 +155,11 @@ static void open_output_file(int probNum, ofstream& ofs) {
 }
 
 // スコアを計算する関数
-static int calc_score_exact() {
+static int calc_score_exact()
+{
   int cnt[n] = {};
   int now = 0;
-  rep(i, L) {
+  for (int i = 0; i < L; ++i) {
     cnt[now]++;
     if (cnt[now] % 2 == 1) {
       now = a[now];
@@ -165,16 +170,17 @@ static int calc_score_exact() {
   }
 
   int res = 1000000;
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     res -= abs(cnt[i] - t[i]);
   }
   return res;
 }
 
-static int calc_score_sample(int k) {
+static int calc_score_sample(int k)
+{
   int cnt[n] = {};
   int now = 0;
-  rep(i, k) {
+  for (int i = 0; i < k; ++i) {
     cnt[now]++;
     if (cnt[now] % 2 == 1) {
       now = a[now];
@@ -186,7 +192,7 @@ static int calc_score_sample(int k) {
 
   double res = 1000000;
   double mul = (double)L / k;
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     res -= abs(cnt[i] * mul - t[i]);
   }
   return max(0, (int)round(res));
@@ -196,10 +202,11 @@ std::array<int, n> sorted_a;
 std::array<int, n> sorted_b;
 vector<P> cnt_sorted_vec(n);
 std::array<int, n> index_map;
-static int sort_and_estimate(int k) {
+static int sort_and_estimate(int k)
+{
   int cnt[n] = {};
   int now = 0;
-  rep(i, k) {
+  for (int i = 0; i < k; ++i) {
     cnt[now]++;
     if (cnt[now] % 2 == 1) {
       now = a[now];
@@ -208,7 +215,7 @@ static int sort_and_estimate(int k) {
       now = b[now];
     }
     if (i == 10000) {
-      rep(j, n) {
+      for (int j = 0; j < n; ++j) {
         if (t[j] > 100 && cnt[j] == 0) {
           return 0;
         }
@@ -216,21 +223,21 @@ static int sort_and_estimate(int k) {
     }
   }
 
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     cnt_sorted_vec[i].first = cnt[i];
     cnt_sorted_vec[i].second = i;
   }
   sort(cnt_sorted_vec.begin(), cnt_sorted_vec.end());
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     index_map[cnt_sorted_vec[i].second] = i;
   }
 
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     sorted_a[i] = index_map[a[cnt_sorted_vec[i].second]];
     sorted_b[i] = index_map[b[cnt_sorted_vec[i].second]];
   }
 
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     if (cnt_sorted_vec[i].first > 0) {
       break;
     }
@@ -240,12 +247,12 @@ static int sort_and_estimate(int k) {
   }
 
   double mul = (double)L / k;
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     est_counts[i] = cnt_sorted_vec[i].first * mul;
   }
 
   double res = 1000000;
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     res -= abs(est_counts[i] - t[i]);
   }
   return max(0, (int)round(res));
@@ -254,18 +261,20 @@ static int sort_and_estimate(int k) {
 std::array<double, n> est_counts_buf;
 int dfs_stack[1000];
 int dfs_tmp[1000];
-static void reset_estimated_counts() {
-  rep(i, n) {
+static void reset_estimated_counts()
+{
+  for (int i = 0; i < n; ++i) {
     est_counts_buf[i] = est_counts_cur[i];
   }
 }
 
-static void update_estimated_counts(int s, double diff) {
+static void update_estimated_counts(int s, double diff)
+{
   dfs_stack[0] = s;
   int tail = 1;
-  rep(dfs, 6) {
+  for (int dfs = 0; dfs < 6; ++dfs) {
     int newTail = 0;
-    rep(j, tail) {
+    for (int j = 0; j < tail; ++j) {
       int num = dfs_stack[j];
       est_counts_buf[num] += diff;
       dfs_tmp[newTail] = a[num];
@@ -273,7 +282,7 @@ static void update_estimated_counts(int s, double diff) {
       dfs_tmp[newTail] = b[num];
       newTail++;
     }
-    rep(j, newTail) {
+    for (int j = 0; j < newTail; ++j) {
       dfs_stack[j] = dfs_tmp[j];
     }
     tail = newTail;
@@ -281,34 +290,37 @@ static void update_estimated_counts(int s, double diff) {
   }
 }
 
-static double calc_estimated_score() {
+static double calc_estimated_score()
+{
   double res = 1000000;
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     res -= abs(est_counts_buf[i] - t[i]);
   }
   return max(0, (int)round(res));
 }
 
 // 解答を出力する関数
-static void write_output(ofstream& ofs) {
+static void write_output(ofstream& ofs)
+{
   int aaaa[n] = {};
   int bbbb[n] = {};
-  rep(i, n) {
+  for (int i = 0; i < n; ++i) {
     aaaa[orig_index[i]] = orig_index[a[i]];
     bbbb[orig_index[i]] = orig_index[b[i]];
   }
 
   if (mode == 0) {
     // 標準出力
-    rep(i, n)cout << aaaa[i] << ' ' << bbbb[i] << endl;
+    for (int i = 0; i < n; ++i)cout << aaaa[i] << ' ' << bbbb[i] << endl;
   }
   else {
     // ファイル出力
-    rep(i, n)ofs << aaaa[i] << ' ' << bbbb[i] << endl;
+    for (int i = 0; i < n; ++i)ofs << aaaa[i] << ' ' << bbbb[i] << endl;
   }
 }
 
-static void build_initial_solution() {
+static void build_initial_solution()
+{
   // ランダムに初期解作成
   double now_time = get_elapsed_time();
   int loop_cnt_init = 0;
@@ -321,13 +333,13 @@ static void build_initial_solution() {
     }
 
     if (rand_u32() % 2 == 0) {
-      rep(i, n) {
+      for (int i = 0; i < n; ++i) {
         a[i] = rand_u32() % n;
         b[i] = rand_u32() % n;
       }
     }
     else {
-      rep(i, n) {
+      for (int i = 0; i < n; ++i) {
         if (rand_u32() % 2 == 0) {
           a[i] = rand_u32() % n;
           b[i] = (i + 1) % n;
@@ -372,8 +384,7 @@ struct AnnealingParams
 static int get_omomi_rand_n()
 {
   int diff_sum[n] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     if (i > 0) {
       diff_sum[i] = diff_sum[i - 1];
     }
@@ -384,14 +395,15 @@ static int get_omomi_rand_n()
   return res;
 }
 
-static void simulated_annealing(AnnealingParams hypers) {
+static void simulated_annealing(AnnealingParams hypers)
+{
   copy_to_best();
 
   build_initial_solution();
 
   int saitakuCount[10][2];
-  rep(i, 10) {
-    rep(j, 2) {
+  for (int i = 0; i < 10; ++i) {
+    for (int j = 0; j < 2; ++j) {
       saitakuCount[i][j] = 0;
     }
   }
@@ -536,7 +548,7 @@ static void simulated_annealing(AnnealingParams hypers) {
     if (ok) {
       // 採用
       current_score = tmpScore2;
-      rep(i, n) {
+      for (int i = 0; i < n; ++i) {
         a[i] = sorted_a[i];
         b[i] = sorted_b[i];
         est_counts_cur[i] = est_counts[i];
@@ -580,7 +592,7 @@ static void simulated_annealing(AnnealingParams hypers) {
 
   if (mode != 0 && mode != 3) {
     cout << loop_cnt_sa << endl;
-    rep(i, 10) {
+    for (int i = 0; i < 10; ++i) {
       cout << saitakuCount[i][1] - saitakuCount[i][0] << " / " << saitakuCount[i][1] << endl;
     }
   }
@@ -589,7 +601,8 @@ static void simulated_annealing(AnnealingParams hypers) {
 }
 
 // 問題を解く関数
-static ll solve_case(int problem_num, AnnealingParams hypers) {
+static ll solve_case(int problem_num, AnnealingParams hypers)
+{
   reset_timer();
 
   // 複数ケース回すときに内部状態を初期値に戻す
@@ -619,7 +632,8 @@ static ll solve_case(int problem_num, AnnealingParams hypers) {
   return score;
 }
 
-int main() {
+int main()
+{
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     rand_u32();
@@ -647,7 +661,7 @@ int main() {
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 15) {
+    for (int i = 0; i < 15; ++i) {
       ll score = solve_case(i, HYPERS);
       sum += score;
       if (mode == 1) {
