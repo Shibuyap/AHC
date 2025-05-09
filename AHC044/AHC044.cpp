@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -53,45 +54,26 @@ static uint32_t rand_u32() {
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double Rand01() {
+static double rand_unit() {
   return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
 }
 
-static double RandRange(double l, double r) {
-  return l + (r - l) * Rand01();
-}
+constexpr ll INF = 1001001001001001001;
+constexpr int INT_INF = 1001001001;
 
-// [l, r]
-static uint32_t RandRange(uint32_t l, uint32_t r) {
-  return l + rand_u32() % (r - l + 1);
-}
+constexpr int DX[4] = { -1, 0, 1, 0 };
+constexpr int DY[4] = { 0, -1, 0, 1 };
 
-
-static void FisherYates(int* data, int n) {
-  for (int i = n - 1; i >= 0; i--) {
-    int j = rand_u32() % (i + 1);
-    int swa = data[i];
-    data[i] = data[j];
-    data[j] = swa;
-  }
-}
-
-const ll INF = 1001001001001001001;
-const int INT_INF = 1001001001;
-
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
-
-double TL = 1.8;
+constexpr double TIME_LIMIT = 1.8;
 int mode;
 
 std::chrono::steady_clock::time_point startTimeClock;
 
-static void ResetTime() {
+static void reset_timer() {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-static double GetNowTime() {
+static double get_elapsed_time() {
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
@@ -99,32 +81,28 @@ static double GetNowTime() {
 const int n = 100;
 const int L = 500000;
 
-int t[n];
-int orig_index[n];
+std::array<int, n> t;
+std::array<int, n> orig_index;
 
 int current_score;
-int a[n], b[n];
+std::array<int, n> a, b;
 
-double est_counts[n];
-double est_counts_cur[n];
+std::array<double, n> est_counts;
+std::array<double, n> est_counts_cur;
 
 int best_score;
-int best_a[n], best_b[n];
+std::array<int, n> best_a, best_b;
 
-static void CopyToBest() {
+static void copy_to_best() {
   best_score = current_score;
-  rep(i, n) {
-    best_a[i] = a[i];
-    best_b[i] = b[i];
-  }
+  best_a = a;
+  best_b = b;
 }
 
-static void CopyToAns() {
+static void copy_from_best() {
   current_score = best_score;
-  rep(i, n) {
-    a[i] = best_a[i];
-    b[i] = best_b[i];
-  }
+  a = best_a;
+  b = best_b;
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
@@ -214,10 +192,10 @@ static int calc_score_sample(int k) {
   return max(0, (int)round(res));
 }
 
-int sorted_a[n];
-int sorted_b[n];
+std::array<int, n> sorted_a;
+std::array<int, n> sorted_b;
 vector<P> cnt_sorted_vec(n);
-int index_map[n];
+std::array<int, n> index_map;
 static int sort_and_estimate(int k) {
   int cnt[n] = {};
   int now = 0;
@@ -273,7 +251,7 @@ static int sort_and_estimate(int k) {
   return max(0, (int)round(res));
 }
 
-double est_counts_buf[n];
+std::array<double, n> est_counts_buf;
 int dfs_stack[1000];
 int dfs_tmp[1000];
 static void reset_estimated_counts() {
@@ -332,14 +310,14 @@ static void write_output(ofstream& ofs) {
 
 static void build_initial_solution() {
   // ランダムに初期解作成
-  double nowTime = GetNowTime();
-  int loop1 = 0;
+  double now_time = get_elapsed_time();
+  int loop_cnt_init = 0;
   while (true) {
-    loop1++;
+    loop_cnt_init++;
 
-    if (loop1 % 100 == 0) {
-      nowTime = GetNowTime();
-      if (nowTime > TL / 10) break;
+    if (loop_cnt_init % 100 == 0) {
+      now_time = get_elapsed_time();
+      if (now_time > TIME_LIMIT / 10) break;
     }
 
     if (rand_u32() % 2 == 0) {
@@ -364,25 +342,21 @@ static void build_initial_solution() {
     int tmpScore = sort_and_estimate(10000);
     if (tmpScore > current_score) {
       current_score = tmpScore;
-      rep(i, n) {
-        a[i] = sorted_a[i];
-        b[i] = sorted_b[i];
-      }
-      CopyToBest();
+      a = sorted_a;
+      b = sorted_b;
+      copy_to_best();
     }
   }
 
-  CopyToAns();
+  copy_from_best();
   current_score = sort_and_estimate(25000);
-  rep(i, n) {
-    a[i] = sorted_a[i];
-    b[i] = sorted_b[i];
-    est_counts_cur[i] = est_counts[i];
-  }
-  CopyToBest();
+  a = sorted_a;
+  b = sorted_b;
+  est_counts_cur = est_counts;
+  copy_to_best();
 
   if (mode != 0 && mode != 3) {
-    cout << loop1 << endl;
+    cout << loop_cnt_init << endl;
   }
 }
 
@@ -411,7 +385,7 @@ static int get_omomi_rand_n()
 }
 
 static void simulated_annealing(AnnealingParams hypers) {
-  CopyToBest();
+  copy_to_best();
 
   build_initial_solution();
 
@@ -422,21 +396,21 @@ static void simulated_annealing(AnnealingParams hypers) {
     }
   }
 
-  double nowTime = GetNowTime();
+  double now_time = get_elapsed_time();
   const double START_TEMP = hypers.start_temp;
   const double END_TEMP = hypers.end_temp;
-  int loop2 = 0;
+  int loop_cnt_sa = 0;
   while (true) {
-    loop2++;
+    loop_cnt_sa++;
 
-    if (loop2 % 100 == 0) {
-      nowTime = GetNowTime();
-      if (nowTime > TL) break;
+    if (loop_cnt_sa % 100 == 0) {
+      now_time = get_elapsed_time();
+      if (now_time > TIME_LIMIT) break;
     }
 
     int ok = 1;
 
-    double progressRatio = nowTime / TL;
+    double progressRatio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
     int NEAR = 5;
     int raMode = rand_u32() % hypers.operation_thresholds[9];
@@ -556,7 +530,7 @@ static void simulated_annealing(AnnealingParams hypers) {
 
       double diffScore2 = (tmpScore2 - current_score) * hypers.multiple_value;
       double prob2 = exp(diffScore2 / temp);
-      ok = prob2 > Rand01();
+      ok = prob2 > rand_unit();
     }
 
     if (ok) {
@@ -570,7 +544,7 @@ static void simulated_annealing(AnnealingParams hypers) {
 
       // Best解よりもいいか
       if (current_score > best_score) {
-        CopyToBest();
+        copy_to_best();
       }
     }
     else {
@@ -605,18 +579,18 @@ static void simulated_annealing(AnnealingParams hypers) {
   }
 
   if (mode != 0 && mode != 3) {
-    cout << loop2 << endl;
+    cout << loop_cnt_sa << endl;
     rep(i, 10) {
       cout << saitakuCount[i][1] - saitakuCount[i][0] << " / " << saitakuCount[i][1] << endl;
     }
   }
 
-  CopyToAns();
+  copy_from_best();
 }
 
 // 問題を解く関数
 static ll solve_case(int problem_num, AnnealingParams hypers) {
-  ResetTime();
+  reset_timer();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   init_state();
@@ -683,7 +657,7 @@ int main() {
         cout << "num = " << setw(2) << i << ", ";
         cout << "score = " << setw(4) << score << ", ";
         cout << "sum = " << setw(5) << sum << ", ";
-        cout << "time = " << setw(5) << GetNowTime() << ", ";
+        cout << "time = " << setw(5) << get_elapsed_time() << ", ";
         cout << endl;
       }
     }
