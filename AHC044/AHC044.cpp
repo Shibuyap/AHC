@@ -100,18 +100,19 @@ const int n = 100;
 const int L = 500000;
 
 int t[n];
-int searchT[n];
+int orig_index[n];
 
-int ansScore;
+int current_score;
 int a[n], b[n];
-double cntDouble[n];
-double cntDoubleAns[n];
 
-int best_ansScore;
+double est_counts[n];
+double est_counts_cur[n];
+
+int best_score;
 int best_a[n], best_b[n];
 
 void CopyToBest() {
-  best_ansScore = ansScore;
+  best_score = current_score;
   rep(i, n) {
     best_a[i] = a[i];
     best_b[i] = b[i];
@@ -119,7 +120,7 @@ void CopyToBest() {
 }
 
 void CopyToAns() {
-  ansScore = best_ansScore;
+  current_score = best_score;
   rep(i, n) {
     a[i] = best_a[i];
     b[i] = best_b[i];
@@ -127,13 +128,13 @@ void CopyToAns() {
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
-void SetUp() {
-  ansScore = 0;
-  best_ansScore = 0;
+void init_state() {
+  current_score = 0;
+  best_score = 0;
 }
 
 // 入力を受け取る関数
-void Input(int problemNum) {
+void read_input(int problemNum) {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());
@@ -158,12 +159,12 @@ void Input(int problemNum) {
   sort(vp.begin(), vp.end());
   rep(i, n) {
     t[i] = vp[i].first;
-    searchT[i] = vp[i].second;
+    orig_index[i] = vp[i].second;
   }
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs) {
+void open_output_file(int probNum, ofstream& ofs) {
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
@@ -172,7 +173,7 @@ void OpenOfs(int probNum, ofstream& ofs) {
 }
 
 // スコアを計算する関数
-int CalcScore() {
+int calc_score_exact() {
   int cnt[n] = {};
   int now = 0;
   rep(i, L) {
@@ -192,7 +193,7 @@ int CalcScore() {
   return res;
 }
 
-int CalcScoreEasy(int k) {
+int calc_score_sample(int k) {
   int cnt[n] = {};
   int now = 0;
   rep(i, k) {
@@ -213,11 +214,11 @@ int CalcScoreEasy(int k) {
   return max(0, (int)round(res));
 }
 
-int sortedA[n];
-int sortedB[n];
-vector<P> sortVec(n);
-int convertArr[n];
-int SortEasy(int k) {
+int sorted_a[n];
+int sorted_b[n];
+vector<P> cnt_sorted_vec(n);
+int index_map[n];
+int sort_and_estimate(int k) {
   int cnt[n] = {};
   int now = 0;
   rep(i, k) {
@@ -238,21 +239,21 @@ int SortEasy(int k) {
   }
 
   rep(i, n) {
-    sortVec[i].first = cnt[i];
-    sortVec[i].second = i;
+    cnt_sorted_vec[i].first = cnt[i];
+    cnt_sorted_vec[i].second = i;
   }
-  sort(sortVec.begin(), sortVec.end());
+  sort(cnt_sorted_vec.begin(), cnt_sorted_vec.end());
   rep(i, n) {
-    convertArr[sortVec[i].second] = i;
-  }
-
-  rep(i, n) {
-    sortedA[i] = convertArr[a[sortVec[i].second]];
-    sortedB[i] = convertArr[b[sortVec[i].second]];
+    index_map[cnt_sorted_vec[i].second] = i;
   }
 
   rep(i, n) {
-    if (sortVec[i].first > 0) {
+    sorted_a[i] = index_map[a[cnt_sorted_vec[i].second]];
+    sorted_b[i] = index_map[b[cnt_sorted_vec[i].second]];
+  }
+
+  rep(i, n) {
+    if (cnt_sorted_vec[i].first > 0) {
       break;
     }
     if (t[i] > 100) {
@@ -262,61 +263,61 @@ int SortEasy(int k) {
 
   double mul = (double)L / k;
   rep(i, n) {
-    cntDouble[i] = sortVec[i].first * mul;
+    est_counts[i] = cnt_sorted_vec[i].first * mul;
   }
 
   double res = 1000000;
   rep(i, n) {
-    res -= abs(cntDouble[i] - t[i]);
+    res -= abs(est_counts[i] - t[i]);
   }
   return max(0, (int)round(res));
 }
 
-double earlyCheckArr[n];
-int earlyCheckNumArr[1000];
-int earlyCheckNumArr2[1000];
-void ClearEarlyCheckArr() {
+double est_counts_buf[n];
+int dfs_stack[1000];
+int dfs_tmp[1000];
+void reset_estimated_counts() {
   rep(i, n) {
-    earlyCheckArr[i] = cntDoubleAns[i];
+    est_counts_buf[i] = est_counts_cur[i];
   }
 }
 
-void UpdateEarlyCheck(int s, double diff) {
-  earlyCheckNumArr[0] = s;
+void update_estimated_counts(int s, double diff) {
+  dfs_stack[0] = s;
   int tail = 1;
   rep(dfs, 6) {
     int newTail = 0;
     rep(j, tail) {
-      int num = earlyCheckNumArr[j];
-      earlyCheckArr[num] += diff;
-      earlyCheckNumArr2[newTail] = a[num];
+      int num = dfs_stack[j];
+      est_counts_buf[num] += diff;
+      dfs_tmp[newTail] = a[num];
       newTail++;
-      earlyCheckNumArr2[newTail] = b[num];
+      dfs_tmp[newTail] = b[num];
       newTail++;
     }
     rep(j, newTail) {
-      earlyCheckNumArr[j] = earlyCheckNumArr2[j];
+      dfs_stack[j] = dfs_tmp[j];
     }
     tail = newTail;
     diff /= 2;
   }
 }
 
-double CalcEarlyCheck() {
+double calc_estimated_score() {
   double res = 1000000;
   rep(i, n) {
-    res -= abs(earlyCheckArr[i] - t[i]);
+    res -= abs(est_counts_buf[i] - t[i]);
   }
   return max(0, (int)round(res));
 }
 
 // 解答を出力する関数
-void Output(ofstream& ofs) {
+void write_output(ofstream& ofs) {
   int aaaa[n] = {};
   int bbbb[n] = {};
   rep(i, n) {
-    aaaa[searchT[i]] = searchT[a[i]];
-    bbbb[searchT[i]] = searchT[b[i]];
+    aaaa[orig_index[i]] = orig_index[a[i]];
+    bbbb[orig_index[i]] = orig_index[b[i]];
   }
 
   if (mode == 0) {
@@ -360,23 +361,23 @@ void build_initial_solution() {
       }
     }
 
-    int tmpScore = SortEasy(10000);
-    if (tmpScore > ansScore) {
-      ansScore = tmpScore;
+    int tmpScore = sort_and_estimate(10000);
+    if (tmpScore > current_score) {
+      current_score = tmpScore;
       rep(i, n) {
-        a[i] = sortedA[i];
-        b[i] = sortedB[i];
+        a[i] = sorted_a[i];
+        b[i] = sorted_b[i];
       }
       CopyToBest();
     }
   }
 
   CopyToAns();
-  ansScore = SortEasy(25000);
+  current_score = sort_and_estimate(25000);
   rep(i, n) {
-    a[i] = sortedA[i];
-    b[i] = sortedB[i];
-    cntDoubleAns[i] = cntDouble[i];
+    a[i] = sorted_a[i];
+    b[i] = sorted_b[i];
+    est_counts_cur[i] = est_counts[i];
   }
   CopyToBest();
 
@@ -386,15 +387,15 @@ void build_initial_solution() {
 }
 
 // ハイパーパラメータ
-struct Hypers
+struct AnnealingParams
 {
-  double StartTemp;
-  double EndTemp;
-  double MultipleValue;
-  int Partition[10];
+  double start_temp;
+  double end_temp;
+  double multiple_value;
+  int operation_thresholds[10];
 };
 
-void SimulatedAnnealing(Hypers hypers) {
+void simulated_annealing(AnnealingParams hypers) {
   CopyToBest();
 
   build_initial_solution();
@@ -407,8 +408,8 @@ void SimulatedAnnealing(Hypers hypers) {
   }
 
   double nowTime = GetNowTime();
-  const double START_TEMP = hypers.StartTemp;
-  const double END_TEMP = hypers.EndTemp;
+  const double START_TEMP = hypers.start_temp;
+  const double END_TEMP = hypers.end_temp;
   int loop2 = 0;
   while (true) {
     loop2++;
@@ -423,10 +424,10 @@ void SimulatedAnnealing(Hypers hypers) {
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
     int NEAR = 5;
-    int raMode = Rand() % hypers.Partition[9];
+    int raMode = Rand() % hypers.operation_thresholds[9];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
-    if (raMode < hypers.Partition[0]) {
+    if (raMode < hypers.operation_thresholds[0]) {
       saitakuCount[0][1]++;
       ra1 = Rand() % n;
       if (Rand() % 2 == 0) {
@@ -440,26 +441,26 @@ void SimulatedAnnealing(Hypers hypers) {
       }
       ra3 = Rand() % 2;
 
-      ClearEarlyCheckArr();
+      reset_estimated_counts();
       if (ra3 == 0) {
-        UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
+        update_estimated_counts(a[ra1], -est_counts_cur[ra1] / 2.0);
         keep1 = a[ra1];
         a[ra1] = ra2;
-        UpdateEarlyCheck(ra2, cntDoubleAns[ra1] / 2.0);
+        update_estimated_counts(ra2, est_counts_cur[ra1] / 2.0);
       }
       else {
-        UpdateEarlyCheck(b[ra1], -cntDoubleAns[ra1] / 2.0);
+        update_estimated_counts(b[ra1], -est_counts_cur[ra1] / 2.0);
         keep1 = b[ra1];
         b[ra1] = ra2;
-        UpdateEarlyCheck(ra2, cntDoubleAns[ra1] / 2.0);
+        update_estimated_counts(ra2, est_counts_cur[ra1] / 2.0);
       }
 
-      double earlyScore = CalcEarlyCheck();
-      if (earlyScore < ansScore - 10000) {
+      double earlyScore = calc_estimated_score();
+      if (earlyScore < current_score - 10000) {
         ok = 0;
       }
     }
-    else if (raMode < hypers.Partition[2]) {
+    else if (raMode < hypers.operation_thresholds[2]) {
       saitakuCount[2][1]++;
       ra1 = Rand() % n;
       if (Rand() % 10 == 0) {
@@ -473,33 +474,33 @@ void SimulatedAnnealing(Hypers hypers) {
       }
       ra3 = Rand() % 2;
 
-      ClearEarlyCheckArr();
+      reset_estimated_counts();
       if (ra3 == 0) {
-        UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
-        UpdateEarlyCheck(a[ra2], -cntDoubleAns[ra2] / 2.0);
+        update_estimated_counts(a[ra1], -est_counts_cur[ra1] / 2.0);
+        update_estimated_counts(a[ra2], -est_counts_cur[ra2] / 2.0);
         swap(a[ra1], a[ra2]);
-        UpdateEarlyCheck(a[ra1], cntDoubleAns[ra1] / 2.0);
-        UpdateEarlyCheck(a[ra2], cntDoubleAns[ra2] / 2.0);
+        update_estimated_counts(a[ra1], est_counts_cur[ra1] / 2.0);
+        update_estimated_counts(a[ra2], est_counts_cur[ra2] / 2.0);
       }
       else {
-        UpdateEarlyCheck(b[ra1], -cntDoubleAns[ra1] / 2.0);
-        UpdateEarlyCheck(b[ra2], -cntDoubleAns[ra2] / 2.0);
+        update_estimated_counts(b[ra1], -est_counts_cur[ra1] / 2.0);
+        update_estimated_counts(b[ra2], -est_counts_cur[ra2] / 2.0);
         swap(b[ra1], b[ra2]);
-        UpdateEarlyCheck(b[ra1], cntDoubleAns[ra1] / 2.0);
-        UpdateEarlyCheck(b[ra2], cntDoubleAns[ra2] / 2.0);
+        update_estimated_counts(b[ra1], est_counts_cur[ra1] / 2.0);
+        update_estimated_counts(b[ra2], est_counts_cur[ra2] / 2.0);
       }
 
-      double earlyScore = CalcEarlyCheck();
-      if (earlyScore < ansScore - 10000) {
+      double earlyScore = calc_estimated_score();
+      if (earlyScore < current_score - 10000) {
         ok = 0;
       }
     }
-    else if (raMode < hypers.Partition[4]) {
+    else if (raMode < hypers.operation_thresholds[4]) {
       saitakuCount[4][1]++;
       ra1 = Rand() % n;
       swap(a[ra1], b[ra1]);
     }
-    else if (raMode < hypers.Partition[5]) {
+    else if (raMode < hypers.operation_thresholds[5]) {
       saitakuCount[5][1]++;
       ra1 = Rand() % n;
       if (Rand() % 10 == 0) {
@@ -512,14 +513,14 @@ void SimulatedAnnealing(Hypers hypers) {
         }
       }
 
-      ClearEarlyCheckArr();
-      UpdateEarlyCheck(a[ra1], -cntDoubleAns[ra1] / 2.0);
-      UpdateEarlyCheck(b[ra2], -cntDoubleAns[ra2] / 2.0);
+      reset_estimated_counts();
+      update_estimated_counts(a[ra1], -est_counts_cur[ra1] / 2.0);
+      update_estimated_counts(b[ra2], -est_counts_cur[ra2] / 2.0);
       swap(a[ra1], b[ra2]);
-      UpdateEarlyCheck(a[ra1], cntDoubleAns[ra1] / 2.0);
-      UpdateEarlyCheck(b[ra2], cntDoubleAns[ra2] / 2.0);
-      double earlyScore = CalcEarlyCheck();
-      if (earlyScore < ansScore - 10000) {
+      update_estimated_counts(a[ra1], est_counts_cur[ra1] / 2.0);
+      update_estimated_counts(b[ra2], est_counts_cur[ra2] / 2.0);
+      double earlyScore = calc_estimated_score();
+      if (earlyScore < current_score - 10000) {
         ok = 0;
       }
     }
@@ -527,30 +528,30 @@ void SimulatedAnnealing(Hypers hypers) {
     // スコア計算
     double tmpScore2 = 0;
     if (ok) {
-      tmpScore2 = SortEasy(25000);
+      tmpScore2 = sort_and_estimate(25000);
 
-      double diffScore2 = (tmpScore2 - ansScore) * hypers.MultipleValue;
+      double diffScore2 = (tmpScore2 - current_score) * hypers.multiple_value;
       double prob2 = exp(diffScore2 / temp);
       ok = prob2 > Rand01();
     }
 
     if (ok) {
       // 採用
-      ansScore = tmpScore2;
+      current_score = tmpScore2;
       rep(i, n) {
-        a[i] = sortedA[i];
-        b[i] = sortedB[i];
-        cntDoubleAns[i] = cntDouble[i];
+        a[i] = sorted_a[i];
+        b[i] = sorted_b[i];
+        est_counts_cur[i] = est_counts[i];
       }
 
       // Best解よりもいいか
-      if (ansScore > best_ansScore) {
+      if (current_score > best_score) {
         CopyToBest();
       }
     }
     else {
       // 元に戻す
-      if (raMode < hypers.Partition[0]) {
+      if (raMode < hypers.operation_thresholds[0]) {
         saitakuCount[0][0]++;
         if (ra3 == 0) {
           a[ra1] = keep1;
@@ -559,7 +560,7 @@ void SimulatedAnnealing(Hypers hypers) {
           b[ra1] = keep1;
         }
       }
-      else if (raMode < hypers.Partition[2]) {
+      else if (raMode < hypers.operation_thresholds[2]) {
         saitakuCount[2][0]++;
         if (ra3 == 0) {
           swap(a[ra1], a[ra2]);
@@ -568,11 +569,11 @@ void SimulatedAnnealing(Hypers hypers) {
           swap(b[ra1], b[ra2]);
         }
       }
-      else if (raMode < hypers.Partition[4]) {
+      else if (raMode < hypers.operation_thresholds[4]) {
         saitakuCount[4][0]++;
         swap(a[ra1], b[ra1]);
       }
-      else if (raMode < hypers.Partition[5]) {
+      else if (raMode < hypers.operation_thresholds[5]) {
         saitakuCount[5][0]++;
         swap(a[ra1], b[ra2]);
       }
@@ -590,24 +591,24 @@ void SimulatedAnnealing(Hypers hypers) {
 }
 
 // 問題を解く関数
-ll Solve(int problem_num, Hypers hypers) {
+ll solve_case(int problem_num, AnnealingParams hypers) {
   ResetTime();
 
   // 複数ケース回すときに内部状態を初期値に戻す
-  SetUp();
+  init_state();
 
   // 入力受け取り
-  Input(problem_num);
+  read_input(problem_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(problem_num, ofs);
+  open_output_file(problem_num, ofs);
 
   // 焼きなまし
-  SimulatedAnnealing(hypers);
+  simulated_annealing(hypers);
 
   // 解答を出力
-  Output(ofs);
+  write_output(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -615,7 +616,7 @@ ll Solve(int problem_num, Hypers hypers) {
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = calc_score_exact();
   }
   return score;
 }
@@ -628,28 +629,28 @@ int main() {
 
   mode = 2;
 
-  Hypers HYPERS;
-  HYPERS.StartTemp = 2000000.0;
-  HYPERS.EndTemp = 0.0;
-  HYPERS.MultipleValue = 12345.0;
-  HYPERS.Partition[0] = 200;
-  HYPERS.Partition[1] = 200;
-  HYPERS.Partition[2] = 400;
-  HYPERS.Partition[3] = 400;
-  HYPERS.Partition[4] = 440;
-  HYPERS.Partition[5] = 700;
-  HYPERS.Partition[6] = 700;
-  HYPERS.Partition[7] = 700;
-  HYPERS.Partition[8] = 700;
-  HYPERS.Partition[9] = 700;
+  AnnealingParams HYPERS;
+  HYPERS.start_temp = 2000000.0;
+  HYPERS.end_temp = 0.0;
+  HYPERS.multiple_value = 12345.0;
+  HYPERS.operation_thresholds[0] = 200;
+  HYPERS.operation_thresholds[1] = 200;
+  HYPERS.operation_thresholds[2] = 400;
+  HYPERS.operation_thresholds[3] = 400;
+  HYPERS.operation_thresholds[4] = 440;
+  HYPERS.operation_thresholds[5] = 700;
+  HYPERS.operation_thresholds[6] = 700;
+  HYPERS.operation_thresholds[7] = 700;
+  HYPERS.operation_thresholds[8] = 700;
+  HYPERS.operation_thresholds[9] = 700;
 
   if (mode == 0) {
-    Solve(0, HYPERS);
+    solve_case(0, HYPERS);
   }
   else if (mode <= 2) {
     ll sum = 0;
     srep(i, 0, 15) {
-      ll score = Solve(i, HYPERS);
+      ll score = solve_case(i, HYPERS);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
