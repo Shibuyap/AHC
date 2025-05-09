@@ -39,7 +39,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t Rand() {
+static uint32_t rand_u32() {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -54,7 +54,7 @@ static uint32_t Rand() {
 }
 
 static double Rand01() {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
 }
 
 static double RandRange(double l, double r) {
@@ -63,13 +63,13 @@ static double RandRange(double l, double r) {
 
 // [l, r]
 static uint32_t RandRange(uint32_t l, uint32_t r) {
-  return l + Rand() % (r - l + 1);
+  return l + rand_u32() % (r - l + 1);
 }
 
 
-void FisherYates(int* data, int n) {
+static void FisherYates(int* data, int n) {
   for (int i = n - 1; i >= 0; i--) {
-    int j = Rand() % (i + 1);
+    int j = rand_u32() % (i + 1);
     int swa = data[i];
     data[i] = data[j];
     data[j] = swa;
@@ -87,11 +87,11 @@ int mode;
 
 std::chrono::steady_clock::time_point startTimeClock;
 
-void ResetTime() {
+static void ResetTime() {
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-double GetNowTime() {
+static double GetNowTime() {
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
@@ -111,7 +111,7 @@ double est_counts_cur[n];
 int best_score;
 int best_a[n], best_b[n];
 
-void CopyToBest() {
+static void CopyToBest() {
   best_score = current_score;
   rep(i, n) {
     best_a[i] = a[i];
@@ -119,7 +119,7 @@ void CopyToBest() {
   }
 }
 
-void CopyToAns() {
+static void CopyToAns() {
   current_score = best_score;
   rep(i, n) {
     a[i] = best_a[i];
@@ -164,7 +164,7 @@ void read_input(int problemNum) {
 }
 
 // 出力ファイルストリームを開く関数
-void open_output_file(int probNum, ofstream& ofs) {
+static void open_output_file(int probNum, ofstream& ofs) {
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
@@ -173,7 +173,7 @@ void open_output_file(int probNum, ofstream& ofs) {
 }
 
 // スコアを計算する関数
-int calc_score_exact() {
+static int calc_score_exact() {
   int cnt[n] = {};
   int now = 0;
   rep(i, L) {
@@ -193,7 +193,7 @@ int calc_score_exact() {
   return res;
 }
 
-int calc_score_sample(int k) {
+static int calc_score_sample(int k) {
   int cnt[n] = {};
   int now = 0;
   rep(i, k) {
@@ -218,7 +218,7 @@ int sorted_a[n];
 int sorted_b[n];
 vector<P> cnt_sorted_vec(n);
 int index_map[n];
-int sort_and_estimate(int k) {
+static int sort_and_estimate(int k) {
   int cnt[n] = {};
   int now = 0;
   rep(i, k) {
@@ -276,13 +276,13 @@ int sort_and_estimate(int k) {
 double est_counts_buf[n];
 int dfs_stack[1000];
 int dfs_tmp[1000];
-void reset_estimated_counts() {
+static void reset_estimated_counts() {
   rep(i, n) {
     est_counts_buf[i] = est_counts_cur[i];
   }
 }
 
-void update_estimated_counts(int s, double diff) {
+static void update_estimated_counts(int s, double diff) {
   dfs_stack[0] = s;
   int tail = 1;
   rep(dfs, 6) {
@@ -303,7 +303,7 @@ void update_estimated_counts(int s, double diff) {
   }
 }
 
-double calc_estimated_score() {
+static double calc_estimated_score() {
   double res = 1000000;
   rep(i, n) {
     res -= abs(est_counts_buf[i] - t[i]);
@@ -312,7 +312,7 @@ double calc_estimated_score() {
 }
 
 // 解答を出力する関数
-void write_output(ofstream& ofs) {
+static void write_output(ofstream& ofs) {
   int aaaa[n] = {};
   int bbbb[n] = {};
   rep(i, n) {
@@ -330,7 +330,7 @@ void write_output(ofstream& ofs) {
   }
 }
 
-void build_initial_solution() {
+static void build_initial_solution() {
   // ランダムに初期解作成
   double nowTime = GetNowTime();
   int loop1 = 0;
@@ -342,21 +342,21 @@ void build_initial_solution() {
       if (nowTime > TL / 10) break;
     }
 
-    if (Rand() % 2 == 0) {
+    if (rand_u32() % 2 == 0) {
       rep(i, n) {
-        a[i] = Rand() % n;
-        b[i] = Rand() % n;
+        a[i] = rand_u32() % n;
+        b[i] = rand_u32() % n;
       }
     }
     else {
       rep(i, n) {
-        if (Rand() % 2 == 0) {
-          a[i] = Rand() % n;
+        if (rand_u32() % 2 == 0) {
+          a[i] = rand_u32() % n;
           b[i] = (i + 1) % n;
         }
         else {
           a[i] = (i + 1) % n;
-          b[i] = Rand() % n;
+          b[i] = rand_u32() % n;
         }
       }
     }
@@ -395,7 +395,22 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-void simulated_annealing(AnnealingParams hypers) {
+static int get_omomi_rand_n()
+{
+  int diff_sum[n] = {};
+  rep(i, n)
+  {
+    if (i > 0) {
+      diff_sum[i] = diff_sum[i - 1];
+    }
+    diff_sum[i] += abs(t[i] - est_counts_cur[i]);
+  }
+  int ra = rand_u32() % diff_sum[n - 1];
+  int res = lower_bound(diff_sum, diff_sum + n, ra) - diff_sum;
+  return res;
+}
+
+static void simulated_annealing(AnnealingParams hypers) {
   CopyToBest();
 
   build_initial_solution();
@@ -424,22 +439,26 @@ void simulated_annealing(AnnealingParams hypers) {
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
     int NEAR = 5;
-    int raMode = Rand() % hypers.operation_thresholds[9];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
+    int raMode = rand_u32() % hypers.operation_thresholds[9];
+    int ra1, ra2, ra3;
+    int keep1;
     if (raMode < hypers.operation_thresholds[0]) {
       saitakuCount[0][1]++;
-      ra1 = Rand() % n;
-      if (Rand() % 2 == 0) {
-        ra2 = Rand() % n;
+
+      //ra1 = rand_u32() % n;
+      ra1 = get_omomi_rand_n();
+
+      if (rand_u32() % 2 == 0) {
+        //ra2 = rand_u32() % n;
+        ra2 = get_omomi_rand_n();
       }
       else {
-        ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
+        ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
+          ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
-      ra3 = Rand() % 2;
+      ra3 = rand_u32() % 2;
 
       reset_estimated_counts();
       if (ra3 == 0) {
@@ -462,17 +481,19 @@ void simulated_annealing(AnnealingParams hypers) {
     }
     else if (raMode < hypers.operation_thresholds[2]) {
       saitakuCount[2][1]++;
-      ra1 = Rand() % n;
-      if (Rand() % 10 == 0) {
-        ra2 = Rand() % n;
+      //ra1 = rand_u32() % n;
+      ra1 = get_omomi_rand_n();
+      if (rand_u32() % 10 == 0) {
+        //ra2 = rand_u32() % n;
+        ra2 = get_omomi_rand_n();
       }
       else {
-        ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
+        ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
+          ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
-      ra3 = Rand() % 2;
+      ra3 = rand_u32() % 2;
 
       reset_estimated_counts();
       if (ra3 == 0) {
@@ -497,19 +518,22 @@ void simulated_annealing(AnnealingParams hypers) {
     }
     else if (raMode < hypers.operation_thresholds[4]) {
       saitakuCount[4][1]++;
-      ra1 = Rand() % n;
+      //ra1 = rand_u32() % n;
+      ra1 = get_omomi_rand_n();
       swap(a[ra1], b[ra1]);
     }
     else if (raMode < hypers.operation_thresholds[5]) {
       saitakuCount[5][1]++;
-      ra1 = Rand() % n;
-      if (Rand() % 10 == 0) {
-        ra2 = Rand() % n;
+      //ra1 = rand_u32() % n;
+      ra1 = get_omomi_rand_n();
+      if (rand_u32() % 10 == 0) {
+        //ra2 = rand_u32() % n;
+        ra2 = get_omomi_rand_n();
       }
       else {
-        ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
+        ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + Rand() % (NEAR * 2 + 1) - NEAR;
+          ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
 
@@ -591,7 +615,7 @@ void simulated_annealing(AnnealingParams hypers) {
 }
 
 // 問題を解く関数
-ll solve_case(int problem_num, AnnealingParams hypers) {
+static ll solve_case(int problem_num, AnnealingParams hypers) {
   ResetTime();
 
   // 複数ケース回すときに内部状態を初期値に戻す
@@ -624,7 +648,7 @@ ll solve_case(int problem_num, AnnealingParams hypers) {
 int main() {
   srand((unsigned)time(NULL));
   while (rand() % 100) {
-    Rand();
+    rand_u32();
   }
 
   mode = 2;
