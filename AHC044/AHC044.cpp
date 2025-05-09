@@ -114,22 +114,22 @@ void init_state()
 }
 
 // 入力を受け取る関数
-void read_input(int problemNum)
+void read_input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
     // 標準入力
-    int nnn, lll;
-    cin >> nnn >> lll;
+    int _n, _l;
+    cin >> _n >> _l;
     for (int i = 0; i < n; ++i)cin >> t[i];
   }
   else {
     // ファイル入力
-    int nnn, lll;
-    ifs >> nnn >> lll;
+    int _n, _l;
+    ifs >> _n >> _l;
     for (int i = 0; i < n; ++i)ifs >> t[i];
   }
 
@@ -145,11 +145,11 @@ void read_input(int problemNum)
 }
 
 // 出力ファイルストリームを開く関数
-static void open_output_file(int probNum, ofstream& ofs)
+static void open_output_file(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }
@@ -191,9 +191,9 @@ static int calc_score_sample(int k)
   }
 
   double res = 1000000;
-  double mul = (double)L / k;
+  double scale_to_full = (double)L / k;
   for (int i = 0; i < n; ++i) {
-    res -= abs(cnt[i] * mul - t[i]);
+    res -= abs(cnt[i] * scale_to_full - t[i]);
   }
   return max(0, (int)round(res));
 }
@@ -246,9 +246,9 @@ static int sort_and_estimate(int k)
     }
   }
 
-  double mul = (double)L / k;
+  double scale_to_full = (double)L / k;
   for (int i = 0; i < n; ++i) {
-    est_counts[i] = cnt_sorted_vec[i].first * mul;
+    est_counts[i] = cnt_sorted_vec[i].first * scale_to_full;
   }
 
   double res = 1000000;
@@ -395,159 +395,152 @@ static int get_omomi_rand_n()
   return res;
 }
 
-static void simulated_annealing(AnnealingParams hypers)
+static void simulated_annealing(AnnealingParams params)
 {
   copy_to_best();
 
   build_initial_solution();
 
-  int saitakuCount[10][2];
+  int accept_stat[10][2];
   for (int i = 0; i < 10; ++i) {
     for (int j = 0; j < 2; ++j) {
-      saitakuCount[i][j] = 0;
+      accept_stat[i][j] = 0;
     }
   }
 
   double now_time = get_elapsed_time();
-  const double START_TEMP = hypers.start_temp;
-  const double END_TEMP = hypers.end_temp;
-  int loop_cnt_sa = 0;
+  const double START_TEMP = params.start_temp;
+  const double END_TEMP = params.end_temp;
+  int anneal_iter = 0;
   while (true) {
-    loop_cnt_sa++;
+    anneal_iter++;
 
-    if (loop_cnt_sa % 100 == 0) {
+    if (anneal_iter % 100 == 0) {
       now_time = get_elapsed_time();
       if (now_time > TIME_LIMIT) break;
     }
 
-    int ok = 1;
+    int accept_move = 1;
 
-    double progressRatio = now_time / TIME_LIMIT;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
-    int NEAR = 5;
-    int raMode = rand_u32() % hypers.operation_thresholds[9];
-    int ra1, ra2, ra3;
-    int keep1;
-    if (raMode < hypers.operation_thresholds[0]) {
-      saitakuCount[0][1]++;
+    const double progress_ratio = now_time / TIME_LIMIT;
+    const double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+    const int NEAR = 5;
+    int op_rand = rand_u32() % params.operation_thresholds[9];
+    int idx1, idx2, choice_flag;
+    int backup_dst;
+    if (op_rand < params.operation_thresholds[0]) {
+      accept_stat[0][1]++;
 
-      //ra1 = rand_u32() % n;
-      ra1 = get_omomi_rand_n();
+      idx1 = get_omomi_rand_n();
 
       if (rand_u32() % 2 == 0) {
-        //ra2 = rand_u32() % n;
-        ra2 = get_omomi_rand_n();
+        idx2 = get_omomi_rand_n();
       }
       else {
-        ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
-        while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
+        idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
+        while (idx2 < 0 || idx2 >= n) {
+          idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
-      ra3 = rand_u32() % 2;
+      choice_flag = rand_u32() % 2;
 
       reset_estimated_counts();
-      if (ra3 == 0) {
-        update_estimated_counts(a[ra1], -est_counts_cur[ra1] / 2.0);
-        keep1 = a[ra1];
-        a[ra1] = ra2;
-        update_estimated_counts(ra2, est_counts_cur[ra1] / 2.0);
+      if (choice_flag == 0) {
+        update_estimated_counts(a[idx1], -est_counts_cur[idx1] / 2.0);
+        backup_dst = a[idx1];
+        a[idx1] = idx2;
+        update_estimated_counts(idx2, est_counts_cur[idx1] / 2.0);
       }
       else {
-        update_estimated_counts(b[ra1], -est_counts_cur[ra1] / 2.0);
-        keep1 = b[ra1];
-        b[ra1] = ra2;
-        update_estimated_counts(ra2, est_counts_cur[ra1] / 2.0);
+        update_estimated_counts(b[idx1], -est_counts_cur[idx1] / 2.0);
+        backup_dst = b[idx1];
+        b[idx1] = idx2;
+        update_estimated_counts(idx2, est_counts_cur[idx1] / 2.0);
       }
 
       double earlyScore = calc_estimated_score();
       if (earlyScore < current_score - 10000) {
-        ok = 0;
+        accept_move = 0;
       }
     }
-    else if (raMode < hypers.operation_thresholds[2]) {
-      saitakuCount[2][1]++;
-      //ra1 = rand_u32() % n;
-      ra1 = get_omomi_rand_n();
+    else if (op_rand < params.operation_thresholds[2]) {
+      accept_stat[2][1]++;
+      idx1 = get_omomi_rand_n();
       if (rand_u32() % 10 == 0) {
-        //ra2 = rand_u32() % n;
-        ra2 = get_omomi_rand_n();
+        idx2 = get_omomi_rand_n();
       }
       else {
-        ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
-        while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
+        idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
+        while (idx2 < 0 || idx2 >= n) {
+          idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
-      ra3 = rand_u32() % 2;
+      choice_flag = rand_u32() % 2;
 
       reset_estimated_counts();
-      if (ra3 == 0) {
-        update_estimated_counts(a[ra1], -est_counts_cur[ra1] / 2.0);
-        update_estimated_counts(a[ra2], -est_counts_cur[ra2] / 2.0);
-        swap(a[ra1], a[ra2]);
-        update_estimated_counts(a[ra1], est_counts_cur[ra1] / 2.0);
-        update_estimated_counts(a[ra2], est_counts_cur[ra2] / 2.0);
+      if (choice_flag == 0) {
+        update_estimated_counts(a[idx1], -est_counts_cur[idx1] / 2.0);
+        update_estimated_counts(a[idx2], -est_counts_cur[idx2] / 2.0);
+        swap(a[idx1], a[idx2]);
+        update_estimated_counts(a[idx1], est_counts_cur[idx1] / 2.0);
+        update_estimated_counts(a[idx2], est_counts_cur[idx2] / 2.0);
       }
       else {
-        update_estimated_counts(b[ra1], -est_counts_cur[ra1] / 2.0);
-        update_estimated_counts(b[ra2], -est_counts_cur[ra2] / 2.0);
-        swap(b[ra1], b[ra2]);
-        update_estimated_counts(b[ra1], est_counts_cur[ra1] / 2.0);
-        update_estimated_counts(b[ra2], est_counts_cur[ra2] / 2.0);
+        update_estimated_counts(b[idx1], -est_counts_cur[idx1] / 2.0);
+        update_estimated_counts(b[idx2], -est_counts_cur[idx2] / 2.0);
+        swap(b[idx1], b[idx2]);
+        update_estimated_counts(b[idx1], est_counts_cur[idx1] / 2.0);
+        update_estimated_counts(b[idx2], est_counts_cur[idx2] / 2.0);
       }
 
       double earlyScore = calc_estimated_score();
       if (earlyScore < current_score - 10000) {
-        ok = 0;
+        accept_move = 0;
       }
     }
-    else if (raMode < hypers.operation_thresholds[4]) {
-      saitakuCount[4][1]++;
-      //ra1 = rand_u32() % n;
-      ra1 = get_omomi_rand_n();
-      swap(a[ra1], b[ra1]);
+    else if (op_rand < params.operation_thresholds[4]) {
+      accept_stat[4][1]++;
+      idx1 = get_omomi_rand_n();
+      swap(a[idx1], b[idx1]);
     }
-    else if (raMode < hypers.operation_thresholds[5]) {
-      saitakuCount[5][1]++;
-      //ra1 = rand_u32() % n;
-      ra1 = get_omomi_rand_n();
+    else if (op_rand < params.operation_thresholds[5]) {
+      accept_stat[5][1]++;
+      idx1 = get_omomi_rand_n();
       if (rand_u32() % 10 == 0) {
-        //ra2 = rand_u32() % n;
-        ra2 = get_omomi_rand_n();
+        idx2 = get_omomi_rand_n();
       }
       else {
-        ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
-        while (ra2 < 0 || ra2 >= n) {
-          ra2 = ra1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
+        idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
+        while (idx2 < 0 || idx2 >= n) {
+          idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
 
       reset_estimated_counts();
-      update_estimated_counts(a[ra1], -est_counts_cur[ra1] / 2.0);
-      update_estimated_counts(b[ra2], -est_counts_cur[ra2] / 2.0);
-      swap(a[ra1], b[ra2]);
-      update_estimated_counts(a[ra1], est_counts_cur[ra1] / 2.0);
-      update_estimated_counts(b[ra2], est_counts_cur[ra2] / 2.0);
-      double earlyScore = calc_estimated_score();
-      if (earlyScore < current_score - 10000) {
-        ok = 0;
+      update_estimated_counts(a[idx1], -est_counts_cur[idx1] / 2.0);
+      update_estimated_counts(b[idx2], -est_counts_cur[idx2] / 2.0);
+      swap(a[idx1], b[idx2]);
+      update_estimated_counts(a[idx1], est_counts_cur[idx1] / 2.0);
+      update_estimated_counts(b[idx2], est_counts_cur[idx2] / 2.0);
+      double early_score = calc_estimated_score();
+      if (early_score < current_score - 10000) {
+        accept_move = 0;
       }
     }
 
     // スコア計算
-    double tmpScore2 = 0;
-    if (ok) {
-      tmpScore2 = sort_and_estimate(25000);
+    double trial_score = 0;
+    if (accept_move) {
+      trial_score = sort_and_estimate(25000);
 
-      double diffScore2 = (tmpScore2 - current_score) * hypers.multiple_value;
-      double prob2 = exp(diffScore2 / temp);
-      ok = prob2 > rand_unit();
+      double diff_score_2 = (trial_score - current_score) * params.multiple_value;
+      double prob_2 = exp(diff_score_2 / temp);
+      accept_move = prob_2 > rand_unit();
     }
 
-    if (ok) {
+    if (accept_move) {
       // 採用
-      current_score = tmpScore2;
+      current_score = trial_score;
       for (int i = 0; i < n; ++i) {
         a[i] = sorted_a[i];
         b[i] = sorted_b[i];
@@ -561,39 +554,39 @@ static void simulated_annealing(AnnealingParams hypers)
     }
     else {
       // 元に戻す
-      if (raMode < hypers.operation_thresholds[0]) {
-        saitakuCount[0][0]++;
-        if (ra3 == 0) {
-          a[ra1] = keep1;
+      if (op_rand < params.operation_thresholds[0]) {
+        accept_stat[0][0]++;
+        if (choice_flag == 0) {
+          a[idx1] = backup_dst;
         }
         else {
-          b[ra1] = keep1;
+          b[idx1] = backup_dst;
         }
       }
-      else if (raMode < hypers.operation_thresholds[2]) {
-        saitakuCount[2][0]++;
-        if (ra3 == 0) {
-          swap(a[ra1], a[ra2]);
+      else if (op_rand < params.operation_thresholds[2]) {
+        accept_stat[2][0]++;
+        if (choice_flag == 0) {
+          swap(a[idx1], a[idx2]);
         }
         else {
-          swap(b[ra1], b[ra2]);
+          swap(b[idx1], b[idx2]);
         }
       }
-      else if (raMode < hypers.operation_thresholds[4]) {
-        saitakuCount[4][0]++;
-        swap(a[ra1], b[ra1]);
+      else if (op_rand < params.operation_thresholds[4]) {
+        accept_stat[4][0]++;
+        swap(a[idx1], b[idx1]);
       }
-      else if (raMode < hypers.operation_thresholds[5]) {
-        saitakuCount[5][0]++;
-        swap(a[ra1], b[ra2]);
+      else if (op_rand < params.operation_thresholds[5]) {
+        accept_stat[5][0]++;
+        swap(a[idx1], b[idx2]);
       }
     }
   }
 
   if (mode != 0 && mode != 3) {
-    cout << loop_cnt_sa << endl;
+    cout << anneal_iter << endl;
     for (int i = 0; i < 10; ++i) {
-      cout << saitakuCount[i][1] - saitakuCount[i][0] << " / " << saitakuCount[i][1] << endl;
+      cout << accept_stat[i][1] - accept_stat[i][0] << " / " << accept_stat[i][1] << endl;
     }
   }
 
@@ -634,35 +627,30 @@ static ll solve_case(int problem_num, AnnealingParams hypers)
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    rand_u32();
-  }
-
   mode = 2;
 
-  AnnealingParams HYPERS;
-  HYPERS.start_temp = 2000000.0;
-  HYPERS.end_temp = 0.0;
-  HYPERS.multiple_value = 12345.0;
-  HYPERS.operation_thresholds[0] = 200;
-  HYPERS.operation_thresholds[1] = 200;
-  HYPERS.operation_thresholds[2] = 400;
-  HYPERS.operation_thresholds[3] = 400;
-  HYPERS.operation_thresholds[4] = 440;
-  HYPERS.operation_thresholds[5] = 700;
-  HYPERS.operation_thresholds[6] = 700;
-  HYPERS.operation_thresholds[7] = 700;
-  HYPERS.operation_thresholds[8] = 700;
-  HYPERS.operation_thresholds[9] = 700;
+  AnnealingParams params;
+  params.start_temp = 2000000.0;
+  params.end_temp = 0.0;
+  params.multiple_value = 12345.0;
+  params.operation_thresholds[0] = 200;
+  params.operation_thresholds[1] = 200;
+  params.operation_thresholds[2] = 400;
+  params.operation_thresholds[3] = 400;
+  params.operation_thresholds[4] = 440;
+  params.operation_thresholds[5] = 700;
+  params.operation_thresholds[6] = 700;
+  params.operation_thresholds[7] = 700;
+  params.operation_thresholds[8] = 700;
+  params.operation_thresholds[9] = 700;
 
   if (mode == 0) {
-    solve_case(0, HYPERS);
+    solve_case(0, params);
   }
   else if (mode <= 2) {
     ll sum = 0;
     for (int i = 0; i < 15; ++i) {
-      ll score = solve_case(i, HYPERS);
+      ll score = solve_case(i, params);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
