@@ -77,41 +77,40 @@ static double get_elapsed_time()
   return elapsed.count();
 }
 
-const int n = 100;
+const int NODE_COUNT = 100;
 const int L = 500000;
 
-std::array<int, n> t;
-std::array<int, n> orig_index;
+std::array<int, NODE_COUNT> t;
+std::array<int, NODE_COUNT> orig_index;
 
-int current_score;
-std::array<int, n> a, b;
-
-std::array<double, n> est_counts;
-std::array<double, n> est_counts_cur;
-
-int best_score;
-std::array<int, n> best_a, best_b;
-
-static void copy_to_best()
+class SolverState
 {
-  best_score = current_score;
-  best_a = a;
-  best_b = b;
-}
+public:
+  std::array<int, NODE_COUNT> a, b;
+  std::array<int, NODE_COUNT> best_a, best_b;
+  std::array<double, NODE_COUNT> est_counts, est_counts_cur;
+  int current_score = 0, best_score = 0;
 
-static void copy_from_best()
-{
-  current_score = best_score;
-  a = best_a;
-  b = best_b;
-}
+  void copy_to_best()
+  {
+    best_score = current_score;
+    best_a = a;
+    best_b = b;
+  }
 
-// 複数のケースを処理する際に、内部状態を初期化する関数
-void init_state()
-{
-  current_score = 0;
-  best_score = 0;
-}
+  void copy_from_best()
+  {
+    current_score = best_score;
+    a = best_a;
+    b = best_b;
+  }
+
+  void init_state()
+  {
+    current_score = 0;
+    best_score = 0;
+  }
+};
 
 // 入力を受け取る関数
 void read_input(int case_num)
@@ -124,21 +123,21 @@ void read_input(int case_num)
     // 標準入力
     int _n, _l;
     cin >> _n >> _l;
-    for (int i = 0; i < n; ++i)cin >> t[i];
+    for (int i = 0; i < NODE_COUNT; ++i)cin >> t[i];
   }
   else {
     // ファイル入力
     int _n, _l;
     ifs >> _n >> _l;
-    for (int i = 0; i < n; ++i)ifs >> t[i];
+    for (int i = 0; i < NODE_COUNT; ++i)ifs >> t[i];
   }
 
   vector<P> vp;
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     vp.push_back(P(t[i], i));
   }
   sort(vp.begin(), vp.end());
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     t[i] = vp[i].first;
     orig_index[i] = vp[i].second;
   }
@@ -155,68 +154,68 @@ static void open_output_file(int case_num, ofstream& ofs)
 }
 
 // スコアを計算する関数
-static int calc_score_exact()
+static int calc_score_exact(const SolverState& st)
 {
-  int visit_cnt[n] = {};
+  int visit_cnt[NODE_COUNT] = {};
   int cur_v = 0;
   for (int i = 0; i < L; ++i) {
     visit_cnt[cur_v]++;
     if (visit_cnt[cur_v] % 2 == 1) {
-      cur_v = a[cur_v];
+      cur_v = st.a[cur_v];
     }
     else {
-      cur_v = b[cur_v];
+      cur_v = st.b[cur_v];
     }
   }
 
   int res = 1000000;
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     res -= abs(visit_cnt[i] - t[i]);
   }
   return res;
 }
 
-static int calc_score_sample(int sample_steps)
+static int calc_score_sample(int sample_steps, const SolverState& st)
 {
-  int visit_cnt[n] = {};
+  int visit_cnt[NODE_COUNT] = {};
   int cur_v = 0;
   for (int i = 0; i < sample_steps; ++i) {
     visit_cnt[cur_v]++;
     if (visit_cnt[cur_v] % 2 == 1) {
-      cur_v = a[cur_v];
+      cur_v = st.a[cur_v];
     }
     else {
-      cur_v = b[cur_v];
+      cur_v = st.b[cur_v];
     }
   }
 
   double res = 1000000;
   double scale_to_full = (double)L / sample_steps;
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     res -= abs(visit_cnt[i] * scale_to_full - t[i]);
   }
   return max(0, (int)round(res));
 }
 
-std::array<int, n> sorted_a;
-std::array<int, n> sorted_b;
-vector<P> cnt_sorted_vec(n);
-std::array<int, n> index_map;
-static int sort_and_estimate(int sample_steps)
+std::array<int, NODE_COUNT> sorted_a;
+std::array<int, NODE_COUNT> sorted_b;
+vector<P> cnt_sorted_vec(NODE_COUNT);
+std::array<int, NODE_COUNT> index_map;
+static int sort_and_estimate(int sample_steps, SolverState& st)
 {
-  int visit_cnt[n] = {};
+  int visit_cnt[NODE_COUNT] = {};
   int cur_v = 0;
   for (int i = 0; i < sample_steps; ++i) {
     visit_cnt[cur_v]++;
     if (visit_cnt[cur_v] % 2 == 1) {
-      cur_v = a[cur_v];
+      cur_v = st.a[cur_v];
     }
     else {
-      cur_v = b[cur_v];
+      cur_v = st.b[cur_v];
     }
     constexpr int EARLY_ABORT_STEP = 10000;
     if (i == EARLY_ABORT_STEP) {
-      for (int j = 0; j < n; ++j) {
+      for (int j = 0; j < NODE_COUNT; ++j) {
         if (t[j] > 100 && visit_cnt[j] == 0) {
           return 0;
         }
@@ -224,21 +223,21 @@ static int sort_and_estimate(int sample_steps)
     }
   }
 
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     cnt_sorted_vec[i].first = visit_cnt[i];
     cnt_sorted_vec[i].second = i;
   }
   sort(cnt_sorted_vec.begin(), cnt_sorted_vec.end());
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     index_map[cnt_sorted_vec[i].second] = i;
   }
 
-  for (int i = 0; i < n; ++i) {
-    sorted_a[i] = index_map[a[cnt_sorted_vec[i].second]];
-    sorted_b[i] = index_map[b[cnt_sorted_vec[i].second]];
+  for (int i = 0; i < NODE_COUNT; ++i) {
+    sorted_a[i] = index_map[st.a[cnt_sorted_vec[i].second]];
+    sorted_b[i] = index_map[st.b[cnt_sorted_vec[i].second]];
   }
 
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     if (cnt_sorted_vec[i].first > 0) {
       break;
     }
@@ -248,28 +247,28 @@ static int sort_and_estimate(int sample_steps)
   }
 
   double scale_to_full = (double)L / sample_steps;
-  for (int i = 0; i < n; ++i) {
-    est_counts[i] = cnt_sorted_vec[i].first * scale_to_full;
+  for (int i = 0; i < NODE_COUNT; ++i) {
+    st.est_counts[i] = cnt_sorted_vec[i].first * scale_to_full;
   }
 
   double res = 1000000;
-  for (int i = 0; i < n; ++i) {
-    res -= abs(est_counts[i] - t[i]);
+  for (int i = 0; i < NODE_COUNT; ++i) {
+    res -= abs(st.est_counts[i] - t[i]);
   }
   return max(0, (int)round(res));
 }
 
-std::array<double, n> est_counts_buf;
+std::array<double, NODE_COUNT> est_counts_buf;
 int dfs_stack[1000];
 int dfs_tmp[1000];
-static void reset_estimated_counts()
+static void reset_estimated_counts(const SolverState& st)
 {
-  for (int i = 0; i < n; ++i) {
-    est_counts_buf[i] = est_counts_cur[i];
+  for (int i = 0; i < NODE_COUNT; ++i) {
+    est_counts_buf[i] = st.est_counts_cur[i];
   }
 }
 
-static void update_estimated_counts(int s, double diff)
+static void update_estimated_counts(int s, double diff, const SolverState& st)
 {
   dfs_stack[0] = s;
   int stack_tail = 1;
@@ -278,9 +277,9 @@ static void update_estimated_counts(int s, double diff)
     for (int j = 0; j < stack_tail; ++j) {
       int num = dfs_stack[j];
       est_counts_buf[num] += diff;
-      dfs_tmp[next_tail] = a[num];
+      dfs_tmp[next_tail] = st.a[num];
       next_tail++;
-      dfs_tmp[next_tail] = b[num];
+      dfs_tmp[next_tail] = st.b[num];
       next_tail++;
     }
     for (int j = 0; j < next_tail; ++j) {
@@ -294,33 +293,33 @@ static void update_estimated_counts(int s, double diff)
 static double calc_estimated_score()
 {
   double res = 1000000;
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < NODE_COUNT; ++i) {
     res -= abs(est_counts_buf[i] - t[i]);
   }
   return max(0, (int)round(res));
 }
 
 // 解答を出力する関数
-static void write_output(ofstream& ofs)
+static void write_output(ofstream& ofs, const SolverState& st)
 {
-  int aaaa[n] = {};
-  int bbbb[n] = {};
-  for (int i = 0; i < n; ++i) {
-    aaaa[orig_index[i]] = orig_index[a[i]];
-    bbbb[orig_index[i]] = orig_index[b[i]];
+  int aaaa[NODE_COUNT] = {};
+  int bbbb[NODE_COUNT] = {};
+  for (int i = 0; i < NODE_COUNT; ++i) {
+    aaaa[orig_index[i]] = orig_index[st.a[i]];
+    bbbb[orig_index[i]] = orig_index[st.b[i]];
   }
 
   if (mode == 0) {
     // 標準出力
-    for (int i = 0; i < n; ++i)cout << aaaa[i] << ' ' << bbbb[i] << endl;
+    for (int i = 0; i < NODE_COUNT; ++i)cout << aaaa[i] << ' ' << bbbb[i] << endl;
   }
   else {
     // ファイル出力
-    for (int i = 0; i < n; ++i)ofs << aaaa[i] << ' ' << bbbb[i] << endl;
+    for (int i = 0; i < NODE_COUNT; ++i)ofs << aaaa[i] << ' ' << bbbb[i] << endl;
   }
 }
 
-static void build_initial_solution()
+static void build_initial_solution(SolverState& st)
 {
   // ランダムに初期解作成
   double now_time = get_elapsed_time();
@@ -334,39 +333,39 @@ static void build_initial_solution()
     }
 
     if (rand_u32() % 2 == 0) {
-      for (int i = 0; i < n; ++i) {
-        a[i] = rand_u32() % n;
-        b[i] = rand_u32() % n;
+      for (int i = 0; i < NODE_COUNT; ++i) {
+        st.a[i] = rand_u32() % NODE_COUNT;
+        st.b[i] = rand_u32() % NODE_COUNT;
       }
     }
     else {
-      for (int i = 0; i < n; ++i) {
+      for (int i = 0; i < NODE_COUNT; ++i) {
         if (rand_u32() % 2 == 0) {
-          a[i] = rand_u32() % n;
-          b[i] = (i + 1) % n;
+          st.a[i] = rand_u32() % NODE_COUNT;
+          st.b[i] = (i + 1) % NODE_COUNT;
         }
         else {
-          a[i] = (i + 1) % n;
-          b[i] = rand_u32() % n;
+          st.a[i] = (i + 1) % NODE_COUNT;
+          st.b[i] = rand_u32() % NODE_COUNT;
         }
       }
     }
 
-    int tmpScore = sort_and_estimate(10000);
-    if (tmpScore > current_score) {
-      current_score = tmpScore;
-      a = sorted_a;
-      b = sorted_b;
-      copy_to_best();
+    int tmpScore = sort_and_estimate(10000, st);
+    if (tmpScore > st.current_score) {
+      st.current_score = tmpScore;
+      st.a = sorted_a;
+      st.b = sorted_b;
+      st.copy_to_best();
     }
   }
 
-  copy_from_best();
-  current_score = sort_and_estimate(25000);
-  a = sorted_a;
-  b = sorted_b;
-  est_counts_cur = est_counts;
-  copy_to_best();
+  st.copy_from_best();
+  st.current_score = sort_and_estimate(25000, st);
+  st.a = sorted_a;
+  st.b = sorted_b;
+  st.est_counts_cur = st.est_counts;
+  st.copy_to_best();
 
   if (mode != 0 && mode != 3) {
     cout << loop_cnt_init << endl;
@@ -382,25 +381,25 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-static int get_omomi_rand_n()
+static int get_omomi_rand_n(const SolverState& st)
 {
-  int cum_abs_diff[n] = {};
-  for (int i = 0; i < n; ++i) {
+  int cum_abs_diff[NODE_COUNT] = {};
+  for (int i = 0; i < NODE_COUNT; ++i) {
     if (i > 0) {
       cum_abs_diff[i] = cum_abs_diff[i - 1];
     }
-    cum_abs_diff[i] += abs(t[i] - est_counts_cur[i]);
+    cum_abs_diff[i] += abs(t[i] - st.est_counts_cur[i]);
   }
-  int rand_pick = rand_u32() % cum_abs_diff[n - 1];
-  int node_id = lower_bound(cum_abs_diff, cum_abs_diff + n, rand_pick) - cum_abs_diff;
+  int rand_pick = rand_u32() % cum_abs_diff[NODE_COUNT - 1];
+  int node_id = lower_bound(cum_abs_diff, cum_abs_diff + NODE_COUNT, rand_pick) - cum_abs_diff;
   return node_id;
 }
 
-static void simulated_annealing(AnnealingParams params)
+static void simulated_annealing(const AnnealingParams& params, SolverState& st)
 {
-  copy_to_best();
+  st.copy_to_best();
 
-  build_initial_solution();
+  build_initial_solution(st);
 
   int accept_stat[10][2];
   for (int i = 0; i < 10; ++i) {
@@ -432,99 +431,99 @@ static void simulated_annealing(AnnealingParams params)
     if (op_rand < params.operation_thresholds[0]) {
       accept_stat[0][1]++;
 
-      idx1 = get_omomi_rand_n();
+      idx1 = get_omomi_rand_n(st);
 
       if (rand_u32() % 2 == 0) {
-        idx2 = get_omomi_rand_n();
+        idx2 = get_omomi_rand_n(st);
       }
       else {
         idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
-        while (idx2 < 0 || idx2 >= n) {
+        while (idx2 < 0 || idx2 >= NODE_COUNT) {
           idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
       choice_flag = rand_u32() % 2;
 
-      reset_estimated_counts();
+      reset_estimated_counts(st);
       if (choice_flag == 0) {
-        update_estimated_counts(a[idx1], -est_counts_cur[idx1] / 2.0);
-        backup_dst = a[idx1];
-        a[idx1] = idx2;
-        update_estimated_counts(idx2, est_counts_cur[idx1] / 2.0);
+        update_estimated_counts(st.a[idx1], -st.est_counts_cur[idx1] / 2.0, st);
+        backup_dst = st.a[idx1];
+        st.a[idx1] = idx2;
+        update_estimated_counts(idx2, st.est_counts_cur[idx1] / 2.0, st);
       }
       else {
-        update_estimated_counts(b[idx1], -est_counts_cur[idx1] / 2.0);
-        backup_dst = b[idx1];
-        b[idx1] = idx2;
-        update_estimated_counts(idx2, est_counts_cur[idx1] / 2.0);
+        update_estimated_counts(st.b[idx1], -st.est_counts_cur[idx1] / 2.0, st);
+        backup_dst = st.b[idx1];
+        st.b[idx1] = idx2;
+        update_estimated_counts(idx2, st.est_counts_cur[idx1] / 2.0, st);
       }
 
-      double earlyScore = calc_estimated_score();
-      if (earlyScore < current_score - 10000) {
+      double early_est_score = calc_estimated_score();
+      if (early_est_score < st.current_score - 10000) {
         accept_move = 0;
       }
     }
     else if (op_rand < params.operation_thresholds[2]) {
       accept_stat[2][1]++;
-      idx1 = get_omomi_rand_n();
+      idx1 = get_omomi_rand_n(st);
       if (rand_u32() % 10 == 0) {
-        idx2 = get_omomi_rand_n();
+        idx2 = get_omomi_rand_n(st);
       }
       else {
         idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
-        while (idx2 < 0 || idx2 >= n) {
+        while (idx2 < 0 || idx2 >= NODE_COUNT) {
           idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
       choice_flag = rand_u32() % 2;
 
-      reset_estimated_counts();
+      reset_estimated_counts(st);
       if (choice_flag == 0) {
-        update_estimated_counts(a[idx1], -est_counts_cur[idx1] / 2.0);
-        update_estimated_counts(a[idx2], -est_counts_cur[idx2] / 2.0);
-        swap(a[idx1], a[idx2]);
-        update_estimated_counts(a[idx1], est_counts_cur[idx1] / 2.0);
-        update_estimated_counts(a[idx2], est_counts_cur[idx2] / 2.0);
+        update_estimated_counts(st.a[idx1], -st.est_counts_cur[idx1] / 2.0, st);
+        update_estimated_counts(st.a[idx2], -st.est_counts_cur[idx2] / 2.0, st);
+        swap(st.a[idx1], st.a[idx2]);
+        update_estimated_counts(st.a[idx1], st.est_counts_cur[idx1] / 2.0, st);
+        update_estimated_counts(st.a[idx2], st.est_counts_cur[idx2] / 2.0, st);
       }
       else {
-        update_estimated_counts(b[idx1], -est_counts_cur[idx1] / 2.0);
-        update_estimated_counts(b[idx2], -est_counts_cur[idx2] / 2.0);
-        swap(b[idx1], b[idx2]);
-        update_estimated_counts(b[idx1], est_counts_cur[idx1] / 2.0);
-        update_estimated_counts(b[idx2], est_counts_cur[idx2] / 2.0);
+        update_estimated_counts(st.b[idx1], -st.est_counts_cur[idx1] / 2.0, st);
+        update_estimated_counts(st.b[idx2], -st.est_counts_cur[idx2] / 2.0, st);
+        swap(st.b[idx1], st.b[idx2]);
+        update_estimated_counts(st.b[idx1], st.est_counts_cur[idx1] / 2.0, st);
+        update_estimated_counts(st.b[idx2], st.est_counts_cur[idx2] / 2.0, st);
       }
 
-      double earlyScore = calc_estimated_score();
-      if (earlyScore < current_score - 10000) {
+      double early_est_score = calc_estimated_score();
+      if (early_est_score < st.current_score - 10000) {
         accept_move = 0;
       }
     }
     else if (op_rand < params.operation_thresholds[4]) {
       accept_stat[4][1]++;
-      idx1 = get_omomi_rand_n();
-      swap(a[idx1], b[idx1]);
+      idx1 = get_omomi_rand_n(st);
+      swap(st.a[idx1], st.b[idx1]);
     }
     else if (op_rand < params.operation_thresholds[5]) {
       accept_stat[5][1]++;
-      idx1 = get_omomi_rand_n();
+      idx1 = get_omomi_rand_n(st);
       if (rand_u32() % 10 == 0) {
-        idx2 = get_omomi_rand_n();
+        idx2 = get_omomi_rand_n(st);
       }
       else {
         idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
-        while (idx2 < 0 || idx2 >= n) {
+        while (idx2 < 0 || idx2 >= NODE_COUNT) {
           idx2 = idx1 + rand_u32() % (NEAR * 2 + 1) - NEAR;
         }
       }
 
-      reset_estimated_counts();
-      update_estimated_counts(a[idx1], -est_counts_cur[idx1] / 2.0);
-      update_estimated_counts(b[idx2], -est_counts_cur[idx2] / 2.0);
-      swap(a[idx1], b[idx2]);
-      update_estimated_counts(a[idx1], est_counts_cur[idx1] / 2.0);
-      update_estimated_counts(b[idx2], est_counts_cur[idx2] / 2.0);
-      double early_score = calc_estimated_score();
-      if (early_score < current_score - 10000) {
+      reset_estimated_counts(st);
+      update_estimated_counts(st.a[idx1], -st.est_counts_cur[idx1] / 2.0, st);
+      update_estimated_counts(st.b[idx2], -st.est_counts_cur[idx2] / 2.0, st);
+      swap(st.a[idx1], st.b[idx2]);
+      update_estimated_counts(st.a[idx1], st.est_counts_cur[idx1] / 2.0, st);
+      update_estimated_counts(st.b[idx2], st.est_counts_cur[idx2] / 2.0, st);
+      double early_est_score = calc_estimated_score();
+      if (early_est_score < st.current_score - 10000) {
         accept_move = 0;
       }
     }
@@ -532,25 +531,25 @@ static void simulated_annealing(AnnealingParams params)
     // スコア計算
     double trial_score = 0;
     if (accept_move) {
-      trial_score = sort_and_estimate(25000);
+      trial_score = sort_and_estimate(25000, st);
 
-      double diff_score_2 = (trial_score - current_score) * params.multiple_value;
+      double diff_score_2 = (trial_score - st.current_score) * params.multiple_value;
       double prob_2 = exp(diff_score_2 / temp);
       accept_move = prob_2 > rand_unit();
     }
 
     if (accept_move) {
       // 採用
-      current_score = trial_score;
-      for (int i = 0; i < n; ++i) {
-        a[i] = sorted_a[i];
-        b[i] = sorted_b[i];
-        est_counts_cur[i] = est_counts[i];
+      st.current_score = trial_score;
+      for (int i = 0; i < NODE_COUNT; ++i) {
+        st.a[i] = sorted_a[i];
+        st.b[i] = sorted_b[i];
+        st.est_counts_cur[i] = st.est_counts[i];
       }
 
       // Best解よりもいいか
-      if (current_score > best_score) {
-        copy_to_best();
+      if (st.current_score > st.best_score) {
+        st.copy_to_best();
       }
     }
     else {
@@ -558,28 +557,28 @@ static void simulated_annealing(AnnealingParams params)
       if (op_rand < params.operation_thresholds[0]) {
         accept_stat[0][0]++;
         if (choice_flag == 0) {
-          a[idx1] = backup_dst;
+          st.a[idx1] = backup_dst;
         }
         else {
-          b[idx1] = backup_dst;
+          st.b[idx1] = backup_dst;
         }
       }
       else if (op_rand < params.operation_thresholds[2]) {
         accept_stat[2][0]++;
         if (choice_flag == 0) {
-          swap(a[idx1], a[idx2]);
+          swap(st.a[idx1], st.a[idx2]);
         }
         else {
-          swap(b[idx1], b[idx2]);
+          swap(st.b[idx1], st.b[idx2]);
         }
       }
       else if (op_rand < params.operation_thresholds[4]) {
         accept_stat[4][0]++;
-        swap(a[idx1], b[idx1]);
+        swap(st.a[idx1], st.b[idx1]);
       }
       else if (op_rand < params.operation_thresholds[5]) {
         accept_stat[5][0]++;
-        swap(a[idx1], b[idx2]);
+        swap(st.a[idx1], st.b[idx2]);
       }
     }
   }
@@ -591,7 +590,7 @@ static void simulated_annealing(AnnealingParams params)
     }
   }
 
-  copy_from_best();
+  st.copy_from_best();
 }
 
 // 問題を解く関数
@@ -599,8 +598,8 @@ static ll solve_case(int problem_num, AnnealingParams hypers)
 {
   reset_timer();
 
-  // 複数ケース回すときに内部状態を初期値に戻す
-  init_state();
+  SolverState st;
+  st.init_state();
 
   // 入力受け取り
   read_input(problem_num);
@@ -610,10 +609,10 @@ static ll solve_case(int problem_num, AnnealingParams hypers)
   open_output_file(problem_num, ofs);
 
   // 焼きなまし
-  simulated_annealing(hypers);
+  simulated_annealing(hypers, st);
 
   // 解答を出力
-  write_output(ofs);
+  write_output(ofs, st);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -621,7 +620,7 @@ static ll solve_case(int problem_num, AnnealingParams hypers)
 
   ll score = 0;
   if (mode != 0) {
-    score = calc_score_exact();
+    score = calc_score_exact(st);
   }
   return score;
 }
