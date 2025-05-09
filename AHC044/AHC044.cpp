@@ -157,43 +157,43 @@ static void open_output_file(int case_num, ofstream& ofs)
 // スコアを計算する関数
 static int calc_score_exact()
 {
-  int cnt[n] = {};
-  int now = 0;
+  int visit_cnt[n] = {};
+  int cur_v = 0;
   for (int i = 0; i < L; ++i) {
-    cnt[now]++;
-    if (cnt[now] % 2 == 1) {
-      now = a[now];
+    visit_cnt[cur_v]++;
+    if (visit_cnt[cur_v] % 2 == 1) {
+      cur_v = a[cur_v];
     }
     else {
-      now = b[now];
+      cur_v = b[cur_v];
     }
   }
 
   int res = 1000000;
   for (int i = 0; i < n; ++i) {
-    res -= abs(cnt[i] - t[i]);
+    res -= abs(visit_cnt[i] - t[i]);
   }
   return res;
 }
 
-static int calc_score_sample(int k)
+static int calc_score_sample(int sample_steps)
 {
-  int cnt[n] = {};
-  int now = 0;
-  for (int i = 0; i < k; ++i) {
-    cnt[now]++;
-    if (cnt[now] % 2 == 1) {
-      now = a[now];
+  int visit_cnt[n] = {};
+  int cur_v = 0;
+  for (int i = 0; i < sample_steps; ++i) {
+    visit_cnt[cur_v]++;
+    if (visit_cnt[cur_v] % 2 == 1) {
+      cur_v = a[cur_v];
     }
     else {
-      now = b[now];
+      cur_v = b[cur_v];
     }
   }
 
   double res = 1000000;
-  double scale_to_full = (double)L / k;
+  double scale_to_full = (double)L / sample_steps;
   for (int i = 0; i < n; ++i) {
-    res -= abs(cnt[i] * scale_to_full - t[i]);
+    res -= abs(visit_cnt[i] * scale_to_full - t[i]);
   }
   return max(0, (int)round(res));
 }
@@ -202,21 +202,22 @@ std::array<int, n> sorted_a;
 std::array<int, n> sorted_b;
 vector<P> cnt_sorted_vec(n);
 std::array<int, n> index_map;
-static int sort_and_estimate(int k)
+static int sort_and_estimate(int sample_steps)
 {
-  int cnt[n] = {};
-  int now = 0;
-  for (int i = 0; i < k; ++i) {
-    cnt[now]++;
-    if (cnt[now] % 2 == 1) {
-      now = a[now];
+  int visit_cnt[n] = {};
+  int cur_v = 0;
+  for (int i = 0; i < sample_steps; ++i) {
+    visit_cnt[cur_v]++;
+    if (visit_cnt[cur_v] % 2 == 1) {
+      cur_v = a[cur_v];
     }
     else {
-      now = b[now];
+      cur_v = b[cur_v];
     }
-    if (i == 10000) {
+    constexpr int EARLY_ABORT_STEP = 10000;
+    if (i == EARLY_ABORT_STEP) {
       for (int j = 0; j < n; ++j) {
-        if (t[j] > 100 && cnt[j] == 0) {
+        if (t[j] > 100 && visit_cnt[j] == 0) {
           return 0;
         }
       }
@@ -224,7 +225,7 @@ static int sort_and_estimate(int k)
   }
 
   for (int i = 0; i < n; ++i) {
-    cnt_sorted_vec[i].first = cnt[i];
+    cnt_sorted_vec[i].first = visit_cnt[i];
     cnt_sorted_vec[i].second = i;
   }
   sort(cnt_sorted_vec.begin(), cnt_sorted_vec.end());
@@ -246,7 +247,7 @@ static int sort_and_estimate(int k)
     }
   }
 
-  double scale_to_full = (double)L / k;
+  double scale_to_full = (double)L / sample_steps;
   for (int i = 0; i < n; ++i) {
     est_counts[i] = cnt_sorted_vec[i].first * scale_to_full;
   }
@@ -271,21 +272,21 @@ static void reset_estimated_counts()
 static void update_estimated_counts(int s, double diff)
 {
   dfs_stack[0] = s;
-  int tail = 1;
+  int stack_tail = 1;
   for (int dfs = 0; dfs < 6; ++dfs) {
-    int newTail = 0;
-    for (int j = 0; j < tail; ++j) {
+    int next_tail = 0;
+    for (int j = 0; j < stack_tail; ++j) {
       int num = dfs_stack[j];
       est_counts_buf[num] += diff;
-      dfs_tmp[newTail] = a[num];
-      newTail++;
-      dfs_tmp[newTail] = b[num];
-      newTail++;
+      dfs_tmp[next_tail] = a[num];
+      next_tail++;
+      dfs_tmp[next_tail] = b[num];
+      next_tail++;
     }
-    for (int j = 0; j < newTail; ++j) {
+    for (int j = 0; j < next_tail; ++j) {
       dfs_stack[j] = dfs_tmp[j];
     }
-    tail = newTail;
+    stack_tail = next_tail;
     diff /= 2;
   }
 }
@@ -383,16 +384,16 @@ struct AnnealingParams
 
 static int get_omomi_rand_n()
 {
-  int diff_sum[n] = {};
+  int cum_abs_diff[n] = {};
   for (int i = 0; i < n; ++i) {
     if (i > 0) {
-      diff_sum[i] = diff_sum[i - 1];
+      cum_abs_diff[i] = cum_abs_diff[i - 1];
     }
-    diff_sum[i] += abs(t[i] - est_counts_cur[i]);
+    cum_abs_diff[i] += abs(t[i] - est_counts_cur[i]);
   }
-  int ra = rand_u32() % diff_sum[n - 1];
-  int res = lower_bound(diff_sum, diff_sum + n, ra) - diff_sum;
-  return res;
+  int rand_pick = rand_u32() % cum_abs_diff[n - 1];
+  int node_id = lower_bound(cum_abs_diff, cum_abs_diff + n, rand_pick) - cum_abs_diff;
+  return node_id;
 }
 
 static void simulated_annealing(AnnealingParams params)
