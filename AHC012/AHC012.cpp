@@ -86,7 +86,6 @@ namespace
   }
 }
 
-const double TIME_LIMIT = 2.9;
 int exec_mode;
 
 class Board
@@ -96,7 +95,7 @@ public:
   static constexpr int MAX_LINE = 50;
 
   int n;
-  int a[11];
+  int a[14];
   int a_sum;
   vector<vector<int>> x, y;
 
@@ -125,7 +124,7 @@ public:
   vector<int> xs, ys; // 半開区間 : [xs[i], xs[i+1])
 
   vector<vector<int>> counts;
-  int b[11];
+  int b[14];
 
   void initialize(int v_num, int h_num) {
     xs.clear();
@@ -144,7 +143,7 @@ public:
   }
 
   void calc_counts(const Board& board) {
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 14; i++) {
       b[i] = 0;
     }
 
@@ -165,8 +164,11 @@ public:
           }
         }
 
-        if (1 <= counts[i][j] && counts[i][j] <= 10) {
+        if (counts[i][j] <= 12) {
           b[counts[i][j]]++;
+        }
+        else {
+          b[13]++;
         }
       }
     }
@@ -176,24 +178,38 @@ public:
     if (diff < 0) {
       for (int i = xs[num] + diff; i < xs[num]; ++i) {
         for (auto y : board.x[i]) {
-          for (int j = 0; j < ys.size() - 1; j++) {
+          //for (int j = 0; j < ys.size() - 1; j++) {
+          {
+            int j = upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
             if (ys[j] <= y && y < ys[j + 1]) {
               // 上側を減らす
-              if (1 <= counts[num - 1][j] && counts[num - 1][j] <= 10) {
+              if (counts[num - 1][j] <= 12) {
                 b[counts[num - 1][j]]--;
               }
+              else {
+                b[13]--;
+              }
               counts[num - 1][j]--;
-              if (1 <= counts[num - 1][j] && counts[num - 1][j] <= 10) {
+              if (counts[num - 1][j] <= 12) {
                 b[counts[num - 1][j]]++;
+              }
+              else {
+                b[13]++;
               }
 
               // 下側を増やす
-              if (1 <= counts[num][j] && counts[num][j] <= 10) {
+              if (counts[num][j] <= 12) {
                 b[counts[num][j]]--;
               }
+              else {
+                b[13]--;
+              }
               counts[num][j]++;
-              if (1 <= counts[num][j] && counts[num][j] <= 10) {
+              if (counts[num][j] <= 12) {
                 b[counts[num][j]]++;
+              }
+              else {
+                b[13]++;
               }
             }
           }
@@ -203,24 +219,38 @@ public:
     else {
       for (int i = xs[num]; i <= xs[num] + diff - 1; ++i) {
         for (auto y : board.x[i]) {
-          for (int j = 0; j < ys.size() - 1; j++) {
+          //for (int j = 0; j < ys.size() - 1; j++) {
+          {
+            int j = upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
             if (ys[j] <= y && y < ys[j + 1]) {
               // 上側を増やす
-              if (1 <= counts[num - 1][j] && counts[num - 1][j] <= 10) {
+              if (counts[num - 1][j] <= 12) {
                 b[counts[num - 1][j]]--;
               }
+              else {
+                b[13]++;
+              }
               counts[num - 1][j]++;
-              if (1 <= counts[num - 1][j] && counts[num - 1][j] <= 10) {
+              if (counts[num - 1][j] <= 12) {
                 b[counts[num - 1][j]]++;
+              }
+              else {
+                b[13]++;
               }
 
               // 下側を減らす
-              if (1 <= counts[num][j] && counts[num][j] <= 10) {
+              if (counts[num][j] <= 12) {
                 b[counts[num][j]]--;
               }
+              else {
+                b[13]++;
+              }
               counts[num][j]--;
-              if (1 <= counts[num][j] && counts[num][j] <= 10) {
+              if (counts[num][j] <= 12) {
                 b[counts[num][j]]++;
+              }
+              else {
+                b[13]++;
               }
             }
           }
@@ -235,23 +265,37 @@ public:
     if (diff < 0) {
       for (int i = ys[num] + diff; i < ys[num]; ++i) {
         for (auto x : board.y[i]) {
-          for (int j = 0; j < xs.size() - 1; j++) {
+          //for (int j = 0; j < xs.size() - 1; j++) {
+          {
+            int j = upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
             if (xs[j] <= x && x < xs[j + 1]) {
               // 左側を減らす
-              if (1 <= counts[j][num - 1] && counts[j][num - 1] <= 10) {
+              if (counts[j][num - 1] <= 12) {
                 b[counts[j][num - 1]]--;
               }
+              else {
+                b[13]++;
+              }
               counts[j][num - 1]--;
-              if (1 <= counts[j][num - 1] && counts[j][num - 1] <= 10) {
+              if (counts[j][num - 1] <= 12) {
                 b[counts[j][num - 1]]++;
               }
+              else {
+                b[13]++;
+              }
               // 右側を増やす
-              if (1 <= counts[j][num] && counts[j][num] <= 10) {
+              if (counts[j][num] <= 12) {
                 b[counts[j][num]]--;
               }
+              else {
+                b[13]++;
+              }
               counts[j][num]++;
-              if (1 <= counts[j][num] && counts[j][num] <= 10) {
+              if (counts[j][num] <= 12) {
                 b[counts[j][num]]++;
+              }
+              else {
+                b[13]++;
               }
             }
           }
@@ -261,23 +305,37 @@ public:
     else {
       for (int i = ys[num]; i <= ys[num] + diff - 1; ++i) {
         for (auto x : board.y[i]) {
-          for (int j = 0; j < xs.size() - 1; j++) {
+          //for (int j = 0; j < xs.size() - 1; j++) {
+          {
+            int j = upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
             if (xs[j] <= x && x < xs[j + 1]) {
               // 左側を増やす
-              if (1 <= counts[j][num - 1] && counts[j][num - 1] <= 10) {
+              if (counts[j][num - 1] <= 12) {
                 b[counts[j][num - 1]]--;
               }
+              else {
+                b[13]++;
+              }
               counts[j][num - 1]++;
-              if (1 <= counts[j][num - 1] && counts[j][num - 1] <= 10) {
+              if (counts[j][num - 1] <= 12) {
                 b[counts[j][num - 1]]++;
               }
+              else {
+                b[13]++;
+              }
               // 右側を減らす
-              if (1 <= counts[j][num] && counts[j][num] <= 10) {
+              if (counts[j][num] <= 12) {
                 b[counts[j][num]]--;
               }
+              else {
+                b[13]++;
+              }
               counts[j][num]--;
-              if (1 <= counts[j][num] && counts[j][num] <= 10) {
+              if (counts[j][num] <= 12) {
                 b[counts[j][num]]++;
+              }
+              else {
+                b[13]++;
               }
             }
           }
@@ -300,6 +358,9 @@ Board input_data(int case_num) {
     // 標準入力
     int  _k;
     cin >> board.n >> _k;
+    for (int i = 0; i < 14; i++) {
+      board.a[i] = 0;
+    }
     for (int i = 1; i <= 10; i++) {
       cin >> board.a[i];
     }
@@ -340,7 +401,16 @@ int calculate_score(const Board& board, const Answer& answer) {
     ok_cnt += min(answer.b[i], board.a[i]);
   }
 
-  int res = round(1e6 * ok_cnt / board.a_sum);
+  double penalty = 0;
+  for (int i = 1; i <= 10; i++) {
+    penalty += max(0, answer.b[i] - board.a[i]) * (11 - i) * 0.01;
+  }
+  //penalty += answer.b[11] * 1.0;
+  //penalty += answer.b[12] * 1.0;
+  //penalty += answer.b[13] * 1.0;
+
+  int res = round(1e6 * ok_cnt / board.a_sum - penalty);
+
   return res;
 }
 
@@ -375,28 +445,36 @@ void output_data(int case_num, const Answer& answer) {
   }
 }
 
-Answer build_initial_solution(const Board& board) {
-  Answer best_answer;
-  int best_score = -1;
+Answer build_one_solution(const Board& board) {
+  Answer answer;
+  int sum = rand_xorshift() % 61 + 40;
+  int v_num = rand_xorshift() % (sum - 1) + 1;
+  int h_num = sum - v_num;
+  answer.initialize(v_num, h_num);
+  answer.calc_counts(board);
+  return answer;
+}
 
-  int iter = 0;
-  while (get_elapsed_time() < TIME_LIMIT / 3) {
-    iter++;
-    int sum = rand_xorshift() % 71 + 30;
-    int v_num = rand_xorshift() % (sum - 1) + 1;
-    int h_num = sum - v_num;
-    Answer answer;
-    answer.initialize(v_num, h_num);
-    answer.calc_counts(board);
-    int score = calculate_score(board, answer);
-    if (score > best_score) {
-      best_score = score;
-      best_answer = answer;
+Answer build_one_solution_2(const Board& board) {
+  double best_pieces = board.a_sum * 4 / 3.141592;
+
+  Answer answer;
+  int sum = rand_xorshift() % 61 + 40;
+  int v_num = rand_xorshift() % (sum - 1) + 1;
+  int h_num = sum - v_num;
+  while (true) {
+    double pieces = (v_num + 1) * (h_num + 1);
+    double ratio = pieces / best_pieces;
+    if (0.90 < ratio && ratio < 1.1) {
+      break;
     }
+    sum = rand_xorshift() % 61 + 40;
+    v_num = rand_xorshift() % (sum - 1) + 1;
+    h_num = sum - v_num;
   }
-  cerr << "iter = " << iter << ", score = " << best_score << endl;
-
-  return best_answer;
+  answer.initialize(v_num, h_num);
+  answer.calc_counts(board);
+  return answer;
 }
 
 struct AnnealingParams
@@ -406,7 +484,7 @@ struct AnnealingParams
   double score_scale;
 };
 
-void annealing(const Board& board, Answer& answer, const AnnealingParams& params) {
+void annealing(const Board& board, Answer& answer, const AnnealingParams& params, double time_limit, bool print) {
   Answer best_answer = answer;
   answer.calc_counts(board);
   int best_score = calculate_score(board, answer);
@@ -419,7 +497,7 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
 
     if (iter % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT) {
+      if (now_time > time_limit) {
         break;
       }
     }
@@ -457,7 +535,7 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
       answer.update_ys(board, num, diff);
     }
 
-    double progress_ratio = (now_time - start_time) / (TIME_LIMIT - start_time);
+    double progress_ratio = (now_time - start_time) / (time_limit - start_time);
     double temp = params.start_temperature + (params.end_temperature - params.start_temperature) * progress_ratio;
 
     int new_score = calculate_score(board, answer);
@@ -469,6 +547,9 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
       if (new_score > best_score) {
         best_score = new_score;
         best_answer = answer;
+        if (best_score == 1000000) {
+          break;
+        }
       }
     }
     else {
@@ -481,9 +562,57 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
     }
   }
 
-  cerr << "iter = " << iter << ", score = " << best_score << endl;
+  if (print) {
+    cerr << "iter = " << iter << ", score = " << best_score << endl;
+  }
 
   answer = best_answer;
+}
+
+Answer build_initial_solution(const Board& board, double time_limit) {
+  Answer best_answer;
+  int best_score = -1;
+
+  int iter = 0;
+  while (get_elapsed_time() < time_limit) {
+    iter++;
+    //Answer answer = build_one_solution(board);
+    Answer answer = build_one_solution_2(board);
+    int score = calculate_score(board, answer);
+    if (score > best_score) {
+      best_score = score;
+      best_answer = answer;
+    }
+  }
+  cerr << "iter = " << iter << ", score = " << best_score << endl;
+
+  return best_answer;
+}
+
+Answer build_initial_solution_2(const Board& board, double time_limit) {
+  Answer best_answer;
+  int best_score = -1;
+
+  int iter = 0;
+  while (get_elapsed_time() < time_limit) {
+    iter++;
+    Answer answer = build_one_solution_2(board);
+
+    AnnealingParams params;
+    params.start_temperature = 10048.0;
+    params.end_temperature = 0.0;
+    params.score_scale = 12345.0;
+    annealing(board, answer, params, get_elapsed_time() + 0.002, false);
+
+    int score = calculate_score(board, answer);
+    if (score > best_score) {
+      best_score = score;
+      best_answer = answer;
+    }
+  }
+  cerr << "iter = " << iter << ", score = " << best_score << endl;
+
+  return best_answer;
 }
 
 ll solve_case(int case_num) {
@@ -491,13 +620,15 @@ ll solve_case(int case_num) {
 
   Board board = input_data(case_num);
 
-  Answer answer = build_initial_solution(board);
+  const double TIME_LIMIT = 2.9;
+
+  Answer answer = build_initial_solution_2(board, TIME_LIMIT / 3);
 
   AnnealingParams params;
   params.start_temperature = 10000048.0;
   params.end_temperature = 0.0;
   params.score_scale = 12345.0;
-  annealing(board, answer, params);
+  annealing(board, answer, params, TIME_LIMIT, true);
 
   output_data(case_num, answer);
 
@@ -517,7 +648,7 @@ int main() {
   }
   else if (exec_mode <= 2) {
     int sum_score = 0;
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 150; i++) {
       int score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
