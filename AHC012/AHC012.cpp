@@ -615,6 +615,43 @@ Answer build_initial_solution_2(const Board& board, double time_limit) {
   return best_answer;
 }
 
+const int VEC_SIZE = 2;
+vector<Answer> build_initial_solution_3(const Board& board, double time_limit) {
+  vector<Answer> best_answers(VEC_SIZE);
+  int best_scores[VEC_SIZE];
+  for (int i = 0; i < VEC_SIZE; i++) {
+    best_scores[i] = -1;
+  }
+
+  int iter = 0;
+  while (get_elapsed_time() < time_limit) {
+    iter++;
+    Answer answer = build_one_solution_2(board);
+
+    AnnealingParams params;
+    params.start_temperature = 10048.0;
+    params.end_temperature = 0.0;
+    params.score_scale = 12345.0;
+    annealing(board, answer, params, get_elapsed_time() + 0.002, false);
+
+    int score = calculate_score(board, answer);
+    if (score > best_scores[VEC_SIZE - 1]) {
+      best_scores[VEC_SIZE - 1] = score;
+      best_answers[VEC_SIZE - 1] = answer;
+
+      int idx = VEC_SIZE - 1;
+      while (idx > 0 && best_scores[idx] > best_scores[idx - 1]) {
+        swap(best_scores[idx], best_scores[idx - 1]);
+        swap(best_answers[idx], best_answers[idx - 1]);
+        idx--;
+      }
+    }
+  }
+  cerr << "iter = " << iter << ", score = " << best_scores[0] << endl;
+
+  return best_answers;
+}
+
 ll solve_case(int case_num) {
   start_timer();
 
@@ -622,20 +659,39 @@ ll solve_case(int case_num) {
 
   const double TIME_LIMIT = 2.9;
 
-  Answer answer = build_initial_solution_2(board, TIME_LIMIT / 3);
+  //Answer answer = build_initial_solution_2(board, TIME_LIMIT / 3);
+  vector<Answer> answers = build_initial_solution_3(board, TIME_LIMIT / 3);
+
+  Answer best_answer = answers[0];
+  int best_score = calculate_score(board, best_answer);
 
   AnnealingParams params;
   params.start_temperature = 10000048.0;
   params.end_temperature = 0.0;
   params.score_scale = 12345.0;
-  annealing(board, answer, params, TIME_LIMIT, true);
 
-  output_data(case_num, answer);
+  double now_time = get_elapsed_time();
+  for (int i = 0; i < VEC_SIZE; i++) {
+    double time_limit = now_time + (TIME_LIMIT - now_time) / VEC_SIZE * (i + 1);
+    annealing(board, answers[i], params, time_limit, true);
+    int score = calculate_score(board, answers[i]);
+    if (score > best_score) {
+      best_score = score;
+      best_answer = answers[i];
+    }
+
+    cerr << i << ' ' << best_score << ' ' << score << endl;
+    if (best_score == 1000000) {
+      break;
+    }
+  }
+
+  output_data(case_num, best_answer);
 
   int score = 0;
   if (exec_mode != 0) {
-    score = calculate_score(board, answer);
-    cerr << answer.xs.size() + answer.ys.size() - 4 << endl;
+    score = calculate_score(board, best_answer);
+    cerr << best_answer.xs.size() + best_answer.ys.size() - 4 << endl;
   }
   return score;
 }
