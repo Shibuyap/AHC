@@ -28,15 +28,28 @@
 #include <string>
 #include <utility>
 #include <vector>
-// #include <atcoder/all>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
+
 using namespace std;
-// using namespace atcoder;
 typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 200005
+
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
 
 namespace /* 乱数ライブラリ */
 {
@@ -110,9 +123,9 @@ public:
 };
 Queue2D que2d;
 
-const int dir_row[4] = { -1, 0, 1, 0 };
-const int dir_col[4] = { 0, -1, 0, 1 };
-const char dir_char[4] = { 'F', 'L', 'B', 'R' };
+const int DX[4] = { -1, 0, 1, 0 };
+const int DY[4] = { 0, -1, 0, 1 };
+const char DC[4] = { 'F', 'L', 'B', 'R' };
 
 const int N = 100;
 const int H = 10;
@@ -130,32 +143,39 @@ board_t backup_board_buf{};
 
 const double TL = 1.8;
 
+int exec_mode = 0;
+
 inline void copy_board_to_work()
 {
   work_board = board;
 }
+
 inline void copy_work_to_board()
 {
   board = work_board;
 }
+
 inline void backup_board()
 {
   backup_board_buf = board;
 }
+
 inline void restore_board()
 {
   board = backup_board_buf;
 }
 
-inline int random_empty_index(int turn) { return xor_shift32() % (N - turn) + 1; }
+inline int random_empty_index(int turn)
+{
+  return xor_shift32() % (N - turn) + 1;
+}
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
 void load_testcase(int problemNum)
 {
   string fileNameIfs = "./in/";
   string strNum;
-  rep(i, 4)
-  {
+  for (int i = 0; i < 4; ++i) {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
@@ -164,8 +184,12 @@ void load_testcase(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  rep(i, N) ifs >> flavor_at_turn[i];
-  rep(i, N) ifs >> input_index_list[i];
+  for (int i = 0; i < N; ++i) {
+    ifs >> flavor_at_turn[i];
+  }
+  for (int i = 0; i < N; ++i) {
+    ifs >> input_index_list[i];
+  }
 }
 
 // 解答出力
@@ -173,8 +197,7 @@ void save_answer(int problemNum)
 {
   string fileNameOfs = "./out/";
   string strNum;
-  rep(i, 4)
-  {
+  for (int i = 0; i < 4; ++i) {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
@@ -183,24 +206,26 @@ void save_answer(int problemNum)
 
   ofstream ofs(fileNameOfs);
 
-  rep(i, N) ofs << output_dir_list[i] << endl;
+  for (int i = 0; i < N; ++i) {
+    ofs << output_dir_list[i] << endl;
+  }
 
   ofs.close();
 }
 
 inline bool is_out_of_board(int x, int y)
 {
-  if (x < 0 || x >= 10 || y < 0 || y >= 10) return true;
+  if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+    return true;
+  }
   return false;
 }
 
 P find_empty_cell(int ite)
 {
   int cnt = 1;
-  rep(i, H)
-  {
-    rep(j, W)
-    {
+  for (int i = 0; i < H; ++i) {
+    for (int j = 0; j < W; ++j) {
       if (board[i][j] == 0) {
         if (cnt == ite) {
           return P(i, j);
@@ -212,29 +237,32 @@ P find_empty_cell(int ite)
     }
   }
 
-  cout << "NG" << endl;
+  cerr << "NG" << endl;
   return P(-1, -1);
 }
 
 int visited[H][W];
+int visited_version;
 
 int score_board(const board_t& board)
 {
   //――― 事前初期化 ―――//
   que2d.clear_queue();
   double score_sum = 0.0;
-  rep(row, H) rep(col, W) visited[row][col] = 0;
+  visited_version++;
 
   //――― 全セル走査 ―――//
-  rep(start_row, H)
-  {
-    rep(start_col, W)
-    {
-      if (board[start_row][start_col] == 0) continue;
-      if (visited[start_row][start_col])    continue;
+  for (int start_row = 0; start_row < H; ++start_row) {
+    for (int start_col = 0; start_col < W; ++start_col) {
+      if (board[start_row][start_col] == 0) {
+        continue;
+      }
+      if (visited[start_row][start_col] == visited_version) {
+        continue;
+      }
 
       que2d.push(start_row, start_col);
-      visited[start_row][start_col] = 1;
+      visited[start_row][start_col] = visited_version;
 
       int component_size = 1;
 
@@ -244,15 +272,15 @@ int score_board(const board_t& board)
         int cur_col = que2d.front_y();
         que2d.pop();
 
-        rep(dir_idx, 4)
-        {
-          int next_row = cur_row + dir_row[dir_idx];
-          int next_col = cur_col + dir_col[dir_idx];
+        for (int dir_idx = 0; dir_idx < 4; ++dir_idx) {
+          int next_row = cur_row + DX[dir_idx];
+          int next_col = cur_col + DY[dir_idx];
 
-          if (is_out_of_board(next_row, next_col)) continue;
-          if (board[next_row][next_col] == board[start_row][start_col] &&
-            visited[next_row][next_col] == 0) {
-            visited[next_row][next_col] = 1;
+          if (is_out_of_board(next_row, next_col)) {
+            continue;
+          }
+          if (board[next_row][next_col] == board[start_row][start_col] && visited[next_row][next_col] != visited_version) {
+            visited[next_row][next_col] = visited_version;
             que2d.push(next_row, next_col);
             ++component_size;
           }
@@ -267,7 +295,9 @@ int score_board(const board_t& board)
   score_sum *= 1'000'000.0;
 
   int denom_sum = 0;
-  srep(flavor, 1, 4) denom_sum += flavor_total[flavor] * flavor_total[flavor];
+  for (int flavor = 1; flavor < 4; ++flavor) {
+    denom_sum += flavor_total[flavor] * flavor_total[flavor];
+  }
 
   score_sum /= denom_sum;
   return static_cast<int>(std::round(score_sum));
@@ -276,11 +306,9 @@ int score_board(const board_t& board)
 void tilt_board(int dir, board_t& board)
 {
   if (dir == 0) {                // 上方向（Front）
-    rep(col, W)
-    {
+    for (int col = 0; col < W; ++col) {
       int write_row = 0;
-      rep(row, H)
-      {
+      for (int row = 0; row < H; ++row) {
         if (board[row][col] != 0) {
           int cell_value = board[row][col];
           board[row][col] = 0;
@@ -291,11 +319,9 @@ void tilt_board(int dir, board_t& board)
     }
   }
   else if (dir == 1) {           // 左方向（Left）
-    rep(row, H)
-    {
+    for (int row = 0; row < H; ++row) {
       int write_col = 0;
-      rep(col, W)
-      {
+      for (int col = 0; col < W; ++col) {
         if (board[row][col] != 0) {
           int cell_value = board[row][col];
           board[row][col] = 0;
@@ -306,11 +332,9 @@ void tilt_board(int dir, board_t& board)
     }
   }
   else if (dir == 2) {           // 下方向（Back）
-    rep(col, W)
-    {
+    for (int col = 0; col < W; ++col) {
       int write_row = H - 1;
-      drep(row, H)
-      {
+      for (int row = (H)-1; row >= 0; --row) {
         if (board[row][col] != 0) {
           int cell_value = board[row][col];
           board[row][col] = 0;
@@ -321,11 +345,9 @@ void tilt_board(int dir, board_t& board)
     }
   }
   else if (dir == 3) {           // 右方向（Right）
-    rep(row, H)
-    {
+    for (int row = 0; row < H; ++row) {
       int write_col = W - 1;
-      drep(col, W)
-      {
+      for (int col = (W)-1; col >= 0; --col) {
         if (board[row][col] != 0) {
           int cell_value = board[row][col];
           board[row][col] = 0;
@@ -346,9 +368,10 @@ int tilt_and_score_work(int dir)
 int simulate_rollout(int start_turn, int sim_bias)
 {
   int sim_turn = 10 + sim_bias;
-  srep(turn, start_turn, start_turn + sim_turn)
-  {
-    if (turn == N) break;
+  for (int turn = start_turn; turn < start_turn + sim_turn; ++turn) {
+    if (turn == N) {
+      break;
+    }
 
     //――― キャンディー配置 ―――//
     int empty_index = random_empty_index(turn);
@@ -364,8 +387,7 @@ int simulate_rollout(int start_turn, int sim_bias)
     //――― 4 方向シミュレートして最良を選択 ―――//
     int best_score = -1;
     int best_dir = -1;
-    rep(dir, 4)
-    {
+    for (int dir = 0; dir < 4; ++dir) {
       copy_board_to_work();
       int score = tilt_and_score_work(dir);
       if (score > best_score) {
@@ -380,30 +402,41 @@ int simulate_rollout(int start_turn, int sim_bias)
   return score_board(board);
 }
 
-int run_solver(int mode)
+int run_solver(int case_num)
 {
   std::ofstream debug_ofs("debug.txt");
 
-  clock_t clk_start = clock();
-  clock_t clk_end = clk_start;
+  start_timer();
+
+  for (int i = 0; i < H; ++i) {
+    for (int j = 0; j < W; ++j) {
+      board[i][j] = 0;
+    }
+  }
+  for (int i = 0; i < 4; ++i) {
+    flavor_total[i] = 0;
+  }
 
   //――― 入力 ―――//
-  if (mode == 0) {
-    rep(i, N) std::cin >> flavor_at_turn[i];
+  if (exec_mode == 0) {
+    for (int i = 0; i < N; ++i) {
+      std::cin >> flavor_at_turn[i];
+    }
   }
   else {
-    load_testcase(mode - 1);
+    load_testcase(case_num);
   }
-  rep(i, N) flavor_total[flavor_at_turn[i]]++;
+  for (int i = 0; i < N; ++i) {
+    flavor_total[flavor_at_turn[i]]++;
+  }
 
   int iter = 0;
 
   //――― 100 ターン回す ―――//
-  rep(turn, N)
-  {
+  for (int turn = 0; turn < N; ++turn) {
     /*---------- 空マスインデックス取得 ----------*/
     int empty_index;
-    if (mode == 0) {
+    if (exec_mode == 0) {
       std::cin >> empty_index;
     }
     else {
@@ -414,15 +447,16 @@ int run_solver(int mode)
     int row = cell.first;
     int col = cell.second;
 
-    if (board[row][col] != 0) std::cout << "NG\n";
+    if (board[row][col] != 0) {
+      cerr << "NG" << endl;
+    }
     board[row][col] = flavor_at_turn[turn];
 
     backup_board();            // 現盤面を保存
 
     /*---------- モンテカルロ探索 ----------*/
-    clk_start = clock();
-    clk_end = clk_start;
-    const double turn_time_limit = TL / 100.0;
+    start_timer();
+    const double turn_time_limit = TL / N;
 
     int    trial_cnt = 0;
     double dir_score_avg[4] = {};
@@ -431,10 +465,9 @@ int run_solver(int mode)
 
     while (true) {
       if (trial_cnt % 8 == 0) {
-        clk_end = clock();
-        double elapsed =
-          static_cast<double>(clk_end - clk_start) / CLOCKS_PER_SEC;
-        if (elapsed > turn_time_limit) break;
+        if (get_elapsed_time() > turn_time_limit) {
+          break;
+        }
       }
       iter++;
       if (trial_cnt % 4 == 0) {
@@ -446,12 +479,9 @@ int run_solver(int mode)
       int dir = trial_cnt % 4;
       tilt_board(dir, board);
 
-      double score =
-        simulate_rollout(turn + 1, sim_bias);
+      double score = simulate_rollout(turn + 1, sim_bias);
 
-      dir_score_avg[dir] =
-        (dir_score_avg[dir] * dir_trial_cnt[dir] + score) /
-        (dir_trial_cnt[dir] + 1);
+      dir_score_avg[dir] = (dir_score_avg[dir] * dir_trial_cnt[dir] + score) / (dir_trial_cnt[dir] + 1);
       dir_trial_cnt[dir]++;
 
       ++trial_cnt;
@@ -460,8 +490,7 @@ int run_solver(int mode)
     /*---------- ベスト方向の決定 ----------*/
     int best_dir = -1;
     int best_score = -1;
-    rep(dir, 4)
-    {
+    for (int dir = 0; dir < 4; ++dir) {
       if (dir_score_avg[dir] > best_score) {
         best_score = static_cast<int>(dir_score_avg[dir]);
         best_dir = dir;
@@ -469,26 +498,26 @@ int run_solver(int mode)
     }
 
     /*---------- 出力 ----------*/
-    if (mode == 0) {
-      std::cout << dir_char[best_dir] << '\n';
+    if (exec_mode == 0) {
+      std::cout << DC[best_dir] << '\n';
       std::fflush(stdout);
     }
     else {
-      output_dir_list[turn] = dir_char[best_dir];
+      output_dir_list[turn] = DC[best_dir];
     }
 
     /*---------- 盤面を進める ----------*/
     restore_board();
     tilt_board(best_dir, board);
 
-    if (mode != 0) {
+    if (exec_mode != 0) {
       debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board(board) << '\n';
     }
   }
 
   /*---------- ファイル保存＆最終スコア表示 ----------*/
-  if (mode != 0) {
-    save_answer(mode - 1);
+  if (exec_mode != 0) {
+    save_answer(case_num);
     cout << "iter = " << iter << endl;
     std::cout << "Score = " << score_board(board) << '\n';
   }
@@ -497,8 +526,28 @@ int run_solver(int mode)
 
 int main()
 {
-  int mode = 1;
-  run_solver(mode);
+  exec_mode = 2;
+
+  if (exec_mode == 0) {
+    run_solver(0);
+  }
+  else if (exec_mode <= 2) {
+    ll sum_score = 0;
+    for (int i = 0; i < 15; i++) {
+      ll score = run_solver(i);
+      sum_score += score;
+      if (exec_mode == 1) {
+        cerr << score << endl;
+      }
+      else {
+        cerr << "case = " << setw(2) << i << ", "
+          << "score = " << setw(4) << score << ", "
+          << "sum = " << setw(5) << sum_score << ", "
+          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << endl;
+      }
+    }
+  }
 
   return 0;
 }
