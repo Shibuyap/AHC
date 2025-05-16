@@ -135,35 +135,45 @@ int input_index_list[N];
 char output_dir_list[N];
 int flavor_total[4];
 
-using board_t = std::array<std::array<int, W>, H>;
+class Board
+{
+public:
+  std::array<std::array<int, W>, H> board;
 
-board_t board{};
-board_t work_board{};
-board_t backup_board_buf{};
+  void init()
+  {
+    for (int i = 0; i < H; ++i) {
+      for (int j = 0; j < W; ++j) {
+        board[i][j] = 0;
+      }
+    }
+  }
+
+  P find_empty_cell(int ite)
+  {
+    int cnt = 1;
+    for (int i = 0; i < H; ++i) {
+      for (int j = 0; j < W; ++j) {
+        if (board[i][j] == 0) {
+          if (cnt == ite) {
+            return P(i, j);
+          }
+          else {
+            cnt++;
+          }
+        }
+      }
+    }
+
+    cerr << "NG" << endl;
+    return P(-1, -1);
+  }
+};
 
 const double TL = 1.8;
 
 int exec_mode = 0;
 
-inline void copy_board_to_work()
-{
-  work_board = board;
-}
-
-inline void copy_work_to_board()
-{
-  board = work_board;
-}
-
-inline void backup_board()
-{
-  backup_board_buf = board;
-}
-
-inline void restore_board()
-{
-  board = backup_board_buf;
-}
 
 inline int random_empty_index(int turn)
 {
@@ -221,30 +231,12 @@ inline bool is_out_of_board(int x, int y)
   return false;
 }
 
-P find_empty_cell(int ite)
-{
-  int cnt = 1;
-  for (int i = 0; i < H; ++i) {
-    for (int j = 0; j < W; ++j) {
-      if (board[i][j] == 0) {
-        if (cnt == ite) {
-          return P(i, j);
-        }
-        else {
-          cnt++;
-        }
-      }
-    }
-  }
 
-  cerr << "NG" << endl;
-  return P(-1, -1);
-}
 
 int visited[H][W];
 int visited_version;
 
-int score_board(const board_t& board)
+int score_board(const std::array<std::array<int, W>, H>& board)
 {
   //――― 事前初期化 ―――//
   que2d.clear_queue();
@@ -303,7 +295,7 @@ int score_board(const board_t& board)
   return static_cast<int>(std::round(score_sum));
 }
 
-void tilt_board(int dir, board_t& board)
+void tilt_board(int dir, std::array<std::array<int, W>, H>& board)
 {
   if (dir == 0) {                // 上方向（Front）
     for (int col = 0; col < W; ++col) {
@@ -359,13 +351,13 @@ void tilt_board(int dir, board_t& board)
   }
 }
 
-int tilt_and_score_work(int dir)
+int tilt_and_score_work(int dir, Board& work_board)
 {
-  tilt_board(dir, work_board);
-  return score_board(work_board);
+  tilt_board(dir, work_board.board);
+  return score_board(work_board.board);
 }
 
-int simulate_rollout(int start_turn, int sim_bias)
+int simulate_rollout(int start_turn, int sim_bias, Board& board)
 {
   int sim_turn = 10 + sim_bias;
   for (int turn = start_turn; turn < start_turn + sim_turn; ++turn) {
@@ -375,44 +367,42 @@ int simulate_rollout(int start_turn, int sim_bias)
 
     //――― キャンディー配置 ―――//
     int empty_index = random_empty_index(turn);
-    P   cell = find_empty_cell(empty_index);
+    P   cell = board.find_empty_cell(empty_index);
     int row = cell.first;
     int col = cell.second;
 
-    if (board[row][col] != 0) {
+    if (board.board[row][col] != 0) {
       std::cout << "NG" << std::endl;
     }
-    board[row][col] = flavor_at_turn[turn];
+    board.board[row][col] = flavor_at_turn[turn];
 
     //――― 4 方向シミュレートして最良を選択 ―――//
     int best_score = -1;
     int best_dir = -1;
     for (int dir = 0; dir < 4; ++dir) {
-      copy_board_to_work();
-      int score = tilt_and_score_work(dir);
+      Board work_board = board;
+      int score = tilt_and_score_work(dir, work_board);
       if (score > best_score) {
         best_score = score;
         best_dir = dir;
       }
     }
 
-    tilt_board(best_dir, board);   // 本盤面を更新
+    tilt_board(best_dir, board.board);   // 本盤面を更新
   }
 
-  return score_board(board);
+  return score_board(board.board);
 }
 
 int run_solver(int case_num)
 {
-  std::ofstream debug_ofs("debug.txt");
-
   start_timer();
 
-  for (int i = 0; i < H; ++i) {
-    for (int j = 0; j < W; ++j) {
-      board[i][j] = 0;
-    }
-  }
+  std::ofstream debug_ofs("debug.txt");
+
+  Board board;
+  board.init();
+
   for (int i = 0; i < 4; ++i) {
     flavor_total[i] = 0;
   }
@@ -443,16 +433,16 @@ int run_solver(int case_num)
       empty_index = input_index_list[turn];
     }
 
-    P   cell = find_empty_cell(empty_index);   // (row,col)
+    P cell = board.find_empty_cell(empty_index);   // (row,col)
     int row = cell.first;
     int col = cell.second;
 
-    if (board[row][col] != 0) {
+    if (board.board[row][col] != 0) {
       cerr << "NG" << endl;
     }
-    board[row][col] = flavor_at_turn[turn];
+    board.board[row][col] = flavor_at_turn[turn];
 
-    backup_board();            // 現盤面を保存
+    Board backup_board = board;   
 
     /*---------- モンテカルロ探索 ----------*/
     start_timer();
@@ -474,12 +464,12 @@ int run_solver(int case_num)
         sim_bias = static_cast<int>(xor_shift32() % 3) - 1;
       }
 
-      restore_board();
+      board = backup_board;  
 
       int dir = trial_cnt % 4;
-      tilt_board(dir, board);
+      tilt_board(dir, board.board);
 
-      double score = simulate_rollout(turn + 1, sim_bias);
+      double score = simulate_rollout(turn + 1, sim_bias, board);
 
       dir_score_avg[dir] = (dir_score_avg[dir] * dir_trial_cnt[dir] + score) / (dir_trial_cnt[dir] + 1);
       dir_trial_cnt[dir]++;
@@ -507,11 +497,11 @@ int run_solver(int case_num)
     }
 
     /*---------- 盤面を進める ----------*/
-    restore_board();
-    tilt_board(best_dir, board);
+    board = backup_board;
+    tilt_board(best_dir, board.board);
 
     if (exec_mode != 0) {
-      debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board(board) << '\n';
+      debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board(board.board) << '\n';
     }
   }
 
@@ -519,7 +509,7 @@ int run_solver(int case_num)
   if (exec_mode != 0) {
     save_answer(case_num);
     cout << "iter = " << iter << endl;
-    std::cout << "Score = " << score_board(board) << '\n';
+    std::cout << "Score = " << score_board(board.board) << '\n';
   }
   return 0;
 }
