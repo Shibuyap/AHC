@@ -424,15 +424,8 @@ int simulate_rollout(int start_turn, int sim_bias, Board& board, const Input& in
   return board.calculate_score(input);
 }
 
-int run_solver(int case_num)
+void monte_carlo_1(Board& board, Input& input)
 {
-  start_timer();
-
-  Input input(exec_mode, case_num);
-
-  Board board;
-  board.init();
-
   int iter = 0;
 
   //――― 100 ターン回す ―――//
@@ -497,10 +490,25 @@ int run_solver(int case_num)
     board.tilt_board(best_dir);
   }
 
+  if (exec_mode != 0) {
+    cout << "iter = " << iter << endl;
+  }
+}
+
+int run_solver(int case_num)
+{
+  start_timer();
+
+  Input input(exec_mode, case_num);
+
+  Board board;
+  board.init();
+
+  monte_carlo_1(board, input);  
+
   int score = 0;
   if (exec_mode != 0) {
     save_answer(case_num);
-    cout << "iter = " << iter << endl;
     score = board.calculate_score(input);
     std::cout << "Score = " << score << '\n';
   }
