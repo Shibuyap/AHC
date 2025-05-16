@@ -401,12 +401,11 @@ void save_answer(int problemNum)
 int simulate_rollout(int start_turn, int sim_bias, Board& board, const Input& input)
 {
   int sim_turn = 10 + sim_bias;
+
   for (int turn = start_turn; turn < min(start_turn + sim_turn, N); ++turn) {
-    //――― キャンディー配置 ―――//
     int empty_index = random_empty_index(turn);
     board.set_candy(empty_index, input.flavor_at_turn[turn]);
 
-    //――― 4 方向シミュレートして最良を選択 ―――//
     int best_score = -1;
     int best_dir = -1;
     for (int dir = 0; dir < 4; ++dir) {
@@ -419,7 +418,7 @@ int simulate_rollout(int start_turn, int sim_bias, Board& board, const Input& in
       }
     }
 
-    board.tilt_board(best_dir);   // 本盤面を更新
+    board.tilt_board(best_dir);
   }
 
   return board.calculate_score(input);
@@ -458,6 +457,7 @@ int run_solver(int case_num)
           break;
         }
       }
+
       iter++;
       if (trial_cnt % 4 == 0) {
         sim_bias = static_cast<int>(xor_shift32() % 3) - 1;
@@ -497,12 +497,15 @@ int run_solver(int case_num)
     board.tilt_board(best_dir);
   }
 
+  int score = 0;
   if (exec_mode != 0) {
     save_answer(case_num);
     cout << "iter = " << iter << endl;
-    std::cout << "Score = " << board.calculate_score(input) << '\n';
+    score = board.calculate_score(input);
+    std::cout << "Score = " << score << '\n';
   }
-  return 0;
+
+  return score;
 }
 
 int main()
