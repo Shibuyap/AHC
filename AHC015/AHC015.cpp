@@ -79,7 +79,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
 class Queue2D
 {
 private:
-  static const int MAX_SIZE = 10000;
+  static const int MAX_SIZE = 500;
   int arr[MAX_SIZE][2];
   int head;
   int tail;
