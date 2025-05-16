@@ -130,10 +130,76 @@ const char DC[4] = { 'F', 'L', 'B', 'R' };
 const int N = 100;
 const int H = 10;
 const int W = 10;
-int flavor_at_turn[N];
-int input_index_list[N];
+
 char output_dir_list[N];
-int flavor_total[4];
+
+
+int visited[H][W];
+int visited_version;
+
+class Input
+{
+private:
+  int mode;
+  int turn;
+  int input_index_list[N];
+public:
+  int flavor_total[4];
+  int flavor_at_turn[N];
+
+  void load_testcase(int problemNum)
+  {
+    string fileNameIfs = "./in/";
+    string strNum;
+    for (int i = 0; i < 4; ++i) {
+      strNum += (char)(problemNum % 10 + '0');
+      problemNum /= 10;
+    }
+    reverse(strNum.begin(), strNum.end());
+    fileNameIfs += strNum + ".txt";
+
+    ifstream ifs(fileNameIfs);
+
+    for (int i = 0; i < N; ++i) {
+      ifs >> flavor_at_turn[i];
+    }
+    for (int i = 0; i < N; ++i) {
+      ifs >> input_index_list[i];
+    }
+  }
+
+  Input(int _mode, int _case_num) : mode(_mode), turn(0)
+  {
+    if (mode == 0) {
+      for (int i = 0; i < N; ++i) {
+        std::cin >> flavor_at_turn[i];
+      }
+    }
+    else {
+      load_testcase(_case_num);
+    }
+
+    for (int i = 0; i < 4; ++i) {
+      flavor_total[i] = 0;
+    }
+    for (int i = 0; i < N; ++i) {
+      flavor_total[flavor_at_turn[i]]++;
+    }
+  }
+
+  int get_empty_index()
+  {
+    int empty_index = 0;
+    if (mode == 0) {
+      std::cin >> empty_index;
+    }
+    else {
+      empty_index = input_index_list[turn];
+    }
+    turn++;
+    return empty_index;
+  }
+};
 
 class Board
 {
@@ -168,6 +234,137 @@ public:
     cerr << "NG" << endl;
     return P(-1, -1);
   }
+
+  inline bool is_out_of_board(int x, int y)
+  {
+    if (x < 0 || x >= H || y < 0 || y >= W) {
+      return true;
+    }
+    return false;
+  }
+
+  int calculate_score(const Input& input)
+  {
+    //――― 事前初期化 ―――//
+    que2d.clear_queue();
+    double score_sum = 0.0;
+    visited_version++;
+
+    //――― 全セル走査 ―――//
+    for (int start_row = 0; start_row < H; ++start_row) {
+      for (int start_col = 0; start_col < W; ++start_col) {
+        if (board[start_row][start_col] == 0) {
+          continue;
+        }
+        if (visited[start_row][start_col] == visited_version) {
+          continue;
+        }
+
+        que2d.push(start_row, start_col);
+        visited[start_row][start_col] = visited_version;
+
+        int component_size = 1;
+
+        //――― BFS で同フレーバ連結成分を数える ―――//
+        while (que2d.size()) {
+          int cur_row = que2d.front_x();
+          int cur_col = que2d.front_y();
+          que2d.pop();
+
+          for (int dir_idx = 0; dir_idx < 4; ++dir_idx) {
+            int next_row = cur_row + DX[dir_idx];
+            int next_col = cur_col + DY[dir_idx];
+
+            if (is_out_of_board(next_row, next_col)) {
+              continue;
+            }
+            if (board[next_row][next_col] == board[start_row][start_col] && visited[next_row][next_col] != visited_version) {
+              visited[next_row][next_col] = visited_version;
+              que2d.push(next_row, next_col);
+              ++component_size;
+            }
+          }
+        }
+
+        score_sum += component_size * component_size;
+      }
+    }
+
+    //――― 正規化 ―――//
+    score_sum *= 1'000'000.0;
+
+    int denom_sum = 0;
+    for (int flavor = 1; flavor < 4; ++flavor) {
+      denom_sum += input.flavor_total[flavor] * input.flavor_total[flavor];
+    }
+
+    score_sum /= denom_sum;
+    return static_cast<int>(std::round(score_sum));
+  }
+
+  void tilt_board(int dir)
+  {
+    if (dir == 0) {                // 上方向（Front）
+      for (int col = 0; col < W; ++col) {
+        int write_row = 0;
+        for (int row = 0; row < H; ++row) {
+          if (board[row][col] != 0) {
+            int cell_value = board[row][col];
+            board[row][col] = 0;
+            board[write_row][col] = cell_value;
+            ++write_row;
+          }
+        }
+      }
+    }
+    else if (dir == 1) {           // 左方向（Left）
+      for (int row = 0; row < H; ++row) {
+        int write_col = 0;
+        for (int col = 0; col < W; ++col) {
+          if (board[row][col] != 0) {
+            int cell_value = board[row][col];
+            board[row][col] = 0;
+            board[row][write_col] = cell_value;
+            ++write_col;
+          }
+        }
+      }
+    }
+    else if (dir == 2) {           // 下方向（Back）
+      for (int col = 0; col < W; ++col) {
+        int write_row = H - 1;
+        for (int row = (H)-1; row >= 0; --row) {
+          if (board[row][col] != 0) {
+            int cell_value = board[row][col];
+            board[row][col] = 0;
+            board[write_row][col] = cell_value;
+            --write_row;
+          }
+        }
+      }
+    }
+    else if (dir == 3) {           // 右方向（Right）
+      for (int row = 0; row < H; ++row) {
+        int write_col = W - 1;
+        for (int col = (W)-1; col >= 0; --col) {
+          if (board[row][col] != 0) {
+            int cell_value = board[row][col];
+            board[row][col] = 0;
+            board[row][write_col] = cell_value;
+            --write_col;
+          }
+        }
+      }
+    }
+  }
+
+  void set_candy(int empty_index, int flavor)
+  {
+    P   cell = find_empty_cell(empty_index);
+    int row = cell.first;
+    int col = cell.second;
+    board[row][col] = flavor;
+  }
 };
 
 const double TL = 1.8;
@@ -178,28 +375,6 @@ int exec_mode = 0;
 inline int random_empty_index(int turn)
 {
   return xor_shift32() % (N - turn) + 1;
-}
-
-// 入力受け取り（実行中一度しか呼ばれないことを想定）
-void load_testcase(int problemNum)
-{
-  string fileNameIfs = "./in/";
-  string strNum;
-  for (int i = 0; i < 4; ++i) {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
-
-  for (int i = 0; i < N; ++i) {
-    ifs >> flavor_at_turn[i];
-  }
-  for (int i = 0; i < N; ++i) {
-    ifs >> input_index_list[i];
-  }
 }
 
 // 解答出力
@@ -223,226 +398,50 @@ void save_answer(int problemNum)
   ofs.close();
 }
 
-inline bool is_out_of_board(int x, int y)
-{
-  if (x < 0 || x >= 10 || y < 0 || y >= 10) {
-    return true;
-  }
-  return false;
-}
-
-
-
-int visited[H][W];
-int visited_version;
-
-int score_board(const std::array<std::array<int, W>, H>& board)
-{
-  //――― 事前初期化 ―――//
-  que2d.clear_queue();
-  double score_sum = 0.0;
-  visited_version++;
-
-  //――― 全セル走査 ―――//
-  for (int start_row = 0; start_row < H; ++start_row) {
-    for (int start_col = 0; start_col < W; ++start_col) {
-      if (board[start_row][start_col] == 0) {
-        continue;
-      }
-      if (visited[start_row][start_col] == visited_version) {
-        continue;
-      }
-
-      que2d.push(start_row, start_col);
-      visited[start_row][start_col] = visited_version;
-
-      int component_size = 1;
-
-      //――― BFS で同フレーバ連結成分を数える ―――//
-      while (que2d.size()) {
-        int cur_row = que2d.front_x();
-        int cur_col = que2d.front_y();
-        que2d.pop();
-
-        for (int dir_idx = 0; dir_idx < 4; ++dir_idx) {
-          int next_row = cur_row + DX[dir_idx];
-          int next_col = cur_col + DY[dir_idx];
-
-          if (is_out_of_board(next_row, next_col)) {
-            continue;
-          }
-          if (board[next_row][next_col] == board[start_row][start_col] && visited[next_row][next_col] != visited_version) {
-            visited[next_row][next_col] = visited_version;
-            que2d.push(next_row, next_col);
-            ++component_size;
-          }
-        }
-      }
-
-      score_sum += component_size * component_size;
-    }
-  }
-
-  //――― 正規化 ―――//
-  score_sum *= 1'000'000.0;
-
-  int denom_sum = 0;
-  for (int flavor = 1; flavor < 4; ++flavor) {
-    denom_sum += flavor_total[flavor] * flavor_total[flavor];
-  }
-
-  score_sum /= denom_sum;
-  return static_cast<int>(std::round(score_sum));
-}
-
-void tilt_board(int dir, std::array<std::array<int, W>, H>& board)
-{
-  if (dir == 0) {                // 上方向（Front）
-    for (int col = 0; col < W; ++col) {
-      int write_row = 0;
-      for (int row = 0; row < H; ++row) {
-        if (board[row][col] != 0) {
-          int cell_value = board[row][col];
-          board[row][col] = 0;
-          board[write_row][col] = cell_value;
-          ++write_row;
-        }
-      }
-    }
-  }
-  else if (dir == 1) {           // 左方向（Left）
-    for (int row = 0; row < H; ++row) {
-      int write_col = 0;
-      for (int col = 0; col < W; ++col) {
-        if (board[row][col] != 0) {
-          int cell_value = board[row][col];
-          board[row][col] = 0;
-          board[row][write_col] = cell_value;
-          ++write_col;
-        }
-      }
-    }
-  }
-  else if (dir == 2) {           // 下方向（Back）
-    for (int col = 0; col < W; ++col) {
-      int write_row = H - 1;
-      for (int row = (H)-1; row >= 0; --row) {
-        if (board[row][col] != 0) {
-          int cell_value = board[row][col];
-          board[row][col] = 0;
-          board[write_row][col] = cell_value;
-          --write_row;
-        }
-      }
-    }
-  }
-  else if (dir == 3) {           // 右方向（Right）
-    for (int row = 0; row < H; ++row) {
-      int write_col = W - 1;
-      for (int col = (W)-1; col >= 0; --col) {
-        if (board[row][col] != 0) {
-          int cell_value = board[row][col];
-          board[row][col] = 0;
-          board[row][write_col] = cell_value;
-          --write_col;
-        }
-      }
-    }
-  }
-}
-
-int tilt_and_score_work(int dir, Board& work_board)
-{
-  tilt_board(dir, work_board.board);
-  return score_board(work_board.board);
-}
-
-int simulate_rollout(int start_turn, int sim_bias, Board& board)
+int simulate_rollout(int start_turn, int sim_bias, Board& board, const Input& input)
 {
   int sim_turn = 10 + sim_bias;
-  for (int turn = start_turn; turn < start_turn + sim_turn; ++turn) {
-    if (turn == N) {
-      break;
-    }
-
+  for (int turn = start_turn; turn < min(start_turn + sim_turn, N); ++turn) {
     //――― キャンディー配置 ―――//
     int empty_index = random_empty_index(turn);
-    P   cell = board.find_empty_cell(empty_index);
-    int row = cell.first;
-    int col = cell.second;
-
-    if (board.board[row][col] != 0) {
-      std::cout << "NG" << std::endl;
-    }
-    board.board[row][col] = flavor_at_turn[turn];
+    board.set_candy(empty_index, input.flavor_at_turn[turn]);
 
     //――― 4 方向シミュレートして最良を選択 ―――//
     int best_score = -1;
     int best_dir = -1;
     for (int dir = 0; dir < 4; ++dir) {
       Board work_board = board;
-      int score = tilt_and_score_work(dir, work_board);
+      work_board.tilt_board(dir);
+      int score = work_board.calculate_score(input);
       if (score > best_score) {
         best_score = score;
         best_dir = dir;
       }
     }
 
-    tilt_board(best_dir, board.board);   // 本盤面を更新
+    board.tilt_board(best_dir);   // 本盤面を更新
   }
 
-  return score_board(board.board);
+  return board.calculate_score(input);
 }
 
 int run_solver(int case_num)
 {
   start_timer();
 
-  std::ofstream debug_ofs("debug.txt");
+  Input input(exec_mode, case_num);
 
   Board board;
   board.init();
-
-  for (int i = 0; i < 4; ++i) {
-    flavor_total[i] = 0;
-  }
-
-  //――― 入力 ―――//
-  if (exec_mode == 0) {
-    for (int i = 0; i < N; ++i) {
-      std::cin >> flavor_at_turn[i];
-    }
-  }
-  else {
-    load_testcase(case_num);
-  }
-  for (int i = 0; i < N; ++i) {
-    flavor_total[flavor_at_turn[i]]++;
-  }
 
   int iter = 0;
 
   //――― 100 ターン回す ―――//
   for (int turn = 0; turn < N; ++turn) {
-    /*---------- 空マスインデックス取得 ----------*/
-    int empty_index;
-    if (exec_mode == 0) {
-      std::cin >> empty_index;
-    }
-    else {
-      empty_index = input_index_list[turn];
-    }
+    int empty_index = input.get_empty_index();
+    board.set_candy(empty_index, input.flavor_at_turn[turn]);
 
-    P cell = board.find_empty_cell(empty_index);   // (row,col)
-    int row = cell.first;
-    int col = cell.second;
-
-    if (board.board[row][col] != 0) {
-      cerr << "NG" << endl;
-    }
-    board.board[row][col] = flavor_at_turn[turn];
-
-    Board backup_board = board;   
+    Board backup_board = board;
 
     /*---------- モンテカルロ探索 ----------*/
     start_timer();
@@ -464,12 +463,12 @@ int run_solver(int case_num)
         sim_bias = static_cast<int>(xor_shift32() % 3) - 1;
       }
 
-      board = backup_board;  
+      board = backup_board;
 
       int dir = trial_cnt % 4;
-      tilt_board(dir, board.board);
+      board.tilt_board(dir);
 
-      double score = simulate_rollout(turn + 1, sim_bias, board);
+      double score = simulate_rollout(turn + 1, sim_bias, board, input);
 
       dir_score_avg[dir] = (dir_score_avg[dir] * dir_trial_cnt[dir] + score) / (dir_trial_cnt[dir] + 1);
       dir_trial_cnt[dir]++;
@@ -477,7 +476,6 @@ int run_solver(int case_num)
       ++trial_cnt;
     }
 
-    /*---------- ベスト方向の決定 ----------*/
     int best_dir = -1;
     int best_score = -1;
     for (int dir = 0; dir < 4; ++dir) {
@@ -487,7 +485,6 @@ int run_solver(int case_num)
       }
     }
 
-    /*---------- 出力 ----------*/
     if (exec_mode == 0) {
       std::cout << DC[best_dir] << '\n';
       std::fflush(stdout);
@@ -496,20 +493,14 @@ int run_solver(int case_num)
       output_dir_list[turn] = DC[best_dir];
     }
 
-    /*---------- 盤面を進める ----------*/
     board = backup_board;
-    tilt_board(best_dir, board.board);
-
-    if (exec_mode != 0) {
-      debug_ofs << std::right << std::setw(7) << trial_cnt << ' ' << score_board(board.board) << '\n';
-    }
+    board.tilt_board(best_dir);
   }
 
-  /*---------- ファイル保存＆最終スコア表示 ----------*/
   if (exec_mode != 0) {
     save_answer(case_num);
     cout << "iter = " << iter << endl;
-    std::cout << "Score = " << score_board(board.board) << '\n';
+    std::cout << "Score = " << board.calculate_score(input) << '\n';
   }
   return 0;
 }
