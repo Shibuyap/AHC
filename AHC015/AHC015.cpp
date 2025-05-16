@@ -371,12 +371,6 @@ const double TL = 1.8;
 
 int exec_mode = 0;
 
-
-inline int random_empty_index(int turn)
-{
-  return xor_shift32() % (N - turn) + 1;
-}
-
 // 解答出力
 void save_answer(int problemNum)
 {
@@ -398,34 +392,45 @@ void save_answer(int problemNum)
   ofs.close();
 }
 
-int simulate_rollout(int start_turn, int sim_bias, Board& board, const Input& input)
+// ルールベースに従う操作列を記録する配列
+vector<int> rule_actions(N, -1);
+
+// イチゴは後ろに、スイカは右前に、パンプキンは左前に集める
+vector<vector<int>> rule_action_samples = {
+    {0, 2, 2},
+    {0, 1, 3},
+    {0, 1, 3},
+};
+
+void init_rule_actions(const Input& input)
 {
-  int sim_turn = 10 + sim_bias;
-
-  for (int turn = start_turn; turn < min(start_turn + sim_turn, N); ++turn) {
-    int empty_index = random_empty_index(turn);
-    board.set_candy(empty_index, input.flavor_at_turn[turn]);
-
-    int best_score = -1;
-    int best_dir = -1;
-    for (int dir = 0; dir < 4; ++dir) {
-      Board work_board = board;
-      work_board.tilt_board(dir);
-      int score = work_board.calculate_score(input);
-      if (score > best_score) {
-        best_score = score;
-        best_dir = dir;
-      }
-    }
-
-    board.tilt_board(best_dir);
+  for (int t = 0; t < N - 1; t++) {
+    int now = input.flavor_at_turn[t];
+    int next = input.flavor_at_turn[t + 1];
+    rule_actions[t] = rule_action_samples[now - 1][next - 1];
   }
+  rule_actions[N - 1] = 0; // 最後のターンは何でもよい
+}
 
+inline int generate_random_empty_index(int turn)
+{
+  return xor_shift32() % (N - turn) + 1;
+}
+
+int simulate_rollout_with_rules(int start_turn, Board& board, const Input& input)
+{
+  for (int turn = start_turn; turn < N; ++turn) {
+    int empty_index = generate_random_empty_index(turn);
+    board.set_candy(empty_index, input.flavor_at_turn[turn]);
+    board.tilt_board(rule_actions[turn]);
+  }
   return board.calculate_score(input);
 }
 
-void monte_carlo_1(Board& board, Input& input)
+void monte_carlo(Board& board, Input& input)
 {
+  init_rule_actions(input);
+
   int iter = 0;
 
   //――― 100 ターン回す ―――//
@@ -442,7 +447,7 @@ void monte_carlo_1(Board& board, Input& input)
     int    trial_cnt = 0;
     double dir_score_avg[4] = {};
     int    dir_trial_cnt[4] = {};
-    int    sim_bias = 0;
+    int sim_turn = 100;
 
     while (true) {
       if (trial_cnt % 8 == 0) {
@@ -452,16 +457,13 @@ void monte_carlo_1(Board& board, Input& input)
       }
 
       iter++;
-      if (trial_cnt % 4 == 0) {
-        sim_bias = static_cast<int>(xor_shift32() % 3) - 1;
-      }
 
       board = backup_board;
 
       int dir = trial_cnt % 4;
       board.tilt_board(dir);
 
-      double score = simulate_rollout(turn + 1, sim_bias, board, input);
+      double score = simulate_rollout_with_rules(turn + 1, board, input);
 
       dir_score_avg[dir] = (dir_score_avg[dir] * dir_trial_cnt[dir] + score) / (dir_trial_cnt[dir] + 1);
       dir_trial_cnt[dir]++;
@@ -504,7 +506,7 @@ int run_solver(int case_num)
   Board board;
   board.init();
 
-  monte_carlo_1(board, input);  
+  monte_carlo(board, input);  
 
   int score = 0;
   if (exec_mode != 0) {
