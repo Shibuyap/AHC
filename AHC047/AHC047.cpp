@@ -93,12 +93,6 @@ namespace
   }
 }
 
-const ll INF = 1001001001001001001LL;
-const int INT_INF = 1001001001;
-
-const int DX[4] = { -1, 0, 1, 0 };
-const int DY[4] = { 0, -1, 0, 1 };
-
 const double TIME_LIMIT = 1.8;
 int exec_mode;
 
@@ -134,11 +128,6 @@ void restore_best_score() {
       a[i][j] = best_a[i][j];
     }
   }
-}
-
-bool is_out_of_range(int x, int y) {
-  //if (x < 0 || n <= x || y < 0 || n <= y) return true;
-  return false;
 }
 
 void initialize_state() {
