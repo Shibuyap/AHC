@@ -235,7 +235,7 @@ inline long double prob_one_or_more(long double k) {
   return 1.0L - expl(ln_term);
 }
 
-int calculate_score_12(bool all = false) {
+int evaluate_score(bool all = false) {
   double P[12][12];
   double pi[12];
   int    visited[12];
@@ -303,7 +303,7 @@ void output_data(ofstream& ofs) {
   }
 }
 
-vector<int> make_100_12(const vector<double>& v) {
+vector<int> normalize_to_100(const vector<double>& v) {
   double sum = 0;
   rep(i, 12) {
     sum += v[i];
@@ -344,7 +344,7 @@ vector<int> make_100_12(const vector<double>& v) {
   return res;
 }
 
-void build_initial_solution_5(double time_limit) {
+void build_seed_solution(double time_limit) {
   int max_a[m][m];
   int max_score = -1;
 
@@ -396,7 +396,7 @@ void build_initial_solution_5(double time_limit) {
     }
 
     rep(i, 12) {
-      auto v = make_100_12(cnt_sum[i]);
+      auto v = normalize_to_100(cnt_sum[i]);
       rep(j, 12) {
         a[i][j] = v[j];
       }
@@ -405,7 +405,7 @@ void build_initial_solution_5(double time_limit) {
       }
     }
 
-    int score = calculate_score_12();
+    int score = evaluate_score();
     if (score > max_score) {
       max_score = score;
       rep(i, m) {
@@ -433,14 +433,14 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-void run_simulated_annealing(AnnealingParams annealingParams, int siki, double time_limit) {
-  current_score = calculate_score_12();
+void run_simulated_annealing(AnnealingParams params, int siki, double time_limit) {
+  current_score = evaluate_score();
   store_best_score();
 
   double start_time = get_elapsed_time();
   double now_time = get_elapsed_time();
-  const double START_TEMP = annealingParams.start_temperature[0];
-  const double END_TEMP = annealingParams.end_temperature;
+  const double START_TEMP = params.start_temperature[0];
+  const double END_TEMP = params.end_temperature;
 
   int loop = 0;
   while (true) {
@@ -460,11 +460,11 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[2];
+    int ra_exec_mode = rand_xorshift() % params.operation_thresholds[2];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
-    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+    if (ra_exec_mode < params.operation_thresholds[0]) {
       // 近傍操作1
       ra5 = rand_xorshift() % 15 + 1;
       ra1 = rand_xorshift() % 2;
@@ -486,7 +486,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
       a[ra2 + ra1 * 6][ra3 + ra1 * 6] -= ra5;
       a[ra2 + ra1 * 6][ra4 + ra1 * 6] += ra5;
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+    else if (ra_exec_mode < params.operation_thresholds[1]) {
       // 近傍操作2
       ra1 = 0;
       ra5 = rand_xorshift() % 15 + 1;
@@ -508,13 +508,13 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
       a[ra2][ra3] -= ra5;
       a[ra2][ra4] += ra5;
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
+    else if (ra_exec_mode < params.operation_thresholds[2]) {
       // 近傍操作2
       ra1 = rand_xorshift() % 6;
       ra2 = rand_xorshift() % 6;
       swap(a[ra1][ra2], a[ra1][ra2 + 6]);
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[3]) {
+    else if (ra_exec_mode < params.operation_thresholds[3]) {
       // 近傍操作2
       ra1 = rand_xorshift() % 6;
       rep(j, 12) {
@@ -523,10 +523,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
     }
 
     // スコア計算
-    double tmp_score = calculate_score_12(false);
+    double tmp_score = evaluate_score(false);
 
     // 焼きなましで採用判定
-    double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
+    double diff_score = (tmp_score - current_score) * params.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
       // 採用
@@ -539,21 +539,21 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+      if (ra_exec_mode < params.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
         a[ra2 + ra1 * 6][ra3 + ra1 * 6] += ra5;
         a[ra2 + ra1 * 6][ra4 + ra1 * 6] -= ra5;
       }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+      else if (ra_exec_mode < params.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
         a[ra2][ra3] += ra5;
         a[ra2][ra4] -= ra5;
       }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
+      else if (ra_exec_mode < params.operation_thresholds[2]) {
         // 近傍操作2 の巻き戻し
         swap(a[ra1][ra2], a[ra1][ra2 + 6]);
       }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[3]) {
+      else if (ra_exec_mode < params.operation_thresholds[3]) {
         // 近傍操作2 の巻き戻し
         rep(j, 12) {
           swap(a[ra1][j], a[ra1 + 6][j]);
@@ -577,7 +577,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
   ofstream ofs;
   open_ofs(case_num, ofs);
 
-  build_initial_solution_5(1.0);
+  build_seed_solution(1.0);
 
   // 焼きなまし実行
   run_simulated_annealing(annealingParams, 0, 1.5);
@@ -594,7 +594,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
 
   ll score = 0;
   if (true) {
-    score = calculate_score_12(false);
+    score = evaluate_score(false);
   }
   return score;
 }
