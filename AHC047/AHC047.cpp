@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -40,7 +40,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -55,7 +55,7 @@ namespace
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace
 {
   static uint32_t rand_xorshift() {
@@ -151,7 +151,7 @@ void input_data(int case_num) {
   ifstream ifs(oss.str());
 
   if (exec_mode == 0 || !ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     int _n, _m, _L;
     cin >> _n >> _m >> _L;
     rep(i, n) {
@@ -160,7 +160,7 @@ void input_data(int case_num) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     int _n, _m, _L;
     ifs >> _n >> _m >> _L;
     rep(i, n) {
@@ -197,98 +197,63 @@ void open_ofs(int case_num, ofstream& ofs) {
   }
 }
 
+// a[][] ã‚’ 0ã€œ100 ã®æ•´æ•°ã¨ã—ã¦æŒã£ã¦ã„ã‚‹å‰æ
+inline void build_transition(double P[12][12]) {
+  constexpr double kInv = 1.0 / 100.0;
+  for (int i = 0; i < 12; ++i)
+    for (int j = 0; j < 12; ++j)
+      P[i][j] = a[i][j] * kInv;        // row-stochastic
+}
+
+inline void stationary_dist(const double P[12][12],
+  double pi[12],          // â†å‡ºåŠ› (æ­£è¦åŒ–æ¸ˆã¿)
+  int max_iter = 20) {
+  // åˆæœŸãƒ™ã‚¯ãƒˆãƒ«ã¯ä¸€æ§˜ã§ååˆ†
+  double v[12], nv[12];
+  for (int i = 0; i < 12; ++i) v[i] = 1.0 / 12.0;
+
+  for (int it = 0; it < max_iter; ++it) {
+    // nv = v * P
+    for (int j = 0; j < 12; ++j) nv[j] = 0.0;
+    for (int i = 0; i < 12; ++i) {
+      const double vi = v[i];
+      for (int j = 0; j < 12; ++j) nv[j] += vi * P[i][j];
+    }
+    // åæŸåˆ¤å®š (L1 ãƒãƒ«ãƒ )
+    double diff = 0.0;
+    for (int j = 0; j < 12; ++j) diff += fabs(nv[j] - v[j]);
+    if (diff < 1e-12) break;
+    memcpy(v, nv, sizeof(v));
+  }
+  memcpy(pi, v, sizeof(double) * 12);
+}
+
+// æ—§ã‚³ãƒ¼ãƒ‰äº’æ›ï¼švisited[i] = Ï€_i Ã— 1e6
+inline void build_visited(int visited[12], const double pi[12]) {
+  constexpr double SCALE = 1'000'000.0;   // æ—§ã‚³ãƒ¼ãƒ‰ã¨åŒã˜ã‚¹ã‚±ãƒ¼ãƒ«
+  for (int i = 0; i < 12; ++i)
+    visited[i] = static_cast<int>(pi[i] * SCALE + 0.5);
+}
+
 inline long double prob_one_or_more(long double k) {
   constexpr long double ONE_MILLION = 1'000'000.0L;
-  if (k <= 0.0L)                  return 0.0L;   // ‹N‚±‚ç‚È‚¢
-  if (k >= ONE_MILLION - 1)       return 1.0L;   // ‚Ù‚ÚŠmÀ‚É‹N‚±‚é
+  if (k <= 0.0L)                  return 0.0L;   // èµ·ã“ã‚‰ãªã„
+  if (k >= ONE_MILLION - 1)       return 1.0L;   // ã»ã¼ç¢ºå®Ÿã«èµ·ã“ã‚‹
 
-  long double p = k / ONE_MILLION;               // 1 s‚ ‚½‚è¬Œ÷Šm—¦
+  long double p = k / ONE_MILLION;               // 1 è©¦è¡Œã‚ãŸã‚ŠæˆåŠŸç¢ºç‡
   // Q = 1 - (1-p)^1e6  = 1 - exp(1e6 * log(1-p))
   long double ln_term = ONE_MILLION * log1pl(-p);
   return 1.0L - expl(ln_term);
 }
 
-int calculate_score(bool all = false) {
-  int visited[m] = {};
-
-  int next[m][100];
-  rep(i, m) {
-    rep(j, 100) {
-      next[i][j] = 0;
-    }
-    int sum = 0;
-    rep(j, m) {
-      rep(k, a[i][j]) {
-        next[i][sum] = j;
-        sum++;
-      }
-    }
-  }
-
-  int now = 0;
-  rep(i, 10000) {
-    visited[now]++;
-    int ra = rand_xorshift() % 100;
-    now = next[now][ra];
-  }
-  rep(i, m) {
-    visited[i] = visited[i] * 100;
-  }
-
-  double res = 0;
-
-  rep(i, n) {
-    double kitai = 0;
-
-    rep(k, 2) {
-      double prob = 0;
-      rep(j, sv[i].size()) {
-        if (j == 0) {
-          prob = visited[sv[i][j] + k * 6];
-        }
-        else {
-          prob *= a[sv[i][j - 1] + k * 6][sv[i][j] + k * 6] / 100.0;
-        }
-      }
-      kitai += prob;
-    }
-
-    double kaku = prob_one_or_more(kitai);
-    res += kaku * p[i];
-    if (all) {
-      cout << i << " " << kitai << " " << kaku << " " << p[i] << endl;
-    }
-  }
-
-  return round(res);
-}
-
 int calculate_score_12(bool all = false, int siki = 0) {
-  int visited[m] = {};
+  double P[12][12];
+  double pi[12];
+  int    visited[12];
 
-  int next[m][100];
-  rep(i, m) {
-    rep(j, 100) {
-      next[i][j] = 0;
-    }
-    int sum = 0;
-    rep(j, m) {
-      rep(k, a[i][j]) {
-        next[i][sum] = j;
-        sum++;
-      }
-    }
-  }
-
-  int now = 0;
-  rep(i, 1000) {
-    visited[now]++;
-    int ra = rand_xorshift() % 100;
-    now = next[now][ra];
-  }
-  rep(i, m) {
-    visited[i] = visited[i] * 1000;
-  }
+  build_transition(P);
+  stationary_dist(P, pi);     // â†é«˜é€Ÿãƒ»æ±ºå®šçš„
+  build_visited(visited, pi); // â†å¾“æ¥ã¨åŒã˜ã‚¹ã‚±ãƒ¼ãƒ«
 
   double res = 0;
 
@@ -333,7 +298,7 @@ int calculate_score_12(bool all = false, int siki = 0) {
 
 void output_data(ofstream& ofs) {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     rep(i, m) {
       cout << (char)('a' + c[i]);
       rep(j, m) {
@@ -343,7 +308,7 @@ void output_data(ofstream& ofs) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     rep(i, m) {
       ofs << (char)('a' + c[i]);
       rep(j, m) {
@@ -352,147 +317,6 @@ void output_data(ofstream& ofs) {
       ofs << endl;
     }
   }
-}
-
-void build_initial_solution() {
-  rep(i, m) {
-    c[i] = i % 6;
-  }
-
-  rep(i, m) {
-    rep(j, m) {
-      a[i][j] = 0;
-    }
-  }
-
-  rep(i, m) {
-    rep(j, 100) {
-      a[i][j % m]++;
-    }
-  }
-}
-
-void build_initial_solution_2() {
-  rep(i, m) {
-    c[i] = i % 6;
-  }
-
-  rep(i, m) {
-    rep(j, m) {
-      a[i][j] = 0;
-    }
-  }
-
-  int cnt[6][6];
-  rep(i, 6) {
-    rep(j, 6) {
-      cnt[i][j] = 0;
-    }
-  }
-
-  rep(i, m) {
-    rep(j, s[i].size() - 1) {
-      int x = s[i][j] - 'a';
-      int y = s[i][j + 1] - 'a';
-      cnt[x][y]++;
-    }
-  }
-
-  rep(i, m) {
-    double sum = 0;
-    rep(j, 6) {
-      sum += cnt[i % 6][j];
-    }
-    int sum2 = 0;
-    rep(j, m) {
-      a[i][j] = round(cnt[i % 6][j % 6] / sum * 100.0 / 2);
-      sum2 += a[i][j];
-    }
-    if (sum2 > 100) {
-      int diff = sum2 - 100;
-      while (diff > 0) {
-        int x = rand_xorshift() % m;
-        if (a[i][x] > 0) {
-          a[i][x]--;
-          diff--;
-        }
-      }
-    }
-    else if (sum2 < 100) {
-      int diff = 100 - sum2;
-      while (diff > 0) {
-        int x = rand_xorshift() % m;
-        a[i][x]++;
-        diff--;
-      }
-    }
-  }
-}
-
-void build_initial_solution_3() {
-  rep(i, m) {
-    c[i] = i % 6;
-  }
-
-  rep(i, m) {
-    rep(j, m) {
-      a[i][j] = 0;
-    }
-  }
-
-  rep(i, sv[n - 1].size()) {
-    c[i] = sv[n - 1][i];
-  }
-  rep(i, m) {
-    rep(j, m) {
-      a[i][j] = 0;
-    }
-    a[i][(i + 1) % m] = 40;
-    rep(j, 60) {
-      a[i][(i + j + 1) % m]++;
-    }
-  }
-}
-
-vector<int> make_99(vector<double> v) {
-  double sum = 0;
-  rep(i, 6) {
-    sum += v[i];
-  }
-  vector<int> res(6);
-  if (sum < 0.1) {
-    rep(i, 99) {
-      res[i % 6]++;
-    }
-    return res;
-  }
-
-  rep(i, 6) {
-    res[i] = round(v[i] / sum * 99.0);
-  }
-  int sum2 = 0;
-  rep(i, 6) {
-    sum2 += res[i];
-  }
-  if (sum2 > 99) {
-    int diff = sum2 - 99;
-    while (diff > 0) {
-      int x = rand_xorshift() % 6;
-      if (res[x] > 0) {
-        res[x]--;
-        diff--;
-      }
-    }
-  }
-  else if (sum2 < 99) {
-    int diff = 99 - sum2;
-    while (diff > 0) {
-      int x = rand_xorshift() % 6;
-      res[x]++;
-      diff--;
-    }
-  }
-  return res;
 }
 
 vector<int> make_100_12(vector<double> v) {
@@ -536,124 +360,6 @@ vector<int> make_100_12(vector<double> v) {
   return res;
 }
 
-
-void build_initial_solution_4() {
-  int max_a[m][m];
-  int max_score = -1;
-
-  rep(i, m) {
-    c[i] = i % 6;
-  }
-
-  rep(sss, 10) {
-    rep(i, m) {
-      rep(j, m) {
-        a[i][j] = 0;
-      }
-      a[i][(i + 6) % m] = 1;
-    }
-
-    // ˆê”Ô‘å‚«‚¢‚â‚Â
-    rep(kk, 2) {
-      vector<double> cnt_sum[6];
-      rep(i, 6) {
-        cnt_sum[i] = vector<double>(6);
-      }
-      rep(l, sss + 1) {
-        int lll = n - 1 - (kk + l * 2);
-        rep(i, sv[lll].size() - 1) {
-          int x = sv[lll][i];
-          int y = sv[lll][i + 1];
-          cnt_sum[x][y] += p[lll];
-        }
-      }
-      int ma = 99;
-      rep(i, 6) {
-        auto v = make_99(cnt_sum[i]);
-        rep(j, 6) {
-          a[kk * 6 + i][kk * 6 + j] = v[j];
-        }
-      }
-    }
-    int score = calculate_score();
-    if (score > max_score) {
-      max_score = score;
-      rep(i, m) {
-        rep(j, m) {
-          max_a[i][j] = a[i][j];
-        }
-      }
-    }
-  }
-
-  int iter = 0;
-  while (true) {
-    int ra = rand_xorshift() % 10 + 2;
-    vector<int> v[2];
-    rep(i, ra) {
-      if (rand_xorshift() % 2 == 0) {
-        v[0].push_back(n - 1 - i);
-      }
-      else {
-        v[1].push_back(n - 1 - i);
-      }
-    }
-    if (v[0].empty() || v[1].empty()) continue;
-
-
-    if (get_elapsed_time() > 0.5) {
-      break;
-    }
-    iter++;
-
-    rep(i, m) {
-      rep(j, m) {
-        a[i][j] = 0;
-      }
-      a[i][(i + 6) % m] = 1;
-    }
-
-    rep(kk, 2) {
-      vector<double> cnt_sum[6];
-      rep(i, 6) {
-        cnt_sum[i] = vector<double>(6);
-      }
-      rep(l, v[kk].size()) {
-        int lll = v[kk][l];
-        rep(i, sv[lll].size() - 1) {
-          int x = sv[lll][i];
-          int y = sv[lll][i + 1];
-          cnt_sum[x][y] += p[lll];
-        }
-      }
-      int ma = 99;
-      rep(i, 6) {
-        auto v = make_99(cnt_sum[i]);
-        rep(j, 6) {
-          a[kk * 6 + i][kk * 6 + j] = v[j];
-        }
-      }
-    }
-    int score = calculate_score();
-    if (score > max_score) {
-      max_score = score;
-      rep(i, m) {
-        rep(j, m) {
-          max_a[i][j] = a[i][j];
-        }
-      }
-    }
-  }
-
-  cerr << iter << ' ' << max_score << ' ' << get_elapsed_time() << endl;
-
-  rep(i, m) {
-    rep(j, m) {
-      a[i][j] = max_a[i][j];
-    }
-  }
-}
-
 void build_initial_solution_5(double time_limit) {
   int max_a[m][m];
   int max_score = -1;
@@ -662,50 +368,8 @@ void build_initial_solution_5(double time_limit) {
     c[i] = i % 6;
   }
 
-  rep(sss, 10) {
-    rep(i, m) {
-      rep(j, m) {
-        a[i][j] = 0;
-      }
-      a[i][(i + 6) % m] = 1;
-    }
-
-    // ˆê”Ô‘å‚«‚¢‚â‚Â
-    rep(kk, 2) {
-      vector<double> cnt_sum[6];
-      rep(i, 6) {
-        cnt_sum[i] = vector<double>(6);
-      }
-      rep(l, sss + 1) {
-        int lll = n - 1 - (kk + l * 2);
-        rep(i, sv[lll].size() - 1) {
-          int x = sv[lll][i];
-          int y = sv[lll][i + 1];
-          cnt_sum[x][y] += p[lll];
-        }
-      }
-      int ma = 99;
-      rep(i, 6) {
-        auto v = make_99(cnt_sum[i]);
-        rep(j, 6) {
-          a[kk * 6 + i][kk * 6 + j] = v[j];
-        }
-      }
-    }
-    int score = calculate_score();
-    if (score > max_score) {
-      max_score = score;
-      rep(i, m) {
-        rep(j, m) {
-          max_a[i][j] = a[i][j];
-        }
-      }
-    }
-  }
-
   int iter = 0;
   while (true) {
-
     if (get_elapsed_time() > time_limit) {
       break;
     }
@@ -770,7 +434,6 @@ void build_initial_solution_5(double time_limit) {
   }
 }
 
-
 struct AnnealingParams
 {
   double start_temperature[10];
@@ -809,13 +472,13 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
     double progress_ratio = (now_time - start_time) / (time_limit - start_time);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[2];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ‹ß–T‘€ì1
+      // è¿‘å‚æ“ä½œ1
       ra5 = rand_xorshift() % 15 + 1;
       ra1 = rand_xorshift() % 2;
       ra2 = rand_xorshift() % 6;
@@ -837,7 +500,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
       a[ra2 + ra1 * 6][ra4 + ra1 * 6] += ra5;
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
       ra1 = 0;
       ra5 = rand_xorshift() % 15 + 1;
       ra2 = rand_xorshift() % 12;
@@ -859,30 +522,30 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
       a[ra2][ra4] += ra5;
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
       ra1 = rand_xorshift() % 6;
       ra2 = rand_xorshift() % 6;
       swap(a[ra1][ra2], a[ra1][ra2 + 6]);
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[3]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
       ra1 = rand_xorshift() % 6;
       rep(j, 12) {
         swap(a[ra1][j], a[ra1 + 6][j]);
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     double tmp_score = calculate_score_12(false, siki);
 
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
+    // ç„¼ããªã¾ã—ã§æ¡ç”¨åˆ¤å®š
     double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
-      // Ì—p
+      // æ¡ç”¨
       current_score = tmp_score;
 
-      // ƒxƒXƒgXV
+      // ãƒ™ã‚¹ãƒˆæ›´æ–°
       if (current_score > best_score) {
         int sum = 0;
         rep(i, 10) {
@@ -895,23 +558,23 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ1 ã®å·»ãæˆ»ã—
         a[ra2 + ra1 * 6][ra3 + ra1 * 6] += ra5;
         a[ra2 + ra1 * 6][ra4 + ra1 * 6] -= ra5;
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
         a[ra2][ra3] += ra5;
         a[ra2][ra4] -= ra5;
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
         swap(a[ra1][ra2], a[ra1][ra2 + 6]);
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[3]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
         rep(j, 12) {
           swap(a[ra1][j], a[ra1 + 6][j]);
         }
@@ -934,19 +597,15 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
   ofstream ofs;
   open_ofs(case_num, ofs);
 
-  //build_initial_solution();
-  //build_initial_solution_2();
-  //build_initial_solution_3();
-  //build_initial_solution_4();
   build_initial_solution_5(1.0);
 
-  // Ä‚«‚È‚Ü‚µÀs
+  // ç„¼ããªã¾ã—å®Ÿè¡Œ
   run_simulated_annealing(annealingParams, 0, 1.5);
 
   annealingParams.start_temperature[0] = 5000048.0;
   run_simulated_annealing(annealingParams, 1, 1.9);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   output_data(ofs);
 
   if (ofs.is_open()) {
@@ -992,7 +651,7 @@ int main() {
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    srep(i, 0, 150) {
+    srep(i, 0, 15) {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
@@ -1005,45 +664,6 @@ int main() {
           << "time = " << setw(5) << get_elapsed_time() << ", "
           << endl;
       }
-    }
-  }
-  else if (exec_mode == 3) {
-    int loop_count = 0;
-    AnnealingParams best_annealingParams;
-    ll best_sum_score = 0;
-
-    while (true) {
-      AnnealingParams new_annealingParams;
-      new_annealingParams.start_temperature[0] = pow(2.0, rand_01() * 20);
-      new_annealingParams.end_temperature = 0.0;
-      new_annealingParams.score_scale = pow(2.0, rand_01() * 20);
-      new_annealingParams.operation_thresholds[0] = rand() % 101;
-
-      ll sum_score = 0;
-      srep(i, 0, 150) {
-        ll score = solve_case(i, new_annealingParams);
-        sum_score += score;
-
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
-        if (i == 0 && score < 0) {
-          break;
-        }
-      }
-
-      cerr << "loop_count = " << loop_count
-        << ", sum_score = " << sum_score
-        << ", start_temperature = " << new_annealingParams.start_temperature[0]
-        << ", end_temperature = " << new_annealingParams.end_temperature
-        << ", score_scale = " << new_annealingParams.score_scale
-        << ", operation_thresholds = " << new_annealingParams.operation_thresholds[0]
-        << endl;
-
-      if (sum_score > best_sum_score) {
-        best_sum_score = sum_score;
-        best_annealingParams = new_annealingParams;
-      }
-
-      loop_count++;
     }
   }
 
