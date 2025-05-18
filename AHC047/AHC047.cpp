@@ -235,7 +235,7 @@ inline long double prob_one_or_more(long double k) {
   return 1.0L - expl(ln_term);
 }
 
-int calculate_score_12(bool all = false, int siki = 0) {
+int calculate_score_12(bool all = false) {
   double P[12][12];
   double pi[12];
   int    visited[12];
@@ -271,12 +271,7 @@ int calculate_score_12(bool all = false, int siki = 0) {
     }
 
     double kaku = prob_one_or_more(dp[0] + dp[1]);
-    if (siki == 0) {
-      res += kaku * pow(max(p[i] - 1, 0), 1.0);
-    }
-    else {
-      res += kaku * p[i];
-    }
+    res += kaku * p[i];
     if (all) {
       cout << i << " " << dp[0] + dp[1] << " " << kaku << " " << p[i] << endl;
     }
@@ -308,7 +303,7 @@ void output_data(ofstream& ofs) {
   }
 }
 
-vector<int> make_100_12(vector<double> v) {
+vector<int> make_100_12(const vector<double>& v) {
   double sum = 0;
   rep(i, 12) {
     sum += v[i];
@@ -353,6 +348,14 @@ void build_initial_solution_5(double time_limit) {
   int max_a[m][m];
   int max_score = -1;
 
+  int ras[n];
+  int vv[20];
+
+  vector<double> cnt_sum[12];
+  rep(i, 12) {
+    cnt_sum[i] = vector<double>(12);
+  }
+
   rep(i, m) {
     c[i] = i % 6;
   }
@@ -371,23 +374,19 @@ void build_initial_solution_5(double time_limit) {
     }
 
     int ra = rand_xorshift() % 10 + 2;
-    vector<int> ras;
+    int sz = 0;
     rep(i, ra) {
       int lll = n - 1 - i;
       if (rand_xorshift() % 100 < 90) {
-        ras.push_back(lll);
+        ras[sz] = lll;
+        sz++;
       }
     }
 
-    vector<double> cnt_sum[12];
-    rep(i, 12) {
-      cnt_sum[i] = vector<double>(12);
-    }
-    rep(l, ras.size()) {
+    rep(l, sz) {
       int lll = ras[l];
-      vector<int> vv;
       rep(i, sv[lll].size()) {
-        vv.push_back(sv[lll][i] + rand_xorshift() % 2 * 6);
+        vv[i] = sv[lll][i] + rand_xorshift() % 2 * 6;
       }
       rep(i, sv[lll].size() - 1) {
         int x = vv[i];
@@ -395,11 +394,14 @@ void build_initial_solution_5(double time_limit) {
         cnt_sum[x][y] += p[lll];
       }
     }
-    int ma = 99;
+
     rep(i, 12) {
       auto v = make_100_12(cnt_sum[i]);
       rep(j, 12) {
         a[i][j] = v[j];
+      }
+      rep(j, 12) {
+        cnt_sum[i][j] = 0;
       }
     }
 
@@ -432,11 +434,7 @@ struct AnnealingParams
 };
 
 void run_simulated_annealing(AnnealingParams annealingParams, int siki, double time_limit) {
-  int sum = 0;
-  rep(i, 10) {
-    sum += calculate_score_12();
-  }
-  current_score = sum / 10;
+  current_score = calculate_score_12();
   store_best_score();
 
   double start_time = get_elapsed_time();
@@ -525,7 +523,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
     }
 
     // スコア計算
-    double tmp_score = calculate_score_12(false, siki);
+    double tmp_score = calculate_score_12(false);
 
     // 焼きなましで採用判定
     double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
@@ -536,14 +534,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, int siki, double t
 
       // ベスト更新
       if (current_score > best_score) {
-        int sum = 0;
-        rep(i, 10) {
-          sum += calculate_score_12(false, siki);
-        }
-        current_score = sum / 10;
-        if (current_score > best_score) {
-          store_best_score();
-        }
+        store_best_score();
       }
     }
     else {
@@ -592,7 +583,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
   run_simulated_annealing(annealingParams, 0, 1.5);
 
   annealingParams.start_temperature[0] = 5000048.0;
-  run_simulated_annealing(annealingParams, 1, 1.9);
+  run_simulated_annealing(annealingParams, 1, 1.95);
 
   // 解答を出力
   output_data(ofs);
@@ -603,7 +594,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
 
   ll score = 0;
   if (true) {
-    score = calculate_score_12(false, 1);
+    score = calculate_score_12(false);
   }
   return score;
 }
