@@ -260,14 +260,22 @@ void output_answer(ofstream& ofs)
 {
   auto& out = (io_mode == 0 ? cout : ofs);
   out << "-1 -1 -1\n";
-  rep(i, wormhole_count) out << guessed_perm[i] << '\n';
-  if (io_mode == 0) fflush(stdout);
+  rep(i, wormhole_count) {
+    out << guessed_perm[i] << '\n';
+  }
+  if (io_mode == 0) {
+    fflush(stdout);
+  }
 }
 
 ll calc_offline_score()
 {
   double score = 1e14;
-  rep(i, wormhole_count) if (guessed_perm[i] != wormhole_perm[i]) score *= 0.8;
+  rep(i, wormhole_count) {
+    if (guessed_perm[i] != wormhole_perm[i]) {
+      score *= 0.8;
+    }
+  }
   score = score / (1e5 + calc_layout_cost() + input_file_measure_cost);
   return ceil(score);
 }
@@ -275,20 +283,40 @@ ll calc_offline_score()
 void snapshot_best_state()
 {
   best_score = max_score; best_layout_cost = max_layout_cost; best_measurement_cost = max_measurement_cost;
-  rep(i, board_size) rep(j, board_size) best_grid[i][j] = grid[i][j];
+  rep(i, board_size) {
+    rep(j, board_size) {
+      best_grid[i][j] = grid[i][j];
+    }
+  }
   rep(s, SET_SIZE) {
-    rep(i, wormhole_count) best_candidate_perm_set[s][i] = candidate_perm_set[s][i];
-    rep(i, wormhole_count) rep(j, wormhole_count) best_diff_cache[s][i][j] = diff_cache[s][i][j];
+    rep(i, wormhole_count) {
+      best_candidate_perm_set[s][i] = candidate_perm_set[s][i];
+    }
+    rep(i, wormhole_count) {
+      rep(j, wormhole_count) {
+        best_diff_cache[s][i][j] = diff_cache[s][i][j];
+      }
+    }
   }
 }
 
 void restore_best_state()
 {
   max_score = best_score; max_layout_cost = best_layout_cost; max_measurement_cost = best_measurement_cost;
-  rep(i, board_size) rep(j, board_size) grid[i][j] = best_grid[i][j];
+  rep(i, board_size) {
+    rep(j, board_size) {
+      grid[i][j] = best_grid[i][j];
+    }
+  }
   rep(s, SET_SIZE) {
-    rep(i, wormhole_count) candidate_perm_set[s][i] = best_candidate_perm_set[s][i];
-    rep(i, wormhole_count) rep(j, wormhole_count) diff_cache[s][i][j] = best_diff_cache[s][i][j];
+    rep(i, wormhole_count) {
+      candidate_perm_set[s][i] = best_candidate_perm_set[s][i];
+    }
+    rep(i, wormhole_count) {
+      rep(j, wormhole_count) {
+        diff_cache[s][i][j] = best_diff_cache[s][i][j];
+      }
+    }
   }
 }
 
@@ -298,20 +326,24 @@ void init_sa_measurements()
   max_measurement_cost = 0;
   int slide = (SEARCH_WINDOW_SIZE - 1) / 2;
   rep(i, wormhole_count) {
-    srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
-      rep(m, SET_SIZE) {
-        scores_sa_measurements[m][k + slide][l + slide] = sa_measure_cell(i, k, l, m);
+    srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) {
+      srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
+        rep(m, SET_SIZE) {
+          scores_sa_measurements[m][k + slide][l + slide] = sa_measure_cell(i, k, l, m);
+        }
+        max_measurement_cost += 100LL * (10LL + abs(k) + abs(l));
       }
-      max_measurement_cost += 100LL * (10LL + abs(k) + abs(l));
     }
     rep(m, SET_SIZE) {
       int minDiff = INF;
       rep(j, wormhole_count) {
         diff_cache[m][i][j] = 0;
-        srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
-          int y = (wormhole_y[j] + k + board_size) % board_size;
-          int x = (wormhole_x[j] + l + board_size) % board_size;
-          diff_cache[m][i][j] += abs(grid[y][x] - scores_sa_measurements[m][k + slide][l + slide]);
+        srep(k, -slide, -slide + SEARCH_WINDOW_SIZE) {
+          srep(l, -slide, -slide + SEARCH_WINDOW_SIZE) {
+            int y = (wormhole_y[j] + k + board_size) % board_size;
+            int x = (wormhole_x[j] + l + board_size) % board_size;
+            diff_cache[m][i][j] += abs(grid[y][x] - scores_sa_measurements[m][k + slide][l + slide]);
+          }
         }
         if (diff_cache[m][i][j] < minDiff) {
           minDiff = diff_cache[m][i][j];
@@ -321,12 +353,17 @@ void init_sa_measurements()
     }
   }
 }
-
 void init_simulated_annealing()
 {
-  rep(i, wormhole_count) answer_perm[i] = i;
+  rep(i, wormhole_count) { answer_perm[i] = i; }
   init_normal_dist();
-  rep(i, wormhole_count) rep(j, SET_SIZE) rep(k, SEARCH_WINDOW_SIZE) rep(l, SEARCH_WINDOW_SIZE) f_SA[i][j][k][l] = sample_normal_int();
+  rep(i, wormhole_count) {
+    rep(j, SET_SIZE) {
+      rep(k, SEARCH_WINDOW_SIZE) {
+        rep(l, SEARCH_WINDOW_SIZE) { f_SA[i][j][k][l] = sample_normal_int(); }
+      }
+    }
+  }
 
   max_layout_cost = calc_layout_cost();
   init_sa_measurements();
@@ -484,7 +521,9 @@ ll solve_problem(int prob_num)
   int loopCount = 0;
   while (true) {
     double elapsed = (double)(clock() - start_clock) / CLOCKS_PER_SEC;
-    if (elapsed > TIME_LIMIT_SEC) break;
+    if (elapsed > TIME_LIMIT_SEC) {
+      break;
+    }
     double progress = elapsed / TIME_LIMIT_SEC;
     double temperature = 2000 * (1.0 - progress);
     tweak_single_cell(temperature);
@@ -497,18 +536,18 @@ ll solve_problem(int prob_num)
   output_measurements(ofs);
   output_answer(ofs);
 
-  if (ofs.is_open()) ofs.close();
-  if (io_mode == 0) return 0;
+  if (ofs.is_open()) {
+    ofs.close();
+  }
+  if (io_mode == 0) {
+    return 0;
+  }
   return calc_offline_score();
 }
 
 // ----------------------------- main -----------------------------
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) rand_xorshift();
-  std::random_device rnd; rng_engine.seed(rnd());
-
   io_mode = 1; // 0: interactive, 1: file batch
 
   if (io_mode == 0) {
