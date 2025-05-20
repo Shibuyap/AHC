@@ -159,12 +159,6 @@ void open_ofs(int case_num, ofstream& ofs)
   }
 }
 
-ll calculate_score()
-{
-  ll res = 0;
-  return res;
-}
-
 void output_data(ofstream& ofs)
 {
   if (exec_mode == 0) {
@@ -173,6 +167,12 @@ void output_data(ofstream& ofs)
   else {
     // ファイル出力
   }
+}
+
+ll calculate_score()
+{
+  ll res = 0;
+  return res;
 }
 
 void build_initial_solution()

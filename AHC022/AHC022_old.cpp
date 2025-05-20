@@ -609,7 +609,7 @@ ll solve_problem(int prob_num)
 }
 
 // ----------------------------- main -----------------------------
-int main()
+int main_old()
 {
   io_mode = 1; // 0: interactive, 1: file batch
 
