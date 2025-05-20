@@ -110,7 +110,7 @@ int best_diff_cache[SET_SIZE][MAX_N][MAX_N];
 // runtime stats
 int method_stat[20][10];
 int measurement_count;
-ll input_file_measure_cost;
+ll measure_cost;
 
 // helpers for window tests
 int is_within_window_iy;
@@ -185,7 +185,7 @@ void open_output_stream(int prob_num, ofstream& ofs)
   ofs.open(file_name);
 }
 
-ll calc_layout_cost()
+ll layout_cost()
 {
   ll cost = 0;
   rep(i, board_size) {
@@ -197,39 +197,10 @@ ll calc_layout_cost()
   return cost;
 }
 
-// ---- various initial layouts ----
-void init_layout_zero() {
-  rep(i, board_size) {
-    rep(j, board_size) {
-      grid[i][j] = 0;
-    }
-  }
-}
 void init_layout_random_binary() {
   rep(i, board_size) {
     rep(j, board_size) {
       grid[i][j] = rand_xorshift() % 2 * 1000;
-    }
-  }
-}
-void init_layout_constant_500() {
-  rep(i, board_size) {
-    rep(j, board_size) {
-      grid[i][j] = 500;
-    }
-  }
-}
-void init_layout_uniform() {
-  rep(i, board_size) {
-    rep(j, board_size) {
-      grid[i][j] = rand_xorshift() % 1001;
-    }
-  }
-}
-void init_layout_quarter_half() {
-  rep(i, board_size) {
-    rep(j, board_size) {
-      grid[i][j] = 250 + rand_xorshift() % 2 * 500;
     }
   }
 }
@@ -270,7 +241,7 @@ int measure_cell(int i, int y, int x, ofstream& ofs)
     measurement_count++;
   }
 
-  input_file_measure_cost += 100LL * (10LL + abs(y) + abs(x));
+  measure_cost += 100LL * (10LL + abs(y) + abs(x));
   return m;
 }
 
@@ -337,7 +308,7 @@ ll calc_offline_score()
       score *= 0.8;
     }
   }
-  score = score / (1e5 + calc_layout_cost() + input_file_measure_cost);
+  score = score / (1e5 + layout_cost() + measure_cost);
   return ceil(score);
 }
 
@@ -435,7 +406,7 @@ void init_simulated_annealing()
     }
   }
 
-  max_layout_cost = calc_layout_cost();
+  max_layout_cost = layout_cost();
   init_sa_measurements();
 
   max_score = 0;
