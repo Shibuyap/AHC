@@ -182,186 +182,156 @@ struct HyperKeys
 };
 
 map<HyperKeys, HyperParameters> hyper_parameters = {
-  {HyperKeys(1,1),  HyperParameters(475, 471, 134, 0.518192, 10)},
-  {HyperKeys(1,2),  HyperParameters(475, 471, 134, 0.518192, 10)},
-  {HyperKeys(1,3),  HyperParameters(475, 471, 134, 0.518192, 10)},
-  {HyperKeys(1,4),  HyperParameters(475, 471, 134, 0.518192, 10)},
-  {HyperKeys(1,5),  HyperParameters(475, 471, 134, 0.518192, 10)},
-  {HyperKeys(4,1),  HyperParameters(421, 402, 149, 0.583516, 10)},
-  {HyperKeys(4,2),  HyperParameters(421, 402, 149, 0.583516, 10)},
-  {HyperKeys(4,3),  HyperParameters(421, 402, 149, 0.583516, 10)},
-  {HyperKeys(4,4),  HyperParameters(421, 402, 149, 0.583516, 10)},
-  {HyperKeys(4,5),  HyperParameters(421, 402, 149, 0.583516, 10)},
-  {HyperKeys(9,1),  HyperParameters(446, 398, 173, 0.608158, 10)},
-  {HyperKeys(16,1), HyperParameters(451, 379, 315, 0.598233, 10)},
-  {HyperKeys(25,1), HyperParameters(458, 375, 315, 0.650053, 10)},
-  {HyperKeys(36,1), HyperParameters(475, 375, 339, 0.75, 10)},
-  {HyperKeys(49,1), HyperParameters(634, 518, 339, 0.75, 10)},
-  {HyperKeys(64,1), HyperParameters(634, 409, 339, 0.75, 10)},
-  {HyperKeys(81,1), HyperParameters(634, 375, 339, 0.75, 10)},
-  {HyperKeys(100,1), HyperParameters(634, 375, 339, 0.75, 10)},
-  {HyperKeys(121,1), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(144,1), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(169,1), HyperParameters(993, 589, 617, 0.730521, 10)},
-  {HyperKeys(196,1), HyperParameters(1000, 582, 636, 0.798162, 10)},
-  {HyperKeys(225,1), HyperParameters(1000, 500, 645, 0.75, 10)},
-  {HyperKeys(256,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(289,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(324,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(361,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(400,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(441,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(484,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(529,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(576,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(625,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(676,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(729,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(784,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(841,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  {HyperKeys(900,1), HyperParameters(1000, 500, 1000, 0.75, 10)},
-  
-
-
-  {HyperKeys(9,2),  HyperParameters(446, 398, 173, 0.608158, 10)},
-  {HyperKeys(9,3),  HyperParameters(446, 398, 173, 0.608158, 10)},
-  {HyperKeys(9,4),  HyperParameters(446, 398, 173, 0.608158, 10)},
-  {HyperKeys(9,5),  HyperParameters(446, 398, 173, 0.608158, 10)},
-
-  {HyperKeys(16,2), HyperParameters(451, 379, 315, 0.598233, 10)},
-  {HyperKeys(16,3), HyperParameters(451, 379, 315, 0.598233, 10)},
-  {HyperKeys(16,4), HyperParameters(451, 379, 315, 0.598233, 10)},
-  {HyperKeys(16,5), HyperParameters(451, 379, 315, 0.598233, 10)},
-
-  {HyperKeys(25,2), HyperParameters(458, 375, 315, 0.650053, 10)},
-  {HyperKeys(25,3), HyperParameters(458, 375, 315, 0.650053, 10)},
-  {HyperKeys(25,4), HyperParameters(458, 375, 315, 0.650053, 10)},
-  {HyperKeys(25,5), HyperParameters(458, 375, 315, 0.650053, 10)},
-
-  {HyperKeys(36,2), HyperParameters(475, 375, 339, 0.75,     10)},
-  {HyperKeys(36,3), HyperParameters(475, 375, 339, 0.75,     10)},
-  {HyperKeys(36,4), HyperParameters(475, 375, 339, 0.75,     10)},
-  {HyperKeys(36,5), HyperParameters(475, 375, 339, 0.75,     10)},
-
-  {HyperKeys(49,2), HyperParameters(634, 518, 339, 0.75,     10)},
-  {HyperKeys(49,3), HyperParameters(634, 518, 339, 0.75,     10)},
-  {HyperKeys(49,4), HyperParameters(634, 518, 339, 0.75,     10)},
-  {HyperKeys(49,5), HyperParameters(634, 518, 339, 0.75,     10)},
-
-  {HyperKeys(64,2), HyperParameters(634, 409, 339, 0.75,     10)},
-  {HyperKeys(64,3), HyperParameters(634, 409, 339, 0.75,     10)},
-  {HyperKeys(64,4), HyperParameters(634, 409, 339, 0.75,     10)},
-  {HyperKeys(64,5), HyperParameters(634, 409, 339, 0.75,     10)},
-
-  {HyperKeys(81,2), HyperParameters(634, 375, 339, 0.75,     10)},
-  {HyperKeys(81,3), HyperParameters(634, 375, 339, 0.75,     10)},
-  {HyperKeys(81,4), HyperParameters(634, 375, 339, 0.75,     10)},
-  {HyperKeys(81,5), HyperParameters(634, 375, 339, 0.75,     10)},
-
-  {HyperKeys(100,2), HyperParameters(634, 375, 339, 0.75,    10)},
-  {HyperKeys(100,3), HyperParameters(634, 375, 339, 0.75,    10)},
-  {HyperKeys(100,4), HyperParameters(634, 375, 339, 0.75,    10)},
-  {HyperKeys(100,5), HyperParameters(634, 375, 339, 0.75,    10)},
-
-  {HyperKeys(121,2), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121,3), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121,4), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121,5), HyperParameters(1000, 779, 657, 0.793272, 10)},
-
-  {HyperKeys(144,2), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144,3), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144,4), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144,5), HyperParameters(992, 579, 617, 0.730521, 10)},
-
-  {HyperKeys(169,2), HyperParameters(993, 589, 617, 0.730521, 10)},
-  {HyperKeys(169,3), HyperParameters(993, 589, 617, 0.730521, 10)},
-  {HyperKeys(169,4), HyperParameters(993, 589, 617, 0.730521, 10)},
-  {HyperKeys(169,5), HyperParameters(993, 589, 617, 0.730521, 10)},
-
-  {HyperKeys(196,2), HyperParameters(1000, 582, 636, 0.798162, 10)},
-  {HyperKeys(196,3), HyperParameters(1000, 582, 636, 0.798162, 10)},
-  {HyperKeys(196,4), HyperParameters(1000, 582, 636, 0.798162, 10)},
-  {HyperKeys(196,5), HyperParameters(1000, 582, 636, 0.798162, 10)},
-
-  {HyperKeys(225,2), HyperParameters(1000, 500, 645, 0.75,    10)},
-  {HyperKeys(225,3), HyperParameters(1000, 500, 645, 0.75,    10)},
-  {HyperKeys(225,4), HyperParameters(1000, 500, 645, 0.75,    10)},
-  {HyperKeys(225,5), HyperParameters(1000, 500, 645, 0.75,    10)},
-
-  {HyperKeys(256,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(256,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(256,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(256,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(289,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(289,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(289,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(289,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(324,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(324,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(324,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(324,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(361,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(361,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(361,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(361,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(400,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(400,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(400,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(400,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(441,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(441,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(441,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(441,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(484,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(484,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(484,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(484,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(529,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(529,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(529,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(529,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(576,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(576,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(576,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(576,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(625,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(625,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(625,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(625,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(676,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(676,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(676,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(676,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(729,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(729,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(729,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(729,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(784,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(784,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(784,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(784,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(841,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(841,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(841,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(841,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
-
-  {HyperKeys(900,2), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(900,3), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(900,4), HyperParameters(1000, 500, 1000, 0.75,   10)},
-  {HyperKeys(900,5), HyperParameters(1000, 500, 1000, 0.75,   10)},
+  {HyperKeys(1, 1), HyperParameters(475, 471, 127, 0.518192, 10)},
+  {HyperKeys(1, 2), HyperParameters(475, 471, 127, 0.518192, 10)},
+  {HyperKeys(1, 3), HyperParameters(475, 471, 134, 0.518192, 10)},
+  {HyperKeys(1, 4), HyperParameters(475, 471, 134, 0.518192, 10)},
+  {HyperKeys(1, 5), HyperParameters(475, 471, 134, 0.518192, 10)},
+  {HyperKeys(4, 1), HyperParameters(421, 402, 149, 0.583516, 10)},
+  {HyperKeys(4, 2), HyperParameters(421, 402, 149, 0.583516, 10)},
+  {HyperKeys(4, 3), HyperParameters(421, 402, 149, 0.583516, 10)},
+  {HyperKeys(4, 4), HyperParameters(421, 402, 149, 0.583516, 10)},
+  {HyperKeys(4, 5), HyperParameters(421, 402, 149, 0.583516, 10)},
+  {HyperKeys(9, 1), HyperParameters(446, 398, 173, 0.608158, 10)},
+  {HyperKeys(9, 2), HyperParameters(446, 398, 173, 0.608158, 10)},
+  {HyperKeys(9, 3), HyperParameters(446, 398, 173, 0.608158, 10)},
+  {HyperKeys(9, 4), HyperParameters(446, 398, 173, 0.608158, 10)},
+  {HyperKeys(9, 5), HyperParameters(446, 398, 173, 0.608158, 10)},
+  {HyperKeys(16, 1), HyperParameters(451, 379, 315, 0.598233, 10)},
+  {HyperKeys(16, 2), HyperParameters(451, 379, 315, 0.598233, 10)},
+  {HyperKeys(16, 3), HyperParameters(451, 379, 315, 0.598233, 10)},
+  {HyperKeys(16, 4), HyperParameters(451, 379, 315, 0.598233, 10)},
+  {HyperKeys(16, 5), HyperParameters(451, 379, 315, 0.598233, 10)},
+  {HyperKeys(25, 1), HyperParameters(458, 375, 315, 0.650053, 10)},
+  {HyperKeys(25, 2), HyperParameters(458, 375, 315, 0.650053, 10)},
+  {HyperKeys(25, 3), HyperParameters(458, 375, 315, 0.650053, 10)},
+  {HyperKeys(25, 4), HyperParameters(458, 375, 315, 0.650053, 10)},
+  {HyperKeys(25, 5), HyperParameters(458, 375, 315, 0.650053, 10)},
+  {HyperKeys(36, 1), HyperParameters(644, 518, 339, 0.704136, 10)},
+  {HyperKeys(36, 2), HyperParameters(644, 518, 339, 0.704136, 10)},
+  {HyperKeys(36, 3), HyperParameters(644, 518, 339, 0.704136, 10)},
+  {HyperKeys(36, 4), HyperParameters(475, 375, 339, 0.75, 10)},
+  {HyperKeys(36, 5), HyperParameters(475, 375, 339, 0.75, 10)},
+  {HyperKeys(49, 1), HyperParameters(634, 518, 339, 0.75, 10)},
+  {HyperKeys(49, 2), HyperParameters(634, 518, 339, 0.75, 10)},
+  {HyperKeys(49, 3), HyperParameters(634, 518, 339, 0.75, 10)},
+  {HyperKeys(49, 4), HyperParameters(634, 518, 339, 0.75, 10)},
+  {HyperKeys(49, 5), HyperParameters(634, 518, 339, 0.75, 10)},
+  {HyperKeys(64, 1), HyperParameters(641, 431, 339, 0.770498, 10)},
+  {HyperKeys(64, 2), HyperParameters(634, 409, 339, 0.75, 10)},
+  {HyperKeys(64, 3), HyperParameters(634, 409, 339, 0.75, 10)},
+  {HyperKeys(64, 4), HyperParameters(634, 409, 339, 0.75, 10)},
+  {HyperKeys(64, 5), HyperParameters(634, 409, 339, 0.75, 10)},
+  {HyperKeys(81, 1), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(81, 2), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(81, 3), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(81, 4), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(81, 5), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(100, 1), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(100, 2), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(100, 3), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(100, 4), HyperParameters(634, 375, 339, 0.75, 10)},
+  {HyperKeys(100, 5), HyperParameters(1000, 779, 657, 0.784956, 10)},
+  {HyperKeys(121, 1), HyperParameters(1000, 779, 657, 0.793272, 10)},
+  {HyperKeys(121, 2), HyperParameters(1000, 779, 657, 0.793272, 10)},
+  {HyperKeys(121, 3), HyperParameters(1000, 779, 657, 0.793272, 10)},
+  {HyperKeys(121, 4), HyperParameters(1000, 779, 657, 0.793272, 10)},
+  {HyperKeys(121, 5), HyperParameters(1000, 779, 657, 0.793272, 10)},
+  {HyperKeys(144, 1), HyperParameters(992, 579, 617, 0.730521, 10)},
+  {HyperKeys(144, 2), HyperParameters(992, 579, 617, 0.730521, 10)},
+  {HyperKeys(144, 3), HyperParameters(992, 579, 617, 0.730521, 10)},
+  {HyperKeys(144, 4), HyperParameters(992, 579, 617, 0.730521, 10)},
+  {HyperKeys(144, 5), HyperParameters(992, 579, 617, 0.730521, 10)},
+  {HyperKeys(169, 1), HyperParameters(993, 589, 617, 0.730521, 10)},
+  {HyperKeys(169, 2), HyperParameters(993, 589, 617, 0.730521, 10)},
+  {HyperKeys(169, 3), HyperParameters(993, 589, 617, 0.730521, 10)},
+  {HyperKeys(169, 4), HyperParameters(993, 589, 617, 0.730521, 10)},
+  {HyperKeys(169, 5), HyperParameters(993, 589, 617, 0.730521, 10)},
+  {HyperKeys(196, 1), HyperParameters(1000, 582, 636, 0.798162, 10)},
+  {HyperKeys(196, 2), HyperParameters(1000, 582, 636, 0.798162, 10)},
+  {HyperKeys(196, 3), HyperParameters(1000, 582, 636, 0.798162, 10)},
+  {HyperKeys(196, 4), HyperParameters(1000, 582, 636, 0.798162, 10)},
+  {HyperKeys(196, 5), HyperParameters(1000, 582, 636, 0.798162, 10)},
+  {HyperKeys(225, 1), HyperParameters(1000, 500, 645, 0.75, 10)},
+  {HyperKeys(225, 2), HyperParameters(1000, 500, 645, 0.75, 10)},
+  {HyperKeys(225, 3), HyperParameters(1000, 500, 645, 0.75, 10)},
+  {HyperKeys(225, 4), HyperParameters(1000, 500, 645, 0.75, 10)},
+  {HyperKeys(225, 5), HyperParameters(1000, 500, 645, 0.75, 10)},
+  {HyperKeys(256, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(256, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(256, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(256, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(256, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(289, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(289, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(289, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(289, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(289, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(324, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(324, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(324, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(324, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(324, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(361, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(361, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(361, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(361, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(361, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(400, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(400, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(400, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(400, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(400, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(441, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(441, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(441, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(441, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(441, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(484, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(484, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(484, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(484, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(484, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(529, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(529, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(529, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(529, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(529, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(576, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(576, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(576, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(576, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(576, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(625, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(625, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(625, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(625, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(625, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(676, 1), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(676, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(676, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(676, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(676, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(729, 1), HyperParameters(999, 335, 1012, 0.77592, 10)},
+  {HyperKeys(729, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(729, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(729, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(729, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(784, 1), HyperParameters(999, 335, 1012, 0.77592, 10)},
+  {HyperKeys(784, 2), HyperParameters(999, 335, 1012, 0.77592, 10)},
+  {HyperKeys(784, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(784, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(784, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(841, 1), HyperParameters(999, 335, 1012, 0.77592, 10)},
+  {HyperKeys(841, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(841, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(841, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(841, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(900, 1), HyperParameters(999, 335, 1012, 0.77592, 10)},
+  {HyperKeys(900, 2), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(900, 3), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(900, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {HyperKeys(900, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
 };
 
 
@@ -891,7 +861,7 @@ void output_hyper_parameters()
   std::ostringstream oss;
   oss << "./hyper_parameters.txt";
   ofstream ofs(oss.str());
-  ofs << "map<int, HyperParameters> hyper_parameters = {" << endl;
+  ofs << "map<HyperKeys, HyperParameters> hyper_parameters = {" << endl;
   for (auto it = hyper_parameters.begin(); it != hyper_parameters.end(); ++it) {
     ofs << "  {HyperKeys(" << it->first.s_key << ", " << it->first.l_key << "), "
       << "HyperParameters(" << it->second.value_1 << ", " << it->second.value_2 << ", "
@@ -936,7 +906,7 @@ int main()
     {
       iter++;
       // 100回戦わせて70勝以上したらハイパーパラメータを更新する
-      int s = rand_range(1, 30);
+      int s = rand_range(1, 10);
       int ss = s * s;
       int l_key = rand_xorshift() % 5 + 1;
 
@@ -1012,15 +982,15 @@ int main()
         }
         else if (ra < 5000) {
           if (rand_xorshift() % 2 == 0) new_params.value_1 = min(1000, max(1, old_params.value_1 + (int)rand_range(-15, 15)));
-          if (rand_xorshift() % 2 == 0)new_params.value_2 = min(1000, max(1, old_params.value_2 + (int)rand_range(-50, 50)));
+          if (rand_xorshift() % 2 == 0)new_params.value_2 = min(1000, max(1, old_params.value_2 + (int)rand_range(-200, 200)));
           if (rand_xorshift() % 2 == 0)new_params.value_3 = min(2000, max(1, old_params.value_3 + (int)rand_range(-15, 15)));
           if (rand_xorshift() % 2 == 0)new_params.value_4 = min(0.99, old_params.value_4 + rand_range_double(-0.05, 0.05));
         }
         else if (ra < 10000) {
-          if (rand_xorshift() % 2 == 0) new_params.value_1 = min(1000, max(1, old_params.value_1 + (int)rand_range(-15, 15)));
-          if (rand_xorshift() % 2 == 0)new_params.value_2 = min(1500, max(1, old_params.value_2 + (int)rand_range(-200, 200)));
-          if (rand_xorshift() % 2 == 0)new_params.value_3 = min(2000, max(1, old_params.value_3 + (int)rand_range(-15, 15)));
-          if (rand_xorshift() % 2 == 0)new_params.value_4 = min(0.99, old_params.value_4 + rand_range_double(-0.05, 0.05));
+          if (rand_xorshift() % 2 == 0) new_params.value_1 = min(1000, max(1, old_params.value_1 + (int)rand_range(-150, 150)));
+          if (rand_xorshift() % 2 == 0)new_params.value_2 = min(1500, max(1, old_params.value_2 + (int)rand_range(-300, 300)));
+          if (rand_xorshift() % 2 == 0)new_params.value_3 = min(2000, max(1, old_params.value_3 + (int)rand_range(-150, 150)));
+          if (rand_xorshift() % 2 == 0)new_params.value_4 = min(0.99, old_params.value_4 + rand_range_double(-0.15, 0.15));
         }
         else if (ra < 20000) {
           if (s == 1) {
@@ -1074,7 +1044,7 @@ int main()
         if (win_count <= 4 && lose_count >= 1) {
           break;
         }
-        if (win_count >= 30) {
+        if (win_count >= 20) {
           break;
         }
         if (draw_count + lose_count >= 5) {
@@ -1096,7 +1066,7 @@ int main()
         << "lose_count = " << std::setw(2) << lose_count << ", "
         << "time = " << get_elapsed_time() << endl;
 
-      if (win_count >= 30) {
+      if (win_count >= 20) {
         hyper_parameters[h_key] = new_params;
         output_hyper_parameters();
         if (1 < s) {
@@ -1119,10 +1089,8 @@ int main()
             que.push(make_pair(HyperKeys(ss, l_key + 1), new_params));
           }
         }
-      }
 
-      if (win_count >= 20) {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
           HyperParameters new_new_params = new_params;
           if (rand_xorshift() % 2 == 0) new_new_params.value_1 = min(1000, max(1, new_params.value_1 + (int)rand_range(-15, 15)));
           if (rand_xorshift() % 2 == 0) new_new_params.value_2 = min(1000, max(1, new_params.value_2 + (int)rand_range(-50, 50)));
@@ -1131,7 +1099,7 @@ int main()
           que.push(make_pair(h_key, new_new_params));
         }
         if (1 < s) {
-          for (int i = 0; i < 20; i++) {
+          for (int i = 0; i < 10; i++) {
             HyperParameters new_new_params = new_params;
             if (rand_xorshift() % 2 == 0) new_new_params.value_1 = min(1000, max(1, new_params.value_1 + (int)rand_range(-15, 15)));
             if (rand_xorshift() % 2 == 0) new_new_params.value_2 = min(1000, max(1, new_params.value_2 + (int)rand_range(-50, 50)));
@@ -1141,7 +1109,7 @@ int main()
           }
         }
         if (s < 30) {
-          for (int i = 0; i < 20; i++) {
+          for (int i = 0; i < 10; i++) {
             HyperParameters new_new_params = new_params;
             if (rand_xorshift() % 2 == 0) new_new_params.value_1 = min(1000, max(1, new_params.value_1 + (int)rand_range(-15, 15)));
             if (rand_xorshift() % 2 == 0) new_new_params.value_2 = min(1000, max(1, new_params.value_2 + (int)rand_range(-50, 50)));
@@ -1151,7 +1119,7 @@ int main()
           }
         }
         if (1 < l_key) {
-          for (int i = 0; i < 20; i++) {
+          for (int i = 0; i < 10; i++) {
             HyperParameters new_new_params = new_params;
             if (rand_xorshift() % 2 == 0) new_new_params.value_1 = min(1000, max(1, new_params.value_1 + (int)rand_range(-15, 15)));
             if (rand_xorshift() % 2 == 0) new_new_params.value_2 = min(1000, max(1, new_params.value_2 + (int)rand_range(-50, 50)));
@@ -1161,7 +1129,7 @@ int main()
           }
         }
         if (l_key < 5) {
-          for (int i = 0; i < 20; i++) {
+          for (int i = 0; i < 10; i++) {
             HyperParameters new_new_params = new_params;
             if (rand_xorshift() % 2 == 0) new_new_params.value_1 = min(1000, max(1, new_params.value_1 + (int)rand_range(-15, 15)));
             if (rand_xorshift() % 2 == 0) new_new_params.value_2 = min(1000, max(1, new_params.value_2 + (int)rand_range(-50, 50)));
