@@ -72,7 +72,7 @@ namespace
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r)
+  static double rand_range_double(double l, double r)
   {
     return l + (r - l) * rand_01();
   }
@@ -91,9 +91,12 @@ namespace
       arr[j] = swa;
     }
   }
+
+  std::mt19937 rng_engine;
+  std::normal_distribution<> normal_dist;
 }
 
-inline void normalize(vector<double> vec)
+inline void normalize(vector<double>& vec)
 {
   double sum = 0.0;
   for (int i = 0; i < vec.size(); i++) {
@@ -130,6 +133,69 @@ inline void normalize_matrix(vector<vector<double>>& mat, int dir, int index)
 
 const double TIME_LIMIT = 3.8;
 int exec_mode;
+
+struct HyperParameters
+{
+public:
+  int value_1, value_2, value_3;
+  double value_4;
+  int value_5;
+
+  HyperParameters() {
+    value_1 = 0;
+    value_2 = 0;
+    value_3 = 0;
+    value_4 = 0;
+    value_5 = 0;
+  }
+
+  HyperParameters(int v1, int v2, int v3, double v4, int v5) {
+    value_1 = v1;
+    value_2 = v2;
+    value_3 = v3;
+    value_4 = v4;
+    value_5 = v5;
+  }
+
+  bool operator==(const HyperParameters& other) const {
+    return value_1 == other.value_1 && value_2 == other.value_2 && value_3 == other.value_3 &&
+      value_4 == other.value_4 && value_5 == other.value_5;
+  }
+};
+
+map<int, HyperParameters> hyper_parameters = {
+  {1, HyperParameters(475, 471, 134, 0.518192, 10)},
+  {4, HyperParameters(421, 402, 149, 0.583516, 10)},
+  {9, HyperParameters(446, 398, 173, 0.608158, 10)},
+  {16, HyperParameters(451, 379, 315, 0.598233, 10)},
+  {25, HyperParameters(458, 375, 315, 0.650053, 10)},
+  {36, HyperParameters(475, 375, 339, 0.75, 10)},
+  {49, HyperParameters(634, 518, 339, 0.75, 10)},
+  {64, HyperParameters(634, 409, 339, 0.75, 10)},
+  {81, HyperParameters(634, 375, 339, 0.75, 10)},
+  {100, HyperParameters(634, 375, 339, 0.75, 10)},
+  {121, HyperParameters(1000, 557, 645, 0.75, 10)},
+  {144, HyperParameters(1000, 557, 645, 0.75, 10)},
+  {169, HyperParameters(1000, 539, 645, 0.75, 10)},
+  {196, HyperParameters(1000, 500, 645, 0.75, 10)},
+  {225, HyperParameters(1000, 500, 645, 0.75, 10)},
+  {256, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {289, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {324, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {361, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {400, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {441, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {484, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {529, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {576, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {625, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {676, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {729, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {784, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {841, HyperParameters(1000, 500, 1000, 0.75, 10)},
+  {900, HyperParameters(1000, 500, 1000, 0.75, 10)},
+};
+
 
 constexpr int INT_INF = 1e9;
 constexpr int MAX_L = 50;
@@ -206,12 +272,15 @@ public:
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
         if (i == top_y && j == top_x) {
-          p[i][j] = 1000;
+          p[i][j] = hyper_parameters[S].value_1;
         }
         else {
           int dy = min(abs(i - top_y), L - abs(i - top_y));
           int dx = min(abs(j - top_x), L - abs(j - top_x));
-          p[i][j] = max(0, 500 - (dy + dx) * 1000 / L);
+
+          int val_2 = hyper_parameters[S].value_2;
+          int val_3 = hyper_parameters[S].value_3;
+          p[i][j] = max(0, val_2 - (dy + dx - 1) * val_3 / L);
         }
       }
     }
@@ -232,6 +301,11 @@ public:
     cost = 0;
     A.resize(n, 0);
     f.resize(MAX_Q, 0);
+  }
+
+  void reset() {
+    query_count = 0;
+    cost = 0;
   }
 
   int query(int i, int y, int x, const Layout& layout) {
@@ -285,7 +359,7 @@ public:
     return res;
   }
 
-  void update_prob(int index_in, int y, int x, int m, const Layout& layout) {
+  void update_prob(int index_in, int y, int x, int m, const Layout& layout, int dir) {
     y = (y + L) % L;
     x = (x + L) % L;
     for (int i = 0; i < N; i++) {
@@ -312,9 +386,11 @@ public:
     for (int j = 0; j < N; j++) {
       normalize_matrix(prob, 1, j);
     }
-    // 行方向に正規化
-    for (int i = 0; i < N; i++) {
-      normalize_matrix(prob, 0, i);
+    if (dir == 0) {
+      // 行方向に正規化
+      for (int i = 0; i < N; i++) {
+        normalize_matrix(prob, 0, i);
+      }
     }
   }
 
@@ -345,13 +421,58 @@ public:
   }
 };
 
+void generate_test_case(int l, int n, int s)
+{
+  L = l;
+  N = n;
+  S = s;
+
+  local_case.init(N);
+
+  // Y,Xの初期化
+  set<pair<int, int>> YX;
+  for (int i = 0; i < N; i++) {
+    int y = rand_range(0, L - 1);
+    int x = rand_range(0, L - 1);
+    while (YX.count(make_pair(y, x))) {
+      y = rand_range(0, L - 1);
+      x = rand_range(0, L - 1);
+    }
+    YX.insert(make_pair(y, x));
+  }
+  for (int i = 0; i < N; i++) {
+    auto it = YX.begin();
+    advance(it, i);
+    Y[i] = it->first;
+    X[i] = it->second;
+  }
+
+  // Aの初期化
+  for (int i = 0; i < N; i++) {
+    local_case.A[i] = i;
+  }
+  shuffle_array(local_case.A.data(), N);
+
+  // fの初期化
+  std::normal_distribution<>::param_type param(0.0, S);
+  normal_dist.param(param);
+  for (int i = 0; i < MAX_Q; i++) {
+    // 平均0, 標準偏差S の正規分布から値をサンプリングする
+    local_case.f[i] = round(normal_dist(rng_engine));
+  }
+}
+
 void input_data(int case_num)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
-  if (!ifs.is_open()) {
+  if (exec_mode == 3) {
+    // テストケースジェネレート済のため何もしない
+    local_case.reset();
+  }
+  else if (!ifs.is_open()) {
     // 標準入力
     cin >> L >> N >> S;
     for (int i = 0; i < N; i++) {
@@ -392,18 +513,22 @@ ll calculate_local_score(const Layout& layout, const Estimation& estimation)
     }
   }
   double cost = layout.cost + local_case.cost + 1e5;
-  cerr
-    << "cost = " << cost << ", "
-    << "local_case.cost = " << local_case.cost << ", "
-    << "layout.cost = " << layout.cost << ", "
-    << "seikai_count = " << seikai_count << " / " << N << endl;
+
+  if (exec_mode != 3) {
+    cerr
+      << "cost = " << cost << ", "
+      << "local_case.cost = " << local_case.cost << ", "
+      << "layout.cost = " << layout.cost << ", "
+      << "seikai_count = " << seikai_count << " / " << N << endl;
+  }
+
   res /= cost;
   return ceil(res);
 }
 
 void open_ofs(int case_num, ofstream& ofs)
 {
-  if (exec_mode != 0) {
+  if (exec_mode != 0 && exec_mode != 3) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
@@ -422,7 +547,7 @@ void output_layout(ofstream& ofs, const Layout& layout)
     }
     cout.flush();
   }
-  else {
+  else if (exec_mode != 3) {
     // ファイル出力
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
@@ -443,7 +568,7 @@ void output_estimation(ofstream& ofs, const Estimation& estimation)
     }
     cout.flush();
   }
-  else {
+  else if (exec_mode != 3) {
     // ファイル出力
     ofs << "-1 -1 -1" << endl;
     for (int i = 0; i < N; i++) {
@@ -463,19 +588,73 @@ int query(ofstream& ofs, int i, int y, int x, const Layout& layout)
   }
   else {
     // ファイル出力
-    ofs << i << " " << y << " " << x << endl;
+    if (exec_mode != 3) {
+      ofs << i << " " << y << " " << x << endl;
+    }
     m = local_case.query(i, y, x, layout);
   }
   return m;
 }
 
 void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
+  double threshold = hyper_parameters[S].value_4;
+  int max_tate_length = hyper_parameters[S].value_5;
   int iter = 0;
+
+  // 列で見る
+  vector<pair<int, int>> vp;
+  for (int i = 0; i < N; i++) {
+    int y = (layout.top_y - Y[i] + L) % L;
+    if (abs(y - L) < y) {
+      y = y - L;
+    }
+    int x = (layout.top_x - X[i] + L) % L;
+    if (abs(x - L) < x) {
+      x = x - L;
+    }
+    vp.push_back(make_pair(abs(x) + abs(y), i));
+  }
+  sort(vp.begin(), vp.end());
+  for (auto it = vp.begin(); it != vp.end(); ++it) {
+    int idx_out = it->second;
+    int dist = it->first;
+    if (dist > max_tate_length) {
+      break;
+    }
+
+    while (iter < MAX_Q) {
+      double max_prob = 0.0;
+      int idx_in = 0;
+      for (int i = 0; i < N; i++) {
+        if (max_prob < estimation.prob[i][idx_out]) {
+          max_prob = estimation.prob[i][idx_out];
+          idx_in = i;
+        }
+      }
+      if (max_prob > threshold) {
+        break;
+      }
+
+      int y = (layout.top_y - Y[idx_out] + L) % L;
+      if (abs(y - L) < y) {
+        y = y - L;
+      }
+      int x = (layout.top_x - X[idx_out] + L) % L;
+      if (abs(x - L) < x) {
+        x = x - L;
+      }
+      int m = query(ofs, idx_in, y, x, layout);
+
+      iter++;
+      estimation.update_prob(idx_in, y, x, m, layout, 1);
+    }
+  }
+
+  // 行で見る
   int idx_in = 0;
   int idx_out = 0;
   while (iter < MAX_Q) {
-    iter++;
-    if (estimation.get_minimum_prob() > 0.75) {
+    if (estimation.get_minimum_prob() > threshold) {
       break;
     }
     for (int i = 0; i < N; i++) {
@@ -487,7 +666,7 @@ void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
           idx_out = j;
         }
       }
-      if (max_prob <= 0.75) {
+      if (max_prob <= threshold) {
         break;
       }
     }
@@ -502,11 +681,15 @@ void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
     }
     int m = query(ofs, idx_in, y, x, layout);
 
-    estimation.update_prob(idx_in, y, x, m, layout);
+    iter++;
+    estimation.update_prob(idx_in, y, x, m, layout, 0);
   }
 
   estimation.calculate_estimation();
-  cerr << "iter = " << iter << endl;
+
+  if (exec_mode != 3) {
+    cerr << "iter = " << iter << endl;
+  }
 }
 
 ll solve_case(int case_num)
@@ -535,6 +718,23 @@ ll solve_case(int case_num)
   return score;
 }
 
+void output_hyper_parameters()
+{
+  std::ostringstream oss;
+  oss << "./hyper_parameters.txt";
+  ofstream ofs(oss.str());
+  ofs << "map<int, HyperParameters> hyper_parameters = {" << endl;
+  for (auto it = hyper_parameters.begin(); it != hyper_parameters.end(); ++it) {
+    ofs << "  {" << it->first << ", HyperParameters("
+      << it->second.value_1 << ", "
+      << it->second.value_2 << ", "
+      << it->second.value_3 << ", "
+      << it->second.value_4 << ", "
+      << it->second.value_5 << ")}," << endl;
+  }
+  ofs << "};" << endl;
+}
+
 int main()
 {
   exec_mode = 2;
@@ -557,6 +757,139 @@ int main()
           << "sum = " << setw(5) << sum_score << ", "
           << "time = " << setw(5) << get_elapsed_time() << ", "
           << endl;
+      }
+    }
+  }
+  else if (exec_mode == 3) {
+    int iter = 0;
+    queue<pair<int, HyperParameters>> que;
+    while (true)
+    {
+      iter++;
+      // 100回戦わせて70勝以上したらハイパーパラメータを更新する
+      int s = rand_range(1, 30);
+      int ss = s * s;
+
+      HyperParameters old_params = hyper_parameters[ss];
+      HyperParameters new_params = old_params;
+
+      if (!que.empty()) {
+        s = que.front().first;
+        ss = s * s;
+        old_params = hyper_parameters[ss];
+        new_params = que.front().second;
+        que.pop();
+      }
+      else {
+        int ra = rand_xorshift() % 1400;
+        if (ra < 50) {
+          new_params.value_1 = rand_range(1, 1000);
+          new_params.value_2 = rand_range(1, 1000);
+          new_params.value_3 = rand_range(1, 2000);
+          new_params.value_4 = sqrt(rand_range_double(0.6, 0.98));
+        }
+        else if (ra < 100) {
+          new_params.value_1 = rand_range(1, 1000);
+        }
+        else if (ra < 150) {
+          new_params.value_2 = rand_range(1, 1000);
+        }
+        else if (ra < 200) {
+          new_params.value_3 = rand_range(1, 2000);
+        }
+        else if (ra < 250) {
+          new_params.value_4 = sqrt(rand_range_double(0.6, 0.98));
+        }
+        else if (ra < 400) {
+          if (s == 1) {
+            new_params = hyper_parameters[2 * 2];
+          }
+          else if (s == 30) {
+            new_params = hyper_parameters[29 * 29];
+          }
+          else {
+            if (rand_xorshift() % 2 == 0) {
+              new_params = hyper_parameters[(s - 1) * (s - 1)];
+            }
+            else {
+              new_params = hyper_parameters[(s + 1) * (s + 1)];
+            }
+          }
+        }
+        else if (ra < 600) {
+          new_params.value_1 = min(1000, max(1, old_params.value_1 + (int)rand_range(-25, 25)));
+        }
+        else if (ra < 800) {
+          new_params.value_2 = min(1000, max(1, old_params.value_2 + (int)rand_range(-25, 25)));
+        }
+        else if (ra < 1000) {
+          new_params.value_3 = min(2000, max(1, old_params.value_3 + (int)rand_range(-25, 25)));
+        }
+        else if (ra < 1200) {
+          new_params.value_4 = min(0.99, old_params.value_4 + rand_range_double(-0.05, 0.05));
+        }
+        else if (ra < 1400) {
+          new_params.value_5 = min(100, max(0, old_params.value_5 + (int)rand_range(-10, 10)));
+        }
+      }
+
+      if (new_params == old_params) {
+        continue;
+      }
+
+      int win_count = 0;
+      int draw_count = 0;
+      int lose_count = 0;
+      for (int i = 0; i < 50; i++) {
+        int l = rand_range(10, 50);
+        int n = rand_range(60, 100);
+        generate_test_case(l, n, ss);
+
+        ll old_score = solve_case(0);
+        hyper_parameters[ss] = new_params;
+        ll new_score = solve_case(0);
+        hyper_parameters[ss] = old_params;
+
+        if (new_score > old_score) {
+          win_count++;
+        }
+        else if (new_score == old_score) {
+          draw_count++;
+        }
+        else {
+          lose_count++;
+        }
+
+        if (win_count >= 40) {
+          break;
+        }
+        if (draw_count + lose_count > 10) {
+          break;
+        }
+        if (lose_count >= win_count + 3) {
+          break;
+        }
+      }
+
+      // 桁をそろえて出力
+      cerr << "iter = " << iter << ", "
+        << "s = " << std::setw(3) << ss << ", "
+        << "old_params = (" << std::setw(4) << old_params.value_1 << ", " << std::setw(3) << old_params.value_2 << ", " << std::setw(4) << old_params.value_3 << ", " << std::setw(8) << old_params.value_4 << ", " << std::setw(3) << old_params.value_5 << "), "
+        << "new_params = (" << std::setw(4) << new_params.value_1 << ", " << std::setw(3) << new_params.value_2 << ", " << std::setw(4) << new_params.value_3 << ", " << std::setw(8) << new_params.value_4 << ", " << std::setw(3) << new_params.value_5 << "), "
+        << "win_count = " << std::setw(2) << win_count << ", "
+        << "draw_count = " << std::setw(2) << draw_count << ", "
+        << "lose_count = " << std::setw(2) << lose_count << ", "
+        << "time = " << get_elapsed_time() << endl;
+
+      if (win_count >= 40) {
+        hyper_parameters[ss] = new_params;
+        output_hyper_parameters();
+        if (1 < s) {
+          que.push(make_pair(s - 1, new_params));
+        }
+        if (s < 30) {
+          que.push(make_pair(s + 1, new_params));
+        }
       }
     }
   }
