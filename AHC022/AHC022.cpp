@@ -230,21 +230,21 @@ map<HyperKeys, HyperParameters> hyper_parameters = {
   {HyperKeys(100, 1), HyperParameters(634, 375, 339, 0.75, 10)},
   {HyperKeys(100, 2), HyperParameters(634, 375, 339, 0.75, 10)},
   {HyperKeys(100, 3), HyperParameters(634, 375, 339, 0.75, 10)},
-  {HyperKeys(100, 4), HyperParameters(634, 375, 339, 0.75, 10)},
-  {HyperKeys(100, 5), HyperParameters(1000, 779, 657, 0.784956, 10)},
-  {HyperKeys(121, 1), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121, 2), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121, 3), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121, 4), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(121, 5), HyperParameters(1000, 779, 657, 0.793272, 10)},
-  {HyperKeys(144, 1), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144, 2), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144, 3), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144, 4), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(144, 5), HyperParameters(992, 579, 617, 0.730521, 10)},
-  {HyperKeys(169, 1), HyperParameters(993, 589, 617, 0.730521, 10)},
-  {HyperKeys(169, 2), HyperParameters(993, 589, 617, 0.730521, 10)},
-  {HyperKeys(169, 3), HyperParameters(993, 589, 617, 0.730521, 10)},
+  {HyperKeys(100, 4), HyperParameters(980, 709, 616, 0.730521, 10)},
+  {HyperKeys(100, 5), HyperParameters(980, 709, 616, 0.730521, 10)},
+  {HyperKeys(121, 1), HyperParameters(980, 709, 613, 0.730521, 10)},
+  {HyperKeys(121, 2), HyperParameters(980, 709, 613, 0.730521, 10)},
+  {HyperKeys(121, 3), HyperParameters(980, 709, 613, 0.730521, 10)},
+  {HyperKeys(121, 4), HyperParameters(980, 709, 613, 0.730521, 10)},
+  {HyperKeys(121, 5), HyperParameters(980, 709, 613, 0.730521, 10)},
+  {HyperKeys(144, 1), HyperParameters(987, 667, 602, 0.804736, 10)},
+  {HyperKeys(144, 2), HyperParameters(987, 667, 602, 0.804736, 10)},
+  {HyperKeys(144, 3), HyperParameters(993, 666, 613, 0.730521, 10)},
+  {HyperKeys(144, 4), HyperParameters(993, 666, 613, 0.730521, 10)},
+  {HyperKeys(144, 5), HyperParameters(982, 667, 602, 0.79957, 10)},
+  {HyperKeys(169, 1), HyperParameters(993, 666, 613, 0.730521, 10)},
+  {HyperKeys(169, 2), HyperParameters(987, 667, 602, 0.804736, 10)},
+  {HyperKeys(169, 3), HyperParameters(987, 619, 599, 0.766846, 10)},
   {HyperKeys(169, 4), HyperParameters(993, 589, 617, 0.730521, 10)},
   {HyperKeys(169, 5), HyperParameters(993, 589, 617, 0.730521, 10)},
   {HyperKeys(196, 1), HyperParameters(1000, 582, 636, 0.798162, 10)},
@@ -333,6 +333,7 @@ map<HyperKeys, HyperParameters> hyper_parameters = {
   {HyperKeys(900, 4), HyperParameters(1000, 500, 1000, 0.75, 10)},
   {HyperKeys(900, 5), HyperParameters(1000, 500, 1000, 0.75, 10)},
 };
+
 
 
 constexpr int INT_INF = 1e9;
@@ -896,7 +897,7 @@ int main()
     }
   }
   else if (exec_mode == 3) {
-    for (int _ = 0; _ < 777; _++) {
+    for (int _ = 0; _ < 343; _++) {
       rand_xorshift();
     }
 
@@ -906,7 +907,7 @@ int main()
     {
       iter++;
       // 100回戦わせて70勝以上したらハイパーパラメータを更新する
-      int s = rand_range(1, 10);
+      int s = rand_range(1, 30);
       int ss = s * s;
       int l_key = rand_xorshift() % 5 + 1;
 
@@ -1089,7 +1090,9 @@ int main()
             que.push(make_pair(HyperKeys(ss, l_key + 1), new_params));
           }
         }
+      }
 
+      if (win_count >= 15) {
         for (int i = 0; i < 10; i++) {
           HyperParameters new_new_params = new_params;
           if (rand_xorshift() % 2 == 0) new_new_params.value_1 = min(1000, max(1, new_params.value_1 + (int)rand_range(-15, 15)));
