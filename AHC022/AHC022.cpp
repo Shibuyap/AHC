@@ -737,7 +737,7 @@ void output_hyper_parameters()
 
 int main()
 {
-  exec_mode = 2;
+  exec_mode = 3;
 
   if (exec_mode == 0) {
     solve_case(0);
@@ -781,7 +781,7 @@ int main()
         que.pop();
       }
       else {
-        int ra = rand_xorshift() % 1400;
+        int ra = rand_xorshift() % 2600;
         if (ra < 50) {
           new_params.value_1 = rand_range(1, 1000);
           new_params.value_2 = rand_range(1, 1000);
@@ -816,19 +816,19 @@ int main()
             }
           }
         }
-        else if (ra < 600) {
+        else if (ra < 900) {
           new_params.value_1 = min(1000, max(1, old_params.value_1 + (int)rand_range(-25, 25)));
         }
-        else if (ra < 800) {
+        else if (ra < 1400) {
           new_params.value_2 = min(1000, max(1, old_params.value_2 + (int)rand_range(-25, 25)));
         }
-        else if (ra < 1000) {
+        else if (ra < 1900) {
           new_params.value_3 = min(2000, max(1, old_params.value_3 + (int)rand_range(-25, 25)));
         }
-        else if (ra < 1200) {
+        else if (ra < 2400) {
           new_params.value_4 = min(0.99, old_params.value_4 + rand_range_double(-0.05, 0.05));
         }
-        else if (ra < 1400) {
+        else if (ra < 2600) {
           new_params.value_5 = min(100, max(0, old_params.value_5 + (int)rand_range(-10, 10)));
         }
       }
