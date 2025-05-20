@@ -131,6 +131,7 @@ inline void normalize_matrix(vector<vector<double>>& mat, int dir, int index)
 const double TIME_LIMIT = 3.8;
 int exec_mode;
 
+constexpr int INT_INF = 1e9;
 constexpr int MAX_L = 50;
 constexpr int MAX_N = 100;
 constexpr int MAX_Q = 10000;
@@ -144,15 +145,15 @@ public:
   int L;
   vector<vector<int>> p;
   ll cost;
-  int mid_y;
-  int mid_x;
+  int top_y;
+  int top_x;
 
   Layout(int l) {
     L = l;
     p.resize(l, vector<int>(l, 0));
     cost = 0;
-    mid_y = L / 2;
-    mid_x = L / 2;
+    top_y = L / 2;
+    top_x = L / 2;
   }
 
   void calc_cost() {
@@ -168,11 +169,49 @@ public:
   void layout_1() {
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
-        if (i == mid_y && j == mid_x) {
+        if (i == top_y && j == top_x) {
           p[i][j] = 1000;
         }
         else {
-          p[i][j] = max(0, 500 - (abs(mid_y - i) + abs(mid_x - j)) * 1000 / L);
+          p[i][j] = max(0, 500 - (abs(top_y - i) + abs(top_x - j)) * 1000 / L);
+        }
+      }
+    }
+    calc_cost();
+  }
+
+  void layout_2() {
+    int minimum_sum = INT_INF;
+    int minimum_x = -1;
+    int minimum_y = -1;
+    for (int i = 0; i < L; i++) {
+      for (int j = 0; j < L; j++) {
+        int sum = 0;
+        for (int k = 0; k < N; k++) {
+          int dy = min(abs(i - Y[k]), L - abs(i - Y[k]));
+          int dx = min(abs(j - X[k]), L - abs(j - X[k]));
+          sum += dy + dx;
+        }
+        if (sum < minimum_sum) {
+          minimum_sum = sum;
+          minimum_x = j;
+          minimum_y = i;
+        }
+      }
+    }
+
+    top_x = minimum_x;
+    top_y = minimum_y;
+
+    for (int i = 0; i < L; i++) {
+      for (int j = 0; j < L; j++) {
+        if (i == top_y && j == top_x) {
+          p[i][j] = 1000;
+        }
+        else {
+          int dy = min(abs(i - top_y), L - abs(i - top_y));
+          int dx = min(abs(j - top_x), L - abs(j - top_x));
+          p[i][j] = max(0, 500 - (dy + dx) * 1000 / L);
         }
       }
     }
@@ -200,8 +239,8 @@ public:
       return -1;
     }
 
-    int qy = (Y[A[i]] + y) % L;
-    int qx = (X[A[i]] + x) % L;
+    int qy = (Y[A[i]] + y + L) % L;
+    int qx = (X[A[i]] + x + L) % L;
     cost += 100 * (10 + abs(y) + abs(x));
     query_count++;
     return layout.p[qy][qx] + f[query_count - 1];
@@ -247,6 +286,8 @@ public:
   }
 
   void update_prob(int index_in, int y, int x, int m, const Layout& layout) {
+    y = (y + L) % L;
+    x = (x + L) % L;
     for (int i = 0; i < N; i++) {
       int kitai = layout.p[(y + Y[i]) % L][(x + X[i]) % L];
       tmp_prob[i] = calc_kakuritsu(kitai, m);
@@ -430,30 +471,42 @@ int query(ofstream& ofs, int i, int y, int x, const Layout& layout)
 
 void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
   int iter = 0;
+  int idx_in = 0;
+  int idx_out = 0;
   while (iter < MAX_Q) {
     iter++;
-    int ra_in = rand_xorshift() % N;
-    int ra_out = rand_xorshift() % N;
-
-    int y = (layout.mid_y - Y[ra_out] + L) % L;
-    int x = (layout.mid_x - X[ra_out] + L) % L;
-    int m = query(ofs, ra_in, y, x, layout);
-
-    estimation.update_prob(ra_in, y, x, m, layout);
-
-    if (estimation.get_minimum_prob() > 0.90) {
+    if (estimation.get_minimum_prob() > 0.75) {
       break;
     }
+    for (int i = 0; i < N; i++) {
+      idx_in = (idx_in + 1) % N;
+      double max_prob = 0.0;
+      for (int j = 0; j < N; j++) {
+        if (max_prob < estimation.prob[idx_in][j]) {
+          max_prob = estimation.prob[idx_in][j];
+          idx_out = j;
+        }
+      }
+      if (max_prob <= 0.75) {
+        break;
+      }
+    }
+
+    int y = (layout.top_y - Y[idx_out] + L) % L;
+    if (abs(y - L) < y) {
+      y = y - L;
+    }
+    int x = (layout.top_x - X[idx_out] + L) % L;
+    if (abs(x - L) < x) {
+      x = x - L;
+    }
+    int m = query(ofs, idx_in, y, x, layout);
+
+    estimation.update_prob(idx_in, y, x, m, layout);
   }
 
   estimation.calculate_estimation();
   cerr << "iter = " << iter << endl;
-  //for(int i = 0; i < N; i++) {
-  //  for(int j = 0; j < N; j++) {
-  //    cerr << estimation.prob[i][j] << " ";
-  //  }
-  //  cerr << endl;
-  //}
 }
 
 ll solve_case(int case_num)
@@ -463,7 +516,7 @@ ll solve_case(int case_num)
   input_data(case_num);
 
   Layout layout(L);
-  layout.layout_1();
+  layout.layout_2();
 
   ofstream ofs;
   open_ofs(case_num, ofs);
@@ -491,7 +544,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 150; i++)
     {
       ll score = solve_case(i);
       sum_score += score;
