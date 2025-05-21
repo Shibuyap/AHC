@@ -369,20 +369,6 @@ public:
     }
   }
 
-  void layout_1() {
-    for (int i = 0; i < L; i++) {
-      for (int j = 0; j < L; j++) {
-        if (i == top_y && j == top_x) {
-          p[i][j] = 1000;
-        }
-        else {
-          p[i][j] = max(0, 500 - (abs(top_y - i) + abs(top_x - j)) * 1000 / L);
-        }
-      }
-    }
-    calc_cost();
-  }
-
   void layout_2() {
     int minimum_sum = INT_INF;
     int minimum_x = -1;
@@ -651,7 +637,7 @@ ll calculate_local_score(const Layout& layout, const Estimation& estimation)
   }
   double cost = layout.cost + local_case.cost + 1e5;
 
-  if (exec_mode != 3) {
+  if (exec_mode != 3 && exec_mode != 1) {
     cerr
       << "cost = " << cost << ", "
       << "local_case.cost = " << local_case.cost << ", "
@@ -824,7 +810,7 @@ void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
 
   estimation.calculate_estimation();
 
-  if (exec_mode != 3) {
+  if (exec_mode != 3 && exec_mode != 1) {
     cerr << "iter = " << iter << endl;
   }
 }
@@ -871,7 +857,7 @@ void output_hyper_parameters()
 
 int main()
 {
-  exec_mode = 2;
+  exec_mode = 1;
 
   if (exec_mode == 0) {
     solve_case(0);
