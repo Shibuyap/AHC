@@ -871,7 +871,7 @@ void output_hyper_parameters()
 
 int main()
 {
-  exec_mode = 3;
+  exec_mode = 2;
 
   if (exec_mode == 0) {
     solve_case(0);
