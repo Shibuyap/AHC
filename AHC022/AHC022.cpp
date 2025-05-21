@@ -502,7 +502,7 @@ public:
       }
     }
 
-    for(int times = 0; times < 10; times++) {
+    for(int times = 0; times < 1; times++) {
       // s•ûŒü‚É³‹K‰»
       for (int i = 0; i < N; i++) {
         normalize_matrix(prob, 0, i);
