@@ -34,7 +34,8 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand() {
+  static uint32_t Rand()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -49,12 +50,14 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
   // 配列シャッフル
-  void FisherYates(int* data, int n) {
+  void FisherYates(int* data, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = Rand() % (i + 1);
       int swa = data[i];
@@ -79,7 +82,8 @@ double TL = 1.8;
 int mode;
 clock_t startTime, endTime;
 
-double GetNowTime() {
+double GetNowTime()
+{
   endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
@@ -96,26 +100,34 @@ class Answer
 public:
   vector<int> p;
   int score;
+
   Answer()
   {
     score = -1;
     p.resize(n);
-    for (int i = 0; i < n; ++i) p[i] = -1;
+    for (int i = 0; i < n; ++i) {
+      p[i] = -1;
+    }
+  }
+
+  void Init()
+  {
+    for (int i = 0; i < n; ++i) {
+      p[i] = -1;
+    }
+    score = -1;
   }
 };
 
-int p[n], best_p[n];
-int score, best_score;
-
 // 複数ケース回すときに内部状態を初期値に戻す
-void SetUp() {
+void SetUp()
+{
   for (int i = 0; i < n; ++i) G[i].clear();
-  score = -1;
-  best_score = -1;
 }
 
 // 入力受け取り
-void Input(int problemNum) {
+void Input(int problemNum)
+{
   string fileNameIfs = "./in/";
   string strNum;
   for (int i = 0; i < 4; ++i) {
@@ -156,7 +168,8 @@ void Input(int problemNum) {
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs) {
+void OpenOfs(int probNum, ofstream& ofs)
+{
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -173,14 +186,15 @@ void OpenOfs(int probNum, ofstream& ofs) {
 
 // スコア計算
 int hhh[n];
-int CalcScore() {
+int CalcScore(const Answer& ans)
+{
   int res = 0;
   for (int i = 0; i < n; ++i) {
     int hh = 1;
-    int x = p[i];
+    int x = ans.p[i];
     while (x != -1) {
       hh++;
-      x = p[x];
+      x = ans.p[x];
     }
     res += a[i] * hh;
     hhh[i] = hh - 1;
@@ -192,7 +206,8 @@ int f[n] = {};
 int hei[n] = {};
 int fcount;
 int dfsLimit = 40;
-void dfs(int x) {
+void dfs(int x, Answer& ans)
+{
   int raFlag = Rand() % 10;
   int raIte = -1;
   if (raFlag == 0) {
@@ -204,12 +219,12 @@ void dfs(int x) {
   for (auto y : G[x]) {
     if (f[y]) continue;
     if (hei[x] == h - 1 && a[y] <= dfsLimit) continue;
-    p[y] = x;
+    ans.p[y] = x;
     f[y] = 1;
     fcount++;
     hei[y] = hei[x] + 1;
     if (hei[y] < h) {
-      dfs(y);
+      dfs(y, ans);
     }
   }
   if (raIte >= 0) {
@@ -218,7 +233,8 @@ void dfs(int x) {
 }
 
 // 初期解生成
-void Initialize() {
+void Initialize(Answer& ans)
+{
   for (int i = 0; i < n; ++i) {
     vector<P> vp;
     for (auto y : G[i]) {
@@ -231,9 +247,7 @@ void Initialize() {
     }
   }
 
-  for (int i = 0; i < n; ++i) {
-    best_p[i] = -1;
-  }
+  Answer best_ans;
 
   while (true) {
     if (GetNowTime() > TL / 3) {
@@ -241,7 +255,7 @@ void Initialize() {
     }
 
     for (int i = 0; i < n; ++i) {
-      p[i] = -2;
+      ans.p[i] = -2;
       f[i] = 0;
       hei[i] = -1;
     }
@@ -262,37 +276,34 @@ void Initialize() {
         }
       }
 
-      p[ra] = -1;
+      ans.p[ra] = -1;
       f[ra] = 1;
       hei[ra] = 0;
       fcount++;
-      dfs(ra);
+      dfs(ra, ans);
     }
 
     if (fcount < n) {
       continue;
     }
 
-    score = CalcScore();
-    if (score >= best_score) {
-      best_score = score;
-      for (int i = 0; i < n; ++i) {
-        best_p[i] = p[i];
-      }
+    ans.score = CalcScore(ans);
+    if (ans.score >= best_ans.score) {
+      best_ans = ans;
     }
   }
 
-  score = best_score;
-  for (int i = 0; i < n; ++i) {
-    p[i] = best_p[i];
-  }
+  ans = best_ans;
 }
 
 vector<int> sons[n];
 vector<int> roots;
-void Method1() {
+void Method1(Answer& ans)
+{
   int loop = 0;
   int flagCount = 0;
+
+  Answer best_ans = ans;
 
   while (true) {
     if (GetNowTime() > TL) {
@@ -304,18 +315,18 @@ void Method1() {
       sons[i].clear();
     }
     for (int i = 0; i < n; ++i) {
-      p[i] = best_p[i];
+      ans.p[i] = best_ans.p[i];
       f[i] = 1;
-      if (p[i] == -1) {
+      if (ans.p[i] == -1) {
         roots.push_back(i);
       }
       else {
-        sons[p[i]].push_back(i);
+        sons[ans.p[i]].push_back(i);
       }
     }
 
     if (Rand() % 20 == 0) {
-      CalcScore();
+      CalcScore(ans);
 
       int flag = 0;
       for (int i = 0; i < n; ++i) {
@@ -323,7 +334,7 @@ void Method1() {
           for (auto y : G[i]) {
             if (hhh[i] <= hhh[y] + 1 && hhh[y] + 1 <= h) {
               hhh[i] = hhh[y] + 1;
-              p[i] = y;
+              ans.p[i] = y;
               sons[y].push_back(i);
               flag = 1;
             }
@@ -333,12 +344,9 @@ void Method1() {
 
       if (flag) {
         flagCount++;
-        score = CalcScore();
-        if (score >= best_score) {
-          best_score = score;
-          for (int i = 0; i < n; ++i) {
-            best_p[i] = p[i];
-          }
+        ans.score = CalcScore(ans);
+        if (ans.score >= best_ans.score) {
+          best_ans = ans;
         }
         continue;
       }
@@ -370,19 +378,16 @@ void Method1() {
         ra = Rand() % n;
       }
 
-      p[ra] = -1;
+      ans.p[ra] = -1;
       f[ra] = 1;
       hei[ra] = 0;
       fcount++;
-      dfs(ra);
+      dfs(ra, ans);
     }
 
-    score = CalcScore();
-    if (score >= best_score) {
-      best_score = score;
-      for (int i = 0; i < n; ++i) {
-        best_p[i] = p[i];
-      }
+    ans.score = CalcScore(ans);
+    if (ans.score >= best_ans.score) {
+      best_ans = ans;
     }
 
     loop++;
@@ -391,25 +396,24 @@ void Method1() {
     cout << "loop = " << loop << ", flagCount = " << flagCount << endl;
   }
 
-  score = best_score;
-  for (int i = 0; i < n; ++i) {
-    p[i] = best_p[i];
-  }
+  ans = best_ans;
 }
 
 // 解答出力
-void Output(ofstream& ofs) {
+void Output(ofstream& ofs, const Answer& ans)
+{
   if (mode == 0) {
-    for (int i = 0; i < n; ++i) cout << p[i] << ' ';
+    for (int i = 0; i < n; ++i) cout << ans.p[i] << ' ';
     cout << endl;
   }
   else {
-    for (int i = 0; i < n; ++i) ofs << p[i] << ' ';
+    for (int i = 0; i < n; ++i) ofs << ans.p[i] << ' ';
     ofs << endl;
   }
 }
 
-ll Solve(int probNum) {
+ll Solve(int probNum)
+{
   startTime = clock();
 
   // 複数ケース回すときに内部状態を初期値に戻す
@@ -422,12 +426,14 @@ ll Solve(int probNum) {
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
+  Answer ans;
+
   // 初期解生成
-  Initialize();
-  Method1();
+  Initialize(ans);
+  Method1(ans);
 
   // 解答を出力
-  Output(ofs);
+  Output(ofs, ans);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -435,14 +441,15 @@ ll Solve(int probNum) {
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = CalcScore(ans);
     int sum[11] = {};
     for (int i = 0; i < n; ++i) sum[hhh[i]]++;
   }
   return score;
 }
 
-int main() {
+int main()
+{
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     Rand();
