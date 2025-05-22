@@ -89,33 +89,30 @@ double GetNowTime()
   return nowTime;
 }
 
-const int n = 1000;
-int m, h;
-int a[n];
-vector<int> G[n];
-int x[n], y[n];
+const int N = 1000;
+const int H = 10;
+int A[N];
+vector<int> G[N];
+int X[N], Y[N];
 
 class Answer
 {
 public:
   vector<int> p;
-  int score;
 
   Answer()
   {
-    score = -1;
-    p.resize(n);
-    for (int i = 0; i < n; ++i) {
+    p.resize(N);
+    for (int i = 0; i < N; ++i) {
       p[i] = -1;
     }
   }
 
   void Init()
   {
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < N; ++i) {
       p[i] = -1;
     }
-    score = -1;
   }
 };
 
@@ -123,30 +120,36 @@ class Heights
 {
 public:
   vector<int> height;
-  int score;
 
   Heights()
   {
-    height.resize(n);
-    for (int i = 0; i < n; ++i) {
+    height.resize(N);
+    for (int i = 0; i < N; ++i) {
       height[i] = -1;
     }
-    score = -1;
   }
 
   void Init()
   {
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < N; ++i) {
       height[i] = -1;
     }
-    score = -1;
+  }
+
+  int calc_score()
+  {
+    int res = 1;
+    for (int i = 0; i < N; ++i) {
+      res += A[i] * (height[i] + 1);
+    }
+    return res;
   }
 };
 
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  for (int i = 0; i < n; ++i) G[i].clear();
+  for (int i = 0; i < N; ++i) G[i].clear();
 }
 
 // 入力受け取り
@@ -164,30 +167,29 @@ void Input(int problemNum)
   ifstream ifs(fileNameIfs);
 
   // 標準入力する
+  int m, _n, _h;
   if (!ifs.is_open()) {
-    int nn;
-    cin >> nn >> m >> h;
-    for (int i = 0; i < n; ++i) cin >> a[i];
+    cin >> _n >> m >> _h;
+    for (int i = 0; i < N; ++i) cin >> A[i];
     for (int i = 0; i < m; ++i) {
       int u, v;
       cin >> u >> v;
       G[u].push_back(v);
       G[v].push_back(u);
     }
-    for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];
+    for (int i = 0; i < N; ++i) cin >> X[i] >> Y[i];
   }
   // ファイル入力する
   else {
-    int nn;
-    ifs >> nn >> m >> h;
-    for (int i = 0; i < n; ++i) ifs >> a[i];
+    ifs >> _n >> m >> _h;
+    for (int i = 0; i < N; ++i) ifs >> A[i];
     for (int i = 0; i < m; ++i) {
       int u, v;
       ifs >> u >> v;
       G[u].push_back(v);
       G[v].push_back(u);
     }
-    for (int i = 0; i < n; ++i) ifs >> x[i] >> y[i];
+    for (int i = 0; i < N; ++i) ifs >> X[i] >> Y[i];
   }
 }
 
@@ -195,7 +197,7 @@ void output_data(int case_num, const Answer& ans)
 {
   if (mode == 0) {
     // 標準出力
-    for (int i = 0; i < n; ++i) cout << ans.p[i] << ' ';
+    for (int i = 0; i < N; ++i) cout << ans.p[i] << ' ';
     cout << endl;
   }
   else {
@@ -204,7 +206,7 @@ void output_data(int case_num, const Answer& ans)
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    for (int i = 0; i < n; ++i) ofs << ans.p[i] << ' ';
+    for (int i = 0; i < N; ++i) ofs << ans.p[i] << ' ';
     ofs << endl;
 
     if (ofs.is_open()) {
@@ -213,220 +215,100 @@ void output_data(int case_num, const Answer& ans)
   }
 }
 
-// スコア計算
-int hhh[n];
-int CalcScore(const Answer& ans)
+Answer convert_heights_to_answer(const Heights& heights)
 {
-  int res = 0;
-  for (int i = 0; i < n; ++i) {
-    int hh = 1;
-    int x = ans.p[i];
-    while (x != -1) {
-      hh++;
-      x = ans.p[x];
+  Answer ans;
+  for (int i = 0; i < N; ++i) {
+    ans.p[i] = -1;
+  }
+  for (int i = 0; i < N; ++i) {
+    if (heights.height[i] == 0) {
+      ans.p[i] = -1;
     }
-    res += a[i] * hh;
-    hhh[i] = hh - 1;
-  }
-  return res;
-}
-
-int f[n] = {};
-int hei[n] = {};
-int fcount;
-int dfsLimit = 40;
-void dfs(int x, Answer& ans)
-{
-  int raFlag = Rand() % 10;
-  int raIte = -1;
-  if (raFlag == 0) {
-    if (G[x].size() >= 2) {
-      raIte = Rand() % (G[x].size() - 1);
-      swap(G[x][raIte], G[x][raIte + 1]);
-    }
-  }
-  for (auto y : G[x]) {
-    if (f[y]) continue;
-    if (hei[x] == h - 1 && a[y] <= dfsLimit) continue;
-    ans.p[y] = x;
-    f[y] = 1;
-    fcount++;
-    hei[y] = hei[x] + 1;
-    if (hei[y] < h) {
-      dfs(y, ans);
-    }
-  }
-  if (raIte >= 0) {
-    swap(G[x][raIte], G[x][raIte + 1]);
-  }
-}
-
-// 初期解生成
-void Initialize(Answer& ans)
-{
-  for (int i = 0; i < n; ++i) {
-    vector<P> vp;
     for (auto y : G[i]) {
-      vp.push_back(P(a[y], y));
-    }
-    sort(vp.begin(), vp.end());
-    G[i].clear();
-    for (auto vpp : vp) {
-      G[i].push_back(vpp.second);
+      if (heights.height[y] == heights.height[i] + 1) {
+        ans.p[y] = i;
+      }
     }
   }
-
-  Answer best_ans;
-
-  while (true) {
-    if (GetNowTime() > TL / 3) {
-      break;
-    }
-
-    for (int i = 0; i < n; ++i) {
-      ans.p[i] = -2;
-      f[i] = 0;
-      hei[i] = -1;
-    }
-
-    fcount = 0;
-    while (fcount < n) {
-      int ra = Rand() % n;
-      while (f[ra] == 1) {
-        ra = (ra + 1) % n;
-        ra = Rand() % n;
-      }
-
-      if (a[ra] >= 40) {
-        ra = Rand() % n;
-        while (f[ra] == 1) {
-          ra = (ra + 1) % n;
-          ra = Rand() % n;
-        }
-      }
-
-      ans.p[ra] = -1;
-      f[ra] = 1;
-      hei[ra] = 0;
-      fcount++;
-      dfs(ra, ans);
-    }
-
-    if (fcount < n) {
-      continue;
-    }
-
-    ans.score = CalcScore(ans);
-    if (ans.score >= best_ans.score) {
-      best_ans = ans;
-    }
-  }
-
-  ans = best_ans;
+  return ans;
 }
 
-void Method1(Answer& ans)
+bool check_if_valid(Heights& heights, int start_height)
 {
-  vector<int> sons[n];
-  vector<int> roots;
-
-  int loop = 0;
-  int flagCount = 0;
-
-  Answer best_ans = ans;
-
-  while (true) {
-    if (GetNowTime() > TL) {
-      break;
+  queue<int> que;
+  for (int i = 0; i < N; ++i) {
+    if (heights.height[i] == start_height && start_height < H) {
+      que.push(i);
     }
-
-    roots.clear();
-    for (int i = 0; i < n; ++i) {
-      sons[i].clear();
-    }
-    for (int i = 0; i < n; ++i) {
-      ans.p[i] = best_ans.p[i];
-      f[i] = 1;
-      if (ans.p[i] == -1) {
-        roots.push_back(i);
-      }
-      else {
-        sons[ans.p[i]].push_back(i);
-      }
-    }
-
-    if (Rand() % 20 == 0) {
-      CalcScore(ans);
-
-      int flag = 0;
-      for (int i = 0; i < n; ++i) {
-        if (sons[i].size() == 0 && hhh[i] < h) {
-          for (auto y : G[i]) {
-            if (hhh[i] <= hhh[y] + 1 && hhh[y] + 1 <= h) {
-              hhh[i] = hhh[y] + 1;
-              ans.p[i] = y;
-              sons[y].push_back(i);
-              flag = 1;
-            }
-          }
-        }
-      }
-
-      if (flag) {
-        flagCount++;
-        ans.score = CalcScore(ans);
-        if (ans.score >= best_ans.score) {
-          best_ans = ans;
-        }
-        continue;
-      }
-    }
-
-    std::shuffle(roots.begin(), roots.end(), engine);
-    int raCount = Rand() % 5 + 1;
-    fcount = n;
-    for (int aespa = 0; aespa < raCount; ++aespa) {
-      queue<int> que;
-      que.push(roots[aespa]);
-      f[roots[aespa]] = 0;
-      fcount--;
-      while (que.size()) {
-        int x = que.front();
-        que.pop();
-        for (auto y : sons[x]) {
-          f[y] = 0;
-          fcount--;
+  }
+  while (que.size()) {
+    int x = que.front();
+    que.pop();
+    for (auto y : G[x]) {
+      if (heights.height[y] == -1) {
+        heights.height[y] = heights.height[x] + 1;
+        if (heights.height[y] < H) {
           que.push(y);
         }
       }
     }
+  }
 
-    while (fcount < n) {
-      int ra = Rand() % n;
-      while (f[ra] == 1) {
-        ra = (ra + 1) % n;
-        ra = Rand() % n;
+  bool res = true;
+
+  for (int i = 0; i < N; ++i) {
+    if (heights.height[i] == -1) {
+      res = false;
+    }
+  }
+
+  // 元に戻す
+  for (int i = 0; i < N; ++i) {
+    if (heights.height[i] >= start_height + 1) {
+      heights.height[i] = -1;
+    }
+  }
+
+  return res;
+}
+
+void greedy_1(Heights& heights)
+{
+  heights.Init();
+  for (int i = 0; i <= H; i++) {
+    set<int> se;
+    if (i == 0) {
+      for (int j = 0; j < N; ++j) {
+        se.insert(j);
       }
-
-      ans.p[ra] = -1;
-      f[ra] = 1;
-      hei[ra] = 0;
-      fcount++;
-      dfs(ra, ans);
+    }
+    else {
+      for (int j = 0; j < N; ++j) {
+        if (heights.height[j] == i - 1) {
+          for (auto y : G[j]) {
+            if (heights.height[y] == -1) {
+              se.insert(y);
+            }
+          }
+        }
+      }
     }
 
-    ans.score = CalcScore(ans);
-    if (ans.score >= best_ans.score) {
-      best_ans = ans;
+    vector<pair<int, int>> vp;
+    for (auto num : se) {
+      heights.height[num] = i;
+      vp.push_back(make_pair(A[num], num));
     }
-
-    loop++;
+    sort(vp.begin(), vp.end(), greater<pair<int, int>>());
+    for (auto p : vp) {
+      int num = p.second;
+      heights.height[num] = -1;
+      if (!check_if_valid(heights, i)) {
+        heights.height[num] = i;
+      }
+    }
   }
-  if (mode != 0) {
-    cout << "loop = " << loop << ", flagCount = " << flagCount << endl;
-  }
-
-  ans = best_ans;
 }
 
 ll Solve(int probNum)
@@ -437,29 +319,23 @@ ll Solve(int probNum)
 
   Input(probNum);
 
-  Answer ans;
+  Heights heights;
+  heights.Init();
+  greedy_1(heights);
 
-  Initialize(ans);
-  Method1(ans);
+  Answer ans = convert_heights_to_answer(heights);
 
   output_data(probNum, ans);
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore(ans);
-    int sum[11] = {};
-    for (int i = 0; i < n; ++i) sum[hhh[i]]++;
+    score = heights.calc_score();
   }
   return score;
 }
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   mode = 1;
 
   if (mode == 0) {
