@@ -119,6 +119,30 @@ public:
   }
 };
 
+class Heights
+{
+public:
+  vector<int> height;
+  int score;
+
+  Heights()
+  {
+    height.resize(n);
+    for (int i = 0; i < n; ++i) {
+      height[i] = -1;
+    }
+    score = -1;
+  }
+
+  void Init()
+  {
+    for (int i = 0; i < n; ++i) {
+      height[i] = -1;
+    }
+    score = -1;
+  }
+};
+
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
@@ -167,20 +191,25 @@ void Input(int problemNum)
   }
 }
 
-// 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void output_data(int case_num, const Answer& ans)
 {
-  if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < 4; ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
+  if (mode == 0) {
+    // 標準出力
+    for (int i = 0; i < n; ++i) cout << ans.p[i] << ' ';
+    cout << endl;
+  }
+  else {
+    // ファイル出力
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
 
-    ofs.open(fileNameOfs);
+    for (int i = 0; i < n; ++i) ofs << ans.p[i] << ' ';
+    ofs << endl;
+
+    if (ofs.is_open()) {
+      ofs.close();
+    }
   }
 }
 
@@ -296,10 +325,11 @@ void Initialize(Answer& ans)
   ans = best_ans;
 }
 
-vector<int> sons[n];
-vector<int> roots;
 void Method1(Answer& ans)
 {
+  vector<int> sons[n];
+  vector<int> roots;
+
   int loop = 0;
   int flagCount = 0;
 
@@ -399,45 +429,20 @@ void Method1(Answer& ans)
   ans = best_ans;
 }
 
-// 解答出力
-void Output(ofstream& ofs, const Answer& ans)
-{
-  if (mode == 0) {
-    for (int i = 0; i < n; ++i) cout << ans.p[i] << ' ';
-    cout << endl;
-  }
-  else {
-    for (int i = 0; i < n; ++i) ofs << ans.p[i] << ' ';
-    ofs << endl;
-  }
-}
-
 ll Solve(int probNum)
 {
   startTime = clock();
 
-  // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
-  // 入力受け取り
   Input(probNum);
-
-  // 出力ファイルストリームオープン
-  ofstream ofs;
-  OpenOfs(probNum, ofs);
 
   Answer ans;
 
-  // 初期解生成
   Initialize(ans);
   Method1(ans);
 
-  // 解答を出力
-  Output(ofs, ans);
-
-  if (ofs.is_open()) {
-    ofs.close();
-  }
+  output_data(probNum, ans);
 
   ll score = 0;
   if (mode != 0) {
