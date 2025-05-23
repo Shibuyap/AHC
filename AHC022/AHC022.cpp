@@ -369,20 +369,6 @@ public:
     }
   }
 
-  void layout_1() {
-    for (int i = 0; i < L; i++) {
-      for (int j = 0; j < L; j++) {
-        if (i == top_y && j == top_x) {
-          p[i][j] = 1000;
-        }
-        else {
-          p[i][j] = max(0, 500 - (abs(top_y - i) + abs(top_x - j)) * 1000 / L);
-        }
-      }
-    }
-    calc_cost();
-  }
-
   void layout_2() {
     int minimum_sum = INT_INF;
     int minimum_x = -1;
@@ -409,14 +395,14 @@ public:
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
         if (i == top_y && j == top_x) {
-          p[i][j] = hyper_parameters[HyperKeys(S, L/10)].value_1;
+          p[i][j] = hyper_parameters[HyperKeys(S, L / 10)].value_1;
         }
         else {
           int dy = min(abs(i - top_y), L - abs(i - top_y));
           int dx = min(abs(j - top_x), L - abs(j - top_x));
 
-          int val_2 = hyper_parameters[HyperKeys(S, L/10)].value_2;
-          int val_3 = hyper_parameters[HyperKeys(S, L/10)].value_3;
+          int val_2 = hyper_parameters[HyperKeys(S, L / 10)].value_2;
+          int val_3 = hyper_parameters[HyperKeys(S, L / 10)].value_3;
           p[i][j] = max(0, val_2 - (dy + dx - 1) * val_3 / L);
         }
       }
@@ -515,13 +501,16 @@ public:
         }
       }
     }
-    // s•ûŒü‚É³‹K‰»
-    for (int i = 0; i < N; i++) {
-      normalize_matrix(prob, 0, i);
-    }
-    // —ñ•ûŒü‚É³‹K‰»
-    for (int j = 0; j < N; j++) {
-      normalize_matrix(prob, 1, j);
+
+    for(int times = 0; times < 1; times++) {
+      // s•ûŒü‚É³‹K‰»
+      for (int i = 0; i < N; i++) {
+        normalize_matrix(prob, 0, i);
+      }
+      // —ñ•ûŒü‚É³‹K‰»
+      for (int j = 0; j < N; j++) {
+        normalize_matrix(prob, 1, j);
+      }
     }
     if (dir == 0) {
       // s•ûŒü‚É³‹K‰»
@@ -651,7 +640,7 @@ ll calculate_local_score(const Layout& layout, const Estimation& estimation)
   }
   double cost = layout.cost + local_case.cost + 1e5;
 
-  if (exec_mode != 3) {
+  if (exec_mode != 3 && exec_mode != 1) {
     cerr
       << "cost = " << cost << ", "
       << "local_case.cost = " << local_case.cost << ", "
@@ -734,8 +723,8 @@ int query(ofstream& ofs, int i, int y, int x, const Layout& layout)
 }
 
 void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
-  double threshold = hyper_parameters[HyperKeys(S, L/10)].value_4;
-  int max_tate_length = hyper_parameters[HyperKeys(S, L/10)].value_5;
+  double threshold = hyper_parameters[HyperKeys(S, L / 10)].value_4;
+  int max_tate_length = hyper_parameters[HyperKeys(S, L / 10)].value_5;
   int iter = 0;
 
   // —ñ‚ÅŒ©‚é
@@ -824,7 +813,7 @@ void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
 
   estimation.calculate_estimation();
 
-  if (exec_mode != 3) {
+  if (exec_mode != 3 && exec_mode != 1) {
     cerr << "iter = " << iter << endl;
   }
 }
@@ -871,7 +860,11 @@ void output_hyper_parameters()
 
 int main()
 {
-  exec_mode = 2;
+  for (int _ = 0; _ < 0; _++) {
+    rand_xorshift();
+  }
+
+  exec_mode = 1;
 
   if (exec_mode == 0) {
     solve_case(0);
@@ -895,10 +888,6 @@ int main()
     }
   }
   else if (exec_mode == 3) {
-    for (int _ = 0; _ < 343; _++) {
-      rand_xorshift();
-    }
-
     int iter = 0;
     queue<pair<HyperKeys, HyperParameters>> que;
     while (true)
@@ -918,7 +907,7 @@ int main()
         h_key = que.front().first;
         ss = h_key.s_key;
         for (int i = 1; i <= 30; i++) {
-          if(i*i == ss) {
+          if (i * i == ss) {
             s = i;
             break;
           }
