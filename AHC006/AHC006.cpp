@@ -93,70 +93,50 @@ struct Point
   }
 };
 
-namespace /* 変数 */
+
+const int INIT_N = 1000;
+
+int n = 1000;
+const int m = 55;
+vector<Point> start_points(INIT_N), goal_points(INIT_N);
+vector<int> orig_indices;
+
+class Answer
 {
-  const int INIT_N = 1000;
+public:
+  ll score;
+  ll length;
+  vector<Point> path;
 
-  int n = 1000;
-  const int m = 55;
-  vector<Point> start_points(INIT_N), goal_points(INIT_N);
-  vector<int> orig_indices;
+  vector<int> sel_pair_idx;
+  vector<int> reduced_pair_idx;
+  vector<int> is_used;
+  vector<int> partner_idx;
 
-  ll curr_score;
-  ll curr_length;
-  vector<Point> current_path;
-
-  vector<int> sel_pair_idx(m * 2);
-  vector<int> reduced_pair_idx(m * 2);
-  vector<int> is_used(INIT_N);
-  vector<int> partner_idx(INIT_N * 2);
-
-  ll best_score;
-  ll best_length;
-  vector<Point> best_path;
-
-  vector<int> best_sel_pair_idx;
-  vector<int> best_reduced_pair_idx;
-  vector<int> best_is_used;
-  vector<int> best_partner_idx;
-
-  void ResetParam()
+  Answer()
+      : score(0), length(0)
   {
-    n = INIT_N;
-
-    start_points.resize(INIT_N);
-    goal_points.resize(INIT_N);
-    orig_indices.clear();
-
-    curr_score = 0;
-    curr_length = 0;
-    current_path.clear();
-
-    sel_pair_idx.clear();
-    reduced_pair_idx.clear();
-    is_used.clear();
-    partner_idx.clear();
-
     sel_pair_idx.resize(m * 2);
     reduced_pair_idx.resize(m * 2);
     is_used.resize(INIT_N);
     partner_idx.resize(INIT_N * 2);
-
-    best_score = 0;
-    best_length = 0;
-    best_path.clear();
-
-    //best_sel_pair_idx.clear();
-    //best_reduced_pair_idx.clear();
-    //best_is_used.clear();
-    //best_partner_idx.clear();
-
-    //best_sel_pair_idx.resize(m * 2);
-    //best_reduced_pair_idx.resize(m * 2);
-    //best_is_used.resize(INIT_N);
-    //best_partner_idx.resize(INIT_N * 2);
   }
-}  // namespace
+};
+
+Answer answer;
+Answer best_answer;
+
+void reset_param()
+{
+  n = INIT_N;
+
+  start_points.resize(INIT_N);
+  goal_points.resize(INIT_N);
+  orig_indices.clear();
+
+  answer = Answer();
+  best_answer = Answer();
+}
 
 // スコア計算
 ll CalcScore(ll time)
@@ -173,9 +153,9 @@ inline int manhattan(const Point& a, const Point& b)
 ll compute_path_time()
 {
   ll timeSum = 0;
-  srep(i, 1, current_path.size())
+  srep(i, 1, answer.path.size())
   {
-    timeSum += manhattan(current_path[i], current_path[i - 1]);
+    timeSum += manhattan(answer.path[i], answer.path[i - 1]);
   }
   return timeSum;
 }
@@ -269,14 +249,14 @@ void output_data(int case_num)
     // 標準出力
     cout << 50;
     for (int i = 0; i < 50; ++i) {
-      if (sel_pair_idx[i] < INIT_N) {
-        cout << " " << orig_indices[sel_pair_idx[i]] + 1;
+      if (answer.sel_pair_idx[i] < INIT_N) {
+        cout << " " << orig_indices[answer.sel_pair_idx[i]] + 1;
       }
     }
     cout << endl;
-    cout << current_path.size();
-    for (int i = 0; i < current_path.size(); ++i) {
-      cout << " " << current_path[i].x << " " << current_path[i].y;
+    cout << answer.path.size();
+    for (int i = 0; i < answer.path.size(); ++i) {
+      cout << " " << answer.path[i].x << " " << answer.path[i].y;
     }
     cout << endl;
   }
@@ -288,14 +268,14 @@ void output_data(int case_num)
 
     ofs << 50;
     for (int i = 0; i < 50; ++i) {
-      if (sel_pair_idx[i] < INIT_N) {
-        ofs << " " << orig_indices[sel_pair_idx[i]] + 1;
+      if (answer.sel_pair_idx[i] < INIT_N) {
+        ofs << " " << orig_indices[answer.sel_pair_idx[i]] + 1;
       }
     }
     ofs << endl;
-    ofs << current_path.size();
-    for (int i = 0; i < current_path.size(); ++i) {
-      ofs << " " << current_path[i].x << " " << current_path[i].y;
+    ofs << answer.path.size();
+    for (int i = 0; i < answer.path.size(); ++i) {
+      ofs << " " << answer.path[i].x << " " << answer.path[i].y;
     }
     ofs << endl;
 
@@ -308,28 +288,25 @@ void output_data(int case_num)
 void build_initial_path()
 {
   // 愚直解
-  current_path.push_back(Point(400, 400));
+  answer.path.push_back(Point(400, 400));
   for (int i = 0; i < m; ++i) {
-    current_path.push_back(Point(start_points[i].x, start_points[i].y));
-    sel_pair_idx[i] = i;
-    is_used[i] = 1;
+    answer.path.push_back(Point(start_points[i].x, start_points[i].y));
+    answer.sel_pair_idx[i] = i;
+    answer.is_used[i] = 1;
   }
   for (int i = 0; i < m; ++i) {
-    current_path.push_back(Point(goal_points[i].x, goal_points[i].y));
+    answer.path.push_back(Point(goal_points[i].x, goal_points[i].y));
   }
-  current_path.push_back(Point(400, 400));
-  curr_length = compute_path_time();
-  curr_score = CalcScore(curr_length);
+  answer.path.push_back(Point(400, 400));
+  answer.length = compute_path_time();
+  answer.score = CalcScore(answer.length);
 
-  best_path = current_path;
-  best_length = curr_length;
-  best_score = curr_score;
+  best_answer = answer;
 }
 
-void sa_point_swap()
+void sa_point_swap(double time_limit)
 {
   // 山登り解、焼きなまし解
-  double time_limit = 0.4;
   double start_temp = 4800;
   double end_temp = 1000;
   int loop = 0;
@@ -344,42 +321,38 @@ void sa_point_swap()
     }
 
     int cand_idx = Rand() % n;
-    while (is_used[cand_idx]) {
+    while (answer.is_used[cand_idx]) {
       cand_idx = Rand() % n;
     }
 
     int path_pos = Rand() % m;
 
-    int keepNum = sel_pair_idx[path_pos];
+    int keepNum = answer.sel_pair_idx[path_pos];
     int diff = 0;
-    diff += manhattan(start_points[cand_idx], current_path[path_pos]);
-    diff += manhattan(start_points[cand_idx], current_path[path_pos + 2]);
-    diff += manhattan(goal_points[cand_idx], current_path[path_pos + m]);
-    diff += manhattan(goal_points[cand_idx], current_path[path_pos + m + 2]);
-    diff -= manhattan(current_path[path_pos + 1], current_path[path_pos]);
-    diff -= manhattan(current_path[path_pos + 1], current_path[path_pos + 2]);
-    diff -= manhattan(current_path[path_pos + m + 1], current_path[path_pos + m]);
-    diff -= manhattan(current_path[path_pos + m + 1], current_path[path_pos + m + 2]);
+    diff += manhattan(start_points[cand_idx], answer.path[path_pos]);
+    diff += manhattan(start_points[cand_idx], answer.path[path_pos + 2]);
+    diff += manhattan(goal_points[cand_idx], answer.path[path_pos + m]);
+    diff += manhattan(goal_points[cand_idx], answer.path[path_pos + m + 2]);
+    diff -= manhattan(answer.path[path_pos + 1], answer.path[path_pos]);
+    diff -= manhattan(answer.path[path_pos + 1], answer.path[path_pos + 2]);
+    diff -= manhattan(answer.path[path_pos + m + 1], answer.path[path_pos + m]);
+    diff -= manhattan(answer.path[path_pos + m + 1], answer.path[path_pos + m + 2]);
 
-    int new_length = curr_length + diff;
+    int new_length = answer.length + diff;
     int diffScore = -diff;
 
     double temp = start_temp + (end_temp - start_temp) * now_time / time_limit;
     double prob = exp((double)diffScore / temp);
     if (prob > Rand01()) {
-      curr_length = new_length;
-      is_used[sel_pair_idx[path_pos]] = 0;
-      is_used[cand_idx] = 1;
-      sel_pair_idx[path_pos] = cand_idx;
-      current_path[path_pos + 1] = Point(start_points[cand_idx].x, start_points[cand_idx].y);
-      current_path[path_pos + m + 1] = Point(goal_points[cand_idx].x, goal_points[cand_idx].y);
-      curr_score = CalcScore(curr_length);
-      if (curr_score > best_score) {
-        best_length = curr_length;
-        best_score = curr_score;
-        best_path = current_path;
-        best_sel_pair_idx = sel_pair_idx;
-        best_is_used = is_used;
+      answer.length = new_length;
+      answer.is_used[answer.sel_pair_idx[path_pos]] = 0;
+      answer.is_used[cand_idx] = 1;
+      answer.sel_pair_idx[path_pos] = cand_idx;
+      answer.path[path_pos + 1] = Point(start_points[cand_idx].x, start_points[cand_idx].y);
+      answer.path[path_pos + m + 1] = Point(goal_points[cand_idx].x, goal_points[cand_idx].y);
+      answer.score = CalcScore(answer.length);
+      if (answer.score > best_answer.score) {
+        best_answer = answer;
       }
     }
     else {
@@ -389,32 +362,26 @@ void sa_point_swap()
   }
 
   // 最高スコアを戻す
-  current_path = best_path;
-  curr_length = best_length;
-  curr_score = best_score;
-  sel_pair_idx = best_sel_pair_idx;
-  is_used = best_is_used;
+  answer = best_answer;
 
   for (int i = 0; i < m; ++i) {
-    partner_idx[sel_pair_idx[i]] = i + m;
-    partner_idx[sel_pair_idx[i] + INIT_N] = i;
+    answer.partner_idx[answer.sel_pair_idx[i]] = i + m;
+    answer.partner_idx[answer.sel_pair_idx[i] + INIT_N] = i;
   }
   for (int i = 0; i < m; ++i) {
-    sel_pair_idx[i + m] = sel_pair_idx[i] + INIT_N;
+    answer.sel_pair_idx[i + m] = answer.sel_pair_idx[i] + INIT_N;
   }
-  best_sel_pair_idx = sel_pair_idx;
-  best_partner_idx = partner_idx;
+  answer.reduced_pair_idx = answer.sel_pair_idx;
 
-  reduced_pair_idx = sel_pair_idx;
-  best_reduced_pair_idx = reduced_pair_idx;
+  best_answer = answer;
+
+  cerr << "Point Swap iteration: " << loop << endl;
 }
 
-void sa_two_opt_path()
+void sa_two_opt_path(double time_limit)
 {
   double start_temp = 48;
   double end_temp = 0.0001;
-
-  double time_limit = 1.8;
 
   int loop = 0;
   double now_time = get_elapsed_time();
@@ -436,15 +403,15 @@ void sa_two_opt_path()
       if (ite1 > ite2) swap(ite1, ite2);
       if (ite2 - ite1 == 1) continue;
 
-      if (sel_pair_idx[ite1] + INIT_N == sel_pair_idx[ite2]) continue;
-      if (sel_pair_idx[ite1] < INIT_N) {
-        int pa = partner_idx[sel_pair_idx[ite1]];
+      if (answer.sel_pair_idx[ite1] + INIT_N == answer.sel_pair_idx[ite2]) continue;
+      if (answer.sel_pair_idx[ite1] < INIT_N) {
+        int pa = answer.partner_idx[answer.sel_pair_idx[ite1]];
         if (pa < ite2) {
           continue;
         }
       }
-      if (sel_pair_idx[ite2] >= INIT_N) {
-        int pa = partner_idx[sel_pair_idx[ite2]];
+      if (answer.sel_pair_idx[ite2] >= INIT_N) {
+        int pa = answer.partner_idx[answer.sel_pair_idx[ite2]];
         if (ite1 < pa) {
           continue;
         }
@@ -453,44 +420,39 @@ void sa_two_opt_path()
       int diff = 0;
 
       if (true || loop % 2 == 0) {
-        diff += manhattan(current_path[ite1 + 1], current_path[ite2]);
-        diff += manhattan(current_path[ite1 + 1], current_path[ite2 + 2]);
-        diff -= manhattan(current_path[ite1 + 1], current_path[ite1]);
-        diff -= manhattan(current_path[ite1 + 1], current_path[ite1 + 2]);
-        diff += manhattan(current_path[ite2 + 1], current_path[ite1]);
-        diff += manhattan(current_path[ite2 + 1], current_path[ite1 + 2]);
-        diff -= manhattan(current_path[ite2 + 1], current_path[ite2]);
-        diff -= manhattan(current_path[ite2 + 1], current_path[ite2 + 2]);
+        diff += manhattan(answer.path[ite1 + 1], answer.path[ite2]);
+        diff += manhattan(answer.path[ite1 + 1], answer.path[ite2 + 2]);
+        diff -= manhattan(answer.path[ite1 + 1], answer.path[ite1]);
+        diff -= manhattan(answer.path[ite1 + 1], answer.path[ite1 + 2]);
+        diff += manhattan(answer.path[ite2 + 1], answer.path[ite1]);
+        diff += manhattan(answer.path[ite2 + 1], answer.path[ite1 + 2]);
+        diff -= manhattan(answer.path[ite2 + 1], answer.path[ite2]);
+        diff -= manhattan(answer.path[ite2 + 1], answer.path[ite2 + 2]);
 
-        int new_length = curr_length + diff;
+        int new_length = answer.length + diff;
         int diffScore = -diff;
 
         double temp = start_temp + (end_temp - start_temp) * now_time / time_limit;
         double prob = exp((double)diffScore / temp);
         if (prob > Rand01()) {
-          curr_length = new_length;
-          if (sel_pair_idx[ite1] < INIT_N) {
-            partner_idx[sel_pair_idx[ite1] + INIT_N] = ite2;
+          answer.length = new_length;
+          if (answer.sel_pair_idx[ite1] < INIT_N) {
+            answer.partner_idx[answer.sel_pair_idx[ite1] + INIT_N] = ite2;
           }
           else {
-            partner_idx[sel_pair_idx[ite1] - INIT_N] = ite2;
+            answer.partner_idx[answer.sel_pair_idx[ite1] - INIT_N] = ite2;
           }
-          if (sel_pair_idx[ite2] < INIT_N) {
-            partner_idx[sel_pair_idx[ite2] + INIT_N] = ite1;
+          if (answer.sel_pair_idx[ite2] < INIT_N) {
+            answer.partner_idx[answer.sel_pair_idx[ite2] + INIT_N] = ite1;
           }
           else {
-            partner_idx[sel_pair_idx[ite2] - INIT_N] = ite1;
+            answer.partner_idx[answer.sel_pair_idx[ite2] - INIT_N] = ite1;
           }
-          swap(sel_pair_idx[ite1], sel_pair_idx[ite2]);
-          swap(current_path[ite1 + 1], current_path[ite2 + 1]);
-          curr_score = CalcScore(curr_length);
-          if (curr_score > best_score) {
-            best_length = curr_length;
-            best_score = curr_score;
-            best_path = current_path;
-            best_sel_pair_idx = sel_pair_idx;
-            best_is_used = is_used;
-            best_partner_idx = partner_idx;
+          swap(answer.sel_pair_idx[ite1], answer.sel_pair_idx[ite2]);
+          swap(answer.path[ite1 + 1], answer.path[ite2 + 1]);
+          answer.score = CalcScore(answer.length);
+          if (answer.score > best_answer.score) {
+            best_answer = answer;
           }
         }
         else {
@@ -501,24 +463,18 @@ void sa_two_opt_path()
     }
 
     // 最高スコアを戻す
-    current_path = best_path;
-    curr_length = best_length;
-    curr_score = best_score;
-    sel_pair_idx = best_sel_pair_idx;
-    reduced_pair_idx = best_reduced_pair_idx;
-    is_used = best_is_used;
-    partner_idx = best_partner_idx;
+    answer = best_answer;
   }
+
+  cerr << "Two-opt iteration: " << loop << endl;
 }
 
-void sa_path_pruning()
+void sa_path_pruning(double time_limit)
 {
-  double time_limit = 1.95;
-
   const int INF = 1001001001;
   int mi = INF;
-  reduced_pair_idx = sel_pair_idx;
-  vector<Point> ans2 = current_path;
+  answer.reduced_pair_idx = answer.sel_pair_idx;
+  vector<Point> ans2 = answer.path;
 
   random_device seed_gen;
   mt19937 engine(seed_gen());
@@ -546,9 +502,9 @@ void sa_path_pruning()
     int cnt = 0;
     int now = 0;
     for (int i = 0; i < m * 2; ++i) {
-      if (sel_pair_idx[i] < INIT_N) {
+      if (answer.sel_pair_idx[i] < INIT_N) {
         if (cnt == pick_order[now]) {
-          pick_set.insert(sel_pair_idx[i]);
+          pick_set.insert(answer.sel_pair_idx[i]);
           now++;
         }
         cnt++;
@@ -561,13 +517,13 @@ void sa_path_pruning()
     vector<Point> ans3;
     ans3.push_back(Point(400, 400));
     for (int i = 0; i < m * 2; ++i) {
-      int ite = sel_pair_idx[i];
+      int ite = answer.sel_pair_idx[i];
       if (ite >= INIT_N) ite -= INIT_N;
       if (pick_set.find(ite) != pick_set.end()) {
-        ans3.push_back(current_path[i + 1]);
-        new_length += abs(cur_x - current_path[i + 1].x) + abs(cur_y - current_path[i + 1].y);
-        cur_x = current_path[i + 1].x;
-        cur_y = current_path[i + 1].y;
+        ans3.push_back(answer.path[i + 1]);
+        new_length += abs(cur_x - answer.path[i + 1].x) + abs(cur_y - answer.path[i + 1].y);
+        cur_x = answer.path[i + 1].x;
+        cur_y = answer.path[i + 1].y;
       }
     }
     ans3.push_back(Point(400, 400));
@@ -575,26 +531,28 @@ void sa_path_pruning()
     if (new_length < mi) {
       mi = new_length;
       ans2 = ans3;
-      reduced_pair_idx.clear();
+      answer.reduced_pair_idx.clear();
 
       for (auto ite : pick_set) {
-        reduced_pair_idx.push_back(ite);
+        answer.reduced_pair_idx.push_back(ite);
       }
     }
   }
 
-  current_path = ans2;
-  sel_pair_idx = reduced_pair_idx;
+  answer.path = ans2;
+  answer.sel_pair_idx = answer.reduced_pair_idx;
 
-  curr_length = compute_path_time();
-  curr_score = CalcScore(curr_length);
+  answer.length = compute_path_time();
+  answer.score = CalcScore(answer.length);
+
+  cerr << "Path Pruning iteration: " << loop << endl;
 }
 
-int Solve(int case_num)
+int solve_case(int case_num)
 {
   start_timer();
 
-  ResetParam();
+  reset_param();
 
   input_data(case_num);
 
@@ -602,30 +560,30 @@ int Solve(int case_num)
 
   build_initial_path();
 
-  sa_point_swap();
+  sa_point_swap(0.4);
 
-  sa_two_opt_path();
+  sa_two_opt_path(1.8);
 
-  sa_path_pruning();
+  sa_path_pruning(1.95);
 
   output_data(case_num);
 
-  cerr << curr_score << endl;
+  cerr << answer.score << endl;
   cerr << get_elapsed_time() << "sec." << endl;
 
-  return curr_score;
+  return answer.score;
 }
 
 int main()
 {
   exec_mode = 1;
   if (exec_mode == 0) {
-    Solve(0);
+    solve_case(0);
   }
   else if (exec_mode == 1) {
     srep(i, 0, 10)
     {
-      Solve(i);
+      solve_case(i);
     }
   }
 
