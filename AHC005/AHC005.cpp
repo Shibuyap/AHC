@@ -443,7 +443,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 
   double start_time = get_elapsed_time();
   double now_time = get_elapsed_time();
-  const double START_TEMP = 18000000;
+  const double START_TEMP = 1800;
   const double END_TEMP = 0.0;
 
   vector<int> keep_vec(ans.vertices.size());
@@ -467,7 +467,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 
     int start_index = 0;
     int end_index = 1001001;
-    if (ra_exec_mode < 100) {
+    if (ra_exec_mode < 50) {
       // 2点の入れ替え
       ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
       ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
@@ -479,7 +479,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
       start_index = ra1 - 1;
       end_index = ra2 + 1;
     }
-    else if (ra_exec_mode < 200) {
+    else if (ra_exec_mode < 100) {
       // 区間reverse
       ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
       ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
@@ -522,7 +522,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     // 焼きなましで採用判定
     double diff_score = (tmp_score - current_score) * 12345.6;
     double prob = exp(diff_score / temp);
-    if (prob > rand_01()) {
+    if (prob > rand_01() || rand_xorshift() % 10000 == 0) {
       // 採用
       current_score = tmp_score;
 
@@ -533,13 +533,13 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < 100) {
+      if (ra_exec_mode < 50) {
         // 近傍操作1 の巻き戻し
         swap(ans.vertices[ra1], ans.vertices[ra2]); // 2点の入れ替えを元に戻す
         ans.recalc_points(board); // 点の再計算
         ans.score = current_score; // スコアを元に戻す
       }
-      else if (ra_exec_mode < 200) {
+      else if (ra_exec_mode < 100) {
         // 近傍操作2 の巻き戻し
         reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // 区間reverseを元に戻す
         ans.recalc_points(board); // 点の再計算
@@ -583,7 +583,7 @@ ll solve_case(int case_num)
 
   Answer initial_ans = ans;
   Answer best_ans = ans;
-  const int SET_COUNT = 3;
+  const int SET_COUNT = 1;
   double start_time = get_elapsed_time();
   for (int i = 0; i < SET_COUNT; i++) {
     double time_limit = start_time + (TIME_LIMIT - start_time) / SET_COUNT * (i + 1);
