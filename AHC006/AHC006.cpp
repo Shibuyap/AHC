@@ -386,30 +386,42 @@ void sa_two_opt_path(Answer& answer, double time_limit)
 {
   Answer best_answer = answer;
 
+  double start_time = get_elapsed_time();
   double start_temp = 48;
   double end_temp = 0.0001;
 
-  int loop = 0;
-  double now_time = get_elapsed_time();
-
   // ‚»‚ê‚¼‚ê‚ðTSP
-  for (int ui_tei = 0; ui_tei < 10; ++ui_tei) {
+  for (int ui_tei = 0; ui_tei < 15; ++ui_tei) {
+    double this_start_time = get_elapsed_time();
+    double this_time_limit = start_time + (time_limit - start_time) / 15.0 * (ui_tei + 1);
+    double now_time = get_elapsed_time();
+    int loop = 0;
+
     while (true) {
       loop++;
       if (loop % 100 == 1) {
         now_time = get_elapsed_time();
       }
-      if (now_time > (time_limit / 15) * (6 + ui_tei)) break;
+      if (now_time > this_time_limit) {
+        break;
+      }
 
       int ite1 = Rand() % (m * 2);
       int ite2 = Rand() % (m * 2);
       while (ite1 == ite2) {
         ite2 = Rand() % (m * 2);
       }
-      if (ite1 > ite2) swap(ite1, ite2);
-      if (ite2 - ite1 == 1) continue;
+      if (ite1 > ite2) {
+        swap(ite1, ite2);
+      }
+      if (ite2 - ite1 == 1) {
+        continue;
+      }
 
-      if (answer.sel_pair_idx[ite1] + INIT_N == answer.sel_pair_idx[ite2]) continue;
+      if (answer.sel_pair_idx[ite1] + INIT_N == answer.sel_pair_idx[ite2]) {
+        continue;
+      }
+
       if (answer.sel_pair_idx[ite1] < INIT_N) {
         int pa = answer.partner_idx[answer.sel_pair_idx[ite1]];
         if (pa < ite2) {
@@ -422,57 +434,53 @@ void sa_two_opt_path(Answer& answer, double time_limit)
           continue;
         }
       }
-
+        
       int diff = 0;
+      diff += manhattan(answer.path[ite1 + 1], answer.path[ite2]);
+      diff += manhattan(answer.path[ite1 + 1], answer.path[ite2 + 2]);
+      diff -= manhattan(answer.path[ite1 + 1], answer.path[ite1]);
+      diff -= manhattan(answer.path[ite1 + 1], answer.path[ite1 + 2]);
+      diff += manhattan(answer.path[ite2 + 1], answer.path[ite1]);
+      diff += manhattan(answer.path[ite2 + 1], answer.path[ite1 + 2]);
+      diff -= manhattan(answer.path[ite2 + 1], answer.path[ite2]);
+      diff -= manhattan(answer.path[ite2 + 1], answer.path[ite2 + 2]);
 
-      if (true || loop % 2 == 0) {
-        diff += manhattan(answer.path[ite1 + 1], answer.path[ite2]);
-        diff += manhattan(answer.path[ite1 + 1], answer.path[ite2 + 2]);
-        diff -= manhattan(answer.path[ite1 + 1], answer.path[ite1]);
-        diff -= manhattan(answer.path[ite1 + 1], answer.path[ite1 + 2]);
-        diff += manhattan(answer.path[ite2 + 1], answer.path[ite1]);
-        diff += manhattan(answer.path[ite2 + 1], answer.path[ite1 + 2]);
-        diff -= manhattan(answer.path[ite2 + 1], answer.path[ite2]);
-        diff -= manhattan(answer.path[ite2 + 1], answer.path[ite2 + 2]);
+      int new_length = answer.length + diff;
+      int diffScore = -diff;
 
-        int new_length = answer.length + diff;
-        int diffScore = -diff;
-
-        double temp = start_temp + (end_temp - start_temp) * now_time / time_limit;
-        double prob = exp((double)diffScore / temp);
-        if (prob > Rand01()) {
-          answer.length = new_length;
-          if (answer.sel_pair_idx[ite1] < INIT_N) {
-            answer.partner_idx[answer.sel_pair_idx[ite1] + INIT_N] = ite2;
-          }
-          else {
-            answer.partner_idx[answer.sel_pair_idx[ite1] - INIT_N] = ite2;
-          }
-          if (answer.sel_pair_idx[ite2] < INIT_N) {
-            answer.partner_idx[answer.sel_pair_idx[ite2] + INIT_N] = ite1;
-          }
-          else {
-            answer.partner_idx[answer.sel_pair_idx[ite2] - INIT_N] = ite1;
-          }
-          swap(answer.sel_pair_idx[ite1], answer.sel_pair_idx[ite2]);
-          swap(answer.path[ite1 + 1], answer.path[ite2 + 1]);
-          answer.calc_score();
-          if (answer.score > best_answer.score) {
-            best_answer = answer;
-          }
+      double temp = start_temp + (end_temp - start_temp) * (now_time - this_start_time) / (this_time_limit - this_start_time);
+      double prob = exp((double)diffScore / temp);
+      if (prob > Rand01()) {
+        answer.length = new_length;
+        if (answer.sel_pair_idx[ite1] < INIT_N) {
+          answer.partner_idx[answer.sel_pair_idx[ite1] + INIT_N] = ite2;
         }
         else {
-          // Œ³‚É–ß‚·
-          ;
+          answer.partner_idx[answer.sel_pair_idx[ite1] - INIT_N] = ite2;
+        }
+        if (answer.sel_pair_idx[ite2] < INIT_N) {
+          answer.partner_idx[answer.sel_pair_idx[ite2] + INIT_N] = ite1;
+        }
+        else {
+          answer.partner_idx[answer.sel_pair_idx[ite2] - INIT_N] = ite1;
+        }
+        swap(answer.sel_pair_idx[ite1], answer.sel_pair_idx[ite2]);
+        swap(answer.path[ite1 + 1], answer.path[ite2 + 1]);
+        answer.calc_score();
+        if (answer.score > best_answer.score) {
+          best_answer = answer;
         }
       }
+      else {
+        // Œ³‚É–ß‚·
+      }
     }
+
+    cerr << "Set " << ui_tei << " iteration: " << loop << endl;
 
     // Å‚ƒXƒRƒA‚ð–ß‚·
     answer = best_answer;
   }
-
-  cerr << "Two-opt iteration: " << loop << endl;
 }
 
 void sa_path_pruning(Answer& answer, double time_limit)
