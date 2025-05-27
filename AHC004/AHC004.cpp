@@ -28,10 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
-
 using namespace std;
 
 typedef long long int ll;
@@ -246,14 +242,12 @@ public:
       int diff = 0;
       int max_len = 0;
       int max_min_len = 9999;
-      drep(i, patterns_tmp.size())
-      {
+      for (int i = patterns_tmp.size() - 1; i >= 0; --i) {
         int size_i = patterns_tmp[i].pattern.size();
         if (size_i < max_len) {
           continue;
         }
-        drep(j, patterns_tmp.size())
-        {
+        for (int j = patterns_tmp.size() - 1; j >= 0; --j) {
           if (i == j) {
             continue;
           }
@@ -424,24 +418,6 @@ public:
     reset_matched_flags(patterns.initial_patterns);
   }
 
-  void generate_empty()
-  {
-    for (int i = 0; i < N; i++) {
-      for (int j = 0; j < N; j++) {
-        grid[i][j] = CHARACTER_SIZE;
-      }
-    }
-  }
-
-  void generate_random()
-  {
-    for (int i = 0; i < N; i++) {
-      for (int j = 0; j < N; j++) {
-        grid[i][j] = rand_xorshift() % CHARACTER_SIZE;
-      }
-    }
-  }
-
   void generate_random_empty()
   {
     for (int i = 0; i < N; i++) {
@@ -579,8 +555,7 @@ public:
   void assemble(double time_limit, const Patterns& patterns)
   {
     vector<vector<int>> vv;
-    drep(i, MAX_PATTERN_LENGTH + 1)
-    {
+    for (int i = MAX_PATTERN_LENGTH + 1 - 1; i >= 0; --i) {
       for (auto& pattern : patterns.vv_patterns[i]) {
         vv.push_back(pattern.pattern);
         if (vv.size() == N * 2) {
@@ -640,10 +615,8 @@ public:
     for (int ii = 0; ii < ii_num; ++ii) {
       int no_start_count = 0;
 
-      srep(i, 0, vv.size())
-      {
-        srep(j, 0, vv.size())
-        {
+      for (int i = 0; i < vv.size(); ++i) {
+        for (int j = 0; j < vv.size(); ++j) {
           if (i == j || ii == i || ii == j) {
             continue;
           }
@@ -655,10 +628,6 @@ public:
               break;
             }
             for (int l = 0; l < N; ++l) {
-              //if (get_elapsed_time() > time_limit) {
-              //  break;
-              //}
-
               // 2行目と3行目をセット
               for (int m = 0; m < N; ++m) {
                 g[0][m] = CHARACTER_SIZE;
@@ -775,9 +744,6 @@ public:
                   for (int n = 0; n < N; ++n) {
                     int idx = (decided_col_2[m] + n) % N;
                     if (idx < vv[decided_col[m]].size()) {
-                      if (g[n][m] != vv[decided_col[m]][idx] && g[n][m] != CHARACTER_SIZE) {
-                        //cout << "NGe" << ' ' << n << ' ' << m << ' ' << g[n][m] << ' ' << vv[decided_col[m]][idx] << endl;
-                      }
                       g[n][m] = vv[decided_col[m]][idx];
                     }
                     else {
@@ -800,8 +766,7 @@ public:
               ng_count = start_col == -1;
               while (ng_count == 0) {
                 bool has_change = false;
-                srep(m, 3, N)
-                {
+                for (int m = 3; m < N; ++m) {
                   if (decided_row[m] != -1) {
                     continue;
                   }
@@ -896,8 +861,7 @@ public:
                   }
                 }
 
-                srep(n, 3, N)
-                {
+                for (int n = 3; n < N; ++n) {
                   if (decided_row[n] != -1) {
                     for (int m = 0; m < N; ++m) {
                       int idx = (decided_row_2[n] + m) % N;
@@ -933,8 +897,7 @@ public:
                   }
                 }
 
-                srep(n, 3, N)
-                {
+                for (int n = 3; n < N; ++n) {
                   if (decided_row[n] != -1) {
                     for (int m = 0; m < N; ++m) {
                       int idx = (decided_row_2[n] + m) % N;
@@ -960,8 +923,7 @@ public:
               if (start_col != -1) {
                 for (int m = 0; m < COL_LENGTH; ++m) {
                   int m2 = (start_col + m) % N;
-                  srep(n, 1, N)
-                  {
+                  for (int n = 1; n < N; ++n) {
                     g[n][m2] = CHARACTER_SIZE;
                   }
                 }
@@ -1004,91 +966,6 @@ private:
       }
     }
     return true;
-  }
-
-  void check_true_genome()
-  {
-    int ma = 0;
-    int ma_grid[N][N];
-
-    for (int si = 0; si < N; ++si) {
-      for (int sj = 0; sj < N; ++sj) {
-        int tmp = 0;
-        for (int i = 0; i < N; ++i) {
-          for (int j = 0; j < N; ++j) {
-            if (grid[(si + i) % N][(sj + j) % N] != true_genome[i][j] - 'A') {
-            }
-            else {
-              tmp++;
-            }
-          }
-        }
-
-        if (tmp > ma) {
-          ma = tmp;
-          for (int i = 0; i < N; ++i) {
-            for (int j = 0; j < N; ++j) {
-              ma_grid[i][j] = grid[(si + i) % N][(sj + j) % N];
-            }
-          }
-        }
-      }
-    }
-
-    // gridを転置する
-    for (int i = 0; i < N; i++) {
-      for (int j = i + 1; j < N; j++) {
-        // arr[i][j] と arr[j][i] を交換する
-        int temp = grid[i][j];
-        grid[i][j] = grid[j][i];
-        grid[j][i] = temp;
-      }
-    }
-
-    for (int si = 0; si < N; ++si) {
-      for (int sj = 0; sj < N; ++sj) {
-        int tmp = 0;
-        for (int i = 0; i < N; ++i) {
-          for (int j = 0; j < N; ++j) {
-            if (grid[(si + i) % N][(sj + j) % N] != true_genome[i][j] - 'A') {
-            }
-            else {
-              tmp++;
-            }
-          }
-        }
-
-        if (tmp > ma) {
-          ma = tmp;
-          for (int i = 0; i < N; ++i) {
-            for (int j = 0; j < N; ++j) {
-              ma_grid[i][j] = grid[(si + i) % N][(sj + j) % N];
-            }
-          }
-        }
-      }
-    }
-
-    for (int i = 0; i < N; i++) {
-      for (int j = i + 1; j < N; j++) {
-        // arr[i][j] と arr[j][i] を交換する
-        int temp = grid[i][j];
-        grid[i][j] = grid[j][i];
-        grid[j][i] = temp;
-      }
-    }
-
-    cout << "Best Score: " << ma << endl;
-    for (int i = 0; i < N; ++i) {
-      for (int j = 0; j < N; ++j) {
-        cout << (char)(ma_grid[i][j] + 'A');
-      }
-      cout << ' ';
-      for (int j = 0; j < N; ++j) {
-        cout << true_genome[i][j];
-      }
-      cout << endl;
-    }
   }
 };
 
@@ -1334,7 +1211,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
   }
 }
 
-ll solve_2(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state)
+ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state)
 {
   patterns_manager.build_merge_patterns(TIME_LIMIT * 0.4, 0);
   cout << "build_merge_patterns : " << get_elapsed_time() << " sec" << endl;
@@ -1378,24 +1255,9 @@ ll solve_2(AnnealingParams annealingParams, PatternsManager& patterns_manager, S
     cerr << "完全復元処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 
-  {
-    //state.recalc_all(patterns_manager.initial_patterns);
-    //ll score = state.get_score(patterns_manager.initial_patterns);
-    //if (score < PERFECT_SCORE * 0.9) {
-    //  state.generate_empty();
-    //}
-  }
-
-  //state.recalc_all(patterns_manager.initial_patterns);
-  //cerr << state.get_score(patterns_manager.initial_patterns) << endl;
-
   state.greedy_after_assemble(patterns_manager.merged_patterns);
-  //state.recalc_all(patterns_manager.initial_patterns);
-  //cerr << state.get_score(patterns_manager.initial_patterns) << endl;
 
   state.greedy_after_assemble(patterns_manager.initial_patterns);
-  //state.recalc_all(patterns_manager.initial_patterns);
-  //cerr << state.get_score(patterns_manager.initial_patterns) << endl;
 
   state.generate_random_empty();
   state.recalc_all(patterns_manager.initial_patterns);
@@ -1418,13 +1280,9 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   input_data(case_num, patterns_manager);
 
-  //if (L != 10) {
-  //  return 0;
-  //}
-
   State state(patterns_manager);
 
-  ll score = solve_2(annealingParams, patterns_manager, state);
+  ll score = execute_solver(annealingParams, patterns_manager, state);
 
   // 解答を出力
   ofstream ofs;
@@ -1440,7 +1298,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
 int main()
 {
-  exec_mode = 1;
+  exec_mode = 3;
 
   AnnealingParams annealingParams;
   annealingParams.start_temperature[0] = 2048.0;
@@ -1471,8 +1329,7 @@ int main()
   }
   else if (exec_mode < 100) {
     ll sum_score = 0;
-    srep(i, 0, 3)
-    {
+    for (int i = 0; i < 10; ++i) {
       if (exec_mode == 1) {
       }
       else {
@@ -1505,8 +1362,7 @@ int main()
       new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
-      srep(i, 0, 15)
-      {
+      for (int i = 0; i < 15; ++i) {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 
