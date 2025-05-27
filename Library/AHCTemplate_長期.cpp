@@ -110,12 +110,6 @@ void input_data(int case_num)
   }
 }
 
-ll calculate_score()
-{
-  ll res = 0;
-  return res;
-}
-
 void output_data(int case_num)
 {
   if (exec_mode == 0) {
@@ -131,6 +125,12 @@ void output_data(int case_num)
       ofs.close();
     }
   }
+}
+
+ll calculate_score()
+{
+  ll res = 0;
+  return res;
 }
 
 ll solve_case(int case_num)
