@@ -277,7 +277,7 @@ public:
     score = 0;
   }
 
-  int recalc_points(const Board& board, int start_index = 0) {
+  int recalc_points(const Board& board, int start_index = 0, int end_index = 1001001) {
     if (points.size() > vertices.size()) {
       points.clear();
     }
@@ -291,6 +291,9 @@ public:
     }
     for (int i = start_index + 1; i < vertices.size() - 1; i++) {
       int next_index = board.dist_to_vertices[cur_index][vertices[i]].point_index;
+      if (i >= end_index && points[i] == next_index) {
+        break;
+      }
       points[i] = next_index; // 次の頂点への最短距離を追加
       cur_index = next_index; // 現在のインデックスを更新
     }
@@ -443,6 +446,8 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
   const double START_TEMP = 18000000;
   const double END_TEMP = 0.0;
 
+  vector<int> keep_vec(ans.vertices.size());
+
   int loop = 0;
   while (true) {
     loop++;
@@ -461,6 +466,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     int keep1, keep2, keep3, keep4, keep5;
 
     int start_index = 0;
+    int end_index = 1001001;
     if (ra_exec_mode < 100) {
       // 2点の入れ替え
       ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
@@ -471,6 +477,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
       if (ra1 > ra2) swap(ra1, ra2);
       swap(ans.vertices[ra1], ans.vertices[ra2]); // 2点の入れ替え
       start_index = ra1 - 1;
+      end_index = ra2 + 1;
     }
     else if (ra_exec_mode < 200) {
       // 区間reverse
@@ -483,6 +490,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 
       reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // 区間reverse
       start_index = ra1 - 1;
+      end_index = ra2 + 1;
     }
     else if (ra_exec_mode < 300) {
       // 1点抜き挿し
@@ -503,11 +511,12 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
         }
       }
       start_index = min(ra1, ra2) - 1;
+      end_index = max(ra1, ra2) + 1;
     }
 
     // スコア計算
     double current_score = ans.score;
-    ans.recalc_points(board, start_index); // 点の再計算
+    ans.recalc_points(board, start_index, end_index); // 点の再計算
     double tmp_score = ans.calc_score(board);
 
     // 焼きなましで採用判定
@@ -520,7 +529,6 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
       // ベスト更新
       if (current_score > best_ans.score) {
         best_ans = ans;
-        //cerr << "Best score updated: " << best_ans.score << endl;
       }
     }
     else {
@@ -549,13 +557,13 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
             swap(ans.vertices[i], ans.vertices[i + 1]); // 1点ずつ右にずらす
           }
         }
-        ans.recalc_points(board, start_index); // 点の再計算
+        ans.recalc_points(board, start_index, end_index); // 点の再計算
         ans.score = current_score; // スコアを元に戻す
       }
     }
   }
 
-  if (exec_mode != 0 && exec_mode != 3) {
+  if (exec_mode != 3) {
     cerr << loop << endl;
   }
 
