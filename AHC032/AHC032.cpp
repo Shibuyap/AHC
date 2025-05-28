@@ -253,10 +253,6 @@ void Output(ofstream& ofs)
   }
 }
 
-double nowTime = 0;
-double startTemp = 1001001001;
-double endTemp = 0.1;
-
 int use[3][3];
 void Rule1(int x, int y, int dir1, int dir2)
 {
@@ -723,24 +719,17 @@ ll Solve(int probNum)
   startTime = clock();
   endTime = clock();
 
-  // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
-  // 入力受け取り
   Input(probNum);
 
-  // 出力ファイルストリームオープン
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // 初期解生成
   Initialize();
   Method4(TL);
   CopyFromBest();
 
-  CopyFromBest();
-
-  // 解答を出力
   Output(ofs);
 
   if (ofs.is_open()) {
