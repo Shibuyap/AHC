@@ -74,7 +74,7 @@ class State
 {
 public:
   array<array<int, n>, n> board;
-  array<array<int, 3>, T> solution; // solution[i][0]: magic index, solution[i][1]: x, solution[i][2]: y
+  array<array<int, 3>, T> turns; // turns[i][0]: magic index, turns[i][1]: x, turns[i][2]: y
   ll score;
   State()
   {
@@ -84,42 +84,40 @@ public:
       }
     }
     for (int i = 0; i < T; ++i) {
-      solution[i][0] = -1;
-      solution[i][1] = -1;
-      solution[i][2] = -1;
+      turns[i][0] = -1;
+      turns[i][1] = -1;
+      turns[i][2] = -1;
     }
     score = 0;
   }
+
+  void reset()
+  {
+    for (int i = 0; i < T; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        turns[i][j] = -1;
+      }
+    }
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        board[i][j] = initial_board[i][j];
+      }
+    }
+    score = calc_score();
+  }
+
+  // スコア計算
+  ll calc_score()
+  {
+    score = 0;
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
+        score += board[i][j] % MOD;
+      }
+    }
+    return score;
+  }
 };
-
-// スコア計算
-ll CalcScore(const State& current)
-{
-  ll res = 0;
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      res += current.board[i][j] % MOD;
-    }
-  }
-
-  return res;
-}
-
-void InitializeAns(State& current)
-{
-  for (int i = 0; i < T; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      current.solution[i][j] = -1;
-    }
-  }
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      current.board[i][j] = initial_board[i][j];
-    }
-  }
-  current.score = CalcScore(current);
-}
 
 // 入力受け取り
 State Input(int problemNum)
@@ -198,15 +196,6 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// 初期解生成
-void Initialize(State& current)
-{
-  for (int i = 0; i < T; ++i) {
-    current.solution[i][0] = -1;
-  }
-  current.score = CalcScore(current);
-}
-
 // 解答出力
 void Output(int probNum, const State& current)
 {
@@ -215,23 +204,23 @@ void Output(int probNum, const State& current)
 
   int L = 0;
   for (int i = 0; i < T; ++i) {
-    if (current.solution[i][0] == -1) continue;
+    if (current.turns[i][0] == -1) continue;
     L++;
   }
 
   if (mode == 0) {
     cout << L << endl;
     for (int i = 0; i < T; ++i) {
-      if (current.solution[i][0] == -1) continue;
-      for (int j = 0; j < 3; ++j) cout << current.solution[i][j] << ' ';
+      if (current.turns[i][0] == -1) continue;
+      for (int j = 0; j < 3; ++j) cout << current.turns[i][j] << ' ';
       cout << endl;
     }
   }
   else {
     ofs << L << endl;
     for (int i = 0; i < T; ++i) {
-      if (current.solution[i][0] == -1) continue;
-      for (int j = 0; j < 3; ++j) ofs << current.solution[i][j] << ' ';
+      if (current.turns[i][0] == -1) continue;
+      for (int j = 0; j < 3; ++j) ofs << current.turns[i][j] << ' ';
       ofs << endl;
     }
   }
@@ -241,170 +230,109 @@ void Output(int probNum, const State& current)
   }
 }
 
-int use[3][3];
-void Rule1(int x, int y, int dir1, int dir2)
+// ── 3×3 ブロック内で「スコア対象になるマス」をマークする
+// dirV = 0 … 上→下に走査、1 … 下→上
+// dirH = 0 … 左→右に走査、1 … 右→左
+// 盤端に達した方向に応じて列全体／行全体／全面を有効化
+void mark_edge_mask_2(int x /*0-based*/, int y /*0-based*/,
+  int dirV, int dirH,
+  int(&mask)[3][3])           // 出力: 0 or 1
 {
-  for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) use[k][l] = 0;
-  if (dir1 == 0 && dir2 == 0) {
-    if (x == n - 3) {
-      if (y == n - 3) {
-        for (int i = 0; i < 3; ++i) {
-          for (int j = 0; j < 3; ++j) {
-            use[i][j] = 1;
-          }
-        }
-      }
-      else {
-        for (int i = 0; i < 3; ++i) use[i][0] = 1;
-      }
-    }
-    else {
-      if (y == n - 3) {
-        for (int l = 0; l < 3; ++l) use[0][l] = 1;
-      }
-      else {
-        use[0][0] = 1;
-      }
-    }
-  }
-  if (dir1 == 0 && dir2 == 1) {
-    if (x == n - 3) {
-      if (y == 0) {
-        for (int i = 0; i < 3; ++i) {
-          for (int j = 0; j < 3; ++j) {
-            use[i][j] = 1;
-          }
-        }
-      }
-      else {
-        for (int i = 0; i < 3; ++i) use[i][2] = 1;
-      }
-    }
-    else {
-      if (y == 0) {
-        for (int l = 0; l < 3; ++l) use[0][l] = 1;
-      }
-      else {
-        use[0][2] = 1;
-      }
-    }
-  }
-  if (dir1 == 1 && dir2 == 0) {
-    if (x == 0) {
-      if (y == n - 3) {
-        for (int i = 0; i < 3; ++i) {
-          for (int j = 0; j < 3; ++j) {
-            use[i][j] = 1;
-          }
-        }
-      }
-      else {
-        for (int i = 0; i < 3; ++i) use[i][0] = 1;
-      }
-    }
-    else {
-      if (y == n - 3) {
-        for (int l = 0; l < 3; ++l) use[2][l] = 1;
-      }
-      else {
-        use[2][0] = 1;
-      }
-    }
-  }
-  if (dir1 == 1 && dir2 == 1) {
-    if (x == 0) {
-      if (y == 0) {
-        for (int i = 0; i < 3; ++i) {
-          for (int j = 0; j < 3; ++j) {
-            use[i][j] = 1;
-          }
-        }
-      }
-      else {
-        for (int i = 0; i < 3; ++i) use[i][2] = 1;
-      }
-    }
-    else {
-      if (y == 0) {
-        for (int l = 0; l < 3; ++l) use[2][l] = 1;
-      }
-      else {
-        use[2][2] = 1;
-      }
-    }
-  }
+  // 1) 全消し
+  for (auto& row : mask) std::fill(std::begin(row), std::end(row), 0);
+
+  // 2) アンカー（通常 1 マスだけ）
+  const int anchorRow = (dirV == 0 ? 0 : 2);   // 上端 or 下端
+  const int anchorCol = (dirH == 0 ? 0 : 2);   // 左端 or 右端
+  mask[anchorRow][anchorCol] = 1;
+
+  // 3) 盤の端に当たったら行／列ごと拡張
+  const bool hitVEdge = (dirV == 0 ? x == n - 3 : x == 0);
+  const bool hitHEdge = (dirH == 0 ? y == n - 3 : y == 0);
+
+  if (hitVEdge)               // -- 縦方向の端
+    for (int r = 0; r < 3; ++r) mask[r][anchorCol] = 1;
+
+  if (hitHEdge)               // -- 横方向の端
+    for (int c = 0; c < 3; ++c) mask[anchorRow][c] = 1;
+
+  // 4) 角 (両端) の場合は 3×3 全面
+  if (hitVEdge && hitHEdge)
+    for (auto& row : mask) std::fill(std::begin(row), std::end(row), 1);
 }
 
-void Rule2(int i, int j, int dir1)
+int use_mask[3][3];
+
+void mark_line_mask(int i, int j, int dir1)
 {
   for (int p = 0; p < 3; ++p) {
     for (int q = 0; q < 3; ++q) {
-      use[p][q] = 0;
+      use_mask[p][q] = 0;
       if (dir1 == 0) {
-        if (i == n - 3) use[p][q] = 1;
-        if (p == 0) use[p][q] = 1;
+        if (i == n - 3) use_mask[p][q] = 1;
+        if (p == 0) use_mask[p][q] = 1;
       }
       else {
-        if (i == 0) use[p][q] = 1;
-        if (p == 2) use[p][q] = 1;
+        if (i == 0) use_mask[p][q] = 1;
+        if (p == 2) use_mask[p][q] = 1;
       }
     }
   }
 }
 
-ll maxSum;
-ll ma[3][3];
-ll maAnssArr[10];
-int maAnsCount = 0;
+ll best_sum;
+ll best_sum_grid[3][3];
+ll best_pattern_ids[10];
+int best_pattern_count = 0;
 
-ll now[3][3];
-ll anssArr[10];
-void Method2DFS(int mm, int cnt, int lim)
+ll work_grid[3][3];
+ll pattern_ids[10];
+void search_best_patterns_dfs(int mm, int cnt, int lim)
 {
   if (cnt == lim) return;
   ll keep[3][3];
   for (int p = 0; p < 3; ++p) {
     for (int q = 0; q < 3; ++q) {
-      keep[p][q] = now[p][q];
+      keep[p][q] = work_grid[p][q];
     }
   }
   for (int i = mm; i < m; ++i) {
-    anssArr[cnt] = i;
+    pattern_ids[cnt] = i;
     cnt++;
-    ll tmpSum = 0;
+    ll tmp_sum = 0;
     for (int p = 0; p < 3; ++p) {
       for (int q = 0; q < 3; ++q) {
-        now[p][q] = (now[p][q] + magic_pattern[i][p][q]) % MOD;
-        if (use[p][q]) tmpSum += now[p][q];
+        work_grid[p][q] = (work_grid[p][q] + magic_pattern[i][p][q]) % MOD;
+        if (use_mask[p][q]) tmp_sum += work_grid[p][q];
       }
     }
-    if (tmpSum > maxSum) {
-      maxSum = tmpSum;
+    if (tmp_sum > best_sum) {
+      best_sum = tmp_sum;
       for (int p = 0; p < 3; ++p) {
         for (int q = 0; q < 3; ++q) {
-          ma[p][q] = now[p][q];
+          best_sum_grid[p][q] = work_grid[p][q];
         }
       }
-      for (int j = 0; j < cnt; ++j) maAnssArr[j] = anssArr[j];
-      maAnsCount = cnt;
+      for (int j = 0; j < cnt; ++j) best_pattern_ids[j] = pattern_ids[j];
+      best_pattern_count = cnt;
     }
 
-    Method2DFS(i, cnt, lim);
+    search_best_patterns_dfs(i, cnt, lim);
 
     cnt--;
     for (int p = 0; p < 3; ++p) {
       for (int q = 0; q < 3; ++q) {
-        now[p][q] = keep[p][q];
+        work_grid[p][q] = keep[p][q];
       }
     }
   }
 }
 
-int keepA[n][n];
+int backupBoard[n][n];
 int keepAns[110][3];
-int baseA[n][n];
+int originalBoard[n][n];
 
-void Method4(double timeLimit, State& current)
+void heuristicSweep(double timeLimit, State& current)
 {
   State best = current;
 
@@ -414,11 +342,11 @@ void Method4(double timeLimit, State& current)
     double nowTime = GetNowTime();
     if (nowTime > timeLimit) break;
 
-    ll hosyou = Rand() % 200000000 + MOD - 200000000;
+    ll scoreThreshold = Rand() % 200000000 + MOD - 200000000;
 
-    int ng = 0;
-    InitializeAns(current);
-    int cnt = 0;
+    int abortFlag = 0;
+    current.reset();
+    int turnCount = 0;
     int dir1 = Rand() % 2;
     int dir2 = Rand() % 2;
     // dir1     = 0;
@@ -426,17 +354,17 @@ void Method4(double timeLimit, State& current)
     for (int ii = 0; ii < n - 2; ++ii) {
       int i = ii;
       if (dir1) i = n - 3 - ii;
-      if (ii == n - 3 && cnt + 3 * 6 + 4 > T) {
-        ng = 1;
+      if (ii == n - 3 && turnCount + 3 * 6 + 4 > T) {
+        abortFlag = 1;
         break;
       }
 
-      int nowCnt = cnt;
+      int nowCnt = turnCount;
       ll maPosSum = 0;
       int maCntTail = 0;
       for (int p = 0; p < n; ++p) {
         for (int q = 0; q < n; ++q) {
-          baseA[p][q] = current.board[p][q];
+          originalBoard[p][q] = current.board[p][q];
         }
       }
 
@@ -445,198 +373,198 @@ void Method4(double timeLimit, State& current)
           int j = jj;
           dir2 = 0;
           if (dir2) j = n - 3 - jj;
-          maAnsCount = 0;
-          maxSum = 0;
+          best_pattern_count = 0;
+          best_sum = 0;
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              ma[k][l] = current.board[i + k][j + l];
-              now[k][l] = ma[k][l];
+              best_sum_grid[k][l] = current.board[i + k][j + l];
+              work_grid[k][l] = best_sum_grid[k][l];
             }
           }
-          Rule1(i, j, dir1, dir2);
+          mark_edge_mask_2(i, j, dir1, dir2, use_mask);
           int useCount = 0;
-          for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use[k][l];
+          for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use_mask[k][l];
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              if (use[k][l]) {
-                maxSum += ma[k][l];
+              if (use_mask[k][l]) {
+                best_sum += best_sum_grid[k][l];
               }
             }
           }
 
           if (useCount == 1) {
-            Method2DFS(0, 0, 1);
-            if (maxSum < hosyou && Rand() % 3 != 0) {
+            search_best_patterns_dfs(0, 0, 1);
+            if (best_sum < scoreThreshold && Rand() % 3 != 0) {
               for (int p = 0; p < 3; ++p) {
                 for (int q = 0; q < 3; ++q) {
-                  now[p][q] = current.board[i + p][j + q];
+                  work_grid[p][q] = current.board[i + p][j + q];
                 }
               }
-              Method2DFS(0, 0, 2);
+              search_best_patterns_dfs(0, 0, 2);
             }
           }
           else if (useCount <= 3) {
-            Method2DFS(0, 0, 3);
+            search_best_patterns_dfs(0, 0, 3);
           }
           else {
-            if (cnt + 4 > T) {
-              ng = 1;
+            if (turnCount + 4 > T) {
+              abortFlag = 1;
               break;
             }
-            Method2DFS(0, 0, 4);
+            search_best_patterns_dfs(0, 0, 4);
           }
 
-          for (int k = 0; k < maAnsCount; ++k) {
-            int ansM = maAnssArr[k];
-            if (cnt < T) {
-              current.solution[cnt][0] = ansM;
-              current.solution[cnt][1] = i;
-              current.solution[cnt][2] = j;
+          for (int k = 0; k < best_pattern_count; ++k) {
+            int ansM = best_pattern_ids[k];
+            if (turnCount < T) {
+              current.turns[turnCount][0] = ansM;
+              current.turns[turnCount][1] = i;
+              current.turns[turnCount][2] = j;
             }
-            cnt++;
+            turnCount++;
           }
-          if (cnt > T) {
-            ng = 1;
+          if (turnCount > T) {
+            abortFlag = 1;
             break;
           }
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              current.board[i + k][j + l] = ma[k][l];
+              current.board[i + k][j + l] = best_sum_grid[k][l];
             }
           }
         }
-        if (ng) break;
+        if (abortFlag) break;
 
         for (int jj = n - 3; jj > jjj; jj--) {
           int j = jj;
           dir2 = 1;
-          maAnsCount = 0;
-          maxSum = 0;
+          best_pattern_count = 0;
+          best_sum = 0;
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              ma[k][l] = current.board[i + k][j + l];
-              now[k][l] = ma[k][l];
+              best_sum_grid[k][l] = current.board[i + k][j + l];
+              work_grid[k][l] = best_sum_grid[k][l];
             }
           }
-          Rule1(i, j, dir1, dir2);
+          mark_edge_mask_2(i, j, dir1, dir2, use_mask);
           int useCount = 0;
-          for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use[k][l];
+          for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use_mask[k][l];
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              if (use[k][l]) {
-                maxSum += ma[k][l];
+              if (use_mask[k][l]) {
+                best_sum += best_sum_grid[k][l];
               }
             }
           }
 
           if (useCount == 1) {
-            Method2DFS(0, 0, 1);
-            if (maxSum < hosyou && Rand() % 3 != 0) {
+            search_best_patterns_dfs(0, 0, 1);
+            if (best_sum < scoreThreshold && Rand() % 3 != 0) {
               for (int p = 0; p < 3; ++p) {
                 for (int q = 0; q < 3; ++q) {
-                  now[p][q] = current.board[i + p][j + q];
+                  work_grid[p][q] = current.board[i + p][j + q];
                 }
               }
-              Method2DFS(0, 0, 2);
+              search_best_patterns_dfs(0, 0, 2);
             }
           }
           else if (useCount <= 3) {
-            Method2DFS(0, 0, 3);
+            search_best_patterns_dfs(0, 0, 3);
           }
           else {
-            if (cnt + 4 > T) {
-              ng = 1;
+            if (turnCount + 4 > T) {
+              abortFlag = 1;
               break;
             }
-            Method2DFS(0, 0, 4);
+            search_best_patterns_dfs(0, 0, 4);
           }
 
-          for (int k = 0; k < maAnsCount; ++k) {
-            int ansM = maAnssArr[k];
-            if (cnt < T) {
-              current.solution[cnt][0] = ansM;
-              current.solution[cnt][1] = i;
-              current.solution[cnt][2] = j;
+          for (int k = 0; k < best_pattern_count; ++k) {
+            int ansM = best_pattern_ids[k];
+            if (turnCount < T) {
+              current.turns[turnCount][0] = ansM;
+              current.turns[turnCount][1] = i;
+              current.turns[turnCount][2] = j;
             }
-            cnt++;
+            turnCount++;
           }
-          if (cnt > T) {
-            ng = 1;
+          if (turnCount > T) {
+            abortFlag = 1;
             break;
           }
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              current.board[i + k][j + l] = ma[k][l];
+              current.board[i + k][j + l] = best_sum_grid[k][l];
             }
           }
         }
 
         {
           int j = jjj;
-          maAnsCount = 0;
-          maxSum = 0;
+          best_pattern_count = 0;
+          best_sum = 0;
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              ma[k][l] = current.board[i + k][j + l];
-              now[k][l] = ma[k][l];
+              best_sum_grid[k][l] = current.board[i + k][j + l];
+              work_grid[k][l] = best_sum_grid[k][l];
             }
           }
-          // Rule1(i, j, dir1, dir2);
-          Rule2(i, j, dir1);
+
+          mark_line_mask(i, j, dir1);
           int useCount = 0;
-          for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use[k][l];
+          for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use_mask[k][l];
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              if (use[k][l]) {
-                maxSum += ma[k][l];
+              if (use_mask[k][l]) {
+                best_sum += best_sum_grid[k][l];
               }
             }
           }
 
           if (useCount == 1) {
-            Method2DFS(0, 0, 1);
-            if (maxSum < hosyou && Rand() % 3 != 0) {
+            search_best_patterns_dfs(0, 0, 1);
+            if (best_sum < scoreThreshold && Rand() % 3 != 0) {
               for (int p = 0; p < 3; ++p) {
                 for (int q = 0; q < 3; ++q) {
-                  now[p][q] = current.board[i + p][j + q];
+                  work_grid[p][q] = current.board[i + p][j + q];
                 }
               }
-              Method2DFS(0, 0, 2);
+              search_best_patterns_dfs(0, 0, 2);
             }
           }
           else if (useCount <= 3) {
-            Method2DFS(0, 0, 3);
+            search_best_patterns_dfs(0, 0, 3);
           }
           else {
-            if (cnt + 4 > T) {
-              ng = 1;
+            if (turnCount + 4 > T) {
+              abortFlag = 1;
               break;
             }
-            int num = min(6, T - cnt);
-            Method2DFS(0, 0, num);
+            int num = min(6, T - turnCount);
+            search_best_patterns_dfs(0, 0, num);
           }
 
-          for (int k = 0; k < maAnsCount; ++k) {
-            int ansM = maAnssArr[k];
-            if (cnt < T) {
-              current.solution[cnt][0] = ansM;
-              current.solution[cnt][1] = i;
-              current.solution[cnt][2] = j;
+          for (int k = 0; k < best_pattern_count; ++k) {
+            int ansM = best_pattern_ids[k];
+            if (turnCount < T) {
+              current.turns[turnCount][0] = ansM;
+              current.turns[turnCount][1] = i;
+              current.turns[turnCount][2] = j;
             }
-            cnt++;
+            turnCount++;
           }
-          if (cnt > T) {
-            ng = 1;
+          if (turnCount > T) {
+            abortFlag = 1;
             break;
           }
           for (int k = 0; k < 3; ++k) {
             for (int l = 0; l < 3; ++l) {
-              current.board[i + k][j + l] = ma[k][l];
+              current.board[i + k][j + l] = best_sum_grid[k][l];
             }
           }
         }
 
-        if (ng) break;
+        if (abortFlag) break;
 
         ll tmpPosSum = 0;
 
@@ -664,43 +592,43 @@ void Method4(double timeLimit, State& current)
         }
         if (tmpPosSum > maPosSum) {
           maPosSum = tmpPosSum;
-          for (int t = nowCnt; t < cnt; ++t) {
-            for (int k = 0; k < 3; ++k) keepAns[t][k] = current.solution[t][k];
+          for (int t = nowCnt; t < turnCount; ++t) {
+            for (int k = 0; k < 3; ++k) keepAns[t][k] = current.turns[t][k];
           }
           for (int p = 0; p < n; ++p) {
             for (int q = 0; q < n; ++q) {
-              keepA[p][q] = current.board[p][q];
+              backupBoard[p][q] = current.board[p][q];
             }
           }
-          maCntTail = cnt;
+          maCntTail = turnCount;
         }
 
-        cnt = nowCnt;
+        turnCount = nowCnt;
         for (int p = 0; p < n; ++p) {
           for (int q = 0; q < n; ++q) {
-            current.board[p][q] = baseA[p][q];
+            current.board[p][q] = originalBoard[p][q];
           }
         }
       }
 
-      if (ng) break;
+      if (abortFlag) break;
 
       for (int t = nowCnt; t < maCntTail; ++t) {
         for (int k = 0; k < 3; ++k) {
-          current.solution[t][k] = keepAns[t][k];
+          current.turns[t][k] = keepAns[t][k];
         }
       }
-      cnt = maCntTail;
+      turnCount = maCntTail;
       for (int p = 0; p < n; ++p) {
         for (int q = 0; q < n; ++q) {
-          current.board[p][q] = keepA[p][q];
+          current.board[p][q] = backupBoard[p][q];
         }
       }
     }
-    if (ng) continue;
+    if (abortFlag) continue;
 
-    for (int t = cnt; t < T; ++t) current.solution[t][0] = -1;
-    current.score = CalcScore(current);
+    for (int t = turnCount; t < T; ++t) current.turns[t][0] = -1;
+    current.calc_score();
     if (current.score > best.score) {
       best = current;
     }
@@ -711,26 +639,23 @@ void Method4(double timeLimit, State& current)
   if (mode != 0) cout << "Method 4 : " << loopCount << endl;
 }
 
-ll SolveCase(int probNum)
+ll solveOneProblem(int probNum)
 {
   startTime = clock();
   endTime = clock();
 
   State current = Input(probNum);
 
-  Initialize(current);
-  Method4(TL, current);
+  current.reset();
+  heuristicSweep(TL, current);
 
   Output(probNum, current);
 
-  cerr << "Problem " << probNum << " solved." << endl;
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore(current);
-    cerr << "Score for problem " << probNum << ": " << score << endl;
+    score = current.calc_score();
   }
 
-  cerr << "Time taken for problem " << probNum << ": " << GetNowTime() << " seconds." << endl;
   return score;
 }
 
@@ -739,13 +664,12 @@ int main()
   mode = 1;
 
   if (mode == 0) {
-    SolveCase(0);
+    solveOneProblem(0);
   }
   else if (mode == 1) {
     ll sum = 0;
     for (int i = 0; i < 10; ++i) {
-      ll score = SolveCase(i);
-      cerr << "Score for problem " << i << ": " << score << endl;
+      ll score = solveOneProblem(i);
       sum += score;
       cout << "num = " << i << ", ";
       cout << "score = " << score << ", ";
