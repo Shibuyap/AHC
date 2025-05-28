@@ -34,7 +34,8 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand() {
+  static uint32_t Rand()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -47,28 +48,14 @@ namespace /* 乱数ライブラリ */
     z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
-
-
-  static double Rand01() {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
-  }
-
-  // 配列シャッフル
-  void FisherYates(int* data, int n) {
-    for (int i = n - 1; i >= 0; i--) {
-      int j = Rand() % (i + 1);
-      int swa = data[i];
-      data[i] = data[j];
-      data[j] = swa;
-    }
-  }
 }  // namespace
 
 double TL = 1.9;
 int mode;
 clock_t startTime, endTime;
 
-double GetNowTime() {
+double GetNowTime()
+{
   endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
@@ -88,7 +75,8 @@ int best_board[n][n];
 ll best_solution[T][3];
 ll best_score;
 
-void CopyToBest() {
+void CopyToBest()
+{
   best_score = current_score;
   for (int i = 0; i < T; ++i) {
     for (int j = 0; j < 3; ++j) {
@@ -102,7 +90,8 @@ void CopyToBest() {
   }
 }
 
-void CopyFromBest() {
+void CopyFromBest()
+{
   current_score = best_score;
   for (int i = 0; i < T; ++i) {
     for (int j = 0; j < 3; ++j) {
@@ -117,7 +106,8 @@ void CopyFromBest() {
 }
 
 // スコア計算
-ll CalcScore() {
+ll CalcScore()
+{
   ll res = 0;
 
   for (int i = 0; i < n; ++i) {
@@ -130,7 +120,8 @@ ll CalcScore() {
 }
 
 // 複数ケース回すときに内部状態を初期値に戻す
-void SetUp() {
+void SetUp()
+{
   for (int i = 0; i < T; ++i) {
     for (int j = 0; j < 3; ++j) {
       current_solution[i][j] = -1;
@@ -138,7 +129,8 @@ void SetUp() {
   }
 }
 
-void InitializeAns() {
+void InitializeAns()
+{
   for (int i = 0; i < T; ++i) {
     for (int j = 0; j < 3; ++j) {
       current_solution[i][j] = -1;
@@ -153,7 +145,8 @@ void InitializeAns() {
 }
 
 // 入力受け取り
-void Input(int problemNum) {
+void Input(int problemNum)
+{
   string fileNameIfs = "./in/";
   string strNum;
   for (int i = 0; i < 4; ++i) {
@@ -208,7 +201,8 @@ void Input(int problemNum) {
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs) {
+void OpenOfs(int probNum, ofstream& ofs)
+{
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -224,7 +218,8 @@ void OpenOfs(int probNum, ofstream& ofs) {
 }
 
 // 初期解生成
-void Initialize() {
+void Initialize()
+{
   for (int i = 0; i < T; ++i) {
     current_solution[i][0] = -1;
   }
@@ -233,7 +228,8 @@ void Initialize() {
 }
 
 // 解答出力
-void Output(ofstream& ofs) {
+void Output(ofstream& ofs)
+{
   int L = 0;
   for (int i = 0; i < T; ++i) {
     if (current_solution[i][0] == -1) continue;
@@ -260,94 +256,10 @@ void Output(ofstream& ofs) {
 double nowTime = 0;
 double startTemp = 1001001001;
 double endTemp = 0.1;
-void Method1_1() {
-  int raT = Rand() % T;
-  int raX = Rand() % 7;
-  int raY = Rand() % 7;
-  int raM = Rand() % m;
-  if (Rand() % 2 == 0) {
-    raM = -1;
-  }
-  if (current_solution[raT][0] == raM) return;
-  ll diff = 0;
-  if (current_solution[raT][0] != -1) {
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 3; ++j) {
-        diff -= magic_pattern[current_solution[raT][0]][i][j];
-        if (magic_pattern[current_solution[raT][0]][i][j] > board[current_solution[raT][1] + i][current_solution[raT][2] + j]) {
-          diff += MOD;
-        }
-      }
-    }
-  }
-  if (raM != -1) {
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 3; ++j) {
-        diff += magic_pattern[raM][i][j];
-        if (magic_pattern[raM][i][j] + board[raX + i][raY + j] > MOD) diff -= MOD;
-      }
-    }
-  }
-
-  double temp = (startTemp + (endTemp - startTemp) * nowTime / TL);
-  const double prob = exp((double)diff / temp);
-  // if (prob > Rand01()) {
-  if (diff >= 0) {
-    if (current_solution[raT][0] != -1) {
-      for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-          board[current_solution[raT][1] + i][current_solution[raT][2] + j] -= magic_pattern[current_solution[raT][0]][i][j];
-          if (board[current_solution[raT][1] + i][current_solution[raT][2] + j] < 0) {
-            board[current_solution[raT][1] + i][current_solution[raT][2] + j] += MOD;
-          }
-        }
-      }
-    }
-    if (raM != -1) {
-      for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-          board[raX + i][raY + j] += magic_pattern[raM][i][j];
-          if (board[raX + i][raY + j] > MOD) board[raX + i][raY + j] -= MOD;
-        }
-      }
-    }
-
-    current_solution[raT][0] = raM;
-    current_solution[raT][1] = raX;
-    current_solution[raT][2] = raY;
-
-    current_score += diff;
-    cout << current_score << endl;
-    if (current_score > best_score) {
-      CopyToBest();
-    }
-  }
-}
-
-void Method1() {
-  CopyFromBest();
-  int loopCount = 0;
-  nowTime = GetNowTime();
-  while (true) {
-    loopCount++;
-    if (loopCount % 10000 == 0) {
-      nowTime = GetNowTime();
-      if (nowTime > TL) {
-        break;
-      }
-    }
-
-    Method1_1();
-  }
-
-  CopyFromBest();
-  if (mode != 0) {
-    cout << "loop = " << loopCount << ", ansScore = " << CalcScore() << endl;
-  }
-}
 
 int use[3][3];
-void Rule1(int x, int y, int dir1, int dir2) {
+void Rule1(int x, int y, int dir1, int dir2)
+{
   for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) use[k][l] = 0;
   if (dir1 == 0 && dir2 == 0) {
     if (x == n - 3) {
@@ -439,7 +351,8 @@ void Rule1(int x, int y, int dir1, int dir2) {
   }
 }
 
-void Rule2(int i, int j, int dir1) {
+void Rule2(int i, int j, int dir1)
+{
   for (int p = 0; p < 3; ++p) {
     for (int q = 0; q < 3; ++q) {
       use[p][q] = 0;
@@ -462,10 +375,15 @@ int maAnsCount = 0;
 
 ll now[3][3];
 ll anssArr[10];
-void Method2DFS(int mm, int cnt, int lim) {
+void Method2DFS(int mm, int cnt, int lim)
+{
   if (cnt == lim) return;
   ll keep[3][3];
-  for (int p = 0; p < 3; ++p) for (int q = 0; q < 3; ++q) keep[p][q] = now[p][q];
+  for (int p = 0; p < 3; ++p) {
+    for (int q = 0; q < 3; ++q) {
+      keep[p][q] = now[p][q];
+    }
+  }
   for (int i = mm; i < m; ++i) {
     anssArr[cnt] = i;
     cnt++;
@@ -498,216 +416,12 @@ void Method2DFS(int mm, int cnt, int lim) {
   }
 }
 
-void Method2(double timeLimit) {
-  int loopCount = 0;
-  while (true) {
-    loopCount++;
-    double nowTime = GetNowTime();
-    if (nowTime > timeLimit) break;
-
-    ll hosyou = Rand() % 200000000 + MOD - 200000000;
-
-    int ng = 0;
-    InitializeAns();
-    int cnt = 0;
-    int dir1 = Rand() % 2;
-    int dir2 = Rand() % 2;
-    for (int ii = 0; ii < n - 2; ++ii) {
-      int i = ii;
-      if (dir1) i = n - 3 - ii;
-      for (int jj = 0; jj < n - 2; ++jj) {
-        int j = jj;
-        if (dir2) j = n - 3 - jj;
-        maAnsCount = 0;
-        maxSum = 0;
-        for (int k = 0; k < 3; ++k) {
-          for (int l = 0; l < 3; ++l) {
-            ma[k][l] = board[i + k][j + l];
-            now[k][l] = ma[k][l];
-          }
-        }
-        Rule1(i, j, dir1, dir2);
-        int useCount = 0;
-        for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use[k][l];
-        for (int k = 0; k < 3; ++k) {
-          for (int l = 0; l < 3; ++l) {
-            if (use[k][l]) {
-              maxSum += ma[k][l];
-            }
-          }
-        }
-
-        if (useCount == 1) {
-          Method2DFS(0, 0, 1);
-          if (maxSum < hosyou) {
-            for (int p = 0; p < 3; ++p) {
-              for (int q = 0; q < 3; ++q) {
-                now[p][q] = board[i + p][j + q];
-              }
-            }
-            Method2DFS(0, 0, 2);
-          }
-        }
-        else if (useCount <= 3) {
-          Method2DFS(0, 0, 3);
-        }
-        else {
-          if (cnt + 6 > T) {
-            ng = 1;
-            break;
-          }
-          Method2DFS(0, 0, 6);
-        }
-
-        for (int k = 0; k < maAnsCount; ++k) {
-          int ansM = maAnssArr[k];
-          current_solution[cnt][0] = ansM;
-          current_solution[cnt][1] = i;
-          current_solution[cnt][2] = j;
-          cnt++;
-        }
-        if (cnt > T) {
-          ng = 1;
-          break;
-        }
-        for (int k = 0; k < 3; ++k) {
-          for (int l = 0; l < 3; ++l) {
-            board[i + k][j + l] = ma[k][l];
-          }
-        }
-      }
-      if (ng) break;
-    }
-    if (ng) continue;
-
-    current_score = CalcScore();
-    if (current_score > best_score) {
-      CopyToBest();
-    }
-  }
-
-  if (mode != 0) cout << loopCount << endl;
-}
-
-void Method3(double timeLimit) {
-  int loopCount = 0;
-  while (true) {
-    loopCount++;
-    double nowTime = GetNowTime();
-    if (nowTime > timeLimit) break;
-
-    ll hosyou = Rand() % 200000000 + MOD - 200000000;
-
-    int aaa[49];
-    for (int i = 0; i < 49; ++i) aaa[i] = i;
-    FisherYates(aaa, 49);
-    int last[n][n];
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        last[i][j] = 0;
-      }
-    }
-    for (int ii = 0; ii < 49; ++ii) {
-      int x = aaa[ii] / 7;
-      int y = aaa[ii] % 7;
-      for (int p = 0; p < 3; ++p) {
-        for (int q = 0; q < 3; ++q) {
-          last[x + p][y + q] = ii;
-        }
-      }
-    }
-
-    int ng = 0;
-    InitializeAns();
-    int cnt = 0;
-
-    for (int ii = 0; ii < 49; ++ii) {
-      int i = aaa[ii] / 7;
-      int j = aaa[ii] % 7;
-
-      maAnsCount = 0;
-      maxSum = 0;
-      for (int k = 0; k < 3; ++k) {
-        for (int l = 0; l < 3; ++l) {
-          ma[k][l] = board[i + k][j + l];
-          now[k][l] = ma[k][l];
-        }
-      }
-
-      for (int p = 0; p < 3; ++p) {
-        for (int q = 0; q < 3; ++q) {
-          use[p][q] = 0;
-          if (last[i + p][j + q] == ii) {
-            use[p][q] = 1;
-          }
-        }
-      }
-      int useCount = 0;
-      for (int k = 0; k < 3; ++k) for (int l = 0; l < 3; ++l) useCount += use[k][l];
-      for (int k = 0; k < 3; ++k) {
-        for (int l = 0; l < 3; ++l) {
-          if (use[k][l]) {
-            maxSum += ma[k][l];
-          }
-        }
-      }
-
-      if (useCount == 1) {
-        Method2DFS(0, 0, 1);
-        if (maxSum < hosyou) {
-          for (int p = 0; p < 3; ++p) {
-            for (int q = 0; q < 3; ++q) {
-              now[p][q] = board[i + p][j + q];
-            }
-          }
-          Method2DFS(0, 0, 2);
-        }
-      }
-      else if (useCount <= 6) {
-        Method2DFS(0, 0, 3);
-      }
-      else {
-        if (cnt + 6 > T) {
-          ng = 1;
-          break;
-        }
-        Method2DFS(0, 0, 6);
-      }
-
-      for (int k = 0; k < maAnsCount; ++k) {
-        int ansM = maAnssArr[k];
-        current_solution[cnt][0] = ansM;
-        current_solution[cnt][1] = i;
-        current_solution[cnt][2] = j;
-        cnt++;
-      }
-      if (cnt > T) {
-        ng = 1;
-        break;
-      }
-      for (int k = 0; k < 3; ++k) {
-        for (int l = 0; l < 3; ++l) {
-          board[i + k][j + l] = ma[k][l];
-        }
-      }
-    }
-
-    if (ng) continue;
-
-    current_score = CalcScore();
-    if (current_score > best_score) {
-      CopyToBest();
-    }
-  }
-
-  if (mode != 0) cout << loopCount << endl;
-}
-
 int keepA[n][n];
 int keepAns[110][3];
 int baseA[n][n];
 
-void Method4(double timeLimit) {
+void Method4(double timeLimit)
+{
   int loopCount = 0;
   while (true) {
     loopCount++;
@@ -1004,7 +718,8 @@ void Method4(double timeLimit) {
   if (mode != 0) cout << loopCount << endl;
 }
 
-ll Solve(int probNum) {
+ll Solve(int probNum)
+{
   startTime = clock();
   endTime = clock();
 
@@ -1020,11 +735,8 @@ ll Solve(int probNum) {
 
   // 初期解生成
   Initialize();
-  // Method2(TL);
   Method4(TL);
-  // Method3(TL);
   CopyFromBest();
-  // Method1();
 
   CopyFromBest();
 
@@ -1042,7 +754,8 @@ ll Solve(int probNum) {
   return score;
 }
 
-int main() {
+int main()
+{
   mode = 1;
 
   if (mode == 0) {
