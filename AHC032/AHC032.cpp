@@ -35,8 +35,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
-  {
+  static uint32_t Rand() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -55,8 +54,7 @@ double TL = 1.9;
 int mode;
 clock_t startTime, endTime;
 
-double GetNowTime()
-{
+double GetNowTime() {
   endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   return nowTime;
@@ -70,14 +68,12 @@ const int MOD = 998244353;
 int initial_board[n][n];
 int magic_pattern[m][3][3];
 
-class State
-{
+class State {
 public:
   array<array<int, n>, n> board;
   array<array<int, 3>, T> turns; // turns[i][0]: magic index, turns[i][1]: x, turns[i][2]: y
   ll score;
-  State()
-  {
+  State() {
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
         board[i][j] = 0;
@@ -91,8 +87,7 @@ public:
     score = 0;
   }
 
-  void reset()
-  {
+  void reset() {
     for (int i = 0; i < T; ++i) {
       for (int j = 0; j < 3; ++j) {
         turns[i][j] = -1;
@@ -107,8 +102,7 @@ public:
   }
 
   // スコア計算
-  ll calc_score()
-  {
+  ll calc_score() {
     score = 0;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
@@ -120,8 +114,7 @@ public:
 };
 
 // 入力受け取り
-State Input(int problemNum)
-{
+State Input(int problemNum) {
   State current;
 
   string fileNameIfs = "./in/";
@@ -180,8 +173,7 @@ State Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
-{
+void OpenOfs(int probNum, ofstream& ofs) {
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -197,8 +189,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // 解答出力
-void Output(int probNum, const State& current)
-{
+void Output(int probNum, const State& current) {
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
@@ -250,11 +241,19 @@ void mark_edge_mask_2(int x /*0-based*/, int y /*0-based*/,
   const bool hitVEdge = (dirV == 0 ? x == n - 3 : x == 0);
   const bool hitHEdge = (dirH == 0 ? y == n - 3 : y == 0);
 
-  if (hitVEdge)               // -- 縦方向の端
-    for (int r = 0; r < 3; ++r) mask[r][anchorCol] = 1;
+  // -- 縦方向の端
+  if (hitVEdge) {
+    for (int r = 0; r < 3; ++r) {
+      mask[r][anchorCol] = 1;
+    }
+  }
 
-  if (hitHEdge)               // -- 横方向の端
-    for (int c = 0; c < 3; ++c) mask[anchorRow][c] = 1;
+  // -- 横方向の端
+  if (hitHEdge) {
+    for (int c = 0; c < 3; ++c) {
+      mask[anchorRow][c] = 1;
+    }
+  }
 
   // 4) 角 (両端) の場合は 3×3 全面
   if (hitVEdge && hitHEdge)
@@ -263,8 +262,7 @@ void mark_edge_mask_2(int x /*0-based*/, int y /*0-based*/,
 
 int use_mask[3][3];
 
-void mark_line_mask(int i, int j, int dir1)
-{
+void mark_line_mask(int i, int j, int dir1) {
   for (int p = 0; p < 3; ++p) {
     for (int q = 0; q < 3; ++q) {
       use_mask[p][q] = 0;
@@ -287,8 +285,7 @@ int best_pattern_count = 0;
 
 ll work_grid[3][3];
 ll pattern_ids[10];
-void search_best_patterns_dfs(int mm, int cnt, int lim)
-{
+void search_best_patterns_dfs(int mm, int cnt, int lim) {
   if (cnt == lim) return;
   ll keep[3][3];
   for (int p = 0; p < 3; ++p) {
@@ -332,15 +329,16 @@ int backupBoard[n][n];
 int keepAns[110][3];
 int originalBoard[n][n];
 
-void heuristicSweep(double timeLimit, State& current)
-{
+void heuristicSweep(double timeLimit, State& current) {
   State best = current;
 
   int loopCount = 0;
   while (true) {
     loopCount++;
     double nowTime = GetNowTime();
-    if (nowTime > timeLimit) break;
+    if (nowTime > timeLimit) {
+      break;
+    }
 
     ll scoreThreshold = Rand() % 200000000 + MOD - 200000000;
 
@@ -639,8 +637,7 @@ void heuristicSweep(double timeLimit, State& current)
   if (mode != 0) cout << "Method 4 : " << loopCount << endl;
 }
 
-ll solveOneProblem(int probNum)
-{
+ll solveOneProblem(int probNum) {
   startTime = clock();
   endTime = clock();
 
@@ -659,8 +656,7 @@ ll solveOneProblem(int probNum)
   return score;
 }
 
-int main()
-{
+int main() {
   mode = 1;
 
   if (mode == 0) {
