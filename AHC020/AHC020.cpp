@@ -217,11 +217,15 @@ ll outer_kruskal_lns() {
     /* タイムリミット監視 */
     double sec_elapsed = get_elapsed_time();
     double ratio_elapsed = sec_elapsed / time_limit;
-    if (ratio_elapsed > 1.0) break;
+    if (ratio_elapsed > 1.0) {
+      break;
+    }
 
     /* ランダム頂点をトグル */
     int node_id = rand_u32() % (n - 1) + 1;
-    if (power_rad[node_id] != 0) continue;
+    if (power_rad[node_id] != 0) {
+      continue;
+    }
 
     mst_node_req[node_id] ^= 1;
     ll cur_cost = outer_kruskal();
@@ -247,7 +251,9 @@ bool check_coverage() {
         break;
       }
     }
-    if (!is_covered) return false;
+    if (!is_covered) {
+      return false;
+    }
   }
   return true;
 }
@@ -264,7 +270,9 @@ bool check_coverage_node(int target_node) {
         break;
       }
     }
-    if (!is_covered) return false;
+    if (!is_covered) {
+      return false;
+    }
   }
   return true;
 }
