@@ -1,30 +1,14 @@
-#include <algorithm>
-#include <array>
-#include <bitset>
-#include <cassert>
-#include <cctype>
+#include <__msvc_ostream.hpp>
 #include <chrono>
 #include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <deque>
-#include <filesystem>
+#include <cstdint>
 #include <fstream>
-#include <functional>
 #include <iomanip>
+#include <iosfwd>
 #include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <numeric>
+#include <math.h>
 #include <queue>
-#include <random>
-#include <set>
 #include <sstream>
-#include <stack>
 #include <string>
 #include <utility>
 #include <vector>
@@ -34,27 +18,22 @@ using namespace std;
 typedef long long int ll;
 
 // タイマー
-namespace
-{
+namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
-  {
+  void start_timer() {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time()
-  {
+  double get_elapsed_time() {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
 }
 
 // 乱数
-namespace
-{
-  static uint32_t rand_xorshift()
-  {
+namespace {
+  static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -67,23 +46,19 @@ namespace
     return w;
   }
 
-  static double rand_01()
-  {
+  static double rand_01() {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r)
-  {
+  static double rand_range(double l, double r) {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r)
-  {
+  static uint32_t rand_range(uint32_t l, uint32_t r) {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n)
-  {
+  void shuffle_array(int* arr, int n) {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -96,21 +71,18 @@ namespace
 int exec_mode;
 
 // 辺を頂点とみなす
-class Vertex
-{
+class Vertex {
 public:
   vector<int> indices;
 };
 
-class DistToVertex
-{
+class DistToVertex {
 public:
   int distance;
   int point_index;
 };
 
-class Board
-{
+class Board {
 public:
   int n;
   int si, sj;
@@ -264,8 +236,7 @@ public:
   }
 };
 
-class Answer
-{
+class Answer {
 public:
   vector<int> vertices;
   vector<int> points;
@@ -316,8 +287,7 @@ public:
   }
 };
 
-Board input_data(int case_num)
-{
+Board input_data(int case_num) {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -364,8 +334,7 @@ Board input_data(int case_num)
   return board;
 }
 
-void output_data(int case_num, const Board& board, const Answer& ans)
-{
+void output_data(int case_num, const Board& board, const Answer& ans) {
   //cerr << "output_data: case_num = " << case_num << endl;
   vector<int> path;
   path.push_back(ans.points[0]);
@@ -436,8 +405,7 @@ void build_initial_path(const Board& board, Answer& ans) {
   ans.vertices.push_back(-1); // スタート位置の頂点は-1とする
 }
 
-void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
-{
+void run_simulated_annealing(double time_limit, const Board& board, Answer& ans) {
   ans.calc_score(board);
   Answer best_ans = ans; // ベスト解を初期化
 
@@ -571,8 +539,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 }
 
 
-ll solve_case(int case_num)
-{
+ll solve_case(int case_num) {
   const double TIME_LIMIT = 2.9;
   start_timer();
 
@@ -605,8 +572,7 @@ ll solve_case(int case_num)
   return score;
 }
 
-int main()
-{
+int main() {
   exec_mode = 2;
 
   if (exec_mode == 0) {
@@ -614,8 +580,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++)
-    {
+    for (int i = 0; i < 15; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {

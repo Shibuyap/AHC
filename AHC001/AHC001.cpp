@@ -1,30 +1,20 @@
 ﻿#pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
+#include <__msvc_ostream.hpp>
 #include <algorithm>
-#include <bitset>
-#include <cassert>
-#include <cctype>
 #include <chrono>
 #include <climits>
 #include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <deque>
+#include <cstdint>
 #include <fstream>
-#include <functional>
 #include <iomanip>
+#include <iosfwd>
 #include <iostream>
-#include <list>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <set>
+#include <math.h>
 #include <sstream>
-#include <stack>
 #include <string>
+#include <time.h>
 #include <utility>
 #include <vector>
 
@@ -37,8 +27,7 @@ typedef pair<int, int> P;
 
 #define MAX_N 205
 
-static uint32_t Rand()
-{
+static uint32_t Rand() {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -51,8 +40,7 @@ static uint32_t Rand()
 }
 
 // 0以上1未満の小数をとる乱数
-static double Rand01()
-{
+static double Rand01() {
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
@@ -80,14 +68,12 @@ char cc[4] = {'U','L','D','R'};
 
 double realTL = 4.8;
 
-struct Point
-{
+struct Point {
   int x;
   int y;
 };
 
-struct Rect
-{
+struct Rect {
   Point p1;
   Point p2;
 };
@@ -100,13 +86,11 @@ Rect rects[MAX_N];
 int area_sizes[MAX_N];
 Rect best_rects[MAX_N];
 
-inline void calc_area(int idx)
-{
+inline void calc_area(int idx) {
   area_sizes[idx] = (rects[idx].p2.x - rects[idx].p1.x) * (rects[idx].p2.y - rects[idx].p1.y);
 }
 
-inline void nyuuryokuInit(int fileNum)
-{
+inline void nyuuryokuInit(int fileNum) {
   // 入力
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << fileNum << ".txt";
@@ -121,8 +105,7 @@ inline void nyuuryokuInit(int fileNum)
   }
 }
 
-inline void FileKakikomi(int fileNum)
-{
+inline void FileKakikomi(int fileNum) {
   string fileName = to_string(fileNum);
   fileName += "_out.txt";
   const char* cstr = fileName.c_str();
@@ -133,8 +116,7 @@ inline void FileKakikomi(int fileNum)
   ofs.close();
 }
 
-inline void FileKakikomiERROR(int fileNum)
-{
+inline void FileKakikomiERROR(int fileNum) {
   string fileName = to_string(fileNum);
   fileName += "_out_ERROR.txt";
   const char* cstr = fileName.c_str();
@@ -150,8 +132,7 @@ int real_maxScore = -1;
 
 double p[MAX_N];
 double pSum;
-inline int calc(int ite)
-{
+inline int calc(int ite) {
   if (ite == -1) {
     double sum = 0;
     for (int i = 0; i < (n); ++i) {
@@ -177,8 +158,7 @@ inline int calc(int ite)
   }
 }
 
-inline int kasanarihantei(int i, int j)
-{
+inline int kasanarihantei(int i, int j) {
   int cnt = 0;
   if (rects[i].p1.x <= rects[j].p1.x && rects[j].p1.x < rects[i].p2.x) cnt++;
   else if (rects[j].p1.x <= rects[i].p1.x && rects[i].p1.x < rects[j].p2.x) cnt++;
@@ -189,8 +169,7 @@ inline int kasanarihantei(int i, int j)
 
 int sort_x[MAX_N], sort_y[MAX_N];
 int arg_sort_x[MAX_N], arg_sort_y[MAX_N];
-inline void sortInit()
-{
+inline void sortInit() {
   vector<P> v;
   for (int i = 0; i < (n); ++i) {
     v.emplace_back(P(target_points[i].x, i));
@@ -216,8 +195,7 @@ inline void sortInit()
 // 面積は1以上か
 // (x[i]+0.5,y[i]+0.5)を含んでいるか
 // 重なりがないか
-inline int isOK2(int ite)
-{
+inline int isOK2(int ite) {
   if (ite == -1) {
     for (int i = 0; i < (n); ++i) {
       if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
@@ -234,8 +212,7 @@ inline int isOK2(int ite)
       if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
     for (int i = 0; i < (n); ++i) {
-      srep(j, i + 1, n)
-      {
+      srep(j, i + 1, n) {
         if (kasanarihantei(i, j)) return 0;
       }
     }
@@ -257,8 +234,7 @@ inline int isOK2(int ite)
   return 1;
 }
 
-inline int isOK(int ite)
-{
+inline int isOK(int ite) {
   if (ite == -1) {
     for (int i = 0; i < (n); ++i) {
       if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
@@ -275,8 +251,7 @@ inline int isOK(int ite)
       if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
     for (int i = 0; i < (n); ++i) {
-      srep(j, i + 1, n)
-      {
+      srep(j, i + 1, n) {
         if (kasanarihantei(i, j)) return 0;
       }
     }
@@ -292,8 +267,7 @@ inline int isOK(int ite)
     if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 0;
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
-    drep(ii, argX)
-    {
+    drep(ii, argX) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
@@ -302,8 +276,7 @@ inline int isOK(int ite)
       }
     }
     nowLeft = rects[ite].p1.y;
-    srep(ii, argX + 1, n)
-    {
+    srep(ii, argX + 1, n) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
@@ -315,8 +288,7 @@ inline int isOK(int ite)
   return 1;
 }
 
-inline void init_rect(Rect& rect, Point& point)
-{
+inline void init_rect(Rect& rect, Point& point) {
   rect.p1.x = point.x;
   rect.p1.y = point.y;
   rect.p2.x = point.x + 1;
@@ -324,8 +296,7 @@ inline void init_rect(Rect& rect, Point& point)
 }
 
 Rect vExtend;
-inline void hukuramashi(int ite)
-{
+inline void hukuramashi(int ite) {
   init_rect(vExtend, target_points[ite]);
 
   int flagTateYoko = Rand() % 2;
@@ -333,8 +304,7 @@ inline void hukuramashi(int ite)
     vExtend.p1.x = 0;
     vExtend.p2.x = 10000;
     int argX = arg_sort_x[ite];
-    drep(ii, argX)
-    {
+    drep(ii, argX) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -349,8 +319,7 @@ inline void hukuramashi(int ite)
         break;
       }
     }
-    srep(ii, argX + 1, n)
-    {
+    srep(ii, argX + 1, n) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -370,8 +339,7 @@ inline void hukuramashi(int ite)
     vExtend.p2.y = 10000;
     int argY = arg_sort_y[ite];
     int nowLeft = vExtend.p1.x;
-    drep(ii, argY)
-    {
+    drep(ii, argY) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -391,8 +359,7 @@ inline void hukuramashi(int ite)
     }
 
     nowLeft = vExtend.p1.x;
-    srep(ii, argY + 1, n)
-    {
+    srep(ii, argY + 1, n) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -415,8 +382,7 @@ inline void hukuramashi(int ite)
     vExtend.p1.y = 0;
     vExtend.p2.y = 10000;
     int argY = arg_sort_y[ite];
-    drep(ii, argY)
-    {
+    drep(ii, argY) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -431,8 +397,7 @@ inline void hukuramashi(int ite)
         break;
       }
     }
-    srep(ii, argY + 1, n)
-    {
+    srep(ii, argY + 1, n) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -452,8 +417,7 @@ inline void hukuramashi(int ite)
     vExtend.p2.x = 10000;
     int argX = arg_sort_x[ite];
     int nowLeft = vExtend.p1.y;
-    drep(ii, argX)
-    {
+    drep(ii, argX) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -472,8 +436,7 @@ inline void hukuramashi(int ite)
       }
     }
     nowLeft = vExtend.p1.y;
-    srep(ii, argX + 1, n)
-    {
+    srep(ii, argX + 1, n) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -563,16 +526,14 @@ inline void hukuramashi(int ite)
   }
 }
 
-inline void store_best()
-{
+inline void store_best() {
   real_maxScore = maxScore;
   for (int i = 0; i < (n); ++i) {
     best_rects[i] = rects[i];
   }
 }
 
-inline void Extend(int ite, double temp)
-{
+inline void Extend(int ite, double temp) {
   Rect keep = rects[ite];
 
   hukuramashi(ite);
@@ -603,8 +564,7 @@ int real_real_maxScore = -1;
 int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
 int ui_tei_maxScore = -1;
 
-inline void Tubusu(int tubusu)
-{
+inline void Tubusu(int tubusu) {
   // tubusu個つぶす
   for (int i = 0; i < (tubusu); ++i) {
     int ite = Rand() % n;
@@ -617,8 +577,7 @@ inline void Tubusu(int tubusu)
   }
 }
 
-inline void TubusuWorst(int tubusu_worst)
-{
+inline void TubusuWorst(int tubusu_worst) {
   vector<pair<double, int>> v;
   for (int i = 0; i < (n); ++i) {
     v.emplace_back(pair<double, int>(p[i], i));
@@ -635,8 +594,7 @@ inline void TubusuWorst(int tubusu_worst)
   }
 }
 
-inline void AnaWoAkeru(int hole = 100)
-{
+inline void AnaWoAkeru(int hole = 100) {
   int ite = Rand() % n;
   vector<int> keep;
   keep.emplace_back(ite);
@@ -660,8 +618,7 @@ inline void AnaWoAkeru(int hole = 100)
 }
 
 Rect vExtendKing;
-inline void hukuramashiKing(int ite)
-{
+inline void hukuramashiKing(int ite) {
   vExtendKing.p1.x = max(0, (int)(target_points[ite].x - Rand() % 1000));
   vExtendKing.p1.y = max(0, (int)(target_points[ite].y - Rand() % 1000));
   vExtendKing.p2.x = min(10000, (int)(target_points[ite].x + 1 + Rand() % 1000));
@@ -671,8 +628,7 @@ inline void hukuramashiKing(int ite)
 
   if (tateyoko == 0) {
     int argX = arg_sort_x[ite];
-    drep(ii, argX)
-    {
+    drep(ii, argX) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -687,8 +643,7 @@ inline void hukuramashiKing(int ite)
         }
       }
     }
-    srep(ii, argX + 1, n)
-    {
+    srep(ii, argX + 1, n) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -705,8 +660,7 @@ inline void hukuramashiKing(int ite)
     }
 
     int argY = arg_sort_y[ite];
-    drep(ii, argY)
-    {
+    drep(ii, argY) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -721,8 +675,7 @@ inline void hukuramashiKing(int ite)
         }
       }
     }
-    srep(ii, argY + 1, n)
-    {
+    srep(ii, argY + 1, n) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -740,8 +693,7 @@ inline void hukuramashiKing(int ite)
   }
   else {
     int argY = arg_sort_y[ite];
-    drep(ii, argY)
-    {
+    drep(ii, argY) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -756,8 +708,7 @@ inline void hukuramashiKing(int ite)
         }
       }
     }
-    srep(ii, argY + 1, n)
-    {
+    srep(ii, argY + 1, n) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -774,8 +725,7 @@ inline void hukuramashiKing(int ite)
     }
 
     int argX = arg_sort_x[ite];
-    drep(ii, argX)
-    {
+    drep(ii, argX) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -790,8 +740,7 @@ inline void hukuramashiKing(int ite)
         }
       }
     }
-    srep(ii, argX + 1, n)
-    {
+    srep(ii, argX + 1, n) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -885,8 +834,7 @@ inline void hukuramashiKing(int ite)
 
 }
 
-inline void ExtendKing(int ite)
-{
+inline void ExtendKing(int ite) {
   hukuramashiKing(ite);
   rects[ite] = vExtendKing;
 
@@ -903,8 +851,7 @@ inline void ExtendKing(int ite)
   }
 }
 
-inline void oneChange(int ite, double temp)
-{
+inline void oneChange(int ite, double temp) {
   int diff = 0;
   while (diff == 0) diff = Rand() % 101 - 50;
   int abcd = Rand() % 4;
@@ -944,8 +891,7 @@ inline void oneChange(int ite, double temp)
   }
 }
 
-inline void fourChange(int ite, double temp)
-{
+inline void fourChange(int ite, double temp) {
   int diffA = Rand() % 101 - 50;
   int diffB = Rand() % 101 - 50;
   int diffC = Rand() % 101 - 50;
@@ -986,8 +932,7 @@ inline void fourChange(int ite, double temp)
   }
 }
 
-inline void Slide(int ite, double temp)
-{
+inline void Slide(int ite, double temp) {
   int diff = 0;
   while (diff == 0) diff = Rand() % 101 - 50;
   int ab = Rand() % 2;
@@ -1039,8 +984,7 @@ inline void Slide(int ite, double temp)
   }
 }
 
-inline void aspectChange(int ite, double temp)
-{
+inline void aspectChange(int ite, double temp) {
   int yokoRatio = Rand() % 9 + 1; // 1 ~ 9;
   int tateRatio = 10 - yokoRatio;
 
@@ -1092,8 +1036,7 @@ inline void aspectChange(int ite, double temp)
   }
 }
 
-inline int selfNg(int ite)
-{
+inline int selfNg(int ite) {
   if (rects[ite].p1.x < 0 || 10000 < rects[ite].p1.x) return 1;
   if (rects[ite].p1.y < 0 || 10000 < rects[ite].p1.y) return 1;
   if (rects[ite].p2.x < 0 || 10000 < rects[ite].p2.x) return 1;
@@ -1105,8 +1048,7 @@ inline int selfNg(int ite)
   return 0;
 }
 
-inline int dokasuOK(int ite, int abcd)
-{
+inline int dokasuOK(int ite, int abcd) {
   for (int i = 0; i < (n); ++i) {
     if (i == ite) continue;
     if (kasanarihantei(i, ite)) {
@@ -1123,15 +1065,13 @@ inline int dokasuOK(int ite, int abcd)
 
 int arrKasanari[MAX_N];
 int kasanariCount;
-inline void kasanaritati(int ite, int abcd)
-{
+inline void kasanaritati(int ite, int abcd) {
   kasanariCount = 0;
   if (abcd == 0) {
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
     int nowRight = rects[ite].p2.y;
-    drep(ii, argX)
-    {
+    drep(ii, argX) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) {
         if (rects[ite].p1.x <= target_points[i].x) {
@@ -1156,8 +1096,7 @@ inline void kasanaritati(int ite, int abcd)
     int argY = arg_sort_y[ite];
     int nowLeft = rects[ite].p1.x;
     int nowRight = rects[ite].p2.x;
-    drep(ii, argY)
-    {
+    drep(ii, argY) {
       int i = sort_y[ii];
       if (kasanarihantei(i, ite)) {
         if (rects[ite].p1.y <= target_points[i].y) {
@@ -1182,8 +1121,7 @@ inline void kasanaritati(int ite, int abcd)
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
     int nowRight = rects[ite].p2.y;
-    srep(ii, argX + 1, n)
-    {
+    srep(ii, argX + 1, n) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) {
         if (target_points[i].x < rects[ite].p2.x) {
@@ -1208,8 +1146,7 @@ inline void kasanaritati(int ite, int abcd)
     int argY = arg_sort_y[ite];
     int nowLeft = rects[ite].p1.x;
     int nowRight = rects[ite].p2.x;
-    srep(ii, argY + 1, n)
-    {
+    srep(ii, argY + 1, n) {
       int i = sort_y[ii];
       if (kasanarihantei(i, ite)) {
         if (target_points[i].y < rects[ite].p2.y) {
@@ -1233,8 +1170,7 @@ inline void kasanaritati(int ite, int abcd)
 }
 
 int keepvA[MAX_N], keepvB[MAX_N], keepvC[MAX_N], keepvD[MAX_N];
-inline void zurasi2(int ite, double temp)
-{
+inline void zurasi2(int ite, double temp) {
   int diff = 0;
   while (diff == 0) diff = Rand() % 50 + 1;
   int abcd = Rand() % 4;
@@ -1327,8 +1263,7 @@ inline void zurasi2(int ite, double temp)
   }
 }
 
-inline void shokiInit()
-{
+inline void shokiInit() {
   for (int i = 0; i < (n); ++i) {
     init_rect(rects[i], target_points[i]);
   }
@@ -1346,8 +1281,7 @@ int a2[100][MAX_N], b2[100][MAX_N], c2[100][MAX_N], d2[100][MAX_N];
 int a4[100][MAX_N], b4[100][MAX_N], c4[100][MAX_N], d4[100][MAX_N];
 int maxScore4[100] = {};
 
-inline void Ui_Tei()
-{
+inline void Ui_Tei() {
   clock_t start, end;
   for (int ui_tei = 0; ui_tei < (5); ++ui_tei) {
 
@@ -1506,8 +1440,7 @@ inline void Ui_Tei()
   }
 }
 
-int solve(int teisyutu, int fileNum)
-{
+int solve(int teisyutu, int fileNum) {
   auto startClock = system_clock::now();
   clock_t start, end;
   clock_t real_start = clock();
@@ -1752,16 +1685,14 @@ int solve(int teisyutu, int fileNum)
   return maxScore;
 }
 
-inline void clear_rect(Rect& r)
-{
+inline void clear_rect(Rect& r) {
   r.p1.x = 0;
   r.p1.y = 0;
   r.p2.x = 0;
   r.p2.y = 0;
 }
 
-inline void AllClear()
-{
+inline void AllClear() {
   n = 0;
   maxScore = -1;
   real_maxScore = -1;
@@ -1784,8 +1715,7 @@ inline void AllClear()
   }
 }
 
-int main()
-{
+int main() {
   int teisyutu = 0;
 
   if (teisyutu) {
@@ -1799,8 +1729,7 @@ int main()
 
     if (mode == 1) { // スコア確認用
       for (int i = 0; i < (1000); ++i) {
-        srep(i, 0, 50)
-        {
+        srep(i, 0, 50) {
           for (int j = 0; j < (10); ++j) {
             AllClear();
             solve(teisyutu, i);
@@ -1827,8 +1756,7 @@ int main()
           if (l == 3) haipara_TT = haipara_oya * 4;
 
           ll sum = 0;
-          srep(i, 0, 50)
-          {
+          srep(i, 0, 50) {
             for (int j = 0; j < (1); ++j) {
               AllClear();
               sum += solve(teisyutu, i);

@@ -1,29 +1,14 @@
-#include <algorithm>
-#include <bitset>
-#include <cassert>
-#include <cctype>
+#include <__msvc_ostream.hpp>
 #include <chrono>
 #include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <deque>
-#include <filesystem>
+#include <cstdint>
 #include <fstream>
-#include <functional>
 #include <iomanip>
+#include <iosfwd>
 #include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <random>
-#include <set>
+#include <math.h>
 #include <sstream>
-#include <stack>
+#include <stdlib.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,27 +20,22 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // タイマー
-namespace
-{
+namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
-  {
+  void start_timer() {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time()
-  {
+  double get_elapsed_time() {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
 }
 
 // 乱数
-namespace
-{
-  static uint32_t rand_xorshift()
-  {
+namespace {
+  static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -68,23 +48,19 @@ namespace
     return w;
   }
 
-  static double rand_01()
-  {
+  static double rand_01() {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r)
-  {
+  static double rand_range(double l, double r) {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r)
-  {
+  static uint32_t rand_range(uint32_t l, uint32_t r) {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n)
-  {
+  void shuffle_array(int* arr, int n) {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -113,8 +89,7 @@ int L;
 
 char true_genome[N][N];
 vector<string> true_genome_strs;
-void generate_true_genome(int l, int m)
-{
+void generate_true_genome(int l, int m) {
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       true_genome[i][j] = 'A' + rand_xorshift() % CHARACTER_SIZE;
@@ -140,8 +115,7 @@ void generate_true_genome(int l, int m)
   }
 }
 
-struct Pattern
-{
+struct Pattern {
 public:
   vector<int> pattern;
   int merged_count;
@@ -150,22 +124,19 @@ public:
   Pattern(vector<int> p) : pattern(p), merged_count(1) {}
 };
 
-struct Patterns
-{
+struct Patterns {
 public:
   vector<vector<Pattern>> vv_patterns;
   int pattern_count = 0;
 };
 
-class PatternsManager
-{
+class PatternsManager {
 public:
   Patterns initial_patterns;
   Patterns merged_patterns;
 
 public:
-  void initialize(vector<string> strs)
-  {
+  void initialize(vector<string> strs) {
     initial_patterns.vv_patterns.clear();
     initial_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = 0; i < strs.size(); i++) {
@@ -185,8 +156,7 @@ public:
     }
   }
 
-  void build_merge_patterns(double time_limit, int need_length)
-  {
+  void build_merge_patterns(double time_limit, int need_length) {
     vector<Pattern> patterns_tmp;
     for (auto& v_patterns : initial_patterns.vv_patterns) {
       for (auto& pattern : v_patterns) {
@@ -353,21 +323,18 @@ public:
   }
 };
 
-class MatchedFlag
-{
+class MatchedFlag {
 private:
   int count;
   bool row_flags[N][N];
   bool col_flags[N][N];
 
 public:
-  MatchedFlag()
-  {
+  MatchedFlag() {
     clear();
   }
 
-  void clear()
-  {
+  void clear() {
     count = 0;
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
@@ -377,8 +344,7 @@ public:
     }
   }
 
-  void set_flag(int row, int col, int dir, bool b)
-  {
+  void set_flag(int row, int col, int dir, bool b) {
     if (dir == 0) {
       count -= row_flags[row][col];
       row_flags[row][col] = b;
@@ -391,14 +357,12 @@ public:
     }
   }
 
-  int get_count()
-  {
+  int get_count() {
     return count;
   }
 };
 
-class State
-{
+class State {
 public:
   PatternsManager& patterns;
 
@@ -407,8 +371,7 @@ public:
   vector<vector<MatchedFlag>> matched_flags;
 
   State() = delete;
-  State(PatternsManager& p) : patterns(p)
-  {
+  State(PatternsManager& p) : patterns(p) {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         grid[i][j] = 0;
@@ -418,8 +381,7 @@ public:
     reset_matched_flags(patterns.initial_patterns);
   }
 
-  void generate_random_empty()
-  {
+  void generate_random_empty() {
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < N; j++) {
         if (grid[i][j] == CHARACTER_SIZE) {
@@ -429,8 +391,7 @@ public:
     }
   }
 
-  void greedy_after_assemble(const Patterns& patterns)
-  {
+  void greedy_after_assemble(const Patterns& patterns) {
     recalc_all(patterns);
 
     // 置けてないパターンを長い順に置けるところに置いていく
@@ -484,8 +445,7 @@ public:
     }
   }
 
-  void reset_matched_flags(const Patterns& patterns)
-  {
+  void reset_matched_flags(const Patterns& patterns) {
     matched_flags.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       matched_flags[i].resize(patterns.vv_patterns[i].size());
@@ -497,8 +457,7 @@ public:
     matched_count = 0;
   }
 
-  void recalc_all(const Patterns& patterns, bool rough = false)
-  {
+  void recalc_all(const Patterns& patterns, bool rough = false) {
     reset_matched_flags(patterns);
 
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
@@ -529,8 +488,7 @@ public:
     }
   }
 
-  void update_one_point(int row, int col, const Patterns& patterns)
-  {
+  void update_one_point(int row, int col, const Patterns& patterns) {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
         if (matched_flags[i][j].get_count() > 0) {
@@ -547,13 +505,11 @@ public:
     }
   }
 
-  ll get_score(const Patterns& patterns)
-  {
+  ll get_score(const Patterns& patterns) {
     return PERFECT_SCORE * matched_count / patterns.pattern_count;
   }
 
-  void assemble(double time_limit, const Patterns& patterns)
-  {
+  void assemble(double time_limit, const Patterns& patterns) {
     vector<vector<int>> vv;
     for (int i = MAX_PATTERN_LENGTH + 1 - 1; i >= 0; --i) {
       for (auto& pattern : patterns.vv_patterns[i]) {
@@ -949,8 +905,7 @@ public:
   }
 
 private:
-  bool is_matched(int row, int col, const vector<int>& vec, int dir)
-  {
+  bool is_matched(int row, int col, const vector<int>& vec, int dir) {
     if (dir == 0) {
       for (int i = 0; i < vec.size(); i++) {
         if (grid[row][(col + i) % N] != vec[i]) {
@@ -969,8 +924,7 @@ private:
   }
 };
 
-void input_data(int case_num, PatternsManager& patterns_manager)
-{
+void input_data(int case_num, PatternsManager& patterns_manager) {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -1020,8 +974,7 @@ void input_data(int case_num, PatternsManager& patterns_manager)
   L = (ma_len + mi_len) / 2;
 }
 
-void open_ofs(int case_num, ofstream& ofs)
-{
+void open_ofs(int case_num, ofstream& ofs) {
   if (exec_mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
@@ -1029,8 +982,7 @@ void open_ofs(int case_num, ofstream& ofs)
   }
 }
 
-void output_data(ofstream& ofs, State& state)
-{
+void output_data(ofstream& ofs, State& state) {
   if (exec_mode == 0) {
     // 標準出力
     for (int i = 0; i < N; ++i) {
@@ -1061,16 +1013,14 @@ void output_data(ofstream& ofs, State& state)
   }
 }
 
-struct AnnealingParams
-{
+struct AnnealingParams {
   double start_temperature[10];
   double end_temperature;
   double score_scale;
   int operation_thresholds[10];
 };
 
-void run_simulated_annealing(AnnealingParams annealingParams, State& state, const Patterns& patterns)
-{
+void run_simulated_annealing(AnnealingParams annealingParams, State& state, const Patterns& patterns) {
   double now_time = get_elapsed_time();
   const double START_TEMP = annealingParams.start_temperature[0];
   const double END_TEMP = annealingParams.end_temperature;
@@ -1211,8 +1161,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
   }
 }
 
-ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state)
-{
+ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_manager, State& state) {
   patterns_manager.build_merge_patterns(TIME_LIMIT * 0.4, 0);
   cout << "build_merge_patterns : " << get_elapsed_time() << " sec" << endl;
   state.assemble(TIME_LIMIT * 0.5, patterns_manager.merged_patterns);
@@ -1272,8 +1221,7 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
   return state.get_score(patterns_manager.initial_patterns);
 }
 
-ll solve_case(int case_num, AnnealingParams annealingParams)
-{
+ll solve_case(int case_num, AnnealingParams annealingParams) {
   start_timer();
 
   PatternsManager patterns_manager;
@@ -1296,8 +1244,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   return score;
 }
 
-int main()
-{
+int main() {
   exec_mode = 3;
 
   AnnealingParams annealingParams;

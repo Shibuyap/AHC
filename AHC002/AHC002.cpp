@@ -1,35 +1,18 @@
 #pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
-#include <algorithm>
-#include <bitset>
-#include <cassert>
-#include <cctype>
+#include <__msvc_ostream.hpp>
 #include <chrono>
 #include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <deque>
-#include <filesystem>
+#include <cstdint>
 #include <fstream>
-#include <functional>
 #include <iomanip>
+#include <iosfwd>
 #include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <random>
-#include <set>
+#include <math.h>
 #include <sstream>
-#include <stack>
 #include <string>
 #include <utility>
-#include <vector>
 
 #define srep(i,s,t) for(int i = s; i < t; ++i)
 #define drep(i,n) for(int i = (n)-1; i >= 0; --i)
@@ -41,19 +24,16 @@ typedef pair<int, int> P;
 
 std::chrono::steady_clock::time_point start_time_clock;
 
-void start_timer()
-{
+void start_timer() {
   start_time_clock = std::chrono::steady_clock::now();
 }
 
-double get_elapsed_time()
-{
+double get_elapsed_time() {
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
   return elapsed.count();
 }
 
-static uint32_t rand_xorshift32()
-{
+static uint32_t rand_xorshift32() {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -65,13 +45,11 @@ static uint32_t rand_xorshift32()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double rand_unit_double()
-{
+static double rand_unit_double() {
   return (rand_xorshift32() + 0.5) * (1.0 / UINT_MAX);
 }
 
-void shuffle_array(int* arr, int n)
-{
+void shuffle_array(int* arr, int n) {
   for (int i = n - 1; i >= 0; i--) {
     int j = rand_xorshift32() % (i + 1);
     int swa = arr[i];
@@ -101,11 +79,9 @@ int cell_value[GRID_SIZE][GRID_SIZE];
 int visited[GRID_SIZE * GRID_SIZE];
 int visited_version;
 
-class Path
-{
+class Path {
 public:
-  Path() : length(0), score(0)
-  {
+  Path() : length(0), score(0) {
   }
 
   int length;
@@ -114,16 +90,14 @@ public:
   int y[MAX_PATH_LENGTH];
   int score;
 
-  void init(int start_x, int start_y)
-  {
+  void init(int start_x, int start_y) {
     x[0] = start_x;
     y[0] = start_y;
     score = cell_value[x[0]][y[0]];
     length = 1;
   }
 
-  void add(int d)
-  {
+  void add(int d) {
     x[length] = x[length - 1] + dx[d];
     y[length] = y[length - 1] + dy[d];
     direction[length - 1] = d;
@@ -131,14 +105,12 @@ public:
     length++;
   }
 
-  void pop()
-  {
+  void pop() {
     length--;
     score -= cell_value[x[length]][y[length]];
   }
 
-  void reverse()
-  {
+  void reverse() {
     for (int i = 0; i < (length / 2); ++i) {
       swap(x[i], x[length - 1 - i]);
       swap(y[i], y[length - 1 - i]);
@@ -155,8 +127,7 @@ public:
     }
   }
 
-  void copy(const Path& a)
-  {
+  void copy(const Path& a) {
     length = a.length;
     score = a.score;
     for (int i = 0; i < (length); ++i) {
@@ -166,8 +137,7 @@ public:
     }
   }
 
-  Path& operator=(const Path& a)
-  {
+  Path& operator=(const Path& a) {
     if (this == &a) return *this;
     length = a.length;
     score = a.score;
@@ -179,27 +149,23 @@ public:
     return *this;
   }
 
-  bool operator<(const Path& other) const
-  {
+  bool operator<(const Path& other) const {
     return score < other.score;
   }
 
-  bool operator>(const Path& other) const
-  {
+  bool operator>(const Path& other) const {
     return score > other.score;
   }
 };
 
 Path best_path;
 
-bool is_out_of_bounds(int x, int y)
-{
+bool is_out_of_bounds(int x, int y) {
   if (x < 0 || GRID_SIZE <= x || y < 0 || GRID_SIZE <= y) return true;
   return false;
 }
 
-static void read_case_input(int case_num)
-{
+static void read_case_input(int case_num) {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -232,8 +198,7 @@ static void read_case_input(int case_num)
   }
 }
 
-void write_case_output(int case_num)
-{
+void write_case_output(int case_num) {
   string best_string;
   for (int i = 0; i < (best_path.length - 1); ++i) {
     best_string += next_char[best_path.direction[i]];
@@ -257,22 +222,19 @@ void write_case_output(int case_num)
   }
 }
 
-void reset_visited_all()
-{
+void reset_visited_all() {
   visited_version++;
   visited[tile_id[si][sj]] = visited_version;
 }
 
-void mark_path_as_visited(const Path& path)
-{
+void mark_path_as_visited(const Path& path) {
   visited_version++;
   for (int i = 0; i < (path.length); ++i) {
     visited[tile_id[path.x[i]][path.y[i]]] = visited_version;
   }
 }
 
-void extend_path_randomly(Path& path)
-{
+void extend_path_randomly(Path& path) {
   int x = path.x[path.length - 1];
   int y = path.y[path.length - 1];
   while (true) {
@@ -294,8 +256,7 @@ void extend_path_randomly(Path& path)
   }
 }
 
-bool try_connect_path(Path& path, int sx, int sy, int gx, int gy)
-{
+bool try_connect_path(Path& path, int sx, int sy, int gx, int gy) {
   path.init(sx, sy);
   int x = sx;
   int y = sy;
@@ -320,8 +281,7 @@ bool try_connect_path(Path& path, int sx, int sy, int gx, int gy)
 }
 
 // ‰Šú‰ð
-void build_from_best_prefix(double time_limit_1, double time_limit_2)
-{
+void build_from_best_prefix(double time_limit_1, double time_limit_2) {
   Path current_path;
   int iter = 0;
   while (true) {
@@ -351,8 +311,7 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2)
   }
 }
 
-struct AnnealParam
-{
+struct AnnealParam {
   double time_limit;
   double start_temp;
   double end_temp;
@@ -361,8 +320,7 @@ struct AnnealParam
   int range_segment_len;
 };
 
-class DfsSolver
-{
+class DfsSolver {
 public:
   bool connected;
   Path best_path;
@@ -371,8 +329,7 @@ public:
   int goal_y;
   int remaining_search_cnt;
 
-  void start(int sx, int sy, int gx, int gy)
-  {
+  void start(int sx, int sy, int gx, int gy) {
     goal_x = gx;
     goal_y = gy;
     connected = false;
@@ -382,8 +339,7 @@ public:
     dfs(sx, sy);
   }
 
-  void dfs(int x, int y)
-  {
+  void dfs(int x, int y) {
     int legal_dir[4];
     if (remaining_search_cnt == 0) {
       return;
@@ -423,8 +379,7 @@ public:
   }
 };
 
-bool search_best_path_2(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param)
-{
+bool search_best_path_2(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param) {
   DfsSolver dfsSolver;
   int ra = rand_xorshift32() % 2;
   if (ra == 0) {
@@ -445,8 +400,7 @@ bool search_best_path_2(int seg_start_x, int seg_start_y, int seg_goal_x, int se
   return false;
 }
 
-void anneal_path_segment(const AnnealParam& param)
-{
+void anneal_path_segment(const AnnealParam& param) {
   Path current_path;
   current_path.copy(best_path);
 
@@ -483,8 +437,7 @@ void anneal_path_segment(const AnnealParam& param)
 
     /* „Ÿ keep_path (‹Œ‹æŠÔ) „Ÿ */
     keep_path.init(seg_start_x, seg_start_y);
-    srep(i, seg_left, seg_right)
-    {
+    srep(i, seg_left, seg_right) {
       keep_path.add(current_path.direction[i]);
       int cx = keep_path.x[keep_path.length - 1];
       int cy = keep_path.y[keep_path.length - 1];
@@ -495,8 +448,7 @@ void anneal_path_segment(const AnnealParam& param)
 
     /* „Ÿ after_keep_path „Ÿ */
     after_keep_path.init(seg_goal_x, seg_goal_y);
-    srep(i, seg_right, path_len - 1)
-    {
+    srep(i, seg_right, path_len - 1) {
       after_keep_path.add(current_path.direction[i]);
       int cx = after_keep_path.x[after_keep_path.length - 1];
       int cy = after_keep_path.y[after_keep_path.length - 1];
@@ -543,8 +495,7 @@ void anneal_path_segment(const AnnealParam& param)
   }
 }
 
-int solve_case(int case_num, const AnnealParam& param)
-{
+int solve_case(int case_num, const AnnealParam& param) {
   start_timer();
 
   read_case_input(case_num);
@@ -568,8 +519,7 @@ int solve_case(int case_num, const AnnealParam& param)
   return best_path.score;
 }
 
-int main()
-{
+int main() {
   exec_mode = 1;
   show_log = true;
 
