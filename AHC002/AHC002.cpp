@@ -1,7 +1,6 @@
 #pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
-#include <__msvc_ostream.hpp>
 #include <chrono>
 #include <climits>
 #include <cstdint>

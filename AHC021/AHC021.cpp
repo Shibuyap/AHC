@@ -34,27 +34,22 @@ using namespace std;
 typedef long long int ll;
 
 // タイマー
-namespace
-{
+namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
-  {
+  void start_timer() {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time()
-  {
+  double get_elapsed_time() {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
 }
 
 // 乱数
-namespace
-{
-  static uint32_t rand_xorshift()
-  {
+namespace {
+  static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -67,23 +62,19 @@ namespace
     return w;
   }
 
-  static double rand_01()
-  {
+  static double rand_01() {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r)
-  {
+  static double rand_range(double l, double r) {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r)
-  {
+  static uint32_t rand_range(uint32_t l, uint32_t r) {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n)
-  {
+  void shuffle_array(int* arr, int n) {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -129,8 +120,7 @@ public:
     std::swap(board[x1][y1], board[x2][y2]);
   }
 
-  inline void push_move(int x1, int y1, int x2, int y2)
-  {
+  inline void push_move(int x1, int y1, int x2, int y2) {
     moves[move_cnt][0] = x1;
     moves[move_cnt][1] = y1;
     moves[move_cnt][2] = x2;
@@ -144,14 +134,12 @@ public:
   }
 };
 
-bool is_out_of_range(int x, int y)
-{
+bool is_out_of_range(int x, int y) {
   //if (x < 0 || n <= x || y < 0 || n <= y) return true;
   return false;
 }
 
-State input_data(int case_num)
-{
+State input_data(int case_num) {
   State state;
 
   std::ostringstream oss;
@@ -160,20 +148,16 @@ State input_data(int case_num)
 
   if (!ifs.is_open()) {
     // 標準入力
-    for (int i = 0; i < BOARD_SIZE; i++)
-    {
-      for (int j = 0; j < i + 1; j++)
-      {
+    for (int i = 0; i < BOARD_SIZE; i++) {
+      for (int j = 0; j < i + 1; j++) {
         cin >> state.board[i][j];
       }
     }
   }
   else {
     // ファイル入力
-    for (int i = 0; i < BOARD_SIZE; i++)
-    {
-      for (int j = 0; j < i + 1; j++)
-      {
+    for (int i = 0; i < BOARD_SIZE; i++) {
+      for (int j = 0; j < i + 1; j++) {
         ifs >> state.board[i][j];
       }
     }
@@ -182,13 +166,11 @@ State input_data(int case_num)
   return state;
 }
 
-void output_data(int case_num, const State& state)
-{
+void output_data(int case_num, const State& state) {
   if (exec_mode == 0) {
     // 標準出力
     cout << state.move_cnt << endl;
-    for (int i = 0; i < state.move_cnt; i++)
-    {
+    for (int i = 0; i < state.move_cnt; i++) {
       for (int j = 0; j < 4; j++) {
         cout << state.moves[i][j] << ' ';
       }
@@ -202,8 +184,7 @@ void output_data(int case_num, const State& state)
     ofstream ofs(oss.str());
 
     ofs << state.move_cnt << endl;
-    for (int i = 0; i < state.move_cnt; i++)
-    {
+    for (int i = 0; i < state.move_cnt; i++) {
       for (int j = 0; j < 4; j++) {
         ofs << state.moves[i][j] << ' ';
       }
@@ -216,17 +197,14 @@ void output_data(int case_num, const State& state)
   }
 }
 
-State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie)
-{
+State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie) {
   State state = initial_state;
 
   while (true) {
     int x1, y1, x2, y2;
     int diff = 0;
-    for (int i = 0; i < BOARD_SIZE - 1; i++)
-    {
-      for (int j = 0; j < i + 1; j++)
-      {
+    for (int i = 0; i < BOARD_SIZE - 1; i++) {
+      for (int j = 0; j < i + 1; j++) {
         int diff1 = state.get_diff(i, j, i + 1, j);
         if (diff1 > diff || (diff1 == diff && with_tie)) {
           diff = diff1;
@@ -254,8 +232,7 @@ State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie)
   return state;
 }
 
-ll solve_case(int case_num)
-{
+ll solve_case(int case_num) {
   start_timer();
 
   State initial_state = input_data(case_num);
@@ -277,8 +254,7 @@ ll solve_case(int case_num)
   return score;
 }
 
-int main()
-{
+int main() {
   exec_mode = 2;
 
   if (exec_mode == 0) {
@@ -286,8 +262,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++)
-    {
+    for (int i = 0; i < 15; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {

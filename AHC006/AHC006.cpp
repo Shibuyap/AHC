@@ -1,4 +1,3 @@
-#include <__msvc_ostream.hpp>
 #include <algorithm>
 #include <chrono>
 #include <climits>

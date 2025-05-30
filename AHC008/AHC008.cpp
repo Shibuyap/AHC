@@ -1,4 +1,3 @@
-#include <__msvc_ostream.hpp>
 #include <climits>
 #include <cstdint>
 #include <fstream>

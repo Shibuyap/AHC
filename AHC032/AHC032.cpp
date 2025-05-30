@@ -1,33 +1,11 @@
-#include <algorithm>
 #include <array>
-#include <bitset>
-#include <cassert>
-#include <cctype>
-#include <chrono>
-#include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <deque>
-#include <filesystem>
+#include <cstdint>
 #include <fstream>
-#include <functional>
-#include <iomanip>
+#include <iosfwd>
 #include <iostream>
-#include <iterator>
-#include <list>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <random>
-#include <set>
-#include <sstream>
-#include <stack>
 #include <string>
+#include <time.h>
 #include <utility>
-#include <vector>
 
 using namespace std;
 typedef long long int ll;
