@@ -103,6 +103,9 @@ public:
   vector<vector<int>> v;
   vector<vector<int>> h;
 
+  vector<vector<double>> volumes;
+  vector<vector<vector<double>>> colors;
+
   Board(int _n) : n(_n) {
     v.resize(n);
     for (int i = 0; i < n; i++) {
@@ -111,6 +114,19 @@ public:
     h.resize(n - 1);
     for (int i = 0; i < n - 1; i++) {
       h[i].resize(n, 0);
+    }
+
+    volumes.resize(n);
+    for (int i = 0; i < n; i++) {
+      volumes[i].resize(n, 0.0);
+    }
+
+    colors.resize(n);
+    for (int i = 0; i < n; i++) {
+      colors[i].resize(n);
+      for (int j = 0; j < n; j++) {
+        colors[i][j].resize(3, 0.0); // RGB
+      }
     }
   }
 };
@@ -131,6 +147,7 @@ public:
     }
   }
 
+  // ŠG‹ï‚ðƒEƒFƒ‹‚É’Ç‰Á‚·‚é
   void add_turn_1(int x, int y, int k) {
     if (t >= max_t) {
       cerr << "Error: add_turn_1 called after max_t reached." << endl;
@@ -145,6 +162,7 @@ public:
     t++;
   }
 
+  // ŠG‹ï‚ð‰æ”Œ‚É“n‚·
   void add_turn_2(int x, int y) {
     if (t >= max_t) {
       cerr << "Error: add_turn_2 called after max_t reached." << endl;
@@ -158,6 +176,7 @@ public:
     t++;
   }
 
+  // ŠG‹ï‚ð”jŠü‚·‚é
   void add_turn_3(int x, int y) {
     if (t >= max_t) {
       cerr << "Error: add_turn_3 called after max_t reached." << endl;
@@ -171,6 +190,7 @@ public:
     t++;
   }
 
+  // ŽdØ‚è‚ðo‚µ“ü‚ê‚·‚é
   void add_turn_4(int x1, int y1, int x2, int y2) {
     if (t >= max_t) {
       cerr << "Error: add_turn_4 called after max_t reached." << endl;
@@ -306,6 +326,28 @@ ll calculate_score() {
   return res;
 }
 
+void initialize_answer(Answer& answer) {
+  for (int i = 0; i < answer.initial_board.n; i++) {
+    for (int j = 0; j < answer.initial_board.n - 1; j++) {
+      answer.initial_board.v[i][j] = 1;
+    }
+  }
+  for (int i = 0; i < answer.initial_board.n - 1; i++) {
+    for (int j = 0; j < answer.initial_board.n; j++) {
+      answer.initial_board.h[i][j] = 1;
+    }
+  }
+
+  answer.board = answer.initial_board;
+}
+
+void method_1(Answer& answer, const Input& input) {
+  for (int i = 0; i < input.h; i++) {
+    answer.add_turn_1(0, 0, 0);
+    answer.add_turn_2(0, 0);
+  }
+}
+
 ll solve_case(int case_num) {
   start_timer();
 
@@ -313,10 +355,9 @@ ll solve_case(int case_num) {
 
   Answer answer(input.n, input.t);
 
-  for (int i = 0; i < input.h; i++) {
-    answer.add_turn_1(0, 0, 0);
-    answer.add_turn_2(0, 0);
-  }
+  initialize_answer(answer);
+
+  method_1(answer, input);
 
   output_data(case_num, answer);
 
