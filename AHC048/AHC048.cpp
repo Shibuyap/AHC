@@ -84,6 +84,50 @@ namespace {
   }
 }
 
+const int DX[4] = { -1, 0, 1, 0 };
+const int DY[4] = { 0, -1, 0, 1 };
+
+// 2次元キューのクラス
+class Queue2D {
+private:
+  static const int MAX_SIZE = 10000;
+  int arr[MAX_SIZE][2];
+  int head;
+  int tail;
+
+public:
+  // コンストラクタ
+  Queue2D() : head(0), tail(0) {}
+
+  void clear_queue() {
+    head = 0;
+    tail = 0;
+  }
+
+  int front_x() const {
+    return arr[head][0];
+  }
+
+  int front_y() const {
+    return arr[head][1];
+  }
+
+  void push(int x, int y) {
+    arr[tail][0] = x;
+    arr[tail][1] = y;
+    tail++;
+  }
+
+  void pop() {
+    head++;
+  }
+
+  int size() const {
+    return tail - head;
+  }
+};
+Queue2D queue2d;
+
 const double TIME_LIMIT = 2.8;
 int exec_mode;
 
@@ -103,8 +147,71 @@ public:
   vector<vector<int>> v;
   vector<vector<int>> h;
 
+  vector<vector<int>> counts;
   vector<vector<double>> volumes;
   vector<vector<vector<double>>> colors;
+
+  bool is_ng(int x, int y, int dir) {
+    int nx = x + DX[dir];
+    int ny = y + DY[dir];
+    if (nx < 0 || nx >= n || ny < 0 || ny >= n) {
+      return true;
+    }
+    if (dir == 0) { // 上
+      return h[nx][ny] == 1;
+    }
+    else if (dir == 1) { // 左
+      return v[nx][ny] == 1;
+    }
+    else if (dir == 2) { // 下
+      return h[x][y] == 1;
+    }
+    else if (dir == 3) { // 右
+      return v[x][y] == 1;
+    }
+  }
+
+  void calc_counts() {
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        counts[i][j] = 0;
+      }
+    }
+
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n - 1; j++) {
+        if (counts[i][j] != 0) {
+          continue;
+        }
+        vector<pair<int, int>> vec;
+        queue2d.clear_queue();
+        queue2d.push(i, j);
+        vec.push_back(make_pair(i, j));
+        counts[i][j] = 1;
+        while (queue2d.size()) {
+          int x = queue2d.front_x();
+          int y = queue2d.front_y();
+          queue2d.pop();
+          for (int d = 0; d < 4; d++) {
+            if (is_ng(x, y, d)) {
+              continue;
+            }
+            int nx = x + DX[d];
+            int ny = y + DY[d];
+            if (counts[nx][ny] != 0) {
+              continue;
+            }
+            counts[nx][ny] = 1;
+            queue2d.push(nx, ny);
+            vec.push_back(make_pair(nx, ny));
+          }
+        }
+        for (const auto& p : vec) {
+          counts[p.first][p.second] = vec.size();
+        }
+      }
+    }
+  }
 
   Board(int _n) : n(_n) {
     v.resize(n);
@@ -114,6 +221,11 @@ public:
     h.resize(n - 1);
     for (int i = 0; i < n - 1; i++) {
       h[i].resize(n, 0);
+    }
+
+    counts.resize(n);
+    for (int i = 0; i < n; i++) {
+      counts[i].resize(n, 0);
     }
 
     volumes.resize(n);
@@ -128,6 +240,70 @@ public:
         colors[i][j].resize(3, 0.0); // RGB
       }
     }
+  }
+
+  int get_wall(int x, int y, int d) {
+    if (d == 0) { // 上
+      return h[x - 1][y];
+    }
+    else if (d == 1) { // 左
+      return v[x][y - 1];
+    }
+    else if (d == 2) { // 下
+      return h[x][y];
+    }
+    else if (d == 3) { // 右
+      return v[x][y];
+    }
+  }
+
+  void toggle_wall(int x, int y, int d) {
+    if (d == 0) { // 上
+      h[x - 1][y] = 1 - h[x - 1][y];
+    }
+    else if (d == 1) { // 左
+      v[x][y - 1] = 1 - v[x][y - 1];
+    }
+    else if (d == 2) { // 下
+      h[x][y] = 1 - h[x][y];
+    }
+    else if (d == 3) { // 右
+      v[x][y] = 1 - v[x][y];
+    }
+  }
+
+  vector<pair<int, int>> get_well_cells(int x, int y) {
+    vector<pair<int, int>> vec;
+    queue2d.clear_queue();
+    queue2d.push(x, y);
+    vec.push_back(make_pair(x, y));
+    counts[x][y] = 0;
+    while (queue2d.size()) {
+      int cx = queue2d.front_x();
+      int cy = queue2d.front_y();
+      queue2d.pop();
+      for (int d = 0; d < 4; d++) {
+        if (is_ng(cx, cy, d)) {
+          continue;
+        }
+        int nx = cx + DX[d];
+        int ny = cy + DY[d];
+        if (counts[nx][ny] == 0) {
+          continue;
+        }
+        counts[nx][ny] = 0;
+        queue2d.push(nx, ny);
+        vec.push_back(make_pair(nx, ny));
+      }
+    }
+    for (const auto& p : vec) {
+      counts[p.first][p.second] = vec.size();
+    }
+    return vec;
+  }
+
+  void calc_one_well_count(int x, int y) {
+    get_well_cells(x, y);
   }
 };
 
@@ -160,10 +336,27 @@ public:
     turns[t][3] = k;
     turns[t][4] = 0; // dummy value
     t++;
+
+    // 絵具をウェルに追加
+    auto cells = board.get_well_cells(x, y);
+    for (const auto& cell : cells) {
+      int cx = cell.first;
+      int cy = cell.second;
+      board.volumes[cx][cy] += 1.0;
+    }
+  }
+
+  bool can_turn_2(int x, int y) {
+    return board.volumes[x][y] >= 1.0 - 1e-6;
   }
 
   // 絵具を画伯に渡す
   void add_turn_2(int x, int y) {
+    if (!can_turn_2(x, y)) {
+      cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
+      return;
+    }
+
     if (t >= max_t) {
       cerr << "Error: add_turn_2 called after max_t reached." << endl;
       return;
@@ -174,6 +367,14 @@ public:
     turns[t][3] = 0; // dummy value
     turns[t][4] = 0; // dummy value
     t++;
+
+    // 画伯に絵具を渡す
+    auto cells = board.get_well_cells(x, y);
+    for (const auto& cell : cells) {
+      int cx = cell.first;
+      int cy = cell.second;
+      board.volumes[cx][cy] = max(0.0, board.volumes[cx][cy] - 1.0);
+    }
   }
 
   // 絵具を破棄する
@@ -188,19 +389,30 @@ public:
     turns[t][3] = 0; // dummy value
     turns[t][4] = 0; // dummy value
     t++;
+
+    auto cells = board.get_well_cells(x, y);
+    for (const auto& cell : cells) {
+      int cx = cell.first;
+      int cy = cell.second;
+      board.volumes[cx][cy] = max(0.0, board.volumes[cx][cy] - 1.0);
+    }
   }
 
   // 仕切りを出し入れする
-  void add_turn_4(int x1, int y1, int x2, int y2) {
+  void add_turn_4(int x, int y, int d) {
     if (t >= max_t) {
       cerr << "Error: add_turn_4 called after max_t reached." << endl;
       return;
     }
+
+    int nx = x + DX[d];
+    int ny = y + DY[d];
+
     turns[t][0] = 4;
-    turns[t][1] = x1;
-    turns[t][2] = y1;
-    turns[t][3] = x2;
-    turns[t][4] = y2;
+    turns[t][1] = x;
+    turns[t][2] = y;
+    turns[t][3] = nx;
+    turns[t][4] = ny;
     t++;
   }
 };
@@ -326,10 +538,30 @@ ll calculate_score() {
   return res;
 }
 
-void initialize_answer(Answer& answer) {
+void initialize_board_1x1(Answer& answer) {
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
       answer.initial_board.v[i][j] = 1;
+    }
+  }
+  for (int i = 0; i < answer.initial_board.n - 1; i++) {
+    for (int j = 0; j < answer.initial_board.n; j++) {
+      answer.initial_board.h[i][j] = 1;
+    }
+  }
+
+  answer.board = answer.initial_board;
+}
+
+void initialize_board_4x1(Answer& answer) {
+  for (int i = 0; i < answer.initial_board.n; i++) {
+    for (int j = 0; j < answer.initial_board.n - 1; j++) {
+      if (j % 4 == 3) {
+        answer.initial_board.v[i][j] = 1;
+      }
+      else {
+        answer.initial_board.v[i][j] = 0;
+      }
     }
   }
   for (int i = 0; i < answer.initial_board.n - 1; i++) {
@@ -355,7 +587,7 @@ ll solve_case(int case_num) {
 
   Answer answer(input.n, input.t);
 
-  initialize_answer(answer);
+  initialize_board_4x1(answer);
 
   method_1(answer, input);
 
