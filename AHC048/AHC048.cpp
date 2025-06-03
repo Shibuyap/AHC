@@ -86,6 +86,10 @@ namespace {
 
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
+constexpr int UP = 0;    // 上
+constexpr int LEFT = 1;  // 左
+constexpr int DOWN = 2;  // 下
+constexpr int RIGHT = 3; // 右
 
 // 2次元キューのクラス
 class Queue2D {
@@ -131,6 +135,11 @@ Queue2D queue2d;
 const double TIME_LIMIT = 2.8;
 int exec_mode;
 
+// 誤差を計算
+inline double calc_error(const vector<double>& v1, const vector<double>& v2) {
+  return sqrt((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1]) + (v1[2] - v2[2]) * (v1[2] - v2[2]));
+}
+
 const int N = 20;
 const int H = 1000;
 
@@ -144,12 +153,12 @@ public:
 class Board {
 public:
   int n;
-  vector<vector<int>> v;
-  vector<vector<int>> h;
+  vector<vector<int>> v; // 垂直の壁
+  vector<vector<int>> h; // 水平の壁
 
-  vector<vector<int>> counts;
-  vector<vector<double>> volumes;
-  vector<vector<vector<double>>> colors;
+  vector<vector<int>> counts; // セルが含まれるウェルのサイズ
+  vector<vector<double>> volumes; // セルが含まれるウェルの絵具の量
+  vector<vector<vector<double>>> colors; // セルが含まれるウェルの色(CMY)
 
   bool is_ng(int x, int y, int dir) {
     int nx = x + DX[dir];
@@ -305,6 +314,98 @@ public:
   void calc_one_well_count(int x, int y) {
     get_well_cells(x, y);
   }
+
+  inline vector<double> calc_mixed_color(const vector<double>& col1, const vector<double>& col2, double vol1, double vol2) {
+    vector<double> mixed_color(3, 0.0);
+    double total_volume = vol1 + vol2;
+    for (int i = 0; i < 3; i++) {
+      mixed_color[i] = (vol1 * col1[i] + vol2 * col2[i]) / total_volume;
+    }
+    return mixed_color;
+  }
+
+  void add_turn_1(int x, int y, const vector<double>& col) {
+    // 実際に加えることのできる量
+    double w = min(1.0, counts[x][y] - volumes[x][y]);
+    double after_vol = volumes[x][y] + w;
+
+    // 混ぜた後の絵の具の色
+    vector<double> mixed_color = calc_mixed_color(colors[x][y], col, volumes[x][y], w);
+
+    // セルの絵具量を更新
+    auto cells = get_well_cells(x, y);
+    for (const auto& cell : cells) {
+      int cx = cell.first;
+      int cy = cell.second;
+      volumes[cx][cy] = after_vol;
+      colors[cx][cy] = mixed_color;
+    }
+  }
+
+  void add_turn_2(int x, int y) {
+    auto cells = get_well_cells(x, y);
+    for (const auto& cell : cells) {
+      int cx = cell.first;
+      int cy = cell.second;
+      volumes[cx][cy] = max(0.0, volumes[cx][cy] - 1.0);
+    }
+  }
+
+  void add_turn_3(int x, int y) {
+    add_turn_2(x, y);
+  }
+
+  void add_turn_4(int x, int y, int d) {
+    int nx = x + DX[d];
+    int ny = y + DY[d];
+
+    int before_wall = get_wall(x, y, d);
+    if (before_wall == 0) {
+      // 仕切りを上げる
+      int before_count = counts[x][y];
+      double before_volume = volumes[x][y];
+      toggle_wall(x, y, d);
+      auto after_cells = get_well_cells(x, y);
+      if (after_cells.size() == before_count) {
+        // 変化なし
+      }
+      else {
+        auto other_cells = get_well_cells(nx, ny);
+        for (const auto& cell : after_cells) {
+          int cx = cell.first;
+          int cy = cell.second;
+          volumes[cx][cy] = before_volume * after_cells.size() / before_count;
+        }
+        for (const auto& cell : other_cells) {
+          int cx = cell.first;
+          int cy = cell.second;
+          volumes[cx][cy] = before_volume * other_cells.size() / before_count;
+        }
+      }
+    }
+    else {
+      // 仕切りを下す
+      int before_count = counts[x][y];
+      int before_other_count = counts[nx][ny];
+      toggle_wall(x, y, d);
+      auto after_cells = get_well_cells(x, y);
+      if (after_cells.size() == before_count) {
+        // 変化なし
+      }
+      else {
+        // 混ぜた後の絵の具の色
+        auto mixed_color = calc_mixed_color(colors[x][y], colors[nx][ny], volumes[x][y], volumes[nx][ny]);
+        double after_volume = volumes[x][y] + volumes[nx][ny];
+        for (const auto& cell : after_cells) {
+          int cx = cell.first;
+          int cy = cell.second;
+          counts[cx][cy] = after_cells.size();
+          volumes[cx][cy] = after_volume;
+          colors[cx][cy] = mixed_color;
+        }
+      }
+    }
+  }
 };
 
 class Answer {
@@ -323,8 +424,12 @@ public:
     }
   }
 
+  void sim_turn_1(int x, int y, int k, const Input& input) {
+    board.add_turn_1(x, y, input.owns[k]);
+  }
+
   // 絵具をウェルに追加する
-  void add_turn_1(int x, int y, int k) {
+  void add_turn_1(int x, int y, int k, const Input& input) {
     if (t >= max_t) {
       cerr << "Error: add_turn_1 called after max_t reached." << endl;
       return;
@@ -337,17 +442,15 @@ public:
     turns[t][4] = 0; // dummy value
     t++;
 
-    // 絵具をウェルに追加
-    auto cells = board.get_well_cells(x, y);
-    for (const auto& cell : cells) {
-      int cx = cell.first;
-      int cy = cell.second;
-      board.volumes[cx][cy] += 1.0;
-    }
+    sim_turn_1(x, y, k, input);
   }
 
   bool can_turn_2(int x, int y) {
     return board.volumes[x][y] >= 1.0 - 1e-6;
+  }
+
+  void sim_turn_2(int x, int y) {
+    board.add_turn_2(x, y);
   }
 
   // 絵具を画伯に渡す
@@ -368,13 +471,11 @@ public:
     turns[t][4] = 0; // dummy value
     t++;
 
-    // 画伯に絵具を渡す
-    auto cells = board.get_well_cells(x, y);
-    for (const auto& cell : cells) {
-      int cx = cell.first;
-      int cy = cell.second;
-      board.volumes[cx][cy] = max(0.0, board.volumes[cx][cy] - 1.0);
-    }
+    sim_turn_2(x, y);
+  }
+
+  void sim_turn_3(int x, int y) {
+    board.add_turn_3(x, y);
   }
 
   // 絵具を破棄する
@@ -390,12 +491,11 @@ public:
     turns[t][4] = 0; // dummy value
     t++;
 
-    auto cells = board.get_well_cells(x, y);
-    for (const auto& cell : cells) {
-      int cx = cell.first;
-      int cy = cell.second;
-      board.volumes[cx][cy] = max(0.0, board.volumes[cx][cy] - 1.0);
-    }
+    sim_turn_3(x, y);
+  }
+
+  void sim_turn_4(int x, int y, int d) {
+    board.add_turn_4(x, y, d);
   }
 
   // 仕切りを出し入れする
@@ -414,6 +514,8 @@ public:
     turns[t][3] = nx;
     turns[t][4] = ny;
     t++;
+
+    sim_turn_4(x, y, d);
   }
 };
 
@@ -533,8 +635,55 @@ void output_data(int case_num, const Answer& answer) {
   }
 }
 
-ll calculate_score() {
-  ll res = 0;
+int calculate_score(Answer& ans, const Input& input) {
+  ans.board = ans.initial_board;
+  double sum_e = 0;
+  int count_add_1 = 0;
+  int count_add_2 = 0;
+
+  for (int i = 0; i < ans.t; i++) {
+    if (ans.turns[i][0] == 1) { // add_turn_1
+      int x = ans.turns[i][1];
+      int y = ans.turns[i][2];
+      int k = ans.turns[i][3];
+      ans.sim_turn_1(x, y, k, input);
+      count_add_1++;
+    }
+    else if (ans.turns[i][0] == 2) { // add_turn_2
+      int x = ans.turns[i][1];
+      int y = ans.turns[i][2];
+      if (!ans.can_turn_2(x, y)) {
+        cerr << i << " Error: add_turn_2 called when not enough paint is available." << endl;
+      }
+      ans.sim_turn_2(x, y);
+      count_add_2++;
+
+      // 誤差を計算
+      sum_e += calc_error(ans.board.colors[x][y], input.targets[count_add_2 - 1]);
+    }
+    else if (ans.turns[i][0] == 3) { // add_turn_3
+      int x = ans.turns[i][1];
+      int y = ans.turns[i][2];
+      ans.sim_turn_3(x, y);
+    }
+    else if (ans.turns[i][0] == 4) { // add_turn_4
+      int x = ans.turns[i][1];
+      int y = ans.turns[i][2];
+      int nx = ans.turns[i][3];
+      int ny = ans.turns[i][4];
+      for(int d = 0; d < 4; d++) {
+        if (x + DX[d] == nx && y + DY[d] == ny) {
+          ans.sim_turn_4(x, y, d);
+          break;
+        }
+      }
+    }
+  }
+
+  if (count_add_2 != input.h) {
+  }
+
+  int res = 1 + input.d * (count_add_1 - input.h) + round(1e4 * sum_e);
   return res;
 }
 
@@ -549,6 +698,7 @@ void initialize_board_1x1(Answer& answer) {
       answer.initial_board.h[i][j] = 1;
     }
   }
+  answer.initial_board.calc_counts();
 
   answer.board = answer.initial_board;
 }
@@ -569,6 +719,7 @@ void initialize_board_4x1(Answer& answer) {
       answer.initial_board.h[i][j] = 1;
     }
   }
+  answer.initial_board.calc_counts();
 
   answer.board = answer.initial_board;
 }
@@ -584,14 +735,17 @@ void initialize_board_20x20(Answer& answer) {
       answer.initial_board.h[i][j] = 0;
     }
   }
+  answer.initial_board.calc_counts();
 
   answer.board = answer.initial_board;
 }
 
 void method_1(Answer& answer, const Input& input) {
   for (int i = 0; i < input.h; i++) {
-    answer.add_turn_1(0, 0, 0);
+    answer.add_turn_1(0, 0, rand_xorshift() % input.k, input);
+    answer.add_turn_1(0, 0, rand_xorshift() % input.k, input);
     answer.add_turn_2(0, 0);
+    answer.add_turn_3(0, 0);
   }
 }
 
@@ -602,7 +756,7 @@ ll solve_case(int case_num) {
 
   Answer answer(input.n, input.t);
 
-  initialize_board_4x1(answer);
+  initialize_board_1x1(answer);
 
   method_1(answer, input);
 
@@ -610,7 +764,7 @@ ll solve_case(int case_num) {
 
   ll score = 0;
   if (exec_mode != 0) {
-    score = calculate_score();
+    score = calculate_score(answer, input);
   }
   return score;
 }
@@ -623,7 +777,7 @@ int main() {
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 1000; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
