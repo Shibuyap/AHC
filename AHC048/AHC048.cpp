@@ -422,10 +422,12 @@ public:
 
   int max_t;
   int t;
+  bool is_over;
   vector<vector<int>> turns;
 
   Answer(int _n, int _max_t) : max_t(_max_t), initial_board(_n), board(_n) {
     t = 0;
+    is_over = false;
     for (int i = 0; i < max_t; i++) {
       turns.push_back(vector<int>(5, 0));
     }
@@ -444,6 +446,7 @@ public:
   void add_turn_1(int x, int y, int k, const Input& input) {
     if (t >= max_t) {
       cerr << "Error: add_turn_1 called after max_t reached." << endl;
+      is_over = true;
       return;
     }
 
@@ -469,11 +472,13 @@ public:
   void add_turn_2(int x, int y) {
     if (!can_turn_2(x, y)) {
       cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
+      is_over = true;
       return;
     }
 
     if (t >= max_t) {
       cerr << "Error: add_turn_2 called after max_t reached." << endl;
+      is_over = true;
       return;
     }
     turns[t][0] = 2;
@@ -494,6 +499,7 @@ public:
   void add_turn_3(int x, int y) {
     if (t >= max_t) {
       cerr << "Error: add_turn_3 called after max_t reached." << endl;
+      is_over = true;
       return;
     }
     turns[t][0] = 3;
@@ -514,6 +520,7 @@ public:
   void add_turn_4(int x, int y, int d) {
     if (t >= max_t) {
       cerr << "Error: add_turn_4 called after max_t reached." << endl;
+      is_over = true;
       return;
     }
 
@@ -1123,6 +1130,8 @@ public:
   Score best_score;
   int best_num = 0;
 
+  static const int MAX_NUM = 5;
+
   Solver_4(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
     score.score = INF;
     best_score.score = INF;
@@ -1130,12 +1139,12 @@ public:
   }
 
   void solve() {
-    vector<pair<vector<double>, vector<int>>> candidates[6];
-    for (int num = 1; num <= 5; num++) {
+    vector<pair<vector<double>, vector<int>>> candidates[MAX_NUM + 1];
+    for (int num = 1; num <= MAX_NUM; num++) {
       candidates[num] = create_candidate_pairs(input.k, num, input);
     }
 
-    for (int num = 2; num <= 5; num++) {
+    for (int num = 2; num <= MAX_NUM; num++) {
       initialize_board_axb(answer, num, 1);
 
       answer.clear();
@@ -1198,11 +1207,11 @@ public:
               }
 
               int vol_int = (int)(answer.board.volumes[x][y] + 0.5);
-              for(int elim_count = 0; elim_count <= vol_int - 1; elim_count++) {
+              for (int elim_count = 0; elim_count <= vol_int - 1; elim_count++) {
                 for (int col_count = 1; col_count <= num - vol_int; col_count++) {
                   for (int j = 0; j < candidates[col_count].size(); j++) {
                     auto mixed_color = answer.board.calc_mixed_color(answer.board.colors[x][y], candidates[col_count][j].first, answer.board.volumes[x][y] - elim_count, col_count);
-                    double cost = calc_one_cost(0, input.targets[i], mixed_color, input.d);
+                    double cost = calc_one_cost(elim_count, input.targets[i], mixed_color, input.d);
                     if (cost < min_cost) {
                       min_cost = cost;
                       query = 1;
@@ -1226,9 +1235,10 @@ public:
         }
 
         if (!visited_vacant) {
+          int vol_int = (int)(answer.board.volumes[0][0] + 0.5);
           for (int col_count = 1; col_count <= num; col_count++) {
             for (int j = 0; j < candidates[col_count].size(); j++) {
-              double cost = calc_one_cost(0, input.targets[i], candidates[col_count][j].first, input.d);
+              double cost = calc_one_cost(vol_int, input.targets[i], candidates[col_count][j].first, input.d);
               if (cost < min_cost) {
                 min_cost = cost;
                 query = 3;
@@ -1258,7 +1268,7 @@ public:
         }
         else if (query == 1) {
           // ‹ó‚Å‚È‚¢ƒEƒFƒ‹‚É’Ç‰Á
-          for(int j = 0; j < eliminate_count; j++) {
+          for (int j = 0; j < eliminate_count; j++) {
             answer.add_turn_3(min_x, min_y);
           }
           for (int j = 0; j < num; j++) {
@@ -1274,8 +1284,12 @@ public:
         }
         else if (query == 3) {
           // ‹ó‚É‚µ‚Ä‚©‚ç’Ç‰Á
-          while(answer.board.volumes[min_x][min_y] > EPS) {
+          while (answer.board.volumes[min_x][min_y] > EPS) {
             answer.add_turn_3(min_x, min_y);
+            if (answer.is_over) {
+              ok = false;
+              break;
+            }
           }
           for (int j = 0; j < num; j++) {
             if (col_indices[j] == -1) {
@@ -1285,6 +1299,11 @@ public:
           }
         }
         answer.add_turn_2(min_x, min_y);
+
+        if (answer.is_over) {
+          ok = false;
+          break;
+        }
       }
 
       if (ok) {
@@ -1328,7 +1347,7 @@ ll solve_case(int case_num) {
   }
 
   {
-    auto solver = Solver_3(answer, input, 0.5);
+    auto solver = Solver_3(answer, input, 99.9);
     solver.solve();
     if (solver.score.score < best_score.score) {
       answer = solver.answer;
@@ -1338,7 +1357,7 @@ ll solve_case(int case_num) {
   }
 
   {
-    auto solver = Solver_4(answer, input, 1.0);
+    auto solver = Solver_4(answer, input, 99.9);
     solver.solve();
     if (solver.score.score < best_score.score) {
       answer = solver.answer;
@@ -1348,7 +1367,7 @@ ll solve_case(int case_num) {
   }
 
   {
-    auto solver = Solver_2(answer, input, 2.0);
+    auto solver = Solver_2(answer, input, 99.9);
     solver.solve();
     if (solver.score.score < best_score.score) {
       answer = solver.answer;
