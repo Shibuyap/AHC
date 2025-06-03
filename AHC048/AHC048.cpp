@@ -85,6 +85,7 @@ namespace {
 }
 
 constexpr int INF = 1001001001;
+constexpr double EPS = 1e-6;
 
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
@@ -715,26 +716,10 @@ Score calculate_score(Answer& ans, const Input& input) {
   return score;
 }
 
-void initialize_board_1x1(Answer& answer) {
+void initialize_board_axb(Answer& answer, int a, int b) {
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
-      answer.initial_board.v[i][j] = 1;
-    }
-  }
-  for (int i = 0; i < answer.initial_board.n - 1; i++) {
-    for (int j = 0; j < answer.initial_board.n; j++) {
-      answer.initial_board.h[i][j] = 1;
-    }
-  }
-  answer.initial_board.calc_counts();
-
-  answer.board = answer.initial_board;
-}
-
-void initialize_board_4x1(Answer& answer) {
-  for (int i = 0; i < answer.initial_board.n; i++) {
-    for (int j = 0; j < answer.initial_board.n - 1; j++) {
-      if (j % 4 == 3) {
+      if (j % a == a - 1) {
         answer.initial_board.v[i][j] = 1;
       }
       else {
@@ -744,23 +729,12 @@ void initialize_board_4x1(Answer& answer) {
   }
   for (int i = 0; i < answer.initial_board.n - 1; i++) {
     for (int j = 0; j < answer.initial_board.n; j++) {
-      answer.initial_board.h[i][j] = 1;
-    }
-  }
-  answer.initial_board.calc_counts();
-
-  answer.board = answer.initial_board;
-}
-
-void initialize_board_20x20(Answer& answer) {
-  for (int i = 0; i < answer.initial_board.n; i++) {
-    for (int j = 0; j < answer.initial_board.n - 1; j++) {
-      answer.initial_board.v[i][j] = 0;
-    }
-  }
-  for (int i = 0; i < answer.initial_board.n - 1; i++) {
-    for (int j = 0; j < answer.initial_board.n; j++) {
-      answer.initial_board.h[i][j] = 0;
+      if (i % b == b - 1) {
+        answer.initial_board.h[i][j] = 1;
+      }
+      else {
+        answer.initial_board.h[i][j] = 0;
+      }
     }
   }
   answer.initial_board.calc_counts();
@@ -779,7 +753,7 @@ public:
   }
 
   void solve() {
-    initialize_board_1x1(answer);
+    initialize_board_axb(answer, 1, 1);
 
     answer.clear();
 
@@ -826,6 +800,37 @@ vector<vector<int>> create_candidates(int max_num, int max_count) {
   return res;
 }
 
+vector<pair<vector<double>, vector<int>>> create_candidate_pairs(int max_num, int max_count, const Input& input) {
+  vector<pair<vector<double>, vector<int>>> res;
+  vector<int> cur;
+  // 深さ優先で非減少列を生成
+  function<void(int, int)> dfs = [&](int start, int remain)
+    {
+      if (remain == 0) {            // ちょうど max_count 個そろった
+        vector<double> col(3, 0.0);
+        for (int i = 0; i < cur.size(); i++) {
+          for (int j = 0; j < 3; j++) {
+            col[j] += input.owns[cur[i]][j];
+          }
+        }
+        for (int j = 0; j < 3; j++) {
+          col[j] /= cur.size();
+        }
+        res.push_back(make_pair(col, cur));
+        return;
+      }
+      for (int i = start; i < max_num; ++i) {
+        cur.push_back(i);         // i を選ぶ
+        dfs(i, remain - 1);       // 同じ i を重複して選べるので start は i
+        cur.pop_back();           // 戻す
+      }
+    };
+  if (max_count >= 0 && max_num > 0) dfs(0, max_count);
+
+  sort(res.begin(), res.end());
+  return res;
+}
+
 inline double calc_one_cost(int vol, const vector<double>& col1, const vector<double>& col2, int d) {
   return vol * d + calc_error(col1, col2) * 1e4;
 }
@@ -847,7 +852,7 @@ public:
   }
 
   void solve() {
-    initialize_board_20x20(answer);
+    initialize_board_axb(answer, 20, 20);
 
     vector<pair<vector<double>, vector<int>>> candidates;
 
@@ -859,19 +864,8 @@ public:
         break;
       }
 
-      auto this_candidates = create_candidates(input.k, paint_count);
-      for (const auto& c : this_candidates) {
-        vector<double> col(3, 0.0);
-        for (int i = 0; i < paint_count; i++) {
-          for (int j = 0; j < 3; j++) {
-            col[j] += input.owns[c[i]][j];
-          }
-        }
-        for (int j = 0; j < 3; j++) {
-          col[j] /= paint_count;
-        }
-        candidates.push_back(make_pair(col, c));
-      }
+      auto this_candidates = create_candidate_pairs(input.k, paint_count, input);
+      candidates.insert(candidates.end(), this_candidates.begin(), this_candidates.end());
 
       sort(candidates.begin(), candidates.end());
 
@@ -964,6 +958,354 @@ public:
   }
 };
 
+// 仕切り固定(T小向け)
+class Solver_3 {
+public:
+  double time_limit;
+  const Input& input;
+  Answer answer;
+  Score score;
+
+  Answer best_answer;
+  Score best_score;
+  int best_num = 0;
+
+  Solver_3(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+    score.score = INF;
+    best_score.score = INF;
+    time_limit = tl;
+  }
+
+  void solve() {
+    vector<pair<vector<double>, vector<int>>> candidates[6];
+    for (int num = 1; num <= 5; num++) {
+      candidates[num] = create_candidate_pairs(input.k, num, input);
+    }
+
+    for (int num = 2; num <= 5; num++) {
+      initialize_board_axb(answer, num, 1);
+
+      answer.clear();
+      bool ok = true;
+      int max_count = 0;
+
+      for (int i = 0; i < input.h; i++) {
+        if (get_elapsed_time() > time_limit) {
+          ok = false;
+          break;
+        }
+
+        double min_cost = INF;
+        int query = 0;
+        int min_x = -1;
+        int min_y = -1;
+        int col_indices[5] = { -1, -1, -1, -1, -1 };
+        bool visited_vacant = false;
+
+        for (int x = 0; x < input.n; x++) {
+          for (int y = 0; y + num - 1 < input.n; y += num) {
+            if (answer.board.volumes[x][y] < EPS) {
+              if (visited_vacant) {
+                continue;
+              }
+              visited_vacant = true;
+
+              for (int col_count = 1; col_count <= num; col_count++) {
+                for (int j = 0; j < candidates[col_count].size(); j++) {
+                  double cost = calc_one_cost(0, input.targets[i], candidates[col_count][j].first, input.d);
+                  if (cost < min_cost) {
+                    min_cost = cost;
+                    query = 0;
+                    min_x = x;
+                    min_y = y;
+                    for (int k = 0; k < 5; k++) {
+                      if (k < col_count) {
+                        col_indices[k] = candidates[col_count][j].second[k];
+                      }
+                      else {
+                        col_indices[k] = -1;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            else {
+              // 足さない
+              double cost = calc_one_cost(0, input.targets[i], answer.board.colors[x][y], input.d);
+              if (cost < min_cost) {
+                min_cost = cost;
+                query = 2;
+                min_x = x;
+                min_y = y;
+                for (int k = 0; k < 5; k++) {
+                  col_indices[k] = -1;
+                }
+              }
+
+              int vol_int = (int)(answer.board.volumes[x][y] + 0.5);
+              for (int col_count = 1; col_count <= num - vol_int; col_count++) {
+                for (int j = 0; j < candidates[col_count].size(); j++) {
+                  auto mixed_color = answer.board.calc_mixed_color(answer.board.colors[x][y], candidates[col_count][j].first, answer.board.volumes[x][y], col_count);
+                  double cost = calc_one_cost(0, input.targets[i], mixed_color, input.d);
+                  if (cost < min_cost) {
+                    min_cost = cost;
+                    query = 1;
+                    min_x = x;
+                    min_y = y;
+                    for (int k = 0; k < 5; k++) {
+                      if (k < col_count) {
+                        col_indices[k] = candidates[col_count][j].second[k];
+                      }
+                      else {
+                        col_indices[k] = -1;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (query == 0) {
+          // 空のウェル
+          for (int j = 0; j < num; j++) {
+            if (col_indices[j] == -1) {
+              continue;
+            }
+            answer.add_turn_1(min_x, min_y, col_indices[j], input);
+          }
+        }
+        else if (query == 1) {
+          // 空でないウェルに追加
+          for (int j = 0; j < num; j++) {
+            if (col_indices[j] == -1) {
+              continue;
+            }
+            answer.add_turn_1(min_x, min_y, col_indices[j], input);
+          }
+        }
+        else if (query == 2) {
+          // 空でないウェルから取得
+          // 何もしない
+        }
+        answer.add_turn_2(min_x, min_y);
+      }
+
+      if (ok) {
+        score = calculate_score(answer, input);
+        if (score.score < best_score.score) {
+          best_answer = answer;
+          best_score = score;
+          best_num = num;
+        }
+      }
+
+      if (!ok) {
+        break;
+      }
+    }
+
+    answer = best_answer;
+    score = best_score;
+  }
+};
+
+class Solver_4 {
+public:
+  double time_limit;
+  const Input& input;
+  Answer answer;
+  Score score;
+
+  Answer best_answer;
+  Score best_score;
+  int best_num = 0;
+
+  Solver_4(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+    score.score = INF;
+    best_score.score = INF;
+    time_limit = tl;
+  }
+
+  void solve() {
+    vector<pair<vector<double>, vector<int>>> candidates[6];
+    for (int num = 1; num <= 5; num++) {
+      candidates[num] = create_candidate_pairs(input.k, num, input);
+    }
+
+    for (int num = 2; num <= 5; num++) {
+      initialize_board_axb(answer, num, 1);
+
+      answer.clear();
+      bool ok = true;
+      int max_count = 0;
+
+      for (int i = 0; i < input.h; i++) {
+        if (get_elapsed_time() > time_limit) {
+          ok = false;
+          break;
+        }
+
+        double min_cost = INF;
+        int query = 0;
+        int min_x = -1;
+        int min_y = -1;
+        int col_indices[5] = { -1, -1, -1, -1, -1 };
+        int eliminate_count = 0;
+        bool visited_vacant = false;
+
+        for (int x = 0; x < input.n; x++) {
+          for (int y = 0; y + num - 1 < input.n; y += num) {
+            if (answer.board.volumes[x][y] < EPS) {
+              if (visited_vacant) {
+                continue;
+              }
+              visited_vacant = true;
+
+              for (int col_count = 1; col_count <= num; col_count++) {
+                for (int j = 0; j < candidates[col_count].size(); j++) {
+                  double cost = calc_one_cost(0, input.targets[i], candidates[col_count][j].first, input.d);
+                  if (cost < min_cost) {
+                    min_cost = cost;
+                    query = 0;
+                    min_x = x;
+                    min_y = y;
+                    for (int k = 0; k < 5; k++) {
+                      if (k < col_count) {
+                        col_indices[k] = candidates[col_count][j].second[k];
+                      }
+                      else {
+                        col_indices[k] = -1;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            else {
+              // 足さない
+              double cost = calc_one_cost(0, input.targets[i], answer.board.colors[x][y], input.d);
+              if (cost < min_cost) {
+                min_cost = cost;
+                query = 2;
+                min_x = x;
+                min_y = y;
+                for (int k = 0; k < 5; k++) {
+                  col_indices[k] = -1;
+                }
+              }
+
+              int vol_int = (int)(answer.board.volumes[x][y] + 0.5);
+              for(int elim_count = 0; elim_count <= vol_int - 1; elim_count++) {
+                for (int col_count = 1; col_count <= num - vol_int; col_count++) {
+                  for (int j = 0; j < candidates[col_count].size(); j++) {
+                    auto mixed_color = answer.board.calc_mixed_color(answer.board.colors[x][y], candidates[col_count][j].first, answer.board.volumes[x][y] - elim_count, col_count);
+                    double cost = calc_one_cost(0, input.targets[i], mixed_color, input.d);
+                    if (cost < min_cost) {
+                      min_cost = cost;
+                      query = 1;
+                      min_x = x;
+                      min_y = y;
+                      for (int k = 0; k < 5; k++) {
+                        if (k < col_count) {
+                          col_indices[k] = candidates[col_count][j].second[k];
+                        }
+                        else {
+                          col_indices[k] = -1;
+                        }
+                      }
+                      eliminate_count = elim_count;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (!visited_vacant) {
+          for (int col_count = 1; col_count <= num; col_count++) {
+            for (int j = 0; j < candidates[col_count].size(); j++) {
+              double cost = calc_one_cost(0, input.targets[i], candidates[col_count][j].first, input.d);
+              if (cost < min_cost) {
+                min_cost = cost;
+                query = 3;
+                min_x = 0;
+                min_y = 0;
+                for (int k = 0; k < 5; k++) {
+                  if (k < col_count) {
+                    col_indices[k] = candidates[col_count][j].second[k];
+                  }
+                  else {
+                    col_indices[k] = -1;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (query == 0) {
+          // 空のウェル
+          for (int j = 0; j < num; j++) {
+            if (col_indices[j] == -1) {
+              continue;
+            }
+            answer.add_turn_1(min_x, min_y, col_indices[j], input);
+          }
+        }
+        else if (query == 1) {
+          // 空でないウェルに追加
+          for(int j = 0; j < eliminate_count; j++) {
+            answer.add_turn_3(min_x, min_y);
+          }
+          for (int j = 0; j < num; j++) {
+            if (col_indices[j] == -1) {
+              continue;
+            }
+            answer.add_turn_1(min_x, min_y, col_indices[j], input);
+          }
+        }
+        else if (query == 2) {
+          // 空でないウェルから取得
+          // 何もしない
+        }
+        else if (query == 3) {
+          // 空にしてから追加
+          while(answer.board.volumes[min_x][min_y] > EPS) {
+            answer.add_turn_3(min_x, min_y);
+          }
+          for (int j = 0; j < num; j++) {
+            if (col_indices[j] == -1) {
+              continue;
+            }
+            answer.add_turn_1(min_x, min_y, col_indices[j], input);
+          }
+        }
+        answer.add_turn_2(min_x, min_y);
+      }
+
+      if (ok) {
+        score = calculate_score(answer, input);
+        if (score.score < best_score.score) {
+          best_answer = answer;
+          best_score = score;
+          best_num = num;
+        }
+      }
+
+      if (!ok) {
+        break;
+      }
+    }
+
+    answer = best_answer;
+    score = best_score;
+  }
+};
+
 ll solve_case(int case_num) {
   const double TIME_LIMIT = 2.8;
   start_timer();
@@ -973,19 +1315,46 @@ ll solve_case(int case_num) {
   Answer answer(input.n, input.t);
   Score best_score;
   best_score.score = INF;
+  int best_solver = -1;
 
-  auto solver_1 = Solver_1(answer, input);
-  solver_1.solve();
-  if (solver_1.score.score < best_score.score) {
-    answer = solver_1.answer;
-    best_score = solver_1.score;
+  {
+    auto solver = Solver_1(answer, input);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 1;
+    }
   }
 
-  auto solver_2 = Solver_2(answer, input, 2.0);
-  solver_2.solve();
-  if (solver_2.score.score < best_score.score) {
-    answer = solver_2.answer;
-    best_score = solver_2.score;
+  {
+    auto solver = Solver_3(answer, input, 0.5);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 3 * 10 + solver.best_num;
+    }
+  }
+
+  {
+    auto solver = Solver_4(answer, input, 1.0);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 4 * 10 + solver.best_num;
+    }
+  }
+
+  {
+    auto solver = Solver_2(answer, input, 2.0);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 2;
+    }
   }
 
   output_data(case_num, answer);
@@ -1008,6 +1377,7 @@ ll solve_case(int case_num) {
       << setw(7) << best_score.d_score << ", "
       << setw(7) << best_score.e_scrore << ", "
       << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
+      << setw(3) << best_solver << ", "
       << setw(5) << get_elapsed_time() << ", "
       << endl;
   }
@@ -1020,8 +1390,9 @@ ll solve_case(int case_num) {
       << "score = " << setw(7) << best_score.score << ", "
       << "d_score = " << setw(7) << best_score.d_score << ", "
       << "e_score = " << setw(7) << best_score.e_scrore << ", "
-      << "max_e_score = " << setw(7) << best_score.max_e_score << ", "
-      << "time = " << setw(5) << get_elapsed_time() << ", "
+      << "max_e_score = " << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
+      << "solver = " << setw(3) << best_solver << ", "
+      << "time = " << setw(5) << get_elapsed_time() << " ms"
       << endl;
   }
 
