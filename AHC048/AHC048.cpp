@@ -573,6 +573,21 @@ void initialize_board_4x1(Answer& answer) {
   answer.board = answer.initial_board;
 }
 
+void initialize_board_20x20(Answer& answer) {
+  for (int i = 0; i < answer.initial_board.n; i++) {
+    for (int j = 0; j < answer.initial_board.n - 1; j++) {
+      answer.initial_board.v[i][j] = 0;
+    }
+  }
+  for (int i = 0; i < answer.initial_board.n - 1; i++) {
+    for (int j = 0; j < answer.initial_board.n; j++) {
+      answer.initial_board.h[i][j] = 0;
+    }
+  }
+
+  answer.board = answer.initial_board;
+}
+
 void method_1(Answer& answer, const Input& input) {
   for (int i = 0; i < input.h; i++) {
     answer.add_turn_1(0, 0, 0);
