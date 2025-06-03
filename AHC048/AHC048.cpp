@@ -84,6 +84,8 @@ namespace {
   }
 }
 
+constexpr int INF = 1001001001;
+
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
 constexpr int UP = 0;    // è„
@@ -132,12 +134,16 @@ public:
 };
 Queue2D queue2d;
 
-const double TIME_LIMIT = 2.8;
+
 int exec_mode;
 
 // åÎç∑ÇåvéZ
-inline double calc_error(const vector<double>& v1, const vector<double>& v2) {
-  return sqrt((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1]) + (v1[2] - v2[2]) * (v1[2] - v2[2]));
+inline double calc_error(const vector<double>& col1, const vector<double>& col2) {
+  return sqrt(
+    (col1[0] - col2[0]) * (col1[0] - col2[0])
+    + (col1[1] - col2[1]) * (col1[1] - col2[1])
+    + (col1[2] - col2[2]) * (col1[2] - col2[2])
+  );
 }
 
 const int N = 20;
@@ -424,6 +430,11 @@ public:
     }
   }
 
+  void clear() {
+    t = 0;
+    board = initial_board;
+  }
+
   void sim_turn_1(int x, int y, int k, const Input& input) {
     board.add_turn_1(x, y, input.owns[k]);
   }
@@ -635,12 +646,22 @@ void output_data(int case_num, const Answer& answer) {
   }
 }
 
-int calculate_score(Answer& ans, const Input& input) {
+struct Score {
+  int score;
+  int d_score;
+  int e_scrore;
+  double max_e_score;
+
+  Score() : score(0), d_score(0), e_scrore(0), max_e_score(0.0) {}
+};
+
+Score calculate_score(Answer& ans, const Input& input) {
+  Score score;
+
   ans.board = ans.initial_board;
-  double sum_e = 0;
   int count_add_1 = 0;
   int count_add_2 = 0;
-
+  double sum_e_score = 0.0;
   for (int i = 0; i < ans.t; i++) {
     if (ans.turns[i][0] == 1) { // add_turn_1
       int x = ans.turns[i][1];
@@ -659,7 +680,11 @@ int calculate_score(Answer& ans, const Input& input) {
       count_add_2++;
 
       // åÎç∑ÇåvéZ
-      sum_e += calc_error(ans.board.colors[x][y], input.targets[count_add_2 - 1]);
+      double e_score = calc_error(ans.board.colors[x][y], input.targets[count_add_2 - 1]);
+      sum_e_score += e_score;
+      if (e_score > score.max_e_score) {
+        score.max_e_score = e_score;
+      }
     }
     else if (ans.turns[i][0] == 3) { // add_turn_3
       int x = ans.turns[i][1];
@@ -671,7 +696,7 @@ int calculate_score(Answer& ans, const Input& input) {
       int y = ans.turns[i][2];
       int nx = ans.turns[i][3];
       int ny = ans.turns[i][4];
-      for(int d = 0; d < 4; d++) {
+      for (int d = 0; d < 4; d++) {
         if (x + DX[d] == nx && y + DY[d] == ny) {
           ans.sim_turn_4(x, y, d);
           break;
@@ -683,8 +708,11 @@ int calculate_score(Answer& ans, const Input& input) {
   if (count_add_2 != input.h) {
   }
 
-  int res = 1 + input.d * (count_add_1 - input.h) + round(1e4 * sum_e);
-  return res;
+  score.d_score = input.d * (count_add_1 - input.h);
+  score.e_scrore = round(sum_e_score * 1e4);
+  score.score = 1 + score.d_score + score.e_scrore;
+
+  return score;
 }
 
 void initialize_board_1x1(Answer& answer) {
@@ -740,56 +768,277 @@ void initialize_board_20x20(Answer& answer) {
   answer.board = answer.initial_board;
 }
 
-void method_1(Answer& answer, const Input& input) {
-  for (int i = 0; i < input.h; i++) {
-    answer.add_turn_1(0, 0, rand_xorshift() % input.k, input);
-    answer.add_turn_1(0, 0, rand_xorshift() % input.k, input);
-    answer.add_turn_2(0, 0);
-    answer.add_turn_3(0, 0);
+class Solver_1 {
+public:
+  Answer answer;
+  const Input& input;
+  Score score;
+
+  Solver_1(Answer ans, const Input& in) : answer(ans), input(in) {
+    score.score = INF;
   }
+
+  void solve() {
+    initialize_board_1x1(answer);
+
+    answer.clear();
+
+    for (int i = 0; i < input.h; i++) {
+      answer.add_turn_1(0, 0, rand_xorshift() % input.k, input);
+      answer.add_turn_1(0, 0, rand_xorshift() % input.k, input);
+      answer.add_turn_2(0, 0);
+      answer.add_turn_3(0, 0);
+    }
+
+    score = calculate_score(answer, input);
+  }
+};
+
+ll nCr(ll n, ll r) {
+  if (r < 0 || r > n) return 0;
+  r = min(r, n - r);
+  ll res = 1;
+  for (ll i = 1; i <= r; ++i) {
+    res = res * (n - r + i) / i;
+  }
+  return res;
 }
 
+vector<vector<int>> create_candidates(int max_num, int max_count) {
+  vector<vector<int>> res;
+  vector<int> cur;
+
+  // ê[Ç≥óDêÊÇ≈îÒå∏è≠óÒÇê∂ê¨
+  function<void(int, int)> dfs = [&](int start, int remain)
+    {
+      if (remain == 0) {            // ÇøÇÂÇ§Ç« max_count å¬ÇªÇÎÇ¡ÇΩ
+        res.push_back(cur);
+        return;
+      }
+      for (int i = start; i < max_num; ++i) {
+        cur.push_back(i);         // i ÇëIÇ‘
+        dfs(i, remain - 1);       // ìØÇ∂ i Çèdï°ÇµÇƒëIÇ◊ÇÈÇÃÇ≈ start ÇÕ i
+        cur.pop_back();           // ñﬂÇ∑
+      }
+    };
+
+  if (max_count >= 0 && max_num > 0) dfs(0, max_count);
+  return res;
+}
+
+inline double calc_one_cost(int vol, const vector<double>& col1, const vector<double>& col2, int d) {
+  return vol * d + calc_error(col1, col2) * 1e4;
+}
+
+class Solver_2 {
+public:
+  double time_limit;
+  const Input& input;
+  Answer answer;
+  Score score;
+
+  Answer best_answer;
+  Score best_score;
+
+  Solver_2(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+    score.score = INF;
+    best_score.score = INF;
+    time_limit = tl;
+  }
+
+  void solve() {
+    initialize_board_20x20(answer);
+
+    vector<pair<vector<double>, vector<int>>> candidates;
+
+    for (int paint_count = 1; paint_count < 100; paint_count++) {
+      //cerr << paint_count << endl;
+
+      // èdï°ëgÇ›çáÇÌÇπÇ™ëÂÇ´Ç¢éûbreak
+      if (nCr(input.k + paint_count - 1, paint_count) > 2e5) {
+        break;
+      }
+
+      auto this_candidates = create_candidates(input.k, paint_count);
+      for (const auto& c : this_candidates) {
+        vector<double> col(3, 0.0);
+        for (int i = 0; i < paint_count; i++) {
+          for (int j = 0; j < 3; j++) {
+            col[j] += input.owns[c[i]][j];
+          }
+        }
+        for (int j = 0; j < 3; j++) {
+          col[j] /= paint_count;
+        }
+        candidates.push_back(make_pair(col, c));
+      }
+
+      sort(candidates.begin(), candidates.end());
+
+      answer.clear();
+      bool ok = true;
+      int max_count = 0;
+
+      for (int i = 0; i < input.h; i++) {
+        if (get_elapsed_time() > time_limit) {
+          ok = false;
+          break;
+        }
+
+        vector<double> tar = input.targets[i];
+        double min_cost = INF;
+        int min_iter = -1;
+
+        int start_iter = lower_bound(candidates.begin(), candidates.end(), make_pair(tar, vector<int>())) - candidates.begin();
+        if (start_iter == candidates.size()) {
+          start_iter--;
+        }
+
+        vector<double> best_cand_col = tar;
+        for (int j = start_iter; j >= 0; j--) {
+          double cost = calc_one_cost(candidates[j].second.size() - 1, tar, candidates[j].first, input.d);
+          if (cost < min_cost) {
+            min_cost = cost;
+            min_iter = j;
+          }
+
+          best_cand_col[0] = candidates[j].first[0];
+          if (calc_one_cost(0, tar, best_cand_col, input.d) > min_cost) {
+            break;
+          }
+        }
+
+        for (int j = start_iter; j < candidates.size(); j++) {
+          double cost = calc_one_cost(candidates[j].second.size() - 1, tar, candidates[j].first, input.d);
+          if (cost < min_cost) {
+            min_cost = cost;
+            min_iter = j;
+          }
+
+          best_cand_col[0] = candidates[j].first[0];
+          if (calc_one_cost(0, tar, best_cand_col, input.d) > min_cost) {
+            break;
+          }
+        }
+
+        int need_turn_count = candidates[min_iter].second.size() * 2;
+        if (answer.t + need_turn_count > answer.max_t) {
+          ok = false;
+          break;
+        }
+
+        max_count = max(max_count, (int)candidates[min_iter].second.size());
+
+        for (auto num : candidates[min_iter].second) {
+          answer.add_turn_1(0, 0, num, input);
+        }
+        for (int j = 0; j < candidates[min_iter].second.size(); j++) {
+          if (j == 0) {
+            answer.add_turn_2(0, 0);
+          }
+          else {
+            answer.add_turn_3(0, 0);
+          }
+        }
+      }
+
+      if (ok) {
+        score = calculate_score(answer, input);
+        if (score.score < best_score.score) {
+          best_answer = answer;
+          best_score = score;
+        }
+      }
+
+      if (!ok) {
+        break;
+      }
+
+      if (max_count < paint_count) {
+        break;
+      }
+    }
+
+    answer = best_answer;
+    score = best_score;
+  }
+};
+
 ll solve_case(int case_num) {
+  const double TIME_LIMIT = 2.8;
   start_timer();
 
   Input input = input_data(case_num);
 
   Answer answer(input.n, input.t);
+  Score best_score;
+  best_score.score = INF;
 
-  initialize_board_1x1(answer);
+  auto solver_1 = Solver_1(answer, input);
+  solver_1.solve();
+  if (solver_1.score.score < best_score.score) {
+    answer = solver_1.answer;
+    best_score = solver_1.score;
+  }
 
-  method_1(answer, input);
+  auto solver_2 = Solver_2(answer, input, 2.0);
+  solver_2.solve();
+  if (solver_2.score.score < best_score.score) {
+    answer = solver_2.answer;
+    best_score = solver_2.score;
+  }
 
   output_data(case_num, answer);
 
-  ll score = 0;
+  int score = 0;
   if (exec_mode != 0) {
-    score = calculate_score(answer, input);
+    score = calculate_score(answer, input).score;
   }
+
+  if (exec_mode == 1) {
+    cerr << score << endl;
+  }
+  else if (exec_mode == 777) {
+    cerr
+      << setw(3) << case_num << ", "
+      << setw(2) << input.k << ", "
+      << setw(5) << input.t << ", "
+      << setw(4) << input.d << ", "
+      << setw(7) << best_score.score << ", "
+      << setw(7) << best_score.d_score << ", "
+      << setw(7) << best_score.e_scrore << ", "
+      << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
+      << setw(5) << get_elapsed_time() << ", "
+      << endl;
+  }
+  else {
+    cerr
+      << "case = " << setw(3) << case_num << ", "
+      << "k = " << setw(2) << input.k << ", "
+      << "t = " << setw(5) << input.t << ", "
+      << "d = " << setw(4) << input.d << ", "
+      << "score = " << setw(7) << best_score.score << ", "
+      << "d_score = " << setw(7) << best_score.d_score << ", "
+      << "e_score = " << setw(7) << best_score.e_scrore << ", "
+      << "max_e_score = " << setw(7) << best_score.max_e_score << ", "
+      << "time = " << setw(5) << get_elapsed_time() << ", "
+      << endl;
+  }
+
   return score;
 }
 
 int main() {
-  exec_mode = 2;
+  exec_mode = 777;
 
   if (exec_mode == 0) {
     solve_case(0);
   }
-  else if (exec_mode <= 2) {
+  else if (exec_mode <= 999) {
     ll sum_score = 0;
     for (int i = 0; i < 1000; i++) {
       ll score = solve_case(i);
       sum_score += score;
-      if (exec_mode == 1) {
-        cerr << score << endl;
-      }
-      else {
-        cerr << "case = " << setw(2) << i << ", "
-          << "score = " << setw(4) << score << ", "
-          << "sum = " << setw(5) << sum_score << ", "
-          << "time = " << setw(5) << get_elapsed_time() << ", "
-          << endl;
-      }
     }
   }
 
