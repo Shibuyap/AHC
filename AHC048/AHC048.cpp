@@ -326,7 +326,12 @@ public:
     vector<double> mixed_color(3, 0.0);
     double total_volume = vol1 + vol2;
     for (int i = 0; i < 3; i++) {
-      mixed_color[i] = (vol1 * col1[i] + vol2 * col2[i]) / total_volume;
+      if (total_volume < EPS) {
+        mixed_color[i] = 0.0;
+      }
+      else {
+        mixed_color[i] = (vol1 * col1[i] + vol2 * col2[i]) / total_volume;
+      }
     }
     return mixed_color;
   }
@@ -471,9 +476,9 @@ public:
   // ŠG‹ï‚ð‰æ”Œ‚É“n‚·
   void add_turn_2(int x, int y) {
     if (!can_turn_2(x, y)) {
-      cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
-      is_over = true;
-      return;
+      //cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
+      //is_over = true;
+      //return;
     }
 
     if (t >= max_t) {
@@ -1370,6 +1375,15 @@ public:
     time_limit = tl;
   }
 
+  int change_vertical_lines_count_limit = 7;
+  inline double calc_eval_1(double mixed_volume, const vector<double>& mixed_color, const vector<double>& target_color, int change_vertical_lines_count) {
+    if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
+      return 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
+    }
+    double res = calc_error(mixed_color, target_color) * 1e4;
+    return res;
+  }
+
   void solve() {
 
     initialize_board_solver_5(answer);
@@ -1378,22 +1392,26 @@ public:
     bool ok = true;
     int max_count = 0;
 
+    vector<int> each_row_colors(input.n, 0);
     for (int i = 0; i < input.n; i++) {
       answer.add_turn_1(i, input.n - 1, i % input.k, input);
+      each_row_colors[i] = i % input.k;
     }
 
     vector<int> vertical_lines(input.n, 0);
-    double volume_sum = input.n;
 
     double mixed_volume = 0.0;
     vector<double> mixed_colors(3, 0.0);
 
-    const double MINIMUM_VOLUME = input.n + EPS;
-    const int LOOP_COUNT = 100000;
+    const double MINIMUM_VOLUME = input.n * 2 + EPS;
+    const int LOOP_COUNT = 10000;
     const int RESET_VERTICAL_LINE_NUM = 10;
 
     for (int i = 0; i < input.h; i++) {
-      cerr << i << endl;
+      if (i % 100 == 0) {
+        cerr << "Processing target " << i << " / " << input.h << endl;
+      }
+      //cerr << i << endl;
       if (get_elapsed_time() > time_limit) {
         ok = false;
         break;
@@ -1401,6 +1419,8 @@ public:
 
       for (int j = 0; j < input.n; j++) {
         if (vertical_lines[j] >= RESET_VERTICAL_LINE_NUM) {
+          double diff_vol = answer.board.volumes[0][0] / answer.board.counts[0][0] * vertical_lines[j];
+          mixed_volume -= diff_vol;
           answer.add_turn_4(j, 0, RIGHT);
           answer.add_turn_4(j, vertical_lines[j], RIGHT);
           vertical_lines[j] = 0;
@@ -1409,18 +1429,37 @@ public:
 
       vector<int> add_indices;
       vector<int> add_colors;
-      while (volume_sum < MINIMUM_VOLUME) {
+      vector<double> each_color_volumes(input.k, 0.0);
+      while (true) {
         int idx = rand_xorshift() % input.n;
-        int col = rand_xorshift() % input.k;
-        add_indices.push_back(idx);
-        add_colors.push_back(col);
-        volume_sum += 1.0;
-      }
-
-      for (int j = 0; j < add_indices.size(); j++) {
-        int idx = add_indices[j];
-        int col = add_colors[j];
+        double min_vol = 1e9;
+        for (int j = 0; j < input.n; j++) {
+          double vol = answer.board.volumes[j][input.n - 1];
+          if (vol < min_vol) {
+            min_vol = vol;
+            idx = j;
+          }
+        }
+        if (min_vol > 0.3) {
+          break;
+        }
+        for (int j = 0; j < input.k; j++) {
+          each_color_volumes[j] = 0.0;
+        }
+        for (int j = 0; j < input.n; j++) {
+          each_color_volumes[each_row_colors[j]] += answer.board.volumes[j][input.n - 1];
+        }
+        int col = 0;
+        double min_color_vol = 1e9;
+        for (int j = 0; j < input.k; j++) {
+          if (each_color_volumes[j] < min_color_vol) {
+            min_color_vol = each_color_volumes[j];
+            col = j;
+          }
+        }
+        answer.add_turn_3(idx, input.n - 1);
         answer.add_turn_1(idx, input.n - 1, col, input);
+        each_row_colors[idx] = col;
       }
 
       vector<int> next_vertical_lines = vertical_lines;
@@ -1429,105 +1468,142 @@ public:
       vector<double> next_mixed_colors = mixed_colors;
 
       // ŽR“o‚è
-      int iter = 0;
-      while (next_mixed_volume < 1.0 - EPS) {
-        iter++;
-        //for (int iter = 0; iter < LOOP_COUNT; iter++) {
-        double current_score = calc_error(next_mixed_colors, input.targets[i]) * 1e4 + pow(max(0, change_vertical_lines_count - 5), 2.0) * 100 + max(0.0, next_mixed_volume - 1.0) * iter + (next_mixed_volume < 1.0 - EPS ? 1.1 : 0) * iter * 10;
+      change_vertical_lines_count_limit = 9;
+      bool is_first = true;
+      while (true) {
+        for (int iter = 0; iter < LOOP_COUNT; iter++) {
+          double current_score = calc_eval_1(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
 
-        int idx1 = 0, idx2 = 0;
-        int diff1 = 0;
-        int color1 = 0;
-        int keep1 = 0;
+          int idx1 = 0, idx2 = 0;
+          int diff1 = 0;
+          int color1 = 0;
+          int keep1 = 0;
 
-        int ra = rand_xorshift() % 100;
-        if (ra < 0) {
-          // ŽdØ‚è‚ð+-1‚·‚é
-          idx1 = rand_xorshift() % input.n;
-          diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
-          if (next_vertical_lines[idx1] + diff1 < vertical_lines[idx1] || next_vertical_lines[idx1] + diff1 > input.n - 2) {
-            diff1 *= -1;
-          }
+          int ra = rand_xorshift() % 100;
+          if (ra < 50) {
+            // ŽdØ‚è‚ð+-1‚·‚é
+            idx1 = rand_xorshift() % input.n;
+            if (true) {
+              diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
+              if (next_vertical_lines[idx1] + diff1 < vertical_lines[idx1] || next_vertical_lines[idx1] + diff1 > input.n - 2) {
+                diff1 *= -1;
+              }
+            }
+            else {
+              diff1 = 1;
+              while (next_vertical_lines[idx1] + diff1 > input.n - 2) {
+                idx1 = rand_xorshift() % input.n;
+              }
+            }
 
-          next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1);
-          next_mixed_volume += answer.board.volumes[idx1][input.n - 1] * diff1 / answer.board.counts[idx1][input.n - 1];
-          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
-            change_vertical_lines_count++;
-          }
-          next_vertical_lines[idx1] += diff1;
-          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
-            change_vertical_lines_count--;
-          }
-        }
-        else if (ra < 100) {
-          // ŽdØ‚è‚ðƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚é
-          idx1 = rand_xorshift() % input.n;
-          // [vertical_lines[idx1], input.n - 2]
-          diff1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
-          while (diff1 == next_vertical_lines[idx1]) {
-            diff1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
-          }
-          keep1 = next_vertical_lines[idx1];
-
-          next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, (diff1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1]);
-          next_mixed_volume += (diff1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1];
-          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
-            change_vertical_lines_count++;
-          }
-          next_vertical_lines[idx1] = diff1;
-          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
-            change_vertical_lines_count--;
-          }
-        }
-        //else if (ra < 90) {
-        //  // ŠG‹ï‚ð‘«‚·êŠ‚ð•Ï‚¦‚é
-        //  idx1 = rand_xorshift() % add_indices.size();
-        //  idx2 = rand_xorshift() % input.n;
-        //  while (add_indices[idx1] == idx2) {
-        //    idx2 = rand_xorshift() % input.n;
-        //  }
-        //  keep1 = add_indices[idx1];
-        //}
-        //else if (ra < 100) {
-        //  // ŠG‹ï‚ÌF‚ð•Ï‚¦‚é
-        //  idx1 = rand_xorshift() % add_colors.size();
-        //  color1 = rand_xorshift() % input.k;
-        //  while (add_colors[idx1] == color1) {
-        //    color1 = rand_xorshift() % input.k;
-        //  }
-        //  keep1 = add_colors[idx1];
-        //}
-
-        double next_score = calc_error(next_mixed_colors, input.targets[i]) * 1e4 + pow(max(0, change_vertical_lines_count - 5), 2.0) * 100 + max(0.0, next_mixed_volume - 1.0) * iter + (next_mixed_volume < 1.0 - EPS ? 1.1 : 0) * iter * 10;
-        if (next_score <= current_score) {
-          // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
-          cerr << next_mixed_volume << endl;
-        }
-        else {
-          // –ß‚·
-          if (ra < 0) {
-            next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * -diff1);
-            next_mixed_volume -= answer.board.volumes[idx1][input.n - 1] * diff1 / answer.board.counts[idx1][input.n - 1];
+            next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1);
+            next_mixed_volume += answer.board.volumes[idx1][input.n - 1] * diff1 / answer.board.counts[idx1][input.n - 1];
             if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
               change_vertical_lines_count++;
             }
-            next_vertical_lines[idx1] -= diff1;
+            next_vertical_lines[idx1] += diff1;
             if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
               change_vertical_lines_count--;
             }
           }
           else if (ra < 100) {
-            next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, (keep1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1]);
-            next_mixed_volume += (keep1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1];
+            // ŽdØ‚è‚ðƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚é
+            idx1 = rand_xorshift() % input.n;
+            // [vertical_lines[idx1], input.n - 2]
+            diff1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
+            if (rand_xorshift() % 3 == 0) {
+              diff1 = vertical_lines[idx1];
+            }
+            while (diff1 == next_vertical_lines[idx1]) {
+              diff1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
+            }
+            keep1 = next_vertical_lines[idx1];
+
+            next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, (diff1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1]);
+            next_mixed_volume += (diff1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1];
             if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
               change_vertical_lines_count++;
             }
-            next_vertical_lines[idx1] = keep1;
+            next_vertical_lines[idx1] = diff1;
             if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
               change_vertical_lines_count--;
             }
           }
+          //else if (ra < 90) {
+          //  // ŠG‹ï‚ð‘«‚·êŠ‚ð•Ï‚¦‚é
+          //  idx1 = rand_xorshift() % add_indices.size();
+          //  idx2 = rand_xorshift() % input.n;
+          //  while (add_indices[idx1] == idx2) {
+          //    idx2 = rand_xorshift() % input.n;
+          //  }
+          //  keep1 = add_indices[idx1];
+          //}
+          //else if (ra < 100) {
+          //  // ŠG‹ï‚ÌF‚ð•Ï‚¦‚é
+          //  idx1 = rand_xorshift() % add_colors.size();
+          //  color1 = rand_xorshift() % input.k;
+          //  while (add_colors[idx1] == color1) {
+          //    color1 = rand_xorshift() % input.k;
+          //  }
+          //  keep1 = add_colors[idx1];
+          //}
+
+          double next_score = calc_eval_1(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
+          //if (!is_first) {
+          //  cerr << next_mixed_colors[0] << " " << next_mixed_colors[1] << " " << next_mixed_colors[2] << endl;
+          //  cerr << current_score << " -> " << next_score << endl;
+          //}
+          if (next_score <= current_score) {
+            // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
+            //cerr << next_mixed_volume << endl;
+          }
+          else {
+            // –ß‚·
+            if (ra < 50) {
+              next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * -diff1);
+              next_mixed_volume -= answer.board.volumes[idx1][input.n - 1] * diff1 / answer.board.counts[idx1][input.n - 1];
+              if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+                change_vertical_lines_count++;
+              }
+              next_vertical_lines[idx1] -= diff1;
+              if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+                change_vertical_lines_count--;
+              }
+            }
+            else if (ra < 100) {
+              next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, (keep1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1]);
+              next_mixed_volume += (keep1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1];
+              if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+                change_vertical_lines_count++;
+              }
+              next_vertical_lines[idx1] = keep1;
+              if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+                change_vertical_lines_count--;
+              }
+            }
+          }
         }
+        if (next_mixed_volume < 1.0 - EPS) {
+          is_first = false;
+          change_vertical_lines_count_limit++;
+          cerr << change_vertical_lines_count_limit << " " << change_vertical_lines_count << endl;
+          cerr << "next_mixed_volume = " << next_mixed_volume << endl;
+          for (int i = 0; i < input.n; i++) {
+            cerr << next_vertical_lines[i] << " ";
+          }
+          cerr << endl;
+          continue;
+        }
+        if (calc_error(next_mixed_colors, input.targets[i]) > 0.001) {
+          //cerr << "i = "<< i << ", " << "calc_error = " << calc_error(next_mixed_colors, input.targets[i]) << endl;
+          is_first = false;
+          next_vertical_lines = vertical_lines;
+          change_vertical_lines_count = 0;
+          next_mixed_volume = mixed_volume;
+          next_mixed_colors = mixed_colors;
+          continue;
+        }
+        break;
       }
 
       for (int j = 0; j < input.n; j++) {
@@ -1535,21 +1611,21 @@ public:
           answer.add_turn_4(j, next_vertical_lines[j], RIGHT);
           answer.add_turn_4(j, vertical_lines[j], RIGHT);
         }
-        vertical_lines[j] = next_vertical_lines[j];
-      }
-
-      if (next_mixed_volume < 1.0 - EPS) {
-        ok = false;
-        break;
       }
 
       answer.add_turn_2(0, 0);
-      volume_sum -= min(next_mixed_volume, 1.0);
       next_mixed_volume = max(0.0, next_mixed_volume - 1.0);
+
+      while (next_mixed_volume > 0.01) {
+        answer.add_turn_3(0, 0);
+        next_mixed_volume = max(0.0, next_mixed_volume - 1.0);
+      }
 
       vertical_lines = next_vertical_lines;
       mixed_volume = next_mixed_volume;
       mixed_colors = next_mixed_colors;
+
+      //cout << "i = " << i << ", mixed_volume = " << mixed_volume << ", " << answer.board.volumes[0][0] << endl;
 
       if (answer.is_over) {
         ok = false;
@@ -1575,15 +1651,15 @@ ll solve_case(int case_num) {
   best_score.score = INF;
   int best_solver = -1;
 
-  {
-    auto solver = Solver_1(answer, input);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 1;
-    }
-  }
+  //{
+  //  auto solver = Solver_1(answer, input);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 1;
+  //  }
+  //}
 
   //{
   //  auto solver = Solver_3(answer, input, 99.9);
@@ -1675,8 +1751,8 @@ int main() {
   }
   else if (exec_mode <= 999) {
     ll sum_score = 0;
-    for (int i = 0; i < 1000; i++) {
-      ll score = solve_case(i);
+    for (int i = 0; i < 1; i++) {
+      ll score = solve_case(770);
       sum_score += score;
     }
   }
