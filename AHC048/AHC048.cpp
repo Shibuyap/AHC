@@ -749,6 +749,32 @@ void initialize_board_axb(Answer& answer, int a, int b) {
   answer.board = answer.initial_board;
 }
 
+void initialize_board_solver_5(Answer& answer) {
+  for (int i = 0; i < answer.initial_board.n; i++) {
+    for (int j = 0; j < answer.initial_board.n - 1; j++) {
+      if (j == 0) {
+        answer.initial_board.v[i][j] = 1;
+      }
+      else {
+        answer.initial_board.v[i][j] = 0;
+      }
+    }
+  }
+  for (int i = 0; i < answer.initial_board.n - 1; i++) {
+    for (int j = 0; j < answer.initial_board.n; j++) {
+      if (j == 0) {
+        answer.initial_board.h[i][j] = 0;
+      }
+      else {
+        answer.initial_board.h[i][j] = 1;
+      }
+    }
+  }
+  answer.initial_board.calc_counts();
+
+  answer.board = answer.initial_board;
+}
+
 class Solver_1 {
 public:
   Answer answer;
@@ -867,7 +893,7 @@ public:
       //cerr << paint_count << endl;
 
       // 重複組み合わせが大きい時break
-      if (nCr(input.k + paint_count - 1, paint_count) > 2e5) {
+      if (nCr(input.k + paint_count - 1, paint_count) > 2e6) {
         break;
       }
 
@@ -1345,189 +1371,196 @@ public:
   }
 
   void solve() {
-    vector<pair<vector<double>, vector<int>>> candidates[MAX_NUM + 1];
-    for (int num = 1; num <= MAX_NUM; num++) {
-      candidates[num] = create_candidate_pairs(input.k, num, input);
+
+    initialize_board_solver_5(answer);
+
+    answer.clear();
+    bool ok = true;
+    int max_count = 0;
+
+    for (int i = 0; i < input.n; i++) {
+      answer.add_turn_1(i, input.n - 1, i % input.k, input);
     }
 
-    for (int num = 2; num <= MAX_NUM; num++) {
-      initialize_board_axb(answer, num, 1);
+    vector<int> vertical_lines(input.n, 0);
+    double volume_sum = input.n;
 
-      answer.clear();
-      bool ok = true;
-      int max_count = 0;
+    double mixed_volume = 0.0;
+    vector<double> mixed_colors(3, 0.0);
 
-      for (int i = 0; i < input.h; i++) {
-        if (get_elapsed_time() > time_limit) {
-          ok = false;
-          break;
-        }
+    const double MINIMUM_VOLUME = input.n + EPS;
+    const int LOOP_COUNT = 100000;
+    const int RESET_VERTICAL_LINE_NUM = 10;
 
-        double min_cost = INF;
-        int query = 0;
-        int min_x = -1;
-        int min_y = -1;
-        int col_indices[5] = { -1, -1, -1, -1, -1 };
-        int eliminate_count = 0;
-        bool visited_vacant = false;
+    for (int i = 0; i < input.h; i++) {
+      cerr << i << endl;
+      if (get_elapsed_time() > time_limit) {
+        ok = false;
+        break;
+      }
 
-        for (int x = 0; x < input.n; x++) {
-          for (int y = 0; y + num - 1 < input.n; y += num) {
-            if (answer.board.volumes[x][y] < EPS) {
-              if (visited_vacant) {
-                continue;
-              }
-              visited_vacant = true;
-
-              for (int col_count = 1; col_count <= num; col_count++) {
-                for (int j = 0; j < candidates[col_count].size(); j++) {
-                  double cost = calc_one_cost(0, input.targets[i], candidates[col_count][j].first, input.d);
-                  if (cost < min_cost) {
-                    min_cost = cost;
-                    query = 0;
-                    min_x = x;
-                    min_y = y;
-                    for (int k = 0; k < 5; k++) {
-                      if (k < col_count) {
-                        col_indices[k] = candidates[col_count][j].second[k];
-                      }
-                      else {
-                        col_indices[k] = -1;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            else {
-              // 足さない
-              double cost = calc_one_cost(0, input.targets[i], answer.board.colors[x][y], input.d);
-              if (cost < min_cost) {
-                min_cost = cost;
-                query = 2;
-                min_x = x;
-                min_y = y;
-                for (int k = 0; k < 5; k++) {
-                  col_indices[k] = -1;
-                }
-              }
-
-              int vol_int = (int)(answer.board.volumes[x][y] + 0.5);
-              for (int elim_count = 0; elim_count <= vol_int - 1; elim_count++) {
-                for (int col_count = 1; col_count <= num - vol_int; col_count++) {
-                  for (int j = 0; j < candidates[col_count].size(); j++) {
-                    auto mixed_color = answer.board.calc_mixed_color(answer.board.colors[x][y], candidates[col_count][j].first, answer.board.volumes[x][y] - elim_count, col_count);
-                    double cost = calc_one_cost(elim_count, input.targets[i], mixed_color, input.d);
-                    if (cost < min_cost) {
-                      min_cost = cost;
-                      query = 1;
-                      min_x = x;
-                      min_y = y;
-                      for (int k = 0; k < 5; k++) {
-                        if (k < col_count) {
-                          col_indices[k] = candidates[col_count][j].second[k];
-                        }
-                        else {
-                          col_indices[k] = -1;
-                        }
-                      }
-                      eliminate_count = elim_count;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        if (!visited_vacant) {
-          int vol_int = (int)(answer.board.volumes[0][0] + 0.5);
-          for (int col_count = 1; col_count <= num; col_count++) {
-            for (int j = 0; j < candidates[col_count].size(); j++) {
-              double cost = calc_one_cost(vol_int, input.targets[i], candidates[col_count][j].first, input.d);
-              if (cost < min_cost) {
-                min_cost = cost;
-                query = 3;
-                min_x = 0;
-                min_y = 0;
-                for (int k = 0; k < 5; k++) {
-                  if (k < col_count) {
-                    col_indices[k] = candidates[col_count][j].second[k];
-                  }
-                  else {
-                    col_indices[k] = -1;
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        if (query == 0) {
-          // 空のウェル
-          for (int j = 0; j < num; j++) {
-            if (col_indices[j] == -1) {
-              continue;
-            }
-            answer.add_turn_1(min_x, min_y, col_indices[j], input);
-          }
-        }
-        else if (query == 1) {
-          // 空でないウェルに追加
-          for (int j = 0; j < eliminate_count; j++) {
-            answer.add_turn_3(min_x, min_y);
-          }
-          for (int j = 0; j < num; j++) {
-            if (col_indices[j] == -1) {
-              continue;
-            }
-            answer.add_turn_1(min_x, min_y, col_indices[j], input);
-          }
-        }
-        else if (query == 2) {
-          // 空でないウェルから取得
-          // 何もしない
-        }
-        else if (query == 3) {
-          // 空にしてから追加
-          while (answer.board.volumes[min_x][min_y] > EPS) {
-            answer.add_turn_3(min_x, min_y);
-            if (answer.is_over) {
-              ok = false;
-              break;
-            }
-          }
-          for (int j = 0; j < num; j++) {
-            if (col_indices[j] == -1) {
-              continue;
-            }
-            answer.add_turn_1(min_x, min_y, col_indices[j], input);
-          }
-        }
-        answer.add_turn_2(min_x, min_y);
-
-        if (answer.is_over) {
-          ok = false;
-          break;
+      for (int j = 0; j < input.n; j++) {
+        if (vertical_lines[j] >= RESET_VERTICAL_LINE_NUM) {
+          answer.add_turn_4(j, 0, RIGHT);
+          answer.add_turn_4(j, vertical_lines[j], RIGHT);
+          vertical_lines[j] = 0;
         }
       }
 
-      if (ok) {
-        score = calculate_score(answer, input);
-        if (score.score < best_score.score) {
-          best_answer = answer;
-          best_score = score;
-          best_num = num;
-        }
+      vector<int> add_indices;
+      vector<int> add_colors;
+      while (volume_sum < MINIMUM_VOLUME) {
+        int idx = rand_xorshift() % input.n;
+        int col = rand_xorshift() % input.k;
+        add_indices.push_back(idx);
+        add_colors.push_back(col);
+        volume_sum += 1.0;
       }
 
-      if (!ok) {
+      for (int j = 0; j < add_indices.size(); j++) {
+        int idx = add_indices[j];
+        int col = add_colors[j];
+        answer.add_turn_1(idx, input.n - 1, col, input);
+      }
+
+      vector<int> next_vertical_lines = vertical_lines;
+      int change_vertical_lines_count = 0;
+      double next_mixed_volume = mixed_volume;
+      vector<double> next_mixed_colors = mixed_colors;
+
+      // 山登り
+      int iter = 0;
+      while (next_mixed_volume < 1.0 - EPS) {
+        iter++;
+        //for (int iter = 0; iter < LOOP_COUNT; iter++) {
+        double current_score = calc_error(next_mixed_colors, input.targets[i]) * 1e4 + pow(max(0, change_vertical_lines_count - 5), 2.0) * 100 + max(0.0, next_mixed_volume - 1.0) * iter + (next_mixed_volume < 1.0 - EPS ? 1.1 : 0) * iter * 10;
+
+        int idx1 = 0, idx2 = 0;
+        int diff1 = 0;
+        int color1 = 0;
+        int keep1 = 0;
+
+        int ra = rand_xorshift() % 100;
+        if (ra < 0) {
+          // 仕切りを+-1する
+          idx1 = rand_xorshift() % input.n;
+          diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
+          if (next_vertical_lines[idx1] + diff1 < vertical_lines[idx1] || next_vertical_lines[idx1] + diff1 > input.n - 2) {
+            diff1 *= -1;
+          }
+
+          next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1);
+          next_mixed_volume += answer.board.volumes[idx1][input.n - 1] * diff1 / answer.board.counts[idx1][input.n - 1];
+          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+            change_vertical_lines_count++;
+          }
+          next_vertical_lines[idx1] += diff1;
+          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+            change_vertical_lines_count--;
+          }
+        }
+        else if (ra < 100) {
+          // 仕切りをランダムに変える
+          idx1 = rand_xorshift() % input.n;
+          // [vertical_lines[idx1], input.n - 2]
+          diff1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
+          while (diff1 == next_vertical_lines[idx1]) {
+            diff1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
+          }
+          keep1 = next_vertical_lines[idx1];
+
+          next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, (diff1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1]);
+          next_mixed_volume += (diff1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1];
+          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+            change_vertical_lines_count++;
+          }
+          next_vertical_lines[idx1] = diff1;
+          if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+            change_vertical_lines_count--;
+          }
+        }
+        //else if (ra < 90) {
+        //  // 絵具を足す場所を変える
+        //  idx1 = rand_xorshift() % add_indices.size();
+        //  idx2 = rand_xorshift() % input.n;
+        //  while (add_indices[idx1] == idx2) {
+        //    idx2 = rand_xorshift() % input.n;
+        //  }
+        //  keep1 = add_indices[idx1];
+        //}
+        //else if (ra < 100) {
+        //  // 絵具の色を変える
+        //  idx1 = rand_xorshift() % add_colors.size();
+        //  color1 = rand_xorshift() % input.k;
+        //  while (add_colors[idx1] == color1) {
+        //    color1 = rand_xorshift() % input.k;
+        //  }
+        //  keep1 = add_colors[idx1];
+        //}
+
+        double next_score = calc_error(next_mixed_colors, input.targets[i]) * 1e4 + pow(max(0, change_vertical_lines_count - 5), 2.0) * 100 + max(0.0, next_mixed_volume - 1.0) * iter + (next_mixed_volume < 1.0 - EPS ? 1.1 : 0) * iter * 10;
+        if (next_score <= current_score) {
+          // スコアが改善した
+        }
+        else {
+          // 戻す
+          if (ra < 0) {
+            next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * -diff1);
+            next_mixed_volume -= answer.board.volumes[idx1][input.n - 1] * diff1 / answer.board.counts[idx1][input.n - 1];
+            if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+              change_vertical_lines_count++;
+            }
+            next_vertical_lines[idx1] -= diff1;
+            if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+              change_vertical_lines_count--;
+            }
+          }
+          else if (ra < 100) {
+            next_mixed_colors = answer.board.calc_mixed_color(next_mixed_colors, answer.board.colors[idx1][input.n - 1], next_mixed_volume, (keep1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1]);
+            next_mixed_volume += (keep1 - next_vertical_lines[idx1]) * answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1];
+            if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+              change_vertical_lines_count++;
+            }
+            next_vertical_lines[idx1] = keep1;
+            if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
+              change_vertical_lines_count--;
+            }
+          }
+        }
+
+        cerr << next_mixed_volume << endl;
+      }
+
+      for (int j = 0; j < input.n; j++) {
+        if (next_vertical_lines[j] != vertical_lines[j]) {
+          answer.add_turn_4(j, next_vertical_lines[j], RIGHT);
+          answer.add_turn_4(j, vertical_lines[j], RIGHT);
+        }
+        vertical_lines[j] = next_vertical_lines[j];
+      }
+
+      if (next_mixed_volume < 1.0 - EPS) {
+        ok = false;
+        break;
+      }
+
+      answer.add_turn_2(0, 0);
+      volume_sum -= min(next_mixed_volume, 1.0);
+      next_mixed_volume = max(0.0, next_mixed_volume - 1.0);
+
+      vertical_lines = next_vertical_lines;
+      mixed_volume = next_mixed_volume;
+      mixed_colors = next_mixed_colors;
+
+      if (answer.is_over) {
+        ok = false;
         break;
       }
     }
 
-    answer = best_answer;
-    score = best_score;
+    if (ok) {
+      score = calculate_score(answer, input);
+    }
   }
 };
 
@@ -1553,18 +1586,28 @@ ll solve_case(int case_num) {
     }
   }
 
-  {
-    auto solver = Solver_3(answer, input, 99.9);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 3 * 10 + solver.best_num;
-    }
-  }
+  //{
+  //  auto solver = Solver_3(answer, input, 99.9);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 3 * 10 + solver.best_num;
+  //  }
+  //}
+
+  //{
+  //  auto solver = Solver_4(answer, input, 99.9);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 4 * 10 + solver.best_num;
+  //  }
+  //}
 
   {
-    auto solver = Solver_4(answer, input, 99.9);
+    auto solver = Solver_5(answer, input, 99.9);
     solver.solve();
     if (solver.score.score < best_score.score) {
       answer = solver.answer;
@@ -1573,15 +1616,15 @@ ll solve_case(int case_num) {
     }
   }
 
-  {
-    auto solver = Solver_2(answer, input, 99.9);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 2;
-    }
-  }
+  //{
+  //  auto solver = Solver_2(answer, input, 19.9);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 2;
+  //  }
+  //}
 
   output_data(case_num, answer);
 
