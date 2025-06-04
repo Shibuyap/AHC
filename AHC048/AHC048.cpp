@@ -1501,6 +1501,7 @@ public:
         double next_score = calc_error(next_mixed_colors, input.targets[i]) * 1e4 + pow(max(0, change_vertical_lines_count - 5), 2.0) * 100 + max(0.0, next_mixed_volume - 1.0) * iter + (next_mixed_volume < 1.0 - EPS ? 1.1 : 0) * iter * 10;
         if (next_score <= current_score) {
           // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
+          cerr << next_mixed_volume << endl;
         }
         else {
           // –ß‚·
@@ -1527,8 +1528,6 @@ public:
             }
           }
         }
-
-        cerr << next_mixed_volume << endl;
       }
 
       for (int j = 0; j < input.n; j++) {
