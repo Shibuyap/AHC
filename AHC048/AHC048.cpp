@@ -1372,7 +1372,7 @@ public:
   }
 };
 
-struct Solver5State {
+class Solver5State {
 public:
   vector<int> vertical_lines;
   int change_vertical_lines_count = 0;
@@ -1381,9 +1381,17 @@ public:
   double score;
 
   Solver5State(int n) : vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {}
+
+  inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
+    if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
+      return 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
+    }
+    score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * min(input_d, 400);
+    return score;
+  }
 };
 
-struct Solver5Params {
+class Solver5Params {
 public:
   double minimum_volume = 20 + EPS;
   int reset_vertical_line_num = 13;
@@ -1421,20 +1429,17 @@ public:
   }
 
   int change_vertical_lines_count_limit = 999;
-  inline double calc_eval_1(double mixed_volume, const vector<double>& mixed_color, const vector<double>& target_color, int change_vertical_lines_count) {
-    if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
-      return 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
-    }
-    double res = calc_error(mixed_color, target_color) * 1e4;
-    return res;
-  }
 
-  inline double calc_eval_2(double mixed_volume, const vector<double>& mixed_color, const vector<double>& target_color, int change_vertical_lines_count) {
-    if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
-      return 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
+  inline void move_diff(const Solver5State& state, Solver5State& next_state, int idx1, int diff1, double diff_vol) {
+    next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
+    next_state.mixed_volume += diff_vol;
+    if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+      next_state.change_vertical_lines_count++;
     }
-    double res = calc_error(mixed_color, target_color) * 1e4 + (mixed_volume - 1.0) * min(input.d, 400);
-    return res;
+    next_state.vertical_lines[idx1] += diff1;
+    if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+      next_state.change_vertical_lines_count--;
+    }
   }
 
   void solve_inner(int i, const Solver5Params& params, const Solver5State& state, Solver5State& next_state, int& count1, int& count2, int mode) {
@@ -1458,7 +1463,7 @@ public:
 
     int last_update_iter = 0;
     for (int iter = 0; iter < loop_count; iter++) {
-      double current_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
+      double current_score = next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
 
       int idx1 = 0;
       int diff1 = 0;
@@ -1488,17 +1493,10 @@ public:
       }
 
       diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
-      next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
-      next_state.mixed_volume += diff_vol;
-      if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-        next_state.change_vertical_lines_count++;
-      }
-      next_state.vertical_lines[idx1] += diff1;
-      if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-        next_state.change_vertical_lines_count--;
-      }
 
-      double next_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
+      move_diff(state, next_state, idx1, diff1, diff_vol);
+
+      double next_score = next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
       count1++;
       if (next_score <= current_score) {
         last_update_iter = iter;
@@ -1507,15 +1505,7 @@ public:
       }
       else {
         // –ß‚·
-        next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, -diff_vol);
-        next_state.mixed_volume -= diff_vol;
-        if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-          next_state.change_vertical_lines_count++;
-        }
-        next_state.vertical_lines[idx1] -= diff1;
-        if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-          next_state.change_vertical_lines_count--;
-        }
+        move_diff(state, next_state, idx1, -diff1, -diff_vol);
       }
       if (iter > last_update_iter + params.main_break_last_update_iter) {
         break;
@@ -1561,8 +1551,6 @@ public:
         }
       }
 
-      vector<int> add_indices;
-      vector<int> add_colors;
       vector<double> each_color_volumes(input.k, 0.0);
       while (true) {
         int idx = rand_xorshift() % input.n;
@@ -1612,7 +1600,6 @@ public:
       int attempt_count_2 = 0;
 
       Solver5State best_best_state = state;
-
       Solver5State best_state = state;
       while (true) {
         attempt_count++;
@@ -1622,9 +1609,35 @@ public:
         for (int set_iter = 0; set_iter < params.initial_set_count; set_iter++) {
           next_state = state;
 
-          solve_inner(i, params, state, next_state, count1, count2, 0);
+          if (false && attempt_count == 1 && set_iter == 0) {
+            while(next_state.mixed_volume < 1.0) {
+              int best_idx = -1;
+              double best_vol = 0.0;
+              double best_score = 1e12;
+              for(int j = 0;j < input.n; j++) {
+                if (next_state.vertical_lines[j] >= params.reset_vertical_line_num) {
+                  continue;
+                }
+                if (next_state.vertical_lines[j] + 1 > input.n - 2) {
+                  continue;
+                }
+                double diff_vol = answer.board.volumes[j][input.n - 1] / answer.board.counts[j][input.n - 1];
+                auto mixed_color = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[j][input.n - 1], next_state.mixed_volume, diff_vol);
+                double new_score = calc_error(mixed_color, input.targets[i]) * 1e4;
+                if (new_score < best_score) {
+                  best_score = new_score;
+                  best_idx = j;
+                  best_vol = diff_vol;
+                }
+              }
+              move_diff(state, next_state, best_idx, 1, best_vol);
+            }
+          }
+          else {
+            solve_inner(i, params, state, next_state, count1, count2, 0);
+          }
 
-          next_state.score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
+          next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
           if (next_state.score < best_state.score) {
             // best‚É•Û‘¶
             best_state = next_state;
@@ -1647,8 +1660,7 @@ public:
           continue;
         }
 
-
-        next_state.score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
+        next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
         //cerr << "i = " << i << ", attempt_count = " << attempt_count << ", next_mixed_volume = " << next_mixed_volume << ", new_score = " << new_score << ", best_best_score = " << best_best_score << ", last_update_iter = " << last_update_iter << endl;
         if (next_state.score < best_best_state.score) {
           best_best_state = next_state;
@@ -1685,9 +1697,11 @@ public:
         break;
       }
 
-      if (attempt_count > 1) {
-        //cerr << i << " : attempt_count = " << attempt_count << endl;
-      }
+      //cerr << i << " : attempt_count = " << attempt_count << endl;
+      //cerr << attempt_count << ' ';
+      //if(i == input.h - 1) {
+      //  cerr << endl;
+      //}
 
       for (int j = 0; j < input.n; j++) {
         if (next_state.vertical_lines[j] != state.vertical_lines[j]) {
