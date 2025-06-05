@@ -1391,13 +1391,23 @@ public:
     }
     return score;
   }
+
+  inline double calc_eval_2(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
+    if (mixed_volume < 1.0 || 1.2 < mixed_volume) {
+      score = 1e9 + calc_error(mixed_colors, target_color) * 1e4 + abs(mixed_volume - 1.0) * min(input_d, 400) * 100000;
+    }
+    else {
+      score = calc_error(mixed_colors, target_color) * 1e4;
+    }
+    return score;
+  }
 };
 
 class Solver5Params {
 public:
   double minimum_volume = 20 + EPS;
-  int reset_vertical_line_num = 13;
-  double discard_value = 0.1;
+  int reset_vertical_line_num = 3;
+  double discard_value = 0.2;
   int start_change_vertical_lines_count_limit = 999;
 
   int initial_set_count = 40;
@@ -1532,7 +1542,7 @@ public:
           continue;
         }
 
-        if( next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]) {
+        if (next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]) {
           cerr << "Error: next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]: " << next_state.vertical_lines[idx1] << " <= " << state.vertical_lines[idx1] << endl;
         }
 
@@ -1544,7 +1554,14 @@ public:
 
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
       count1++;
-      if (next_state.score <= current_score) {
+      //double diff_score = (current_score - next_state.score) * 12345.6;
+      //double temp = 500000 / (iter - last_update_iter + 1);
+      //if(mode == 0) {
+      //  temp = 0.1;
+      //}
+      //double prob = exp(diff_score / temp);
+      //if (prob > rand_01()) {
+      if (next_state.score < current_score) {
         last_update_iter = iter;
         // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
         count2++;
@@ -1649,7 +1666,7 @@ public:
             col = j;
           }
         }
-        //answer.add_turn_3(idx, input.n - 1);
+        answer.add_turn_3(idx, input.n - 1);
         answer.add_turn_1(idx, input.n - 1, col, input);
         each_row_colors[idx] = col;
         if (answer.is_over) {
@@ -1745,8 +1762,8 @@ public:
           best_best_state = next_state;
         }
 
-        if (best_best_state.score > (input.d / 100.0 + 10) * (attempt_count + 5) / 6) {
-          if (attempt_count == 21 && attempt_count_2 == 0) {
+        if (best_best_state.score > (input.d / 100.0 + 0.2) * (attempt_count + 5) / 6) {
+          if (attempt_count == 3 && attempt_count_2 == 0) {
             while (state.mixed_volume > EPS) {
               answer.add_turn_3(0, 0);
               state.mixed_volume = max(0.0, state.mixed_volume - 1.0);
@@ -1837,29 +1854,30 @@ ll solve_case(int case_num) {
     }
   }
 
-  {
-    auto solver = Solver_3(answer, input, 99.9);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 3 * 10 + solver.best_num;
-    }
-  }
+  //{
+  //  auto solver = Solver_3(answer, input, 99.9);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 3 * 10 + solver.best_num;
+  //  }
+  //}
 
-  {
-    auto solver = Solver_4(answer, input, 99.9);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 4 * 10 + solver.best_num;
-    }
-  }
+  //{
+  //  auto solver = Solver_4(answer, input, 99.9);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 4 * 10 + solver.best_num;
+  //  }
+  //}
 
+  input.d = 1;
   if (true || (input.t > 20000 && input.d > 2000)) {
-    int arr[6] = { 20,6,5,4,3,2 };
-    for (int i = 0; i < 6; i++) {
+    int arr[2] = { 20,4 };
+    for (int i = 0; i < 1; i++) {
       auto solver = Solver_5(answer, input, 99.9);
 
       Solver5Params params;
@@ -1877,14 +1895,22 @@ ll solve_case(int case_num) {
     }
   }
 
-  {
-    auto solver = Solver_2(answer, input, 19.9);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 2;
-    }
+  //{
+  //  auto solver = Solver_2(answer, input, 19.9);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 2;
+  //  }
+  //}
+
+  //if (best_solver / 100 != 5) {
+  //  return 0;
+  //}
+
+  if (best_score.score > 50000) {
+    return 0;
   }
 
   output_data(case_num, answer);
@@ -1949,8 +1975,8 @@ int main() {
   }
   else if (exec_mode <= 999) {
     ll sum_score = 0;
-    for (int i = 0; i < 1000; i++) {
-      ll score = solve_case(i);
+    for (int i = 0; i < 2; i++) {
+      ll score = solve_case(i*5);
       sum_score += score;
     }
   }
