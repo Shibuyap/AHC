@@ -450,7 +450,9 @@ public:
   // ŠG‹ï‚ðƒEƒFƒ‹‚É’Ç‰Á‚·‚é
   void add_turn_1(int x, int y, int k, const Input& input) {
     if (t >= max_t) {
-      cerr << "Error: add_turn_1 called after max_t reached." << endl;
+      if (exec_mode != 778) {
+        cerr << "Error: add_turn_1 called after max_t reached." << endl;
+      }
       is_over = true;
       return;
     }
@@ -476,13 +478,17 @@ public:
   // ŠG‹ï‚ð‰æ”Œ‚É“n‚·
   void add_turn_2(int x, int y) {
     if (!can_turn_2(x, y)) {
-      //cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
-      //is_over = true;
-      //return;
+      if (exec_mode != 778) {
+        cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
+      }
+      is_over = true;
+      return;
     }
 
     if (t >= max_t) {
-      cerr << "Error: add_turn_2 called after max_t reached." << endl;
+      if (exec_mode != 778) {
+        cerr << "Error: add_turn_2 called after max_t reached." << endl;
+      }
       is_over = true;
       return;
     }
@@ -524,7 +530,9 @@ public:
   // ŽdØ‚è‚ðo‚µ“ü‚ê‚·‚é
   void add_turn_4(int x, int y, int d) {
     if (t >= max_t) {
-      cerr << "Error: add_turn_4 called after max_t reached." << endl;
+      if (exec_mode != 778) {
+        cerr << "Error: add_turn_4 called after max_t reached." << endl;
+      }
       is_over = true;
       return;
     }
@@ -665,11 +673,14 @@ struct Score {
   int e_scrore;
   double max_e_score;
 
+  vector<double> e_score_list; // Šeƒ^[ƒ“‚ÌŒë·‚ðŠi”[‚·‚éƒŠƒXƒg
+
   Score() : score(0), d_score(0), e_scrore(0), max_e_score(0.0) {}
 };
 
 Score calculate_score(Answer& ans, const Input& input) {
   Score score;
+  score.e_score_list.resize(input.h, 0.0);
 
   ans.board = ans.initial_board;
   int count_add_1 = 0;
@@ -695,6 +706,7 @@ Score calculate_score(Answer& ans, const Input& input) {
       // Œë·‚ðŒvŽZ
       double e_score = calc_error(ans.board.colors[x][y], input.targets[count_add_2 - 1]);
       sum_e_score += e_score;
+      score.e_score_list[count_add_2 - 1] = e_score;
       if (e_score > score.max_e_score) {
         score.max_e_score = e_score;
       }
@@ -724,6 +736,8 @@ Score calculate_score(Answer& ans, const Input& input) {
   score.d_score = input.d * (count_add_1 - input.h);
   score.e_scrore = round(sum_e_score * 1e4);
   score.score = 1 + score.d_score + score.e_scrore;
+
+  sort(score.e_score_list.begin(), score.e_score_list.end());
 
   return score;
 }
@@ -1388,8 +1402,9 @@ public:
     if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
       return 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
     }
-    //double res = calc_error(mixed_color, target_color) * 1e4 + (discard_palete_volume + mixed_volume - 1.0) * input.d;
-    double res = calc_error(mixed_color, target_color) * 1e4 + (mixed_volume - 1.0) * input.d;
+    //double res = calc_error(mixed_color, target_color) * 1e4 + (discard_palete_volume + mixed_volume - 1.0) * input.d * 1.0;
+    //double res = calc_error(mixed_color, target_color) * 1e4 + (discard_palete_volume + mixed_volume - 1.0) * 560;
+    double res = calc_error(mixed_color, target_color) * 1e4 + (mixed_volume - 1.0) * min(input.d, 400);
     return res;
   }
 
@@ -1420,9 +1435,9 @@ public:
     int count1 = 0, count2 = 0;
 
     for (int i = 0; i < input.h; i++) {
-      if (i % 100 == 0) {
-        cerr << "Processing target " << i << " / " << input.h << endl;
-      }
+      //if (i % 100 == 0) {
+      //  cerr << "Processing target " << i << " / " << input.h << endl;
+      //}
       //cerr << i << endl;
       if (get_elapsed_time() > time_limit) {
         ok = false;
@@ -1498,6 +1513,7 @@ public:
       // ŽR“o‚è
       change_vertical_lines_count_limit = 20;
       int attempt_count = 0;
+      int attempt_count_2 = 0;
       while (true) {
         attempt_count++;
 
@@ -1547,6 +1563,9 @@ public:
                 diff1 = 1;
                 while (next_vertical_lines[idx1] + diff1 > input.n - 2) {
                   idx1 = rand_xorshift() % input.n;
+                  if (rand_xorshift() % 99999 == 13579) {
+                    cerr << "c";
+                  }
                 }
               }
             }
@@ -1558,6 +1577,7 @@ public:
               if (rand_xorshift() % 3 == 0) {
                 new1 = vertical_lines[idx1];
               }
+
               while (new1 == next_vertical_lines[idx1]) {
                 new1 = rand_xorshift() % (input.n - 2 - vertical_lines[idx1] + 1) + vertical_lines[idx1];
               }
@@ -1658,6 +1678,9 @@ public:
               diff1 = 1;
               while (next_vertical_lines[idx1] + diff1 > input.n - 2) {
                 idx1 = rand_xorshift() % input.n;
+                if (rand_xorshift() % 99999 == 13579) {
+                  cerr << "a";
+                }
               }
             }
           }
@@ -1740,11 +1763,20 @@ public:
           cerr << endl;
           continue;
         }
-        //if (calc_error(next_mixed_colors, input.targets[i]) > 0.001 * (attempt_count + 0) / 1) {
-        //cout << calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume) << " " << (input.d / 3000.0 + 10) * attempt_count << endl;
-        //cout << discard_palette_volume << endl;
-        if (calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume) > (input.d / 100.0 + 10) * (attempt_count + 10) / 11) {
+
+        if (calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume) > (input.d / 100.0 + 10) * (attempt_count + 5) / 6) {
           //cerr << "i = "<< i << ", " << "calc_error = " << calc_error(next_mixed_colors, input.targets[i]) << endl;
+
+          if (attempt_count == 101 && attempt_count_2 == 0) {
+            while (mixed_volume > EPS) {
+              answer.add_turn_3(0, 0);
+              mixed_volume = max(0.0, mixed_volume - 1.0);
+            }
+
+            attempt_count = 0;
+            attempt_count_2++;
+          }
+
           next_vertical_lines = vertical_lines;
           change_vertical_lines_count = 0;
           next_mixed_volume = mixed_volume;
@@ -1780,11 +1812,6 @@ public:
       answer.add_turn_2(0, 0);
       next_mixed_volume = max(0.0, next_mixed_volume - 1.0);
 
-      //while (next_mixed_volume > EPS) {
-      //  answer.add_turn_3(0, 0);
-      //  next_mixed_volume = max(0.0, next_mixed_volume - 1.0);
-      //}
-
       vertical_lines = next_vertical_lines;
       mixed_volume = next_mixed_volume;
       mixed_colors = next_mixed_colors;
@@ -1798,8 +1825,11 @@ public:
     }
 
     if (ok) {
-      cerr << "count1 = " << count1 << ", count2 = " << count2 << endl;
+      //cerr << "count1 = " << count1 << ", count2 = " << count2 << endl;
       score = calculate_score(answer, input);
+    }
+    else {
+      score.score = INF;
     }
   }
 };
@@ -1816,38 +1846,28 @@ ll solve_case(int case_num) {
   best_score.score = INF;
   int best_solver = -1;
 
-  //{
-  //  auto solver = Solver_1(answer, input);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 1;
-  //  }
-  //}
+  {
+    auto solver = Solver_1(answer, input);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 1;
+    }
+  }
 
-  //{
-  //  auto solver = Solver_3(answer, input, 99.9);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 3 * 10 + solver.best_num;
-  //  }
-  //}
+  {
+    auto solver = Solver_3(answer, input, 99.9);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 3 * 10 + solver.best_num;
+    }
+  }
 
-  //{
-  //  auto solver = Solver_4(answer, input, 99.9);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 4 * 10 + solver.best_num;
-  //  }
-  //}
-
-  if (input.t > 30000) {
-    auto solver = Solver_5(answer, input, 99.9);
+  {
+    auto solver = Solver_4(answer, input, 99.9);
     solver.solve();
     if (solver.score.score < best_score.score) {
       answer = solver.answer;
@@ -1856,15 +1876,25 @@ ll solve_case(int case_num) {
     }
   }
 
-  //{
-  //  auto solver = Solver_2(answer, input, 19.9);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 2;
-  //  }
-  //}
+  if (true || (input.t > 20000 && input.d > 2000)) {
+    auto solver = Solver_5(answer, input, 99.9);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 5 * 10 + solver.best_num;
+    }
+  }
+
+  {
+    auto solver = Solver_2(answer, input, 19.9);
+    solver.solve();
+    if (solver.score.score < best_score.score) {
+      answer = solver.answer;
+      best_score = solver.score;
+      best_solver = 2;
+    }
+  }
 
   output_data(case_num, answer);
 
@@ -1876,20 +1906,31 @@ ll solve_case(int case_num) {
   if (exec_mode == 1) {
     cerr << score << endl;
   }
-  else if (exec_mode == 777) {
-    cerr << "Turn = " << answer.t << endl;
-    cerr
-      << setw(3) << case_num << ", "
-      << setw(2) << input.k << ", "
-      << setw(5) << input.t << ", "
-      << setw(4) << input.d << ", "
-      << setw(7) << best_score.score << ", "
-      << setw(7) << best_score.d_score << ", "
-      << setw(7) << best_score.e_scrore << ", "
-      << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
-      << setw(3) << best_solver << ", "
-      << setw(5) << get_elapsed_time() << ", "
-      << endl;
+  else if (exec_mode == 777 || exec_mode == 778) {
+    if (best_score.score < 1e7) {
+      //cerr << "Turn = " << answer.t << endl;
+      double e_ruisekiwa = 0;
+      for (int i = 0; i < input.h; i++) {
+        e_ruisekiwa += best_score.e_score_list[input.h - 1 - i] * 1e4;
+        if (i % 100 == 99) {
+          cerr << setw(6) << (int)e_ruisekiwa << ", ";
+        }
+      }
+      //cerr << endl;
+      cerr
+        << setw(3) << case_num << ", "
+        << setw(2) << input.k << ", "
+        << setw(5) << input.t << ", "
+        << setw(4) << input.d << ", "
+        << setw(7) << best_score.score << ", "
+        << setw(7) << best_score.d_score << ", "
+        << setw(7) << best_score.e_scrore << ", "
+        << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
+        << setw(3) << best_solver << ", "
+        << setw(5) << get_elapsed_time() << ", "
+        << setw(5) << answer.t << ", "
+        << endl;
+    }
   }
   else {
     cerr
@@ -1910,14 +1951,14 @@ ll solve_case(int case_num) {
 }
 
 int main() {
-  exec_mode = 777;
+  exec_mode = 778;
 
   if (exec_mode == 0) {
     solve_case(0);
   }
   else if (exec_mode <= 999) {
     ll sum_score = 0;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1000; i++) {
       ll score = solve_case(i);
       sum_score += score;
     }
