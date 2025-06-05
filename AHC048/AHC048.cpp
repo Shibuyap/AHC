@@ -1398,12 +1398,10 @@ public:
     return res;
   }
 
-  inline double calc_eval_2(double mixed_volume, const vector<double>& mixed_color, const vector<double>& target_color, int change_vertical_lines_count, double discard_palete_volume) {
+  inline double calc_eval_2(double mixed_volume, const vector<double>& mixed_color, const vector<double>& target_color, int change_vertical_lines_count) {
     if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
       return 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
     }
-    //double res = calc_error(mixed_color, target_color) * 1e4 + (discard_palete_volume + mixed_volume - 1.0) * input.d * 1.0;
-    //double res = calc_error(mixed_color, target_color) * 1e4 + (discard_palete_volume + mixed_volume - 1.0) * 560;
     double res = calc_error(mixed_color, target_color) * 1e4 + (mixed_volume - 1.0) * min(input.d, 400);
     return res;
   }
@@ -1501,14 +1499,6 @@ public:
       int change_vertical_lines_count = 0;
       double next_mixed_volume = mixed_volume;
       vector<double> next_mixed_colors = mixed_colors;
-      vector<double> after_volumes(input.n, 0.0);
-      double discard_palette_volume = 0.0;
-      for (int j = 0; j < input.n; j++) {
-        after_volumes[j] = answer.board.volumes[j][input.n - 1];
-        if (after_volumes[j] < DISCARD_VOLUME) {
-          discard_palette_volume += after_volumes[j];
-        }
-      }
 
       // ŽR“o‚è
       change_vertical_lines_count_limit = 20;
@@ -1521,8 +1511,6 @@ public:
         int best_change_vertical_lines_count = 0;
         double best_next_mixed_volume = mixed_volume;
         vector<double> best_next_mixed_colors = mixed_colors;
-        vector<double> best_after_volumes = after_volumes;
-        double best_discard_palette_volume = discard_palette_volume;
         double best_score = 1e12;
 
         const int SET_COUNT = 40;
@@ -1531,18 +1519,10 @@ public:
           change_vertical_lines_count = 0;
           next_mixed_volume = mixed_volume;
           next_mixed_colors = mixed_colors;
-          discard_palette_volume = 0.0;
-          for (int j = 0; j < input.n; j++) {
-            after_volumes[j] = answer.board.volumes[j][input.n - 1];
-            if (after_volumes[j] < DISCARD_VOLUME) {
-              discard_palette_volume += after_volumes[j];
-            }
-          }
 
           int MINI_LOOP_COUNT = 20;
           for (int iter = 0; iter < MINI_LOOP_COUNT; iter++) {
-            //double current_score = calc_eval_1(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
-            double current_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume);
+            double current_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
 
             int idx1 = 0, idx2 = 0;
             int diff1 = 0;
@@ -1594,16 +1574,8 @@ public:
             if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
               change_vertical_lines_count--;
             }
-            if (after_volumes[idx1] < DISCARD_VOLUME) {
-              discard_palette_volume -= after_volumes[idx1];
-            }
-            after_volumes[idx1] -= diff_vol;
-            if (after_volumes[idx1] < DISCARD_VOLUME) {
-              discard_palette_volume += after_volumes[idx1];
-            }
 
-            //double next_score = calc_eval_1(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
-            double next_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume);
+            double next_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
             count1++;
             if (next_score <= current_score) {
               //cout << iter << ' ';
@@ -1624,25 +1596,16 @@ public:
               if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
                 change_vertical_lines_count--;
               }
-              if (after_volumes[idx1] < DISCARD_VOLUME) {
-                discard_palette_volume -= after_volumes[idx1];
-              }
-              after_volumes[idx1] += diff_vol;
-              if (after_volumes[idx1] < DISCARD_VOLUME) {
-                discard_palette_volume += after_volumes[idx1];
-              }
             }
           }
 
-          if (calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume) < best_score) {
+          if (calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count) < best_score) {
             // best‚É•Û‘¶
             best_next_vertical_lines = next_vertical_lines;
             best_change_vertical_lines_count = change_vertical_lines_count;
             best_next_mixed_volume = next_mixed_volume;
             best_next_mixed_colors = next_mixed_colors;
-            best_after_volumes = after_volumes;
-            best_discard_palette_volume = discard_palette_volume;
-            best_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume);
+            best_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
           }
         }
 
@@ -1651,13 +1614,10 @@ public:
         change_vertical_lines_count = best_change_vertical_lines_count;
         next_mixed_volume = best_next_mixed_volume;
         next_mixed_colors = best_next_mixed_colors;
-        after_volumes = best_after_volumes;
-        discard_palette_volume = best_discard_palette_volume;
 
         int last_update_iter = 0;
         for (int iter = 0; iter < LOOP_COUNT; iter++) {
-          //double current_score = calc_eval_1(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
-          double current_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume);
+          double current_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
 
           int idx1 = 0, idx2 = 0;
           int diff1 = 0;
@@ -1708,25 +1668,14 @@ public:
           if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
             change_vertical_lines_count--;
           }
-          if (after_volumes[idx1] < DISCARD_VOLUME) {
-            discard_palette_volume -= after_volumes[idx1];
-          }
-          after_volumes[idx1] -= diff_vol;
-          if (after_volumes[idx1] < DISCARD_VOLUME) {
-            discard_palette_volume += after_volumes[idx1];
-          }
 
-          //double next_score = calc_eval_1(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
-          double next_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume);
+          double next_score = calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count);
           count1++;
           if (next_score <= current_score) {
             //cout << iter << ' ';
             last_update_iter = iter;
             // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
             count2++;
-            //if (next_score < (input.d / 3000.0 + 10) * (attempt_count + 10) / 11) {
-            //  break;
-            //}
           }
           else {
             // –ß‚·
@@ -1738,13 +1687,6 @@ public:
             next_vertical_lines[idx1] -= diff1;
             if (next_vertical_lines[idx1] == vertical_lines[idx1]) {
               change_vertical_lines_count--;
-            }
-            if (after_volumes[idx1] < DISCARD_VOLUME) {
-              discard_palette_volume -= after_volumes[idx1];
-            }
-            after_volumes[idx1] += diff_vol;
-            if (after_volumes[idx1] < DISCARD_VOLUME) {
-              discard_palette_volume += after_volumes[idx1];
             }
           }
           if (iter > last_update_iter + 50) {
@@ -1764,9 +1706,7 @@ public:
           continue;
         }
 
-        if (calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count, discard_palette_volume) > (input.d / 100.0 + 10) * (attempt_count + 5) / 6) {
-          //cerr << "i = "<< i << ", " << "calc_error = " << calc_error(next_mixed_colors, input.targets[i]) << endl;
-
+        if (calc_eval_2(next_mixed_volume, next_mixed_colors, input.targets[i], change_vertical_lines_count) > (input.d / 100.0 + 10) * (attempt_count + 5) / 6) {
           if (attempt_count == 101 && attempt_count_2 == 0) {
             while (mixed_volume > EPS) {
               answer.add_turn_3(0, 0);
@@ -1781,13 +1721,6 @@ public:
           change_vertical_lines_count = 0;
           next_mixed_volume = mixed_volume;
           next_mixed_colors = mixed_colors;
-          discard_palette_volume = 0.0;
-          for (int j = 0; j < input.n; j++) {
-            after_volumes[j] = answer.board.volumes[j][input.n - 1];
-            if (after_volumes[j] < DISCARD_VOLUME) {
-              discard_palette_volume += after_volumes[j];
-            }
-          }
 
           if (attempt_count % 100 == 0) {
             change_vertical_lines_count_limit++;
