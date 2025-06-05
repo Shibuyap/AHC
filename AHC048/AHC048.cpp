@@ -1383,6 +1383,24 @@ public:
   Solver5State(int n) : vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {}
 };
 
+struct Solver5Params {
+public:
+  double minimum_volume = 20 + EPS;
+  int reset_vertical_line_num = 13;
+  double discard_value = 0.1;
+  int start_change_vertical_lines_count_limit = 999;
+
+  int initial_set_count = 40;
+  int initial_loop_count = 20;
+  int initial_operation_thresholds[10] = { 0, 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
+  int initial_max_threshold = 100;
+
+  int main_loop_count = 1000;
+  int main_operation_thresholds[10] = { 90, 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
+  int main_max_threshold = 100;
+  int main_break_last_update_iter = 50;
+};
+
 class Solver_5 {
 public:
   double time_limit;
@@ -1419,7 +1437,93 @@ public:
     return res;
   }
 
-  void solve(int start_change_vertical_lines_count_limit) {
+  void solve_inner(int i, const Solver5Params& params, const Solver5State& state, Solver5State& next_state, int& count1, int& count2, int mode) {
+    int thresholds[10];
+    int max_threshold = 0;
+    int loop_count = 0;
+    if (mode == 0) {
+      for (int j = 0; j < 10; j++) {
+        thresholds[j] = params.initial_operation_thresholds[j];
+      }
+      max_threshold = params.initial_max_threshold;
+      loop_count = params.initial_loop_count;
+    }
+    else {
+      for (int j = 0; j < 10; j++) {
+        thresholds[j] = params.main_operation_thresholds[j];
+      }
+      max_threshold = params.main_max_threshold;
+      loop_count = params.main_loop_count;
+    }
+
+    int last_update_iter = 0;
+    for (int iter = 0; iter < loop_count; iter++) {
+      double current_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
+
+      int idx1 = 0;
+      int diff1 = 0;
+      double diff_vol = 0.0;
+
+      int ra = rand_xorshift() % max_threshold;
+      if (ra < thresholds[0]) {
+        // 仕切りを+-1する
+        idx1 = rand_xorshift() % input.n;
+        diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
+        if (next_state.vertical_lines[idx1] + diff1 < state.vertical_lines[idx1] || next_state.vertical_lines[idx1] + diff1 > input.n - 2) {
+          diff1 *= -1;
+        }
+      }
+      else if (ra < thresholds[1]) {
+        // 仕切りをランダムに変える
+        idx1 = rand_xorshift() % input.n;
+        // [vertical_lines[idx1], input.n - 2]
+        int new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
+        if (rand_xorshift() % 3 == 0) {
+          new1 = state.vertical_lines[idx1];
+        }
+        while (new1 == next_state.vertical_lines[idx1]) {
+          new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
+        }
+        diff1 = new1 - next_state.vertical_lines[idx1];
+      }
+
+      diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
+      next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
+      next_state.mixed_volume += diff_vol;
+      if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+        next_state.change_vertical_lines_count++;
+      }
+      next_state.vertical_lines[idx1] += diff1;
+      if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+        next_state.change_vertical_lines_count--;
+      }
+
+      double next_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
+      count1++;
+      if (next_score <= current_score) {
+        last_update_iter = iter;
+        // スコアが改善した
+        count2++;
+      }
+      else {
+        // 戻す
+        next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, -diff_vol);
+        next_state.mixed_volume -= diff_vol;
+        if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+          next_state.change_vertical_lines_count++;
+        }
+        next_state.vertical_lines[idx1] -= diff1;
+        if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+          next_state.change_vertical_lines_count--;
+        }
+      }
+      if (iter > last_update_iter + params.main_break_last_update_iter) {
+        break;
+      }
+    }
+  }
+
+  void solve(const Solver5Params& params) {
 
     initialize_board_solver_5(answer);
 
@@ -1435,11 +1539,6 @@ public:
 
     Solver5State state(input.n);
 
-    const double MINIMUM_VOLUME = input.n * 2 + EPS;
-    const int LOOP_COUNT = 1000;
-    const int RESET_VERTICAL_LINE_NUM = 13;
-    const double DISCARD_VOLUME = 0.1;
-
     int count1 = 0, count2 = 0;
 
     for (int i = 0; i < input.h; i++) {
@@ -1453,7 +1552,7 @@ public:
       }
 
       for (int j = 0; j < input.n; j++) {
-        if (state.vertical_lines[j] >= RESET_VERTICAL_LINE_NUM) {
+        if (state.vertical_lines[j] >= params.reset_vertical_line_num) {
           double diff_vol = answer.board.volumes[0][0] / answer.board.counts[0][0] * state.vertical_lines[j];
           state.mixed_volume -= diff_vol;
           answer.add_turn_4(j, 0, RIGHT);
@@ -1475,7 +1574,7 @@ public:
             idx = j;
           }
         }
-        if (min_vol >= DISCARD_VOLUME) {
+        if (min_vol >= params.discard_value) {
           break;
         }
         for (int j = 0; j < input.k; j++) {
@@ -1508,7 +1607,7 @@ public:
       Solver5State next_state = state;
 
       // 山登り
-      change_vertical_lines_count_limit = start_change_vertical_lines_count_limit;
+      change_vertical_lines_count_limit = params.start_change_vertical_lines_count_limit;
       int attempt_count = 0;
       int attempt_count_2 = 0;
 
@@ -1520,88 +1619,10 @@ public:
 
         best_state = state;
 
-        const int SET_COUNT = 40;
-        for (int set_iter = 0; set_iter < SET_COUNT; set_iter++) {
+        for (int set_iter = 0; set_iter < params.initial_set_count; set_iter++) {
           next_state = state;
 
-          int MINI_LOOP_COUNT = 20;
-          for (int iter = 0; iter < MINI_LOOP_COUNT; iter++) {
-            double current_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
-
-            int idx1 = 0, idx2 = 0;
-            int diff1 = 0;
-            int color1 = 0;
-            double diff_vol = 0.0;
-
-            int ra = rand_xorshift() % 100;
-            if (ra < 0) {
-              // 仕切りを+-1する
-              idx1 = rand_xorshift() % input.n;
-              if (true) {
-                diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
-                if (next_state.vertical_lines[idx1] + diff1 < state.vertical_lines[idx1] || next_state.vertical_lines[idx1] + diff1 > input.n - 2) {
-                  diff1 *= -1;
-                }
-              }
-              else {
-                diff1 = 1;
-                while (next_state.vertical_lines[idx1] + diff1 > input.n - 2) {
-                  idx1 = rand_xorshift() % input.n;
-                  if (rand_xorshift() % 99999 == 13579) {
-                    cerr << "c";
-                  }
-                }
-              }
-            }
-            else if (ra < 100) {
-              // 仕切りをランダムに変える
-              idx1 = rand_xorshift() % input.n;
-              // [vertical_lines[idx1], input.n - 2]
-              int new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
-              if (rand_xorshift() % 3 == 0) {
-                new1 = state.vertical_lines[idx1];
-              }
-
-              while (new1 == next_state.vertical_lines[idx1]) {
-                new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
-              }
-              diff1 = new1 - next_state.vertical_lines[idx1];
-            }
-
-            diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
-            next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
-            next_state.mixed_volume += diff_vol;
-            if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-              next_state.change_vertical_lines_count++;
-            }
-            next_state.vertical_lines[idx1] += diff1;
-            if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-              next_state.change_vertical_lines_count--;
-            }
-
-            double next_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
-            count1++;
-            if (next_score <= current_score) {
-              //cout << iter << ' ';
-              // スコアが改善した
-              count2++;
-              //if (next_score < (input.d / 3000.0 + 10) * (attempt_count + 10) / 11) {
-              //  break;
-              //}
-            }
-            else {
-              // 戻す
-              next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, -diff_vol);
-              next_state.mixed_volume -= diff_vol;
-              if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-                next_state.change_vertical_lines_count++;
-              }
-              next_state.vertical_lines[idx1] -= diff1;
-              if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-                next_state.change_vertical_lines_count--;
-              }
-            }
-          }
+          solve_inner(i, params, state, next_state, count1, count2, 0);
 
           next_state.score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
           if (next_state.score < best_state.score) {
@@ -1613,88 +1634,7 @@ public:
         // bestから戻す
         next_state = best_state;
 
-        int last_update_iter = 0;
-        int last_idx1 = -1;
-        int last_diff1 = 0;
-        for (int iter = 0; iter < LOOP_COUNT; iter++) {
-          double current_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
-
-          int idx1 = 0;
-          int diff1 = 0;
-          double diff_vol = 0.0;
-
-          int ra = rand_xorshift() % 100;
-          if (ra < 90) {
-            // 仕切りを+-1する
-            if (false && last_idx1 != -1) {
-              idx1 = last_idx1;
-              diff1 = last_diff1;
-            }
-            else {
-              idx1 = rand_xorshift() % input.n;
-              diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
-            }
-            if (next_state.vertical_lines[idx1] + diff1 < state.vertical_lines[idx1] || next_state.vertical_lines[idx1] + diff1 > input.n - 2) {
-              diff1 *= -1;
-            }
-          }
-          else if (ra < 100) {
-            // 仕切りをランダムに変える
-            idx1 = rand_xorshift() % input.n;
-            // [vertical_lines[idx1], input.n - 2]
-            int new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
-            if (rand_xorshift() % 3 == 0) {
-              new1 = state.vertical_lines[idx1];
-            }
-            while (new1 == next_state.vertical_lines[idx1]) {
-              new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
-            }
-            diff1 = new1 - next_state.vertical_lines[idx1];
-          }
-
-          diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
-          next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
-          next_state.mixed_volume += diff_vol;
-          if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-            next_state.change_vertical_lines_count++;
-          }
-          next_state.vertical_lines[idx1] += diff1;
-          if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-            next_state.change_vertical_lines_count--;
-          }
-
-          double next_score = calc_eval_2(next_state.mixed_volume, next_state.mixed_colors, input.targets[i], next_state.change_vertical_lines_count);
-          count1++;
-          last_idx1 = -1;
-          last_diff1 = 0;
-          if (next_score <= current_score) {
-            //cout << iter << ' ' << idx1 << ' ' << diff1 << ' ' << next_score << endl;
-            last_update_iter = iter;
-            // スコアが改善した
-            count2++;
-
-            if (rand_xorshift() % 2 == 0 && abs(diff1) == 1) {
-              last_idx1 = idx1;
-              last_diff1 = diff1;
-            }
-          }
-          else {
-            // 戻す
-            next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, -diff_vol);
-            next_state.mixed_volume -= diff_vol;
-            if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-              next_state.change_vertical_lines_count++;
-            }
-            next_state.vertical_lines[idx1] -= diff1;
-            if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
-              next_state.change_vertical_lines_count--;
-            }
-          }
-          if (iter > last_update_iter + 50) {
-            break;
-          }
-        }
-        //cout << endl;
+        solve_inner(i, params, state, next_state, count1, count2, 1);
 
         if (next_state.mixed_volume < 1.0 - EPS) {
           change_vertical_lines_count_limit++;
@@ -1827,7 +1767,11 @@ ll solve_case(int case_num) {
     int arr[6] = { 20,6,5,4,3,2 };
     for (int i = 0; i < 6; i++) {
       auto solver = Solver_5(answer, input, 99.9);
-      solver.solve(arr[i]);
+
+      Solver5Params params;
+      params.start_change_vertical_lines_count_limit = arr[i];
+
+      solver.solve(params);
       if (solver.score.score < best_score.score) {
         answer = solver.answer;
         best_score = solver.score;
