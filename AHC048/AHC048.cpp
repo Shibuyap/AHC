@@ -769,7 +769,7 @@ void initialize_board_axb(Answer& answer, int a, int b) {
   answer.board = answer.initial_board;
 }
 
-void initialize_board_solver_5(Answer& answer) {
+void initialize_board_solver_56(Answer& answer) {
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
       if (j == 0) {
@@ -1607,7 +1607,7 @@ public:
 
   void solve(const Solver5Params& params) {
 
-    initialize_board_solver_5(answer);
+    initialize_board_solver_56(answer);
 
     answer.clear();
     bool ok = true;
@@ -1840,6 +1840,24 @@ public:
 
 class Solver_6 {
 public:
+  class Solver6Params {
+  public:
+    double minimum_volume = 20 + EPS;
+    int reset_vertical_line_num = 5;
+    double discard_value = 0.4;
+    int start_change_vertical_lines_count_limit = 999;
+
+    int initial_set_count = 40;
+    int initial_loop_count = 20;
+    int initial_operation_thresholds[10] = { 0, 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
+    int initial_max_threshold = 100;
+
+    int main_loop_count = 500000; // 1000
+    int main_operation_thresholds[10] = { 90, 100, 150, 400, 500, 600, 700, 800, 900, 1000 };
+    int main_max_threshold = 150;
+    int main_break_last_update_iter = 999999; // 50
+  };
+
   class Solver6State {
   public:
     vector<int> vertical_lines;
@@ -1871,22 +1889,11 @@ public:
     }
   };
 
-  class Solver6Params {
+  class Solver6SAState {
   public:
-    double minimum_volume = 20 + EPS;
-    int reset_vertical_line_num = 5;
-    double discard_value = 0.4;
-    int start_change_vertical_lines_count_limit = 999;
-
-    int initial_set_count = 40;
-    int initial_loop_count = 20;
-    int initial_operation_thresholds[10] = { 0, 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
-    int initial_max_threshold = 100;
-
-    int main_loop_count = 500000; // 1000
-    int main_operation_thresholds[10] = { 90, 100, 150, 400, 500, 600, 700, 800, 900, 1000 };
-    int main_max_threshold = 150;
-    int main_break_last_update_iter = 999999; // 50
+    vector<int> used_indices;
+    vector<vector<int>> each_colors;
+    vector<int> each_row_colors;
   };
 
   double time_limit;
@@ -1918,7 +1925,7 @@ public:
     }
   }
 
-  void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int& count1, int& count2, int mode, vector<int>& used_indices, const vector<vector<int>>& each_colors, const vector<int>& each_row_colors) {
+  void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int mode, Solver6SAState& saState) {
     int thresholds[10];
     int max_threshold = 0;
     int loop_count = 0;
@@ -1937,7 +1944,7 @@ public:
       loop_count = params.main_loop_count;
     }
 
-    used_indices = calc_used_indices(state, next_state);
+    saState.used_indices = calc_used_indices(state, next_state);
     next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
 
     int last_update_iter = 0;
@@ -1982,27 +1989,24 @@ public:
       else if (ra < thresholds[2]) {
         // 同じ色の仕切りを一つ-1して、別の仕切りを+1する
         diff1 = -1;
-        if (used_indices.size() == 0) {
-          //iter--;
+        if (saState.used_indices.size() == 0) {
           continue;
         }
         for (int j = 0; j < 10; j++) {
-          idx1 = used_indices[rand_xorshift() % used_indices.size()];
-          col1 = each_row_colors[idx1];
-          if (each_colors[col1].size() > 1) {
+          idx1 = saState.used_indices[rand_xorshift() % saState.used_indices.size()];
+          col1 = saState.each_row_colors[idx1];
+          if (saState.each_colors[col1].size() > 1) {
             break;
           }
         }
-        if (each_colors[col1].size() <= 1) {
-          //iter--;
+        if (saState.each_colors[col1].size() <= 1) {
           continue;
         }
-        idx2 = each_colors[col1][rand_xorshift() % each_colors[col1].size()];
+        idx2 = saState.each_colors[col1][rand_xorshift() % saState.each_colors[col1].size()];
         while (idx1 == idx2) {
-          idx2 = each_colors[col1][rand_xorshift() % each_colors[col1].size()];
+          idx2 = saState.each_colors[col1][rand_xorshift() % saState.each_colors[col1].size()];
         }
         if (next_state.vertical_lines[idx2] >= input.n - 2) {
-          //iter--;
           continue;
         }
 
@@ -2017,7 +2021,6 @@ public:
       }
 
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
-      count1++;
       double diff_score = (current_score - next_state.score) * 12345.6;
       const double START_TEMP = 1000000; // 初期温度
       const double END_TEMP = 0.01; // 終了温度
@@ -2036,11 +2039,9 @@ public:
         }
       }
       if (accept) {
-        last_update_iter = iter;
         // スコアが改善した
-        count2++;
-        used_indices = calc_used_indices(state, next_state);
-        //cerr << "Iter: " << iter << ", Score: " << next_state.score << ", Change: " << diff_score << ", Temp: " << temp;
+        last_update_iter = iter;
+        saState.used_indices = calc_used_indices(state, next_state);
       }
       else {
         // 戻す
@@ -2073,33 +2074,21 @@ public:
   }
 
   void solve(const Solver6Params& params) {
-
-    initialize_board_solver_5(answer);
+    initialize_board_solver_56(answer);
 
     answer.clear();
     bool ok = true;
-    int max_count = 0;
 
-    vector<int> each_row_colors(input.n, 0);
+    Solver6SAState saState;
+    saState.each_row_colors.resize(input.n);
     for (int i = 0; i < input.n; i++) {
       answer.add_turn_1(i, input.n - 1, i % input.k, input);
-      each_row_colors[i] = i % input.k;
+      saState.each_row_colors[i] = i % input.k;
     }
 
     Solver6State state(input.n);
 
-    int count1 = 0, count2 = 0;
-
     for (int i = 0; i < input.h; i++) {
-      //if (i % 100 == 0) {
-      //  cerr << "Processing target " << i << " / " << input.h << endl;
-      //}
-      //cerr << i << endl;
-      if (get_elapsed_time() > time_limit) {
-        ok = false;
-        break;
-      }
-
       for (int j = 0; j < input.n; j++) {
         if (state.vertical_lines[j] >= params.reset_vertical_line_num) {
           double diff_vol = answer.board.volumes[0][0] / answer.board.counts[0][0] * state.vertical_lines[j];
@@ -2128,7 +2117,7 @@ public:
           each_color_volumes[j] = 0.0;
         }
         for (int j = 0; j < input.n; j++) {
-          each_color_volumes[each_row_colors[j]] += answer.board.volumes[j][input.n - 1];
+          each_color_volumes[saState.each_row_colors[j]] += answer.board.volumes[j][input.n - 1];
         }
         int col = 0;
         double min_color_vol = 1e9;
@@ -2140,7 +2129,7 @@ public:
         }
         answer.add_turn_3(idx, input.n - 1);
         answer.add_turn_1(idx, input.n - 1, col, input);
-        each_row_colors[idx] = col;
+        saState.each_row_colors[idx] = col;
         if (answer.is_over) {
           ok = false;
           break;
@@ -2151,9 +2140,10 @@ public:
         break;
       }
 
-      vector<vector<int>> each_colors(input.k);
+      saState.each_colors.clear();
+      saState.each_colors.resize(input.k);
       for (int j = 0; j < input.n; j++) {
-        each_colors[each_row_colors[j]].push_back(j);
+        saState.each_colors[saState.each_row_colors[j]].push_back(j);
       }
 
       Solver6State next_state = state;
@@ -2165,7 +2155,7 @@ public:
 
       Solver6State best_best_state = state;
       Solver6State best_state = state;
-      auto used_indices = calc_used_indices(state, next_state);
+      saState.used_indices = calc_used_indices(state, next_state);
       while (true) {
         attempt_count++;
 
@@ -2173,7 +2163,7 @@ public:
 
         for (int set_iter = 0; set_iter < params.initial_set_count; set_iter++) {
           next_state = state;
-          used_indices = calc_used_indices(state, next_state);
+          saState.used_indices = calc_used_indices(state, next_state);
 
           if (false && attempt_count == 1 && set_iter == 0) {
             while (next_state.mixed_volume < 1.0) {
@@ -2198,10 +2188,10 @@ public:
               }
               move_diff(state, next_state, best_idx, 1, best_vol);
             }
-            used_indices = calc_used_indices(state, next_state);
+            saState.used_indices = calc_used_indices(state, next_state);
           }
           else {
-            solve_inner(i, params, state, next_state, count1, count2, 0, used_indices, each_colors, each_row_colors);
+            solve_inner(i, params, state, next_state, 0, saState);
           }
 
           next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
@@ -2213,24 +2203,17 @@ public:
 
         // bestから戻す
         next_state = best_state;
-        used_indices = calc_used_indices(state, next_state);
+        saState.used_indices = calc_used_indices(state, next_state);
 
-        solve_inner(i, params, state, next_state, count1, count2, 1, used_indices, each_colors, each_row_colors);
+        solve_inner(i, params, state, next_state, 1, saState);
         cerr << "i = " << i << ", attempt_count = " << attempt_count << ", error = " << calc_error(next_state.mixed_colors, input.targets[i]) * 1e4 << ", mixed_volume = " << next_state.mixed_volume << endl;
 
         if (next_state.mixed_volume < 1.0 - EPS) {
-          change_vertical_lines_count_limit++;
-          cerr << change_vertical_lines_count_limit << " " << next_state.change_vertical_lines_count << endl;
           cerr << "next_state.mixed_volume = " << next_state.mixed_volume << endl;
-          for (int i = 0; i < input.n; i++) {
-            cerr << next_state.vertical_lines[i] << " ";
-          }
-          cerr << endl;
           continue;
         }
 
         next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
-        //cerr << "i = " << i << ", attempt_count = " << attempt_count << ", next_mixed_volume = " << next_state.mixed_volume << ", new_score = " << next_state.score << ", best_best_score = " << best_best_state.score << endl;
         if (next_state.score < best_best_state.score) {
           best_best_state = next_state;
         }
@@ -2249,7 +2232,7 @@ public:
           }
 
           next_state = state;
-          used_indices = calc_used_indices(state, next_state);
+          saState.used_indices = calc_used_indices(state, next_state);
 
           if (attempt_count_2 > 0 && attempt_count > 20) {
             change_vertical_lines_count_limit++;
@@ -2262,16 +2245,10 @@ public:
 
         // best_bestから戻す
         next_state = best_best_state;
-        used_indices = calc_used_indices(state, next_state);
+        saState.used_indices = calc_used_indices(state, next_state);
 
         break;
       }
-
-      //cerr << i << " : attempt_count = " << attempt_count << endl;
-      //cerr << attempt_count << ' ';
-      //if(i == input.h - 1) {
-      //  cerr << endl;
-      //}
 
       for (int j = 0; j < input.n; j++) {
         if (next_state.vertical_lines[j] != state.vertical_lines[j]) {
@@ -2287,8 +2264,6 @@ public:
       state.score = 1e12;
       state.change_vertical_lines_count = 0;
 
-      //cout << "i = " << i << ", mixed_volume = " << mixed_volume << ", " << answer.board.volumes[0][0] << endl;
-
       if (answer.is_over) {
         ok = false;
         break;
@@ -2296,7 +2271,6 @@ public:
     }
 
     if (ok) {
-      //cerr << "count1 = " << count1 << ", count2 = " << count2 << endl;
       score = calculate_score(answer, input);
     }
     else {
