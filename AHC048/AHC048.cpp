@@ -1387,7 +1387,7 @@ public:
       score = 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
     }
     else {
-      score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * min(input_d, 400);
+      score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * min(input_d, 400) * 0.0001;
     }
     return score;
   }
@@ -1406,8 +1406,8 @@ public:
 class Solver5Params {
 public:
   double minimum_volume = 20 + EPS;
-  int reset_vertical_line_num = 3;
-  double discard_value = 0.2;
+  int reset_vertical_line_num = 5;
+  double discard_value = 0.4;
   int start_change_vertical_lines_count_limit = 999;
 
   int initial_set_count = 40;
@@ -1415,10 +1415,10 @@ public:
   int initial_operation_thresholds[10] = { 0, 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
   int initial_max_threshold = 100;
 
-  int main_loop_count = 1000;
+  int main_loop_count = 500000; // 1000
   int main_operation_thresholds[10] = { 90, 100, 150, 400, 500, 600, 700, 800, 900, 1000 };
   int main_max_threshold = 150;
-  int main_break_last_update_iter = 50;
+  int main_break_last_update_iter = 999999; // 50
 };
 
 class Solver_5 {
@@ -1554,21 +1554,29 @@ public:
 
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
       count1++;
-      //double diff_score = (current_score - next_state.score) * 12345.6;
-      //double temp = 500000 / (iter - last_update_iter + 1);
-      //if(mode == 0) {
-      //  temp = 0.1;
-      //}
-      //double prob = exp(diff_score / temp);
-      //if (prob > rand_01()) {
-      if (next_state.score < current_score) {
+      double diff_score = (current_score - next_state.score) * 12345.6;
+      const double START_TEMP = 1000000; // 初期温度
+      const double END_TEMP = 0.01; // 終了温度
+      double temp = START_TEMP - (START_TEMP - END_TEMP) * (double)iter / loop_count;
+      bool accept = false;
+      if (mode == 0) {
+        accept = next_state.score < current_score;
+      }
+      else {
+        if (temp <= 0.0) {
+          accept = next_state.score < current_score;
+        }
+        else {
+          double prob = exp(diff_score / temp);
+          accept = prob > rand_01();
+        }
+      }
+      if (accept) {
         last_update_iter = iter;
         // スコアが改善した
         count2++;
         used_indices = calc_used_indices(state, next_state);
-        //if (input.n - used_indices.size() != next_state.change_vertical_lines_count) {
-        //  cerr << "Error: used_indices size mismatch: " << used_indices.size() << " != " << next_state.change_vertical_lines_count << endl;
-        //}
+        //cerr << "Iter: " << iter << ", Score: " << next_state.score << ", Change: " << diff_score << ", Temp: " << temp;
       }
       else {
         // 戻す
@@ -1744,6 +1752,7 @@ public:
         used_indices = calc_used_indices(state, next_state);
 
         solve_inner(i, params, state, next_state, count1, count2, 1, used_indices, each_colors, each_row_colors);
+        cerr << "i = " << i << ", attempt_count = " << attempt_count << ", error = " << calc_error(next_state.mixed_colors, input.targets[i]) * 1e4 << ", mixed_volume = " << next_state.mixed_volume << endl;
 
         if (next_state.mixed_volume < 1.0 - EPS) {
           change_vertical_lines_count_limit++;
@@ -1762,7 +1771,7 @@ public:
           best_best_state = next_state;
         }
 
-        if (best_best_state.score > (input.d / 100.0 + 0.2) * (attempt_count + 5) / 6) {
+        if (best_best_state.score > (input.d / 100.0 + 2.0) * (attempt_count + 25) / 26) {
           if (attempt_count == 3 && attempt_count_2 == 0) {
             while (state.mixed_volume > EPS) {
               answer.add_turn_3(0, 0);
@@ -1841,7 +1850,7 @@ ll solve_case(int case_num) {
 
   Answer answer(input.n, input.t);
   Score best_score;
-  best_score.score = INF;
+  best_score.score = 1e12;
   int best_solver = -1;
 
   {
@@ -1878,7 +1887,7 @@ ll solve_case(int case_num) {
   if (true || (input.t > 20000 && input.d > 2000)) {
     int arr[2] = { 20,4 };
     for (int i = 0; i < 1; i++) {
-      auto solver = Solver_5(answer, input, 99.9);
+      auto solver = Solver_5(answer, input, 99999.9);
 
       Solver5Params params;
       params.start_change_vertical_lines_count_limit = arr[i];
@@ -1908,10 +1917,6 @@ ll solve_case(int case_num) {
   //if (best_solver / 100 != 5) {
   //  return 0;
   //}
-
-  if (best_score.score > 50000) {
-    return 0;
-  }
 
   output_data(case_num, answer);
 
@@ -1976,7 +1981,7 @@ int main() {
   else if (exec_mode <= 999) {
     ll sum_score = 0;
     for (int i = 0; i < 2; i++) {
-      ll score = solve_case(i*5);
+      ll score = solve_case(i * 5);
       sum_score += score;
     }
   }
