@@ -1846,6 +1846,8 @@ public:
     int reset_vertical_line_num = 5;
     double discard_value = 0.4;
     int start_change_vertical_lines_count_limit = 999;
+    bool is_mixed_volume_reset = true;
+    bool is_each_row_volume_reset = true;
 
     int initial_set_count = 40;
     int initial_loop_count = 20;
@@ -2127,7 +2129,9 @@ public:
             col = j;
           }
         }
-        answer.add_turn_3(idx, input.n - 1);
+        if (params.is_each_row_volume_reset) {
+          answer.add_turn_3(idx, input.n - 1);
+        }
         answer.add_turn_1(idx, input.n - 1, col, input);
         saState.each_row_colors[idx] = col;
         if (answer.is_over) {
@@ -2220,9 +2224,11 @@ public:
 
         if (best_best_state.score > (input.d / 100.0 + 2.0) * (attempt_count + 25) / 26) {
           if (attempt_count == 3 && attempt_count_2 == 0) {
-            while (state.mixed_volume > EPS) {
-              answer.add_turn_3(0, 0);
-              state.mixed_volume = max(0.0, state.mixed_volume - 1.0);
+            if (params.is_mixed_volume_reset) {
+              while (state.mixed_volume > EPS) {
+                answer.add_turn_3(0, 0);
+                state.mixed_volume = max(0.0, state.mixed_volume - 1.0);
+              }
             }
 
             attempt_count = 0;
