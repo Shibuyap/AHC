@@ -769,10 +769,36 @@ void initialize_board_axb(Answer& answer, int a, int b) {
   answer.board = answer.initial_board;
 }
 
-void initialize_board_solver_56(Answer& answer) {
+void initialize_board_solver_5(Answer& answer) {
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
       if (j == 0) {
+        answer.initial_board.v[i][j] = 1;
+      }
+      else {
+        answer.initial_board.v[i][j] = 0;
+      }
+    }
+  }
+  for (int i = 0; i < answer.initial_board.n - 1; i++) {
+    for (int j = 0; j < answer.initial_board.n; j++) {
+      if (j == 0) {
+        answer.initial_board.h[i][j] = 0;
+      }
+      else {
+        answer.initial_board.h[i][j] = 1;
+      }
+    }
+  }
+  answer.initial_board.calc_counts();
+
+  answer.board = answer.initial_board;
+}
+
+void initialize_board_solver_6(Answer& answer) {
+  for (int i = 0; i < answer.initial_board.n; i++) {
+    for (int j = 0; j < answer.initial_board.n - 1; j++) {
+      if (j == answer.initial_board.n - 3) {
         answer.initial_board.v[i][j] = 1;
       }
       else {
@@ -1607,7 +1633,7 @@ public:
 
   void solve(const Solver5Params& params) {
 
-    initialize_board_solver_56(answer);
+    initialize_board_solver_5(answer);
 
     answer.clear();
     bool ok = true;
@@ -1708,7 +1734,7 @@ public:
           next_state = state;
           used_indices = calc_used_indices(state, next_state);
 
-          if (false && attempt_count == 1 && set_iter == 0) {
+          if (attempt_count == 1 && set_iter == 0) {
             while (next_state.mixed_volume < 1.0) {
               int best_idx = -1;
               double best_vol = 0.0;
@@ -1856,19 +1882,24 @@ public:
 
     int main_loop_count = 500000; // 1000
     int main_operation_thresholds[10] = { 90, 100, 150, 400, 500, 600, 700, 800, 900, 1000 };
-    int main_max_threshold = 150;
+    int main_max_threshold = 100;
     int main_break_last_update_iter = 999999; // 50
   };
 
   class Solver6State {
   public:
+    int n;
     vector<int> vertical_lines;
     int change_vertical_lines_count = 0;
     double mixed_volume;
     vector<double> mixed_colors;
     double score;
 
-    Solver6State(int n) : vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {}
+    vector<int> each_row_each_operation_indices;
+
+    Solver6State(int n) : n(n), vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {
+      each_row_each_operation_indices.resize(n);
+    }
 
     inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
       if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
@@ -1889,6 +1920,13 @@ public:
       }
       return score;
     }
+
+    inline void reset_each_row_each_operation_indices() {
+      each_row_each_operation_indices.clear();
+      for (int i = 0; i < n; i++) {
+        each_row_each_operation_indices.push_back(0);
+      }
+    }
   };
 
   class Solver6SAState {
@@ -1899,12 +1937,11 @@ public:
     vector<int> each_row_colors;
 
     vector<vector<pair<double, pair<int, int>>>> each_row_each_operation_volumes;
-    vector<int> each_row_each_operation_indices;
 
-    void calc_used_indices() {
+    inline void calc_used_indices(const Solver6State& state) {
       used_indices.clear();
       for (int i = 0; i < n; i++) {
-        if (each_row_each_operation_indices[i] != 0) {
+        if (state.each_row_each_operation_indices[i] != 0) {
           used_indices.push_back(i);
         }
       }
@@ -1928,14 +1965,14 @@ public:
 
   int change_vertical_lines_count_limit = 999;
 
-  inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol) {
+  inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol, Solver6SAState& saState) {
     next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
     next_state.mixed_volume += diff_vol;
-    if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+    if (next_state.each_row_each_operation_indices[idx1] == 0) {
       next_state.change_vertical_lines_count++;
     }
-    next_state.vertical_lines[idx1] += diff1;
-    if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
+    next_state.each_row_each_operation_indices[idx1] += diff1;
+    if (next_state.each_row_each_operation_indices[idx1] == 0) {
       next_state.change_vertical_lines_count--;
     }
   }
@@ -1959,7 +1996,7 @@ public:
       loop_count = params.main_loop_count;
     }
 
-    saState.calc_used_indices();
+    saState.calc_used_indices(next_state);
     next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
 
     int last_update_iter = 0;
@@ -1978,62 +2015,64 @@ public:
         // 仕切りを+-1する
         idx1 = rand_xorshift() % input.n;
         diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
-        if (next_state.vertical_lines[idx1] + diff1 < state.vertical_lines[idx1] || next_state.vertical_lines[idx1] + diff1 > input.n - 2) {
+        if (next_state.each_row_each_operation_indices[idx1] + diff1 < 0 || next_state.each_row_each_operation_indices[idx1] + diff1 >= saState.each_row_each_operation_volumes[idx1].size()) {
           diff1 *= -1;
         }
 
-        diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
-        move_diff(state, next_state, idx1, diff1, diff_vol);
+        diff_vol = saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1] + diff1].first
+          - saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1]].first;
+        move_diff(state, next_state, idx1, diff1, diff_vol, saState);
       }
       else if (ra < thresholds[1]) {
         // 仕切りをランダムに変える
         idx1 = rand_xorshift() % input.n;
-        // [vertical_lines[idx1], input.n - 2]
-        int new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
+
+        int new1 = rand_xorshift() % saState.each_row_each_operation_volumes[idx1].size();
         if (rand_xorshift() % 3 == 0) {
-          new1 = state.vertical_lines[idx1];
+          new1 = 0;
         }
-        while (new1 == next_state.vertical_lines[idx1]) {
-          new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
+        while (new1 == next_state.each_row_each_operation_indices[idx1]) {
+          new1 = rand_xorshift() % saState.each_row_each_operation_volumes[idx1].size();
         }
-        diff1 = new1 - next_state.vertical_lines[idx1];
+        diff1 = new1 - next_state.each_row_each_operation_indices[idx1];
 
-        diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
-        move_diff(state, next_state, idx1, diff1, diff_vol);
+        diff_vol = saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1] + diff1].first
+          - saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1]].first;
+        move_diff(state, next_state, idx1, diff1, diff_vol, saState);
       }
-      else if (ra < thresholds[2]) {
-        // 同じ色の仕切りを一つ-1して、別の仕切りを+1する
-        diff1 = -1;
-        if (saState.used_indices.size() == 0) {
-          continue;
-        }
-        for (int j = 0; j < 10; j++) {
-          idx1 = saState.used_indices[rand_xorshift() % saState.used_indices.size()];
-          col1 = saState.each_row_colors[idx1];
-          if (saState.each_colors[col1].size() > 1) {
-            break;
-          }
-        }
-        if (saState.each_colors[col1].size() <= 1) {
-          continue;
-        }
-        idx2 = saState.each_colors[col1][rand_xorshift() % saState.each_colors[col1].size()];
-        while (idx1 == idx2) {
-          idx2 = saState.each_colors[col1][rand_xorshift() % saState.each_colors[col1].size()];
-        }
-        if (next_state.vertical_lines[idx2] >= input.n - 2) {
-          continue;
-        }
+      //else if (ra < thresholds[2]) {
+      //  // 同じ色の仕切りを一つ-1して、別の仕切りを+1する
+      //  diff1 = -1;
+      //  if (saState.used_indices.size() == 0) {
+      //    continue;
+      //  }
+      //  for (int j = 0; j < 10; j++) {
+      //    idx1 = saState.used_indices[rand_xorshift() % saState.used_indices.size()];
+      //    col1 = saState.each_row_colors[idx1];
+      //    if (saState.each_colors[col1].size() > 1) {
+      //      break;
+      //    }
+      //  }
+      //  if (saState.each_colors[col1].size() <= 1) {
+      //    continue;
+      //  }
+      //  idx2 = saState.each_colors[col1][rand_xorshift() % saState.each_colors[col1].size()];
+      //  while (idx1 == idx2) {
+      //    idx2 = saState.each_colors[col1][rand_xorshift() % saState.each_colors[col1].size()];
+      //  }
+      //  if (next_state.vertical_lines[idx2] >= input.n - 2) {
+      //    continue;
+      //  }
 
-        if (next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]) {
-          cerr << "Error: next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]: " << next_state.vertical_lines[idx1] << " <= " << state.vertical_lines[idx1] << endl;
-        }
+      //  if (next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]) {
+      //    cerr << "Error: next_state.vertical_lines[idx1] <= state.vertical_lines[idx1]: " << next_state.vertical_lines[idx1] << " <= " << state.vertical_lines[idx1] << endl;
+      //  }
 
-        diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
-        move_diff(state, next_state, idx1, diff1, diff_vol);
-        diff_vol2 = answer.board.volumes[idx2][input.n - 1] / answer.board.counts[idx2][input.n - 1] * -diff1;
-        move_diff(state, next_state, idx2, -diff1, diff_vol2);
-      }
+      //  diff_vol = answer.board.volumes[idx1][input.n - 1] / answer.board.counts[idx1][input.n - 1] * diff1;
+      //  move_diff(state, next_state, idx1, diff1, diff_vol);
+      //  diff_vol2 = answer.board.volumes[idx2][input.n - 1] / answer.board.counts[idx2][input.n - 1] * -diff1;
+      //  move_diff(state, next_state, idx2, -diff1, diff_vol2);
+      //}
 
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
       double diff_score = (current_score - next_state.score) * 12345.6;
@@ -2056,21 +2095,21 @@ public:
       if (accept) {
         // スコアが改善した
         last_update_iter = iter;
-        saState.calc_used_indices();
+        saState.calc_used_indices(next_state);
       }
       else {
         // 戻す
         next_state.score = current_score;
         if (ra < thresholds[0]) {
-          move_diff(state, next_state, idx1, -diff1, -diff_vol);
+          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState);
         }
         else if (ra < thresholds[1]) {
-          move_diff(state, next_state, idx1, -diff1, -diff_vol);
+          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState);
         }
-        else if (ra < thresholds[2]) {
-          move_diff(state, next_state, idx2, diff1, -diff_vol2);
-          move_diff(state, next_state, idx1, -diff1, -diff_vol);
-        }
+        //else if (ra < thresholds[2]) {
+        //  move_diff(state, next_state, idx2, diff1, -diff_vol2);
+        //  move_diff(state, next_state, idx1, -diff1, -diff_vol);
+        //}
       }
       if (iter > last_update_iter + params.main_break_last_update_iter) {
         break;
@@ -2079,7 +2118,7 @@ public:
   }
 
   void solve(const Solver6Params& params) {
-    initialize_board_solver_56(answer);
+    initialize_board_solver_6(answer);
 
     answer.clear();
     bool ok = true;
@@ -2092,25 +2131,21 @@ public:
       saState.each_row_colors[i] = i % input.k;
     }
     saState.each_row_each_operation_volumes.resize(input.n);
-    saState.each_row_each_operation_indices.resize(input.n);
 
     Solver6State state(input.n);
 
     for (int i = 0; i < input.h; i++) {
-      for (int j = 0; j < input.n; j++) {
-        if (state.vertical_lines[j] >= params.reset_vertical_line_num) {
-          double diff_vol = answer.board.volumes[0][0] / answer.board.counts[0][0] * state.vertical_lines[j];
-          state.mixed_volume -= diff_vol;
-          answer.add_turn_4(j, 0, RIGHT);
-          answer.add_turn_4(j, state.vertical_lines[j], RIGHT);
-          state.vertical_lines[j] = 0;
+      if (params.is_mixed_volume_reset) {
+        while (state.mixed_volume > EPS) {
+          answer.add_turn_3(0, 0);
+          state.mixed_volume = max(0.0, state.mixed_volume - 1.0);
         }
       }
 
       // each_row_each_operation_volumesを計算
       // answer.board.volumes[0][0]は0.0の前提
+      state.reset_each_row_each_operation_indices();
       for (int j = 0; j < input.n; j++) {
-        saState.each_row_each_operation_indices[j] = 0;
         saState.each_row_each_operation_volumes[j].clear();
         saState.each_row_each_operation_volumes[j].emplace_back(0.0, make_pair(state.vertical_lines[j], state.vertical_lines[j]));
 
@@ -2182,11 +2217,10 @@ public:
       // 山登り
       change_vertical_lines_count_limit = params.start_change_vertical_lines_count_limit;
       int attempt_count = 0;
-      int attempt_count_2 = 0;
 
       Solver6State best_best_state = state;
       Solver6State best_state = state;
-      saState.calc_used_indices();
+      saState.calc_used_indices(state);
       while (true) {
         attempt_count++;
 
@@ -2194,36 +2228,9 @@ public:
 
         for (int set_iter = 0; set_iter < params.initial_set_count; set_iter++) {
           next_state = state;
-          saState.calc_used_indices();
+          saState.calc_used_indices(next_state);
 
-          if (false && attempt_count == 1 && set_iter == 0) {
-            while (next_state.mixed_volume < 1.0) {
-              int best_idx = -1;
-              double best_vol = 0.0;
-              double best_score = 1e12;
-              for (int j = 0; j < input.n; j++) {
-                if (next_state.vertical_lines[j] >= params.reset_vertical_line_num) {
-                  continue;
-                }
-                if (next_state.vertical_lines[j] + 1 > input.n - 2) {
-                  continue;
-                }
-                double diff_vol = answer.board.volumes[j][input.n - 1] / answer.board.counts[j][input.n - 1];
-                auto mixed_color = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[j][input.n - 1], next_state.mixed_volume, diff_vol);
-                double new_score = calc_error(mixed_color, input.targets[i]) * 1e4;
-                if (new_score < best_score) {
-                  best_score = new_score;
-                  best_idx = j;
-                  best_vol = diff_vol;
-                }
-              }
-              move_diff(state, next_state, best_idx, 1, best_vol);
-            }
-            saState.calc_used_indices();
-          }
-          else {
-            solve_inner(i, params, state, next_state, 0, saState);
-          }
+          solve_inner(i, params, state, next_state, 0, saState);
 
           next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
           if (next_state.score < best_state.score) {
@@ -2234,7 +2241,7 @@ public:
 
         // bestから戻す
         next_state = best_state;
-        saState.calc_used_indices();
+        saState.calc_used_indices(next_state);
 
         solve_inner(i, params, state, next_state, 1, saState);
 
@@ -2249,45 +2256,44 @@ public:
         }
 
         if (best_best_state.score > (input.d / 100.0 + 2.0) * (attempt_count + 25) / 26) {
-          if (attempt_count == 3 && attempt_count_2 == 0) {
-            if (params.is_mixed_volume_reset) {
-              while (state.mixed_volume > EPS) {
-                answer.add_turn_3(0, 0);
-                state.mixed_volume = max(0.0, state.mixed_volume - 1.0);
-              }
-            }
-
-            attempt_count = 0;
-            attempt_count_2++;
-
-            best_best_state = state;
-          }
-
           next_state = state;
-          saState.calc_used_indices();
+          saState.calc_used_indices(next_state);
 
-          if (attempt_count_2 > 0 && attempt_count > 20) {
+          if (attempt_count > 20) {
             change_vertical_lines_count_limit++;
           }
 
-          if (attempt_count_2 == 0 || attempt_count <= 30) {
+          if (attempt_count <= 30) {
             continue;
           }
         }
 
         // best_bestから戻す
         next_state = best_best_state;
-        saState.calc_used_indices();
+        saState.calc_used_indices(next_state);
 
         break;
       }
 
       cerr << "i = " << i << ", attempt_count = " << attempt_count << ", error = " << calc_error(next_state.mixed_colors, input.targets[i]) * 1e4 << ", mixed_volume = " << next_state.mixed_volume << endl;
 
+      // 広げる
       for (int j = 0; j < input.n; j++) {
-        if (next_state.vertical_lines[j] != state.vertical_lines[j]) {
+        int new_vertical_line = saState.each_row_each_operation_volumes[j][next_state.each_row_each_operation_indices[j]].second.first;
+        if (new_vertical_line != next_state.vertical_lines[j]) {
+          answer.add_turn_4(j, new_vertical_line, RIGHT);
           answer.add_turn_4(j, next_state.vertical_lines[j], RIGHT);
-          answer.add_turn_4(j, state.vertical_lines[j], RIGHT);
+          next_state.vertical_lines[j] = new_vertical_line;
+        }
+      }
+
+      // 縮める
+      for (int j = 0; j < input.n; j++) {
+        int new_vertical_line = saState.each_row_each_operation_volumes[j][next_state.each_row_each_operation_indices[j]].second.second;
+        if (new_vertical_line != next_state.vertical_lines[j]) {
+          answer.add_turn_4(j, new_vertical_line, RIGHT);
+          answer.add_turn_4(j, next_state.vertical_lines[j], RIGHT);
+          next_state.vertical_lines[j] = new_vertical_line;
         }
       }
 
@@ -2308,7 +2314,7 @@ public:
       score = calculate_score(answer, input);
     }
     else {
-      score.score = INF;
+      score.score = INF / 2;
     }
   }
 };
