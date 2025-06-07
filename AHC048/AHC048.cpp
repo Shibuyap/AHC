@@ -2210,7 +2210,6 @@ public:
         saState.used_indices = calc_used_indices(state, next_state);
 
         solve_inner(i, params, state, next_state, 1, saState);
-        cerr << "i = " << i << ", attempt_count = " << attempt_count << ", error = " << calc_error(next_state.mixed_colors, input.targets[i]) * 1e4 << ", mixed_volume = " << next_state.mixed_volume << endl;
 
         if (next_state.mixed_volume < 1.0 - EPS) {
           cerr << "next_state.mixed_volume = " << next_state.mixed_volume << endl;
@@ -2256,6 +2255,8 @@ public:
         break;
       }
 
+      cerr << "i = " << i << ", attempt_count = " << attempt_count << ", error = " << calc_error(next_state.mixed_colors, input.targets[i]) * 1e4 << ", mixed_volume = " << next_state.mixed_volume << endl;
+
       for (int j = 0; j < input.n; j++) {
         if (next_state.vertical_lines[j] != state.vertical_lines[j]) {
           answer.add_turn_4(j, next_state.vertical_lines[j], RIGHT);
@@ -2291,20 +2292,24 @@ ll solve_case(int case_num) {
 
   Input input = input_data(case_num);
 
+  //if (input.t >= 8000) {
+  //  return 0;
+  //}
+
   Answer answer(input.n, input.t);
   Score best_score;
-  best_score.score = 1e12;
+  best_score.score = INF*2;
   int best_solver = -1;
 
-  {
-    auto solver = Solver_1(answer, input);
-    solver.solve();
-    if (solver.score.score < best_score.score) {
-      answer = solver.answer;
-      best_score = solver.score;
-      best_solver = 1;
-    }
-  }
+  //{
+  //  auto solver = Solver_1(answer, input);
+  //  solver.solve();
+  //  if (solver.score.score < best_score.score) {
+  //    answer = solver.answer;
+  //    best_score = solver.score;
+  //    best_solver = 1;
+  //  }
+  //}
 
   //{
   //  auto solver = Solver_3(answer, input, 99.9);
@@ -2360,7 +2365,7 @@ ll solve_case(int case_num) {
       if (solver.score.score < best_score.score) {
         answer = solver.answer;
         best_score = solver.score;
-        best_solver = 5 * 100 + arr[i];
+        best_solver = 6 * 100 + arr[i];
       }
       if (!solver.answer.is_over) {
         break;
@@ -2437,14 +2442,14 @@ ll solve_case(int case_num) {
 }
 
 int main() {
-  exec_mode = 778;
+  exec_mode = 777;
 
   if (exec_mode == 0) {
     solve_case(0);
   }
   else if (exec_mode <= 999) {
     ll sum_score = 0;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 1; i < 2; i++) {
       ll score = solve_case(i * 5);
       sum_score += score;
     }
