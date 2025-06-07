@@ -1909,7 +1909,7 @@ public:
         score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * max((double)input_d, 10.0) * 10000;
       }
       else {
-        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d;
+        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d * 0.0;
       }
       return score;
     }
@@ -2352,7 +2352,7 @@ ll solve_case(int case_num) {
 
   input.d = 1;
   if (true || (input.t > 20000 && input.d > 2000)) {
-    int arr[2] = { 10,4 };
+    int arr[2] = { 20,4 };
     for (int i = 0; i < 1; i++) {
       auto solver = Solver_6(answer, input, 99999.9);
 
