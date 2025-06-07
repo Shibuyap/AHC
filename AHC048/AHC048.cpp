@@ -1893,9 +1893,22 @@ public:
 
   class Solver6SAState {
   public:
+    int n;
     vector<int> used_indices;
     vector<vector<int>> each_colors;
     vector<int> each_row_colors;
+
+    vector<vector<pair<double, pair<int, int>>>> each_row_each_operation_volumes;
+    vector<int> each_row_each_operation_indices;
+
+    void calc_used_indices() {
+      used_indices.clear();
+      for (int i = 0; i < n; i++) {
+        if (each_row_each_operation_indices[i] != 0) {
+          used_indices.push_back(i);
+        }
+      }
+    }
   };
 
   double time_limit;
@@ -1946,7 +1959,7 @@ public:
       loop_count = params.main_loop_count;
     }
 
-    saState.used_indices = calc_used_indices(state, next_state);
+    saState.calc_used_indices();
     next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
 
     int last_update_iter = 0;
@@ -2043,7 +2056,7 @@ public:
       if (accept) {
         // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
         last_update_iter = iter;
-        saState.used_indices = calc_used_indices(state, next_state);
+        saState.calc_used_indices();
       }
       else {
         // –ß‚·
@@ -2065,16 +2078,6 @@ public:
     }
   }
 
-  vector<int> calc_used_indices(const Solver6State& state, const Solver6State& next_state) {
-    vector<int> used_indices;
-    for (int j = 0; j < input.n; j++) {
-      if (next_state.vertical_lines[j] != state.vertical_lines[j]) {
-        used_indices.push_back(j);
-      }
-    }
-    return used_indices;
-  }
-
   void solve(const Solver6Params& params) {
     initialize_board_solver_56(answer);
 
@@ -2082,11 +2085,14 @@ public:
     bool ok = true;
 
     Solver6SAState saState;
+    saState.n = input.n;
     saState.each_row_colors.resize(input.n);
     for (int i = 0; i < input.n; i++) {
       answer.add_turn_1(i, input.n - 1, i % input.k, input);
       saState.each_row_colors[i] = i % input.k;
     }
+    saState.each_row_each_operation_volumes.resize(input.n);
+    saState.each_row_each_operation_indices.resize(input.n);
 
     Solver6State state(input.n);
 
@@ -2099,6 +2105,27 @@ public:
           answer.add_turn_4(j, state.vertical_lines[j], RIGHT);
           state.vertical_lines[j] = 0;
         }
+      }
+
+      // each_row_each_operation_volumes‚ðŒvŽZ
+      // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
+      for (int j = 0; j < input.n; j++) {
+        saState.each_row_each_operation_indices[j] = 0;
+        saState.each_row_each_operation_volumes[j].clear();
+        saState.each_row_each_operation_volumes[j].emplace_back(0.0, make_pair(state.vertical_lines[j], state.vertical_lines[j]));
+
+        double current_row_volume = answer.board.volumes[j][input.n - 1] / answer.board.counts[j][input.n - 1];
+
+        // L‚°‚é ¨ k‚ß‚é
+        for (int k = state.vertical_lines[j]; k >= 0; k--) {
+          double one_block_volume = current_row_volume / (input.n - 1 - k);
+          for (int l = k + 1; l <= input.n - 3; l++) {
+            double diff_vol = one_block_volume * (l - k);
+            saState.each_row_each_operation_volumes[j].emplace_back(diff_vol, make_pair(k, l));
+          }
+        }
+
+        sort(saState.each_row_each_operation_volumes[j].begin(), saState.each_row_each_operation_volumes[j].end());
       }
 
       vector<double> each_color_volumes(input.k, 0.0);
@@ -2159,7 +2186,7 @@ public:
 
       Solver6State best_best_state = state;
       Solver6State best_state = state;
-      saState.used_indices = calc_used_indices(state, next_state);
+      saState.calc_used_indices();
       while (true) {
         attempt_count++;
 
@@ -2167,7 +2194,7 @@ public:
 
         for (int set_iter = 0; set_iter < params.initial_set_count; set_iter++) {
           next_state = state;
-          saState.used_indices = calc_used_indices(state, next_state);
+          saState.calc_used_indices();
 
           if (false && attempt_count == 1 && set_iter == 0) {
             while (next_state.mixed_volume < 1.0) {
@@ -2192,7 +2219,7 @@ public:
               }
               move_diff(state, next_state, best_idx, 1, best_vol);
             }
-            saState.used_indices = calc_used_indices(state, next_state);
+            saState.calc_used_indices();
           }
           else {
             solve_inner(i, params, state, next_state, 0, saState);
@@ -2207,7 +2234,7 @@ public:
 
         // best‚©‚ç–ß‚·
         next_state = best_state;
-        saState.used_indices = calc_used_indices(state, next_state);
+        saState.calc_used_indices();
 
         solve_inner(i, params, state, next_state, 1, saState);
 
@@ -2237,7 +2264,7 @@ public:
           }
 
           next_state = state;
-          saState.used_indices = calc_used_indices(state, next_state);
+          saState.calc_used_indices();
 
           if (attempt_count_2 > 0 && attempt_count > 20) {
             change_vertical_lines_count_limit++;
@@ -2250,7 +2277,7 @@ public:
 
         // best_best‚©‚ç–ß‚·
         next_state = best_best_state;
-        saState.used_indices = calc_used_indices(state, next_state);
+        saState.calc_used_indices();
 
         break;
       }
@@ -2298,7 +2325,7 @@ ll solve_case(int case_num) {
 
   Answer answer(input.n, input.t);
   Score best_score;
-  best_score.score = INF*2;
+  best_score.score = INF * 2;
   int best_solver = -1;
 
   //{
