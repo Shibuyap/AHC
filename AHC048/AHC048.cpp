@@ -1878,7 +1878,7 @@ public:
     int initial_set_count = 50;
     int initial_loop_count = 40;
     int initial_operation_thresholds[10] = { 0, 100, 200, 400, 500, 600, 700, 800, 900, 1000 };
-    int initial_max_threshold = 200;
+    int initial_max_threshold = 100;
 
     int main_loop_count = 20000; // 1000
     int main_operation_thresholds[10] = { 90, 100, 150, 400, 500, 600, 700, 800, 900, 1000 };
@@ -1910,20 +1910,10 @@ public:
         score = 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
       }
       else if (2.1 < mixed_volume) {
-        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * max((double)input_d, 10.0) * 10000;
+        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d * 10000;
       }
       else {
-        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d * 0.0;
-      }
-      return score;
-    }
-
-    inline double calc_eval_2(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
-      if (mixed_volume < 1.0 || 1.2 < mixed_volume) {
-        score = 1e9 + calc_error(mixed_colors, target_color) * 1e4 + abs(mixed_volume - 1.0) * min(input_d, 400) * 100000;
-      }
-      else {
-        score = calc_error(mixed_colors, target_color) * 1e4;
+        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d * 0.1;
       }
       return score;
     }
@@ -1944,12 +1934,14 @@ public:
     vector<vector<pair<double, pair<int, int>>>> row_op_volumes;
     vector<vector<pair<double, pair<int, int>>>> row_op_volumes_add;
     vector<int> row_op_can_add_indices;
-    vector<vector<vector<double>>> row_op_colors_add;
+    vector<vector<vector<double>>> row_op_colors;
+    vector<vector<vector<vector<double>>>> row_op_colors_add;
 
     S6SAConfig(int n) : n(n) {
       row_op_volumes.resize(n);
       row_op_volumes_add.resize(n);
       row_op_can_add_indices.clear();
+      row_op_colors.resize(n);
       row_op_colors_add.resize(n);
     }
 
@@ -2045,7 +2037,17 @@ public:
             - saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
         }
 
-        move_diff(state, next_state, idx1, diff1, diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
+
+        if (next_state.row_op_add_colors[idx1] == -1) {
+          int k = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1] + diff1].second.first;
+          diff_col1 = saState.row_op_colors[idx1][k];
+        }
+        else {
+          int k = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1] + diff1].second.first;
+          diff_col1 = saState.row_op_colors_add[idx1][k][next_state.row_op_add_colors[idx1]];
+        }
+
+        move_diff(state, next_state, idx1, diff1, diff_vol, saState, diff_col1);
       }
       else if (ra < thresholds[1]) {
         // ŽdØ‚è‚ðƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚é
@@ -2069,7 +2071,16 @@ public:
             - saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
         }
 
-        move_diff(state, next_state, idx1, diff1, diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
+        if (next_state.row_op_add_colors[idx1] == -1) {
+          int k = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1] + diff1].second.first;
+          diff_col1 = saState.row_op_colors[idx1][k];
+        }
+        else {
+          int k = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1] + diff1].second.first;
+          diff_col1 = saState.row_op_colors_add[idx1][k][next_state.row_op_add_colors[idx1]];
+        }
+
+        move_diff(state, next_state, idx1, diff1, diff_vol, saState, diff_col1);
       }
       else if (ra < thresholds[2]) {
         // ŠG‹ï‚ð‘«‚·/ˆø‚­
@@ -2088,22 +2099,40 @@ public:
           // case 1: ‘«‚·
           diff_vol = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
-          diff_col1 = answer.board.colors[idx1][input.n - 1];
-          diff_col2 = saState.row_op_colors_add[idx1][col1];
+          {
+            int k = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].second.first;
+            diff_col1 = saState.row_op_colors[idx1][k];
+          }
+          {
+            int k = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].second.first;
+            diff_col2 = saState.row_op_colors_add[idx1][k][col1];
+          }
         }
         else if (col1 == -1) {
           // case 2: ˆø‚­
           diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
-          diff_col1 = saState.row_op_colors_add[idx1][keep_col1];
-          diff_col2 = answer.board.colors[idx1][input.n - 1];
+          {
+            int k = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].second.first;
+            diff_col1 = saState.row_op_colors_add[idx1][k][keep_col1];
+          }
+          {
+            int k = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].second.first;
+            diff_col2 = saState.row_op_colors[idx1][k];
+          }
         }
         else {
           // case 3: F‚ð•Ï‚¦‚é
           diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
-          diff_col1 = saState.row_op_colors_add[idx1][keep_col1];
-          diff_col2 = saState.row_op_colors_add[idx1][col1];
+          {
+            int k = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].second.first;
+            diff_col1 = saState.row_op_colors_add[idx1][k][keep_col1];
+          }
+          {
+            int k = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].second.first;
+            diff_col2 = saState.row_op_colors_add[idx1][k][col1];
+          }
         }
         move_diff(state, next_state, idx1, 0, -diff_vol, saState, diff_col1);
         move_diff(state, next_state, idx1, 0, diff_vol2, saState, diff_col2);
@@ -2137,10 +2166,10 @@ public:
         // –ß‚·
         next_state.score = current_score;
         if (ra < thresholds[0]) {
-          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
+          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, diff_col1);
         }
         else if (ra < thresholds[1]) {
-          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
+          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, diff_col1);
         }
         else if (ra < thresholds[2]) {
           move_diff(state, next_state, idx1, 0, -diff_vol2, saState, diff_col2);
@@ -2190,8 +2219,12 @@ public:
         double current_row_volume = answer.board.volumes[j][input.n - 1];
 
         // L‚°‚é ¨ k‚ß‚é
+        double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
         for (int k = state.vertical_lines[j]; k >= 0; k--) {
-          double one_block_volume = current_row_volume / (input.n - 1 - k);
+          int add_count = state.vertical_lines[j] - k;
+          double after_volume = current_row_volume + one_block_mixed_volume * add_count;
+          double one_block_volume = after_volume / (input.n - 1 - k);
+
           for (int l = k + 1; l <= input.n - 3; l++) {
             double diff_vol = one_block_volume * (l - k);
             saConfig.row_op_volumes[j].emplace_back(diff_vol, make_pair(k, l));
@@ -2202,7 +2235,6 @@ public:
       }
 
       // row_op_volumes_add‚ðŒvŽZ
-      // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
       saConfig.row_op_can_add_indices.clear();
       for (int j = 0; j < input.n; j++) {
         saConfig.row_op_volumes_add[j].clear();
@@ -2217,8 +2249,12 @@ public:
         double current_row_volume = (answer.board.volumes[j][input.n - 1] + 1.0);
 
         // L‚°‚é ¨ k‚ß‚é
+        double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
         for (int k = state.vertical_lines[j]; k >= 0; k--) {
-          double one_block_volume = current_row_volume / (input.n - 1 - k);
+          int add_count = state.vertical_lines[j] - k;
+          double after_volume = current_row_volume + one_block_mixed_volume * add_count;
+          double one_block_volume = after_volume / (input.n - 1 - k);
+
           for (int l = k + 1; l <= input.n - 3; l++) {
             double diff_vol = one_block_volume * (l - k);
             saConfig.row_op_volumes_add[j].emplace_back(diff_vol, make_pair(k, l));
@@ -2228,11 +2264,42 @@ public:
         sort(saConfig.row_op_volumes_add[j].begin(), saConfig.row_op_volumes_add[j].end());
       }
 
+      // row_op_colors‚ðŒvŽZ
+      for (int j = 0; j < input.n; j++) {
+        double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
+        vector<double> mixed_color = answer.board.colors[0][0];
+
+        saConfig.row_op_colors[j].clear();
+        for (int k = 0; k < input.n; k++) {
+          saConfig.row_op_colors[j].emplace_back();
+
+          int add_count = state.vertical_lines[j] - k;
+          if (add_count < 0) {
+            continue;
+          }
+          saConfig.row_op_colors[j][0] = answer.board.calc_mixed_color(answer.board.colors[j][input.n - 1], mixed_color, answer.board.volumes[j][input.n - 1], one_block_mixed_volume * add_count);
+        }
+      }
+
       // row_op_colors_add‚ðŒvŽZ
       for (int j = 0; j < input.n; j++) {
+        double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
+        vector<double> mixed_color = answer.board.colors[0][0];
+
         saConfig.row_op_colors_add[j].clear();
-        for (int k = 0; k < input.k; k++) {
-          saConfig.row_op_colors_add[j].push_back(answer.board.calc_mixed_color(answer.board.colors[j][input.n - 1], input.owns[k], answer.board.volumes[j][input.n - 1], 1.0));
+        for (int k = 0; k < input.n; k++) {
+          saConfig.row_op_colors_add[j].emplace_back();
+
+          int add_count = state.vertical_lines[j] - k;
+          if (add_count < 0) {
+            continue;
+          }
+          vector<double> after_color = answer.board.calc_mixed_color(answer.board.colors[j][input.n - 1], mixed_color, answer.board.volumes[j][input.n - 1], one_block_mixed_volume * add_count);
+          double after_volume = answer.board.volumes[j][input.n - 1] + one_block_mixed_volume * add_count;
+
+          for (int l = 0; l < input.k; l++) {
+            saConfig.row_op_colors_add[j][k].push_back(answer.board.calc_mixed_color(after_color, input.owns[l], after_volume, 1.0));
+          }
         }
       }
 
@@ -2243,7 +2310,7 @@ public:
         double min_vol = 1e9;
         for (int j = 0; j < input.n; j++) {
           double vol = answer.board.volumes[j][input.n - 1];
-          if(state.row_op_add_colors[j] != -1) {
+          if (state.row_op_add_colors[j] != -1) {
             vol += 1.0;
           }
           if (vol < min_vol) {
@@ -2369,12 +2436,12 @@ public:
       next_state.mixed_volume = max(0.0, next_state.mixed_volume - 1.0);
 
       cerr << "i = " << i << ", attempt_count = " << attempt_count << ", next_mixed_volume = " << next_state.mixed_volume << ", new_score = " << next_state.score << ", best_best_score = " << best_best_state.score << endl;
-      //cerr << "i = " << i << ", mixed_volume = " << next_state.mixed_volume << ", " << answer.board.volumes[0][0] << endl;
+      cerr << "i = " << i << ", mixed_volume = " << next_state.mixed_volume << ", " << answer.board.volumes[0][0] << endl;
 
       state = next_state;
       state.score = 1e12;
       state.change_vertical_lines_count = 0;
-      for(int j = 0; j < input.n; j++) {
+      for (int j = 0; j < input.n; j++) {
         state.row_op_indices[j] = 0;
         state.row_op_add_colors[j] = -1;
       }
@@ -2409,86 +2476,88 @@ ll solve_case(int case_num) {
   best_score.score = INF * 2;
   int best_solver = -1;
 
-  //{
-  //  auto solver = Solver_1(answer, input);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 1;
-  //  }
-  //}
-
-  //{
-  //  auto solver = Solver_3(answer, input, 99.9);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 3 * 10 + solver.best_num;
-  //  }
-  //}
-
-  //{
-  //  auto solver = Solver_4(answer, input, 99.9);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 4 * 10 + solver.best_num;
-  //  }
-  //}
-
-  //if (true || (input.t > 20000 && input.d > 2000)) {
-  //  int arr[2] = { 20,4 };
-  //  for (int i = 0; i < 1; i++) {
-  //    auto solver = Solver_5(answer, input, 99999.9);
-
-  //    Solver_5::Solver5Params params;
-  //    params.start_change_vertical_lines_count_limit = arr[i];
-
-  //    solver.solve(params);
-  //    if (solver.score.score < best_score.score) {
-  //      answer = solver.answer;
-  //      best_score = solver.score;
-  //      best_solver = 5 * 100 + arr[i];
-  //    }
-  //    if (!solver.answer.is_over) {
-  //      break;
-  //    }
-  //  }
-  //}
-
-  input.d = 1;
-  if (true || (input.t > 20000 && input.d > 2000)) {
-    int arr[2] = { 10,4 };
-    for (int i = 0; i < 1; i++) {
-      auto solver = Solver_6(answer, input, 99999.9);
-
-      Solver_6::Solver6Params params;
-      params.start_change_vertical_lines_count_limit = arr[i];
-
-      solver.solve(params);
+  if (input.t < 32000) {
+    {
+      auto solver = Solver_1(answer, input);
+      solver.solve();
       if (solver.score.score < best_score.score) {
         answer = solver.answer;
         best_score = solver.score;
-        best_solver = 6 * 100 + arr[i];
+        best_solver = 1;
       }
-      if (!solver.answer.is_over) {
-        break;
+    }
+
+    {
+      auto solver = Solver_3(answer, input, 99.9);
+      solver.solve();
+      if (solver.score.score < best_score.score) {
+        answer = solver.answer;
+        best_score = solver.score;
+        best_solver = 3 * 10 + solver.best_num;
+      }
+    }
+
+    {
+      auto solver = Solver_4(answer, input, 99.9);
+      solver.solve();
+      if (solver.score.score < best_score.score) {
+        answer = solver.answer;
+        best_score = solver.score;
+        best_solver = 4 * 10 + solver.best_num;
+      }
+    }
+    {
+      auto solver = Solver_2(answer, input, 19.9);
+      solver.solve();
+      if (solver.score.score < best_score.score) {
+        answer = solver.answer;
+        best_score = solver.score;
+        best_solver = 2;
       }
     }
   }
+  else {
+    //if (true || (input.t > 20000 && input.d > 2000)) {
+    //  int arr[2] = { 20,4 };
+    //  for (int i = 0; i < 1; i++) {
+    //    auto solver = Solver_5(answer, input, 99999.9);
 
-  //{
-  //  auto solver = Solver_2(answer, input, 19.9);
-  //  solver.solve();
-  //  if (solver.score.score < best_score.score) {
-  //    answer = solver.answer;
-  //    best_score = solver.score;
-  //    best_solver = 2;
-  //  }
-  //}
+    //    Solver_5::Solver5Params params;
+    //    params.start_change_vertical_lines_count_limit = arr[i];
+
+    //    solver.solve(params);
+    //    if (solver.score.score < best_score.score) {
+    //      answer = solver.answer;
+    //      best_score = solver.score;
+    //      best_solver = 5 * 100 + arr[i];
+    //    }
+    //    if (!solver.answer.is_over) {
+    //      break;
+    //    }
+    //  }
+    //}
+
+    //input.d = 1;
+    if (true || (input.t > 20000 && input.d > 2000)) {
+      int arr[2] = { 10,4 };
+      for (int i = 0; i < 1; i++) {
+        auto solver = Solver_6(answer, input, 99999.9);
+
+        Solver_6::Solver6Params params;
+        params.start_change_vertical_lines_count_limit = arr[i];
+
+        solver.solve(params);
+        if (solver.score.score < best_score.score) {
+          answer = solver.answer;
+          best_score = solver.score;
+          best_solver = 6 * 100 + arr[i];
+        }
+        if (!solver.answer.is_over) {
+          break;
+        }
+      }
+    }
+  }
 
   //if (best_solver / 100 != 5) {
   //  return 0;
