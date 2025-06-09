@@ -1872,7 +1872,7 @@ public:
     int reset_vertical_line_num = 5;
     double discard_value = 0.05;
     int start_change_vertical_lines_count_limit = 999;
-    bool is_mixed_volume_reset = true;
+    bool is_mixed_volume_reset = false;
     bool is_each_row_volume_reset = false;
 
     int initial_set_count = 50;
@@ -1892,6 +1892,8 @@ public:
     vector<int> vertical_lines;
     int change_vertical_lines_count = 0;
     double mixed_volume;
+    double one_block_mixed_volume = 0.1;
+    int mixed_block_count;
     vector<double> mixed_colors;
     double score;
 
@@ -1906,14 +1908,15 @@ public:
     }
 
     inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
-      if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
-        score = 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
+      double new_mixed_volume = mixed_volume - one_block_mixed_volume * mixed_block_count;
+      if (new_mixed_volume < 1.0 || 3.0 < new_mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
+        score = 1e9 + abs(1.1 - new_mixed_volume) + change_vertical_lines_count_limit * 100;
       }
-      else if (2.1 < mixed_volume) {
-        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d * 10000;
+      else if (2.1 < new_mixed_volume) {
+        score = calc_error(mixed_colors, target_color) * 1e4 + (new_mixed_volume - 1.0) * input_d * 10000;
       }
       else {
-        score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * input_d * 0.1;
+        score = calc_error(mixed_colors, target_color) * 1e4 + (new_mixed_volume - 1.0) * input_d * 0.1;
       }
       return score;
     }
@@ -1973,15 +1976,37 @@ public:
   int change_vertical_lines_count_limit = 999;
 
   inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol, S6SAConfig& saState, const vector<double>& diff_col) {
-    next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, diff_col, next_state.mixed_volume, diff_vol);
-    next_state.mixed_volume += diff_vol;
+    double before_volume = next_state.mixed_volume - next_state.mixed_block_count * next_state.one_block_mixed_volume;
     if (next_state.row_op_indices[idx1] == 0) {
       next_state.change_vertical_lines_count++;
     }
+    if (next_state.row_op_add_colors[idx1] == -1) {
+      next_state.mixed_block_count += saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].second.first;
+    }
+    else {
+      next_state.mixed_block_count += saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].second.first;
+    }
+
     next_state.row_op_indices[idx1] += diff1;
+
     if (next_state.row_op_indices[idx1] == 0) {
       next_state.change_vertical_lines_count--;
     }
+    if (next_state.row_op_add_colors[idx1] == -1) {
+      next_state.mixed_block_count -= saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].second.first;
+    }
+    else {
+      next_state.mixed_block_count -= saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].second.first;
+    }
+    double after_volume = next_state.mixed_volume - next_state.mixed_block_count * next_state.one_block_mixed_volume;
+    double diff_volume = after_volume - before_volume;
+
+    vector<double> totyuu_color = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[0][0], next_state.mixed_volume, diff_volume);
+    double totyuu_volume = next_state.mixed_volume + diff_volume;
+
+    next_state.mixed_colors = answer.board.calc_mixed_color(totyuu_color, diff_col, totyuu_volume, diff_vol);
+    next_state.mixed_volume = totyuu_volume + diff_vol;
+
   }
 
   void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int mode, S6SAConfig& saState) {
@@ -2096,6 +2121,8 @@ public:
 
         keep_col1 = next_state.row_op_add_colors[idx1];
         if (keep_col1 == -1) {
+          iter--;
+          continue;
           // case 1: ‘«‚·
           diff_vol = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
@@ -2109,6 +2136,8 @@ public:
           }
         }
         else if (col1 == -1) {
+          iter--;
+          continue;
           // case 2: ˆø‚­
           diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
@@ -2208,6 +2237,9 @@ public:
           state.mixed_volume = max(0.0, state.mixed_volume - 1.0);
         }
       }
+
+      state.one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
+      state.mixed_block_count = 0;
 
       // row_op_volumes‚ðŒvŽZ
       // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
@@ -2436,7 +2468,7 @@ public:
       next_state.mixed_volume = max(0.0, next_state.mixed_volume - 1.0);
 
       cerr << "i = " << i << ", attempt_count = " << attempt_count << ", next_mixed_volume = " << next_state.mixed_volume << ", new_score = " << next_state.score << ", best_best_score = " << best_best_state.score << endl;
-      cerr << "i = " << i << ", mixed_volume = " << next_state.mixed_volume << ", " << answer.board.volumes[0][0] << endl;
+      cerr << "i = " << i << ", mixed_volume = " << next_state.mixed_volume << ", " << answer.board.volumes[0][0] << ", mixed_block_count = " << next_state.mixed_block_count << endl;
 
       state = next_state;
       state.score = 1e12;
