@@ -1877,12 +1877,12 @@ public:
 
     int initial_set_count = 50;
     int initial_loop_count = 40;
-    int initial_operation_thresholds[10] = { 0, 100, 300, 400, 500, 600, 700, 800, 900, 1000 };
-    int initial_max_threshold = 100;
+    int initial_operation_thresholds[10] = { 0, 100, 200, 400, 500, 600, 700, 800, 900, 1000 };
+    int initial_max_threshold = 200;
 
     int main_loop_count = 20000; // 1000
     int main_operation_thresholds[10] = { 90, 100, 150, 400, 500, 600, 700, 800, 900, 1000 };
-    int main_max_threshold = 100;
+    int main_max_threshold = 150;
     int main_break_last_update_iter = 999; // 50
   };
 
@@ -1895,17 +1895,21 @@ public:
     vector<double> mixed_colors;
     double score;
 
-    vector<int> each_row_each_operation_indices;
+    vector<int> row_color_indices;
+    vector<int> row_op_indices;
+    vector<int> row_op_add_colors;
 
     Solver6State(int n) : n(n), vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {
-      each_row_each_operation_indices.resize(n);
+      row_op_indices.resize(n);
+      row_op_add_colors.resize(n);
+      row_color_indices.resize(n);
     }
 
     inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
       if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
         score = 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
       }
-      else if (1.1 < mixed_volume) {
+      else if (2.1 < mixed_volume) {
         score = calc_error(mixed_colors, target_color) * 1e4 + (mixed_volume - 1.0) * max((double)input_d, 10.0) * 10000;
       }
       else {
@@ -1925,26 +1929,34 @@ public:
     }
 
     inline void reset_each_row_each_operation_indices() {
-      each_row_each_operation_indices.clear();
       for (int i = 0; i < n; i++) {
-        each_row_each_operation_indices.push_back(0);
+        row_op_indices[i] = 0;
+        row_op_add_colors[i] = -1;
       }
     }
   };
 
-  class Solver6SAState {
+  class S6SAConfig {
   public:
     int n;
     vector<int> used_indices;
-    vector<vector<int>> each_colors;
-    vector<int> each_row_colors;
 
-    vector<vector<pair<double, pair<int, int>>>> each_row_each_operation_volumes;
+    vector<vector<pair<double, pair<int, int>>>> row_op_volumes;
+    vector<vector<pair<double, pair<int, int>>>> row_op_volumes_add;
+    vector<int> row_op_can_add_indices;
+    vector<vector<vector<double>>> row_op_colors_add;
+
+    S6SAConfig(int n) : n(n) {
+      row_op_volumes.resize(n);
+      row_op_volumes_add.resize(n);
+      row_op_can_add_indices.clear();
+      row_op_colors_add.resize(n);
+    }
 
     inline void calc_used_indices(const Solver6State& state) {
       used_indices.clear();
       for (int i = 0; i < n; i++) {
-        if (state.each_row_each_operation_indices[i] != 0) {
+        if (state.row_op_indices[i] != 0) {
           used_indices.push_back(i);
         }
       }
@@ -1968,19 +1980,19 @@ public:
 
   int change_vertical_lines_count_limit = 999;
 
-  inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol, Solver6SAState& saState) {
-    next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
+  inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol, S6SAConfig& saState, const vector<double>& diff_col) {
+    next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, diff_col, next_state.mixed_volume, diff_vol);
     next_state.mixed_volume += diff_vol;
-    if (next_state.each_row_each_operation_indices[idx1] == 0) {
+    if (next_state.row_op_indices[idx1] == 0) {
       next_state.change_vertical_lines_count++;
     }
-    next_state.each_row_each_operation_indices[idx1] += diff1;
-    if (next_state.each_row_each_operation_indices[idx1] == 0) {
+    next_state.row_op_indices[idx1] += diff1;
+    if (next_state.row_op_indices[idx1] == 0) {
       next_state.change_vertical_lines_count--;
     }
   }
 
-  void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int mode, Solver6SAState& saState) {
+  void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int mode, S6SAConfig& saState) {
     int thresholds[10];
     int max_threshold = 0;
     int loop_count = 0;
@@ -2003,45 +2015,99 @@ public:
     next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
 
     int last_update_iter = 0;
+    int idx1 = 0;
+    int idx2 = 0;
+    int diff1 = 0;
+    int col1 = 0;
+    int keep_col1 = 0;
+    double diff_vol = 0.0;
+    double diff_vol2 = 0.0;
+    vector<double> diff_col1(3, 0.0);
+    vector<double> diff_col2(3, 0.0);
     for (int iter = 0; iter < loop_count; iter++) {
       double current_score = next_state.score;
-
-      int idx1 = 0;
-      int idx2 = 0;
-      int diff1 = 0;
-      int col1 = 0;
-      double diff_vol = 0.0;
-      double diff_vol2 = 0.0;
 
       int ra = rand_xorshift() % max_threshold;
       if (ra < thresholds[0]) {
         // ŽdØ‚è‚ð+-1‚·‚é
         idx1 = rand_xorshift() % input.n;
         diff1 = rand_xorshift() % 3 - 1;
-        while (next_state.each_row_each_operation_indices[idx1] + diff1 < 0 || next_state.each_row_each_operation_indices[idx1] + diff1 >= saState.each_row_each_operation_volumes[idx1].size() || diff1 == 0) {
+        while (next_state.row_op_indices[idx1] + diff1 < 0 || next_state.row_op_indices[idx1] + diff1 >= saState.row_op_volumes[idx1].size() || diff1 == 0) {
           diff1 = rand_xorshift() % 3 - 1;
         }
 
-        diff_vol = saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1] + diff1].first
-          - saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1]].first;
-        move_diff(state, next_state, idx1, diff1, diff_vol, saState);
+        if (next_state.row_op_add_colors[idx1] == -1) {
+          diff_vol = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1] + diff1].first
+            - saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
+        }
+        else {
+          diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1] + diff1].first
+            - saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
+        }
+
+        move_diff(state, next_state, idx1, diff1, diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
       }
       else if (ra < thresholds[1]) {
         // ŽdØ‚è‚ðƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚é
         idx1 = rand_xorshift() % input.n;
 
-        int new1 = rand_xorshift() % saState.each_row_each_operation_volumes[idx1].size();
+        int new1 = rand_xorshift() % saState.row_op_volumes[idx1].size();
         if (rand_xorshift() % 3 == 0) {
           new1 = 0;
         }
-        while (new1 == next_state.each_row_each_operation_indices[idx1]) {
-          new1 = rand_xorshift() % saState.each_row_each_operation_volumes[idx1].size();
+        while (new1 == next_state.row_op_indices[idx1]) {
+          new1 = rand_xorshift() % saState.row_op_volumes[idx1].size();
         }
-        diff1 = new1 - next_state.each_row_each_operation_indices[idx1];
+        diff1 = new1 - next_state.row_op_indices[idx1];
 
-        diff_vol = saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1] + diff1].first
-          - saState.each_row_each_operation_volumes[idx1][next_state.each_row_each_operation_indices[idx1]].first;
-        move_diff(state, next_state, idx1, diff1, diff_vol, saState);
+        if (next_state.row_op_add_colors[idx1] == -1) {
+          diff_vol = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1] + diff1].first
+            - saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
+        }
+        else {
+          diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1] + diff1].first
+            - saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
+        }
+
+        move_diff(state, next_state, idx1, diff1, diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
+      }
+      else if (ra < thresholds[2]) {
+        // ŠG‹ï‚ð‘«‚·/ˆø‚­
+        if (saState.row_op_can_add_indices.size() == 0) {
+          iter--;
+          continue;
+        }
+        idx1 = saState.row_op_can_add_indices[rand_xorshift() % saState.row_op_can_add_indices.size()];
+        col1 = rand_xorshift() % (input.k + 1) - 1;
+        while (col1 == next_state.row_op_add_colors[idx1]) {
+          col1 = rand_xorshift() % (input.k + 1) - 1;
+        }
+
+        keep_col1 = next_state.row_op_add_colors[idx1];
+        if (keep_col1 == -1) {
+          // case 1: ‘«‚·
+          diff_vol = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
+          diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
+          diff_col1 = answer.board.colors[idx1][input.n - 1];
+          diff_col2 = saState.row_op_colors_add[idx1][col1];
+        }
+        else if (col1 == -1) {
+          // case 2: ˆø‚­
+          diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
+          diff_vol2 = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
+          diff_col1 = saState.row_op_colors_add[idx1][keep_col1];
+          diff_col2 = answer.board.colors[idx1][input.n - 1];
+        }
+        else {
+          // case 3: F‚ð•Ï‚¦‚é
+          diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
+          diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
+          diff_col1 = saState.row_op_colors_add[idx1][keep_col1];
+          diff_col2 = saState.row_op_colors_add[idx1][col1];
+        }
+        move_diff(state, next_state, idx1, 0, -diff_vol, saState, diff_col1);
+        move_diff(state, next_state, idx1, 0, diff_vol2, saState, diff_col2);
+        next_state.row_op_add_colors[idx1] = col1;
       }
 
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
@@ -2071,10 +2137,15 @@ public:
         // –ß‚·
         next_state.score = current_score;
         if (ra < thresholds[0]) {
-          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState);
+          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
         }
         else if (ra < thresholds[1]) {
-          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState);
+          move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, answer.board.colors[idx1][input.n - 1]);
+        }
+        else if (ra < thresholds[2]) {
+          move_diff(state, next_state, idx1, 0, -diff_vol2, saState, diff_col2);
+          move_diff(state, next_state, idx1, 0, diff_vol, saState, diff_col1);
+          next_state.row_op_add_colors[idx1] = keep_col1;
         }
       }
       if (iter > last_update_iter + params.main_break_last_update_iter) {
@@ -2094,14 +2165,11 @@ public:
     answer.clear();
     bool ok = true;
 
-    Solver6SAState saState;
-    saState.n = input.n;
-    saState.each_row_colors.resize(input.n);
+    S6SAConfig saConfig(input.n);
     for (int i = 0; i < input.n; i++) {
       answer.add_turn_1(i, input.n - 1, i % input.k, input);
-      saState.each_row_colors[i] = i % input.k;
+      state.row_color_indices[i] = i % input.k;
     }
-    saState.each_row_each_operation_volumes.resize(input.n);
 
     for (int i = 0; i < input.h; i++) {
       // mixed_volume‚ð@‚«Žæ‚è
@@ -2112,6 +2180,62 @@ public:
         }
       }
 
+      // row_op_volumes‚ðŒvŽZ
+      // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
+      state.reset_each_row_each_operation_indices();
+      for (int j = 0; j < input.n; j++) {
+        saConfig.row_op_volumes[j].clear();
+        saConfig.row_op_volumes[j].emplace_back(0.0, make_pair(state.vertical_lines[j], state.vertical_lines[j]));
+
+        double current_row_volume = answer.board.volumes[j][input.n - 1];
+
+        // L‚°‚é ¨ k‚ß‚é
+        for (int k = state.vertical_lines[j]; k >= 0; k--) {
+          double one_block_volume = current_row_volume / (input.n - 1 - k);
+          for (int l = k + 1; l <= input.n - 3; l++) {
+            double diff_vol = one_block_volume * (l - k);
+            saConfig.row_op_volumes[j].emplace_back(diff_vol, make_pair(k, l));
+          }
+        }
+
+        sort(saConfig.row_op_volumes[j].begin(), saConfig.row_op_volumes[j].end());
+      }
+
+      // row_op_volumes_add‚ðŒvŽZ
+      // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
+      saConfig.row_op_can_add_indices.clear();
+      for (int j = 0; j < input.n; j++) {
+        saConfig.row_op_volumes_add[j].clear();
+        saConfig.row_op_volumes_add[j].emplace_back(0.0, make_pair(state.vertical_lines[j], state.vertical_lines[j]));
+
+        if (answer.board.volumes[j][input.n - 1] >= params.discard_value) {
+          continue; // F‚ª‘«‚¹‚È‚¢
+        }
+
+        saConfig.row_op_can_add_indices.push_back(j);
+
+        double current_row_volume = (answer.board.volumes[j][input.n - 1] + 1.0);
+
+        // L‚°‚é ¨ k‚ß‚é
+        for (int k = state.vertical_lines[j]; k >= 0; k--) {
+          double one_block_volume = current_row_volume / (input.n - 1 - k);
+          for (int l = k + 1; l <= input.n - 3; l++) {
+            double diff_vol = one_block_volume * (l - k);
+            saConfig.row_op_volumes_add[j].emplace_back(diff_vol, make_pair(k, l));
+          }
+        }
+
+        sort(saConfig.row_op_volumes_add[j].begin(), saConfig.row_op_volumes_add[j].end());
+      }
+
+      // row_op_colors_add‚ðŒvŽZ
+      for (int j = 0; j < input.n; j++) {
+        saConfig.row_op_colors_add[j].clear();
+        for (int k = 0; k < input.k; k++) {
+          saConfig.row_op_colors_add[j].push_back(answer.board.calc_mixed_color(answer.board.colors[j][input.n - 1], input.owns[k], answer.board.volumes[j][input.n - 1], 1.0));
+        }
+      }
+
       // F‚ð‘«‚·
       vector<double> each_color_volumes(input.k, 0.0);
       while (true) {
@@ -2119,6 +2243,9 @@ public:
         double min_vol = 1e9;
         for (int j = 0; j < input.n; j++) {
           double vol = answer.board.volumes[j][input.n - 1];
+          if(state.row_op_add_colors[j] != -1) {
+            vol += 1.0;
+          }
           if (vol < min_vol) {
             min_vol = vol;
             idx = j;
@@ -2131,7 +2258,10 @@ public:
           each_color_volumes[j] = 0.0;
         }
         for (int j = 0; j < input.n; j++) {
-          each_color_volumes[saState.each_row_colors[j]] += answer.board.volumes[j][input.n - 1];
+          each_color_volumes[state.row_color_indices[j]] += answer.board.volumes[j][input.n - 1];
+          if (state.row_op_add_colors[j] != -1) {
+            each_color_volumes[state.row_color_indices[j]] += 1.0;
+          }
         }
         int col = 0;
         double min_color_vol = 1e9;
@@ -2141,48 +2271,8 @@ public:
             col = j;
           }
         }
-        if (params.is_each_row_volume_reset) {
-          answer.add_turn_3(idx, input.n - 1);
-        }
-        answer.add_turn_1(idx, input.n - 1, col, input);
-        saState.each_row_colors[idx] = col;
-        if (answer.is_over) {
-          ok = false;
-          break;
-        }
+        state.row_op_add_colors[idx] = col;
       }
-      if (answer.is_over) {
-        ok = false;
-        break;
-      }
-
-      saState.each_colors.clear();
-      saState.each_colors.resize(input.k);
-      for (int j = 0; j < input.n; j++) {
-        saState.each_colors[saState.each_row_colors[j]].push_back(j);
-      }
-
-      // each_row_each_operation_volumes‚ðŒvŽZ
-      // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
-      state.reset_each_row_each_operation_indices();
-      for (int j = 0; j < input.n; j++) {
-        saState.each_row_each_operation_volumes[j].clear();
-        saState.each_row_each_operation_volumes[j].emplace_back(0.0, make_pair(state.vertical_lines[j], state.vertical_lines[j]));
-
-        double current_row_volume = answer.board.volumes[j][input.n - 1];
-
-        // L‚°‚é ¨ k‚ß‚é
-        for (int k = state.vertical_lines[j]; k >= 0; k--) {
-          double one_block_volume = current_row_volume / (input.n - 1 - k);
-          for (int l = k + 1; l <= input.n - 3; l++) {
-            double diff_vol = one_block_volume * (l - k);
-            saState.each_row_each_operation_volumes[j].emplace_back(diff_vol, make_pair(k, l));
-          }
-        }
-
-        sort(saState.each_row_each_operation_volumes[j].begin(), saState.each_row_each_operation_volumes[j].end());
-      }
-
 
       // ŽR“o‚è
       change_vertical_lines_count_limit = params.start_change_vertical_lines_count_limit;
@@ -2190,7 +2280,7 @@ public:
       Solver6State next_state = state;
       Solver6State best_best_state = state;
       Solver6State best_state = state;
-      saState.calc_used_indices(state);
+      saConfig.calc_used_indices(state);
       while (true) {
         attempt_count++;
 
@@ -2198,9 +2288,9 @@ public:
 
         for (int set_iter = 0; set_iter < params.initial_set_count; set_iter++) {
           next_state = state;
-          saState.calc_used_indices(next_state);
+          saConfig.calc_used_indices(next_state);
 
-          solve_inner(i, params, state, next_state, 0, saState);
+          solve_inner(i, params, state, next_state, 0, saConfig);
 
           next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
           if (next_state.score < best_state.score) {
@@ -2211,9 +2301,9 @@ public:
 
         // best‚©‚ç–ß‚·
         next_state = best_state;
-        saState.calc_used_indices(next_state);
+        saConfig.calc_used_indices(next_state);
 
-        solve_inner(i, params, state, next_state, 1, saState);
+        solve_inner(i, params, state, next_state, 1, saConfig);
 
         if (next_state.mixed_volume < 1.0 - EPS) {
           cerr << "next_state.mixed_volume = " << next_state.mixed_volume << endl;
@@ -2227,7 +2317,7 @@ public:
 
         if (attempt_count <= 0 && best_best_state.score > (input.d / 100.0 + 2.0) * (attempt_count + 25) / 26) {
           next_state = state;
-          saState.calc_used_indices(next_state);
+          saConfig.calc_used_indices(next_state);
 
           if (attempt_count > 20) {
             change_vertical_lines_count_limit++;
@@ -2238,14 +2328,26 @@ public:
 
         // best_best‚©‚ç–ß‚·
         next_state = best_best_state;
-        saState.calc_used_indices(next_state);
+        saConfig.calc_used_indices(next_state);
 
         break;
       }
 
+      // ŠG‹ï‚ð‘«‚·
+      for (int j = 0; j < input.n; j++) {
+        if (next_state.row_op_add_colors[j] == -1) {
+          continue;
+        }
+        if (next_state.row_op_indices[j] == 0) {
+          continue;
+        }
+        answer.add_turn_1(j, input.n - 1, next_state.row_op_add_colors[j], input);
+        next_state.row_color_indices[j] = next_state.row_op_add_colors[j];
+      }
+
       // L‚°‚é
       for (int j = 0; j < input.n; j++) {
-        int new_vertical_line = saState.each_row_each_operation_volumes[j][next_state.each_row_each_operation_indices[j]].second.first;
+        int new_vertical_line = saConfig.row_op_volumes[j][next_state.row_op_indices[j]].second.first;
         if (new_vertical_line != next_state.vertical_lines[j]) {
           answer.add_turn_4(j, new_vertical_line, RIGHT);
           answer.add_turn_4(j, next_state.vertical_lines[j], RIGHT);
@@ -2255,7 +2357,7 @@ public:
 
       // k‚ß‚é
       for (int j = 0; j < input.n; j++) {
-        int new_vertical_line = saState.each_row_each_operation_volumes[j][next_state.each_row_each_operation_indices[j]].second.second;
+        int new_vertical_line = saConfig.row_op_volumes[j][next_state.row_op_indices[j]].second.second;
         if (new_vertical_line != next_state.vertical_lines[j]) {
           answer.add_turn_4(j, new_vertical_line, RIGHT);
           answer.add_turn_4(j, next_state.vertical_lines[j], RIGHT);
@@ -2266,9 +2368,16 @@ public:
       answer.add_turn_2(0, 0);
       next_state.mixed_volume = max(0.0, next_state.mixed_volume - 1.0);
 
+      cerr << "i = " << i << ", attempt_count = " << attempt_count << ", next_mixed_volume = " << next_state.mixed_volume << ", new_score = " << next_state.score << ", best_best_score = " << best_best_state.score << endl;
+      //cerr << "i = " << i << ", mixed_volume = " << next_state.mixed_volume << ", " << answer.board.volumes[0][0] << endl;
+
       state = next_state;
       state.score = 1e12;
       state.change_vertical_lines_count = 0;
+      for(int j = 0; j < input.n; j++) {
+        state.row_op_indices[j] = 0;
+        state.row_op_add_colors[j] = -1;
+      }
 
       if (answer.is_over) {
         ok = false;
@@ -2352,7 +2461,7 @@ ll solve_case(int case_num) {
 
   input.d = 1;
   if (true || (input.t > 20000 && input.d > 2000)) {
-    int arr[2] = { 20,4 };
+    int arr[2] = { 10,4 };
     for (int i = 0; i < 1; i++) {
       auto solver = Solver_6(answer, input, 99999.9);
 
@@ -2440,7 +2549,7 @@ ll solve_case(int case_num) {
 }
 
 int main() {
-  exec_mode = 778;
+  exec_mode = 777;
 
   if (exec_mode == 0) {
     solve_case(0);
