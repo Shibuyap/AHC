@@ -10,7 +10,8 @@
       "Bash(./convert_to_utf8_bom.sh:*)",
       "Bash(dos2unix:*)",
       "Bash(sed:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(python3:*)"
     ],
     "deny": []
   }

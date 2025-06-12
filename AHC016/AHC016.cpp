@@ -27,9 +27,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -39,8 +36,7 @@ const int dy[4] = { 0, 0, -1, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
-  {
+  static uint32_t Rand() {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -60,8 +56,7 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
-namespace
-{
+namespace {
   // 共通変数
   double com[105][105];
   int MODE = 0;
@@ -89,8 +84,7 @@ namespace
 }  // namespace
 
 // ハイパラ
-namespace
-{
+namespace {
   int maxNumArray[100] = {
       50, 53, 49, 52, 48, 75, 47, 61, 46, 57, 81, 90, 77, 69, 43, 58, 42,
       59, 41, 82, 40, 54, 39, 76, 55, 63, 37, 64, 65, 33, 86, 66, 34, 67,
@@ -902,11 +896,9 @@ namespace
 }  // namespace
 
 // Input（m, eps, iEpsの設定）
-namespace
-{
+namespace {
   int judgeArr[100];
-  void Input(int mode, int problemNum = 0)
-  {
+  void Input(int mode, int problemNum = 0) {
     if (mode == 0) {
       cin >> m;
       string sEps;
@@ -917,8 +909,7 @@ namespace
     else if (mode == 1000) {
       string fileNameIfs = "./in/";
       string strNum;
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         strNum += (char)(problemNum % 10 + '0');
         problemNum /= 10;
       }
@@ -933,7 +924,7 @@ namespace
       iEps = (sEps[2] - '0') * 10 + (sEps[3] - '0');
       eps = (double)iEps / 100.0;
 
-      rep(i, 100) ifs >> judgeArr[i];
+      for (int i = 0; i < (100); ++i) ifs >> judgeArr[i];
     }
     else if (mode == 100 || mode == 110) {
       m = Rand() % 91 + 10;
@@ -941,27 +932,24 @@ namespace
       iEps = Rand() % 41;
       // iEps = Rand() % 11 + 30;
       eps = iEps / 100.0;
-      rep(i, 100) judgeArr[i] = Rand() % m;
+      for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
     }
     else if (mode == 333) {
       m = problemNum * 10;
       iEps = 40;
       eps = iEps / 100.0;
-      rep(i, 100) judgeArr[i] = Rand() % m;
+      for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
     }
   }
 }  // namespace
 
 // Output
-namespace
-{
+namespace {
   ofstream ofs1000Out;
-  void OpenOfs1000Out(int problemNum)
-  {
+  void OpenOfs1000Out(int problemNum) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
-    {
+    for (int i = 0; i < (4); ++i) {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
     }
@@ -973,16 +961,13 @@ namespace
 
   void CloseOfs1000Out() { ofs1000Out.close(); }
 
-  void OutputArrayAsString(int mode)
-  {
+  void OutputArrayAsString(int mode) {
     if (mode == 0) {
       cout << n << endl;
-      rep(i, m)
-      {
+      for (int i = 0; i < (m); ++i) {
         string s;
-        rep(j, n)
-        {
-          srep(k, j + 1, n) { s += (char)(a[i][j][k] + '0'); }
+        for (int j = 0; j < (n); ++j) {
+          for (int k = j + 1; k < n; ++k) { s += (char)(a[i][j][k] + '0'); }
         }
         cout << s << endl;
       }
@@ -996,12 +981,10 @@ namespace
       ofs1000Out << "# hyperMaxRound = " << hyperMaxRound << endl;
       ofs1000Out << "# hyperStep1 = " << hyperStep1 << endl;
       ofs1000Out << "# hyperStep2 = " << hyperStep2 << endl;
-      rep(i, m)
-      {
+      for (int i = 0; i < (m); ++i) {
         string s;
-        rep(j, n)
-        {
-          srep(k, j + 1, n) { s += (char)(a[i][j][k] + '0'); }
+        for (int j = 0; j < (n); ++j) {
+          for (int k = j + 1; k < n; ++k) { s += (char)(a[i][j][k] + '0'); }
         }
         ofs1000Out << s << endl;
         ofs1000Out << "# " << numPairArr[i][0] << ' ' << numPairArr[i][1] << endl;
@@ -1010,17 +993,13 @@ namespace
   }
 
   int answersFor1000Out[TURN];
-  void OutputAnsToOfs1000Out()
-  {
-    rep(i, 100) { ofs1000Out << answersFor1000Out[i] << endl; }
+  void OutputAnsToOfs1000Out() {
+    for (int i = 0; i < (100); ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
   }
 
-  void OutputHaipara()
-  {
-    rep(i, 101)
-    {
-      rep(j, 41)
-      {
+  void OutputHaipara() {
+    for (int i = 0; i < (101); ++i) {
+      for (int j = 0; j < (41); ++j) {
         if (hyperSolver[i][j] / 10 == 10 || hyperSolver[i][j] / 10 == 12) {
           hyperStep2Arr[i][j] = hyperStep1Arr[i][j];
         }
@@ -1028,11 +1007,9 @@ namespace
     }
     ofstream ofs("Haipara.txt");
     ofs << "int hyperN[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperN[i][j];
         if (j == 40)
           ofs << "}";
@@ -1048,11 +1025,9 @@ namespace
     }
     ofs << endl;
     ofs << "double hyperMaxScore[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperMaxScore[i][j];
         if (j == 40)
           ofs << "}";
@@ -1068,11 +1043,9 @@ namespace
     }
     ofs << endl;
     ofs << "int hyperSolver[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperSolver[i][j];
         if (j == 40)
           ofs << "}";
@@ -1088,11 +1061,9 @@ namespace
     }
     ofs << endl;
     ofs << "int hyperMinDiffArr[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperMinDiffArr[i][j];
         if (j == 40)
           ofs << "}";
@@ -1108,11 +1079,9 @@ namespace
     }
     ofs << endl;
     ofs << "int hyperMaxRoundArr[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperMaxRoundArr[i][j];
         if (j == 40)
           ofs << "}";
@@ -1128,11 +1097,9 @@ namespace
     }
     ofs << endl;
     ofs << "int hyperStep1Arr[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperStep1Arr[i][j];
         if (j == 40)
           ofs << "}";
@@ -1148,11 +1115,9 @@ namespace
     }
     ofs << endl;
     ofs << "int hyperStep2Arr[101][41] = {" << endl;
-    rep(i, 101)
-    {
+    for (int i = 0; i < (101); ++i) {
       ofs << "{";
-      rep(j, 41)
-      {
+      for (int j = 0; j < (41); ++j) {
         ofs << hyperStep2Arr[i][j];
         if (j == 40)
           ofs << "}";
@@ -1171,12 +1136,9 @@ namespace
   }
 }  // namespace
 
-void RandmizeGraph(int x)
-{
-  rep(j, n)
-  {
-    srep(k, j + 1, n)
-    {
+void RandmizeGraph(int x) {
+  for (int j = 0; j < (n); ++j) {
+    for (int k = j + 1; k < n; ++k) {
       b[j][k] = a[x][j][k];
       if (Rand01() < eps) {
         b[j][k] = 1 - b[j][k];
@@ -1187,20 +1149,16 @@ void RandmizeGraph(int x)
 }
 
 int judgeNum;
-void InitB(int mode, int turn = 0)
-{
-  rep(i, n)
-  {
-    rep(j, n) { b[i][j] = 0; }
+void InitB(int mode, int turn = 0) {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { b[i][j] = 0; }
   }
   if (mode == 0) {
     string s;
     cin >> s;
     int ite = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         b[i][j] = s[ite] - '0';
         b[j][i] = b[i][j];
         ite++;
@@ -1215,15 +1173,12 @@ void InitB(int mode, int turn = 0)
 }
 
 // numArray
-namespace
-{
+namespace {
   int numArr[100];
-  void InitNumArray1()
-  {
+  void InitNumArray1() {
     if (n % 2 == 0) {
       int cnt = 0;
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
@@ -1234,8 +1189,7 @@ namespace
       int cnt = 0;
       numArr[cnt] = n / 2 + 1;
       cnt++;
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
@@ -1243,13 +1197,10 @@ namespace
       }
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1263,17 +1214,13 @@ namespace
     }
   }
 
-  void InitNumArray2()
-  {
-    rep(i, 100) { numArr[i] = maxNumArray[i]; }
+  void InitNumArray2() {
+    for (int i = 0; i < (100); ++i) { numArr[i] = maxNumArray[i]; }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1287,17 +1234,13 @@ namespace
     }
   }
 
-  void InitNumArray3()
-  {
-    rep(i, 100) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
+  void InitNumArray3() {
+    for (int i = 0; i < (100); ++i) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1311,17 +1254,13 @@ namespace
     }
   }
 
-  void InitNumArray4()
-  {
-    rep(i, 100) numArr[i] = 0;
-    rep(i, 20) { numArr[i] = (i + 1) * 5; }
-    rep(i, m)
-    {
+  void InitNumArray4() {
+    for (int i = 0; i < (100); ++i) numArr[i] = 0;
+    for (int i = 0; i < (20); ++i) { numArr[i] = (i + 1) * 5; }
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1335,20 +1274,17 @@ namespace
     }
   }
 
-  void InitNumArray5()
-  {
+  void InitNumArray5() {
     if (n % 2 == 0) {
       int cnt = 0;
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         if (i % 2 == 1) continue;
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
         cnt++;
       }
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         if (i % 2 == 0) continue;
         numArr[cnt] = i + 1;
         cnt++;
@@ -1360,16 +1296,14 @@ namespace
       int cnt = 0;
       numArr[cnt] = n / 2 + 1;
       cnt++;
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         if (i % 2 == 0) continue;
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
         cnt++;
       }
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         if (i % 2 == 1) continue;
         numArr[cnt] = i + 1;
         cnt++;
@@ -1378,13 +1312,10 @@ namespace
       }
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1398,14 +1329,11 @@ namespace
     }
   }
 
-  void InitNumArray6()
-  {
+  void InitNumArray6() {
     if (n % 2 == 0) {
       int cnt = 0;
-      rep(j, 3)
-      {
-        drep(i, n / 2)
-        {
+      for (int j = 0; j < (3); ++j) {
+        for (int i = (n / 2) - 1; i >= 0; --i) {
           if (i % 3 != j) continue;
           numArr[cnt] = i + 1;
           cnt++;
@@ -1418,10 +1346,8 @@ namespace
       int cnt = 0;
       numArr[cnt] = n / 2 + 1;
       cnt++;
-      srep(j, 2, 5)
-      {
-        drep(i, n / 2)
-        {
+      for (int j = 2; j < 5; ++j) {
+        for (int i = (n / 2) - 1; i >= 0; --i) {
           if (i % 3 != j % 3) continue;
           numArr[cnt] = i + 1;
           cnt++;
@@ -1431,13 +1357,10 @@ namespace
       }
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1451,17 +1374,14 @@ namespace
     }
   }
 
-  void InitNumArray7()
-  {
+  void InitNumArray7() {
     if (n % 2 == 0) {
       int cnt = 0;
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         numArr[cnt] = i + 1;
         cnt++;
       }
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         numArr[cnt] = n - i;
         cnt++;
       }
@@ -1470,25 +1390,20 @@ namespace
       int cnt = 0;
       numArr[cnt] = n / 2 + 1;
       cnt++;
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         numArr[cnt] = i + 1;
         cnt++;
       }
-      drep(i, n / 2)
-      {
+      for (int i = (n / 2) - 1; i >= 0; --i) {
         numArr[cnt] = n - i;
         cnt++;
       }
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1506,22 +1421,17 @@ namespace
     }
   }
 
-  void InitNumArray8()
-  {
+  void InitNumArray8() {
     int cnt = 0;
-    drep(i, n)
-    {
+    for (int i = (n)-1; i >= 0; --i) {
       numArr[cnt] = i + 1;
       cnt++;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1535,26 +1445,20 @@ namespace
     }
   }
 
-  void InitNumArray9()
-  {
+  void InitNumArray9() {
     int cnt = 0;
-    srep(j, 1, 3)
-    {
-      drep(i, n)
-      {
+    for (int j = 1; j < 3; ++j) {
+      for (int i = (n)-1; i >= 0; --i) {
         if (i % 2 != j % 2) continue;
         numArr[cnt] = i + 1;
         cnt++;
       }
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num = numArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1568,8 +1472,7 @@ namespace
     }
   }
 
-  void InitNumArray10()
-  {
+  void InitNumArray10() {
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1586,14 +1489,11 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1612,8 +1512,7 @@ namespace
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray11()
-  {
+  void InitNumArray11() {
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1630,14 +1529,11 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1656,8 +1552,7 @@ namespace
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray12()
-  {
+  void InitNumArray12() {
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -1678,14 +1573,11 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1704,8 +1596,7 @@ namespace
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray13()
-  {
+  void InitNumArray13() {
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -1726,14 +1617,11 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1752,15 +1640,11 @@ namespace
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray14()
-  {
-    rep(i, m)
-    {
+  void InitNumArray14() {
+    for (int i = 0; i < (m); ++i) {
       int cnt = 0;
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (cnt < i) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1775,8 +1659,7 @@ namespace
     }
   }
 
-  void InitNumArray15()
-  {
+  void InitNumArray15() {
     numPairArrOK = 0;
     int minn = 4;
     int cnt = 0;
@@ -1871,23 +1754,19 @@ namespace
       }
     }
 
-    rep(i, cnt / 2)
-    {
+    for (int i = 0; i < (cnt / 2); ++i) {
       swap(numThreeArr[i][0], numThreeArr[cnt - 1 - i][0]);
       swap(numThreeArr[i][1], numThreeArr[cnt - 1 - i][1]);
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numThreeArr[i][0];
       int num2 = numThreeArr[i][1];
       int num3 = numThreeArr[i][2];
       // cout << "a" << num1 << ' ' << num2 << ' ' << num3 << ' ' << endl;
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -1909,8 +1788,7 @@ namespace
     }
   }
 
-  void InitNumArray16()
-  {
+  void InitNumArray16() {
     numPairArrOK = 0;
     int minn = 4;
     int cnt = 0;
@@ -2005,23 +1883,19 @@ namespace
       }
     }
 
-    rep(i, cnt / 2)
-    {
+    for (int i = 0; i < (cnt / 2); ++i) {
       swap(numThreeArr[i][0], numThreeArr[cnt - 1 - i][0]);
       swap(numThreeArr[i][1], numThreeArr[cnt - 1 - i][1]);
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numThreeArr[i][0];
       int num2 = numThreeArr[i][1];
       int num3 = numThreeArr[i][2];
       // cout << "a" << num1 << ' ' << num2 << ' ' << num3 << ' ' << endl;
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -2044,8 +1918,7 @@ namespace
   }
 
   // 4コア
-  void InitNumArray17()
-  {
+  void InitNumArray17() {
     numPairArrOK = 0;
     int minn = 4;
     int cnt = 0;
@@ -2185,26 +2058,22 @@ namespace
       }
     }
 
-    rep(i, cnt / 2)
-    {
+    for (int i = 0; i < (cnt / 2); ++i) {
       swap(numFourArr[i][0], numFourArr[cnt - 1 - i][0]);
       swap(numFourArr[i][1], numFourArr[cnt - 1 - i][1]);
       swap(numFourArr[i][2], numFourArr[cnt - 1 - i][2]);
       swap(numFourArr[i][3], numFourArr[cnt - 1 - i][3]);
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numFourArr[i][0];
       int num2 = numFourArr[i][1];
       int num3 = numFourArr[i][2];
       int num4 = numFourArr[i][3];
       // cout << "a" << num1 << ' ' << num2 << ' ' << num3  << ' ' << num4 <<
       // endl;
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -2232,9 +2101,8 @@ namespace
 
   // 13表裏
   int omoteArr[1000];
-  void InitNumArray18()
-  {
-    rep(i, 1000)omoteArr[i] = 0;
+  void InitNumArray18() {
+    for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -2265,15 +2133,12 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       int omote = omoteArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -2297,9 +2162,8 @@ namespace
   }
 
   // 10表裏
-  void InitNumArray19()
-  {
-    rep(i, 1000)omoteArr[i] = 0;
+  void InitNumArray19() {
+    for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -2326,15 +2190,12 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       int omote = omoteArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -2360,14 +2221,12 @@ namespace
   // 0.0用
   vector<vector<P>> zeroPairs;
   vector<int> dfsvec;
-  void dfs(int sum, int x)
-  {
+  void dfs(int sum, int x) {
     if (dfsvec.size()) {
 
       if (dfsvec.size() == 1) {
         int num1 = dfsvec[0];
-        srep(i, num1 - 1, num1 * (num1 - 1) / 2 + 1)
-        {
+        for (int i = num1 - 1; i < num1 * (num1 - 1) / 2 + 1; ++i) {
           vector<P> vp;
           vp.push_back(P(num1, i));
           zeroPairs.push_back(vp);
@@ -2376,10 +2235,8 @@ namespace
       if (dfsvec.size() == 2) {
         int num1 = dfsvec[0];
         int num2 = dfsvec[1];
-        srep(i, num1 - 1, num1 * (num1 - 1) / 2 + 1)
-        {
-          srep(j, num2 - 1, num2 * (num2 - 1) / 2 + 1)
-          {
+        for (int i = num1 - 1; i < num1 * (num1 - 1) / 2 + 1; ++i) {
+          for (int j = num2 - 1; j < num2 * (num2 - 1) / 2 + 1; ++j) {
             vector<P> vp;
             vp.push_back(P(num1, i));
             vp.push_back(P(num2, j));
@@ -2389,8 +2246,7 @@ namespace
       }
     }
 
-    srep(i, x + 1, 10)
-    {
+    for (int i = x + 1; i < 10; ++i) {
       if (sum + i <= n) {
         dfsvec.push_back(i);
         dfs(sum + i, i);
@@ -2398,37 +2254,29 @@ namespace
       }
     }
   }
-  void InitNumArray20()
-  {
+  void InitNumArray20() {
     zeroPairs.clear();
     numPairArrOK = 0;
     dfs(0, 1);
     if (zeroPairs.size() >= m) {
       numPairArrOK = 1;
-      rep(i, m)
-      {
-        rep(j, n)
-        {
-          rep(k, n)
-          {
+      for (int i = 0; i < (m); ++i) {
+        for (int j = 0; j < (n); ++j) {
+          for (int k = 0; k < (n); ++k) {
             a[i][j][k] = 0;
           }
         }
       }
-      rep(i, m)
-      {
+      for (int i = 0; i < (m); ++i) {
         vector<P> vp = zeroPairs[i];
         int sz = vp.size();
         int sum = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           int sq = vp[j].first;
           int hon = vp[j].second;
           int cnt = 0;
-          srep(k, sum, sum + sq)
-          {
-            srep(l, k + 1, sum + sq)
-            {
+          for (int k = sum; k < sum + sq; ++k) {
+            for (int l = k + 1; l < sum + sq; ++l) {
               if (cnt < hon) {
                 a[i][k][l] = 1;
                 a[i][l][k] = 1;
@@ -2443,9 +2291,8 @@ namespace
   }
 
   // 1コア
-  void InitNumArray21()
-  {
-    rep(i, 1000)omoteArr[i] = 0;
+  void InitNumArray21() {
+    for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -2458,14 +2305,11 @@ namespace
       if (cnt > 200) break;
     }
 
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numSingleArr[i];
       int omote = omoteArr[i];
-      rep(j, n)
-      {
-        srep(k, j + 1, n)
-        {
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
             a[i][k][j] = 1;
@@ -2485,8 +2329,7 @@ namespace
   }
 
 
-  void InitNumArray(int mode)
-  {
+  void InitNumArray(int mode) {
     numPairArrOK = 1;
     int ra = hyperSolverNum % 1000 / 10;
 
@@ -2560,25 +2403,21 @@ namespace
 
 }  // namespace
 
-int Solver1()
-{
+int Solver1() {
   vector<int> keep[110];
 
   int cnt[100] = {};
-  rep(i, n)
-  {
-    rep(j, n) { cnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
   }
 
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num = numArr[i];
     double e0 = ((double)n - 1) * eps;
     double e1 = ((double)num - 1) + ((double)n - num) * eps - ((double)num - 1) * eps;
     int kijun = round(e0 + (e1 - e0) / 2.0);
     int count = 0;
-    rep(j, 100)
-    {
+    for (int j = 0; j < (100); ++j) {
       if (cnt[j] >= kijun) {
         count++;
       }
@@ -2587,8 +2426,7 @@ int Solver1()
   }
 
   int res = -1;
-  rep(i, 110)
-  {
+  for (int i = 0; i < (110); ++i) {
     if (keep[i].size()) {
       int sz = keep[i].size();
       res = keep[i][sz / 2];
@@ -2599,30 +2437,26 @@ int Solver1()
   return res;
 }
 
-int Solver2()
-{
+int Solver2() {
   int cnt[100] = {};
   int f[100] = {};
   int res = n;
-  rep(i, n)
-  {
-    rep(j, n) { cnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
     f[i] = 1;
   }
 
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -2634,8 +2468,7 @@ int Solver2()
 
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num = numArr[i];
     if (abs(num - res) < diff) {
       diff = abs(num - res);
@@ -2646,12 +2479,10 @@ int Solver2()
   return argRes;
 }
 
-int Solver3()
-{
+int Solver3() {
   vector<int> vec[2];
   int f[100];
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (i == 0) {
       vec[0].push_back(i);
       f[i] = 0;
@@ -2667,16 +2498,13 @@ int Solver3()
       }
     }
   }
-  rep(_, 100)
-  {
+  for (int _ = 0; _ < (100); ++_) {
     if (vec[0].empty() || vec[1].empty()) break;
     double cnt[110][2];
-    rep(i, n) rep(j, 2) cnt[i][j] = 0;
+    for (int i = 0; i < (n); ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
     vector<int> nxt[2];
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         if (i == j) {
           cnt[i][0]++;
         }
@@ -2698,14 +2526,13 @@ int Solver3()
       }
     }
 
-    rep(i, 2) vec[i] = nxt[i];
+    for (int i = 0; i < (2); ++i) vec[i] = nxt[i];
   }
   int res = min(vec[0].size(), vec[1].size());
   // cout << res << endl;
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num = numArr[i];
     if (abs(num - res) < diff) {
       diff = abs(num - res);
@@ -2716,30 +2543,26 @@ int Solver3()
   return argRes;
 }
 
-int Solver4()
-{
+int Solver4() {
   int cnt[100] = {};
   int f[100] = {};
   int res = n;
-  rep(i, n)
-  {
-    rep(j, n) { cnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
     f[i] = 1;
   }
 
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -2752,23 +2575,19 @@ int Solver4()
   if (res >= 20) {
     int res2 = 0;
     vector<int> vec;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i]) {
         vec.push_back(i);
       }
     }
     int ff[100] = {};
     double kijun = (eps * eps + (1.0 - eps) * (1.0 - eps)) / 2.0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       int tri[2] = {};
-      rep(j, res)
-      {
+      for (int j = 0; j < (res); ++j) {
         int jj = vec[j];
         if (jj == i) continue;
-        srep(k, j + 1, res)
-        {
+        for (int k = j + 1; k < res; ++k) {
           int kk = vec[k];
           if (kk == i) continue;
           tri[1]++;
@@ -2787,8 +2606,7 @@ int Solver4()
 
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num = numArr[i];
     if (abs(num - res) < diff) {
       diff = abs(num - res);
@@ -2799,30 +2617,26 @@ int Solver4()
   return argRes;
 }
 
-int Solver5()
-{
+int Solver5() {
   int cnt[100] = {};
   int f[100] = {};
   int res = n;
-  rep(i, n)
-  {
-    rep(j, n) { cnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
     f[i] = 1;
   }
 
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -2834,28 +2648,24 @@ int Solver5()
 
   int res1 = res;
   res = n - res;
-  rep(i, n) { f[i] = 1 - f[i]; }
-  rep(i, n) { cnt[i] = 0; }
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
+  for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -2868,8 +2678,7 @@ int Solver5()
   if (res2 <= hyperMaxRound) res2 = 0;
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2881,31 +2690,27 @@ int Solver5()
   return argRes;
 }
 
-int Solver6()
-{
+int Solver6() {
   int cnt[100] = {};
   int f[100] = {};
   int ff[100] = {};
   int res = n;
-  rep(i, n)
-  {
-    rep(j, n) { cnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
     f[i] = 1;
   }
 
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -2917,32 +2722,27 @@ int Solver6()
 
   int res1 = res;
   res = n - res;
-  rep(i, n) { f[i] = 1 - f[i]; }
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 0) ff[i] = 1;
   }
-  rep(i, n) { cnt[i] = 0; }
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -2954,20 +2754,17 @@ int Solver6()
   int res2 = res;
   if (res2 <= hyperMaxRound) {
     res2 = 0;
-    rep(i, n) f[i] = 0;
+    for (int i = 0; i < (n); ++i) f[i] = 0;
   }
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i]) ff[i] = 2;
   }
 
-  rep(i, n) f[i] = ff[i];
+  for (int i = 0; i < (n); ++i) f[i] = ff[i];
 
   int score = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) {
       if (f[i] == 0 && f[j] == 0) {
         score += 1 - b[i][j];
       }
@@ -2980,25 +2777,22 @@ int Solver6()
   }
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n) { bib[i][j] = b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  rep(i, n) { bione[i] = 1; }
+  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  rep(_, flipLoop)
-  {
+  for (int _ = 0; _ < (flipLoop); ++_) {
     int x = Rand() % n;
     int ra = Rand() % 3;
     while (ra == f[x]) {
@@ -3044,16 +2838,14 @@ int Solver6()
   }
   res1 = 0;
   res2 = 0;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
   }
 
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3065,31 +2857,27 @@ int Solver6()
   return argRes;
 }
 
-int Solver7()
-{
+int Solver7() {
   int cnt[100] = {};
   int f[100] = {};
   int ff[100] = {};
   int res = n;
-  rep(i, n)
-  {
-    rep(j, n) { cnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
     f[i] = 1;
   }
 
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -3101,32 +2889,27 @@ int Solver7()
 
   int res1 = res;
   res = n - res;
-  rep(i, n) { f[i] = 1 - f[i]; }
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 0) ff[i] = 1;
   }
-  rep(i, n) { cnt[i] = 0; }
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
   while (res > 1) {
     int mi = 1000;
     int arg = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
         mi = cnt[i];
         arg = i;
       }
     }
     if (arg == -1) break;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
         cnt[i]--;
@@ -3138,20 +2921,17 @@ int Solver7()
   int res2 = res;
   if (res2 <= hyperMaxRound) {
     res2 = 0;
-    rep(i, n) f[i] = 0;
+    for (int i = 0; i < (n); ++i) f[i] = 0;
   }
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i]) ff[i] = 2;
   }
 
-  rep(i, n) f[i] = ff[i];
+  for (int i = 0; i < (n); ++i) f[i] = ff[i];
 
   int score = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) {
       if (f[i] == 0 && f[j] == 0) {
         score += 1 - b[i][j];
       }
@@ -3164,25 +2944,22 @@ int Solver7()
   }
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n) { bib[i][j] = b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  rep(i, n) { bione[i] = 1; }
+  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  rep(_, flipLoop)
-  {
+  for (int _ = 0; _ < (flipLoop); ++_) {
     int x = Rand() % n;
     int ra = Rand() % 3;
     while (ra == f[x]) {
@@ -3228,16 +3005,14 @@ int Solver7()
   }
   res1 = 0;
   res2 = 0;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
   }
 
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3249,38 +3024,32 @@ int Solver7()
   return argRes;
 }
 
-int Solver8()
-{
+int Solver8() {
   int cnt = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n) { cnt += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) { cnt += b[i][j]; }
   }
   cnt = min(cnt, m - 1);
   return cnt;
 }
 
-int Solver9()
-{
+int Solver9() {
   map<P, int> mp;
   int fff[10][100];
   P kp[10];
 
   int kcnt[100] = {};
-  rep(i, n)
-  {
-    rep(j, n) { kcnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { kcnt[i] += b[i][j]; }
   }
 
-  rep(_, 10)
-  {
+  for (int _ = 0; _ < (10); ++_) {
     int cnt[100] = {};
     int f[100] = {};
     int ff[100] = {};
     int res = n;
 
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       cnt[i] = kcnt[i];
       f[i] = 1;
     }
@@ -3288,8 +3057,7 @@ int Solver9()
     while (res > 1) {
       int mi = 1000;
       vector<int> arv;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
           if (cnt[i] == mi) {
             arv.push_back(i);
@@ -3303,8 +3071,7 @@ int Solver9()
       }
       if (arv.empty()) break;
       int arg = arv[Rand() % arv.size()];
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (i == arg) continue;
         if (f[i] && b[i][arg]) {
           cnt[i]--;
@@ -3316,24 +3083,20 @@ int Solver9()
 
     int res1 = res;
     res = n - res;
-    rep(i, n) { f[i] = 1 - f[i]; }
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 0) ff[i] = 1;
     }
-    rep(i, n) { cnt[i] = 0; }
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
     }
     while (res > 1) {
       int mi = 1000;
       vector<int> arv;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
           if (cnt[i] == mi) {
             arv.push_back(i);
@@ -3347,8 +3110,7 @@ int Solver9()
       }
       if (arv.empty()) break;
       int arg = arv[Rand() % arv.size()];
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (i == arg) continue;
         if (f[i] && b[i][arg]) {
           cnt[i]--;
@@ -3360,16 +3122,15 @@ int Solver9()
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
-      rep(i, n) f[i] = 0;
+      for (int i = 0; i < (n); ++i) f[i] = 0;
     }
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i]) ff[i] = 2;
     }
 
-    rep(i, n) f[i] = ff[i];
+    for (int i = 0; i < (n); ++i) f[i] = ff[i];
 
-    rep(i, n) { fff[_][i] = f[i]; }
+    for (int i = 0; i < (n); ++i) { fff[_][i] = f[i]; }
     mp[P(res1, res2)]++;
     kp[_] = P(res1, res2);
   }
@@ -3387,18 +3148,15 @@ int Solver9()
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
-  rep(i, 10)
-  {
+  for (int i = 0; i < (10); ++i) {
     if (maxP == kp[i]) {
-      rep(j, 100) { f[j] = fff[i][j]; }
+      for (int j = 0; j < (100); ++j) { f[j] = fff[i][j]; }
     }
   }
 
   int score = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) {
       if (f[i] == 0 && f[j] == 0) {
         score += 1 - b[i][j];
       }
@@ -3411,25 +3169,22 @@ int Solver9()
   }
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n) { bib[i][j] = b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  rep(i, n) { bione[i] = 1; }
+  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  rep(_, flipLoop)
-  {
+  for (int _ = 0; _ < (flipLoop); ++_) {
     int x = Rand() % n;
     int ra = Rand() % 3;
     while (ra == f[x]) {
@@ -3475,16 +3230,14 @@ int Solver9()
   }
   res1 = 0;
   res2 = 0;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
   }
 
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3496,27 +3249,23 @@ int Solver9()
   return argRes;
 }
 
-int Solver10()
-{
+int Solver10() {
   map<P, int> mp;
   int fff[31][100];
   P kp[31];
 
   int kcnt[100] = {};
-  rep(i, n)
-  {
-    rep(j, n) { kcnt[i] += b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { kcnt[i] += b[i][j]; }
   }
 
-  rep(_, 31)
-  {
+  for (int _ = 0; _ < (31); ++_) {
     int cnt[100] = {};
     int f[100] = {};
     int ff[100] = {};
     int res = n;
 
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       cnt[i] = kcnt[i];
       f[i] = 1;
     }
@@ -3524,8 +3273,7 @@ int Solver10()
     while (res > 1) {
       int mi = 1000;
       vector<int> arv;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
           if (cnt[i] == mi) {
             arv.push_back(i);
@@ -3539,8 +3287,7 @@ int Solver10()
       }
       if (arv.empty()) break;
       int arg = arv[Rand() % arv.size()];
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (i == arg) continue;
         if (f[i] && b[i][arg]) {
           cnt[i]--;
@@ -3552,24 +3299,20 @@ int Solver10()
 
     int res1 = res;
     res = n - res;
-    rep(i, n) { f[i] = 1 - f[i]; }
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 0) ff[i] = 1;
     }
-    rep(i, n) { cnt[i] = 0; }
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
     }
     while (res > 1) {
       int mi = 1000;
       vector<int> arv;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
           if (cnt[i] == mi) {
             arv.push_back(i);
@@ -3583,8 +3326,7 @@ int Solver10()
       }
       if (arv.empty()) break;
       int arg = arv[Rand() % arv.size()];
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (i == arg) continue;
         if (f[i] && b[i][arg]) {
           cnt[i]--;
@@ -3596,16 +3338,15 @@ int Solver10()
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
-      rep(i, n) f[i] = 0;
+      for (int i = 0; i < (n); ++i) f[i] = 0;
     }
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i]) ff[i] = 2;
     }
 
-    rep(i, n) f[i] = ff[i];
+    for (int i = 0; i < (n); ++i) f[i] = ff[i];
 
-    rep(i, n) { fff[_][i] = f[i]; }
+    for (int i = 0; i < (n); ++i) { fff[_][i] = f[i]; }
     mp[P(res1, res2)]++;
     kp[_] = P(res1, res2);
   }
@@ -3623,17 +3364,15 @@ int Solver10()
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
-  rep(i, 10)
-  {
+  for (int i = 0; i < (10); ++i) {
     if (maxP == kp[i]) {
-      rep(j, 100) { f[j] = fff[i][j]; }
+      for (int j = 0; j < (100); ++j) { f[j] = fff[i][j]; }
     }
   }
 
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3645,40 +3384,33 @@ int Solver10()
   return argRes;
 }
 
-int Solver11()
-{
+int Solver11() {
   int f[110] = {};
 
   // コア1を作る
   vector<int> cores1;
   vector<int> kouho;
-  rep(i, n) kouho.push_back(i);
+  for (int i = 0; i < (n); ++i) kouho.push_back(i);
   if (kouho.size() < 4) return 0;
-  rep(loop1, 5000)
-  {
+  for (int loop1 = 0; loop1 < (5000); ++loop1) {
     int core[4] = {};
-    rep(i, 4)
-    {
+    for (int i = 0; i < (4); ++i) {
       while (true) {
         core[i] = kouho[Rand() % kouho.size()];
-        rep(j, i)
-        {
+        for (int j = 0; j < (i); ++j) {
           if (core[j] == core[i]) core[i] = -1;
         }
         if (core[i] != -1) break;
       }
     }
     int mitu = 1;
-    rep(i, 4)
-    {
-      srep(j, i + 1, 4)
-      {
+    for (int i = 0; i < (4); ++i) {
+      for (int j = i + 1; j < 4; ++j) {
         if (!b[core[i]][core[j]]) mitu = 0;
       }
     }
     if (mitu) {
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         f[core[i]] = 1;
         cores1.push_back(core[i]);
       }
@@ -3692,12 +3424,10 @@ int Solver11()
     int sz = cores1.size();
     int arg = -1;
     int ma = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, sz)
-      {
+      for (int j = 0; j < (sz); ++j) {
         if (b[i][cores1[j]]) cnt++;
       }
       if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -3713,12 +3443,10 @@ int Solver11()
   // コア2を作る
   vector<int> cores2;
   kouho.clear();
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] != 0) continue;
     int cnt = 0;
-    rep(j, n)
-    {
+    for (int j = 0; j < (n); ++j) {
       if (f[j] == 0) cnt += b[i][j];
     }
 
@@ -3726,31 +3454,25 @@ int Solver11()
     kouho.push_back(i);
   }
   if (kouho.size() >= 4) {
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 2;
           cores2.push_back(core[i]);
         }
@@ -3763,12 +3485,10 @@ int Solver11()
         int sz = cores2.size();
         int arg = -1;
         int ma = -1;
-        rep(i, n)
-        {
+        for (int i = 0; i < (n); ++i) {
           if (f[i] != 0) continue;
           int cnt = 0;
-          rep(j, sz)
-          {
+          for (int j = 0; j < (sz); ++j) {
             if (b[i][cores2[j]]) cnt++;
           }
           if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -3787,10 +3507,8 @@ int Solver11()
   int res2 = cores2.size();
 
   int score = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) {
       if (f[i] == 0 && f[j] == 0) {
         score += 1 - b[i][j];
       }
@@ -3803,25 +3521,22 @@ int Solver11()
   }
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n) { bib[i][j] = b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  rep(i, n) { bione[i] = 1; }
+  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  rep(_, flipLoop)
-  {
+  for (int _ = 0; _ < (flipLoop); ++_) {
     int x = Rand() % n;
     int ra = Rand() % 3;
     while (ra == f[x]) {
@@ -3867,16 +3582,14 @@ int Solver11()
   }
   res1 = 0;
   res2 = 0;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
   }
   if (res2 > res1) swap(res1, res2);
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3886,9 +3599,9 @@ int Solver11()
   }
 
   // if (argRes != judgeNum) {
-  //   rep(i, n) cout << f[i];
+  //   for (int i = 0; i < (n); ++i) cout << f[i];
   //   cout << endl;
-  //   rep(i, n) {
+  //   for (int i = 0; i < (n); ++i) {
   //     if (i < numPairArr[judgeNum][0])
   //       cout << 1;
   //     else if (numPairArr[judgeNum][0] <= i &&
@@ -3903,40 +3616,33 @@ int Solver11()
   return argRes;
 }
 
-int Solver12()
-{
+int Solver12() {
   int f[110] = {};
 
   // コア1を作る
   vector<int> cores1;
   vector<int> kouho;
-  rep(i, n) kouho.push_back(i);
+  for (int i = 0; i < (n); ++i) kouho.push_back(i);
   if (kouho.size() < 4) return 0;
-  rep(loop1, 5000)
-  {
+  for (int loop1 = 0; loop1 < (5000); ++loop1) {
     int core[4] = {};
-    rep(i, 4)
-    {
+    for (int i = 0; i < (4); ++i) {
       while (true) {
         core[i] = kouho[Rand() % kouho.size()];
-        rep(j, i)
-        {
+        for (int j = 0; j < (i); ++j) {
           if (core[j] == core[i]) core[i] = -1;
         }
         if (core[i] != -1) break;
       }
     }
     int mitu = 1;
-    rep(i, 4)
-    {
-      srep(j, i + 1, 4)
-      {
+    for (int i = 0; i < (4); ++i) {
+      for (int j = i + 1; j < 4; ++j) {
         if (!b[core[i]][core[j]]) mitu = 0;
       }
     }
     if (mitu) {
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         f[core[i]] = 1;
         cores1.push_back(core[i]);
       }
@@ -3950,12 +3656,10 @@ int Solver12()
     int sz = cores1.size();
     int arg = -1;
     int ma = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, sz)
-      {
+      for (int j = 0; j < (sz); ++j) {
         if (b[i][cores1[j]]) cnt++;
       }
       if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -3971,12 +3675,10 @@ int Solver12()
   // コア2を作る
   vector<int> cores2;
   kouho.clear();
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] != 0) continue;
     int cnt = 0;
-    rep(j, n)
-    {
+    for (int j = 0; j < (n); ++j) {
       if (f[j] == 0) cnt += b[i][j];
     }
 
@@ -3984,31 +3686,25 @@ int Solver12()
     kouho.push_back(i);
   }
   if (kouho.size() >= 4) {
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 2;
           cores2.push_back(core[i]);
         }
@@ -4021,12 +3717,10 @@ int Solver12()
         int sz = cores2.size();
         int arg = -1;
         int ma = -1;
-        rep(i, n)
-        {
+        for (int i = 0; i < (n); ++i) {
           if (f[i] != 0) continue;
           int cnt = 0;
-          rep(j, sz)
-          {
+          for (int j = 0; j < (sz); ++j) {
             if (b[i][cores2[j]]) cnt++;
           }
           if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4045,12 +3739,10 @@ int Solver12()
   vector<int> cores3;
   if (cores2.size() > 0) {
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -4058,31 +3750,25 @@ int Solver12()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 3;
             cores3.push_back(core[i]);
           }
@@ -4095,12 +3781,10 @@ int Solver12()
           int sz = cores3.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores3[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4121,10 +3805,8 @@ int Solver12()
   int res3 = cores3.size();
 
   int score = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) {
       if (f[i] == 0 && f[j] == 0) {
         score += 1 - b[i][j];
       }
@@ -4137,25 +3819,22 @@ int Solver12()
   }
 
   bitset<100> bif[4] = {}, bib[100] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n) { bib[i][j] = b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  rep(i, n) { bione[i] = 1; }
+  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  rep(_, flipLoop)
-  {
+  for (int _ = 0; _ < (flipLoop); ++_) {
     int x = Rand() % n;
     int ra = Rand() % 4;
     while (ra == f[x]) {
@@ -4208,8 +3887,7 @@ int Solver12()
   res1 = 0;
   res2 = 0;
   res3 = 0;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
     if (f[i] == 3) res3++;
@@ -4225,8 +3903,7 @@ int Solver12()
   res3 = resv[0];
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numThreeArr[i][0];
     int num2 = numThreeArr[i][1];
     int num3 = numThreeArr[i][2];
@@ -4237,7 +3914,7 @@ int Solver12()
   }
 
   // if (argRes != judgeNum) {
-  //   rep(i, n) cout << f[i];
+  //   for (int i = 0; i < (n); ++i) cout << f[i];
   //   cout << "   " << diff << endl;
   //   cout << endl;
   // }
@@ -4246,40 +3923,33 @@ int Solver12()
 }
 
 // 4コア
-int Solver13()
-{
+int Solver13() {
   int f[110] = {};
 
   // コア1を作る
   vector<int> cores1;
   vector<int> kouho;
-  rep(i, n) kouho.push_back(i);
+  for (int i = 0; i < (n); ++i) kouho.push_back(i);
   if (kouho.size() < 4) return 0;
-  rep(loop1, 5000)
-  {
+  for (int loop1 = 0; loop1 < (5000); ++loop1) {
     int core[4] = {};
-    rep(i, 4)
-    {
+    for (int i = 0; i < (4); ++i) {
       while (true) {
         core[i] = kouho[Rand() % kouho.size()];
-        rep(j, i)
-        {
+        for (int j = 0; j < (i); ++j) {
           if (core[j] == core[i]) core[i] = -1;
         }
         if (core[i] != -1) break;
       }
     }
     int mitu = 1;
-    rep(i, 4)
-    {
-      srep(j, i + 1, 4)
-      {
+    for (int i = 0; i < (4); ++i) {
+      for (int j = i + 1; j < 4; ++j) {
         if (!b[core[i]][core[j]]) mitu = 0;
       }
     }
     if (mitu) {
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         f[core[i]] = 1;
         cores1.push_back(core[i]);
       }
@@ -4293,12 +3963,10 @@ int Solver13()
     int sz = cores1.size();
     int arg = -1;
     int ma = -1;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, sz)
-      {
+      for (int j = 0; j < (sz); ++j) {
         if (b[i][cores1[j]]) cnt++;
       }
       if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4314,12 +3982,10 @@ int Solver13()
   // コア2を作る
   vector<int> cores2;
   kouho.clear();
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] != 0) continue;
     int cnt = 0;
-    rep(j, n)
-    {
+    for (int j = 0; j < (n); ++j) {
       if (f[j] == 0) cnt += b[i][j];
     }
 
@@ -4327,31 +3993,25 @@ int Solver13()
     kouho.push_back(i);
   }
   if (kouho.size() >= 4) {
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 2;
           cores2.push_back(core[i]);
         }
@@ -4364,12 +4024,10 @@ int Solver13()
         int sz = cores2.size();
         int arg = -1;
         int ma = -1;
-        rep(i, n)
-        {
+        for (int i = 0; i < (n); ++i) {
           if (f[i] != 0) continue;
           int cnt = 0;
-          rep(j, sz)
-          {
+          for (int j = 0; j < (sz); ++j) {
             if (b[i][cores2[j]]) cnt++;
           }
           if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4388,12 +4046,10 @@ int Solver13()
   vector<int> cores3;
   if (cores2.size() > 0) {
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -4401,31 +4057,25 @@ int Solver13()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 3;
             cores3.push_back(core[i]);
           }
@@ -4438,12 +4088,10 @@ int Solver13()
           int sz = cores3.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores3[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4463,12 +4111,10 @@ int Solver13()
   vector<int> cores4;
   if (cores3.size() > 0) {
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -4476,31 +4122,25 @@ int Solver13()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 4;
             cores4.push_back(core[i]);
           }
@@ -4513,12 +4153,10 @@ int Solver13()
           int sz = cores4.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores4[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4540,10 +4178,8 @@ int Solver13()
   int res4 = cores4.size();
 
   int score = 0;
-  rep(i, n)
-  {
-    srep(j, i + 1, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = i + 1; j < n; ++j) {
       if (f[i] == 0 && f[j] == 0) {
         score += 1 - b[i][j];
       }
@@ -4556,25 +4192,22 @@ int Solver13()
   }
 
   bitset<100> bif[5] = {}, bib[100] = {};
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  rep(i, n)
-  {
-    rep(j, n) { bib[i][j] = b[i][j]; }
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  rep(i, n) { bione[i] = 1; }
+  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  rep(_, flipLoop)
-  {
+  for (int _ = 0; _ < (flipLoop); ++_) {
     int x = Rand() % n;
     int ra = Rand() % 5;
     while (ra == f[x]) {
@@ -4634,8 +4267,7 @@ int Solver13()
   res2 = 0;
   res3 = 0;
   res4 = 0;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
     if (f[i] == 3) res3++;
@@ -4654,8 +4286,7 @@ int Solver13()
   res4 = resv[0];
   int diff = 1000;
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     int num1 = numFourArr[i][0];
     int num2 = numFourArr[i][1];
     int num3 = numFourArr[i][2];
@@ -4672,46 +4303,38 @@ int Solver13()
   return argRes;
 }
 
-int Solver14()
-{
+int Solver14() {
   int real_argRes = 0;
   int real_minDiff = 1000;
 
-  rep(wataruoop, 15)
-  {
+  for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
     int f[110] = {};
 
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -4725,12 +4348,10 @@ int Solver14()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4746,12 +4367,10 @@ int Solver14()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -4759,31 +4378,25 @@ int Solver14()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -4796,12 +4409,10 @@ int Solver14()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -4820,10 +4431,8 @@ int Solver14()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -4836,25 +4445,22 @@ int Solver14()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -4900,16 +4506,14 @@ int Solver14()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -4928,45 +4532,37 @@ int Solver14()
   return real_argRes;
 }
 
-int Solver15()
-{
+int Solver15() {
   map<int, int> argMap;
 
-  rep(wataruoop, 5)
-  {
+  for (int wataruoop = 0; wataruoop < (5); ++wataruoop) {
     int f[110] = {};
 
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -4980,12 +4576,10 @@ int Solver15()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5001,12 +4595,10 @@ int Solver15()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -5014,31 +4606,25 @@ int Solver15()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -5051,12 +4637,10 @@ int Solver15()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5075,10 +4659,8 @@ int Solver15()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -5091,25 +4673,22 @@ int Solver15()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -5155,16 +4734,14 @@ int Solver15()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -5176,9 +4753,9 @@ int Solver15()
     argMap[argRes]++;
 
     // if (argRes != judgeNum) {
-    //   rep(i, n) cout << f[i];
+    //   for (int i = 0; i < (n); ++i) cout << f[i];
     //   cout << endl;
-    //   rep(i, n) {
+    //   for (int i = 0; i < (n); ++i) {
     //     if (i < numPairArr[judgeNum][0])
     //       cout << 1;
     //     else if (numPairArr[judgeNum][0] <= i &&
@@ -5204,33 +4781,25 @@ int Solver15()
 }
 
 // 11表裏
-int Solver16()
-{
+int Solver16() {
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
-  rep(tei, 2)
-  {
+  for (int tei = 0; tei < (2); ++tei) {
 
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      rep(i, n)
-      {
-        rep(j, n)
-        {
+      for (int i = 0; i < (n); ++i) {
+        for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -5243,33 +4812,27 @@ int Solver16()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -5283,12 +4846,10 @@ int Solver16()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5304,12 +4865,10 @@ int Solver16()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -5317,31 +4876,25 @@ int Solver16()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -5354,12 +4907,10 @@ int Solver16()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5378,10 +4929,8 @@ int Solver16()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -5394,25 +4943,22 @@ int Solver16()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -5458,16 +5004,14 @@ int Solver16()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -5479,10 +5023,8 @@ int Solver16()
 
     // スコア計算
     int tmpScore = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
         }
@@ -5501,33 +5043,25 @@ int Solver16()
 }
 
 // 11表裏5セット
-int Solver17()
-{
+int Solver17() {
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
-  rep(tei, 10)
-  {
+  for (int tei = 0; tei < (10); ++tei) {
 
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      rep(i, n)
-      {
-        rep(j, n)
-        {
+      for (int i = 0; i < (n); ++i) {
+        for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -5540,33 +5074,27 @@ int Solver17()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -5580,12 +5108,10 @@ int Solver17()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5601,12 +5127,10 @@ int Solver17()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -5614,31 +5138,25 @@ int Solver17()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -5651,12 +5169,10 @@ int Solver17()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5675,10 +5191,8 @@ int Solver17()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -5691,25 +5205,22 @@ int Solver17()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -5755,16 +5266,14 @@ int Solver17()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -5776,10 +5285,8 @@ int Solver17()
 
     // スコア計算
     int tmpScore = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
         }
@@ -5798,21 +5305,17 @@ int Solver17()
 }
 
 // 0.0用
-int Solver18()
-{
+int Solver18() {
   int visit[110] = {};
   int bb[110][110];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       bb[i][j] = b[i][j];
     }
   }
 
   vector<P> vp;
-  rep(i, n)
-  {
+  for (int i = 0; i < (n); ++i) {
     if (visit[i]) {
       continue;
     }
@@ -5824,8 +5327,7 @@ int Solver18()
     while (que.size()) {
       int x = que.front();
       que.pop();
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (bb[x][j]) {
           cnt2++;
           bb[x][j] = 0;
@@ -5843,8 +5345,7 @@ int Solver18()
   }
   sort(vp.begin(), vp.end());
   int argRes = 0;
-  rep(i, m)
-  {
+  for (int i = 0; i < (m); ++i) {
     if (zeroPairs[i] == vp) {
       argRes = i;
       break;
@@ -5854,34 +5355,26 @@ int Solver18()
 }
 
 // 14表裏
-int Solver19()
-{
+int Solver19() {
   int real_argRes[2] = {};
   int real_minDiff[2] = { 1000,1000 };
   int keepB[100][100];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
 
 
-  rep(wataruoop, 10)
-  {
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+  for (int wataruoop = 0; wataruoop < (10); ++wataruoop) {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (wataruoop % 2 == 1) {
-      rep(i, n)
-      {
-        rep(j, n)
-        {
+      for (int i = 0; i < (n); ++i) {
+        for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -5893,34 +5386,28 @@ int Solver19()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -5934,12 +5421,10 @@ int Solver19()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -5955,12 +5440,10 @@ int Solver19()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -5968,31 +5451,25 @@ int Solver19()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[4] = {};
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 4)
-        {
-          srep(j, i + 1, 4)
-          {
+        for (int i = 0; i < (4); ++i) {
+          for (int j = i + 1; j < 4; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 4)
-          {
+          for (int i = 0; i < (4); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -6005,12 +5482,10 @@ int Solver19()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6029,10 +5504,8 @@ int Solver19()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -6045,25 +5518,22 @@ int Solver19()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -6109,16 +5579,14 @@ int Solver19()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != wataruoop % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -6142,33 +5610,25 @@ int Solver19()
 }
 
 // 21表裏5セット
-int Solver20()
-{
+int Solver20() {
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
-  rep(tei, 2)
-  {
+  for (int tei = 0; tei < (2); ++tei) {
 
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      rep(i, n)
-      {
-        rep(j, n)
-        {
+      for (int i = 0; i < (n); ++i) {
+        for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -6181,33 +5641,27 @@ int Solver20()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 4)
-      {
+      for (int i = 0; i < (4); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 4)
-      {
-        srep(j, i + 1, 4)
-        {
+      for (int i = 0; i < (4); ++i) {
+        for (int j = i + 1; j < 4; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 4)
-        {
+        for (int i = 0; i < (4); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -6221,12 +5675,10 @@ int Solver20()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6242,10 +5694,8 @@ int Solver20()
     int res1 = cores1.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -6258,25 +5708,22 @@ int Solver20()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 2;
       while (ra == f[x]) {
@@ -6318,14 +5765,12 @@ int Solver20()
       }
     }
     res1 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
     }
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numSingleArr[i];
       if (abs(num1 - res1) < diff) {
@@ -6336,10 +5781,8 @@ int Solver20()
 
     // スコア計算
     int tmpScore = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
         }
@@ -6358,46 +5801,38 @@ int Solver20()
 }
 
 // 14亜種
-int Solver21()
-{
+int Solver21() {
   int real_argRes = 0;
   int real_minDiff = 1000;
 
-  rep(wataruoop, 15)
-  {
+  for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
     int f[110] = {};
 
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[5] = {};
-      rep(i, 5)
-      {
+      for (int i = 0; i < (5); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 5)
-      {
-        srep(j, i + 1, 5)
-        {
+      for (int i = 0; i < (5); ++i) {
+        for (int j = i + 1; j < 5; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 5)
-        {
+        for (int i = 0; i < (5); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -6411,12 +5846,10 @@ int Solver21()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6432,12 +5865,10 @@ int Solver21()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -6445,31 +5876,25 @@ int Solver21()
       kouho.push_back(i);
     }
     if (kouho.size() >= 5) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[5] = {};
-        rep(i, 5)
-        {
+        for (int i = 0; i < (5); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 5)
-        {
-          srep(j, i + 1, 5)
-          {
+        for (int i = 0; i < (5); ++i) {
+          for (int j = i + 1; j < 5; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 5)
-          {
+          for (int i = 0; i < (5); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -6482,12 +5907,10 @@ int Solver21()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6506,10 +5929,8 @@ int Solver21()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -6522,25 +5943,22 @@ int Solver21()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -6586,16 +6004,14 @@ int Solver21()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -6615,46 +6031,38 @@ int Solver21()
 }
 
 // 14亜種
-int Solver22()
-{
+int Solver22() {
   int real_argRes = 0;
   int real_minDiff = 1000;
 
-  rep(wataruoop, 15)
-  {
+  for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
     int f[110] = {};
 
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;
     ;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[5] = {};
-      rep(i, 3)
-      {
+      for (int i = 0; i < (3); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 3)
-      {
-        srep(j, i + 1, 3)
-        {
+      for (int i = 0; i < (3); ++i) {
+        for (int j = i + 1; j < 3; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 3)
-        {
+        for (int i = 0; i < (3); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -6668,12 +6076,10 @@ int Solver22()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6689,12 +6095,10 @@ int Solver22()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -6702,31 +6106,25 @@ int Solver22()
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[5] = {};
-        rep(i, 3)
-        {
+        for (int i = 0; i < (3); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 3)
-        {
-          srep(j, i + 1, 3)
-          {
+        for (int i = 0; i < (3); ++i) {
+          for (int j = i + 1; j < 3; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 3)
-          {
+          for (int i = 0; i < (3); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -6739,12 +6137,10 @@ int Solver22()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6763,10 +6159,8 @@ int Solver22()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -6779,25 +6173,22 @@ int Solver22()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -6843,16 +6234,14 @@ int Solver22()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -6872,33 +6261,25 @@ int Solver22()
 }
 
 // 16亜種
-int Solver23()
-{
+int Solver23() {
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
-  rep(tei, 2)
-  {
+  for (int tei = 0; tei < (2); ++tei) {
 
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      rep(i, n)
-      {
-        rep(j, n)
-        {
+      for (int i = 0; i < (n); ++i) {
+        for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -6911,33 +6292,27 @@ int Solver23()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[4] = {};
-      rep(i, 3)
-      {
+      for (int i = 0; i < (3); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 3)
-      {
-        srep(j, i + 1, 3)
-        {
+      for (int i = 0; i < (3); ++i) {
+        for (int j = i + 1; j < 3; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 3)
-        {
+        for (int i = 0; i < (3); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -6951,12 +6326,10 @@ int Solver23()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -6972,12 +6345,10 @@ int Solver23()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -6985,31 +6356,25 @@ int Solver23()
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[3] = {};
-        rep(i, 3)
-        {
+        for (int i = 0; i < (3); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 3)
-        {
-          srep(j, i + 1, 3)
-          {
+        for (int i = 0; i < (3); ++i) {
+          for (int j = i + 1; j < 3; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 3)
-          {
+          for (int i = 0; i < (3); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -7022,12 +6387,10 @@ int Solver23()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -7046,10 +6409,8 @@ int Solver23()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -7062,25 +6423,22 @@ int Solver23()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -7126,16 +6484,14 @@ int Solver23()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -7147,10 +6503,8 @@ int Solver23()
 
     // スコア計算
     int tmpScore = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
         }
@@ -7169,33 +6523,25 @@ int Solver23()
 }
 
 // 16亜種
-int Solver24()
-{
+int Solver24() {
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  rep(i, n)
-  {
-    rep(j, n)
-    {
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
-  rep(tei, 2)
-  {
+  for (int tei = 0; tei < (2); ++tei) {
 
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      rep(i, n)
-      {
-        rep(j, n)
-        {
+      for (int i = 0; i < (n); ++i) {
+        for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -7208,33 +6554,27 @@ int Solver24()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    rep(i, n) kouho.push_back(i);
+    for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 5) continue;;
-    rep(loop1, 5000)
-    {
+    for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[5] = {};
-      rep(i, 5)
-      {
+      for (int i = 0; i < (5); ++i) {
         while (true) {
           core[i] = kouho[Rand() % kouho.size()];
-          rep(j, i)
-          {
+          for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
           if (core[i] != -1) break;
         }
       }
       int mitu = 1;
-      rep(i, 5)
-      {
-        srep(j, i + 1, 5)
-        {
+      for (int i = 0; i < (5); ++i) {
+        for (int j = i + 1; j < 5; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        rep(i, 5)
-        {
+        for (int i = 0; i < (5); ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -7248,12 +6588,10 @@ int Solver24()
       int sz = cores1.size();
       int arg = -1;
       int ma = -1;
-      rep(i, n)
-      {
+      for (int i = 0; i < (n); ++i) {
         if (f[i] != 0) continue;
         int cnt = 0;
-        rep(j, sz)
-        {
+        for (int j = 0; j < (sz); ++j) {
           if (b[i][cores1[j]]) cnt++;
         }
         if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -7269,12 +6607,10 @@ int Solver24()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      rep(j, n)
-      {
+      for (int j = 0; j < (n); ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -7282,31 +6618,25 @@ int Solver24()
       kouho.push_back(i);
     }
     if (kouho.size() >= 5) {
-      rep(loop1, 5000)
-      {
+      for (int loop1 = 0; loop1 < (5000); ++loop1) {
         int core[5] = {};
-        rep(i, 5)
-        {
+        for (int i = 0; i < (5); ++i) {
           while (true) {
             core[i] = kouho[Rand() % kouho.size()];
-            rep(j, i)
-            {
+            for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
             if (core[i] != -1) break;
           }
         }
         int mitu = 1;
-        rep(i, 5)
-        {
-          srep(j, i + 1, 5)
-          {
+        for (int i = 0; i < (5); ++i) {
+          for (int j = i + 1; j < 5; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          rep(i, 5)
-          {
+          for (int i = 0; i < (5); ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -7319,12 +6649,10 @@ int Solver24()
           int sz = cores2.size();
           int arg = -1;
           int ma = -1;
-          rep(i, n)
-          {
+          for (int i = 0; i < (n); ++i) {
             if (f[i] != 0) continue;
             int cnt = 0;
-            rep(j, sz)
-            {
+            for (int j = 0; j < (sz); ++j) {
               if (b[i][cores2[j]]) cnt++;
             }
             if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -7343,10 +6671,8 @@ int Solver24()
     int res2 = cores2.size();
 
     int score = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == 0 && f[j] == 0) {
           score += 1 - b[i][j];
         }
@@ -7359,25 +6685,22 @@ int Solver24()
     }
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] > 0) {
         bif[f[i]][i] = 1;
       }
     }
 
-    rep(i, n)
-    {
-      rep(j, n) { bib[i][j] = b[i][j]; }
+    for (int i = 0; i < (n); ++i) {
+      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
     }
 
     bitset<100> bione(0);
-    rep(i, n) { bione[i] = 1; }
+    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    rep(_, flipLoop)
-    {
+    for (int _ = 0; _ < (flipLoop); ++_) {
       int x = Rand() % n;
       int ra = Rand() % 3;
       while (ra == f[x]) {
@@ -7423,16 +6746,14 @@ int Solver24()
     }
     res1 = 0;
     res2 = 0;
-    rep(i, n)
-    {
+    for (int i = 0; i < (n); ++i) {
       if (f[i] == 1) res1++;
       if (f[i] == 2) res2++;
     }
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
-    rep(i, m)
-    {
+    for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -7444,10 +6765,8 @@ int Solver24()
 
     // スコア計算
     int tmpScore = 0;
-    rep(i, n)
-    {
-      srep(j, i + 1, n)
-      {
+    for (int i = 0; i < (n); ++i) {
+      for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
         }
@@ -7465,8 +6784,7 @@ int Solver24()
   return real_argRes;
 }
 
-int ComputeAnswer(int mode, int turn = 0)
-{
+int ComputeAnswer(int mode, int turn = 0) {
   int res = 0;
   int num = num = hyperSolverNum % 10 + hyperSolverNum / 1000 * 10;
 
@@ -7546,11 +6864,9 @@ int ComputeAnswer(int mode, int turn = 0)
   return res;
 }
 
-double Simulate(int mode)
-{
+double Simulate(int mode) {
   double res = 1e9 / n;
-  rep(turn, 100)
-  {
+  for (int turn = 0; turn < (100); ++turn) {
     InitB(mode, turn);
     int ans = ComputeAnswer(mode, turn);
     answersFor1000Out[turn] = ans;
@@ -7565,8 +6881,7 @@ double Simulate(int mode)
   return res;
 }
 
-void solve(int mode)
-{
+void solve(int mode) {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
@@ -7592,8 +6907,7 @@ void solve(int mode)
   // ハイパラ調整
   if (mode == 100) {
     int loop = 0;
-    struct winner
-    {
+    struct winner {
       int winM = -1;
       int winEps = -1;
       int winLife = 0;
@@ -7620,8 +6934,7 @@ void solve(int mode)
         double sumScore = 0;
         ofstream ofsScore("Score.txt");
         double hi = 0;
-        rep(_, 1000)
-        {
+        for (int _ = 0; _ < (1000); ++_) {
           if (_ % 100 == 0) {
             // cout << _ << endl;
           }
@@ -7673,7 +6986,7 @@ void solve(int mode)
       m = Rand() % 91 + 10;
       iEps = Rand() % 41;
       eps = iEps / 100.0;
-      rep(i, 100) judgeArr[i] = Rand() % m;
+      for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
 
       int initMode = loop % 2;
 
@@ -7849,10 +7162,9 @@ void solve(int mode)
       int CHAMP = 17;
       int LOSE = 3;
       int loseCount = 0;
-      rep(i, CHAMP + LOSE + 100)
-      {
+      for (int i = 0; i < (CHAMP + LOSE + 100); ++i) {
         matchCount++;
-        rep(j, 100) judgeArr[j] = Rand() % m;
+        for (int j = 0; j < (100); ++j) judgeArr[j] = Rand() % m;
 
         n = nown;
         hyperSolverNum = nowhyperSolverNum;
@@ -7891,7 +7203,7 @@ void solve(int mode)
       score /= matchCount;
 
       // double score = 0;
-      // rep(i, 30) score += Simulate(mode);
+      // for (int i = 0; i < (30); ++i) score += Simulate(mode);
       // score /= 30;
       // if (score >= hyperMaxScore[m][iEps]) {
 
@@ -7931,8 +7243,7 @@ void solve(int mode)
     double sumScore = 0;
     ofstream ofsScore("Score.txt");
     double hi = 0;
-    rep(_, 1000)
-    {
+    for (int _ = 0; _ < (1000); ++_) {
       if (_ % 100 == 0) {
         cout << _ << endl;
       }
@@ -7984,10 +7295,8 @@ void solve(int mode)
     double sumScore = 0;
     ofstream ofsScore("Score.txt");
     double hi = 0;
-    rep(looop, 100)
-    {
-      srep(_, 19, 20)
-      {
+    for (int looop = 0; looop < (100); ++looop) {
+      for (int _ = 19; _ < 20; ++_) {
         if (_ % 100 == 0) {
           cout << _ << endl;
         }
@@ -8033,23 +7342,19 @@ void solve(int mode)
 #if 0
   // hyperMaxScoreを20回3セットの一番いいやつで更新
   if (mode == 200) {
-    srep(i, 10, 101)
-    {
-      srep(j, 0, 41)
-      {
+    for (int i = 10; i < 101; ++i) {
+      for (int j = 0; j < 41; ++j) {
         double maxScore = 0;
-        rep(_, 3)
-        {
+        for (int _ = 0; _ < (3); ++_) {
           double score = 0;
-          rep(k, 20)
-          {
+          for (int k = 0; k < (20); ++k) {
             MODE = 100;
             mode = 100;
             Input(mode);
             m = i;
             iEps = j;
             eps = iEps / 100.0;
-            rep(l, 100) judgeArr[l] = Rand() % m;
+            for (int l = 0; l < (100); ++l) judgeArr[l] = Rand() % m;
             n = hyperN[m][iEps];
             hyperSolverNum = hyperSolver[m][iEps];
             hyperMinDiff = hyperMinDiffArr[m][iEps];
@@ -8070,30 +7375,24 @@ void solve(int mode)
       }
     }
     OutputHaipara();
-}
+  }
 #endif
 }
 
-int main()
-{
-  rep(i, 105)
-  {
-    rep(j, 105)
-    {
+int main() {
+  for (int i = 0; i < (105); ++i) {
+    for (int j = 0; j < (105); ++j) {
       com[i][j] = 0;
       if (j > i) continue;
-      rep(k, j)
-      {
+      for (int k = 0; k < (j); ++k) {
         com[i][j] += log(i - k);
         com[i][j] -= log(j - k);
       }
     }
   }
 
-  rep(i, 101)
-  {
-    rep(j, 41)
-    {
+  for (int i = 0; i < (101); ++i) {
+    for (int j = 0; j < (41); ++j) {
     }
   }
 
