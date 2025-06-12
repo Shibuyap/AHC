@@ -26,14 +26,12 @@
 #include <utility>
 #include <vector>
 #define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 100
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -49,10 +47,10 @@ namespace
 }
 
 ///////////////////////////////////////////
-// ãF2
-// ‰ºF8
-// ¶F1
-// ‰EF4
+// ä¸Šï¼š2
+// ä¸‹ï¼š8
+// å·¦ï¼š1
+// å³ï¼š4
 //
 ///////////////////////////////////////////
 
@@ -61,7 +59,7 @@ const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
 const char DIR_CHAR[4] = { 'U', 'L', 'D', 'R' };
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t rand32() {
     static uint32_t x = 123456789;
@@ -83,21 +81,21 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-namespace /* •Ï” */
+namespace /* å¤‰æ•° */
 {
-  // “ü—Í—p•Ï”
+  // å…¥åŠ›ç”¨å¤‰æ•°
   int board_size;
   int turn_limit;
   int board[10][10];
   int startX, startY;
   int kind_count[16];
 
-  // ‰ğ“š—p•Ï”
+  // è§£ç­”ç”¨å¤‰æ•°
   ll cur_score;
   vector<int> route;
   int route_backup[2100];
 
-  // Ä‚«‚È‚Ü‚µ—p•Ï”
+  // ç„¼ããªã¾ã—ç”¨å¤‰æ•°
   double TL = 2.9;
   double start_temp = 2048;
   double end_temp = 0.0001;
@@ -108,11 +106,11 @@ namespace /* •Ï” */
 
 namespace /* Union Find*/
 {
-  int parUF[MAX_N];   // e
-  int rankUF[MAX_N];  // –Ø‚Ì[‚³
-  int cntUF[MAX_N];   // ‘®‚·‚é’¸“_‚ÌŒÂ”(e‚Ì‚İ³‚µ‚¢)
+  int parUF[MAX_N];   // è¦ª
+  int rankUF[MAX_N];  // æœ¨ã®æ·±ã•
+  int cntUF[MAX_N];   // å±ã™ã‚‹é ‚ç‚¹ã®å€‹æ•°(è¦ªã®ã¿æ­£ã—ã„)
 
-  // n—v‘f‚Å‰Šú‰»
+  // nè¦ç´ ã§åˆæœŸåŒ–
   void UFinit(const int nn) {
     for (int i = 0; i < nn; i++) {
       parUF[i] = i;
@@ -125,7 +123,7 @@ namespace /* Union Find*/
     }
   }
 
-  // –Ø‚Ìª‚ğ‹‚ß‚é
+  // æœ¨ã®æ ¹ã‚’æ±‚ã‚ã‚‹
   int findUF(int x) {
     if (parUF[x] == x) {
       return x;
@@ -135,7 +133,7 @@ namespace /* Union Find*/
     }
   }
 
-  // x‚Æy‚Ì‘®‚·‚éW‡‚ğ•¹‡
+  // xã¨yã®å±ã™ã‚‹é›†åˆã‚’ä½µåˆ
   void uniteUF(int x, int y) {
     x = findUF(x);
     y = findUF(y);
@@ -152,42 +150,42 @@ namespace /* Union Find*/
     }
   } /* Union Find*/
 
-  // x‚Æy‚ª“¯‚¶W‡‚É‘®‚·‚é‚©”Û‚©
+  // xã¨yãŒåŒã˜é›†åˆã«å±ã™ã‚‹ã‹å¦ã‹
   bool sameUF(int x, int y) {
     return findUF(x) == findUF(y);
   }
 }  // namespace
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 int boardForCalc[10][10];
 int calc_score(const vector<int>& ope) {
   UFinit(board_size * board_size);
 
   int x = startX, y = startY;
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       boardForCalc[i][j] = board[i][j];
     }
   }
 
-  rep(i, ope.size()) {
+  for (int i = 0; i < ope.size(); ++i) {
     swap(boardForCalc[x][y], boardForCalc[x + DX[ope[i]]][y + DY[ope[i]]]);
     x += DX[ope[i]];
     y += DY[ope[i]];
   }
 
-  // ‰¡‚ÌŒq‚ª‚è
-  rep(i, board_size) {
-    rep(j, board_size - 1) {
+  // æ¨ªã®ç¹‹ãŒã‚Š
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size - 1; ++j) {
       if ((boardForCalc[i][j] & (1 << 2)) && (boardForCalc[i][j + 1] & (1 << 0))) {
         uniteUF(i * board_size + j, i * board_size + j + 1);
       }
     }
   }
 
-  // c‚ÌŒq‚ª‚è
-  rep(i, board_size - 1) {
-    rep(j, board_size) {
+  // ç¸¦ã®ç¹‹ãŒã‚Š
+  for (int i = 0; i < board_size - 1; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       if ((boardForCalc[i][j] & (1 << 3)) && (boardForCalc[i + 1][j] & (1 << 1))) {
         uniteUF(i * board_size + j, (i + 1) * board_size + j);
       }
@@ -196,9 +194,9 @@ int calc_score(const vector<int>& ope) {
 
   int res = 0;
 
-  // ƒXƒRƒAŒvZ
-  rep(i, board_size) {
-    rep(j, board_size) {
+  // ã‚¹ã‚³ã‚¢è¨ˆç®—
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       int ij = i * board_size + j;
       if (findUF(ij) == ij) {
         if (cntUF[ij] == board_size * board_size - 1) {
@@ -221,12 +219,12 @@ void read_input(int problemNum) {
   std::string numStr = sout.str();
   string fileNameIfs = "in/" + numStr + ".txt ";
   ifstream ifs(fileNameIfs.c_str());
-  if (!ifs.is_open()) {  // •W€“ü—Í‚·‚é
+  if (!ifs.is_open()) {  // æ¨™æº–å…¥åŠ›ã™ã‚‹
     cin >> board_size >> turn_limit;
-    rep(i, board_size) {
+    for (int i = 0; i < board_size; ++i) {
       string str;
       cin >> str;
-      rep(j, board_size) {
+      for (int j = 0; j < board_size; ++j) {
         if ('0' <= str[j] && str[j] <= '9') {
           board[i][j] = str[j] - '0';
         }
@@ -240,12 +238,12 @@ void read_input(int problemNum) {
       }
     }
   }
-  else {  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  else {  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     ifs >> board_size >> turn_limit;
-    rep(i, board_size) {
+    for (int i = 0; i < board_size; ++i) {
       string str;
       ifs >> str;
-      rep(j, board_size) {
+      for (int j = 0; j < board_size; ++j) {
         if ('0' <= str[j] && str[j] <= '9') {
           board[i][j] = str[j] - '0';
         }
@@ -260,8 +258,8 @@ void read_input(int problemNum) {
     }
   }
 
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       kind_count[board[i][j]]++;
     }
   }
@@ -277,7 +275,7 @@ bool in_bounds(int x, int y) {
 bool route_in_bounds(const vector<int>& ope) {
   int x = startX;
   int y = startY;
-  rep(i, ope.size()) {
+  for (int i = 0; i < ope.size(); ++i) {
     x += DX[ope[i]];
     y += DY[ope[i]];
     if (!in_bounds(x, y)) {
@@ -287,13 +285,13 @@ bool route_in_bounds(const vector<int>& ope) {
   return true;
 }
 
-// k‚©‚çŒã‚ë‚ğ‘SƒŠƒZƒbƒg
+// kã‹ã‚‰å¾Œã‚ã‚’å…¨ãƒªã‚»ãƒƒãƒˆ
 void shuffle_suffix(double temp) {
   int ite = rand32() % turn_limit;
 
   int x = startX;
   int y = startY;
-  rep(i, turn_limit) {
+  for (int i = 0; i < turn_limit; ++i) {
     route_backup[i] = route[i];
     if (i < ite) {
       x += DX[route[i]];
@@ -324,14 +322,14 @@ void shuffle_suffix(double temp) {
     }
   }
   else {
-    // Œ³‚É–ß‚·
-    rep(i, turn_limit) {
+    // å…ƒã«æˆ»ã™
+    for (int i = 0; i < turn_limit; ++i) {
       route[i] = route_backup[i];
     }
   }
 }
 
-// k‚Æk‚Ì’¼Œã‚ğƒXƒƒbƒv
+// kã¨kã®ç›´å¾Œã‚’ã‚¹ãƒ¯ãƒƒãƒ—
 void swap_adjacent(double temp) {
   int ite = rand32() % (turn_limit - 1);
 
@@ -355,29 +353,29 @@ void swap_adjacent(double temp) {
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     swap(route[ite], route[ite + 1]);
   }
 }
 
-// –Ø‚ğ‘S’Tõ
+// æœ¨ã‚’å…¨æ¢ç´¢
 namespace
 {
   int dfsBoard[10][10];
   bool CheckAllDfs(const vector<vector<int>>& vec) {
     UFinit(board_size * board_size);
-    // ‰¡‚ÌŒq‚ª‚è
-    rep(i, board_size) {
-      rep(j, board_size - 1) {
+    // æ¨ªã®ç¹‹ãŒã‚Š
+    for (int i = 0; i < board_size; ++i) {
+      for (int j = 0; j < board_size - 1; ++j) {
         if ((vec[i][j] & (1 << 2)) && (vec[i][j + 1] & (1 << 0))) {
           uniteUF(i * board_size + j, i * board_size + j + 1);
         }
       }
     }
 
-    // c‚ÌŒq‚ª‚è
-    rep(i, board_size - 1) {
-      rep(j, board_size) {
+    // ç¸¦ã®ç¹‹ãŒã‚Š
+    for (int i = 0; i < board_size - 1; ++i) {
+      for (int j = 0; j < board_size; ++j) {
         if ((vec[i][j] & (1 << 3)) && (vec[i + 1][j] & (1 << 1))) {
           uniteUF(i * board_size + j, (i + 1) * board_size + j);
         }
@@ -391,23 +389,23 @@ namespace
   }
 }  // namespace
 
-// –Ø‚ğÄ‚«‚È‚Ü‚µ‚ÅŒ©‚Â‚¯‚é
+// æœ¨ã‚’ç„¼ããªã¾ã—ã§è¦‹ã¤ã‘ã‚‹
 int aniBoard[10][10];
 int bestMaxAniBoard[10][10];
 int calc_anneal_score() {
   UFinit(board_size * board_size);
-  // ‰¡‚ÌŒq‚ª‚è
-  rep(i, board_size) {
-    rep(j, board_size - 1) {
+  // æ¨ªã®ç¹‹ãŒã‚Š
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size - 1; ++j) {
       if ((aniBoard[i][j] & (1 << 2)) && (aniBoard[i][j + 1] & (1 << 0))) {
         uniteUF(i * board_size + j, i * board_size + j + 1);
       }
     }
   }
 
-  // c‚ÌŒq‚ª‚è
-  rep(i, board_size - 1) {
-    rep(j, board_size) {
+  // ç¸¦ã®ç¹‹ãŒã‚Š
+  for (int i = 0; i < board_size - 1; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       if ((aniBoard[i][j] & (1 << 3)) && (aniBoard[i + 1][j] & (1 << 1))) {
         uniteUF(i * board_size + j, (i + 1) * board_size + j);
       }
@@ -415,8 +413,8 @@ int calc_anneal_score() {
   }
 
   int MaxSize = 0;
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       MaxSize = max(MaxSize, cntUF[findUF(i * board_size + j)]);
     }
     if (MaxSize >= board_size * board_size / 2) {
@@ -438,20 +436,20 @@ bool anneal_find_tree(bool isReset = false) {
   double endAniTemp = 0.0;
 
   if (isReset) {
-    rep(i, board_size) {
-      rep(j, board_size) {
+    for (int i = 0; i < board_size; ++i) {
+      for (int j = 0; j < board_size; ++j) {
         aniBoard[i][j] = board[i][j];
       }
     }
   }
 
-  // ƒJ[ƒ\ƒ‹‚Í‰E‰ºŒÅ’è
+  // ã‚«ãƒ¼ã‚½ãƒ«ã¯å³ä¸‹å›ºå®š
   swap(aniBoard[startX][startY], aniBoard[board_size - 1][board_size - 1]);
 
   int maxAniScore = calc_anneal_score();
   int bestMaxAniScore = maxAniScore;
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       bestMaxAniBoard[i][j] = aniBoard[i][j];
     }
   }
@@ -492,15 +490,15 @@ bool anneal_find_tree(bool isReset = false) {
       maxAniScore += diffScore;
       if (maxAniScore > bestMaxAniScore) {
         bestMaxAniScore = maxAniScore;
-        rep(i, board_size) {
-          rep(j, board_size) {
+        for (int i = 0; i < board_size; ++i) {
+          for (int j = 0; j < board_size; ++j) {
             bestMaxAniBoard[i][j] = aniBoard[i][j];
           }
         }
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       swap(aniBoard[x1][y1], aniBoard[x2][y2]);
     }
 
@@ -511,8 +509,8 @@ bool anneal_find_tree(bool isReset = false) {
   }
 
   maxAniScore = bestMaxAniScore;
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       aniBoard[i][j] = bestMaxAniBoard[i][j];
     }
   }
@@ -524,23 +522,23 @@ bool anneal_find_tree(bool isReset = false) {
 }
 
 int piece_number[10][10];
-// ì¬‚µ‚½”Õ–Ê‚Ì“]“|”‚ğƒ`ƒFƒbƒN‚·‚é
+// ä½œæˆã—ãŸç›¤é¢ã®è»¢å€’æ•°ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 bool is_even_inversion() {
   int tmp_board[10][10];
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       tmp_board[i][j] = piece_number[i][j];
     }
   }
   int cnt = 0;
 
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       int num = i * board_size + j;
       int x = -1;
       int y = -1;
-      rep(k, board_size) {
-        rep(l, board_size) {
+      for (int k = 0; k < board_size; ++k) {
+        for (int l = 0; l < board_size; ++l) {
           if (tmp_board[k][l] == num) {
             x = k;
             y = j;
@@ -576,12 +574,12 @@ bool is_even_inversion() {
   return false;
 }
 
-// ì¬‚µ‚½–Ø‚©‚çƒs[ƒX‚Ìí—Ş‚²‚Æ‚Ì”Ô†‚ğŒˆ’è‚·‚é
+// ä½œæˆã—ãŸæœ¨ã‹ã‚‰ãƒ”ãƒ¼ã‚¹ã®ç¨®é¡ã”ã¨ã®ç•ªå·ã‚’æ±ºå®šã™ã‚‹
 vector<int> kindNumbers[16];
 vector<P> origin_positions[16];
 void init_kind_indices() {
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       kindNumbers[dfsBoard[i][j]].push_back(i * board_size + j);
       origin_positions[board[i][j]].push_back(P(i, j));
     }
@@ -591,31 +589,31 @@ void init_kind_indices() {
 void reset_state() {
   route.clear();
   best_route.clear();
-  rep(i, 16) {
+  for (int i = 0; i < 16; ++i) {
     kindNumbers[i].clear();
     origin_positions[i].clear();
   }
 }
 
-// ƒs[ƒX‚É”Ô†‚ğU‚é
+// ãƒ”ãƒ¼ã‚¹ã«ç•ªå·ã‚’æŒ¯ã‚‹
 void init_piece_numbers() {
   int ite[16] = {};
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       piece_number[i][j] = kindNumbers[board[i][j]][ite[board[i][j]]];
       ite[board[i][j]]++;
     }
   }
 
-  // ‚à‚µ“]“|”‚ªŠï”‚È‚ç1‰ÓŠƒXƒƒbƒv‚·‚é
+  // ã‚‚ã—è»¢å€’æ•°ãŒå¥‡æ•°ãªã‚‰1ç®‡æ‰€ã‚¹ãƒ¯ãƒƒãƒ—ã™ã‚‹
   if (!is_even_inversion()) {
-    rep(i, 16) {
+    for (int i = 0; i < 16; ++i) {
       if (kindNumbers[i].size() >= 2) {
         int num1 = kindNumbers[i][0];
         int num2 = kindNumbers[i][1];
         int x1, y1, x2, y2;
-        rep(j, board_size) {
-          rep(k, board_size) {
+        for (int j = 0; j < board_size; ++j) {
+          for (int k = 0; k < board_size; ++k) {
             if (piece_number[j][k] == num1) {
               x1 = j;
               y1 = k;
@@ -654,7 +652,7 @@ pair<P, P> shuffle_same_kind_piece() {
   return pair<P, P>({ {x1, y1}, {x2, y2} });
 }
 
-// –Ø‚ğì¬‚·‚éè‡‚ğ1‚Âì¬‚·‚é
+// æœ¨ã‚’ä½œæˆã™ã‚‹æ‰‹é †ã‚’1ã¤ä½œæˆã™ã‚‹
 void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& route_tmp) {
   route_tmp.push_back(nd);
   swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
@@ -666,8 +664,8 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
   int dp[10][10];
   int dir[10][10];
   if (mode == 0) {
-    rep(i, board_size) {
-      rep(j, board_size) {
+    for (int i = 0; i < board_size; ++i) {
+      for (int j = 0; j < board_size; ++j) {
         if (i < ii) {
           dp[i][j] = -1;
         }
@@ -681,8 +679,8 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
     }
   }
   else if (mode == 2) {
-    rep(i, board_size) {
-      rep(j, board_size) {
+    for (int i = 0; i < board_size; ++i) {
+      for (int j = 0; j < board_size; ++j) {
         if (i < ii) {
           dp[i][j] = -1;
         }
@@ -706,7 +704,7 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
     int b = que.front().second;
     que.pop();
     bool isFinish = false;
-    rep(i, 4) {
+    for (int i = 0; i < 4; ++i) {
       int na = a + DX[i];
       int nb = b + DY[i];
       if (in_bounds(na, nb) && dp[na][nb] > dp[a][b] + 1) {
@@ -741,7 +739,7 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
     x += DX[nd];
     y += DY[nd];
   }
-  rep(i, 4) {
+  for (int i = 0; i < 4; ++i) {
     if (x + DX[i] == xx && y + DY[i] == yy) {
       swap(tmpBoard[x][y], tmpBoard[xx][yy]);
       swap(x, xx);
@@ -752,15 +750,15 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
   }
 }
 
-// 3~2ƒ}ƒX‚ğg‚Á‚Äã‚Éƒ}ƒX‚ğ“ü‚ê‘Ö‚¦‚é
-// (xx,yy) = (¶ã,‰Eã)
+// 3Ã—2ãƒã‚¹ã‚’ä½¿ã£ã¦ä¸Šã«ãƒã‚¹ã‚’å…¥ã‚Œæ›¿ãˆã‚‹
+// (xx,yy) = (å·¦ä¸Š,å³ä¸Š)
 void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   while (y != yy + 1) {
     ansDfs.push_back(3);
     swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
     y++;
   }
-  // ã¶‰º‰E
+  // ä¸Šå·¦ä¸‹å³
   vector<int> order = { 0, 1, 2, 3, 2, 1, 0, 0, 3, 2, 1, 2, 3, 0, 0, 1, 2 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
@@ -770,13 +768,13 @@ void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmp
   }
 }
 
-// 2~3ƒ}ƒX‚ğg‚Á‚Äã‚Éƒ}ƒX‚ğ“ü‚ê‘Ö‚¦‚é
-// (xx,yy) = (¶ã,‰Eã)
+// 2Ã—3ãƒã‚¹ã‚’ä½¿ã£ã¦ä¸Šã«ãƒã‚¹ã‚’å…¥ã‚Œæ›¿ãˆã‚‹
+// (xx,yy) = (å·¦ä¸Š,å³ä¸Š)
 void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
   while (x != board_size - 1) {
     apply_move(x, y, 2, tmpBoard, ansDfs);
   }
-  // ã¶‰º‰E
+  // ä¸Šå·¦ä¸‹å³
   vector<int> order = { 1, 0, 3, 2, 3, 0, 1, 1, 2, 3, 0, 3, 2, 1, 1, 0, 3 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
@@ -787,11 +785,11 @@ void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& t
 }
 
 void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
-  // ƒJ[ƒ\ƒ‹ˆÚ“®
+  // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•
   int dp[10][10];
   int dir[10][10];
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       if (i <= ii) {
         dp[i][j] = -1;
       }
@@ -812,7 +810,7 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
     int b = que.front().second;
     que.pop();
     bool isFinish = false;
-    rep(i, 4) {
+    for (int i = 0; i < 4; ++i) {
       int na = a + DX[i];
       int nb = b + DY[i];
       if (in_bounds(na, nb) && dp[na][nb] > dp[a][b] + 1) {
@@ -848,7 +846,7 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
     y += DY[nd];
   }
 
-  // ã¶‰º‰E
+  // ä¸Šå·¦ä¸‹å³
   vector<int> order = { 1, 2 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
@@ -859,11 +857,11 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
 }
 
 void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
-  // ƒJ[ƒ\ƒ‹ˆÚ“®
+  // ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•
   int dp[10][10];
   int dir[10][10];
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       if (i < board_size - 2) {
         dp[i][j] = -1;
       }
@@ -887,7 +885,7 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
     int b = que.front().second;
     que.pop();
     bool isFinish = false;
-    rep(i, 4) {
+    for (int i = 0; i < 4; ++i) {
       int na = a + DX[i];
       int nb = b + DY[i];
       if (in_bounds(na, nb) && dp[na][nb] > dp[a][b] + 1) {
@@ -923,7 +921,7 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
     y += DY[nd];
   }
 
-  // ã¶‰º‰E
+  // ä¸Šå·¦ä¸‹å³
   vector<int> order = { 0, 3 };
   for (auto nd : order) {
     ansDfs.push_back(nd);
@@ -935,8 +933,8 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
 
 vector<int> build_route() {
   vector<vector<int>> tmpBoard(10, vector<int>(10));
-  rep(i, board_size) {
-    rep(j, board_size) {
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
       tmpBoard[i][j] = board[i][j];
     }
   }
@@ -946,17 +944,17 @@ vector<int> build_route() {
   int x = startX;
   int y = startY;
 
-  // 1—ñ–Ú‚©‚ç‰º‚©‚ç3—ñ–Ú‚Ü‚ÅŠ®¬‚³‚¹‚é
-  rep(i, board_size - 2) {
-    rep(j, board_size - 1) {
+  // 1åˆ—ç›®ã‹ã‚‰ä¸‹ã‹ã‚‰3åˆ—ç›®ã¾ã§å®Œæˆã•ã›ã‚‹
+  for (int i = 0; i < board_size - 2; ++i) {
+    for (int j = 0; j < board_size - 1; ++j) {
       int num = aniBoard[i][j];
       if (j == board_size - 2) {
         num = aniBoard[i][board_size - 1];
       }
 
       vector<int> vxx, vyy;
-      rep(k, board_size) {
-        rep(l, board_size) {
+      for (int k = 0; k < board_size; ++k) {
+        for (int l = 0; l < board_size; ++l) {
           if (k < i) {
             continue;
           }
@@ -977,14 +975,14 @@ vector<int> build_route() {
       int miniX = -1;
       int miniY = -1;
       vector<vector<int>> keeptmpBoard;
-      rep(k, vxx.size()) {
+      for (int k = 0; k < vxx.size(); ++k) {
         x = keepX;
         y = keepY;
         int xx = vxx[k];
         int yy = vyy[k];
         vector<int> tmpVec;
         vector<vector<int>> tmptmpBoard = tmpBoard;
-        // “KØ‚ÈˆÊ’u‚Éƒs[ƒX‚ğˆÚ“®‚³‚¹‚é
+        // é©åˆ‡ãªä½ç½®ã«ãƒ”ãƒ¼ã‚¹ã‚’ç§»å‹•ã•ã›ã‚‹
 
         while (xx != i || yy != j) {
           if (yy != j) {
@@ -1023,15 +1021,15 @@ vector<int> build_route() {
       x++;
     }
 
-    // ÅŒã‚Ì2ŒÂ‚ğ‘µ‚¦‚é
+    // æœ€å¾Œã®2å€‹ã‚’æƒãˆã‚‹
     if (tmpBoard[i][board_size - 1] == aniBoard[i][board_size - 2]) {
       swap_vertical_pair(x, y, i, board_size - 2, tmpBoard, ansDfs);
     }
     else {
       int num = aniBoard[i][board_size - 2];
       vector<int> vxx, vyy;
-      rep(k, board_size) {
-        rep(l, board_size) {
+      for (int k = 0; k < board_size; ++k) {
+        for (int l = 0; l < board_size; ++l) {
           if (k <= i) {
             continue;
           }
@@ -1049,7 +1047,7 @@ vector<int> build_route() {
       int miniX = -1;
       int miniY = -1;
       vector<vector<int>> keeptmpBoard;
-      rep(k, vxx.size()) {
+      for (int k = 0; k < vxx.size(); ++k) {
         x = keepX;
         y = keepY;
         int xx = vxx[k];
@@ -1057,7 +1055,7 @@ vector<int> build_route() {
         vector<int> tmpVec;
         vector<vector<int>> tmptmpBoard = tmpBoard;
 
-        // “KØ‚ÈˆÊ’u‚Éƒs[ƒX‚ğˆÚ“®‚³‚¹‚é
+        // é©åˆ‡ãªä½ç½®ã«ãƒ”ãƒ¼ã‚¹ã‚’ç§»å‹•ã•ã›ã‚‹
         while (xx != i + 1 || yy != board_size - 2) {
           if (yy != board_size - 2) {
             if (yy < board_size - 2) {
@@ -1092,13 +1090,13 @@ vector<int> build_route() {
     }
   }
 
-  // ‰º2—ñ‚ğ‚»‚ë‚¦‚é
-  rep(j, board_size - 2) {
-    // ‰º‚Ìƒ}ƒX‚ğã‚Ìƒ}ƒX‚ÌˆÊ’u‚É‚Á‚Ä‚­‚é
+  // ä¸‹2åˆ—ã‚’ãã‚ãˆã‚‹
+  for (int j = 0; j < board_size - 2; ++j) {
+    // ä¸‹ã®ãƒã‚¹ã‚’ä¸Šã®ãƒã‚¹ã®ä½ç½®ã«æŒã£ã¦ãã‚‹
     int num = aniBoard[board_size - 1][j];
     int xx = -1, yy = -1;
-    rep(k, board_size) {
-      rep(l, board_size) {
+    for (int k = 0; k < board_size; ++k) {
+      for (int l = 0; l < board_size; ++l) {
         if (k < board_size - 2) {
           continue;
         }
@@ -1115,7 +1113,7 @@ vector<int> build_route() {
       }
     }
 
-    // “KØ‚ÈˆÊ’u‚Éƒs[ƒX‚ğˆÚ“®‚³‚¹‚é
+    // é©åˆ‡ãªä½ç½®ã«ãƒ”ãƒ¼ã‚¹ã‚’ç§»å‹•ã•ã›ã‚‹
     while (xx != board_size - 2 || yy != j) {
       if (yy != j) {
         if (yy < j) {
@@ -1136,15 +1134,15 @@ vector<int> build_route() {
       y++;
     }
 
-    // ÅŒã‚Ì2ŒÂ‚ğ‘µ‚¦‚é
+    // æœ€å¾Œã®2å€‹ã‚’æƒãˆã‚‹
     if (tmpBoard[board_size - 1][j] == aniBoard[board_size - 2][j]) {
       swap_horizontal_pair(x, y, board_size - 2, j, tmpBoard, ansDfs);
     }
     else {
       int num = aniBoard[board_size - 2][j];
       int xx = -1, yy = -1;
-      rep(k, board_size) {
-        rep(l, board_size) {
+      for (int k = 0; k < board_size; ++k) {
+        for (int l = 0; l < board_size; ++l) {
           if (k < board_size - 2) {
             continue;
           }
@@ -1160,7 +1158,7 @@ vector<int> build_route() {
           break;
         }
       }
-      // “KØ‚ÈˆÊ’u‚Éƒs[ƒX‚ğˆÚ“®‚³‚¹‚é
+      // é©åˆ‡ãªä½ç½®ã«ãƒ”ãƒ¼ã‚¹ã‚’ç§»å‹•ã•ã›ã‚‹
       while (xx != board_size - 2 || yy != j + 1) {
         if (xx != board_size - 2) {
           if (xx < board_size - 2) {
@@ -1178,7 +1176,7 @@ vector<int> build_route() {
     }
   }
 
-  // ƒJ[ƒ\ƒ‹‚ğ‰E‰º‚É‚Á‚Ä‚­‚é
+  // ã‚«ãƒ¼ã‚½ãƒ«ã‚’å³ä¸‹ã«æŒã£ã¦ãã‚‹
   while (x != board_size - 1 || y != board_size - 1) {
     if (y != board_size - 1) {
       apply_move(x, y, 3, tmpBoard, ansDfs);
@@ -1195,22 +1193,22 @@ vector<int> build_route() {
   return ansDfs;
 }
 
-int exec_mode = 0; // 0: •W€o—Í, 1: ƒtƒ@ƒCƒ‹o—Í
+int exec_mode = 0; // 0: æ¨™æº–å‡ºåŠ›, 1: ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
 void output_data(int case_num) {
   if (exec_mode == 0) {
-    // •W€o—Í
-    rep(i, route.size()) {
+    // æ¨™æº–å‡ºåŠ›
+    for (int i = 0; i < route.size(); ++i) {
       cout << DIR_CHAR[route[i]];
     }
     cout << endl;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    rep(i, route.size()) {
+    for (int i = 0; i < route.size(); ++i) {
       ofs << DIR_CHAR[route[i]];
     }
     ofs << endl;
@@ -1220,29 +1218,29 @@ void output_data(int case_num) {
 int solve_case(int mode, int problemNum = 0) {
   start_timer();
 
-  // “ü—Í•”
+  // å…¥åŠ›éƒ¨
   read_input(problemNum);
 
-  // –Ø‚ğ1‚ÂŒ©‚Â‚¯‚é
+  // æœ¨ã‚’1ã¤è¦‹ã¤ã‘ã‚‹
   bool isFind = false;
   {
-    // Ä‚«‚È‚Ü‚µ
-    rep(_, 25) {
+    // ç„¼ããªã¾ã—
+    for (int _ = 0; _ < 25; ++_) {
       bool isReset = true;
       if (anneal_find_tree(isReset)) {
         isFind = true;
         break;
       }
     }
-    rep(i, board_size) {
-      rep(j, board_size) {
+    for (int i = 0; i < board_size; ++i) {
+      for (int j = 0; j < board_size; ++j) {
         dfsBoard[i][j] = aniBoard[i][j];
       }
     }
   }
 
   if (isFind) {
-    // ‚»‚ê‚¼‚ê‚Ìƒs[ƒX‚É”Ô†‚ğ•t‚¯‚é
+    // ãã‚Œãã‚Œã®ãƒ”ãƒ¼ã‚¹ã«ç•ªå·ã‚’ä»˜ã‘ã‚‹
     init_kind_indices();
     init_piece_numbers();
 
@@ -1261,7 +1259,7 @@ int solve_case(int mode, int problemNum = 0) {
         if (now_time > TL) break;
       }
       pair<P, P> pp[2];
-      rep(i, 2) {
+      for (int i = 0; i < 2; ++i) {
         pp[i] = shuffle_same_kind_piece();
       }
 
@@ -1282,8 +1280,8 @@ int solve_case(int mode, int problemNum = 0) {
         }
       }
       else {
-        // Œ³‚É–ß‚·
-        rep(i, 2) {
+        // å…ƒã«æˆ»ã™
+        for (int i = 0; i < 2; ++i) {
           swap(piece_number[pp[i].first.first][pp[i].first.second], piece_number[pp[i].second.first][pp[i].second.second]);
         }
       }
@@ -1291,11 +1289,11 @@ int solve_case(int mode, int problemNum = 0) {
     }
   }
   else {
-    // ‹ğ’¼‰ğ
+    // æ„šç›´è§£
     {
       int x = startX;
       int y = startY;
-      rep(i, turn_limit) {
+      for (int i = 0; i < turn_limit; ++i) {
         int val = rand32() % 4;
         while (!in_bounds(x + DX[val], y + DY[val])) {
           val = rand32() % 4;
@@ -1311,7 +1309,7 @@ int solve_case(int mode, int problemNum = 0) {
     best_route = route;
     best_score = cur_score;
 
-    // R“o‚è‰ğAÄ‚«‚È‚Ü‚µ‰ğ
+    // å±±ç™»ã‚Šè§£ã€ç„¼ããªã¾ã—è§£
     double now_time = get_elapsed_time();
     int loop = 0;
     while (true) {
@@ -1331,12 +1329,12 @@ int solve_case(int mode, int problemNum = 0) {
       loop++;
     }
 
-    // Å‚ƒXƒRƒA‚ğ–ß‚·
+    // æœ€é«˜ã‚¹ã‚³ã‚¢ã‚’æˆ»ã™
     route = best_route;
     cur_score = best_score;
   }
 
-  // ƒfƒoƒbƒO—p
+  // ãƒ‡ãƒãƒƒã‚°ç”¨
   if (mode != 0) {
     cout << cur_score << endl;
     cout << get_elapsed_time() << "sec." << endl;
@@ -1357,7 +1355,7 @@ int main() {
     solve_case(exec_mode, 0);
   }
   else if (exec_mode == 10) {
-    srep(_, 4, 5) {
+    for (int _ = 4; _ < 5; ++_) {
       solve_case(exec_mode, _);
       reset_state();
     }
