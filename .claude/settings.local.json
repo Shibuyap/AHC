@@ -11,7 +11,9 @@
       "Bash(dos2unix:*)",
       "Bash(sed:*)",
       "Bash(bash:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(g++:*)"
     ],
     "deny": []
   }

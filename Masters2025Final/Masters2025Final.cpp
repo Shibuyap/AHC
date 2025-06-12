@@ -28,10 +28,7 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
+// Removed macro definitions - using standard for loops instead
 
 using namespace std;
 
@@ -124,8 +121,8 @@ int a_flag[MAX_N];
 int b_flag[MAX_N];
 
 void reset_flag() {
-  rep(i, A) a_flag[i] = 0;
-  rep(i, B) b_flag[i] = 0;
+  for (int i = 0; i < A; ++i) a_flag[i] = 0;
+  for (int i = 0; i < B; ++i) b_flag[i] = 0;
 }
 
 Point box_a[MAX_N][2];
@@ -164,18 +161,18 @@ void store_keep_score()
   keep_score = current_score;
   keep_moves_a_count = moves_a_count;
   keep_moves_b_count = moves_b_count;
-  rep(i, moves_a_count) {
+  for (int i = 0; i < moves_a_count; ++i) {
     keep_moves_a[i][0] = moves_a[i][0];
     keep_moves_a[i][1] = moves_a[i][1];
   }
-  rep(i, moves_b_count) {
+  for (int i = 0; i < moves_b_count; ++i) {
     keep_moves_b[i][0] = moves_b[i][0];
     keep_moves_b[i][1] = moves_b[i][1];
   }
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     keep_nums_a[i] = nums_a[i];
   }
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     keep_nums_b[i] = nums_b[i];
   }
 
@@ -186,18 +183,18 @@ void restore_keep_score()
   current_score = keep_score;
   moves_a_count = keep_moves_a_count;
   moves_b_count = keep_moves_b_count;
-  rep(i, moves_a_count) {
+  for (int i = 0; i < moves_a_count; ++i) {
     moves_a[i][0] = keep_moves_a[i][0];
     moves_a[i][1] = keep_moves_a[i][1];
   }
-  rep(i, moves_b_count) {
+  for (int i = 0; i < moves_b_count; ++i) {
     moves_b[i][0] = keep_moves_b[i][0];
     moves_b[i][1] = keep_moves_b[i][1];
   }
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     nums_a[i] = keep_nums_a[i];
   }
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     nums_b[i] = keep_nums_b[i];
   }
 
@@ -208,18 +205,18 @@ void store_best_score()
   best_score = current_score;
   best_moves_a_count = moves_a_count;
   best_moves_b_count = moves_b_count;
-  rep(i, moves_a_count) {
+  for (int i = 0; i < moves_a_count; ++i) {
     best_moves_a[i][0] = moves_a[i][0];
     best_moves_a[i][1] = moves_a[i][1];
   }
-  rep(i, moves_b_count) {
+  for (int i = 0; i < moves_b_count; ++i) {
     best_moves_b[i][0] = moves_b[i][0];
     best_moves_b[i][1] = moves_b[i][1];
   }
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     best_nums_a[i] = nums_a[i];
   }
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     best_nums_b[i] = nums_b[i];
   }
 
@@ -230,18 +227,18 @@ void restore_best_score()
   current_score = best_score;
   moves_a_count = best_moves_a_count;
   moves_b_count = best_moves_b_count;
-  rep(i, moves_a_count) {
+  for (int i = 0; i < moves_a_count; ++i) {
     moves_a[i][0] = best_moves_a[i][0];
     moves_a[i][1] = best_moves_a[i][1];
   }
-  rep(i, moves_b_count) {
+  for (int i = 0; i < moves_b_count; ++i) {
     moves_b[i][0] = best_moves_b[i][0];
     moves_b[i][1] = best_moves_b[i][1];
   }
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     nums_a[i] = best_nums_a[i];
   }
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     nums_b[i] = best_nums_b[i];
   }
 
@@ -270,26 +267,26 @@ void input_data(int case_num)
   if (!ifs.is_open()) {
     // 標準入力
     cin >> A >> B >> C;
-    rep(i, A) {
+    for (int i = 0; i < A; ++i) {
       cin >> a[i].x >> a[i].y;
     }
-    rep(i, B) {
+    for (int i = 0; i < B; ++i) {
       cin >> b[i].x >> b[i].y;
     }
-    rep(i, C) {
+    for (int i = 0; i < C; ++i) {
       cin >> c[i].x >> c[i].y;
     }
   }
   else {
     // ファイル入力
     ifs >> A >> B >> C;
-    rep(i, A) {
+    for (int i = 0; i < A; ++i) {
       ifs >> a[i].x >> a[i].y;
     }
-    rep(i, B) {
+    for (int i = 0; i < B; ++i) {
       ifs >> b[i].x >> b[i].y;
     }
-    rep(i, C) {
+    for (int i = 0; i < C; ++i) {
       ifs >> c[i].x >> c[i].y;
     }
   }
@@ -307,7 +304,7 @@ void open_ofs(int case_num, ofstream& ofs)
 double calculate_score()
 {
   double res = 0;
-  srep(i, 1, max(moves_a_count, moves_b_count)) {
+  for (int i = 1; i < max(moves_a_count, moves_b_count); ++i) {
     double d = 0;
     if (i < moves_a_count) {
       d = max(d, get_distance(moves_a[i][0], moves_a[i - 1][0]) + get_distance(moves_a[i][1], moves_a[i - 1][1]));
@@ -329,7 +326,7 @@ double simulate_score() {
 
   int x = a[nums_a[0]].x;
   int y = a[nums_a[0]].y;
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     int idx = nums_a[i];
     if (a_flag[idx] == 1) {
       //cout << "OK" << endl;
@@ -354,7 +351,7 @@ double simulate_score() {
     moves_a[moves_a_count][1].x = dx;
     moves_a[moves_a_count][1].y = dy;
     moves_a_count++;
-    rep(j, A) {
+    for (int j = 0; j < A; ++j) {
       if (box_a_flag[idx][j] == 1) {
         a_flag[j] = 1;
       }
@@ -366,7 +363,7 @@ double simulate_score() {
 
   x = b[nums_b[0]].x;
   y = b[nums_b[0]].y;
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     int idx = nums_b[i];
     if (b_flag[idx] == 1) {
       continue;
@@ -390,7 +387,7 @@ double simulate_score() {
     moves_b[moves_b_count][1].x = dx;
     moves_b[moves_b_count][1].y = dy;
     moves_b_count++;
-    rep(j, B) {
+    for (int j = 0; j < B; ++j) {
       if (box_b_flag[idx][j] == 1) {
         b_flag[j] = 1;
       }
@@ -404,7 +401,7 @@ double simulate_score() {
 
 double calculate_score_one_point(int idx) {
   double res = 0;
-  srep(i, idx, idx + 2) {
+  for (int i = idx; i < idx + 2; ++i) {
     double d = 0;
     if (i < moves_a_count) {
       d = max(d, get_distance(moves_a[i][0], moves_a[i - 1][0]) + get_distance(moves_a[i][1], moves_a[i - 1][1]));
@@ -421,7 +418,7 @@ void output_data(ofstream& ofs)
 {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, max(moves_a_count, moves_b_count)) {
+    for (int i = 0; i < max(moves_a_count, moves_b_count); ++i) {
       if (i < moves_a_count) {
         cout << moves_a[i][0].x << " " << moves_a[i][0].y << " " << moves_a[i][1].x << " " << moves_a[i][1].y << ' ';
       }
@@ -438,7 +435,7 @@ void output_data(ofstream& ofs)
   }
   else {
     // ファイル出力
-    rep(i, max(moves_a_count, moves_b_count)) {
+    for (int i = 0; i < max(moves_a_count, moves_b_count); ++i) {
       if (i < moves_a_count) {
         ofs << moves_a[i][0].x << " " << moves_a[i][0].y << " " << moves_a[i][1].x << " " << moves_a[i][1].y << ' ';
       }
@@ -456,11 +453,11 @@ void output_data(ofstream& ofs)
 }
 
 void init_box() {
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     box_a[i][0] = a[i];
     box_a[i][1] = a[i];
     box_a_count[i] = 1;
-    rep(j, A) {
+    for (int j = 0; j < A; ++j) {
       box_a_flag[i][j] = 0;
     }
     box_a_flag[i][i] = 1;
@@ -482,14 +479,14 @@ void init_box() {
     if (left > right) std::swap(left, right);
 
     int ok = 1;
-    rep(i, B) {
+    for (int i = 0; i < B; ++i) {
       if (up <= b[i].x && b[i].x <= down && left <= b[i].y && b[i].y <= right) {
         ok = 0;
         break;
       }
     }
     if (ok == 0) continue;
-    rep(i, C) {
+    for (int i = 0; i < C; ++i) {
       if (up <= c[i].x && c[i].x <= down && left <= c[i].y && c[i].y <= right) {
         ok = 0;
         break;
@@ -497,14 +494,14 @@ void init_box() {
     }
     if (ok == 0) continue;
     int cnt = 0;
-    rep(i, A) {
+    for (int i = 0; i < A; ++i) {
       if (up <= a[i].x && a[i].x <= down && left <= a[i].y && a[i].y <= right) {
         flag[cnt] = i;
         cnt++;
       }
     }
     if (cnt == 0) continue;
-    rep(i, cnt) {
+    for (int i = 0; i < cnt; ++i) {
       int idx = flag[i];
       if (cnt > box_a_count[idx]) {
         box_a_count[idx] = cnt;
@@ -513,17 +510,17 @@ void init_box() {
         box_a[idx][1].x = down;
         box_a[idx][1].y = right;
       }
-      rep(j, A) {
+      for (int j = 0; j < A; ++j) {
         box_a_flag[idx][j] = 0;
       }
-      rep(j, cnt) {
+      for (int j = 0; j < cnt; ++j) {
         int idx2 = flag[j];
         box_a_flag[idx][idx2] = 1;
       }
     }
   }
 
-  //rep(i, A) {
+  //for (int i = 0; i < (A); ++i) {
   //  cout << box_a_count[i] << " ";
   //}
   //cout << endl;
@@ -532,11 +529,11 @@ void init_box() {
     return;
   }
 
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     box_b[i][0] = b[i];
     box_b[i][1] = b[i];
     box_b_count[i] = 1;
-    rep(j, B) {
+    for (int j = 0; j < B; ++j) {
       box_b_flag[i][j] = 0;
     }
     box_b_flag[i][i] = 1;
@@ -557,14 +554,14 @@ void init_box() {
     if (left > right) std::swap(left, right);
 
     int ok = 1;
-    rep(i, A) {
+    for (int i = 0; i < A; ++i) {
       if (up <= a[i].x && a[i].x <= down && left <= a[i].y && a[i].y <= right) {
         ok = 0;
         break;
       }
     }
     if (ok == 0) continue;
-    rep(i, C) {
+    for (int i = 0; i < C; ++i) {
       if (up <= c[i].x && c[i].x <= down && left <= c[i].y && c[i].y <= right) {
         ok = 0;
         break;
@@ -572,14 +569,14 @@ void init_box() {
     }
     if (ok == 0) continue;
     int cnt = 0;
-    rep(i, B) {
+    for (int i = 0; i < B; ++i) {
       if (up <= b[i].x && b[i].x <= down && left <= b[i].y && b[i].y <= right) {
         cnt++;
         flag[cnt] = i;
       }
     }
     if (cnt == 0) continue;
-    rep(i, cnt) {
+    for (int i = 0; i < cnt; ++i) {
       int idx = flag[i];
       if (cnt > box_b_count[idx]) {
         box_b_count[idx] = cnt;
@@ -588,10 +585,10 @@ void init_box() {
         box_b[idx][1].x = down;
         box_b[idx][1].y = right;
       }
-      rep(j, B) {
+      for (int j = 0; j < B; ++j) {
         box_b_flag[idx][j] = 0;
       }
-      rep(j, cnt) {
+      for (int j = 0; j < cnt; ++j) {
         int idx2 = flag[j];
         box_b_flag[idx][idx2] = 1;
       }
@@ -602,7 +599,7 @@ void init_box() {
 void merge_gomi() {
   ua.clear();
   da.clear();
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     ua.push_back(a[i]);
     da.push_back(a[i]);
   }
@@ -613,8 +610,8 @@ void merge_gomi() {
     int idx1 = -1;
     int idx2 = -1;
     Point mi_nua, mi_nda;
-    rep(i, ua.size()) {
-      srep(j, i + 1, ua.size()) {
+    for (int i = 0; i < ua.size(); ++i) {
+      for (int j = i + 1; j < ua.size(); ++j) {
         if (i == j) continue;
         Point nua = ua[i];
         nua.x = min(nua.x, ua[j].x);
@@ -625,14 +622,14 @@ void merge_gomi() {
         ll tmp = (nda.x - nua.x) * (nda.y - nua.y);
         if (tmp >= mi) continue;
         int ok = 1;
-        rep(k, B) {
+        for (int k = 0; k < B; ++k) {
           if (nua.x <= b[k].x && b[k].x <= nda.x && nua.y <= b[k].y && b[k].y <= nda.y) {
             ok = 0;
             break;
           }
         }
         if (ok == 0) continue;
-        rep(k, C) {
+        for (int k = 0; k < C; ++k) {
           if (nua.x <= c[k].x && c[k].x <= nda.x && nua.y <= c[k].y && c[k].y <= nda.y) {
             ok = 0;
             break;
@@ -662,7 +659,7 @@ void merge_gomi() {
 
   ub.clear();
   db.clear();
-  rep(i,B) {
+  for (int i = 0; i < B; ++i) {
     ub.push_back(b[i]);
     db.push_back(b[i]);
   }
@@ -673,8 +670,8 @@ void merge_gomi() {
     int idx1 = -1;
     int idx2 = -1;
     Point mi_nub, mi_ndb;
-    rep(i, ub.size()) {
-      srep(j, i + 1, ub.size()) {
+    for (int i = 0; i < ub.size(); ++i) {
+      for (int j = i + 1; j < ub.size(); ++j) {
         if (i == j) continue;
         Point nub = ub[i];
         nub.x = min(nub.x, ub[j].x);
@@ -685,14 +682,14 @@ void merge_gomi() {
         ll tmp = (ndb.x - nub.x) * (ndb.y - nub.y);
         if (tmp >= mi) continue;
         int ok = 1;
-        rep(k, A) {
+        for (int k = 0; k < A; ++k) {
           if (nub.x <= a[k].x && a[k].x <= ndb.x && nub.y <= a[k].y && a[k].y <= ndb.y) {
             ok = 0;
             break;
           }
         }
         if (ok == 0) continue;
-        rep(k, C) {
+        for (int k = 0; k < C; ++k) {
           if (nub.x <= c[k].x && c[k].x <= ndb.x && nub.y <= c[k].y && c[k].y <= ndb.y) {
             ok = 0;
             break;
@@ -724,13 +721,13 @@ void merge_gomi() {
 void build_initial_solution(double ttll)
 {
   moves_a_count = 0;
-  rep(i, A) {
+  for (int i = 0; i < A; ++i) {
     moves_a[moves_a_count][0] = a[i];
     moves_a[moves_a_count][1] = a[i];
     nums_a[i] = i;
     moves_a_count++;
   }
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     moves_b[moves_b_count][0] = b[i];
     moves_b[moves_b_count][1] = b[i];
     nums_b[i] = i;
@@ -751,7 +748,7 @@ void build_initial_solution(double ttll)
 void build_initial_solution2()
 {
   moves_a_count = 0;
-  rep(i, ua.size()) {
+  for (int i = 0; i < ua.size(); ++i) {
     nums_a[i] = i;
     moves_a[moves_a_count][0] = ua[i];
     moves_a[moves_a_count][1] = ua[i];
@@ -768,7 +765,7 @@ void build_initial_solution2()
     moves_a_count++;
   }
   moves_b_count = 0;
-  rep(i, ub.size()) {
+  for (int i = 0; i < ub.size(); ++i) {
     nums_b[i] = i;
     moves_b[moves_b_count][0] = ub[i];
     moves_b[moves_b_count][1] = ub[i];
@@ -926,15 +923,15 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
 
   restore_best_score();
 
-  rep(i, A) {
-    rep(j, A) {
+  for (int i = 0; i < A; ++i) {
+    for (int j = 0; j < A; ++j) {
       if (moves_a[i][0].x == a[j].x) {
         nums_a[i] = j;
       }
     }
   }
-  rep(i, B) {
-    rep(j, B) {
+  for (int i = 0; i < B; ++i) {
+    for (int j = 0; j < B; ++j) {
       if (moves_b[i][0].x == b[j].x) {
         nums_b[i] = j;
       }
@@ -989,7 +986,7 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
           continue;
         }
 
-        rep(j, 3) {
+        for (int j = 0; j < 3; ++j) {
           swap(moves_a[ra2*3+j][0], moves_a[ra3*3+j][0]);
           swap(moves_a[ra2*3+j][1], moves_a[ra3*3+j][1]);
         }
@@ -1008,7 +1005,7 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
           continue;
         }
 
-        rep(j, 3) {
+        for (int j = 0; j < 3; ++j) {
           swap(moves_b[ra2 * 3 + j][0], moves_b[ra3 * 3 + j][0]);
           swap(moves_b[ra2 * 3 + j][1], moves_b[ra3 * 3 + j][1]);
         }
@@ -1039,13 +1036,13 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
         if (ra1 == 0) {
-          rep(j, 3) {
+          for (int j = 0; j < 3; ++j) {
             swap(moves_a[ra2 * 3 + j][0], moves_a[ra3 * 3 + j][0]);
             swap(moves_a[ra2 * 3 + j][1], moves_a[ra3 * 3 + j][1]);
           }
         }
         else {
-          rep(j, 3) {
+          for (int j = 0; j < 3; ++j) {
             swap(moves_b[ra2 * 3 + j][0], moves_b[ra3 * 3 + j][0]);
             swap(moves_b[ra2 * 3 + j][1], moves_b[ra3 * 3 + j][1]);
           }
@@ -1063,15 +1060,15 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
 
   restore_best_score();
 
-  rep(i, A) {
-    rep(j, A) {
+  for (int i = 0; i < A; ++i) {
+    for (int j = 0; j < A; ++j) {
       if (moves_a[i][0].x == a[j].x) {
         nums_a[i] = j;
       }
     }
   }
-  rep(i, B) {
-    rep(j, B) {
+  for (int i = 0; i < B; ++i) {
+    for (int j = 0; j < B; ++j) {
       if (moves_b[i][0].x == b[j].x) {
         nums_b[i] = j;
       }
@@ -1189,7 +1186,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
   }
 
   restore_best_score();
-  //rep(i, A) {
+  //for (int i = 0; i < (A); ++i) {
   //  cout << nums_a[i] << " ";
   //}
   //cout << endl;
@@ -1198,7 +1195,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
 
 void run_simulated_annealing_B(AnnealingParams annealingParams)
 {
-  rep(i, B) {
+  for (int i = 0; i < B; ++i) {
     moves_b[i][0].x = 0;
     moves_b[i][0].y = 0;
     moves_b[i][1].x = 0;
@@ -1347,7 +1344,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
       store_keep_score();
       if (ra == 0) {
         int ra2 = rand_xorshift() % (moves_a_count - 1);
-        drep(i, moves_a_count) {
+        for (int i = moves_a_count - 1; i >= 0; --i) {
           moves_a[i + 1][0] = moves_a[i][0];
           moves_a[i + 1][1] = moves_a[i][1];
           if (i == ra2) {
@@ -1357,7 +1354,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
       }
       else {
         int ra2 = rand_xorshift() % (moves_b_count - 1);
-        drep(i, moves_b_count) {
+        for (int i = moves_b_count - 1; i >= 0; --i) {
           moves_b[i + 1][0] = moves_b[i][0];
           moves_b[i + 1][1] = moves_b[i][1];
           if (i == ra2) {
@@ -1387,7 +1384,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   //if (B == 0 && C == 0) {
   //  run_simulated_annealing_B(annealingParams);
   //  moves_b_count = 0;
-  //  rep(i, A) {
+  //  for (int i = 0; i < A; ++i) {
   //    moves_b[moves_b_count][0].x = 0;
   //    moves_b[moves_b_count][0].y = 0;
   //    moves_b[moves_b_count][1].x = 0;
@@ -1457,7 +1454,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    srep(i, 0, 15)
+    for (int i = 0; i < 15; ++i)
     {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
@@ -1486,7 +1483,7 @@ int main()
       new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
-      srep(i, 0, 15)
+      for (int i = 0; i < 15; ++i)
       {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
