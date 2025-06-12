@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -34,7 +34,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -71,7 +71,7 @@ int d[2000];
 vector<int> ans;
 vector<int> V[2000];
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   ans.clear();
@@ -82,7 +82,7 @@ void SetUp()
   }
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -97,7 +97,7 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     cin >> N;
     rep(i, N - 1)
@@ -126,7 +126,7 @@ void Input(int problemNum)
     }
     rep(i, N * N) { cin >> d[i]; }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     ifs >> N;
     rep(i, N - 1)
@@ -157,7 +157,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -175,14 +175,14 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   ll res = 0;
   return res;
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs)
 {
   string ansString;
@@ -233,20 +233,20 @@ vector<int> MakeLoop(int st)
 
 ll Solve(int probNum)
 {
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
   vector<int> loop = MakeLoop(0);
   ans = loop;
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {

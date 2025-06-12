@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -76,7 +76,7 @@ void FisherYates(int* data, int n) {
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -101,31 +101,31 @@ double GetNowTime() {
   return elapsed.count();
 }
 
-// “ñŸŒ³À•W‚ğ•\‚·\‘¢‘Ì
+// äºŒæ¬¡å…ƒåº§æ¨™ã‚’è¡¨ã™æ§‹é€ ä½“
 struct Point {
 public:
   int x;
   int y;
 
-  Point() { x = 0; y = 0; }                  // ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
-  Point(int _x, int _y) { x = _x; y = _y; }  // À•W‚ğw’è‚·‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
+  Point() { x = 0; y = 0; }                  // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+  Point(int _x, int _y) { x = _x; y = _y; }  // åº§æ¨™ã‚’æŒ‡å®šã™ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 };
 
-const int MAX_N = 30;  // –¢g—p‚Ì’è”i¡Œã‚ÌŠg’£—pHj
+const int MAX_N = 30;  // æœªä½¿ç”¨ã®å®šæ•°ï¼ˆä»Šå¾Œã®æ‹¡å¼µç”¨ï¼Ÿï¼‰
 
-const int n = 5000;    // ‹›‚Ì”iƒTƒo‚ÆƒCƒƒV‚»‚ê‚¼‚ê‚Ì”j
+const int n = 5000;    // é­šã®æ•°ï¼ˆã‚µãƒã¨ã‚¤ãƒ¯ã‚·ãã‚Œãã‚Œã®æ•°ï¼‰
 
-vector<Point> saba, iwashi;  // ƒTƒo‚ÆƒCƒƒV‚ÌÀ•W‚ğŠi”[‚·‚éƒxƒNƒ^[
+vector<Point> saba, iwashi;  // ã‚µãƒã¨ã‚¤ãƒ¯ã‚·ã®åº§æ¨™ã‚’æ ¼ç´ã™ã‚‹ãƒ™ã‚¯ã‚¿ãƒ¼
 
-vector<Point> ans;  // o—Í‚·‚éƒ|ƒŠƒSƒ“‚Ì’¸“_À•W‚ğŠi”[‚·‚éƒxƒNƒ^[
+vector<Point> ans;  // å‡ºåŠ›ã™ã‚‹ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹åº§æ¨™ã‚’æ ¼ç´ã™ã‚‹ãƒ™ã‚¯ã‚¿ãƒ¼
 
-int ansScore;       // Œ»İ‚ÌƒXƒRƒA
-int best_ansScore;  // Å—Ç‚ÌƒXƒRƒAi–¢g—pHj
+int ansScore;       // ç¾åœ¨ã®ã‚¹ã‚³ã‚¢
+int best_ansScore;  // æœ€è‰¯ã®ã‚¹ã‚³ã‚¢ï¼ˆæœªä½¿ç”¨ï¼Ÿï¼‰
 
 int f[510][510];
 int best_f[510][510];
 
-// Œ»İ‚Ì‰ğ“š‚ğÅ—Ç‚Ì‰ğ“š‚Æ‚µ‚Ä•Û‘¶‚·‚éŠÖ”i–¢g—pj
+// ç¾åœ¨ã®è§£ç­”ã‚’æœ€è‰¯ã®è§£ç­”ã¨ã—ã¦ä¿å­˜ã™ã‚‹é–¢æ•°ï¼ˆæœªä½¿ç”¨ï¼‰
 void CopyToBest(int blockSize) {
   best_ansScore = ansScore;
   rep(i, blockSize + 2) {
@@ -135,7 +135,7 @@ void CopyToBest(int blockSize) {
   }
 }
 
-// Å—Ç‚Ì‰ğ“š‚ğŒ»İ‚Ì‰ğ“š‚Æ‚µ‚Äİ’è‚·‚éŠÖ”i–¢g—pj
+// æœ€è‰¯ã®è§£ç­”ã‚’ç¾åœ¨ã®è§£ç­”ã¨ã—ã¦è¨­å®šã™ã‚‹é–¢æ•°ï¼ˆæœªä½¿ç”¨ï¼‰
 void CopyToAns(int blockSize) {
   ansScore = best_ansScore;
   rep(i, blockSize + 2) {
@@ -145,177 +145,177 @@ void CopyToAns(int blockSize) {
   }
 }
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void SetUp() {
-  ansScore = 0;   // ƒXƒRƒA‚Ì‰Šú‰»
+  ansScore = 0;   // ã‚¹ã‚³ã‚¢ã®åˆæœŸåŒ–
   rep(i, 510)rep(j, 510)best_f[i][j] = 0;
 
-  ans.clear();    // ‰ğ“š‚Ì‰Šú‰»
-  saba.clear();   // ƒTƒo‚ÌÀ•W‚Ì‰Šú‰»
-  iwashi.clear(); // ƒCƒƒV‚ÌÀ•W‚Ì‰Šú‰»
+  ans.clear();    // è§£ç­”ã®åˆæœŸåŒ–
+  saba.clear();   // ã‚µãƒã®åº§æ¨™ã®åˆæœŸåŒ–
+  iwashi.clear(); // ã‚¤ãƒ¯ã‚·ã®åº§æ¨™ã®åˆæœŸåŒ–
 }
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void Input(int problemNum) {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";  // “ü—Íƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğì¬
-  ifstream ifs(oss.str());  // ƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";  // å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’ä½œæˆ
+  ifstream ifs(oss.str());  // ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ã
 
-  saba.resize(n);    // ƒTƒo‚ÌƒxƒNƒ^[‚ğƒŠƒTƒCƒY
-  iwashi.resize(n);  // ƒCƒƒV‚ÌƒxƒNƒ^[‚ğƒŠƒTƒCƒY
+  saba.resize(n);    // ã‚µãƒã®ãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ãƒªã‚µã‚¤ã‚º
+  iwashi.resize(n);  // ã‚¤ãƒ¯ã‚·ã®ãƒ™ã‚¯ã‚¿ãƒ¼ã‚’ãƒªã‚µã‚¤ã‚º
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í‚©‚ç‚Ì“Ç‚İ‚İ
+    // æ¨™æº–å…¥åŠ›ã‹ã‚‰ã®èª­ã¿è¾¼ã¿
     int _n;
-    cin >> _n;  // ‹›‚Ì”i–¢g—pj
-    rep(i, n) cin >> saba[i].x >> saba[i].y;     // ƒTƒo‚ÌÀ•W‚ğ“Ç‚İ‚Ş
-    rep(i, n) cin >> iwashi[i].x >> iwashi[i].y; // ƒCƒƒV‚ÌÀ•W‚ğ“Ç‚İ‚Ş
+    cin >> _n;  // é­šã®æ•°ï¼ˆæœªä½¿ç”¨ï¼‰
+    rep(i, n) cin >> saba[i].x >> saba[i].y;     // ã‚µãƒã®åº§æ¨™ã‚’èª­ã¿è¾¼ã‚€
+    rep(i, n) cin >> iwashi[i].x >> iwashi[i].y; // ã‚¤ãƒ¯ã‚·ã®åº§æ¨™ã‚’èª­ã¿è¾¼ã‚€
   }
   else {
-    // ƒtƒ@ƒCƒ‹‚©‚ç‚Ì“Ç‚İ‚İ
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®èª­ã¿è¾¼ã¿
     int _n;
-    ifs >> _n;  // ‹›‚Ì”i–¢g—pj
-    rep(i, n) ifs >> saba[i].x >> saba[i].y;     // ƒTƒo‚ÌÀ•W‚ğ“Ç‚İ‚Ş
-    rep(i, n) ifs >> iwashi[i].x >> iwashi[i].y; // ƒCƒƒV‚ÌÀ•W‚ğ“Ç‚İ‚Ş
+    ifs >> _n;  // é­šã®æ•°ï¼ˆæœªä½¿ç”¨ï¼‰
+    rep(i, n) ifs >> saba[i].x >> saba[i].y;     // ã‚µãƒã®åº§æ¨™ã‚’èª­ã¿è¾¼ã‚€
+    rep(i, n) ifs >> iwashi[i].x >> iwashi[i].y; // ã‚¤ãƒ¯ã‚·ã®åº§æ¨™ã‚’èª­ã¿è¾¼ã‚€
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void OpenOfs(int probNum, ofstream& ofs) {
   if (mode != 0) {
-    // ƒ‚[ƒh‚ª0ˆÈŠO‚Ìê‡Ao—Íƒtƒ@ƒCƒ‹‚ğì¬
+    // ãƒ¢ãƒ¼ãƒ‰ãŒ0ä»¥å¤–ã®å ´åˆã€å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆ
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
     ofs.open(oss.str());
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 ll CalcScore() {
-  ll res = ansScore + 1;  // –â‘è•¶‚Ì“¾“_ŒvZ®‚ÉŠî‚Ã‚­imax(0, a - b + 1)j
-  return res;             // ƒXƒRƒA‚ğ•Ô‚·
+  ll res = ansScore + 1;  // å•é¡Œæ–‡ã®å¾—ç‚¹è¨ˆç®—å¼ã«åŸºã¥ãï¼ˆmax(0, a - b + 1)ï¼‰
+  return res;             // ã‚¹ã‚³ã‚¢ã‚’è¿”ã™
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void Output(ofstream& ofs) {
   if (mode == 0) {
-    // •W€o—Í‚Éo—Í
-    cout << ans.size() << endl;  // ƒ|ƒŠƒSƒ“‚Ì’¸“_”‚ğo—Í
-    for (auto p : ans) cout << p.x << ' ' << p.y << endl;  // Še’¸“_‚ÌÀ•W‚ğo—Í
+    // æ¨™æº–å‡ºåŠ›ã«å‡ºåŠ›
+    cout << ans.size() << endl;  // ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹æ•°ã‚’å‡ºåŠ›
+    for (auto p : ans) cout << p.x << ' ' << p.y << endl;  // å„é ‚ç‚¹ã®åº§æ¨™ã‚’å‡ºåŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹‚Éo—Í
-    ofs << ans.size() << endl;  // ƒ|ƒŠƒSƒ“‚Ì’¸“_”‚ğo—Í
-    for (auto p : ans) ofs << p.x << ' ' << p.y << endl;  // Še’¸“_‚ÌÀ•W‚ğo—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã«å‡ºåŠ›
+    ofs << ans.size() << endl;  // ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹æ•°ã‚’å‡ºåŠ›
+    for (auto p : ans) ofs << p.x << ' ' << p.y << endl;  // å„é ‚ç‚¹ã®åº§æ¨™ã‚’å‡ºåŠ›
   }
 }
 
-// ƒ|ƒŠƒSƒ“‚Ì•Ó‚Ì‘˜a‚ª§–ñ‚ğ–‚½‚µ‚Ä‚¢‚é‚©Šm”F‚·‚éŠÖ”
+// ãƒãƒªã‚´ãƒ³ã®è¾ºã®ç·å’ŒãŒåˆ¶ç´„ã‚’æº€ãŸã—ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹é–¢æ•°
 bool IsLengthOK(vector<Point> vp) {
   int len = 0;
-  // Še•Ó‚Ì’·‚³‚ğŒvZ
+  // å„è¾ºã®é•·ã•ã‚’è¨ˆç®—
   rep(i, vp.size() - 1) {
-    len += abs(vp[i + 1].x - vp[i].x);  // xÀ•W‚Ì·‚Ìâ‘Î’l‚ğ‰ÁZ
-    len += abs(vp[i + 1].y - vp[i].y);  // yÀ•W‚Ì·‚Ìâ‘Î’l‚ğ‰ÁZ
+    len += abs(vp[i + 1].x - vp[i].x);  // xåº§æ¨™ã®å·®ã®çµ¶å¯¾å€¤ã‚’åŠ ç®—
+    len += abs(vp[i + 1].y - vp[i].y);  // yåº§æ¨™ã®å·®ã®çµ¶å¯¾å€¤ã‚’åŠ ç®—
   }
 
-  // ÅŒã‚Ì’¸“_‚ÆÅ‰‚Ì’¸“_‚ğŒ‹‚Ô•Ó‚Ì’·‚³‚ğ‰ÁZ
+  // æœ€å¾Œã®é ‚ç‚¹ã¨æœ€åˆã®é ‚ç‚¹ã‚’çµã¶è¾ºã®é•·ã•ã‚’åŠ ç®—
   len += abs(vp[0].x - vp.back().x);
   len += abs(vp[0].y - vp.back().y);
 
-  // ‘˜a‚ª400,000ˆÈ‰º‚Å‚ ‚ê‚Îtrue‚ğ•Ô‚·
+  // ç·å’ŒãŒ400,000ä»¥ä¸‹ã§ã‚ã‚Œã°trueã‚’è¿”ã™
   return len <= 400000;
 }
 
-// À•W‚ªƒOƒŠƒbƒh‚Ì”ÍˆÍŠO‚©‚ğŠm”F‚·‚éŠÖ”
+// åº§æ¨™ãŒã‚°ãƒªãƒƒãƒ‰ã®ç¯„å›²å¤–ã‹ã‚’ç¢ºèªã™ã‚‹é–¢æ•°
 bool IsNG(int x, int y, int blockSize) {
-  if (x < 0 || blockSize <= x || y < 0 || blockSize <= y) return true;  // ”ÍˆÍŠO‚È‚çtrue
-  return false;  // ”ÍˆÍ“à‚È‚çfalse
+  if (x < 0 || blockSize <= x || y < 0 || blockSize <= y) return true;  // ç¯„å›²å¤–ãªã‚‰true
+  return false;  // ç¯„å›²å†…ãªã‚‰false
 }
 
-int block[510][510];  // ŠeƒOƒŠƒbƒhƒZƒ‹‚ÌƒXƒRƒA‚ğŠi”[‚·‚é”z—ñ
+int block[510][510];  // å„ã‚°ãƒªãƒƒãƒ‰ã‚»ãƒ«ã®ã‚¹ã‚³ã‚¢ã‚’æ ¼ç´ã™ã‚‹é…åˆ—
 void InitBlock(const int blockSize) {
-  rep(i, blockSize) rep(j, blockSize) block[i][j] = 0;  // ‰Šú‰»
+  rep(i, blockSize) rep(j, blockSize) block[i][j] = 0;  // åˆæœŸåŒ–
 
-  // ƒTƒo‚ÆƒCƒƒV‚ÌˆÊ’u‚©‚çAŠeƒZƒ‹‚ÌƒXƒRƒA‚ğŒvZ
+  // ã‚µãƒã¨ã‚¤ãƒ¯ã‚·ã®ä½ç½®ã‹ã‚‰ã€å„ã‚»ãƒ«ã®ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—
   rep(i, n) {
     {
-      // ƒTƒo‚ÌÀ•W‚ğƒZƒ‹‚ÉŠ„‚è“–‚ÄAƒXƒRƒA‚ğ‰ÁZ
+      // ã‚µãƒã®åº§æ¨™ã‚’ã‚»ãƒ«ã«å‰²ã‚Šå½“ã¦ã€ã‚¹ã‚³ã‚¢ã‚’åŠ ç®—
       int xx = saba[i].x / (100000 / blockSize);
-      xx = min(xx, blockSize - 1);  // Å‘å’l‚ğ’´‚¦‚È‚¢‚æ‚¤‚É’²®
+      xx = min(xx, blockSize - 1);  // æœ€å¤§å€¤ã‚’è¶…ãˆãªã„ã‚ˆã†ã«èª¿æ•´
       int yy = saba[i].y / (100000 / blockSize);
       yy = min(yy, blockSize - 1);
 
-      block[xx][yy]++;  // ƒTƒo‚ª‚¢‚éƒZƒ‹‚ÌƒXƒRƒA‚ğ+1
+      block[xx][yy]++;  // ã‚µãƒãŒã„ã‚‹ã‚»ãƒ«ã®ã‚¹ã‚³ã‚¢ã‚’+1
     }
 
     {
-      // ƒCƒƒV‚ÌÀ•W‚ğƒZƒ‹‚ÉŠ„‚è“–‚ÄAƒXƒRƒA‚ğŒ¸Z
+      // ã‚¤ãƒ¯ã‚·ã®åº§æ¨™ã‚’ã‚»ãƒ«ã«å‰²ã‚Šå½“ã¦ã€ã‚¹ã‚³ã‚¢ã‚’æ¸›ç®—
       int xx = iwashi[i].x / (100000 / blockSize);
       xx = min(xx, blockSize - 1);
       int yy = iwashi[i].y / (100000 / blockSize);
       yy = min(yy, blockSize - 1);
 
-      block[xx][yy]--;  // ƒCƒƒV‚ª‚¢‚éƒZƒ‹‚ÌƒXƒRƒA‚ğ-1
+      block[xx][yy]--;  // ã‚¤ãƒ¯ã‚·ãŒã„ã‚‹ã‚»ãƒ«ã®ã‚¹ã‚³ã‚¢ã‚’-1
     }
   }
 }
 
-int haba[510][510];  // •—Dæ’Tõ—p‚Ì”z—ñ
+int haba[510][510];  // å¹…å„ªå…ˆæ¢ç´¢ç”¨ã®é…åˆ—
 void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, const int blockSize, int& loop2, double timeLimit) {
-  queue<P> que;  // •—Dæ’Tõ‚Ì‚½‚ß‚ÌƒLƒ…[
+  queue<P> que;  // å¹…å„ªå…ˆæ¢ç´¢ã®ãŸã‚ã®ã‚­ãƒ¥ãƒ¼
 
-  double nowTime = GetNowTime();  // Œ»İ‚ÌŒo‰ßŠÔ
-  const double START_TEMP = 200.0;  // Ä‚«‚È‚Ü‚µ–@‚ÌŠJn‰·“x
-  const double END_TEMP = 0.1;      // Ä‚«‚È‚Ü‚µ–@‚ÌI—¹‰·“x
-  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / timeLimit;  // Œ»İ‚Ì‰·“x
+  double nowTime = GetNowTime();  // ç¾åœ¨ã®çµŒéæ™‚é–“
+  const double START_TEMP = 200.0;  // ç„¼ããªã¾ã—æ³•ã®é–‹å§‹æ¸©åº¦
+  const double END_TEMP = 0.1;      // ç„¼ããªã¾ã—æ³•ã®çµ‚äº†æ¸©åº¦
+  double temp = START_TEMP + (END_TEMP - START_TEMP) * nowTime / timeLimit;  // ç¾åœ¨ã®æ¸©åº¦
 
   while (true) {
     if (loop2 % 1 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;  // ŠÔ§ŒÀ‚ğ‰ß‚¬‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
+      if (nowTime > timeLimit) break;  // æ™‚é–“åˆ¶é™ã‚’éããŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
     }
     loop2++;
 
-    int rax = Rand() % blockSize;  // ƒ‰ƒ“ƒ_ƒ€‚ÈƒZƒ‹‚ÌxƒCƒ“ƒfƒbƒNƒX
-    int ray = Rand() % blockSize;  // ƒ‰ƒ“ƒ_ƒ€‚ÈƒZƒ‹‚ÌyƒCƒ“ƒfƒbƒNƒX
+    int rax = Rand() % blockSize;  // ãƒ©ãƒ³ãƒ€ãƒ ãªã‚»ãƒ«ã®xã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+    int ray = Rand() % blockSize;  // ãƒ©ãƒ³ãƒ€ãƒ ãªã‚»ãƒ«ã®yã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 
-    int ng = 1;  // •ÏX‚ª‰Â”\‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+    int ng = 1;  // å¤‰æ›´ãŒå¯èƒ½ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
     rep(i, 4) {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
-      if (IsNG(nx, ny, blockSize)) continue;  // ”ÍˆÍŠO‚Í–³‹
-      if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // —×ÚƒZƒ‹‚ªˆÙ‚È‚éó‘Ô‚È‚ç•ÏX‰Â”\
+      if (IsNG(nx, ny, blockSize)) continue;  // ç¯„å›²å¤–ã¯ç„¡è¦–
+      if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // éš£æ¥ã‚»ãƒ«ãŒç•°ãªã‚‹çŠ¶æ…‹ãªã‚‰å¤‰æ›´å¯èƒ½
     }
 
-    if (ng) continue;  // •ÏX•s‰Â‚È‚çŸ‚Ìƒ‹[ƒv‚Ö
+    if (ng) continue;  // å¤‰æ›´ä¸å¯ãªã‚‰æ¬¡ã®ãƒ«ãƒ¼ãƒ—ã¸
 
     int tmpScore = ansScore;
     if (f[rax + 1][ray + 1] == 0) {
-      tmpScore += block[rax][ray];  // ƒZƒ‹‚ğ’Ç‰Á‚µ‚½ê‡‚ÌƒXƒRƒA
+      tmpScore += block[rax][ray];  // ã‚»ãƒ«ã‚’è¿½åŠ ã—ãŸå ´åˆã®ã‚¹ã‚³ã‚¢
     }
     else {
-      tmpScore += -block[rax][ray];  // ƒZƒ‹‚ğíœ‚µ‚½ê‡‚ÌƒXƒRƒA
+      tmpScore += -block[rax][ray];  // ã‚»ãƒ«ã‚’å‰Šé™¤ã—ãŸå ´åˆã®ã‚¹ã‚³ã‚¢
     }
 
-    const double progressRatio = nowTime / TL;  // i’»—¦i0.0`1.0j
-    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;  // ‰·“x‚ÌXV
+    const double progressRatio = nowTime / TL;  // é€²æ—ç‡ï¼ˆ0.0ã€œ1.0ï¼‰
+    temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;  // æ¸©åº¦ã®æ›´æ–°
 
-    double diff = tmpScore - ansScore;  // ƒXƒRƒA‚Ì·•ª
-    double prob = exp(diff / temp);     // Ä‚«‚È‚Ü‚µ–@‚ÌÌ—pŠm—¦
-    f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // ó‘Ô‚ğ”½“]
-    int upd = 0;  // ‰ğ“š‚ğXV‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+    double diff = tmpScore - ansScore;  // ã‚¹ã‚³ã‚¢ã®å·®åˆ†
+    double prob = exp(diff / temp);     // ç„¼ããªã¾ã—æ³•ã®æ¡ç”¨ç¢ºç‡
+    f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // çŠ¶æ…‹ã‚’åè»¢
+    int upd = 0;  // è§£ç­”ã‚’æ›´æ–°ã™ã‚‹ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
     if (prob > Rand01()) {
-      // ‰ğ“š‚ğXV‚·‚éê‡‚Ìˆ—
-      // •—Dæ’Tõ‚Å˜AŒ‹¬•ª‚Ì”‚ğŠm”F
-      rep(i, blockSize + 2) rep(j, blockSize + 2) haba[i][j] = 0;  // ‰Šú‰»
+      // è§£ç­”ã‚’æ›´æ–°ã™ã‚‹å ´åˆã®å‡¦ç†
+      // å¹…å„ªå…ˆæ¢ç´¢ã§é€£çµæˆåˆ†ã®æ•°ã‚’ç¢ºèª
+      rep(i, blockSize + 2) rep(j, blockSize + 2) haba[i][j] = 0;  // åˆæœŸåŒ–
       int now = 1;
       upd = 1;
       srep(i, 1, blockSize + 1) {
         srep(j, 1, blockSize + 1) {
-          if (haba[i][j] != 0) continue;  // Šù‚É’TõÏ‚İ‚È‚çƒXƒLƒbƒv
+          if (haba[i][j] != 0) continue;  // æ—¢ã«æ¢ç´¢æ¸ˆã¿ãªã‚‰ã‚¹ã‚­ãƒƒãƒ—
           if (now == 3) {
-            upd = 0;  // ˜AŒ‹¬•ª‚ª2‚Â‚ğ’´‚¦‚éê‡‚ÍXV•s‰Â
+            upd = 0;  // é€£çµæˆåˆ†ãŒ2ã¤ã‚’è¶…ãˆã‚‹å ´åˆã¯æ›´æ–°ä¸å¯
             break;
           }
 
@@ -340,17 +340,17 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
         }
         if (upd == 0) break;
       }
-      if (now > 3) upd = 0;  // ˜AŒ‹¬•ª‚ª3‚ÂˆÈã‚È‚çXV•s‰Â
+      if (now > 3) upd = 0;  // é€£çµæˆåˆ†ãŒ3ã¤ä»¥ä¸Šãªã‚‰æ›´æ–°ä¸å¯
     }
 
     if (upd) {
-      auto ans2 = ans;  // Œ»İ‚Ì‰ğ“š‚ğˆê•Û‘¶
+      auto ans2 = ans;  // ç¾åœ¨ã®è§£ç­”ã‚’ä¸€æ™‚ä¿å­˜
 
       ans.clear();
 
       int sx = -1, sy = -1;
       int befx = -1, befy = -1;
-      // ‹«ŠE‚Ìn“_‚ğ’T‚·
+      // å¢ƒç•Œã®å§‹ç‚¹ã‚’æ¢ã™
       srep(i, 1, blockSize + 1) {
         srep(j, 1, blockSize + 1) {
           if (f[i][j] == 1 && f[i][j - 1] == 0) {
@@ -363,15 +363,15 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       }
 
       if (sx == -1) {
-        assert(false);  // n“_‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍƒGƒ‰[
+        assert(false);  // å§‹ç‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
       }
 
-      vector<P> vp;  // ƒ|ƒŠƒSƒ“‚Ì’¸“_‚ğŠi”[
+      vector<P> vp;  // ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ã‚’æ ¼ç´
       vp.emplace_back(sx, sy);
       while (true) {
         int x = -1, y = -1;
 
-        // ‹«ŠE‚ğ‚½‚Ç‚éiüˆÍ4•ûŒü‚ğŠm”Fj
+        // å¢ƒç•Œã‚’ãŸã©ã‚‹ï¼ˆå‘¨å›²4æ–¹å‘ã‚’ç¢ºèªï¼‰
         if (x == -1) {
           int nx = sx - 1;
           int ny = sy;
@@ -416,10 +416,10 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
           }
         }
 
-        if (x == vp[0].first && y == vp[0].second) break;  // n“_‚É–ß‚Á‚½‚çƒ‹[ƒvI—¹
+        if (x == vp[0].first && y == vp[0].second) break;  // å§‹ç‚¹ã«æˆ»ã£ãŸã‚‰ãƒ«ãƒ¼ãƒ—çµ‚äº†
 
         if (x == -1) {
-          assert(false);  // Ÿ‚Ì“_‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍƒGƒ‰[
+          assert(false);  // æ¬¡ã®ç‚¹ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
           for (auto p : vp) cout << p.first << ' ' << p.second << endl;
           cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
           srep(i, 1, blockSize + 1) {
@@ -434,80 +434,80 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
         befy = sy;
         sx = x;
         sy = y;
-        vp.emplace_back(sx, sy);  // ’¸“_‚ğ’Ç‰Á
+        vp.emplace_back(sx, sy);  // é ‚ç‚¹ã‚’è¿½åŠ 
       }
 
       for (auto p : vp) {
-        // ƒOƒŠƒbƒh‚ÌƒCƒ“ƒfƒbƒNƒX‚ğÀÀ•W‚É•ÏŠ·
+        // ã‚°ãƒªãƒƒãƒ‰ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å®Ÿåº§æ¨™ã«å¤‰æ›
         int x = (p.first - 1) * (100000 / blockSize);
         int y = (p.second - 1) * (100000 / blockSize);
-        ans.emplace_back(x, y);  // ƒ|ƒŠƒSƒ“‚Ì’¸“_‚Æ‚µ‚Ä’Ç‰Á
+        ans.emplace_back(x, y);  // ãƒãƒªã‚´ãƒ³ã®é ‚ç‚¹ã¨ã—ã¦è¿½åŠ 
       }
 
       if (IsLengthOK(ans)) {
-        upd = 1;  // §–ñ‚ğ–‚½‚µ‚Ä‚¢‚ê‚ÎXV
+        upd = 1;  // åˆ¶ç´„ã‚’æº€ãŸã—ã¦ã„ã‚Œã°æ›´æ–°
       }
       else {
-        upd = 0;  // §–ñ‚ğ–‚½‚µ‚Ä‚¢‚È‚¯‚ê‚ÎXV‚µ‚È‚¢
-        ans = ans2;  // Œ³‚Ì‰ğ“š‚É–ß‚·
+        upd = 0;  // åˆ¶ç´„ã‚’æº€ãŸã—ã¦ã„ãªã‘ã‚Œã°æ›´æ–°ã—ãªã„
+        ans = ans2;  // å…ƒã®è§£ç­”ã«æˆ»ã™
       }
     }
 
     if (upd) {
-      ansScore = tmpScore;  // ƒXƒRƒA‚ğXV
+      ansScore = tmpScore;  // ã‚¹ã‚³ã‚¢ã‚’æ›´æ–°
       if (ansScore > best_ansScore) {
         CopyToBest(blockSize);
       }
     }
     else {
-      f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // ó‘Ô‚ğŒ³‚É–ß‚·
+      f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // çŠ¶æ…‹ã‚’å…ƒã«æˆ»ã™
     }
   }
 
   CopyToAns(blockSize);
 }
 
-// ‰ğ–@‚ÌƒƒCƒ“•”•ª‚ğÀ‘•‚·‚éŠÖ”
+// è§£æ³•ã®ãƒ¡ã‚¤ãƒ³éƒ¨åˆ†ã‚’å®Ÿè£…ã™ã‚‹é–¢æ•°
 int ff[510][510];
 void Method3() {
-  const int blockSize = 20;  // ƒOƒŠƒbƒh‚Ì•ªŠ„”i20~20‚ÌƒOƒŠƒbƒhj
+  const int blockSize = 20;  // ã‚°ãƒªãƒƒãƒ‰ã®åˆ†å‰²æ•°ï¼ˆ20Ã—20ã®ã‚°ãƒªãƒƒãƒ‰ï¼‰
 
   InitBlock(blockSize);
 
-  int xx1, yy1, xx2, yy2;  // Å—Ç‚Ì‹éŒ`—Ìˆæ‚ÌÀ•W‚ğŠi”[‚·‚é•Ï”
+  int xx1, yy1, xx2, yy2;  // æœ€è‰¯ã®çŸ©å½¢é ˜åŸŸã®åº§æ¨™ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
 
-  ansScore = 0;  // ƒXƒRƒA‚Ì‰Šú‰»
-  int loop1 = 0;  // ƒ‹[ƒv‰ñ”‚ÌƒJƒEƒ“ƒ^
+  ansScore = 0;  // ã‚¹ã‚³ã‚¢ã®åˆæœŸåŒ–
+  int loop1 = 0;  // ãƒ«ãƒ¼ãƒ—å›æ•°ã®ã‚«ã‚¦ãƒ³ã‚¿
   while (true) {
     if (loop1 % 100 == 0) {
-      if (GetNowTime() > TL * 0.1) break;  // ŠÔ§ŒÀ‚Ì”¼•ª‚ğ‰ß‚¬‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
+      if (GetNowTime() > TL * 0.1) break;  // æ™‚é–“åˆ¶é™ã®åŠåˆ†ã‚’éããŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
     }
     loop1++;
-    // ƒ‰ƒ“ƒ_ƒ€‚É‹éŒ`—Ìˆæ‚ğ‘I‘ğ
+    // ãƒ©ãƒ³ãƒ€ãƒ ã«çŸ©å½¢é ˜åŸŸã‚’é¸æŠ
     int x1 = Rand() % blockSize;
     int x2 = Rand() % blockSize;
     int y1 = Rand() % blockSize;
     int y2 = Rand() % blockSize;
-    if (x1 > x2) swap(x1, x2);  // x1‚Æx2‚ğ¬‚³‚¢‡‚É•À‚×‘Ö‚¦
-    if (y1 > y2) swap(y1, y2);  // y1‚Æy2‚ğ¬‚³‚¢‡‚É•À‚×‘Ö‚¦
+    if (x1 > x2) swap(x1, x2);  // x1ã¨x2ã‚’å°ã•ã„é †ã«ä¸¦ã¹æ›¿ãˆ
+    if (y1 > y2) swap(y1, y2);  // y1ã¨y2ã‚’å°ã•ã„é †ã«ä¸¦ã¹æ›¿ãˆ
 
-    int cnt = 0;  // ‘I‘ğ‚µ‚½—Ìˆæ‚ÌƒXƒRƒA
+    int cnt = 0;  // é¸æŠã—ãŸé ˜åŸŸã®ã‚¹ã‚³ã‚¢
     srep(i, x1, x2 + 1) {
       srep(j, y1, y2 + 1) {
-        cnt += block[i][j];  // ‘I‘ğ‚µ‚½ƒZƒ‹‚ÌƒXƒRƒA‚ğ‡Œv
+        cnt += block[i][j];  // é¸æŠã—ãŸã‚»ãƒ«ã®ã‚¹ã‚³ã‚¢ã‚’åˆè¨ˆ
       }
     }
 
     if (cnt > ansScore) {
-      // ƒXƒRƒA‚ª‰ü‘P‚³‚ê‚½ê‡A‰ğ“š‚ğXV
+      // ã‚¹ã‚³ã‚¢ãŒæ”¹å–„ã•ã‚ŒãŸå ´åˆã€è§£ç­”ã‚’æ›´æ–°
       ansScore = cnt;
       ans.clear();
-      // ‹éŒ`‚Ìl‹÷‚ÌÀ•W‚ğŒvZ‚µA‰ğ“š‚É’Ç‰Á
+      // çŸ©å½¢ã®å››éš…ã®åº§æ¨™ã‚’è¨ˆç®—ã—ã€è§£ç­”ã«è¿½åŠ 
       ans.emplace_back(x1 * (100000 / blockSize), y1 * (100000 / blockSize));
       ans.emplace_back((x2 + 1) * (100000 / blockSize), y1 * (100000 / blockSize));
       ans.emplace_back((x2 + 1) * (100000 / blockSize), (y2 + 1) * (100000 / blockSize));
       ans.emplace_back(x1 * (100000 / blockSize), (y2 + 1) * (100000 / blockSize));
-      // Å—Ç‚Ì‹éŒ`—Ìˆæ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ•Û‘¶
+      // æœ€è‰¯ã®çŸ©å½¢é ˜åŸŸã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä¿å­˜
       xx1 = x1;
       yy1 = y1;
       xx2 = x2;
@@ -518,14 +518,14 @@ void Method3() {
 
   rep(i, blockSize + 2) {
     rep(j, blockSize + 2) {
-      f[i][j] = 0;  // ‰Šú‰»
+      f[i][j] = 0;  // åˆæœŸåŒ–
     }
   }
 
-  // Å—Ç‚Ì‹éŒ`—Ìˆæ‚ğf”z—ñ‚Éİ’è
+  // æœ€è‰¯ã®çŸ©å½¢é ˜åŸŸã‚’fé…åˆ—ã«è¨­å®š
   srep(i, xx1, xx2 + 1) {
     srep(j, yy1, yy2 + 1) {
-      f[i + 1][j + 1] = 1;  // ‘I‘ğ‚µ‚½—Ìˆæ‚ğ1‚Æ‚·‚é
+      f[i + 1][j + 1] = 1;  // é¸æŠã—ãŸé ˜åŸŸã‚’1ã¨ã™ã‚‹
     }
   }
 
@@ -590,7 +590,7 @@ void Method3() {
 
 
   if (mode != 0) {
-    // ƒfƒoƒbƒO—p‚Ìo—Í
+    // ãƒ‡ãƒãƒƒã‚°ç”¨ã®å‡ºåŠ›
     cout << "loop1 = " << loop1 << ", ";
     cout << "loop2 = " << loop2 << ", ";
     cout << "loop3 = " << loop3 << ", ";
@@ -605,35 +605,35 @@ void Method3() {
   }
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll Solve(int problem_num) {
-  ResetTime();  // ŠÔŒv‘ª‚ÌƒŠƒZƒbƒg
+  ResetTime();  // æ™‚é–“è¨ˆæ¸¬ã®ãƒªã‚»ãƒƒãƒˆ
 
-  SetUp();  // “à•”ó‘Ô‚Ì‰Šú‰»
+  SetUp();  // å†…éƒ¨çŠ¶æ…‹ã®åˆæœŸåŒ–
 
-  Input(problem_num);  // “ü—Í‚Ìó‚¯æ‚è
+  Input(problem_num);  // å…¥åŠ›ã®å—ã‘å–ã‚Š
 
   ofstream ofs;
-  OpenOfs(problem_num, ofs);  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ÌƒI[ƒvƒ“
+  OpenOfs(problem_num, ofs);  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ã‚ªãƒ¼ãƒ—ãƒ³
 
-  Method3();  // ‰ğ–@‚ÌÀs
+  Method3();  // è§£æ³•ã®å®Ÿè¡Œ
 
-  Output(ofs);  // ‰ğ“š‚Ìo—Í
+  Output(ofs);  // è§£ç­”ã®å‡ºåŠ›
 
   if (ofs.is_open()) {
-    ofs.close();  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ÌƒNƒ[ƒY
+    ofs.close();  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã®ã‚¯ãƒ­ãƒ¼ã‚º
   }
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();  // ƒXƒRƒA‚ÌŒvZ
+    score = CalcScore();  // ã‚¹ã‚³ã‚¢ã®è¨ˆç®—
   }
-  return score;  // ƒXƒRƒA‚ğ•Ô‚·
+  return score;  // ã‚¹ã‚³ã‚¢ã‚’è¿”ã™
 }
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////
@@ -641,15 +641,15 @@ int main_old() {
   mode = 2;
 
   if (mode == 0) {
-    Solve(0);  // –â‘è”Ô†0‚ğ‰ğ‚­
+    Solve(0);  // å•é¡Œç•ªå·0ã‚’è§£ã
   }
   else {
     ll sum = 0;
     srep(i, 0, 100) {
-      ll score = Solve(i);  // –â‘è”Ô†i‚ğ‰ğ‚­
-      sum += score;         // ƒXƒRƒA‚Ì‡Œv‚ğXV
+      ll score = Solve(i);  // å•é¡Œç•ªå·iã‚’è§£ã
+      sum += score;         // ã‚¹ã‚³ã‚¢ã®åˆè¨ˆã‚’æ›´æ–°
       if (mode == 1) {
-        cout << score << endl;  // ƒXƒRƒA‚ğo—Í
+        cout << score << endl;  // ã‚¹ã‚³ã‚¢ã‚’å‡ºåŠ›
       }
       else {
         cout << "num = " << setw(2) << i << ", ";

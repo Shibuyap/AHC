@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -33,7 +33,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -66,7 +66,7 @@ double TL = 1.8;
 int mode;
 
 /////////////////////////////////////////////////////////////////////////////////
-// •Ï”
+// å¤‰æ•°
 
 struct Crop
 {
@@ -78,7 +78,7 @@ struct Crop
 bool compD(const Crop& a, const Crop& b) { return a.d < b.d; }
 bool compS(const Crop& a, const Crop& b) { return a.s < b.s; }
 
-// “ü—Í
+// å…¥åŠ›
 const int T = 100;
 const int H = 20;
 const int W = 20;
@@ -94,13 +94,13 @@ int wall[25][25][4];
 vector<Crop> SVec[100], DVec[100];
 int Used[44000];
 
-// o—Í
+// å‡ºåŠ›
 int M;
 int ansK[44000], ansX[44000], ansY[44000], ansS[44000];
 
 /////////////////////////////////////////////////////////////////////////////////
 
-namespace /* ŠÖß“_ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* é–¢ç¯€ç‚¹ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   struct LowLinkEdge
   {
@@ -108,10 +108,10 @@ namespace /* ŠÖß“_ƒ‰ƒCƒuƒ‰ƒŠ */
   };
   using LowLinkGraph = vector<vector<LowLinkEdge>>;
 
-  /* Lowlink: ƒOƒ‰ƒt‚ÌŠÖß“_E‹´‚ğ—ñ‹“‚·‚é\‘¢‘Ì
-      ì¬: O(E+V)
-      ŠÖß“_‚ÌW‡: vector<int> aps
-      ‹´‚ÌW‡: vector<P> bridges
+  /* Lowlink: ã‚°ãƒ©ãƒ•ã®é–¢ç¯€ç‚¹ãƒ»æ©‹ã‚’åˆ—æŒ™ã™ã‚‹æ§‹é€ ä½“
+      ä½œæˆ: O(E+V)
+      é–¢ç¯€ç‚¹ã®é›†åˆ: vector<int> aps
+      æ©‹ã®é›†åˆ: vector<P> bridges
   */
   struct LowLink
   {
@@ -129,40 +129,40 @@ namespace /* ŠÖß“_ƒ‰ƒCƒuƒ‰ƒŠ */
       for (int i = 0; i < (int)G.size(); i++) {
         if (!used[i]) k = dfs(i, k, -1);
       }
-      sort(aps.begin(), aps.end());          // •K—v‚È‚çƒ\[ƒg‚·‚é
-      sort(bridges.begin(), bridges.end());  // •K—v‚È‚çƒ\[ƒg‚·‚é
+      sort(aps.begin(), aps.end());          // å¿…è¦ãªã‚‰ã‚½ãƒ¼ãƒˆã™ã‚‹
+      sort(bridges.begin(), bridges.end());  // å¿…è¦ãªã‚‰ã‚½ãƒ¼ãƒˆã™ã‚‹
     }
 
-    // id:’Tõ’†‚Ì’¸“_, k:dfs‚Å‰½”Ô–Ú‚É’Tõ‚·‚é‚©, par:id‚Ìe
+    // id:æ¢ç´¢ä¸­ã®é ‚ç‚¹, k:dfsã§ä½•ç•ªç›®ã«æ¢ç´¢ã™ã‚‹ã‹, par:idã®è¦ª
     int dfs(int id, int k, int par)
     {
       used[id] = true;
       ord[id] = k++;
       low[id] = ord[id];
       bool is_aps = false;
-      int count = 0;  // q‚Ì”
+      int count = 0;  // å­ã®æ•°
       for (auto& e : G[id]) {
         if (!used[e.to]) {
           count++;
           k = dfs(e.to, k, id);
           low[id] = min(low[id], low[e.to]);
           if (par != -1 && ord[id] <= low[e.to])
-            is_aps = true;  // ğŒ2‚ğ–‚½‚·‚Ì‚ÅŠÖß“_
+            is_aps = true;  // æ¡ä»¶2ã‚’æº€ãŸã™ã®ã§é–¢ç¯€ç‚¹
           if (ord[id] < low[e.to])
             bridges.emplace_back(min(id, e.to), max(id, e.to));
         }
-        else if (e.to != par) {  // e‚ªŒã‘Ş•Ó‚Ì
+        else if (e.to != par) {  // eãŒå¾Œé€€è¾ºã®æ™‚
           low[id] = min(low[id], ord[e.to]);
         }
       }
-      if (par == -1 && count >= 2) is_aps = true;  // ğŒ1‚ğ–‚½‚·‚Ì‚ÅŠÖß“_
+      if (par == -1 && count >= 2) is_aps = true;  // æ¡ä»¶1ã‚’æº€ãŸã™ã®ã§é–¢ç¯€ç‚¹
       if (is_aps) aps.push_back(id);
       return k;
     }
   };
 }  // namespace
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   M = 0;
@@ -175,7 +175,7 @@ void SetUp()
   }
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -189,7 +189,7 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     int TTT, HHH, WWW;
     cin >> TTT >> HHH >> WWW >> SX;
@@ -206,7 +206,7 @@ void Input(int problemNum)
     cin >> K;
     for (int i = 0; i < (K); ++i) { cin >> S[i] >> D[i]; }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     int TTT, HHH, WWW;
     ifs >> TTT >> HHH >> WWW >> SX;
@@ -290,7 +290,7 @@ void Input(int problemNum)
   // }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -307,7 +307,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   ll sum = 0;
@@ -316,7 +316,7 @@ ll CalcScore()
   return res;
 }
 
-// ‰Šú‰ğ¶¬
+// åˆæœŸè§£ç”Ÿæˆ
 void Initialize() {}
 
 bool OKCheck(const int x, const int y, const vector<vector<int>>& use)
@@ -504,7 +504,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
   return score;
 }
 
-// Œ©‚¦‚Ä‚éí—Ş‚Í‘½‚­AŒ©‚¦‚Ä‚é”‚Í­‚È‚­
+// è¦‹ãˆã¦ã‚‹ç¨®é¡ã¯å¤šãã€è¦‹ãˆã¦ã‚‹æ•°ã¯å°‘ãªã
 double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use)
 {
   double score = 100;
@@ -543,7 +543,7 @@ void Method1()
   }
 
   for (int turn = 0; turn < (T); ++turn) {
-    // İ’u
+    // è¨­ç½®
     drep(i, SVec[turn].size())
     {
       Crop crop = SVec[turn][i];
@@ -552,11 +552,11 @@ void Method1()
       }
       int d = crop.d;
 
-      // ŠÖß“_‚¶‚á‚È‚¢‹ó”’ƒ}ƒX‚ğ—ñ‹“
+      // é–¢ç¯€ç‚¹ã˜ã‚ƒãªã„ç©ºç™½ãƒã‚¹ã‚’åˆ—æŒ™
       LowLinkGraph Graph;
-      map<int, P> mp;     // {’¸“_”Ô†,À•W}
-      map<P, int> mpInv;  // {À•W,’¸“_”Ô†}
-      // ‹ó‚ÌƒOƒ‰ƒtì¬
+      map<int, P> mp;     // {é ‚ç‚¹ç•ªå·,åº§æ¨™}
+      map<P, int> mpInv;  // {åº§æ¨™,é ‚ç‚¹ç•ªå·}
+      // ç©ºã®ã‚°ãƒ©ãƒ•ä½œæˆ
       for (int i = 0; i < (HW); ++i) {
         int x = i / H;
         int y = i % H;
@@ -567,7 +567,7 @@ void Method1()
           Graph.push_back(vector<LowLinkEdge>());
         }
       }
-      // ƒGƒbƒW
+      // ã‚¨ãƒƒã‚¸
       for (int num = 0; num < mp.size(); ++num) {
         int x = mp[num].first;
         int y = mp[num].second;
@@ -582,7 +582,7 @@ void Method1()
           }
         }
       }
-      // ŠÖß“_—ñ‹“
+      // é–¢ç¯€ç‚¹åˆ—æŒ™
       LowLink lowLink(Graph);
       set<int> aps;
       for (auto ap : lowLink.aps) {
@@ -621,7 +621,7 @@ void Method1()
         }
       }
 
-      // ”z’uŒˆ‚ß
+      // é…ç½®æ±ºã‚
       vector<P> OKs;
       for (auto ap : blanks) {
         int x = ap.first;
@@ -671,7 +671,7 @@ void Method1()
       }
     }
 
-    // ûŠn
+    // åç©«
     for (int i = 0; i < (H); ++i) {
       for (int j = 0; j < (W); ++j) {
         if (use[i][j] == turn) {
@@ -682,7 +682,7 @@ void Method1()
   }
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
@@ -703,23 +703,23 @@ void Output(ofstream& ofs)
 
 ll Solve(int probNum)
 {
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Initialize();
 
-  // æÃ—~1
+  // è²ªæ¬²1
   Method1();
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {

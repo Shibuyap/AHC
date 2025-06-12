@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -32,7 +32,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -55,7 +55,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  // ”z—ñƒVƒƒƒbƒtƒ‹
+  // é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
@@ -67,7 +67,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-// ”z—ñƒVƒƒƒbƒtƒ‹
+// é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -146,13 +146,13 @@ public:
   }
 };
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   for (int i = 0; i < N; ++i) G[i].clear();
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -166,7 +166,7 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   int m, _n, _h;
   if (!ifs.is_open()) {
     cin >> _n >> m >> _h;
@@ -179,7 +179,7 @@ void Input(int problemNum)
     }
     for (int i = 0; i < N; ++i) cin >> X[i] >> Y[i];
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     ifs >> _n >> m >> _h;
     for (int i = 0; i < N; ++i) ifs >> A[i];
@@ -196,12 +196,12 @@ void Input(int problemNum)
 void output_data(int case_num, const Answer& ans)
 {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     for (int i = 0; i < N; ++i) cout << ans.p[i] << ' ';
     cout << endl;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -263,7 +263,7 @@ bool check_if_valid(Heights& heights, int start_height)
     }
   }
 
-  // Œ³‚É–ß‚·
+  // å…ƒã«æˆ»ã™
   for (int i = 0; i < N; ++i) {
     if (heights.height[i] >= start_height + 1) {
       heights.height[i] = -1;

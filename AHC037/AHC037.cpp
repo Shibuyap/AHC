@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -36,7 +36,7 @@ typedef long long int ll;
 typedef pair<ll, ll> P;
 typedef pair<P, P> PP;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -59,7 +59,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  // ”z—ñƒVƒƒƒbƒtƒ‹
+  // é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
@@ -71,7 +71,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-// ”z—ñƒVƒƒƒbƒtƒ‹
+// é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -141,21 +141,21 @@ void CopyToAns()
   }
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   ansCount = 0;
   ansCost = 0;
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     int nnn;
     cin >> nnn;
@@ -164,7 +164,7 @@ void Input(int problemNum)
       cin >> a[i] >> b[i];
     }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     int nnn;
     ifs >> nnn;
@@ -194,7 +194,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -204,14 +204,14 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   ll res = round(1.0 * n * L / (ansCost + 1) * 1000000.0);
   return res;
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
@@ -248,7 +248,7 @@ void AddOneStepToAns(int x1, int y1, int x2, int y2)
   ansCost += (x2 - x1) + (y2 - y1);
 }
 
-// 23ˆÊ‰ğ–@
+// 23ä½è§£æ³•
 void Method23()
 {
   vector<P> points;
@@ -320,19 +320,19 @@ ll Solve(int probNum)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
   Method23();
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -348,7 +348,7 @@ ll Solve(int probNum)
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////

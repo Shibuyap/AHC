@@ -5,7 +5,12 @@
       "Bash(claude config --model opus)",
       "Bash(find:*)",
       "Bash(rg:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(chmod:*)",
+      "Bash(./convert_to_utf8_bom.sh:*)",
+      "Bash(dos2unix:*)",
+      "Bash(sed:*)",
+      "Bash(bash:*)"
     ],
     "deny": []
   }

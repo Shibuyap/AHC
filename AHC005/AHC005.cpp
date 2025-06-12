@@ -1,4 +1,4 @@
-#include <chrono>
+ï»¿#include <chrono>
 #include <climits>
 #include <cstdint>
 #include <fstream>
@@ -16,7 +16,7 @@ using namespace std;
 
 typedef long long int ll;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
@@ -30,7 +30,7 @@ namespace {
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace {
   static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
@@ -69,7 +69,7 @@ namespace {
 
 int exec_mode;
 
-// •Ó‚ğ’¸“_‚Æ‚İ‚È‚·
+// è¾ºã‚’é ‚ç‚¹ã¨ã¿ãªã™
 class Vertex {
 public:
   vector<int> indices;
@@ -90,12 +90,12 @@ public:
   vector<vector<int>> dist;
 
   vector<Vertex> vertices;
-  vector<vector<DistToVertex>> dist_to_vertices; // Še’¸“_‚Ö‚Ì‹——£‚Æ‘Î‰‚·‚é“_‚ÌƒCƒ“ƒfƒbƒNƒX
+  vector<vector<DistToVertex>> dist_to_vertices; // å„é ‚ç‚¹ã¸ã®è·é›¢ã¨å¯¾å¿œã™ã‚‹ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 
   void init_vertices() {
     for (int i = 0; i < n * n; i++) {
       int x = i / n, y = i % n;
-      if (grid[x][y] == -1) continue; // •Ç‚Í–³‹
+      if (grid[x][y] == -1) continue; // å£ã¯ç„¡è¦–
       if (x == 0 || grid[x - 1][y] == -1) {
         Vertex v;
         int cur_x = x;
@@ -125,7 +125,7 @@ public:
     dist_to_vertices.clear();
     dist_to_vertices.resize(n * n);
     for (int i = 0; i < n * n; i++) {
-      if (grid[i / n][i % n] == -1) continue; // •Ç‚Í–³‹
+      if (grid[i / n][i % n] == -1) continue; // å£ã¯ç„¡è¦–
       for (size_t j = 0; j < vertices.size(); j++) {
         const Vertex& v = vertices[j];
         int min_dist = INT_MAX;
@@ -145,13 +145,13 @@ public:
   }
 
   void init_graph() {
-    // ƒOƒ‰ƒt‚Ì‰Šú‰»
+    // ã‚°ãƒ©ãƒ•ã®åˆæœŸåŒ–
     graph.resize(n * n);
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        if (grid[i][j] == -1) continue; // •Ç‚Í–³‹
+        if (grid[i][j] == -1) continue; // å£ã¯ç„¡è¦–
         int idx = i * n + j;
-        // ã‰º¶‰E‚Ì—×Ú“_‚ğ’Ç‰Á
+        // ä¸Šä¸‹å·¦å³ã®éš£æ¥ç‚¹ã‚’è¿½åŠ 
         if (i > 0 && grid[i - 1][j] != -1) graph[idx].push_back((i - 1) * n + j);
         if (i < n - 1 && grid[i + 1][j] != -1) graph[idx].push_back((i + 1) * n + j);
         if (j > 0 && grid[i][j - 1] != -1) graph[idx].push_back(i * n + (j - 1));
@@ -162,16 +162,16 @@ public:
 
   inline int get_cost(int idx) const {
     int i = idx / n, j = idx % n;
-    if (grid[i][j] == -1) return INT_MAX; // •Ç‚Í–³‹
-    return grid[i][j]; // ƒRƒXƒg‚ÍƒOƒŠƒbƒh‚Ì’l
+    if (grid[i][j] == -1) return INT_MAX; // å£ã¯ç„¡è¦–
+    return grid[i][j]; // ã‚³ã‚¹ãƒˆã¯ã‚°ãƒªãƒƒãƒ‰ã®å€¤
   }
 
-  // ‘S“_‘ÎÅ’ZŒo˜H‚ğŒvZ‚·‚é
+  // å…¨ç‚¹å¯¾æœ€çŸ­çµŒè·¯ã‚’è¨ˆç®—ã™ã‚‹
   void calc_dist() {
-    // n*n‰ñƒ_ƒCƒNƒXƒgƒ‰
+    // n*nå›ãƒ€ã‚¤ã‚¯ã‚¹ãƒˆãƒ©
     dist.resize(n * n, vector<int>(n * n, INT_MAX));
     for (int start = 0; start < n * n; start++) {
-      if (grid[start / n][start % n] == -1) continue; // •Ç‚Í–³‹
+      if (grid[start / n][start % n] == -1) continue; // å£ã¯ç„¡è¦–
       vector<int> d(n * n, INT_MAX);
       d[start] = 0;
       priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
@@ -203,7 +203,7 @@ public:
   vector<int> get_path(int start, int goal) const {
     //cerr << "get_path: start = " << start << ", goal = " << goal << endl;
 
-    // •œŒ³ƒ_ƒCƒNƒXƒgƒ‰
+    // å¾©å…ƒãƒ€ã‚¤ã‚¯ã‚¹ãƒˆãƒ©
     vector<int> prev(n * n, -1);
     vector<int> d(n * n, INT_MAX);
     d[start] = 0;
@@ -224,7 +224,7 @@ public:
       }
     }
 
-    // ƒpƒX‚ğ•œŒ³
+    // ãƒ‘ã‚¹ã‚’å¾©å…ƒ
     vector<int> path;
     for (int v = goal; v != -1; v = prev[v]) {
       path.push_back(v);
@@ -254,20 +254,20 @@ public:
     if (points.size() < vertices.size()) {
       points.resize(vertices.size());
     }
-    points[0] = board.si * board.n + board.sj; // ƒXƒ^[ƒgˆÊ’u‚ğ’Ç‰Á
+    points[0] = board.si * board.n + board.sj; // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã‚’è¿½åŠ 
     int cur_index = board.si * board.n + board.sj;
     if (start_index > 0) {
-      cur_index = points[start_index]; // ƒXƒ^[ƒgˆÊ’u‚ğw’è
+      cur_index = points[start_index]; // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã‚’æŒ‡å®š
     }
     for (int i = start_index + 1; i < vertices.size() - 1; i++) {
       int next_index = board.dist_to_vertices[cur_index][vertices[i]].point_index;
       if (i >= end_index && points[i] == next_index) {
         break;
       }
-      points[i] = next_index; // Ÿ‚Ì’¸“_‚Ö‚ÌÅ’Z‹——£‚ğ’Ç‰Á
-      cur_index = next_index; // Œ»İ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğXV
+      points[i] = next_index; // æ¬¡ã®é ‚ç‚¹ã¸ã®æœ€çŸ­è·é›¢ã‚’è¿½åŠ 
+      cur_index = next_index; // ç¾åœ¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›´æ–°
     }
-    points[points.size() - 1] = board.si * board.n + board.sj; // ƒXƒ^[ƒgˆÊ’u‚É–ß‚é
+    points[points.size() - 1] = board.si * board.n + board.sj; // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã«æˆ»ã‚‹
     return 0;
   }
 
@@ -294,7 +294,7 @@ Board input_data(int case_num) {
   Board board;
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     cin >> board.n >> board.si >> board.sj;
     board.grid.resize(board.n, vector<int>(board.n));
     for (int i = 0; i < board.n; i++) {
@@ -311,7 +311,7 @@ Board input_data(int case_num) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> board.n >> board.si >> board.sj;
     board.grid.resize(board.n, vector<int>(board.n));
     for (int i = 0; i < board.n; i++) {
@@ -339,7 +339,7 @@ void output_data(int case_num, const Board& board, const Answer& ans) {
   path.push_back(ans.points[0]);
   for (size_t i = 0; i < ans.points.size() - 1; i++) {
     auto tmp = board.get_path(ans.points[i], ans.points[i + 1]);
-    tmp.erase(tmp.begin()); // Å‰‚Ì“_‚Í‚·‚Å‚É’Ç‰ÁÏ‚İ
+    tmp.erase(tmp.begin()); // æœ€åˆã®ç‚¹ã¯ã™ã§ã«è¿½åŠ æ¸ˆã¿
     path.insert(path.end(), tmp.begin(), tmp.end());
   }
 
@@ -370,11 +370,11 @@ void output_data(int case_num, const Board& board, const Answer& ans) {
   }
 
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << directions << endl;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -390,23 +390,23 @@ void output_data(int case_num, const Board& board, const Answer& ans) {
 void build_initial_path(const Board& board, Answer& ans) {
   ans.clear();
   ans.vertices.clear();
-  ans.points.push_back(board.si * board.n + board.sj); // ƒXƒ^[ƒgˆÊ’u‚ğ’Ç‰Á
-  ans.vertices.push_back(-1); // ƒXƒ^[ƒgˆÊ’u‚Ì’¸“_‚Í-1‚Æ‚·‚é
+  ans.points.push_back(board.si * board.n + board.sj); // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã‚’è¿½åŠ 
+  ans.vertices.push_back(-1); // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã®é ‚ç‚¹ã¯-1ã¨ã™ã‚‹
 
   int cur_index = board.si * board.n + board.sj;
   for (int i = 0; i < board.vertices.size(); i++) {
     int next_index = board.dist_to_vertices[cur_index][i].point_index;
-    ans.points.push_back(next_index); // Ÿ‚Ì’¸“_‚Ö‚ÌÅ’Z‹——£‚ğ’Ç‰Á
-    ans.vertices.push_back(i); // Ÿ‚Ì’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ’Ç‰Á
-    cur_index = next_index; // Œ»İ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğXV
+    ans.points.push_back(next_index); // æ¬¡ã®é ‚ç‚¹ã¸ã®æœ€çŸ­è·é›¢ã‚’è¿½åŠ 
+    ans.vertices.push_back(i); // æ¬¡ã®é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¿½åŠ 
+    cur_index = next_index; // ç¾åœ¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›´æ–°
   }
-  ans.points.push_back(board.si * board.n + board.sj); // ƒXƒ^[ƒgˆÊ’u‚É–ß‚é
-  ans.vertices.push_back(-1); // ƒXƒ^[ƒgˆÊ’u‚Ì’¸“_‚Í-1‚Æ‚·‚é
+  ans.points.push_back(board.si * board.n + board.sj); // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã«æˆ»ã‚‹
+  ans.vertices.push_back(-1); // ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã®é ‚ç‚¹ã¯-1ã¨ã™ã‚‹
 }
 
 void run_simulated_annealing(double time_limit, const Board& board, Answer& ans) {
   ans.calc_score(board);
-  Answer best_ans = ans; // ƒxƒXƒg‰ğ‚ğ‰Šú‰»
+  Answer best_ans = ans; // ãƒ™ã‚¹ãƒˆè§£ã‚’åˆæœŸåŒ–
 
   double start_time = get_elapsed_time();
   double now_time = get_elapsed_time();
@@ -427,7 +427,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     double progress_ratio = (now_time - start_time) / (time_limit - start_time);
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra_exec_mode = rand_xorshift() % 300;
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -435,19 +435,19 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     int start_index = 0;
     int end_index = 1001001;
     if (ra_exec_mode < 50) {
-      // 2“_‚Ì“ü‚ê‘Ö‚¦
+      // 2ç‚¹ã®å…¥ã‚Œæ›¿ãˆ
       ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
       ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
       while (ra1 == ra2) {
         ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
       }
       if (ra1 > ra2) swap(ra1, ra2);
-      swap(ans.vertices[ra1], ans.vertices[ra2]); // 2“_‚Ì“ü‚ê‘Ö‚¦
+      swap(ans.vertices[ra1], ans.vertices[ra2]); // 2ç‚¹ã®å…¥ã‚Œæ›¿ãˆ
       start_index = ra1 - 1;
       end_index = ra2 + 1;
     }
     else if (ra_exec_mode < 100) {
-      // ‹æŠÔreverse
+      // åŒºé–“reverse
       ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
       ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
       while (ra1 == ra2) {
@@ -455,77 +455,77 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
       }
       if (ra1 > ra2) swap(ra1, ra2);
 
-      reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // ‹æŠÔreverse
+      reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // åŒºé–“reverse
       start_index = ra1 - 1;
       end_index = ra2 + 1;
     }
     else if (ra_exec_mode < 300) {
-      // 1“_”²‚«‘}‚µ
+      // 1ç‚¹æŠœãæŒ¿ã—
       ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
       ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
       while (ra1 == ra2) {
         ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
       }
-      // ra1‚ğra2‚ÌˆÊ’u‚ÉˆÚ“®
+      // ra1ã‚’ra2ã®ä½ç½®ã«ç§»å‹•
       if (ra1 < ra2) {
         for (int i = ra1; i < ra2; i++) {
-          swap(ans.vertices[i], ans.vertices[i + 1]); // 1“_‚¸‚Â‰E‚É‚¸‚ç‚·
+          swap(ans.vertices[i], ans.vertices[i + 1]); // 1ç‚¹ãšã¤å³ã«ãšã‚‰ã™
         }
       }
       else {
         for (int i = ra1; i > ra2; i--) {
-          swap(ans.vertices[i], ans.vertices[i - 1]); // 1“_‚¸‚Â¶‚É‚¸‚ç‚·
+          swap(ans.vertices[i], ans.vertices[i - 1]); // 1ç‚¹ãšã¤å·¦ã«ãšã‚‰ã™
         }
       }
       start_index = min(ra1, ra2) - 1;
       end_index = max(ra1, ra2) + 1;
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     double current_score = ans.score;
-    ans.recalc_points(board, start_index, end_index); // “_‚ÌÄŒvZ
+    ans.recalc_points(board, start_index, end_index); // ç‚¹ã®å†è¨ˆç®—
     double tmp_score = ans.calc_score(board);
 
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
+    // ç„¼ããªã¾ã—ã§æ¡ç”¨åˆ¤å®š
     double diff_score = (tmp_score - current_score) * 12345.6;
     double prob = exp(diff_score / temp);
     if (prob > rand_01() || rand_xorshift() % 10000 == 0) {
-      // Ì—p
+      // æ¡ç”¨
       current_score = tmp_score;
 
-      // ƒxƒXƒgXV
+      // ãƒ™ã‚¹ãƒˆæ›´æ–°
       if (current_score > best_ans.score) {
         best_ans = ans;
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (ra_exec_mode < 50) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
-        swap(ans.vertices[ra1], ans.vertices[ra2]); // 2“_‚Ì“ü‚ê‘Ö‚¦‚ğŒ³‚É–ß‚·
-        ans.recalc_points(board); // “_‚ÌÄŒvZ
-        ans.score = current_score; // ƒXƒRƒA‚ğŒ³‚É–ß‚·
+        // è¿‘å‚æ“ä½œ1 ã®å·»ãæˆ»ã—
+        swap(ans.vertices[ra1], ans.vertices[ra2]); // 2ç‚¹ã®å…¥ã‚Œæ›¿ãˆã‚’å…ƒã«æˆ»ã™
+        ans.recalc_points(board); // ç‚¹ã®å†è¨ˆç®—
+        ans.score = current_score; // ã‚¹ã‚³ã‚¢ã‚’å…ƒã«æˆ»ã™
       }
       else if (ra_exec_mode < 100) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
-        reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // ‹æŠÔreverse‚ğŒ³‚É–ß‚·
-        ans.recalc_points(board); // “_‚ÌÄŒvZ
-        ans.score = current_score; // ƒXƒRƒA‚ğŒ³‚É–ß‚·
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
+        reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // åŒºé–“reverseã‚’å…ƒã«æˆ»ã™
+        ans.recalc_points(board); // ç‚¹ã®å†è¨ˆç®—
+        ans.score = current_score; // ã‚¹ã‚³ã‚¢ã‚’å…ƒã«æˆ»ã™
       }
       else if (ra_exec_mode < 300) {
-        // ‹ß–T‘€ì3 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ3 ã®å·»ãæˆ»ã—
         if (ra1 < ra2) {
           for (int i = ra2; i > ra1; i--) {
-            swap(ans.vertices[i], ans.vertices[i - 1]); // 1“_‚¸‚Â¶‚É‚¸‚ç‚·
+            swap(ans.vertices[i], ans.vertices[i - 1]); // 1ç‚¹ãšã¤å·¦ã«ãšã‚‰ã™
           }
         }
         else {
           for (int i = ra2; i < ra1; i++) {
-            swap(ans.vertices[i], ans.vertices[i + 1]); // 1“_‚¸‚Â‰E‚É‚¸‚ç‚·
+            swap(ans.vertices[i], ans.vertices[i + 1]); // 1ç‚¹ãšã¤å³ã«ãšã‚‰ã™
           }
         }
-        ans.recalc_points(board, start_index, end_index); // “_‚ÌÄŒvZ
-        ans.score = current_score; // ƒXƒRƒA‚ğŒ³‚É–ß‚·
+        ans.recalc_points(board, start_index, end_index); // ç‚¹ã®å†è¨ˆç®—
+        ans.score = current_score; // ã‚¹ã‚³ã‚¢ã‚’å…ƒã«æˆ»ã™
       }
     }
   }
@@ -534,7 +534,7 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     cerr << loop << endl;
   }
 
-  ans = best_ans; // ƒxƒXƒg‰ğ‚ğÅI‰ğ‚Éİ’è
+  ans = best_ans; // ãƒ™ã‚¹ãƒˆè§£ã‚’æœ€çµ‚è§£ã«è¨­å®š
 }
 
 

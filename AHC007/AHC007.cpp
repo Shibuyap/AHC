@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <chrono>
 #include <climits>
 #include <cmath>
@@ -27,11 +27,11 @@ class UnionFind {
 public:
   const int MAX_UF = 1000006;
 
-  int N;                // ’¸“_”
-  vector<int> Par;      // e
-  vector<int> Rank;     // –Ø‚Ì[‚³
+  int N;                // é ‚ç‚¹æ•°
+  vector<int> Par;      // è¦ª
+  vector<int> Rank;     // æœ¨ã®æ·±ã•
 
-  // ‰Šú‰»
+  // åˆæœŸåŒ–
   void Initialize() {
     for (int i = 0; i < N; i++) {
       Par[i] = i;
@@ -51,7 +51,7 @@ public:
     UnionFind(MAX_UF);
   }
 
-  // –Ø‚Ìª‚ğ‹‚ß‚é
+  // æœ¨ã®æ ¹ã‚’æ±‚ã‚ã‚‹
   int Find(int x) {
     if (Par[x] == x) {
       return x;
@@ -61,7 +61,7 @@ public:
     }
   }
 
-  // x‚Æy‚Ì‘®‚·‚éW‡‚ğ•¹‡
+  // xã¨yã®å±ã™ã‚‹é›†åˆã‚’ä½µåˆ
   void Unite(int x, int y) {
     x = Find(x);
     y = Find(y);
@@ -76,7 +76,7 @@ public:
     }
   }
 
-  // x‚Æy‚ª“¯‚¶W‡‚É‘®‚·‚é‚©”Û‚©
+  // xã¨yãŒåŒã˜é›†åˆã«å±ã™ã‚‹ã‹å¦ã‹
   bool IsSame(int x, int y) {
     return Find(x) == Find(y);
   }
@@ -113,7 +113,7 @@ void FisherYates(int* data, int n) {
   }
 }
 
-// ”z—ñƒVƒƒƒbƒtƒ‹
+// é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -149,7 +149,7 @@ int u[m], v[m];
 int distances[m];
 vector<vector<P>> randomDistances;
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp() {
   randomDistances.clear();
 }
@@ -158,7 +158,7 @@ int GetDistance(int i, int j) {
   return round(sqrt((x[i] - x[j]) * (x[i] - x[j]) + (y[i] - y[j]) * (y[i] - y[j])));
 }
 
-// “ü—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenIfs(int problemNum, ifstream& ifs) {
   if (mode != 0) {
     std::ostringstream oss;
@@ -167,15 +167,15 @@ void OpenIfs(int problemNum, ifstream& ifs) {
   }
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum, ifstream& ifs) {
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];
     for (int i = 0; i < m; ++i) cin >> u[i] >> v[i];
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     for (int i = 0; i < n; ++i) ifs >> x[i] >> y[i];
     for (int i = 0; i < m; ++i) ifs >> u[i] >> v[i];
   }
@@ -185,7 +185,7 @@ void Input(int problemNum, ifstream& ifs) {
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs) {
   if (mode != 0) {
     std::ostringstream oss;
@@ -194,19 +194,19 @@ void OpenOfs(int probNum, ofstream& ofs) {
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore() {
   ll res = 0;
   return res;
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs) {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   }
 }
 
@@ -222,7 +222,7 @@ void Prepare() {
 }
 
 int Kruskal(UnionFind uf, int start, int caseNumber) {
-  // ‚±‚±‚Ì“_‚Å‚Íu[start]‚Æv[start]‚ÍŒq‚ª‚Á‚Ä‚¢‚È‚¢
+  // ã“ã“ã®æ™‚ç‚¹ã§ã¯u[start]ã¨v[start]ã¯ç¹‹ãŒã£ã¦ã„ãªã„
 
   for (auto p : randomDistances[caseNumber]) {
     int cost = p.first;
@@ -235,25 +235,25 @@ int Kruskal(UnionFind uf, int start, int caseNumber) {
     }
   }
 
-  // •Óstart‚ğÌ—p‚µ‚È‚¢‚Æ˜AŒ‹‚É‚È‚ç‚È‚¢
+  // è¾ºstartã‚’æ¡ç”¨ã—ãªã„ã¨é€£çµã«ãªã‚‰ãªã„
   return -1;
 }
 
 bool MonteCarlo(UnionFind uf, int start) {
-  // ‚±‚±‚É—ˆ‚½“_‚Åu[start]‚Æv[start]‚ÍŒq‚ª‚Á‚Ä‚¢‚È‚¢
+  // ã“ã“ã«æ¥ãŸæ™‚ç‚¹ã§u[start]ã¨v[start]ã¯ç¹‹ãŒã£ã¦ã„ãªã„
 
   int sum_costs = 0;
   for (int i = 0; i < repeat; ++i) {
     sum_costs += Kruskal(uf, start, i);
     if (i == 0 && sum_costs == -1) {
-      // •Óstart‚ğÌ—p‚µ‚È‚¢‚Æ˜AŒ‹‚É‚È‚ç‚È‚¢
+      // è¾ºstartã‚’æ¡ç”¨ã—ãªã„ã¨é€£çµã«ãªã‚‰ãªã„
       return true;
     }
   }
   return repeat * distances[start] < sum_costs;
 }
 
-// ƒiƒC[ƒu‚È‰ğ–@
+// ãƒŠã‚¤ãƒ¼ãƒ–ãªè§£æ³•
 void Method1(ifstream& ifs, ofstream& ofs) {
   Prepare();
 
@@ -321,7 +321,7 @@ ll Solve(int probNum) {
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////

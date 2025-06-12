@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -34,7 +34,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 200005
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -51,7 +51,7 @@ namespace
   }
 }
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t xor_shift32()
   {
@@ -75,7 +75,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-// 2ŸŒ³ƒLƒ…[‚ÌƒNƒ‰ƒX
+// 2æ¬¡å…ƒã‚­ãƒ¥ãƒ¼ã®ã‚¯ãƒ©ã‚¹
 class Queue2D
 {
 private:
@@ -85,7 +85,7 @@ private:
   int tail;
 
 public:
-  // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+  // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
   Queue2D() : head(0), tail(0) {}
 
   void clear_queue()
@@ -245,12 +245,12 @@ public:
 
   int calculate_score(const Input& input)
   {
-    //\\\ –‘O‰Šú‰» \\\//
+    //â€•â€•â€• äº‹å‰åˆæœŸåŒ– â€•â€•â€•//
     que2d.clear_queue();
     double score_sum = 0.0;
     visited_version++;
 
-    //\\\ ‘SƒZƒ‹‘–¸ \\\//
+    //â€•â€•â€• å…¨ã‚»ãƒ«èµ°æŸ» â€•â€•â€•//
     for (int start_row = 0; start_row < H; ++start_row) {
       for (int start_col = 0; start_col < W; ++start_col) {
         if (board[start_row][start_col] == 0) {
@@ -265,7 +265,7 @@ public:
 
         int component_size = 1;
 
-        //\\\ BFS ‚Å“¯ƒtƒŒ[ƒo˜AŒ‹¬•ª‚ğ”‚¦‚é \\\//
+        //â€•â€•â€• BFS ã§åŒãƒ•ãƒ¬ãƒ¼ãƒé€£çµæˆåˆ†ã‚’æ•°ãˆã‚‹ â€•â€•â€•//
         while (que2d.size()) {
           int cur_row = que2d.front_x();
           int cur_col = que2d.front_y();
@@ -290,7 +290,7 @@ public:
       }
     }
 
-    //\\\ ³‹K‰» \\\//
+    //â€•â€•â€• æ­£è¦åŒ– â€•â€•â€•//
     score_sum *= 1'000'000.0;
 
     int denom_sum = 0;
@@ -304,7 +304,7 @@ public:
 
   void tilt_board(int dir)
   {
-    if (dir == 0) {                // ã•ûŒüiFrontj
+    if (dir == 0) {                // ä¸Šæ–¹å‘ï¼ˆFrontï¼‰
       for (int col = 0; col < W; ++col) {
         int write_row = 0;
         for (int row = 0; row < H; ++row) {
@@ -317,7 +317,7 @@ public:
         }
       }
     }
-    else if (dir == 1) {           // ¶•ûŒüiLeftj
+    else if (dir == 1) {           // å·¦æ–¹å‘ï¼ˆLeftï¼‰
       for (int row = 0; row < H; ++row) {
         int write_col = 0;
         for (int col = 0; col < W; ++col) {
@@ -330,7 +330,7 @@ public:
         }
       }
     }
-    else if (dir == 2) {           // ‰º•ûŒüiBackj
+    else if (dir == 2) {           // ä¸‹æ–¹å‘ï¼ˆBackï¼‰
       for (int col = 0; col < W; ++col) {
         int write_row = H - 1;
         for (int row = (H)-1; row >= 0; --row) {
@@ -343,7 +343,7 @@ public:
         }
       }
     }
-    else if (dir == 3) {           // ‰E•ûŒüiRightj
+    else if (dir == 3) {           // å³æ–¹å‘ï¼ˆRightï¼‰
       for (int row = 0; row < H; ++row) {
         int write_col = W - 1;
         for (int col = (W)-1; col >= 0; --col) {
@@ -371,7 +371,7 @@ const double TL = 1.8;
 
 int exec_mode = 0;
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void save_answer(int problemNum)
 {
   string fileNameOfs = "./out/";
@@ -392,10 +392,10 @@ void save_answer(int problemNum)
   ofs.close();
 }
 
-// ƒ‹[ƒ‹ƒx[ƒX‚É]‚¤‘€ì—ñ‚ğ‹L˜^‚·‚é”z—ñ
+// ãƒ«ãƒ¼ãƒ«ãƒ™ãƒ¼ã‚¹ã«å¾“ã†æ“ä½œåˆ—ã‚’è¨˜éŒ²ã™ã‚‹é…åˆ—
 vector<int> rule_actions(N, -1);
 
-// ƒCƒ`ƒS‚ÍŒã‚ë‚ÉAƒXƒCƒJ‚Í‰E‘O‚ÉAƒpƒ“ƒvƒLƒ“‚Í¶‘O‚ÉW‚ß‚é
+// ã‚¤ãƒã‚´ã¯å¾Œã‚ã«ã€ã‚¹ã‚¤ã‚«ã¯å³å‰ã«ã€ãƒ‘ãƒ³ãƒ—ã‚­ãƒ³ã¯å·¦å‰ã«é›†ã‚ã‚‹
 vector<vector<int>> rule_action_samples = {
     {0, 2, 2},
     {0, 1, 3},
@@ -409,7 +409,7 @@ void init_rule_actions(const Input& input)
     int next = input.flavor_at_turn[t + 1];
     rule_actions[t] = rule_action_samples[now - 1][next - 1];
   }
-  rule_actions[N - 1] = 0; // ÅŒã‚Ìƒ^[ƒ“‚Í‰½‚Å‚à‚æ‚¢
+  rule_actions[N - 1] = 0; // æœ€å¾Œã®ã‚¿ãƒ¼ãƒ³ã¯ä½•ã§ã‚‚ã‚ˆã„
 }
 
 inline int generate_random_empty_index(int turn)
@@ -433,14 +433,14 @@ void monte_carlo(Board& board, Input& input)
 
   int iter = 0;
 
-  //\\\ 100 ƒ^[ƒ“‰ñ‚· \\\//
+  //â€•â€•â€• 100 ã‚¿ãƒ¼ãƒ³å›ã™ â€•â€•â€•//
   for (int turn = 0; turn < N; ++turn) {
     int empty_index = input.get_empty_index();
     board.set_candy(empty_index, input.flavor_at_turn[turn]);
 
     Board backup_board = board;
 
-    /*---------- ƒ‚ƒ“ƒeƒJƒ‹ƒ’Tõ ----------*/
+    /*---------- ãƒ¢ãƒ³ãƒ†ã‚«ãƒ«ãƒ­æ¢ç´¢ ----------*/
     start_timer();
     const double turn_time_limit = TL / N;
 
@@ -481,7 +481,7 @@ void monte_carlo(Board& board, Input& input)
     }
 
     if (exec_mode == 0) {
-      std::cout << DC[best_dir] << '\n';
+      std::cout << DC[best_dir] << 'Â¥n';
       std::fflush(stdout);
     }
     else {
@@ -512,7 +512,7 @@ int run_solver(int case_num)
   if (exec_mode != 0) {
     save_answer(case_num);
     score = board.calculate_score(input);
-    std::cout << "Score = " << score << '\n';
+    std::cout << "Score = " << score << 'Â¥n';
   }
 
   return score;

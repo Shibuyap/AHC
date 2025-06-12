@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -79,7 +79,7 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^‚Ì‰Šú‰»
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿ã®åˆæœŸåŒ–
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -127,13 +127,13 @@ void CopyToAns()
   ansScore = best_ansScore;
 }
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void SetUp()
 {
   ansScore = 0;
 }
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void Input(int problemNum)
 {
   std::ostringstream oss;
@@ -141,14 +141,14 @@ void Input(int problemNum)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -158,49 +158,49 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 ll CalcScore()
 {
   ll res = 0;
   return res;
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   }
 }
 
-// ƒiƒC[ƒu‚È‰ğ–@
+// ãƒŠã‚¤ãƒ¼ãƒ–ãªè§£æ³•
 void Method1()
 {
 
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll Solve(int problem_num)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(problem_num, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Method1();
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -216,7 +216,7 @@ ll Solve(int problem_num)
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////

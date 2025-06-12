@@ -1,4 +1,4 @@
-#include <algorithm>
+Ôªø#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -33,7 +33,7 @@ using namespace std;
 
 typedef long long int ll;
 
-// É^ÉCÉ}Å[
+// „Çø„Ç§„Éû„Éº
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -48,7 +48,7 @@ namespace
   }
 }
 
-// óêêî
+// ‰π±Êï∞
 namespace
 {
   static uint32_t rand_xorshift() {
@@ -121,7 +121,7 @@ public:
   static constexpr int MIN = 0;
   static constexpr int MAX = 20000;
 
-  vector<int> xs, ys; // îºäJãÊä‘ : [xs[i], xs[i+1])
+  vector<int> xs, ys; // ÂçäÈñãÂå∫Èñì : [xs[i], xs[i+1])
 
   vector<vector<int>> counts;
   int b[14];
@@ -182,7 +182,7 @@ public:
           {
             int j = upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
             if (ys[j] <= y && y < ys[j + 1]) {
-              // è„ë§Çå∏ÇÁÇ∑
+              // ‰∏äÂÅ¥„ÇíÊ∏õ„Çâ„Åô
               if (counts[num - 1][j] <= 12) {
                 b[counts[num - 1][j]]--;
               }
@@ -197,7 +197,7 @@ public:
                 b[13]++;
               }
 
-              // â∫ë§ÇëùÇ‚Ç∑
+              // ‰∏ãÂÅ¥„ÇíÂ¢ó„ÇÑ„Åô
               if (counts[num][j] <= 12) {
                 b[counts[num][j]]--;
               }
@@ -223,7 +223,7 @@ public:
           {
             int j = upper_bound(ys.begin(), ys.end(), y) - ys.begin() - 1;
             if (ys[j] <= y && y < ys[j + 1]) {
-              // è„ë§ÇëùÇ‚Ç∑
+              // ‰∏äÂÅ¥„ÇíÂ¢ó„ÇÑ„Åô
               if (counts[num - 1][j] <= 12) {
                 b[counts[num - 1][j]]--;
               }
@@ -238,7 +238,7 @@ public:
                 b[13]++;
               }
 
-              // â∫ë§Çå∏ÇÁÇ∑
+              // ‰∏ãÂÅ¥„ÇíÊ∏õ„Çâ„Åô
               if (counts[num][j] <= 12) {
                 b[counts[num][j]]--;
               }
@@ -269,7 +269,7 @@ public:
           {
             int j = upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
             if (xs[j] <= x && x < xs[j + 1]) {
-              // ç∂ë§Çå∏ÇÁÇ∑
+              // Â∑¶ÂÅ¥„ÇíÊ∏õ„Çâ„Åô
               if (counts[j][num - 1] <= 12) {
                 b[counts[j][num - 1]]--;
               }
@@ -283,7 +283,7 @@ public:
               else {
                 b[13]++;
               }
-              // âEë§ÇëùÇ‚Ç∑
+              // Âè≥ÂÅ¥„ÇíÂ¢ó„ÇÑ„Åô
               if (counts[j][num] <= 12) {
                 b[counts[j][num]]--;
               }
@@ -309,7 +309,7 @@ public:
           {
             int j = upper_bound(xs.begin(), xs.end(), x) - xs.begin() - 1;
             if (xs[j] <= x && x < xs[j + 1]) {
-              // ç∂ë§ÇëùÇ‚Ç∑
+              // Â∑¶ÂÅ¥„ÇíÂ¢ó„ÇÑ„Åô
               if (counts[j][num - 1] <= 12) {
                 b[counts[j][num - 1]]--;
               }
@@ -323,7 +323,7 @@ public:
               else {
                 b[13]++;
               }
-              // âEë§Çå∏ÇÁÇ∑
+              // Âè≥ÂÅ¥„ÇíÊ∏õ„Çâ„Åô
               if (counts[j][num] <= 12) {
                 b[counts[j][num]]--;
               }
@@ -355,7 +355,7 @@ Board input_data(int case_num) {
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // ïWèÄì¸óÕ
+    // Ê®ôÊ∫ñÂÖ•Âäõ
     int  _k;
     cin >> board.n >> _k;
     for (int i = 0; i < 14; i++) {
@@ -374,7 +374,7 @@ Board input_data(int case_num) {
     }
   }
   else {
-    // ÉtÉ@ÉCÉãì¸óÕ
+    // „Éï„Ç°„Ç§„É´ÂÖ•Âäõ
     int _k;
     ifs >> board.n >> _k;
     for (int i = 1; i <= 10; i++) {
@@ -416,7 +416,7 @@ int calculate_score(const Board& board, const Answer& answer) {
 
 void output_data(int case_num, const Answer& answer) {
   if (exec_mode == 0) {
-    // ïWèÄèoóÕ
+    // Ê®ôÊ∫ñÂá∫Âäõ
     cout << answer.xs.size() + answer.ys.size() - 4 << endl;
     for (int i = 1; i < answer.xs.size() - 1; i++) {
       cout << answer.xs[i] - 10000 - 1 << " " << -10000000 << " " << answer.xs[i] - 10000 << " " << 10000000 << endl;
@@ -426,7 +426,7 @@ void output_data(int case_num, const Answer& answer) {
     }
   }
   else {
-    // ÉtÉ@ÉCÉãèoóÕ
+    // „Éï„Ç°„Ç§„É´Âá∫Âäõ
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -542,7 +542,7 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
     double diff_score = (new_score - current_score) * params.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
-      // çÃóp
+      // Êé°Áî®
 
       if (new_score > best_score) {
         best_score = new_score;

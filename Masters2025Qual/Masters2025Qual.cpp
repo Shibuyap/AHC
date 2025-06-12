@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -79,7 +79,7 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^‚Ì‰Šú‰»
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿ã®åˆæœŸåŒ–
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -171,7 +171,7 @@ bool IsNG(int x, int y)
   return false;
 }
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void SetUp()
 {
   ansScore = 0;
@@ -186,7 +186,7 @@ void SetUp()
   order.clear();
 }
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void Input(int problemNum)
 {
   std::ostringstream oss;
@@ -203,7 +203,7 @@ void Input(int problemNum)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     int nn;
     cin >> nn >> m;
     rep(i, n) {
@@ -236,7 +236,7 @@ void Input(int problemNum)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     int nn;
     ifs >> nn >> m;
     rep(i, n) {
@@ -310,7 +310,7 @@ void InitA() {
   posY = init_posY;
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -320,7 +320,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 ll CalcScore()
 {
   ll res = 0;
@@ -333,17 +333,17 @@ ll CalcScore()
   return res;
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     rep(i, ansCount) {
       cout << ans[i][0] << ' ' << dc[ans[i][1]] << endl;
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     ofs << ansCount << endl;
     rep(i, ansCount) {
       ofs << ans[i][0] << ' ' << dc[ans[i][1]] << endl;
@@ -376,7 +376,7 @@ int Size() {
   return queueTail - queueHead;
 }
 
-// ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^
+// ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 struct Hypers
 {
   double StartTemp;
@@ -402,7 +402,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
   while (a[hx][L - 1] == -1 || a2[hx][L - 1] == id)L--;
   while (a[hx][R + 1] == -1 || a2[hx][R + 1] == id)R++;
 
-  // ‚Ü‚¸ˆÚ“®
+  // ã¾ãšç§»å‹•
   while (nowX > sx) {
     ans[ansCount][0] = 1;
     ans[ansCount][1] = 0;
@@ -462,7 +462,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     return;
   }
 
-  // zÎ‚ğ‰^‚Ôbfs
+  // é‰±çŸ³ã‚’é‹ã¶bfs
   int saitan = 1;
   int tx = -1;
   int ty = -1;
@@ -581,7 +581,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     nowY = ny;
   }
 
-  // ŒŠ‚É“]‚ª‚µ‚Ä“ü‚ê‚é
+  // ç©´ã«è»¢ãŒã—ã¦å…¥ã‚Œã‚‹
   if (nowX == hx && nowY < hy) {
     ans[ansCount][0] = 3;
     ans[ansCount][1] = 3;
@@ -646,7 +646,7 @@ void Method1_3() {
   int isAllConnected = false;
 
   rep(i, order.size()) {
-    // \š‚É—‚Æ‚¹‚éŠâ‚ª‚ ‚ê‚Î—‚Æ‚·
+    // åå­—ã«è½ã¨ã›ã‚‹å²©ãŒã‚ã‚Œã°è½ã¨ã™
     while (true) {
       int tx = -1;
       int ty = -1;
@@ -739,7 +739,7 @@ void Method1_3() {
 
       if (dir == -1)break;
 
-      // ‚Ü‚¸ˆÚ“®
+      // ã¾ãšç§»å‹•
       while (nowX > tx) {
         ans[ansCount][0] = 1;
         ans[ansCount][1] = 0;
@@ -765,7 +765,7 @@ void Method1_3() {
         nowY++;
       }
 
-      // “]‚ª‚µ‚Ä—‚Æ‚·
+      // è»¢ãŒã—ã¦è½ã¨ã™
       if (isCrystal == 1) {
         int id = a2[nowX][nowY];
         posX[id] = -1;
@@ -779,12 +779,12 @@ void Method1_3() {
       a2[nowX][nowY] = -1;
     }
 
-    // C‘ÎôF‘S•”‚Ì•”‰®‚ğŒq‚°‚é
+    // Cå¯¾ç­–ï¼šå…¨éƒ¨ã®éƒ¨å±‹ã‚’ç¹‹ã’ã‚‹
     if (!isAllConnected && mode2 == 2) {
       while (true) {
         int hx = holeX[1];
         int hy = holeY[1];
-        // ¡‚Ì”
+        // ä»Šã®æ•°
         int nowCount = 0;
         {
           bfsCount++;
@@ -812,12 +812,12 @@ void Method1_3() {
           break;
         }
 
-        // ‚Ç‚±‚©ˆê—ñ‹ó‚¯‚é
+        // ã©ã“ã‹ä¸€åˆ—ç©ºã‘ã‚‹
         int mi = 1001001;
         int dir = -1;
         int idx = -1;
         int maxCount = 0;
-        // s
+        // è¡Œ
         srep(k, 1, n + 1) {
           int tmpCount = 0;
           int rockCount = 0;
@@ -849,7 +849,7 @@ void Method1_3() {
             maxCount = tmpCount;
           }
         }
-        // —ñ
+        // åˆ—
         srep(k, 1, n + 1) {
           int tmpCount = 0;
           int rockCount = 0;
@@ -889,7 +889,7 @@ void Method1_3() {
 
         //cout << nowCount << ' ' << maxCount << ' ' << mi << ' ' << dir << ' ' << idx << endl;
 
-        // ‚»‚ÌsE—ñ‚ğ‘S•”—‚Æ‚·
+        // ãã®è¡Œãƒ»åˆ—ã‚’å…¨éƒ¨è½ã¨ã™
         if (dir == 0) {
           dsrep(k, 1, hy) {
             int huyou = 1;
@@ -1000,7 +1000,7 @@ void Method1_3() {
 
 int ErasePos[1000000];
 
-// ƒiƒC[ƒu‚È‰ğ–@
+// ãƒŠã‚¤ãƒ¼ãƒ–ãªè§£æ³•
 void Method1(Hypers hypers)
 {
   ansCount = 0;
@@ -1025,7 +1025,7 @@ void Method1(Hypers hypers)
       if (nowTime > TL) break;
     }
 
-    // –ß‚·
+    // æˆ»ã™
     //if (ansScore * 1.2 < best_ansScore) {
     //  CopyToAns();
     //}
@@ -1036,7 +1036,7 @@ void Method1(Hypers hypers)
     keepOrder = order;
     int raMode = Rand() % 100;
     if (raMode < hypers.Partition) {
-      // ‹ß–T‰ğì¬
+      // è¿‘å‚è§£ä½œæˆ
       int ra1 = Rand() % crystalCount;
       int ra2 = Rand() % crystalCount;
 
@@ -1068,23 +1068,23 @@ void Method1(Hypers hypers)
 
     Method1_3();
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     double tmpScore = CalcScore();
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
     if (prob > Rand01()) {
-      // Ì—p
+      // æ¡ç”¨
       ansScore = tmpScore;
 
-      // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+      // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
       if (ansScore > best_ansScore) {
         CopyToBest();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       //swap(order[ra1], order[ra2]);
       order = keepOrder;
     }
@@ -1103,25 +1103,25 @@ void Method1(Hypers hypers)
   }
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll Solve(int problem_num, Hypers hypers)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(problem_num, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Method1(hypers);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -1137,7 +1137,7 @@ ll Solve(int problem_num, Hypers hypers)
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////
@@ -1196,7 +1196,7 @@ int main()
         ll score = Solve(i, hypers);
         sum += score;
 
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
+        // ã‚·ãƒ¼ãƒ‰0ãŒæ‚ªã‘ã‚Œã°æ‰“ã¡åˆ‡ã‚Š
         if (i == 0 && score < 0) {
           break;
         }

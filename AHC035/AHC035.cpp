@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -40,7 +40,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -57,7 +57,7 @@ namespace
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace
 {
   static uint32_t rand_xorshift()
@@ -129,10 +129,10 @@ vector<vector<int>> placement(BOARD_SIZE, vector<int>(BOARD_SIZE, 0));
 int horizontal_edge_block[TURN_COUNT][BOARD_SIZE][BOARD_SIZE][ITEM_KIND];
 int vertical_edge_block[TURN_COUNT][BOARD_SIZE][BOARD_SIZE][ITEM_KIND];
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void reset_state() {}
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void read_input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -147,7 +147,7 @@ void read_input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     int n, m, t;
     cin >> n >> m >> t;
@@ -157,7 +157,7 @@ void read_input(int problemNum)
       }
     }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     int n, m, t;
     ifs >> n >> m >> t;
@@ -204,7 +204,7 @@ void read_input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void open_output_file(int probNum, ofstream& ofs)
 {
   if (exec_mode != 0) {
@@ -222,7 +222,7 @@ void open_output_file(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll calc_final_score()
 {
   ll sumX = 0;
@@ -246,7 +246,7 @@ ll calc_final_score()
 
 void apply_feedback(int turn)
 {
-  // placement‚ÉŠî‚Ã‚¢‚Ä itemValue ‚ğÄİ’è
+  // placementã«åŸºã¥ã„ã¦ itemValue ã‚’å†è¨­å®š
   int idx = 0;
   // horizontal
   for (int row = 0; row < BOARD_SIZE; row++) {
@@ -418,15 +418,15 @@ void anneal_spiral_placement()
 
 ll solve_case(int probNum)
 {
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   reset_state();
 
   init_spiral_order();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   read_input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   open_output_file(probNum, ofs);
 

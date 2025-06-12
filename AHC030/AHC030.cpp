@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -34,7 +34,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-// 10‚Ìxæ
+// 10ã®xä¹—
 const ll D1 = 10LL;
 const ll D2 = 100LL;
 const ll D3 = 1000LL;
@@ -54,7 +54,7 @@ const ll D16 = 10000000000000000LL;
 const ll D17 = 100000000000000000LL;
 const ll D18 = 1000000000000000000LL;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -78,7 +78,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-// ”z—ñƒVƒƒƒbƒtƒ‹
+// é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 std::normal_distribution<> normalDistribution(0, 1);
@@ -106,7 +106,7 @@ int ii[MAX_M][250], jj[MAX_M][250];
 int minIi[MAX_M], maxIi[MAX_M], minJj[MAX_M], maxJj[MAX_M];
 int sum;
 
-// ƒnƒCƒpƒ‰’²®—p
+// ãƒã‚¤ãƒ‘ãƒ©èª¿æ•´ç”¨
 const int M_INDEX_SIZE = 21;
 const int EPS_INDEX_SIZE = 21;
 int mIndex, epsIndex;
@@ -119,7 +119,7 @@ ll hyperParams[21][21] = { {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} };
 
-// ƒ[ƒJƒ‹ƒeƒXƒg—p
+// ãƒ­ãƒ¼ã‚«ãƒ«ãƒ†ã‚¹ãƒˆç”¨
 int di[MAX_M], dj[MAX_M];
 int localAnsGrid[MAX_N][MAX_N];
 vector<P> localAns;
@@ -237,7 +237,7 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
         }
       }
 
-      // ƒ[ƒJƒ‹ƒeƒXƒ^•Ï”
+      // ãƒ­ãƒ¼ã‚«ãƒ«ãƒ†ã‚¹ã‚¿å¤‰æ•°
       int sx = Rand() % ((n - 1 - (maX - miX)) - 0 + 1);
       int sy = Rand() % ((n - 1 - (maY - miY)) - 0 + 1);
       di[i] = sx;
@@ -312,7 +312,7 @@ int Query2Local(const vector<P>& points)
   }
   double mean = (static_cast<double>(k) - vSum) * eps + vSum * (1.0 - eps);
   double variance = k * eps * (1 - eps);
-  double std_dev = std::sqrt(variance);  // •ªU‚©‚ç•W€•Î·‚ğŒvZ
+  double std_dev = std::sqrt(variance);  // åˆ†æ•£ã‹ã‚‰æ¨™æº–åå·®ã‚’è¨ˆç®—
 
   double transformed_sample = sampleEs[g_query2Count] * std_dev + mean;
   g_query2Count++;
@@ -349,7 +349,7 @@ int Query2(const vector<P>& points, ofstream& ofs)
   return res;
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   g_cost = 0;
@@ -357,7 +357,7 @@ void SetUp()
   localAns.clear();
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   if (mode == 0 || mode == 1) {
@@ -373,7 +373,7 @@ void Input(int problemNum)
 
     ifstream ifs(fileNameIfs);
 
-    // •W€“ü—Í‚·‚é
+    // æ¨™æº–å…¥åŠ›ã™ã‚‹
     if (!ifs.is_open()) {
       cin >> n >> m >> eps;
       rep(i, m)
@@ -385,7 +385,7 @@ void Input(int problemNum)
         }
       }
     }
-    // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     else {
       ifs >> n >> m >> eps;
       rep(i, m)
@@ -458,7 +458,7 @@ void Initialize()
   InitIndices();
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -476,7 +476,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   ll res = static_cast<ll>(round(g_cost * 1000000LL));
@@ -721,7 +721,7 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
   }
 }
 
-// M”Ô†AD”Ô†‚Ì”z’u‚ªN*N‚Ì˜g“à‚Éû‚Ü‚Á‚Ä‚¢‚é‚©iáŠQ•¨–³‚µj
+// Mç•ªå·ã€Dç•ªå·ã®é…ç½®ãŒN*Nã®æ å†…ã«åã¾ã£ã¦ã„ã‚‹ã‹ï¼ˆéšœå®³ç‰©ç„¡ã—ï¼‰
 bool CanHaiti(int sx, int sy, int mNum)
 {
   rep(i, d[mNum])
@@ -900,27 +900,27 @@ void Method2_2(int query2Size, ofstream& ofs)
 {
   Method2_2_Initialize();
   vector<pair<P, int>> kakuteiValues;
-  // Šm’èƒ}ƒX‚ğ’T‚·
+  // ç¢ºå®šãƒã‚¹ã‚’æ¢ã™
   Method2_2_SearchKakuteiMasu(kakuteiValues);
 
   int isAC = 0;
   while (true) {
     if (g_cost > 20) { break; }
-    // ‰ñ“š‚·‚é‚©‚Ç‚¤‚©
+    // å›ç­”ã™ã‚‹ã‹ã©ã†ã‹
     {
       int ret = Method2_2_ChallengeAns(ofs);
-      if (ret == 0) {         // ‰ñ“š‚¹‚¸
+      if (ret == 0) {         // å›ç­”ã›ãš
       }
-      else if (ret == 1) {  // ³‰ğ
+      else if (ret == 1) {  // æ­£è§£
         isAC = 1;
         break;
       }
-      else if (ret == 2) {  // •s³‰ğ
+      else if (ret == 2) {  // ä¸æ­£è§£
         continue;
       }
     }
 
-    // Ÿ‚ÌƒNƒGƒŠì¬
+    // æ¬¡ã®ã‚¯ã‚¨ãƒªä½œæˆ
     {
       int nums[MAX_N][MAX_N][3];
       rep(i, n)
@@ -935,7 +935,7 @@ void Method2_2(int query2Size, ofstream& ofs)
       }
 
       if (kakuteiValues.size() >= query2Size - 1) {
-        // ‚ ‚¢‚Ü‚¢ƒNƒGƒŠ
+        // ã‚ã„ã¾ã„ã‚¯ã‚¨ãƒª
         double minPenalty = m2_2_penaltySortedArray[0].first;
         rep(i, m2_2_kouhoCount)
         {
@@ -980,7 +980,7 @@ void Method2_2(int query2Size, ofstream& ofs)
         }
       }
 
-      // Šm’èƒNƒGƒŠ
+      // ç¢ºå®šã‚¯ã‚¨ãƒª
       {
         rep(i, n)
         {
@@ -1068,7 +1068,7 @@ vector<P> Method3_GetOnes()
   return ones;
 }
 
-// {M”Ô†AD”Ô†}
+// {Mç•ªå·ã€Dç•ªå·}
 struct Kouho
 {
   int mNum;
@@ -1082,7 +1082,7 @@ vector<Kouho> Method3_GetAllKouho()
   rep(i, m)
   {
     if (m3_usedM[i]) continue;
-    // ƒ`ƒFƒbƒN
+    // ãƒã‚§ãƒƒã‚¯
     rep(j, d[i])
     {
       rep(xxx, n)
@@ -1111,14 +1111,14 @@ vector<Kouho> Method3_GetAllKouho()
   return res;
 }
 
-// {M”Ô†,D”Ô†}
+// {Mç•ªå·,Dç•ªå·}
 vector<P> Method3_GetAllKouhoSpecificPoint1(int xxx, int yyy)
 {
   vector<P> res;
   rep(i, m)
   {
     if (m3_usedM[i]) continue;
-    // ƒ`ƒFƒbƒN
+    // ãƒã‚§ãƒƒã‚¯
     rep(j, d[i])
     {
       int isOk = 1;
@@ -1142,14 +1142,14 @@ vector<P> Method3_GetAllKouhoSpecificPoint1(int xxx, int yyy)
   return res;
 }
 
-// {M”Ô†,D”Ô†}
+// {Mç•ªå·,Dç•ªå·}
 vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
 {
   vector<P> res;
   rep(i, m)
   {
     if (m3_usedM[i]) continue;
-    // ƒ`ƒFƒbƒN
+    // ãƒã‚§ãƒƒã‚¯
     const int shuuiSize = 3;
     rep(j, d[i])
     {
@@ -1183,7 +1183,7 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
       }
       if (!isOk) { continue; }
 
-      // üˆÍ9ƒ}ƒX‚Åg‚Á‚Ä‚¢‚È‚¢ƒ}ƒX‚Ìƒ`ƒFƒbƒN
+      // å‘¨å›²9ãƒã‚¹ã§ä½¿ã£ã¦ã„ãªã„ãƒã‚¹ã®ãƒã‚§ãƒƒã‚¯
       vector<P> unusedPoints;
       rep(k, shuuiSize)
       {
@@ -1374,7 +1374,7 @@ void Method3(ofstream& ofs)
       else {
         std::shuffle(ones.begin(), ones.end(), engine);
 
-        // ˆêˆÓ‚É’è‚Ü‚é‚©ƒ`ƒFƒbƒN
+        // ä¸€æ„ã«å®šã¾ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
         {
           int realFlag = 0;
           for (auto p : ones) {
@@ -1589,7 +1589,7 @@ void Method3(ofstream& ofs)
 
 int m4_values1[MAX_N][MAX_N];
 int m4_values2[MAX_N][MAX_N];
-vector<P> m4_kouhos[MAX_N][MAX_N];  // {M”Ô†,D”Ô†}
+vector<P> m4_kouhos[MAX_N][MAX_N];  // {Mç•ªå·,Dç•ªå·}
 vector<int> m4_kouhos_OK[MAX_N][MAX_N];
 void Method4(int kakuteiCount, ofstream& ofs)
 {
@@ -1605,7 +1605,7 @@ void Method4(int kakuteiCount, ofstream& ofs)
 
   vector<pair<P, int>> kakuteiValues;
 
-  // ‘S‚Ä‚Ìƒ}ƒX‚ÌŒó•â‚ğ—ñ‹“‚·‚é
+  // å…¨ã¦ã®ãƒã‚¹ã®å€™è£œã‚’åˆ—æŒ™ã™ã‚‹
   rep(i, n)
   {
     rep(j, n)
@@ -1626,12 +1626,12 @@ void Method4(int kakuteiCount, ofstream& ofs)
     }
   }
 
-  // ¸”s‚µ‚½‰ğ“š‚ğŠo‚¦‚Ä‚¨‚­
+  // å¤±æ•—ã—ãŸè§£ç­”ã‚’è¦šãˆã¦ãŠã
   int wrongAnswerCount = 0;
   vector<vector<P>> wrongAnswers;
 
   while (true) {
-    // ‰ğ“š‚Å‚«‚é‚©ƒ`ƒFƒbƒN
+    // è§£ç­”ã§ãã‚‹ã‹ãƒã‚§ãƒƒã‚¯
     {
       rep(i, n)
       {
@@ -1645,7 +1645,7 @@ void Method4(int kakuteiCount, ofstream& ofs)
         }
       }
     }
-    // Šm’èƒ}ƒX‚Ì”‚ª‘«‚è‚È‚¯‚ê‚ÎŠm’è‘€ì‚ğs‚¤
+    // ç¢ºå®šãƒã‚¹ã®æ•°ãŒè¶³ã‚Šãªã‘ã‚Œã°ç¢ºå®šæ“ä½œã‚’è¡Œã†
   }
 }
 
@@ -1654,19 +1654,19 @@ ll Solve(int probNum)
   g_startTime = clock();
   g_endTime = clock();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
   Initialize();
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   ll para = hyperParams[mIndex][epsIndex];
   if (m == 2) {
     int methodNum = para % D12 / D10;
@@ -1689,13 +1689,13 @@ ll Solve(int probNum)
   return score;
 }
 
-// hyperParams‚ğƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚Éo—Í
+// hyperParamsã‚’ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã«å‡ºåŠ›
 void PrintHyperParams(int loop)
 {
   string str = "./hyperParams/hyperParams" + to_string(loop) + ".txt";
   std::ofstream file(str);
 
-  // o—Í‚µ‚½‚¢•¶š—ñ
+  // å‡ºåŠ›ã—ãŸã„æ–‡å­—åˆ—
   file << "ll hyperParams[21][21] = {" << endl;
   for (int _mIndex = 0; _mIndex < M_INDEX_SIZE; _mIndex++) {
     file << "{";
@@ -1718,26 +1718,26 @@ void PrintHyperParams(int loop)
 
 void Battle()
 {
-  int loop = 0;  // ƒ‹[ƒv‰ñ”‚ÌƒJƒEƒ“ƒ^
+  int loop = 0;  // ãƒ«ãƒ¼ãƒ—å›æ•°ã®ã‚«ã‚¦ãƒ³ã‚¿
   queue<pair<int, ll>> winQueue;
   while (true) {
     ll newPara = 0;
     if (!winQueue.empty()) {
-      // winQueue‚É’†g‚ª‚ ‚éê‡‚Í‚»‚¿‚ç‚©‚çƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“
-      // Ÿ‚É‚µ‚½‚¢êŠ
+      // winQueueã«ä¸­èº«ãŒã‚ã‚‹å ´åˆã¯ãã¡ã‚‰ã‹ã‚‰ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³
+      // æ¬¡ã«è©¦ã—ãŸã„å ´æ‰€
       int nextIndex = winQueue.front().first;
       mIndex = nextIndex / D2;
       epsIndex = nextIndex % D2;
-      // ‚µ‚½‚¢ƒpƒ‰ƒ[ƒ^
+      // è©¦ã—ãŸã„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
       newPara = winQueue.front().second;
       winQueue.pop();
     }
     else {
-      // ƒ‰ƒ“ƒ_ƒ€‚É1‰ÓŠ‘I‚ÑƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“
-      // 1ƒP[ƒXƒWƒFƒlƒŒ[ƒg
+      // ãƒ©ãƒ³ãƒ€ãƒ ã«1ç®‡æ‰€é¸ã³ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³
+      // 1ã‚±ãƒ¼ã‚¹ã‚¸ã‚§ãƒãƒ¬ãƒ¼ãƒˆ
       TestCaseGenerator(true, true, true);
 
-      // V‚µ‚¢ƒnƒCƒpƒ‰i’§íÒj‚ğì¬
+      // æ–°ã—ã„ãƒã‚¤ãƒ‘ãƒ©ï¼ˆæŒ‘æˆ¦è€…ï¼‰ã‚’ä½œæˆ
       int solverNum = rand() % 2;
       if (solverNum == 0) {
         newPara = solverNum * D10;
@@ -1748,7 +1748,7 @@ void Battle()
       }
     }
 
-    // “¯‚¶’l‚Ìê‡‚Ícontinue
+    // åŒã˜å€¤ã®å ´åˆã¯continue
     if (hyperParams[mIndex][epsIndex] == newPara) continue;
 
     int win = 0;
@@ -1759,9 +1759,9 @@ void Battle()
     bool isWin = false;
     if (m != 2 || eps > 0.1) continue;
     cout << loop << ' ' << m << ' ' << eps << ", oldPara = " << hyperParams[mIndex][epsIndex] << ", newPara = " << newPara;
-    if (judgeMode == 0) {  // 20í18Ÿ
+    if (judgeMode == 0) {  // 20æˆ¦18å‹
       for (int _ = 0; _ < 20; _++) {
-        // ‚±‚±‚Å–ˆ‰ñƒeƒXƒgƒP[ƒX‚ğ1ƒP[ƒXì¬
+        // ã“ã“ã§æ¯å›ãƒ†ã‚¹ãƒˆã‚±ãƒ¼ã‚¹ã‚’1ã‚±ãƒ¼ã‚¹ä½œæˆ
         TestCaseGenerator(true, false, false);
         ll oldScore = Solve(0);
         ll oldPara = hyperParams[mIndex][epsIndex];
@@ -1772,7 +1772,7 @@ void Battle()
         // cout << "n = " << n << ", d[0] = " << d[0] << ", d[1] = " << d[1] << ", oldScore = " << oldScore << ", newScore = " << newScore << endl;
 
         if (newScore < oldScore) {
-          // AHC030‚ÍƒXƒRƒA‚ª¬‚³‚¢‚Ù‚Ç—Ç‚¢
+          // AHC030ã¯ã‚¹ã‚³ã‚¢ãŒå°ã•ã„ã»ã©è‰¯ã„
           win++;
         }
         else if (newScore == oldScore) {
@@ -1782,17 +1782,17 @@ void Battle()
           lose++;
         }
 
-        // ŠÔ’Zk(Œ‹‰Ê‚ª–¾‚ç‚©‚È‚Æ‚«‚Íbreak)
+        // æ™‚é–“çŸ­ç¸®(çµæœãŒæ˜ã‚‰ã‹ãªã¨ãã¯break)
         if (lose >= 3) break;
       }
 
-      if (win >= 3 && (double)win / (win + lose) >= 0.9) {  // 1Ÿ0”s19•ª‚È‚Ç‚Í”ğ‚¯‚é
+      if (win >= 3 && (double)win / (win + lose) >= 0.9) {  // 1å‹0æ•—19åˆ†ãªã©ã¯é¿ã‘ã‚‹
         isWin = true;
       }
     }
-    else if (judgeMode == 1) {  // 200í120Ÿ
+    else if (judgeMode == 1) {  // 200æˆ¦120å‹
       for (int _ = 0; _ < 200; _++) {
-        // ‚±‚±‚Å–ˆ‰ñƒeƒXƒgƒP[ƒX‚ğ1ƒP[ƒXì¬
+        // ã“ã“ã§æ¯å›ãƒ†ã‚¹ãƒˆã‚±ãƒ¼ã‚¹ã‚’1ã‚±ãƒ¼ã‚¹ä½œæˆ
         TestCaseGenerator(true, false, false);
         ll oldScore = Solve(0);
         ll oldPara = hyperParams[mIndex][epsIndex];
@@ -1801,7 +1801,7 @@ void Battle()
         hyperParams[mIndex][epsIndex] = oldPara;
 
         if (newScore < oldScore) {
-          // AHC030‚ÍƒXƒRƒA‚ª¬‚³‚¢‚Ù‚Ç—Ç‚¢
+          // AHC030ã¯ã‚¹ã‚³ã‚¢ãŒå°ã•ã„ã»ã©è‰¯ã„
           win++;
         }
         else if (newScore == oldScore) {
@@ -1811,7 +1811,7 @@ void Battle()
           lose++;
         }
 
-        // ŠÔ’Zk(Œ‹‰Ê‚ª–¾‚ç‚©‚È‚Æ‚«‚Íbreak)
+        // æ™‚é–“çŸ­ç¸®(çµæœãŒæ˜ã‚‰ã‹ãªã¨ãã¯break)
         if (win >= 120) break;
         if (lose >= 80) break;
         if (win <= lose - 10) break;
@@ -1819,13 +1819,13 @@ void Battle()
         if (win - lose >= 40) break;
       }
 
-      if (win >= 10 && (double)win / (win + lose) >= 0.6) {  // 3Ÿ1”s116•ª‚È‚Ç‚Í”ğ‚¯‚é
+      if (win >= 10 && (double)win / (win + lose) >= 0.6) {  // 3å‹1æ•—116åˆ†ãªã©ã¯é¿ã‘ã‚‹
         isWin = true;
       }
     }
-    else if (judgeMode == 2) {  // 1000í550Ÿ
+    else if (judgeMode == 2) {  // 1000æˆ¦550å‹
       for (int _ = 0; _ < 1000; _++) {
-        // ‚±‚±‚Å–ˆ‰ñƒeƒXƒgƒP[ƒX‚ğ1ƒP[ƒXì¬
+        // ã“ã“ã§æ¯å›ãƒ†ã‚¹ãƒˆã‚±ãƒ¼ã‚¹ã‚’1ã‚±ãƒ¼ã‚¹ä½œæˆ
         TestCaseGenerator(true, false, false);
         ll oldScore = Solve(0);
         ll oldPara = hyperParams[mIndex][epsIndex];
@@ -1834,7 +1834,7 @@ void Battle()
         hyperParams[mIndex][epsIndex] = oldPara;
 
         if (newScore < oldScore) {
-          // AHC030‚ÍƒXƒRƒA‚ª¬‚³‚¢‚Ù‚Ç—Ç‚¢
+          // AHC030ã¯ã‚¹ã‚³ã‚¢ãŒå°ã•ã„ã»ã©è‰¯ã„
           win++;
         }
         else if (newScore == oldScore) {
@@ -1844,7 +1844,7 @@ void Battle()
           lose++;
         }
 
-        // ŠÔ’Zk(Œ‹‰Ê‚ª–¾‚ç‚©‚È‚Æ‚«‚Íbreak)
+        // æ™‚é–“çŸ­ç¸®(çµæœãŒæ˜ã‚‰ã‹ãªã¨ãã¯break)
         if (win >= 550) break;
         if (lose >= 450) break;
         if (win - lose >= 100) break;
@@ -1858,10 +1858,10 @@ void Battle()
 
     if (isWin) {
       cout << "win! loop = " << loop << " : " << endl;
-      // hyperParams‚ğVƒpƒ‰ƒ[ƒ^‚Åã‘‚«
+      // hyperParamsã‚’æ–°ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ä¸Šæ›¸ã
       hyperParams[mIndex][epsIndex] = newPara;
 
-      // •t‹ß(ŠeƒCƒ“ƒfƒbƒNƒX}1)‚ğƒLƒ…[‚É“ü‚ê‚é
+      // ä»˜è¿‘(å„ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹Â±1)ã‚’ã‚­ãƒ¥ãƒ¼ã«å…¥ã‚Œã‚‹
       for (int i = 0; i < 4; i++) {
         int nextMIndex = mIndex;
         int nextEpsIndex = epsIndex;
@@ -1878,17 +1878,17 @@ void Battle()
           nextEpsIndex++;
         }
 
-        // ”ÍˆÍƒ`ƒFƒbƒN
+        // ç¯„å›²ãƒã‚§ãƒƒã‚¯
         if (nextMIndex < 2 || 20 < nextMIndex) continue;
         if (nextEpsIndex <= 0 || 20 < nextEpsIndex) continue;
 
-        // ƒLƒ…[‚É“ü‚ê‚é
+        // ã‚­ãƒ¥ãƒ¼ã«å…¥ã‚Œã‚‹
         winQueue.push(make_pair(nextEpsIndex, newPara));
       }
     }
 
     loop++;
-    if (loop % 100 == 0) {  // “K“–‚Èƒ^ƒCƒ~ƒ“ƒO‚Åo—Í
+    if (loop % 100 == 0) {  // é©å½“ãªã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å‡ºåŠ›
       PrintHyperParams(loop);
     }
   }

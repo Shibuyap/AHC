@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -76,12 +76,12 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^‚Ì‰Šú‰»
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿ã®åˆæœŸåŒ–
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 2ŸŒ³
+// 2æ¬¡å…ƒ
 int queueArr2[10000][2];
 int queueHead2 = 0;
 int queueTail2 = 0;
@@ -179,13 +179,13 @@ bool IsNG(int x, int y)
   return false;
 }
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void SetUp()
 {
   ansScore = 0;
 }
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void Input(int problemNum)
 {
   std::ostringstream oss;
@@ -193,7 +193,7 @@ void Input(int problemNum)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     int nn, mm;
     cin >> nn >> mm;
     srep(i, 1, n + 1)
@@ -205,7 +205,7 @@ void Input(int problemNum)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     int nn, mm;
     ifs >> nn >> mm;
     srep(i, 1, n + 1)
@@ -250,7 +250,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -260,7 +260,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 int CalcScore()
 {
   int res = 1;
@@ -276,11 +276,11 @@ int CalcScore()
   return res;
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     srep(i, 1, n + 1)
     {
       srep(j, 1, n + 1)
@@ -291,7 +291,7 @@ void Output(ofstream& ofs)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     srep(i, 1, n + 1)
     {
       srep(j, 1, n + 1)
@@ -389,7 +389,7 @@ bool Check()
   return true;
 }
 
-// ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^
+// ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 struct Hypers
 {
   double StartTemp;
@@ -433,7 +433,7 @@ void SimulatedAnnealing(Hypers hypers)
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int raMode = Rand() % hypers.Partition[2];
     int ra1, ra2, ra3, ra4, ra5, raDir;
     int keep1, keep2, keep3, keep4, keep5;
@@ -545,24 +545,24 @@ void SimulatedAnnealing(Hypers hypers)
 
     double tmpScore = -INF;
     if (Check()) {
-      // ƒXƒRƒAŒvZ
+      // ã‚¹ã‚³ã‚¢è¨ˆç®—
       tmpScore = CalcScore();
     }
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
     if (prob > Rand01()) {
-      // Ì—p
+      // æ¡ç”¨
       ansScore = tmpScore;
 
-      // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+      // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
       if (ansScore > best_ansScore) {
         CopyToBest();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (raMode < hypers.Partition[0]) {
         srep(i, 1, n + 1)
         {
@@ -591,25 +591,25 @@ void SimulatedAnnealing(Hypers hypers)
   CopyToAns();
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll Solve(int problem_num, Hypers hypers)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(problem_num, ofs);
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   SimulatedAnnealing(hypers);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -686,7 +686,7 @@ int main()
         ll score = Solve(i, hypers);
         sum += score;
 
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
+        // ã‚·ãƒ¼ãƒ‰0ãŒæ‚ªã‘ã‚Œã°æ‰“ã¡åˆ‡ã‚Š
         if (i == 0 && score < 0) {
           break;
         }

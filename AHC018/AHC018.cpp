@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-//=== Macros (•K—v‚É‰‚¶‚ÄC³) ===//
+//=== Macros (å¿…è¦ã«å¿œã˜ã¦ä¿®æ­£) ===//
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -39,19 +39,19 @@ typedef long long int ll;
 typedef pair<int, int> P;
 
 //------------------------------------------------------------------------------
-// (1) Union-FindŠÖ˜AFunnamed namespace
+// (1) Union-Findé–¢é€£ï¼šunnamed namespace
 //------------------------------------------------------------------------------
 namespace
 {
-  // ’è” (UPPER_SNAKE_CASE)
+  // å®šæ•° (UPPER_SNAKE_CASE)
   const int UNION_FIND_MAX = 50000;
 
-  // Union-Find‚Åg—p‚·‚é”z—ñ (snake_case)
+  // Union-Findã§ä½¿ç”¨ã™ã‚‹é…åˆ— (snake_case)
   int uf_parent[UNION_FIND_MAX];
   int uf_rank[UNION_FIND_MAX];
   int uf_count[UNION_FIND_MAX];
 
-  // n—v‘f‚Å‰Šú‰»
+  // nè¦ç´ ã§åˆæœŸåŒ–
   void uf_init()
   {
     for (int i = 0; i < UNION_FIND_MAX; i++) {
@@ -61,7 +61,7 @@ namespace
     }
   }
 
-  // –Ø‚Ìª‚ğ‹‚ß‚é
+  // æœ¨ã®æ ¹ã‚’æ±‚ã‚ã‚‹
   int uf_find(int x)
   {
     if (uf_parent[x] == x) {
@@ -72,7 +72,7 @@ namespace
     }
   }
 
-  // x‚Æy‚Ì‘®‚·‚éW‡‚ğ•¹‡
+  // xã¨yã®å±ã™ã‚‹é›†åˆã‚’ä½µåˆ
   void uf_unite(int x, int y)
   {
     x = uf_find(x);
@@ -90,7 +90,7 @@ namespace
     }
   }
 
-  // x‚Æy‚ª“¯‚¶W‡‚É‘®‚·‚é‚©”Û‚©
+  // xã¨yãŒåŒã˜é›†åˆã«å±ã™ã‚‹ã‹å¦ã‹
   bool uf_same(int x, int y)
   {
     return uf_find(x) == uf_find(y);
@@ -98,22 +98,22 @@ namespace
 }
 
 //------------------------------------------------------------------------------
-// (2) •Ö—˜ŒnE’è”ŠÖ˜AFunnamed namespace
+// (2) ä¾¿åˆ©ç³»ãƒ»å®šæ•°é–¢é€£ï¼šunnamed namespace
 //------------------------------------------------------------------------------
 namespace
 {
   const int INF = 1001001001;
 
-  // ˆÚ“®—p‚Ì·•ª (UPPER_SNAKE_CASE)
+  // ç§»å‹•ç”¨ã®å·®åˆ† (UPPER_SNAKE_CASE)
   const int DELTA_X[4] = { -1, 0, 1, 0 };
   const int DELTA_Y[4] = { 0, -1, 0, 1 };
 
-  // (—á) ˆÚ“®•ûŒü‚ğ¦‚·•¶š—ñ (g‚Á‚Ä‚¢‚È‚¢‰Â”\«‚ ‚è)
+  // (ä¾‹) ç§»å‹•æ–¹å‘ã‚’ç¤ºã™æ–‡å­—åˆ— (ä½¿ã£ã¦ã„ãªã„å¯èƒ½æ€§ã‚ã‚Š)
   const char MOVE_CHARS[4] = { 'U', 'L', 'D', 'R' };
 }
 
 //------------------------------------------------------------------------------
-// (3) —”ƒ‰ƒCƒuƒ‰ƒŠFunnamed namespace
+// (3) ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒªï¼šunnamed namespace
 //------------------------------------------------------------------------------
 namespace
 {
@@ -139,81 +139,81 @@ namespace
 }
 
 //------------------------------------------------------------------------------
-// (4) å—vƒOƒ[ƒoƒ‹•Ï”Funnamed namespace
+// (4) ä¸»è¦ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ï¼šunnamed namespace
 //------------------------------------------------------------------------------
 namespace
 {
-  // ‚à‚Æ‚ÌƒR[ƒh‚Ì MIN_ROCK, MAX_ROCK ‚Íg‚Á‚Ä‚¢‚È‚¢‚½‚ß’u‚¢‚Ä‚¨‚«‚Ü‚·
+  // ã‚‚ã¨ã®ã‚³ãƒ¼ãƒ‰ã® MIN_ROCK, MAX_ROCK ã¯ä½¿ã£ã¦ã„ãªã„ãŸã‚ç½®ã„ã¦ãŠãã¾ã™
   const int MIN_ROCK = 10;
   const int MAX_ROCK = 5000;
 
-  // ‹Œ: CC (UŒ‚ƒRƒXƒg‚ÌŒó•â)
+  // æ—§: CC (æ”»æ’ƒã‚³ã‚¹ãƒˆã®å€™è£œ)
   const int C_OPTIONS[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
-  // Àsƒ‚[ƒh (0: ’ño—p / ‚»‚êˆÈŠO: ƒ[ƒJƒ‹)
+  // å®Ÿè¡Œãƒ¢ãƒ¼ãƒ‰ (0: æå‡ºç”¨ / ãã‚Œä»¥å¤–: ãƒ­ãƒ¼ã‚«ãƒ«)
   int execution_mode = 0;
   ofstream output_file_stream;
 
-  // “ü—ÍŠÖ˜A (‹ŒN, W, K, C)
+  // å…¥åŠ›é–¢é€£ (æ—§N, W, K, C)
   int n_size;          // N
   int w_count;         // W
   int k_count;         // K
   int attack_cost;     // C
 
-  // …Œ¹‚ÌÀ•W (‹Œ: a[i], b[i])
+  // æ°´æºã®åº§æ¨™ (æ—§: a[i], b[i])
   int water_x[20];
   int water_y[20];
 
-  // ‰Æ‚ÌÀ•W (‹Œ: c[i], d[i])
+  // å®¶ã®åº§æ¨™ (æ—§: c[i], d[i])
   int house_x[20];
   int house_y[20];
 
-  // Šâ‚Ì‹­“xƒ}ƒbƒv (‹Œ: S)
+  // å²©ã®å¼·åº¦ãƒãƒƒãƒ— (æ—§: S)
   int rock_strength[210][210];
 
-  // Šeƒ}ƒX‚ª‰ó‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚È‚Ç (‹Œ: f, minS, maxS)
+  // å„ãƒã‚¹ãŒå£Šã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ãªã© (æ—§: f, minS, maxS)
   int is_broken[210][210];
   int min_strength[210][210];
   int max_strength[210][210];
 
-  // Še‰Æ‚ªÅ‚à‹ß‚¢…Œ¹‚ğ‹L˜^ (‹Œ: nearX, nearY)
+  // å„å®¶ãŒæœ€ã‚‚è¿‘ã„æ°´æºã‚’è¨˜éŒ² (æ—§: nearX, nearY)
   int nearest_water_x[20];
   int nearest_water_y[20];
 
-  // ƒXƒRƒAŒvZ—p: HP (‹Œ: hp)
+  // ã‚¹ã‚³ã‚¢è¨ˆç®—ç”¨: HP (æ—§: hp)
   int health_points;
 
-  // UŒ‚—Í‚ÌŒó•â (‹Œ: attack_power[8])
+  // æ”»æ’ƒåŠ›ã®å€™è£œ (æ—§: attack_power[8])
   const int ATTACK_POWER_VALUES[8] = { 50, 50, 50, 50, 50, 100, 100, 100 };
 
-  // ÀÛ‚Ég‚¤UŒ‚—Í (‹Œ: ATTACK_POWER)
+  // å®Ÿéš›ã«ä½¿ã†æ”»æ’ƒåŠ› (æ—§: ATTACK_POWER)
   int attack_power_global = 100;
 }
 
 //------------------------------------------------------------------------------
-// (5) ƒwƒ‹ƒp[ŠÖ”
+// (5) ãƒ˜ãƒ«ãƒ‘ãƒ¼é–¢æ•°
 //------------------------------------------------------------------------------
 inline bool is_out_of_bounds(int x, int y)
 {
   return (x < 0 || x >= n_size || y < 0 || y >= n_size);
 }
 
-// x,y‚ª…‚Æ‚Â‚È‚ª‚Á‚Ä‚¢‚é‚© (‹Œ: IsUniteWater)
+// x,yãŒæ°´ã¨ã¤ãªãŒã£ã¦ã„ã‚‹ã‹ (æ—§: IsUniteWater)
 inline bool is_united_with_water(int x, int y)
 {
   // UF_MAX - 1 = UNION_FIND_MAX - 1
-  // x * n_size + y ‚ª UNION_FIND_MAX - 1 ‚Æ“¯‚¶˜AŒ‹¬•ª‚©
+  // x * n_size + y ãŒ UNION_FIND_MAX - 1 ã¨åŒã˜é€£çµæˆåˆ†ã‹
   return uf_same(x * n_size + y, UNION_FIND_MAX - 1);
 }
 
-// ƒ}ƒ“ƒnƒbƒ^ƒ“‹——£ (‹Œ: Manhattan)
+// ãƒãƒ³ãƒãƒƒã‚¿ãƒ³è·é›¢ (æ—§: Manhattan)
 inline int manhattan_distance(int x1, int y1, int x2, int y2)
 {
   return abs(x1 - x2) + abs(y1 - y2);
 }
 
 //------------------------------------------------------------------------------
-// (6) ƒXƒRƒAŒvZ (‹Œ: CalcScore)
+// (6) ã‚¹ã‚³ã‚¢è¨ˆç®— (æ—§: CalcScore)
 //------------------------------------------------------------------------------
 int calc_score()
 {
@@ -221,38 +221,38 @@ int calc_score()
 }
 
 //------------------------------------------------------------------------------
-// (7) UŒ‚ˆ— (‹Œ: Attack)
+// (7) æ”»æ’ƒå‡¦ç† (æ—§: Attack)
 //------------------------------------------------------------------------------
 int attack_cell(int x, int y, int power)
 {
-  // min_strength‚ğ¡‚Ìmax_strength‚ÉXV
+  // min_strengthã‚’ä»Šã®max_strengthã«æ›´æ–°
   min_strength[x][y] = max_strength[x][y];
-  // max_strength‚É¡‰ñ‚Ì’Ç‰ÁUŒ‚—Ê‚ğ‰ÁZ
+  // max_strengthã«ä»Šå›ã®è¿½åŠ æ”»æ’ƒé‡ã‚’åŠ ç®—
   max_strength[x][y] += power;
-  // HP(ƒXƒRƒA)‚ğ‰ÁZ
+  // HP(ã‚¹ã‚³ã‚¢)ã‚’åŠ ç®—
   health_points += attack_cost + power;
 
   int res = 0;
   if (execution_mode == 0) {
-    // ’ño—p: •W€o—Í‚ÉUŒ‚“à—e‚ğo‚µAŒ‹‰Ê(‰ó‚ê‚½‚©‚Ç‚¤‚©)‚ğó‚¯æ‚é
+    // æå‡ºç”¨: æ¨™æº–å‡ºåŠ›ã«æ”»æ’ƒå†…å®¹ã‚’å‡ºã—ã€çµæœ(å£Šã‚ŒãŸã‹ã©ã†ã‹)ã‚’å—ã‘å–ã‚‹
     cout << x << ' ' << y << ' ' << power << endl;
     fflush(stdout);
     cin >> res;
   }
   else {
-    // ƒ[ƒJƒ‹Às: rock_strength‚ğŒ¸‚ç‚µ‚Ä‰ó‚ê‚½‚©”»’è
+    // ãƒ­ãƒ¼ã‚«ãƒ«å®Ÿè¡Œ: rock_strengthã‚’æ¸›ã‚‰ã—ã¦å£Šã‚ŒãŸã‹åˆ¤å®š
     output_file_stream << x << ' ' << y << ' ' << power << endl;
     rock_strength[x][y] -= power;
     if (rock_strength[x][y] <= 0) {
-      res = 1; // ‰ó‚ê‚½
+      res = 1; // å£Šã‚ŒãŸ
     }
   }
 
-  // ‰ó‚ê‚½ê‡
+  // å£Šã‚ŒãŸå ´åˆ
   if (res != 0) {
     is_broken[x][y] = 1;
 
-    // üˆÍƒ}ƒX‚ª‚·‚Å‚É‰ó‚ê‚Ä‚¢‚ê‚Î Union-Find ‚Å‚Â‚È‚®
+    // å‘¨å›²ãƒã‚¹ãŒã™ã§ã«å£Šã‚Œã¦ã„ã‚Œã° Union-Find ã§ã¤ãªã
     rep(i, 4) {
       int nx = x + DELTA_X[i];
       int ny = y + DELTA_Y[i];
@@ -262,18 +262,18 @@ int attack_cell(int x, int y, int power)
       }
     }
 
-    // ‚à‚µ…Œ¹ƒ}ƒX‚¾‚Á‚½‚çAUF_MAX-1 ‚Æ‚Â‚È‚®
+    // ã‚‚ã—æ°´æºãƒã‚¹ã ã£ãŸã‚‰ã€UF_MAX-1 ã¨ã¤ãªã
     rep(i, w_count) {
       if (x == water_x[i] && y == water_y[i]) {
         uf_unite(x * n_size + y, UNION_FIND_MAX - 1);
       }
     }
 
-    // ‚±‚±‚ÅÄ“xu‘S‚Ä‚Ì‰Æ‚ªŒq‚ª‚Á‚½‚©‚Ç‚¤‚©v‚ğ”»’è‚µ‚Ä‚¢‚é‚ç‚µ‚¢
+    // ã“ã“ã§å†åº¦ã€Œå…¨ã¦ã®å®¶ãŒç¹‹ãŒã£ãŸã‹ã©ã†ã‹ã€ã‚’åˆ¤å®šã—ã¦ã„ã‚‹ã‚‰ã—ã„
     res = 2;
     rep(i, k_count) {
       if (!is_united_with_water(house_x[i], house_y[i])) {
-        res = 1; // ‚Ü‚¾–¢Ú‘±‚Ì‰Æ‚ª‚ ‚é
+        res = 1; // ã¾ã æœªæ¥ç¶šã®å®¶ãŒã‚ã‚‹
       }
     }
   }
@@ -282,7 +282,7 @@ int attack_cell(int x, int y, int power)
 }
 
 //------------------------------------------------------------------------------
-// (8) ˜A‘±UŒ‚‚Å‰ó‚ê‚é‚Ü‚ÅŒ@‚è‘±‚¯‚é (‹Œ: Challenge)
+// (8) é€£ç¶šæ”»æ’ƒã§å£Šã‚Œã‚‹ã¾ã§æ˜ã‚Šç¶šã‘ã‚‹ (æ—§: Challenge)
 //------------------------------------------------------------------------------
 int challenge_cell(int x, int y, int power)
 {
@@ -294,22 +294,22 @@ int challenge_cell(int x, int y, int power)
 }
 
 //------------------------------------------------------------------------------
-// (9) •¡”ƒP[ƒX—p‚É‚·‚×‚ÄƒNƒŠƒA (‹Œ: AllClear_MultiCase)
+// (9) è¤‡æ•°ã‚±ãƒ¼ã‚¹ç”¨ã«ã™ã¹ã¦ã‚¯ãƒªã‚¢ (æ—§: AllClear_MultiCase)
 //------------------------------------------------------------------------------
 void clear_all_multicase()
 {
-  // À‘•–³‚µ(ƒTƒ“ƒvƒ‹)
+  // å®Ÿè£…ç„¡ã—(ã‚µãƒ³ãƒ—ãƒ«)
 }
 
 //------------------------------------------------------------------------------
-// (10) ‰Šúó‘Ôì¬ (‹Œ: Init)
+// (10) åˆæœŸçŠ¶æ…‹ä½œæˆ (æ—§: Init)
 //------------------------------------------------------------------------------
 void init(int problem_num)
 {
   uf_init();
   health_points = 0;
 
-  // ó‘ÔƒNƒŠƒA
+  // çŠ¶æ…‹ã‚¯ãƒªã‚¢
   rep(i, n_size) {
     rep(j, n_size) {
       is_broken[i][j] = 0;
@@ -318,18 +318,18 @@ void init(int problem_num)
     }
   }
 
-  // UŒ‚ƒRƒXƒgC‚É‰‚¶‚ÄUŒ‚—Í‚ğ‘I‘ğ
+  // æ”»æ’ƒã‚³ã‚¹ãƒˆCã«å¿œã˜ã¦æ”»æ’ƒåŠ›ã‚’é¸æŠ
   rep(i, 8) {
     if (attack_cost == C_OPTIONS[i]) {
       attack_power_global = ATTACK_POWER_VALUES[i];
     }
   }
 
-  // ƒ[ƒJƒ‹Às‚Íƒtƒ@ƒCƒ‹o—Í‚ğƒI[ƒvƒ“
+  // ãƒ­ãƒ¼ã‚«ãƒ«å®Ÿè¡Œæ™‚ã¯ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
   if (execution_mode != 0) {
     string file_name_ofs = "./out/";
     {
-      // problem_num‚ğ4Œ…‰»‚µ‚Äƒtƒ@ƒCƒ‹–¼‚ğì‚é
+      // problem_numã‚’4æ¡åŒ–ã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ä½œã‚‹
       int tmp = problem_num;
       string str_num;
       rep(i, 4) {
@@ -345,11 +345,11 @@ void init(int problem_num)
 }
 
 //------------------------------------------------------------------------------
-// (11) “ü—Íó‚¯æ‚è (‹Œ: Input)
+// (11) å…¥åŠ›å—ã‘å–ã‚Š (æ—§: Input)
 //------------------------------------------------------------------------------
 void read_input(int problem_num)
 {
-  // ƒtƒ@ƒCƒ‹–¼¶¬
+  // ãƒ•ã‚¡ã‚¤ãƒ«åç”Ÿæˆ
   string file_name_ifs = "./in/";
   {
     int tmp = problem_num;
@@ -364,7 +364,7 @@ void read_input(int problem_num)
 
   ifstream ifs(file_name_ifs);
 
-  // Àsƒ‚[ƒh=0‚Ü‚½‚Íƒtƒ@ƒCƒ‹‚ªŠJ‚¯‚È‚©‚Á‚½‚ç•W€“ü—Í‚©‚ç“Ç‚Ş
+  // å®Ÿè¡Œãƒ¢ãƒ¼ãƒ‰=0ã¾ãŸã¯ãƒ•ã‚¡ã‚¤ãƒ«ãŒé–‹ã‘ãªã‹ã£ãŸã‚‰æ¨™æº–å…¥åŠ›ã‹ã‚‰èª­ã‚€
   if (execution_mode == 0 || !ifs.is_open()) {
     cin >> n_size >> w_count >> k_count >> attack_cost;
     rep(i, w_count) {
@@ -375,7 +375,7 @@ void read_input(int problem_num)
     }
   }
   else {
-    // ƒ[ƒJƒ‹‚Íƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ­ãƒ¼ã‚«ãƒ«æ™‚ã¯ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> n_size >> w_count >> k_count >> attack_cost;
     rep(i, n_size) {
       rep(j, n_size) {
@@ -392,30 +392,30 @@ void read_input(int problem_num)
 }
 
 //------------------------------------------------------------------------------
-// (12) ‰ğ“šo—Í (‹Œ: Output)
+// (12) è§£ç­”å‡ºåŠ› (æ—§: Output)
 //------------------------------------------------------------------------------
 void write_output(int /*problem_num*/)
 {
-  // ƒ[ƒJƒ‹Às‚Íƒtƒ@ƒCƒ‹o—ÍƒNƒ[ƒY
+  // ãƒ­ãƒ¼ã‚«ãƒ«å®Ÿè¡Œæ™‚ã¯ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›ã‚¯ãƒ­ãƒ¼ã‚º
   if (execution_mode != 0) {
     output_file_stream.close();
   }
 }
 
 //------------------------------------------------------------------------------
-// (13) ÀÛ‚Ìˆ— (‹Œ: Solve)
+// (13) å®Ÿéš›ã®å‡¦ç† (æ—§: Solve)
 //------------------------------------------------------------------------------
 int solve_problem(int problem_num = 0)
 {
   clock_t start_time = clock();
   clock_t end_time = clock();
-  (void)start_time; // g‚í‚È‚¢‚È‚çvoidƒLƒƒƒXƒg‚ÅÁ‚·
+  (void)start_time; // ä½¿ã‚ãªã„ãªã‚‰voidã‚­ãƒ£ã‚¹ãƒˆã§æ¶ˆã™
   (void)end_time;
 
-  // ‰Šú‰»
+  // åˆæœŸåŒ–
   init(problem_num);
 
-  // Še‰Æ‚Ìˆê”Ô‹ß‚¢…Œ¹‚ğ’T‚·
+  // å„å®¶ã®ä¸€ç•ªè¿‘ã„æ°´æºã‚’æ¢ã™
   rep(i, k_count) {
     int dist = INF;
     rep(j, w_count) {
@@ -428,22 +428,22 @@ int solve_problem(int problem_num = 0)
     }
   }
 
-  // ‰Æ‚ğ…Œ¹‚É‚Â‚È‚°‚é
+  // å®¶ã‚’æ°´æºã«ã¤ãªã’ã‚‹
   rep(i, k_count) {
     int phase = 0;
     int now_x = house_x[i], now_y = house_y[i];
     int next_x = -1, next_y = -1;
     int dir = -1;
 
-    // ‚»‚Ì‰Æ‚ª‚Ü‚¾…‚ÆŒq‚ª‚Á‚Ä‚¢‚È‚¢ŠÔ‚ÍŒ@‚è‘±‚¯‚é
+    // ãã®å®¶ãŒã¾ã æ°´ã¨ç¹‹ãŒã£ã¦ã„ãªã„é–“ã¯æ˜ã‚Šç¶šã‘ã‚‹
     while (!is_united_with_water(house_x[i], house_y[i])) {
       if (phase == 0) {
-        // ‰Æ‚Ìƒ}ƒX‚ğŒ@‚é
+        // å®¶ã®ãƒã‚¹ã‚’æ˜ã‚‹
         challenge_cell(now_x, now_y, attack_power_global);
         phase = 1;
       }
       else if (phase == 1) {
-        // Ÿ‚Ìuƒ^[ƒQƒbƒg’n“_(next_x, next_y)v‚ğŒˆ‚ß‚é
+        // æ¬¡ã®ã€Œã‚¿ãƒ¼ã‚²ãƒƒãƒˆåœ°ç‚¹(next_x, next_y)ã€ã‚’æ±ºã‚ã‚‹
         int diff_x = nearest_water_x[i] - now_x;
         if (abs(diff_x) > 20) {
           diff_x = (diff_x > 0) ? 20 : -20;
@@ -453,7 +453,7 @@ int solve_problem(int problem_num = 0)
           diff_y = (diff_y > 0) ? 20 : -20;
         }
 
-        // Šù‚É‰ó‚ê‚Ä…˜H‚ª’Ê‚Á‚Ä‚¢‚éƒ}ƒX‚ª‹ß‚­‚É‚ ‚ê‚ÎA‚»‚¿‚ç‚ğ—Dæ
+        // æ—¢ã«å£Šã‚Œã¦æ°´è·¯ãŒé€šã£ã¦ã„ã‚‹ãƒã‚¹ãŒè¿‘ãã«ã‚ã‚Œã°ã€ãã¡ã‚‰ã‚’å„ªå…ˆ
         int diff_sum = abs(diff_x) + abs(diff_y);
         srep(k, 1, diff_sum) {
           bool found = false;
@@ -470,7 +470,7 @@ int solve_problem(int problem_num = 0)
           if (found) break;
         }
 
-        // x•ûŒü or y•ûŒü‚¾‚¯‚Ìê‡
+        // xæ–¹å‘ or yæ–¹å‘ã ã‘ã®å ´åˆ
         if (diff_x == 0) {
           next_x = now_x;
           next_y = now_y + diff_y;
@@ -482,7 +482,7 @@ int solve_problem(int problem_num = 0)
           challenge_cell(next_x, next_y, attack_power_global);
         }
         else {
-          // Î‚ß‚Éi‚Ş‚Æ‚«‚Í‚Ü‚¸ x•ûŒü‚ÉŒ@‚Á‚ÄA‚»‚ê‚©‚ç y•ûŒü‚ÉŒ@‚é or ‹t‡
+          // æ–œã‚ã«é€²ã‚€ã¨ãã¯ã¾ãš xæ–¹å‘ã«æ˜ã£ã¦ã€ãã‚Œã‹ã‚‰ yæ–¹å‘ã«æ˜ã‚‹ or é€†é †
           int nx1 = now_x + diff_x;
           int ny1 = now_y;
           challenge_cell(nx1, ny1, attack_power_global);
@@ -491,7 +491,7 @@ int solve_problem(int problem_num = 0)
           int ny2 = now_y + diff_y;
           challenge_cell(nx2, ny2, attack_power_global);
 
-          // ‚Ç‚¿‚ç‚Ìƒ}ƒX‚Ì‚Ù‚¤‚ª max_strength ‚ª¬‚³‚¢‚©‚ÅŸ‚ÌŒ»İ’n‚ğŒˆ‚ß‚é
+          // ã©ã¡ã‚‰ã®ãƒã‚¹ã®ã»ã†ãŒ max_strength ãŒå°ã•ã„ã‹ã§æ¬¡ã®ç¾åœ¨åœ°ã‚’æ±ºã‚ã‚‹
           if (max_strength[nx1][ny1] <= max_strength[nx2][ny2]) {
             next_x = nx1;
             next_y = ny1;
@@ -502,33 +502,33 @@ int solve_problem(int problem_num = 0)
           }
         }
 
-        // ˆÚ“®•ûŒüdir‚ğŒˆ‚ß‚é (DELTA_X/DELTA_Y‚Ì“Yš‚ğ‘Î‰)
+        // ç§»å‹•æ–¹å‘dirã‚’æ±ºã‚ã‚‹ (DELTA_X/DELTA_Yã®æ·»å­—ã‚’å¯¾å¿œ)
         if (next_x - now_x < 0) {
-          dir = 0; // ã•ûŒü(DELTA_X[0],DELTA_Y[0])
+          dir = 0; // ä¸Šæ–¹å‘(DELTA_X[0],DELTA_Y[0])
         }
         else if (next_x - now_x > 0) {
-          dir = 2; // ‰º•ûŒü(DELTA_X[2],DELTA_Y[2])
+          dir = 2; // ä¸‹æ–¹å‘(DELTA_X[2],DELTA_Y[2])
         }
         else if (next_y - now_y < 0) {
-          dir = 1; // ¶•ûŒü(DELTA_X[1],DELTA_Y[1])
+          dir = 1; // å·¦æ–¹å‘(DELTA_X[1],DELTA_Y[1])
         }
         else if (next_y - now_y > 0) {
-          dir = 3; // ‰E•ûŒü(DELTA_X[3],DELTA_Y[3])
+          dir = 3; // å³æ–¹å‘(DELTA_X[3],DELTA_Y[3])
         }
 
         phase = 2;
       }
       else if (phase == 2) {
-        // next_x, next_y ‚É“’BÏ‚È‚çÄ“xƒ^[ƒQƒbƒg‚ğÄŒvZ
+        // next_x, next_y ã«åˆ°é”æ¸ˆãªã‚‰å†åº¦ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å†è¨ˆç®—
         if (now_x == next_x && now_y == next_y) {
           phase = 1;
         }
         else {
-          // next_x, next_y ‚ÉŒü‚©‚Á‚Äˆê•ài‚Ş
+          // next_x, next_y ã«å‘ã‹ã£ã¦ä¸€æ­©é€²ã‚€
           int nx = now_x + DELTA_X[dir];
           int ny = now_y + DELTA_Y[dir];
           if (max_strength[nx][ny] == 0) {
-            // ‚Ü‚¾UŒ‚‚³‚ê‚Ä‚¢‚È‚¢ƒ}ƒX‚È‚çCüˆÍ‚Ìó‹µ‚É‰‚¶‚½UŒ‚—ÊŒvZ
+            // ã¾ã æ”»æ’ƒã•ã‚Œã¦ã„ãªã„ãƒã‚¹ãªã‚‰ï¼Œå‘¨å›²ã®çŠ¶æ³ã«å¿œã˜ãŸæ”»æ’ƒé‡è¨ˆç®—
             int d1 = manhattan_distance(now_x, now_y, nx, ny);
             int d2 = manhattan_distance(nx, ny, next_x, next_y);
             int p1 = min_strength[now_x][now_y];
@@ -538,7 +538,7 @@ int solve_problem(int problem_num = 0)
             attack_cell(nx, ny, power);
           }
           else {
-            // ‚·‚Å‚ÉUŒ‚‚³‚ê‚½‚±‚Æ‚Ì‚ ‚éƒ}ƒX‚È‚çA‰ó‚ê‚é‚Ü‚ÅŒ@‚é
+            // ã™ã§ã«æ”»æ’ƒã•ã‚ŒãŸã“ã¨ã®ã‚ã‚‹ãƒã‚¹ãªã‚‰ã€å£Šã‚Œã‚‹ã¾ã§æ˜ã‚‹
             challenge_cell(nx, ny, attack_power_global);
             now_x = nx;
             now_y = ny;
@@ -548,7 +548,7 @@ int solve_problem(int problem_num = 0)
     }
   }
 
-  // ƒ[ƒJƒ‹Às‚ÍƒfƒoƒbƒOo—Í
+  // ãƒ­ãƒ¼ã‚«ãƒ«å®Ÿè¡Œæ™‚ã¯ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›
   if (execution_mode != 0) {
     cerr << "problem_num = " << problem_num
       << ", health_points = " << health_points << endl;
@@ -558,17 +558,17 @@ int solve_problem(int problem_num = 0)
 }
 
 //------------------------------------------------------------------------------
-// (14) ƒ‰ƒbƒpŠÖ” (‹Œ: SolveOuter)
+// (14) ãƒ©ãƒƒãƒ‘é–¢æ•° (æ—§: SolveOuter)
 //------------------------------------------------------------------------------
 int solve_outer(int problem_num = 0)
 {
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   read_input(problem_num);
 
-  // Às
+  // å®Ÿè¡Œ
   int score = solve_problem(problem_num);
 
-  // o—Í
+  // å‡ºåŠ›
   write_output(problem_num);
 
   return score;
@@ -580,24 +580,24 @@ int solve_outer(int problem_num = 0)
 int main()
 {
   srand((unsigned)time(NULL));
-  // —”’²®
+  // ä¹±æ•°èª¿æ•´
   while (rand() % 100) {
     rand_uint32();
   }
 
-  // execution_mode = 0 => ’ño—p
+  // execution_mode = 0 => æå‡ºç”¨
   execution_mode = 2;
 
   if (execution_mode == 0) {
-    // ’ño—p: ’PˆêƒP[ƒX
+    // æå‡ºç”¨: å˜ä¸€ã‚±ãƒ¼ã‚¹
     solve_outer();
   }
   else if (execution_mode == 1) {
-    // 1ƒP[ƒX‚Ì‚İƒtƒ@ƒCƒ‹“Ç‚İE‘‚«
+    // 1ã‚±ãƒ¼ã‚¹ã®ã¿ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿ãƒ»æ›¸ã
     solve_outer(0);
   }
   else if (execution_mode == 2) {
-    // •¡”ƒP[ƒX
+    // è¤‡æ•°ã‚±ãƒ¼ã‚¹
     ll score_sum = 0;
     rep(i, 100) {
       score_sum += solve_outer(i);

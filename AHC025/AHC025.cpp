@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -55,7 +55,7 @@ const ll D16 = 10000000000000000LL;
 const ll D17 = 100000000000000000LL;
 const ll D18 = 1000000000000000000LL;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -109,10 +109,10 @@ int hikaku[110][110];
 
 vector<int> pseudoItems;
 
-// ƒ[ƒJƒ‹ƒeƒXƒg—p“ü—Í
+// ãƒ­ãƒ¼ã‚«ãƒ«ãƒ†ã‚¹ãƒˆç”¨å…¥åŠ›
 ll W[110];
 
-// ƒnƒCƒpƒ‰
+// ãƒã‚¤ãƒ‘ãƒ©
 vector<int> haipara[14][40] = {
 {
 { 200306,1008100, 200916, 200916, 200206, 200216, 200216},
@@ -1400,16 +1400,16 @@ void GeneratePseudoItems()
   }
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   if (mode <= 2) {
     if (mode == 0) {
-      // •W€“ü—Í‚·‚é
+      // æ¨™æº–å…¥åŠ›ã™ã‚‹
       cin >> N >> D >> Q;
     }
     else if (mode <= 2) {
-      // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+      // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
       string fileNameIfs = "./in/";
       string strNum;
       rep(i, 4)
@@ -1429,7 +1429,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode < 1000000) {
@@ -1481,7 +1481,7 @@ bool ErrorCheck()
   return true;
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   double t[30] = {};
@@ -1575,7 +1575,7 @@ char Query(int& turn)
   }
 
   if (turn >= Q) {
-    // WA‘Îô
+    // WAå¯¾ç­–
     l[turn].clear();
     r[turn].clear();
     return '>';
@@ -1859,7 +1859,7 @@ void ResetMemory()
   }
 }
 
-// 1ŒÂˆÚ“®
+// 1å€‹ç§»å‹•
 void Move1(int& countQ, int cutLine = 999)
 {
   int x = Rand() % D;
@@ -1930,7 +1930,7 @@ void Move1(int& countQ, int cutLine = 999)
   }
 }
 
-// –ß‚è’lFˆÚ“®æƒOƒ‹[ƒv
+// æˆ»ã‚Šå€¤ï¼šç§»å‹•å…ˆã‚°ãƒ«ãƒ¼ãƒ—
 int Move1_Specify(int& countQ, int groupId)
 {
   int x = groupId;
@@ -2218,7 +2218,7 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
   return -1;
 }
 
-// 1ŒÂŒğŠ·
+// 1å€‹äº¤æ›
 int arr8_2_L[110];
 int arr8_2_R[110];
 void Swap1(int& countQ, int diffLine = 999)
@@ -2540,7 +2540,7 @@ bool IsAllSearched_SwapNeighbor1(const vector<int>& items)
       return false;
     }
 
-    // XV‰Â”\‚©
+    // æ›´æ–°å¯èƒ½ã‹
     if (c == '<') {
       return false;
     }
@@ -2549,7 +2549,7 @@ bool IsAllSearched_SwapNeighbor1(const vector<int>& items)
   return true;
 }
 
-// d‚³‚Ì‹ß‚¢‚à‚Ì‚ğƒXƒƒbƒv
+// é‡ã•ã®è¿‘ã„ã‚‚ã®ã‚’ã‚¹ãƒ¯ãƒƒãƒ—
 bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
 {
   int M = _m;
@@ -2944,7 +2944,7 @@ void Method16(int hiritu = 60)
 {
   int countQ = 0;
 
-  // ‰Šú‰ğ‚ğ­‚µH•v
+  // åˆæœŸè§£ã‚’å°‘ã—å·¥å¤«
   rep(i, N)
   {
     if (i < D) {
@@ -3223,7 +3223,7 @@ void MergeDfs_Group(vector<int>& groups, int& countQ, int left, int right)
 void MergeSort_Group(vector<int>& groups, int& countQ)
 {
   MergeDfs_Group(groups, countQ, 0, D);
-  reverse(groups.begin(), groups.end());  // d‚¢‡‚Å•Ô‚·
+  reverse(groups.begin(), groups.end());  // é‡ã„é †ã§è¿”ã™
   return;
 }
 
@@ -3643,21 +3643,21 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -3737,7 +3737,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
         real_ans[i] = ans[i];
       }
       if (countQ <= Q - D) {
-        // max_DŒvZ
+        // max_Dè¨ˆç®—
         int tmp_max_D = 0;
         srep(i, 1, D)
         {
@@ -3763,7 +3763,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     }
     else {
       if (countQ <= Q - D) {
-        // max_DŒvZ
+        // max_Dè¨ˆç®—
         int tmp_max_D = 0;
         srep(i, 1, D)
         {
@@ -3782,7 +3782,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
           }
         }
 
-        // b’è1ˆÊ‚Æ”äŠr
+        // æš«å®š1ä½ã¨æ¯”è¼ƒ
         int cntBoth[110] = {};
         rep(j, N)
         {
@@ -3831,7 +3831,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
       break;
     }
 
-    // ƒ‰ƒ“ƒ_ƒ€‚É‚¢‚­‚Â‚©ƒXƒƒbƒv
+    // ãƒ©ãƒ³ãƒ€ãƒ ã«ã„ãã¤ã‹ã‚¹ãƒ¯ãƒƒãƒ—
     vector<int> ningning;
     saidai = min(saidai, N - 1);
     saidai = max(saidai, 1);
@@ -3864,21 +3864,21 @@ void Method226(int hiritu = 100, int minDiff = 10)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -3962,7 +3962,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
         real_ans[i] = ans[i];
       }
       if (countQ <= Q - D) {
-        // max_DŒvZ
+        // max_Dè¨ˆç®—
         int tmp_max_D = 0;
         srep(i, 1, D)
         {
@@ -3988,7 +3988,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
     }
     else {
       if (countQ <= Q - D) {
-        // max_DŒvZ
+        // max_Dè¨ˆç®—
         int tmp_max_D = 0;
         srep(i, 1, D)
         {
@@ -4007,7 +4007,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
           }
         }
 
-        // b’è1ˆÊ‚Æ”äŠr
+        // æš«å®š1ä½ã¨æ¯”è¼ƒ
         int cntBoth[110] = {};
         rep(j, N)
         {
@@ -4079,20 +4079,20 @@ void Method6(int hiritu = 100, int minDiff = 10)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -4166,20 +4166,20 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -4274,10 +4274,10 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
   }
 
   int M = blocks.size();
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSortBlock(blocks, countQ);
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     rep(j, blocks[M - 1 - i].size())
@@ -4287,10 +4287,10 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
     }
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, M - D)
   {
     int gId = groups[D - 1];
@@ -4399,7 +4399,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   int M = blocks.size();
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSortBlock(blocks, countQ);
 
   if (destroySize >= M) {
@@ -4408,7 +4408,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     return;
   }
 
-  // ‘å‚«‚¢‚Ì‚ğ•ªŠ„
+  // å¤§ãã„ã®ã‚’åˆ†å‰²
   vector<vector<int>> tmp1, tmp2;
   rep(i, M)
   {
@@ -4420,7 +4420,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     }
   }
 
-  // •ªŠ„‚µ‚½ƒAƒCƒeƒ€‚ğ‘}“ü
+  // åˆ†å‰²ã—ãŸã‚¢ã‚¤ãƒ†ãƒ ã‚’æŒ¿å…¥
   blocks = tmp2;
   for (auto tmp : tmp1) {
     M = blocks.size();
@@ -4445,7 +4445,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   M = blocks.size();
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     rep(j, blocks[M - 1 - i].size())
@@ -4455,10 +4455,10 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     }
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, M - D)
   {
     int gId = groups[D - 1];
@@ -4569,7 +4569,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   int M = blocks.size();
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSortBlock(blocks, countQ);
 
   if (destroySize >= M) {
@@ -4579,7 +4579,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     return;
   }
 
-  // ‘å‚«‚¢‚Ì‚ğ•ªŠ„
+  // å¤§ãã„ã®ã‚’åˆ†å‰²
   vector<vector<int>> tmp1, tmp2;
   rep(i, M)
   {
@@ -4591,7 +4591,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     }
   }
 
-  // •ªŠ„‚µ‚½ƒAƒCƒeƒ€‚ğ‘}“ü
+  // åˆ†å‰²ã—ãŸã‚¢ã‚¤ãƒ†ãƒ ã‚’æŒ¿å…¥
   blocks = tmp2;
   for (auto tmp : tmp1) {
     M = blocks.size();
@@ -4641,7 +4641,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   M = blocks.size();
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     rep(j, blocks[M - 1 - i].size())
@@ -4651,10 +4651,10 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     }
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, M - D)
   {
     int gId = groups[D - 1];
@@ -4754,7 +4754,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   }
 
   int M = blocks.size();
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSortBlock(blocks, countQ);
 
   if (destroySize >= M) {
@@ -4764,7 +4764,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
     return;
   }
 
-  // ‘å‚«‚¢‚Ì‚ğ•ªŠ„
+  // å¤§ãã„ã®ã‚’åˆ†å‰²
   vector<vector<int>> tmp1, tmp2;
   rep(i, M)
   {
@@ -4776,7 +4776,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
     }
   }
 
-  // •ªŠ„‚µ‚½ƒAƒCƒeƒ€‚ğ‘}“ü
+  // åˆ†å‰²ã—ãŸã‚¢ã‚¤ãƒ†ãƒ ã‚’æŒ¿å…¥
   blocks = tmp2;
   for (auto tmp : tmp1) {
     M = blocks.size();
@@ -4828,7 +4828,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   M = blocks.size();
   vector<int> groupNakami[30];
   int flag[110] = {};
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     rep(j, blocks[M - 1 - i].size())
@@ -4840,14 +4840,14 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
     flag[M - 1 - i] = 1;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
 
   rep(i, D)
   {
     groups.push_back(i);
   }
 
-  // “r’†‚Ü‚ÅpseudoItems‚ğ—p‚¢‚Äˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // é€”ä¸­ã¾ã§pseudoItemsã‚’ç”¨ã„ã¦ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, M - D)
   {
     if (M - i >= totyuu) {
@@ -4885,10 +4885,10 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
     }
   }
 
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   int tail = M;
   while (tail > 0) {
     if (flag[tail - 1] == 1) {
@@ -4998,7 +4998,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   int M = blocks.size();
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSortBlock(blocks, countQ);
 
   if (destroySize >= M) {
@@ -5008,7 +5008,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     return;
   }
 
-  // ‘å‚«‚¢‚Ì‚ğ•ªŠ„
+  // å¤§ãã„ã®ã‚’åˆ†å‰²
   vector<vector<int>> tmp1, tmp2;
   rep(i, M)
   {
@@ -5020,7 +5020,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     }
   }
 
-  // •ªŠ„‚µ‚½ƒAƒCƒeƒ€‚ğ‘}“ü
+  // åˆ†å‰²ã—ãŸã‚¢ã‚¤ãƒ†ãƒ ã‚’æŒ¿å…¥
   blocks = tmp2;
   for (auto tmp : tmp1) {
     M = blocks.size();
@@ -5070,7 +5070,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   M = blocks.size();
-  // ‚Â‚Ã‚çÜ‚è‚É“ü‚ê‚Ä‚¢‚­
+  // ã¤ã¥ã‚‰æŠ˜ã‚Šã«å…¥ã‚Œã¦ã„ã
   int junban[60];
   rep(i, D)
   {
@@ -5132,21 +5132,21 @@ void Method12(int ikichi = N)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ, ikichi);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -5196,21 +5196,21 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // “r’†‚Ü‚ÅpseudoItems‚ğ—p‚¢‚Äˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // é€”ä¸­ã¾ã§pseudoItemsã‚’ç”¨ã„ã¦ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     if (N - i >= totyuu) {
@@ -5252,10 +5252,10 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
     }
   }
 
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   int tail = N;
   while (tail > 0) {
     if (ans[items[tail - 1]] != -1) {
@@ -5329,10 +5329,10 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ˆê•”ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ä¸€éƒ¨ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ, 1001001, M);
 
-  // ƒ\[ƒg‚µ‚Ä‚¢‚È‚¢ƒAƒCƒeƒ€‚ğ“ü‚ê‚é
+  // ã‚½ãƒ¼ãƒˆã—ã¦ã„ãªã„ã‚¢ã‚¤ãƒ†ãƒ ã‚’å…¥ã‚Œã‚‹
   int _D = D - aketoku;
   _D = max(_D, 2);
   srep(i, M, N)
@@ -5341,11 +5341,11 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     ans[id] = (i - M) % _D;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   int tail = N;
   while (tail > 0) {
     if (ans[items[tail - 1]] != -1) {
@@ -5423,7 +5423,7 @@ void Method806(int hiritu, int minDiff, int _m)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // 1‰ñ‚¾‚¯”ä‚×‚é
+  // 1å›ã ã‘æ¯”ã¹ã‚‹
   rep(i, M)
   {
     int j = N - 1 - i;
@@ -5434,21 +5434,21 @@ void Method806(int hiritu, int minDiff, int _m)
     }
   }
 
-  // ˆê•”ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ä¸€éƒ¨ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ, 1001001, M);
 
-  // ƒ\[ƒg‚µ‚Ä‚¢‚È‚¢ƒAƒCƒeƒ€‚ğ“ü‚ê‚é
+  // ã‚½ãƒ¼ãƒˆã—ã¦ã„ãªã„ã‚¢ã‚¤ãƒ†ãƒ ã‚’å…¥ã‚Œã‚‹
   srep(i, M, N)
   {
     int id = items[i];
     ans[id] = (i - M) % D;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   int tail = N;
   while (tail > 0) {
     if (ans[items[tail - 1]] != -1) {
@@ -5527,10 +5527,10 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ˆê•”ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ä¸€éƒ¨ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ, 1001001, M);
 
-  // ƒ\[ƒg‚µ‚Ä‚¢‚È‚¢ƒAƒCƒeƒ€‚ğ“ü‚ê‚é
+  // ã‚½ãƒ¼ãƒˆã—ã¦ã„ãªã„ã‚¢ã‚¤ãƒ†ãƒ ã‚’å…¥ã‚Œã‚‹
   int _D = D - aketoku;
   _D = max(_D, 2);
   srep(i, M, N)
@@ -5539,11 +5539,11 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     ans[id] = (i - M) % _D;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   int tail = N;
   while (tail > 0) {
     if (ans[items[tail - 1]] != -1) {
@@ -5559,11 +5559,11 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     int gId = groups[D - 1];
     ans[id] = gId;
 
-    // ‰‰ñ‚¾‚¯“Á•Êˆ—
+    // åˆå›ã ã‘ç‰¹åˆ¥å‡¦ç†
     if (i == tail - 1) {
       rep(karina, 10)
       {
-        // ¡‚ÌƒOƒ‹[ƒv‚É”‰ñMove1‚·
+        // ä»Šã®ã‚°ãƒ«ãƒ¼ãƒ—ã«æ•°å›Move1è©¦ã™
         int dstId = Move1_Specify(countQ, gId);
         if (dstId != -1) {
           int dstPos = 0;
@@ -5573,7 +5573,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
               dstPos = j;
             }
           }
-          // ®—ñ‚ğXV
+          // æ•´åˆ—ã‚’æ›´æ–°
           int left = 0;
           int right = dstPos;
           while (left < right) {
@@ -5669,21 +5669,21 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // “r’†‚Ü‚ÅpseudoItems‚ğ—p‚¢‚Äˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // é€”ä¸­ã¾ã§pseudoItemsã‚’ç”¨ã„ã¦ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     if (N - i >= totyuu) {
@@ -5725,10 +5725,10 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
     }
   }
 
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   int tail = N;
   while (tail > 0) {
     if (ans[items[tail - 1]] != -1) {
@@ -5800,21 +5800,21 @@ void Method112(int ikichi = N, int totyuu = 999)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ, ikichi);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // “r’†‚Ü‚ÅpseudoItems‚ğ—p‚¢‚Äˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // é€”ä¸­ã¾ã§pseudoItemsã‚’ç”¨ã„ã¦ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     if (N - i >= totyuu) {
@@ -5856,10 +5856,10 @@ void Method112(int ikichi = N, int totyuu = 999)
     }
   }
 
-  // ‚±‚±‚ÅƒOƒ‹[ƒv‚ğˆê“xƒ}[ƒWƒ\[ƒg‚µ‚Ä³‚µ‚¢‡˜‚É•À‚Ñ‘Ö‚¦‚é
+  // ã“ã“ã§ã‚°ãƒ«ãƒ¼ãƒ—ã‚’ä¸€åº¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã—ã¦æ­£ã—ã„é †åºã«ä¸¦ã³æ›¿ãˆã‚‹
   MergeSort_Group(groups, countQ);
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -5909,21 +5909,21 @@ void Method17(int ikichi, int hiritu)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ, ikichi);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // ˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -5985,21 +5985,21 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
   rep(i, N) { items.push_back(i); }
   int countQ = 0;
 
-  // ƒAƒCƒeƒ€‚ğƒ}[ƒWƒ\[ƒg(Œy‚¢‡)
+  // ã‚¢ã‚¤ãƒ†ãƒ ã‚’ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆ(è»½ã„é †)
   MergeSort(items, countQ);
   rep(i, N) { karusa[items[i]] = i; }
 
-  // ŠeƒOƒ‹[ƒv‚É1ŒÂ‚¸‚Â“ü‚ê‚é
+  // å„ã‚°ãƒ«ãƒ¼ãƒ—ã«1å€‹ãšã¤å…¥ã‚Œã‚‹
   rep(i, D)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
 
-  vector<int> groups;  // í‚Éd‚¢‡‚É•À‚ñ‚Å‚¢‚é‚æ‚¤‚É‚·‚é
+  vector<int> groups;  // å¸¸ã«é‡ã„é †ã«ä¸¦ã‚“ã§ã„ã‚‹ã‚ˆã†ã«ã™ã‚‹
   rep(i, D) { groups.push_back(i); }
 
-  // pseudoItems‚ğ—p‚¢‚Äˆê”ÔŒy‚¢ƒOƒ‹[ƒv‚É“ü‚ê‚Ä‚¢‚­
+  // pseudoItemsã‚’ç”¨ã„ã¦ä¸€ç•ªè»½ã„ã‚°ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚Œã¦ã„ã
   drep(i, N - D)
   {
     int id = items[i];
@@ -6106,7 +6106,7 @@ void PrintAns(ofstream& ofs)
   }
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   startTime = clock();
@@ -6137,10 +6137,10 @@ void SetUp()
 
 ll Solve(int probNum, ll hai2 = D18)
 {
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
   GeneratePseudoItems();
@@ -6158,7 +6158,7 @@ ll Solve(int probNum, ll hai2 = D18)
   //   return 0;
   // }
 
-  // ‚±‚ê‚ ‚é‚ÆTLE‚µ‚È‚¢B
+  // ã“ã‚Œã‚ã‚‹ã¨TLEã—ãªã„ã€‚
   //if (haipara[NN][QQ][DD] >= 1000000) {
   //  return 0;
   //}
@@ -6332,7 +6332,7 @@ ll Solve(int probNum, ll hai2 = D18)
     }
   }
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   if (mode == 0 || mode == 1) {
     OpenOfs(probNum, ofs);
@@ -6921,7 +6921,7 @@ int main()
         cout << "newHai2 = " << setw(19) << newHai2;
         cout << " : " << winSum << "/" << loseSum << "/" << drawSum << endl;
 
-        // winQueue‚É“ü‚ê‚é
+        // winQueueã«å…¥ã‚Œã‚‹
         rep(_, 6)
         {
           int NNN = NN;

@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-// 1ŸŒ³ƒLƒ…[‚ÌƒNƒ‰ƒX
+// 1æ¬¡å…ƒã‚­ãƒ¥ãƒ¼ã®ã‚¯ãƒ©ã‚¹
 class Queue1D
 {
 private:
@@ -10,7 +10,7 @@ private:
   int tail;
 
 public:
-  // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+  // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
   Queue1D() : head(0), tail(0) {}
 
   void clear_queue()
@@ -41,7 +41,7 @@ public:
   }
 };
 
-// 2ŸŒ³ƒLƒ…[‚ÌƒNƒ‰ƒX
+// 2æ¬¡å…ƒã‚­ãƒ¥ãƒ¼ã®ã‚¯ãƒ©ã‚¹
 class Queue2D
 {
 private:
@@ -51,7 +51,7 @@ private:
   int tail;
 
 public:
-  // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+  // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
   Queue2D() : head(0), tail(0) {}
 
   void clear_queue()

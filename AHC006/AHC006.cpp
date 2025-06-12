@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <chrono>
 #include <climits>
 #include <cstdint>
@@ -20,7 +20,7 @@ using namespace std;
 typedef long long int ll;
 #define MAX_N 200005
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
@@ -34,7 +34,7 @@ namespace {
   }
 }
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand() {
     static uint32_t x = 123456789;
@@ -141,13 +141,13 @@ void input_data(int case_num) {
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     for (int i = 0; i < n; ++i) {
       cin >> start_points[i].x >> start_points[i].y >> goal_points[i].x >> goal_points[i].y;
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     for (int i = 0; i < n; ++i) {
       ifs >> start_points[i].x >> start_points[i].y >> goal_points[i].x >> goal_points[i].y;
     }
@@ -156,7 +156,7 @@ void input_data(int case_num) {
 
 void output_data(const Answer& answer, int case_num) {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << 50;
     for (int i = 0; i < 50; ++i) {
       if (answer.sel_pair_idx[i] < INIT_N) {
@@ -171,7 +171,7 @@ void output_data(const Answer& answer, int case_num) {
     cout << endl;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -204,21 +204,21 @@ void reset_param() {
 }
 
 void filter_input_points(double time_limit) {
-  // --- ûWÏ‚İ‚ÌÅ—Çƒf[ƒ^‚ğ•Û ---
+  // --- åé›†æ¸ˆã¿ã®æœ€è‰¯ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒ ---
   vector<Point> best_start_points, best_goal_points;
-  int         best_metric = 1'001'001;   // ¡‚Ì‚Æ‚±‚ëÅ¬‚Ìu‹éŒ`ƒXƒRƒAv
+  int         best_metric = 1'001'001;   // ä»Šã®ã¨ã“ã‚æœ€å°ã®ã€ŒçŸ©å½¢ã‚¹ã‚³ã‚¢ã€
   int         iter_count = 0;
 
-  // --- ‰ü‘Pƒ‹[ƒv ---
+  // --- æ”¹å–„ãƒ«ãƒ¼ãƒ— ---
   while (true) {
     ++iter_count;
     if (iter_count % 100 == 1 && get_elapsed_time() > time_limit) break;
 
-    // Œó•âƒf[ƒ^‚ğˆê“I‚É•Û
+    // å€™è£œãƒ‡ãƒ¼ã‚¿ã‚’ä¸€æ™‚çš„ã«ä¿æŒ
     vector<Point> cand_start_points, cand_goal_points;
     vector<int> cand_indices;
 
-    // ƒ‰ƒ“ƒ_ƒ€‚É‹éŒ`‚ğ¶¬
+    // ãƒ©ãƒ³ãƒ€ãƒ ã«çŸ©å½¢ã‚’ç”Ÿæˆ
     int rect_left = Rand() % 801;
     int rect_right = Rand() % 801;
     int rect_upper = Rand() % 801;
@@ -226,11 +226,11 @@ void filter_input_points(double time_limit) {
     if (rect_left > rect_right)  swap(rect_left, rect_right);
     if (rect_upper > rect_lower)  swap(rect_upper, rect_lower);
 
-    // gL‚³h ‚Ì‘ã‚í‚è‚É•{‚‚³‚ğ•]‰¿w•W‚É‚µ‚Ä‚¢‚é
+    // â€œåºƒã•â€ ã®ä»£ã‚ã‚Šã«å¹…ï¼‹é«˜ã•ã‚’è©•ä¾¡æŒ‡æ¨™ã«ã—ã¦ã„ã‚‹
     const int rect_metric = (rect_right - rect_left) + (rect_lower - rect_upper);
     if (rect_metric >= best_metric) continue;
 
-    // ‹éŒ`“à‚Éû‚Ü‚é“_‚ğ’Šo
+    // çŸ©å½¢å†…ã«åã¾ã‚‹ç‚¹ã‚’æŠ½å‡º
     for (int i = 0; i < n; ++i) {
       if (is_inside_rect(i, rect_left, rect_right, rect_upper, rect_lower)) {
         cand_start_points.push_back(start_points[i]);
@@ -239,7 +239,7 @@ void filter_input_points(double time_limit) {
       }
     }
 
-    // \•ª‚È“_”‚ª‚ ‚èA‚µ‚©‚àw•W‚ªXV‚³‚ê‚½‚çÌ—p
+    // ååˆ†ãªç‚¹æ•°ãŒã‚ã‚Šã€ã—ã‹ã‚‚æŒ‡æ¨™ãŒæ›´æ–°ã•ã‚ŒãŸã‚‰æ¡ç”¨
     if (cand_start_points.size() >= m + 1) {
       best_start_points = std::move(cand_start_points);
       best_goal_points = std::move(cand_goal_points);
@@ -248,7 +248,7 @@ void filter_input_points(double time_limit) {
     }
   }
 
-  // ƒxƒXƒgŒ‹‰Ê‚ÅƒOƒ[ƒoƒ‹‚ğXV
+  // ãƒ™ã‚¹ãƒˆçµæœã§ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚’æ›´æ–°
   if (best_start_points.size() >= m) {
     start_points.swap(best_start_points);
     goal_points.swap(best_goal_points);
@@ -275,7 +275,7 @@ void build_initial_path(Answer& answer) {
 void sa_point_swap(Answer& answer, double time_limit) {
   Answer best_answer = answer;
 
-  // R“o‚è‰ğAÄ‚«‚È‚Ü‚µ‰ğ
+  // å±±ç™»ã‚Šè§£ã€ç„¼ããªã¾ã—è§£
   double start_temp = 4800;
   double end_temp = 1000;
   int loop = 0;
@@ -325,12 +325,12 @@ void sa_point_swap(Answer& answer, double time_limit) {
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       ;
     }
   }
 
-  // Å‚ƒXƒRƒA‚ğ–ß‚·
+  // æœ€é«˜ã‚¹ã‚³ã‚¢ã‚’æˆ»ã™
   answer = best_answer;
 
   for (int i = 0; i < m; ++i) {
@@ -354,7 +354,7 @@ void sa_two_opt_path(Answer& answer, double time_limit) {
   double start_temp = 48;
   double end_temp = 0.0001;
 
-  // ‚»‚ê‚¼‚ê‚ğTSP
+  // ãã‚Œãã‚Œã‚’TSP
   for (int ui_tei = 0; ui_tei < 15; ++ui_tei) {
     double this_start_time = get_elapsed_time();
     double this_time_limit = start_time + (time_limit - start_time) / 15.0 * (ui_tei + 1);
@@ -436,13 +436,13 @@ void sa_two_opt_path(Answer& answer, double time_limit) {
         }
       }
       else {
-        // Œ³‚É–ß‚·
+        // å…ƒã«æˆ»ã™
       }
     }
 
     cerr << "Set " << ui_tei << " iteration: " << loop << endl;
 
-    // Å‚ƒXƒRƒA‚ğ–ß‚·
+    // æœ€é«˜ã‚¹ã‚³ã‚¢ã‚’æˆ»ã™
     answer = best_answer;
   }
 }

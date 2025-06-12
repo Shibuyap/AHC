@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -687,8 +687,8 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
       piece.rot = 1 - piece.rot;
     }
 
-    // ‚±‚±‚ÅisPlacementAllowed‚ğ—p‚¢‚Ä‰Â“Ç«Œüã
-    // ‘S‚Ä‚Ìok•Ï”‚ğisPlacementAllowed‚É•ÏX
+    // ã“ã“ã§isPlacementAllowedã‚’ç”¨ã„ã¦å¯èª­æ€§å‘ä¸Š
+    // å…¨ã¦ã®okå¤‰æ•°ã‚’isPlacementAllowedã«å¤‰æ›´
     int isPlacementAllowed = 1;
 
     if (secondStackingThreshold < 50 && (pieceSizeOrder[i] < rankThreshold || pieceLargestDimension[i] < MAX_HEIGHT * heightRatioLimit / 2)) {
@@ -1050,19 +1050,19 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
 
-      /*  ‚±‚±‚ğ‘‚­ */
+      /*  ã“ã“ã‚’æ›¸ã */
       /*
-      ‘S•”U‚¾‚©‚çAAA
+      å…¨éƒ¨Uã ã‹ã‚‰ã€ã€ã€
 
-      1. X‚ğ1’i‰º‚Ì––”ö‚É’u‚­
+      1. Xã‚’1æ®µä¸‹ã®æœ«å°¾ã«ç½®ã
 
-      2. X‚ğ1’iã‚Ìæ“ª‚É’u‚­
+      2. Xã‚’1æ®µä¸Šã®å…ˆé ­ã«ç½®ã
 
-      3. X‚Ìc‰¡‚ğ•ÏX‚·‚é
+      3. Xã®ç¸¦æ¨ªã‚’å¤‰æ›´ã™ã‚‹
 
-      4. ƒXƒƒbƒv
+      4. ã‚¹ãƒ¯ãƒƒãƒ—
 
-      ƒuƒƒbƒN‚²‚Æ“®‚©‚µ‚½•û‚ªŠy‚»‚¤
+      ãƒ–ãƒ­ãƒƒã‚¯ã”ã¨å‹•ã‹ã—ãŸæ–¹ãŒæ¥½ãã†
       */
 
       int layoutNum = Rand() % layouts.size();
@@ -1268,7 +1268,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
         continue;
       }
 
-      // 1‚Í2‚Ìs‚Ì1”Ô‘O
+      // 1ã¯2ã®è¡Œã®1ç•ªå‰
       int base1 = solutionCandidates[randomCandidateIndex].pieces[randomPieceIndex2].base;
       while (base1 > randomCandidateIndex) {
         base1 = solutionCandidates[randomCandidateIndex].pieces[base1].base;
@@ -1277,7 +1277,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
         continue;
       }
 
-      // 2‚Í1‚Ìs‚Ì1”ÔŒã‚ë
+      // 2ã¯1ã®è¡Œã®1ç•ªå¾Œã‚
       int base2_1 = randomCandidateIndex;
       int base2_21 = -2;
       int base2_22 = -2;

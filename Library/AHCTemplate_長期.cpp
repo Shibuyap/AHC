@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -33,7 +33,7 @@ using namespace std;
 
 typedef long long int ll;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
@@ -47,7 +47,7 @@ namespace {
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace {
   static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
@@ -93,19 +93,19 @@ void input_data(int case_num) {
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
   }
 }
 
 void output_data(int case_num) {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());

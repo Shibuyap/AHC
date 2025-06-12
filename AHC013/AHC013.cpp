@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -42,7 +42,7 @@ typedef pair<int, int> P;
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -65,13 +65,13 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-namespace /* •Ï” */
+namespace /* å¤‰æ•° */
 {
-  // “ü—Í—p•Ï”
+  // å…¥åŠ›ç”¨å¤‰æ•°
   int n, K;
   string s[100];
 
-  // ‰ğ“š—p•Ï”
+  // è§£ç­”ç”¨å¤‰æ•°
   int maxScore;
   int ope1, ope2;
   int ans1[1000][5], ans2[1000][4];
@@ -132,7 +132,7 @@ namespace /* •Ï” */
   int outer_unionSize[500];
   set<P> outer_vp;
 
-  // ‚»‚Ì‘¼
+  // ãã®ä»–
   int K100;
   int methodCount[20][2];
   int methodSum[2];
@@ -217,7 +217,7 @@ int GetIte(int xx, int yy, char cc)
   return -1;
 }
 
-// ƒT[ƒo[‚Ü‚Å‚½‚Ç‚è’…‚¯‚é‚©
+// ã‚µãƒ¼ãƒãƒ¼ã¾ã§ãŸã©ã‚Šç€ã‘ã‚‹ã‹
 int GetIte2(int xx, int yy, char cc)
 {
   if (cc == 'U') {
@@ -319,8 +319,8 @@ void UpdateD(int j)
   }
 }
 
-// ƒXƒRƒAŒvZ
-// —v‘f”‚Ì‘å‚«‚¢‡‚Ég‚¤
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
+// è¦ç´ æ•°ã®å¤§ãã„é †ã«ä½¿ã†
 int CalcScore(int times, bool makeAns = false)
 {
   int res = 0;
@@ -447,7 +447,7 @@ void Init()
   }
 
   if (viewOrder == 0) {
-    // ‰¡c‚Ì‡
+    // æ¨ªç¸¦ã®é †
     rep(i, K100)
     {
       if (R[i] == -1) {
@@ -485,7 +485,7 @@ void Init()
     }
   }
   else {
-    // c‰¡‚Ì‡
+    // ç¸¦æ¨ªã®é †
     rep(i, K100)
     {
       if (D[i] == -1) {
@@ -584,11 +584,11 @@ void Input(int problemNum)
   fileNameIfs += strNum + ".txt";
 
   ifstream ifs(fileNameIfs.c_str());
-  if (!ifs.is_open()) {  // •W€“ü—Í‚·‚é
+  if (!ifs.is_open()) {  // æ¨™æº–å…¥åŠ›ã™ã‚‹
     cin >> n >> K;
     rep(i, n) cin >> s[i];
   }
-  else {  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  else {  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     ifs >> n >> K;
     rep(i, n) ifs >> s[i];
   }
@@ -616,7 +616,7 @@ void Output(int mode, int problemNum)
     }
   }
 
-  // ƒtƒ@ƒCƒ‹o—Í
+  // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -706,7 +706,7 @@ void OuterClear()
   outer_ope2 = 0;
 }
 
-// max‚Æreal_max‚ğ‰Šú‰»
+// maxã¨real_maxã‚’åˆæœŸåŒ–
 void AllClear()
 {
   NormalClear();
@@ -1022,7 +1022,7 @@ void RollBackFromOuter()
   vp = outer_vp;
 }
 
-// ƒRƒ“ƒsƒ…[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É1ƒ}ƒXˆÚ“®
+// ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«1ãƒã‚¹ç§»å‹•
 /*
 int maxScore;
 int ope1, ope2;
@@ -1101,7 +1101,7 @@ void BackVp()
   drep(i, vpcnt)
   {
     if (keep_vp[i][2] == 0) {
-      // push‚³‚ê‚½‚Ì‚Åpop‚·‚é
+      // pushã•ã‚ŒãŸã®ã§popã™ã‚‹
       vp.erase(P(keep_vp[i][0], keep_vp[i][1]));
       unionSize[keep_vp[i][1]] = 0;
     }
@@ -1122,7 +1122,7 @@ inline void EraseUnion(int ite)
   }
 }
 
-// –ß‚è’lFXV‚µ‚½‚©‚Ç‚¤‚©
+// æˆ»ã‚Šå€¤ï¼šæ›´æ–°ã—ãŸã‹ã©ã†ã‹
 int InnerMethod(double start_temp, double end_temp, double now_progress,
   int ite, int dir, bool forceDo = false, int MethodeMode = 0)
 {
@@ -1142,19 +1142,19 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
   PushACnt(xx, yy);
   PushACnt(nx, ny);
 
-  set<int> se;     // W‡‚ğÄ\¬‚µ‚½‚¢’¸“_‚ğ•Û
-  vector<P> beam;  // V‚½‚ÉŒq‚°‚é‚©Œ©‚é’¸“_
+  set<int> se;     // é›†åˆã‚’å†æ§‹æˆã—ãŸã„é ‚ç‚¹ã‚’ä¿æŒ
+  vector<P> beam;  // æ–°ãŸã«ç¹‹ã’ã‚‹ã‹è¦‹ã‚‹é ‚ç‚¹
 
   /*
-    ¶‰E‚É“®‚­‚Æ‚«‚Í¶‰E‚Æ‚ÌŒ‹‡ŠÖŒW‚Í•Û
-    Ÿ‚É“®‚¢‚½2ƒ}ƒX‚Ìc‚ğ—Dæ
-    ÅŒã‚Éã‰º‚Ìs‚Ì‰¡
+    å·¦å³ã«å‹•ãã¨ãã¯å·¦å³ã¨ã®çµåˆé–¢ä¿‚ã¯ä¿æŒ
+    æ¬¡ã«å‹•ã„ãŸ2ãƒã‚¹ã®ç¸¦ã‚’å„ªå…ˆ
+    æœ€å¾Œã«ä¸Šä¸‹ã®è¡Œã®æ¨ª
   */
   if (nx == xx) {
-    // ‰E
+    // å³
     if (ny == yy + 1) {
-      // Œ³‚Ìƒ}ƒX‚Ì¶‚Ì‚Â‚È‚ª‚è
-      // Œq‚ª‚Á‚Ä‚¢‚é
+      // å…ƒã®ãƒã‚¹ã®å·¦ã®ã¤ãªãŒã‚Š
+      // ç¹‹ãŒã£ã¦ã„ã‚‹
       if (udlr[ite][2] != -1) {
         if (HasServer(xx, yy - 1)) {
           a[xx][yy] = MakeAValue(ite, a[xx][yy - 1]);
@@ -1167,11 +1167,11 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         a[xx][yy] = INF;
       }
 
-      // Œ³‚Ìƒ}ƒX‚Ì‰E‚Ì‚Â‚È‚ª‚è
+      // å…ƒã®ãƒã‚¹ã®å³ã®ã¤ãªãŒã‚Š
       a[xx][ny] = ite;
 
-      // Œ³‚Ìƒ}ƒX‚Ìã‰º‚Ì‚Â‚È‚ª‚è
-      // ¶‚ÆŒq‚ª‚Á‚Ä‚¢‚éê‡AØ‚é
+      // å…ƒã®ãƒã‚¹ã®ä¸Šä¸‹ã®ã¤ãªãŒã‚Š
+      // å·¦ã¨ç¹‹ãŒã£ã¦ã„ã‚‹å ´åˆã€åˆ‡ã‚‹
       if (udlr[ite][2] != -1) {
         if (udlr[ite][0] != -1) {
           int iteU = udlr[ite][0];
@@ -1208,9 +1208,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
       else {
-        // ã‰ºŒq‚ª‚Á‚Ä‚¢‚½
+        // ä¸Šä¸‹ç¹‹ãŒã£ã¦ã„ãŸ
         if (udlr[ite][0] != -1 && udlr[ite][1] != -1) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           int iteU = udlr[ite][0];
           int iteD = udlr[ite][1];
           Update_udlr(iteU, 1, iteD);
@@ -1229,9 +1229,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[i][yy] = aVal;
           }
         }
-        // ãŒq‚ª‚Á‚Ä‚¢‚½
+        // ä¸Šç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][0] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteU = udlr[ite][0];
           Update_udlr(iteU, 1, -1);
           Update_udlr(ite, 0, -1);
@@ -1247,9 +1247,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(i, yy));
           }
         }
-        // ‰ºŒq‚ª‚Á‚Ä‚¢‚½
+        // ä¸‹ç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][1] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteD = udlr[ite][1];
           Update_udlr(iteD, 0, -1);
           Update_udlr(ite, 1, -1);
@@ -1265,13 +1265,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(i, yy));
           }
         }
-        // Œq‚ª‚è‚È‚µ
+        // ç¹‹ãŒã‚Šãªã—
         else {
-          // ã‚Æ‰º‚ª“¯‚¶F‚Ìê‡
+          // ä¸Šã¨ä¸‹ãŒåŒã˜è‰²ã®å ´åˆ
           int iteU = GetIte2(xx, yy, 'U');
           int iteD = GetIte2(xx, yy, 'D');
           if (iteU != -1 && iteD != -1 && iteU / 100 == iteD / 100) {
-            // Œq‚®
+            // ç¹‹ã
             Update_udlr(iteU, 1, iteD);
             Update_udlr(iteD, 0, iteU);
 
@@ -1289,8 +1289,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
 
-      // æ‚Ìƒ}ƒX‚Ìã‰º‚Ì‚Â‚È‚ª‚è
-      // Œ³XŒq‚ª‚Á‚Ä‚¢‚é
+      // å…ˆã®ãƒã‚¹ã®ä¸Šä¸‹ã®ã¤ãªãŒã‚Š
+      // å…ƒã€…ç¹‹ãŒã£ã¦ã„ã‚‹
       if (na != INF && udlr[ite][3] == -1) {
         int iteU = -na / 1000;
         int iteD = -na % 1000;
@@ -1298,9 +1298,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           swap(iteU, iteD);
         }
 
-        // “¯‚¶F
+        // åŒã˜è‰²
         if (iteU / 100 == ite / 100) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           Update_udlr(iteU, 1, ite);
           Update_udlr(iteD, 0, ite);
           Update_udlr(ite, 0, iteU);
@@ -1325,9 +1325,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[i][ny] = aVal;
           }
         }
-        // ˆá‚¤F
+        // é•ã†è‰²
         else {
-          // Ø‚é
+          // åˆ‡ã‚‹
           Update_udlr(iteU, 1, -1);
           Update_udlr(iteD, 0, -1);
 
@@ -1349,12 +1349,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
       }
-      // Œq‚ª‚Á‚Ä‚¢‚È‚¢
+      // ç¹‹ãŒã£ã¦ã„ãªã„
       else {
-        // ã‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // ä¸Šã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteU = GetIte2(xx, ny, 'U');
         if (iteU != -1 && iteU / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(iteU, 1, ite);
           Update_udlr(ite, 0, iteU);
 
@@ -1370,10 +1370,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
 
-        // ‰º‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // ä¸‹ã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteD = GetIte2(xx, ny, 'D');
         if (iteD != -1 && iteD / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(ite, 1, iteD);
           Update_udlr(iteD, 0, ite);
 
@@ -1390,10 +1390,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
     }
-    // ¶
+    // å·¦
     else {
-      // Œ³‚Ìƒ}ƒX‚Ì‰E‚Ì‚Â‚È‚ª‚è
-      // Œq‚ª‚Á‚Ä‚¢‚é
+      // å…ƒã®ãƒã‚¹ã®å³ã®ã¤ãªãŒã‚Š
+      // ç¹‹ãŒã£ã¦ã„ã‚‹
       if (udlr[ite][3] != -1) {
         if (HasServer(xx, yy + 1)) {
           a[xx][yy] = MakeAValue(ite, a[xx][yy + 1]);
@@ -1406,11 +1406,11 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         a[xx][yy] = INF;
       }
 
-      // Œ³‚Ìƒ}ƒX‚Ì¶‚Ì‚Â‚È‚ª‚è
+      // å…ƒã®ãƒã‚¹ã®å·¦ã®ã¤ãªãŒã‚Š
       a[xx][ny] = ite;
 
-      // Œ³‚Ìƒ}ƒX‚Ìã‰º‚Ì‚Â‚È‚ª‚è
-      // ‰E‚ÆŒq‚ª‚Á‚Ä‚¢‚éê‡AØ‚é
+      // å…ƒã®ãƒã‚¹ã®ä¸Šä¸‹ã®ã¤ãªãŒã‚Š
+      // å³ã¨ç¹‹ãŒã£ã¦ã„ã‚‹å ´åˆã€åˆ‡ã‚‹
       if (udlr[ite][3] != -1) {
         if (udlr[ite][0] != -1) {
           int iteU = udlr[ite][0];
@@ -1447,9 +1447,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
       else {
-        // ã‰ºŒq‚ª‚Á‚Ä‚¢‚½
+        // ä¸Šä¸‹ç¹‹ãŒã£ã¦ã„ãŸ
         if (udlr[ite][0] != -1 && udlr[ite][1] != -1) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           int iteU = udlr[ite][0];
           int iteD = udlr[ite][1];
           Update_udlr(iteU, 1, iteD);
@@ -1468,9 +1468,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[i][yy] = aVal;
           }
         }
-        // ãŒq‚ª‚Á‚Ä‚¢‚½
+        // ä¸Šç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][0] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteU = udlr[ite][0];
           Update_udlr(iteU, 1, -1);
           Update_udlr(ite, 0, -1);
@@ -1487,9 +1487,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(i, yy));
           }
         }
-        // ‰ºŒq‚ª‚Á‚Ä‚¢‚½
+        // ä¸‹ç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][1] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteD = udlr[ite][1];
           Update_udlr(iteD, 0, -1);
           Update_udlr(ite, 1, -1);
@@ -1506,13 +1506,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(i, yy));
           }
         }
-        // Œq‚ª‚è‚È‚µ
+        // ç¹‹ãŒã‚Šãªã—
         else {
-          // ã‚Æ‰º‚ª“¯‚¶F‚Ìê‡
+          // ä¸Šã¨ä¸‹ãŒåŒã˜è‰²ã®å ´åˆ
           int iteU = GetIte2(xx, yy, 'U');
           int iteD = GetIte2(xx, yy, 'D');
           if (iteU != -1 && iteD != -1 && iteU / 100 == iteD / 100) {
-            // Œq‚®
+            // ç¹‹ã
             Update_udlr(iteU, 1, iteD);
             Update_udlr(iteD, 0, iteU);
 
@@ -1530,8 +1530,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
 
-      // æ‚Ìƒ}ƒX‚Ìã‰º‚Ì‚Â‚È‚ª‚è
-      // Œ³XŒq‚ª‚Á‚Ä‚¢‚é
+      // å…ˆã®ãƒã‚¹ã®ä¸Šä¸‹ã®ã¤ãªãŒã‚Š
+      // å…ƒã€…ç¹‹ãŒã£ã¦ã„ã‚‹
       if (na != INF && udlr[ite][2] == -1) {
         int iteU = -na / 1000;
         int iteD = -na % 1000;
@@ -1539,9 +1539,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           swap(iteU, iteD);
         }
 
-        // “¯‚¶F
+        // åŒã˜è‰²
         if (iteU / 100 == ite / 100) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           Update_udlr(iteU, 1, ite);
           Update_udlr(iteD, 0, ite);
           Update_udlr(ite, 0, iteU);
@@ -1566,9 +1566,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[i][ny] = aVal;
           }
         }
-        // ˆá‚¤F
+        // é•ã†è‰²
         else {
-          // Ø‚é
+          // åˆ‡ã‚‹
           Update_udlr(iteU, 1, -1);
           Update_udlr(iteD, 0, -1);
 
@@ -1590,12 +1590,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
       }
-      // Œq‚ª‚Á‚Ä‚¢‚È‚¢
+      // ç¹‹ãŒã£ã¦ã„ãªã„
       else {
-        // ã‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // ä¸Šã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteU = GetIte2(xx, ny, 'U');
         if (iteU != -1 && iteU / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(iteU, 1, ite);
           Update_udlr(ite, 0, iteU);
 
@@ -1611,10 +1611,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
 
-        // ‰º‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // ä¸‹ã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteD = GetIte2(xx, ny, 'D');
         if (iteD != -1 && iteD / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(ite, 1, iteD);
           Update_udlr(iteD, 0, ite);
 
@@ -1633,10 +1633,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
     }
   }
   else {
-    // ‰º
+    // ä¸‹
     if (nx == xx + 1) {
-      // Œ³‚Ìƒ}ƒX‚Ìã‚Ì‚Â‚È‚ª‚è
-      // Œq‚ª‚Á‚Ä‚¢‚é
+      // å…ƒã®ãƒã‚¹ã®ä¸Šã®ã¤ãªãŒã‚Š
+      // ç¹‹ãŒã£ã¦ã„ã‚‹
       if (udlr[ite][0] != -1) {
         if (HasServer(xx - 1, yy)) {
           a[xx][yy] = MakeAValue(ite, a[xx - 1][yy]);
@@ -1649,11 +1649,11 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         a[xx][yy] = INF;
       }
 
-      // Œ³‚Ìƒ}ƒX‚Ì‰º‚Ì‚Â‚È‚ª‚è
+      // å…ƒã®ãƒã‚¹ã®ä¸‹ã®ã¤ãªãŒã‚Š
       a[nx][yy] = ite;
 
-      // Œ³‚Ìƒ}ƒX‚Ì¶‰E‚Ì‚Â‚È‚ª‚è
-      // ã‚ÆŒq‚ª‚Á‚Ä‚¢‚éê‡AØ‚é
+      // å…ƒã®ãƒã‚¹ã®å·¦å³ã®ã¤ãªãŒã‚Š
+      // ä¸Šã¨ç¹‹ãŒã£ã¦ã„ã‚‹å ´åˆã€åˆ‡ã‚‹
       if (udlr[ite][0] != -1) {
         if (udlr[ite][2] != -1) {
           int iteL = udlr[ite][2];
@@ -1690,9 +1690,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
       else {
-        // ¶‰EŒq‚ª‚Á‚Ä‚¢‚½
+        // å·¦å³ç¹‹ãŒã£ã¦ã„ãŸ
         if (udlr[ite][2] != -1 && udlr[ite][3] != -1) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           int iteL = udlr[ite][2];
           int iteR = udlr[ite][3];
           Update_udlr(iteL, 3, iteR);
@@ -1711,9 +1711,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[xx][i] = aVal;
           }
         }
-        // ¶Œq‚ª‚Á‚Ä‚¢‚½
+        // å·¦ç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][2] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteL = udlr[ite][2];
           Update_udlr(iteL, 3, -1);
           Update_udlr(ite, 2, -1);
@@ -1730,9 +1730,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(xx, i));
           }
         }
-        // ‰EŒq‚ª‚Á‚Ä‚¢‚½
+        // å³ç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][3] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteR = udlr[ite][3];
           Update_udlr(iteR, 2, -1);
           Update_udlr(ite, 3, -1);
@@ -1749,13 +1749,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(xx, i));
           }
         }
-        // Œq‚ª‚è‚È‚µ
+        // ç¹‹ãŒã‚Šãªã—
         else {
-          // ¶‚Æ‰E‚ª“¯‚¶F‚Ìê‡
+          // å·¦ã¨å³ãŒåŒã˜è‰²ã®å ´åˆ
           int iteL = GetIte2(xx, yy, 'L');
           int iteR = GetIte2(xx, yy, 'R');
           if (iteL != -1 && iteR != -1 && iteL / 100 == iteR / 100) {
-            // Œq‚®
+            // ç¹‹ã
             Update_udlr(iteL, 3, iteR);
             Update_udlr(iteR, 2, iteL);
 
@@ -1773,8 +1773,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
 
-      // æ‚Ìƒ}ƒX‚Ì¶‰E‚Ì‚Â‚È‚ª‚è
-      // Œ³XŒq‚ª‚Á‚Ä‚¢‚é
+      // å…ˆã®ãƒã‚¹ã®å·¦å³ã®ã¤ãªãŒã‚Š
+      // å…ƒã€…ç¹‹ãŒã£ã¦ã„ã‚‹
       if (na != INF && udlr[ite][1] == -1) {
         int iteL = -na / 1000;
         int iteR = -na % 1000;
@@ -1782,9 +1782,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           swap(iteL, iteR);
         }
 
-        // “¯‚¶F
+        // åŒã˜è‰²
         if (iteL / 100 == ite / 100) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           Update_udlr(iteL, 3, ite);
           Update_udlr(iteR, 2, ite);
           Update_udlr(ite, 2, iteL);
@@ -1809,9 +1809,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[nx][i] = aVal;
           }
         }
-        // ˆá‚¤F
+        // é•ã†è‰²
         else {
-          // Ø‚é
+          // åˆ‡ã‚‹
           Update_udlr(iteL, 3, -1);
           Update_udlr(iteR, 2, -1);
 
@@ -1833,12 +1833,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
       }
-      // Œq‚ª‚Á‚Ä‚¢‚È‚¢
+      // ç¹‹ãŒã£ã¦ã„ãªã„
       else {
-        // ¶‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // å·¦ã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteL = GetIte2(nx, yy, 'L');
         if (iteL != -1 && iteL / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(iteL, 3, ite);
           Update_udlr(ite, 2, iteL);
 
@@ -1854,10 +1854,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
 
-        // ‰E‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // å³ã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteR = GetIte2(nx, yy, 'R');
         if (iteR != -1 && iteR / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(ite, 3, iteR);
           Update_udlr(iteR, 2, ite);
 
@@ -1874,10 +1874,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
     }
-    // ã
+    // ä¸Š
     else {
-      // Œ³‚Ìƒ}ƒX‚Ì‰º‚Ì‚Â‚È‚ª‚è
-      // Œq‚ª‚Á‚Ä‚¢‚é
+      // å…ƒã®ãƒã‚¹ã®ä¸‹ã®ã¤ãªãŒã‚Š
+      // ç¹‹ãŒã£ã¦ã„ã‚‹
       if (udlr[ite][1] != -1) {
         if (HasServer(xx + 1, yy)) {
           a[xx][yy] = MakeAValue(ite, a[xx + 1][yy]);
@@ -1890,11 +1890,11 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         a[xx][yy] = INF;
       }
 
-      // Œ³‚Ìƒ}ƒX‚Ìã‚Ì‚Â‚È‚ª‚è
+      // å…ƒã®ãƒã‚¹ã®ä¸Šã®ã¤ãªãŒã‚Š
       a[nx][yy] = ite;
 
-      // Œ³‚Ìƒ}ƒX‚Ì¶‰E‚Ì‚Â‚È‚ª‚è
-      // ‰º‚ÆŒq‚ª‚Á‚Ä‚¢‚éê‡AØ‚é
+      // å…ƒã®ãƒã‚¹ã®å·¦å³ã®ã¤ãªãŒã‚Š
+      // ä¸‹ã¨ç¹‹ãŒã£ã¦ã„ã‚‹å ´åˆã€åˆ‡ã‚‹
       if (udlr[ite][1] != -1) {
         if (udlr[ite][2] != -1) {
           int iteL = udlr[ite][2];
@@ -1931,9 +1931,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
       else {
-        // ¶‰EŒq‚ª‚Á‚Ä‚¢‚½
+        // å·¦å³ç¹‹ãŒã£ã¦ã„ãŸ
         if (udlr[ite][2] != -1 && udlr[ite][3] != -1) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           int iteL = udlr[ite][2];
           int iteR = udlr[ite][3];
           Update_udlr(iteL, 3, iteR);
@@ -1952,9 +1952,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[xx][i] = aVal;
           }
         }
-        // ¶Œq‚ª‚Á‚Ä‚¢‚½
+        // å·¦ç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][2] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteL = udlr[ite][2];
           Update_udlr(iteL, 3, -1);
           Update_udlr(ite, 2, -1);
@@ -1971,9 +1971,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(xx, i));
           }
         }
-        // ‰EŒq‚ª‚Á‚Ä‚¢‚½
+        // å³ç¹‹ãŒã£ã¦ã„ãŸ
         else if (udlr[ite][3] != -1) {
-          // Ø‚é
+          // åˆ‡ã‚‹
           int iteR = udlr[ite][3];
           Update_udlr(iteR, 2, -1);
           Update_udlr(ite, 3, -1);
@@ -1990,13 +1990,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             beam.push_back(P(xx, i));
           }
         }
-        // Œq‚ª‚è‚È‚µ
+        // ç¹‹ãŒã‚Šãªã—
         else {
-          // ¶‚Æ‰E‚ª“¯‚¶F‚Ìê‡
+          // å·¦ã¨å³ãŒåŒã˜è‰²ã®å ´åˆ
           int iteL = GetIte2(xx, yy, 'L');
           int iteR = GetIte2(xx, yy, 'R');
           if (iteL != -1 && iteR != -1 && iteL / 100 == iteR / 100) {
-            // Œq‚®
+            // ç¹‹ã
             Update_udlr(iteL, 3, iteR);
             Update_udlr(iteR, 2, iteL);
 
@@ -2014,8 +2014,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         }
       }
 
-      // æ‚Ìƒ}ƒX‚Ì¶‰E‚Ì‚Â‚È‚ª‚è
-      // Œ³XŒq‚ª‚Á‚Ä‚¢‚é
+      // å…ˆã®ãƒã‚¹ã®å·¦å³ã®ã¤ãªãŒã‚Š
+      // å…ƒã€…ç¹‹ãŒã£ã¦ã„ã‚‹
       if (na != INF && udlr[ite][0] == -1) {
         int iteL = -na / 1000;
         int iteR = -na % 1000;
@@ -2023,9 +2023,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           swap(iteL, iteR);
         }
 
-        // “¯‚¶F
+        // åŒã˜è‰²
         if (iteL / 100 == ite / 100) {
-          // Œq‚¬‚È‚¨‚·
+          // ç¹‹ããªãŠã™
           Update_udlr(iteL, 3, ite);
           Update_udlr(iteR, 2, ite);
           Update_udlr(ite, 2, iteL);
@@ -2050,9 +2050,9 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             a[nx][i] = aVal;
           }
         }
-        // ˆá‚¤F
+        // é•ã†è‰²
         else {
-          // Ø‚é
+          // åˆ‡ã‚‹
           Update_udlr(iteL, 3, -1);
           Update_udlr(iteR, 2, -1);
 
@@ -2074,12 +2074,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
       }
-      // Œq‚ª‚Á‚Ä‚¢‚È‚¢
+      // ç¹‹ãŒã£ã¦ã„ãªã„
       else {
-        // ¶‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // å·¦ã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteL = GetIte2(nx, yy, 'L');
         if (iteL != -1 && iteL / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(iteL, 3, ite);
           Update_udlr(ite, 2, iteL);
 
@@ -2095,10 +2095,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           }
         }
 
-        // ‰E‚ÆŒq‚°‚ç‚ê‚é‚©‚Ç‚¤‚©
+        // å³ã¨ç¹‹ã’ã‚‰ã‚Œã‚‹ã‹ã©ã†ã‹
         int iteR = GetIte2(nx, yy, 'R');
         if (iteR != -1 && iteR / 100 == ite / 100) {
-          // Œq‚®
+          // ç¹‹ã
           Update_udlr(ite, 3, iteR);
           Update_udlr(iteR, 2, ite);
 
@@ -2117,8 +2117,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
     }
   }
 
-  // V‚½‚È•Ó‚Ìì¬
-  // ¶‰E
+  // æ–°ãŸãªè¾ºã®ä½œæˆ
+  // å·¦å³
   if (nx == xx) {
     for (auto&& p : beam) {
       int px = p.first;
@@ -2143,7 +2143,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       }
     }
   }
-  // ã‰º
+  // ä¸Šä¸‹
   else {
     for (auto&& p : beam) {
       int px = p.first;
@@ -2186,7 +2186,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
   }
 
 
-  // parent, vp‚ÌXV
+  // parent, vpã®æ›´æ–°
   visitedCnt++;
   for (auto&& vpIte : se) {
     if (visited[vpIte] == visitedCnt) {
@@ -2281,7 +2281,7 @@ int parent[500];
 int unionSize[500];
 set<P> vp;
     */
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     x[ite] = xx;
     y[ite] = yy;
 
@@ -2314,7 +2314,7 @@ void Method1(double start_temp, double end_temp, double now_progress)
     if (randCnt == 100) {
       return;
     }
-    ite = Rand() % K100;  // 1ƒ}ƒX“®‚©‚·ƒRƒ“ƒsƒ…[ƒ^
+    ite = Rand() % K100;  // 1ãƒã‚¹å‹•ã‹ã™ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿
     dir = Rand() % 4;
 
     nx = x[ite] + dx[dir];
@@ -2328,7 +2328,7 @@ void Method1(double start_temp, double end_temp, double now_progress)
   InnerMethod(start_temp, end_temp, now_progress, ite, dir);
 }
 
-// ‹ó”’‚ğ2ƒ}ƒX“®‚©‚·
+// ç©ºç™½ã‚’2ãƒã‚¹å‹•ã‹ã™
 void Method3(double start_temp, double end_temp, double now_progress)
 {
   int xx, yy, dir1, dir2;
@@ -2403,7 +2403,7 @@ void Method3(double start_temp, double end_temp, double now_progress)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     x[ite2] = nx2;
     y[ite2] = ny2;
     std::swap(a[nx2][ny2], a[nx1][ny1]);
@@ -2421,10 +2421,10 @@ void Method3(double start_temp, double end_temp, double now_progress)
   }
 }
 
-// ƒRƒ“ƒsƒ…[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É2ƒ}ƒXˆÚ“®
+// ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«2ãƒã‚¹ç§»å‹•
 void Method4(double start_temp, double end_temp, double now_progress)
 {
-  int ite = Rand() % K100;  // 1ƒ}ƒX“®‚©‚·ƒRƒ“ƒsƒ…[ƒ^
+  int ite = Rand() % K100;  // 1ãƒã‚¹å‹•ã‹ã™ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿
   int dir1 = Rand() % 4;
   int dir2 = Rand() % 4;
 
@@ -2485,7 +2485,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     swap(a[xx][yy], a[nx2][ny2]);
     x[ite] = xx;
     y[ite] = yy;
@@ -2499,13 +2499,13 @@ void Method4(double start_temp, double end_temp, double now_progress)
   }
 }
 
-// ˆÚ“®‚ğƒ‰ƒ“ƒ_ƒ€‚É1‚Âíœ
+// ç§»å‹•ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«1ã¤å‰Šé™¤
 void Method5(double start_temp, double end_temp, double now_progress)
 {
   int ite = Rand() % ope1;
 
-  // NGƒ`ƒFƒbƒN
-  // iteˆÈ~‚Ì‘€ì‚ÅA‘€ìŒ³‚ªˆÚ“®Œã‚Ìƒ}ƒXA‘€ìŒã‚ªˆÚ“®‘O‚Ìƒ}ƒXA‚Ì‘€ì‚ªo‚Ä‚±‚È‚¯‚ê‚ÎOK
+  // NGãƒã‚§ãƒƒã‚¯
+  // iteä»¥é™ã®æ“ä½œã§ã€æ“ä½œå…ƒãŒç§»å‹•å¾Œã®ãƒã‚¹ã€æ“ä½œå¾ŒãŒç§»å‹•å‰ã®ãƒã‚¹ã€ã®æ“ä½œãŒå‡ºã¦ã“ãªã‘ã‚Œã°OK
   srep(i, ite + 1, ope1)
   {
     if (ans1[i][4] == ans1[ite][4]) {
@@ -2519,7 +2519,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
     }
   }
 
-  // Á‚µ‚½‚¢ˆÚ“®‚Ì‹t‚Ì‘€ì‚ğ‘«‚µ‚ÄInnerMethod‚ğÀs
+  // æ¶ˆã—ãŸã„ç§»å‹•ã®é€†ã®æ“ä½œã‚’è¶³ã—ã¦InnerMethodã‚’å®Ÿè¡Œ
   int reverseDir = 0;
   rep(i, 4)
   {
@@ -2533,14 +2533,14 @@ void Method5(double start_temp, double end_temp, double now_progress)
   int isDo = InnerMethod(start_temp, end_temp, now_progress, ans1[ite][4],
     reverseDir, false, 5);
 
-  // Às‚µ‚½ê‡A2‚ÂÁ‚·
+  // å®Ÿè¡Œã—ãŸå ´åˆã€2ã¤æ¶ˆã™
   if (isDo) {
     /*
-    C³‚·‚é‚à‚Ì
+    ä¿®æ­£ã™ã‚‹ã‚‚ã®
     int ope1;
     int ans1[1000][5];
     */
-    // Á‚·‚Ì‚Íite‚Æope1-1
+    // æ¶ˆã™ã®ã¯iteã¨ope1-1
     ope1--;
     srep(i, ite, ope1 - 1)
     {
@@ -2552,11 +2552,11 @@ void Method5(double start_temp, double end_temp, double now_progress)
     }
   }
   else {
-    // ‰½‚à‚µ‚È‚¢
+    // ä½•ã‚‚ã—ãªã„
   }
 }
 
-// ƒXƒƒbƒv‚µ‚Ä‚é‚¾‚¯‚Ì2‚Â‚ÌˆÚ“®‚ğíœ
+// ã‚¹ãƒ¯ãƒƒãƒ—ã—ã¦ã‚‹ã ã‘ã®2ã¤ã®ç§»å‹•ã‚’å‰Šé™¤
 void Method6(double start_temp, double end_temp, double now_progress)
 {
   methodCount[6][1]++;
@@ -2595,7 +2595,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
   }
 }
 
-// ƒXƒƒbƒv‚µ‚Ä‚é‚¾‚¯‚Ì2‚Â‚ÌˆÚ“®‚ğíœ
+// ã‚¹ãƒ¯ãƒƒãƒ—ã—ã¦ã‚‹ã ã‘ã®2ã¤ã®ç§»å‹•ã‚’å‰Šé™¤
 vector<int> vv[510];
 void Method7(double start_temp, double end_temp, double now_progress)
 {
@@ -2625,7 +2625,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
         int ite2 = vv[i][j + 1];
         if (ans1[ite1][0] == ans1[ite2][2] && ans1[ite1][1] == ans1[ite2][3] &&
           ans1[ite1][2] == ans1[ite2][0] && ans1[ite1][3] == ans1[ite2][1]) {
-          // ngƒ`ƒFƒbƒN
+          // ngãƒã‚§ãƒƒã‚¯
           int ng = 0;
           srep(k, ite1 + 1, ite2)
           {
@@ -2689,12 +2689,12 @@ int Solve(int mode, int problemNum = 0)
 
   Init();
 
-  // ‹ğ’¼‰ğ
+  // æ„šç›´è§£
   maxScore = CalcScore(K100, true);
   CopyToReal();
   CopyToSeed();
 
-  // ƒV[ƒhì‚è
+  // ã‚·ãƒ¼ãƒ‰ä½œã‚Š
   int seedCount = 10;
   rep(tei, seedCount)
   {
@@ -2704,7 +2704,7 @@ int Solve(int mode, int problemNum = 0)
     viewOrder = tei % 2;
     maxScore = CalcScore(K100, true);
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     end_time = clock();
     double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
     double TL = 1.0 / seedCount;
@@ -2722,7 +2722,7 @@ int Solve(int mode, int problemNum = 0)
       }
       if (now_progress > 1.0) break;
 
-      // Œ»İ‚ÌƒXƒRƒA‚ªˆ«‚¢‚Æ‚«‚ÍŒ³‚É–ß‚·
+      // ç¾åœ¨ã®ã‚¹ã‚³ã‚¢ãŒæ‚ªã„ã¨ãã¯å…ƒã«æˆ»ã™
       if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
         RollBackFromReal();
         rollbackCount++;
@@ -2746,7 +2746,7 @@ int Solve(int mode, int problemNum = 0)
         me = 6;
       }
 
-      // ƒRƒ“ƒsƒ…[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É1ƒ}ƒXˆÚ“®
+      // ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«1ãƒã‚¹ç§»å‹•
       if (me == 1) {
         if (ope1 >= K100) {
           continue;
@@ -2754,7 +2754,7 @@ int Solve(int mode, int problemNum = 0)
         Method1(start_temp, end_temp, now_progress);
       }
 
-      // ‹ó”’‚ğ2ƒ}ƒX“®‚©‚·
+      // ç©ºç™½ã‚’2ãƒã‚¹å‹•ã‹ã™
       if (me == 3) {
         if (ope1 >= K100 - 1) {
           continue;
@@ -2762,7 +2762,7 @@ int Solve(int mode, int problemNum = 0)
         Method3(start_temp, end_temp, now_progress);
       }
 
-      // ƒRƒ“ƒsƒ…[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É2ƒ}ƒXˆÚ“®
+      // ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«2ãƒã‚¹ç§»å‹•
       if (me == 4) {
         if (ope1 >= K100 - 1) {
           continue;
@@ -2770,7 +2770,7 @@ int Solve(int mode, int problemNum = 0)
         Method4(start_temp, end_temp, now_progress);
       }
 
-      // ˆÚ“®‚ğƒ‰ƒ“ƒ_ƒ€‚É1‚Âíœ
+      // ç§»å‹•ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«1ã¤å‰Šé™¤
       if (me == 5) {
         if (ope1 == 0) {
           continue;
@@ -2778,13 +2778,13 @@ int Solve(int mode, int problemNum = 0)
         Method5(start_temp, end_temp, now_progress);
       }
 
-      // ƒXƒƒbƒv‚µ‚Ä‚é‚¾‚¯‚Ì2‚Â‚ÌˆÚ“®‚ğíœ
+      // ã‚¹ãƒ¯ãƒƒãƒ—ã—ã¦ã‚‹ã ã‘ã®2ã¤ã®ç§»å‹•ã‚’å‰Šé™¤
       if (me == 6) {
         Method6(start_temp, end_temp, now_progress);
       }
     }
 
-    // ƒXƒRƒA‚ª—Ç‚¯‚ê‚ÎƒV[ƒh‚ğXV
+    // ã‚¹ã‚³ã‚¢ãŒè‰¯ã‘ã‚Œã°ã‚·ãƒ¼ãƒ‰ã‚’æ›´æ–°
     // cout << "seedScore = " << maxScore << endl;
     RollBackFromReal();
     if (maxScore > seed_maxScore) {
@@ -2794,11 +2794,11 @@ int Solve(int mode, int problemNum = 0)
     AllClear();
   }
 
-  // ƒV[ƒh‚©‚ç–ß‚·
+  // ã‚·ãƒ¼ãƒ‰ã‹ã‚‰æˆ»ã™
   RollBackFromSeed();
   CopyToReal();
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   start_time = clock();
   end_time = clock();
   double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
@@ -2817,7 +2817,7 @@ int Solve(int mode, int problemNum = 0)
     }
     if (now_progress > 1.0) break;
 
-    // Œ»İ‚ÌƒXƒRƒA‚ªˆ«‚¢‚Æ‚«‚ÍŒ³‚É–ß‚·
+    // ç¾åœ¨ã®ã‚¹ã‚³ã‚¢ãŒæ‚ªã„ã¨ãã¯å…ƒã«æˆ»ã™
     // if (maxScore * 1.1 < real_maxScore || loop % 94687 == 37) {
     if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
       RollBackFromReal();
@@ -2846,7 +2846,7 @@ int Solve(int mode, int problemNum = 0)
       me = 7;
     }
 
-    // ƒRƒ“ƒsƒ…[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É1ƒ}ƒXˆÚ“®
+    // ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«1ãƒã‚¹ç§»å‹•
     if (me == 1) {
       if (ope1 >= K100) {
         continue;
@@ -2854,7 +2854,7 @@ int Solve(int mode, int problemNum = 0)
       Method1(start_temp, end_temp, now_progress);
     }
 
-    // ‹ó”’‚ğ2ƒ}ƒX“®‚©‚·
+    // ç©ºç™½ã‚’2ãƒã‚¹å‹•ã‹ã™
     if (me == 3) {
       if (ope1 >= K100 - 1) {
         continue;
@@ -2862,7 +2862,7 @@ int Solve(int mode, int problemNum = 0)
       Method3(start_temp, end_temp, now_progress);
     }
 
-    // ƒRƒ“ƒsƒ…[ƒ^‚ğƒ‰ƒ“ƒ_ƒ€‚É2ƒ}ƒXˆÚ“®
+    // ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«2ãƒã‚¹ç§»å‹•
     if (me == 4) {
       if (ope1 >= K100 - 1) {
         continue;
@@ -2870,7 +2870,7 @@ int Solve(int mode, int problemNum = 0)
       Method4(start_temp, end_temp, now_progress);
     }
 
-    // ˆÚ“®‚ğƒ‰ƒ“ƒ_ƒ€‚É1‚Âíœ
+    // ç§»å‹•ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«1ã¤å‰Šé™¤
     if (me == 5) {
       if (ope1 == 0) {
         continue;
@@ -2878,13 +2878,13 @@ int Solve(int mode, int problemNum = 0)
       Method5(start_temp, end_temp, now_progress);
     }
 
-    // ƒXƒƒbƒv‚µ‚Ä‚é‚¾‚¯‚Ì2‚Â‚ÌˆÚ“®‚ğíœ
+    // ã‚¹ãƒ¯ãƒƒãƒ—ã—ã¦ã‚‹ã ã‘ã®2ã¤ã®ç§»å‹•ã‚’å‰Šé™¤
     if (me == 6) {
       Method6(start_temp, end_temp, now_progress);
     }
 
 
-    // ƒXƒƒbƒv‚µ‚Ä‚é‚¾‚¯‚Ì2‚Â‚ÌˆÚ“®‚ğíœ
+    // ã‚¹ãƒ¯ãƒƒãƒ—ã—ã¦ã‚‹ã ã‘ã®2ã¤ã®ç§»å‹•ã‚’å‰Šé™¤
     if (me == 7) {
       Method7(start_temp, end_temp, now_progress);
     }
@@ -2919,7 +2919,7 @@ int Solve(int mode, int problemNum = 0)
 
 int SolveOuter(int mode, int problemNum = 0)
 {
-  // “ü—Í•”
+  // å…¥åŠ›éƒ¨
   Input(problemNum);
 
   rep(_, outer_Split)
@@ -2933,7 +2933,7 @@ int SolveOuter(int mode, int problemNum = 0)
   }
   RollBackFromOuter();
 
-  // ‰ğ‚Ìo—Í
+  // è§£ã®å‡ºåŠ›
   Output(mode, problemNum);
 
   return maxScore;

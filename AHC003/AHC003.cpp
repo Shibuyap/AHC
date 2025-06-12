@@ -1,4 +1,4 @@
-#pragma GCC target("avx2")
+ï»¿#pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <algorithm>
@@ -28,7 +28,7 @@ typedef pair<double, P> PDP;
 #define MAX_N 200005
 const int INF = 1001001001;
 
-namespace /* —” */
+namespace /* ä¹±æ•° */
 {
   static uint32_t Rand() {
     static uint32_t x = 123456789;
@@ -48,7 +48,7 @@ namespace /* —” */
   }
 }
 
-namespace /* ƒOƒŠƒbƒh—p */
+namespace /* ã‚°ãƒªãƒƒãƒ‰ç”¨ */
 {
   inline int ManhattanDistance(int x1, int y1, int x2, int y2) {
     return std::abs(x1 - x2) + std::abs(y1 - y2);
@@ -59,13 +59,13 @@ namespace /* ƒOƒŠƒbƒh—p */
   const string ULDR = "ULDR";
 }
 
-namespace /* –â‘èİ’è */
+namespace /* å•é¡Œè¨­å®š */
 {
   const int n = 30;
   const int Q = 1000;
 }
 
-namespace /* ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^ */
+namespace /* ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ */
 {
   double initialD = 3585;
   double start_temp = 103.48026;
@@ -76,26 +76,26 @@ namespace /* ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^ */
   double SabunCostMultiple = 1.5;
 }
 
-namespace /* ƒ[ƒJƒ‹—p */
+namespace /* ãƒ­ãƒ¼ã‚«ãƒ«ç”¨ */
 {
-  double dReal[2][n + 1][n + 1]; // ³‰ğ‚Ì’·‚³
-  double scoreSumGlobal; // ƒXƒRƒAŠÇ—
+  double dReal[2][n + 1][n + 1]; // æ­£è§£ã®é•·ã•
+  double scoreSumGlobal; // ã‚¹ã‚³ã‚¢ç®¡ç†
 }
 
-namespace /* •Ï” */
+namespace /* å¤‰æ•° */
 {
   PDP p;
 }
 
-namespace /* Ä‚«‚È‚Ü‚µ—p•Ï” */
+namespace /* ç„¼ããªã¾ã—ç”¨å¤‰æ•° */
 {
-  double DistResponce[Q] = {};				// ó‚¯æ‚Á‚½’·‚³
+  double DistResponce[Q] = {};				// å—ã‘å–ã£ãŸé•·ã•
 }
 
-namespace /* sA—ñAØ‚ê–Ú‚Ì\‘¢ */
+namespace /* è¡Œã€åˆ—ã€åˆ‡ã‚Œç›®ã®æ§‹é€  */
 {
   double Upper[n] = {}, Downer[n] = {}, Lefter[n] = {}, Righter[n] = {};
-  int CutUD[n] = {}, CutLR[n] = {}; // 0~30‚ğ‚Æ‚é”¼ŠJ‹æŠÔ
+  int CutUD[n] = {}, CutLR[n] = {}; // 0â€¾30ã‚’ã¨ã‚‹åŠé–‹åŒºé–“
   int VerticalSum[Q][n + 1][n + 1];
   int HorizontalSum[Q][n + 1][n + 1];
   vector<int> TurnUD[n], TurnLR[n];
@@ -276,14 +276,14 @@ void Dijkstra2(int sx, int sy, int gx, int gy) {
 }
 
 
-/* ƒƒ‚
-  •Ó‚Ì”Ô†‚Í1~29(1-index)
-  c•Ó(i-1,j)->(i,j)‚Íd[0][i][j];
-  ‰¡•Ó(i,j-1)->(i,j)‚Íd[1][i][j];
+/* ãƒ¡ãƒ¢
+  è¾ºã®ç•ªå·ã¯1â€¾29(1-index)
+  ç¸¦è¾º(i-1,j)->(i,j)ã¯d[0][i][j];
+  æ¨ªè¾º(i,j-1)->(i,j)ã¯d[1][i][j];
 */
 
 int Solve(string iunputFileNum) {
-  // ŠÔŒv‘ª
+  // æ™‚é–“è¨ˆæ¸¬
   clock_t start, end;
   start = clock();
 
@@ -292,7 +292,7 @@ int Solve(string iunputFileNum) {
   string fileNameIfs = (string)"./in/" + iunputFileNum + ".txt";
   const char* cstrIfs = fileNameIfs.c_str();
   ifstream ifs(cstrIfs);
-  if (!ifs) { // •W€“ü—Í‚·‚é
+  if (!ifs) { // æ¨™æº–å…¥åŠ›ã™ã‚‹
     inputMode = 0;
   }
   else {
@@ -317,7 +317,7 @@ int Solve(string iunputFileNum) {
   for (int turn = 0; turn < Q; ++turn) {
     int sx, sy, gx, gy;
 
-    // “ü—Íó‚¯æ‚è
+    // å…¥åŠ›å—ã‘å–ã‚Š
     if (inputMode == 0) {
       cin >> sx >> sy >> gx >> gy;
     }
@@ -325,13 +325,13 @@ int Solve(string iunputFileNum) {
       ifs >> sx >> sy >> gx >> gy;
     }
 
-    // ƒL[ƒv
+    // ã‚­ãƒ¼ãƒ—
     int keepSx = sx, keepSy = sy, keepGx = gx, keepGy = gy;
 
-    // ƒvƒ‰ƒCƒIƒŠƒeƒB[ƒLƒ…[‚ÅÅ’Z˜H‚ğ‹‚ß‚éiƒ_ƒCƒNƒXƒgƒ‰j
+    // ãƒ—ãƒ©ã‚¤ã‚ªãƒªãƒ†ã‚£ãƒ¼ã‚­ãƒ¥ãƒ¼ã§æœ€çŸ­è·¯ã‚’æ±‚ã‚ã‚‹ï¼ˆãƒ€ã‚¤ã‚¯ã‚¹ãƒˆãƒ©ï¼‰
     Dijkstra2(sx, sy, gx, gy);
 
-    // ‰ñ“š•¶š—ñ¶¬
+    // å›ç­”æ–‡å­—åˆ—ç”Ÿæˆ
     string ans;
     vector<int> v;
     while (gx != sx || gy != sy) {
@@ -353,7 +353,7 @@ int Solve(string iunputFileNum) {
       ofs << ans << endl;
     }
 
-    // ƒpƒX‚Ì’·‚³‚Ìó‚¯æ‚è
+    // ãƒ‘ã‚¹ã®é•·ã•ã®å—ã‘å–ã‚Š
     double dist = 0;
     if (inputMode == 0) {
       cin >> dist;
@@ -364,7 +364,7 @@ int Solve(string iunputFileNum) {
       dist = CalcScore(sx, sy, ans, aValue, eValue, turn + 1);
     }
 
-    // R“o‚è—p
+    // å±±ç™»ã‚Šç”¨
     DistResponce[turn] = dist;
 
     int length = ans.size();
@@ -380,7 +380,7 @@ int Solve(string iunputFileNum) {
       continue;
     }
 
-    // V‚µ‚¢ƒf[ƒ^\‘¢XV
+    // æ–°ã—ã„ãƒ‡ãƒ¼ã‚¿æ§‹é€ æ›´æ–°
     int tatePath[n + 1][n + 1];
     int yokoPath[n + 1][n + 1];
     for (int i = 0; i < n + 1; ++i) {
@@ -454,7 +454,7 @@ int Solve(string iunputFileNum) {
       BestCutLR[i] = CutLR[i];
     }
 
-    // Ä‚«‚È‚Ü‚µ‚Å—\‘ª’l‚ğ‚³‚ç‚É’²®
+    // ç„¼ããªã¾ã—ã§äºˆæ¸¬å€¤ã‚’ã•ã‚‰ã«èª¿æ•´
     end = clock();
     double now_time = (double)(end - start) / CLOCKS_PER_SEC;
     double TL = 1.8;
@@ -475,7 +475,7 @@ int Solve(string iunputFileNum) {
       int MODE = loop % 3;
       if (turn >= 200 && ALLloop % 5247 == 1853) MODE = 3;
 
-      // Upper, Downer, Lefter, Righter‚Ì‚¢‚¸‚ê‚©ˆê‚Â‚ğ•ÏX
+      // Upper, Downer, Lefter, Righterã®ã„ãšã‚Œã‹ä¸€ã¤ã‚’å¤‰æ›´
       if (MODE == 0) {
         int rULDR = Rand() % 4;
 
@@ -564,7 +564,7 @@ int Solve(string iunputFileNum) {
         }
       }
 
-      // Upper‚ÆDownerA‚à‚µ‚­‚ÍLefter‚ÆRighter‚ğ•ÏX
+      // Upperã¨Downerã€ã‚‚ã—ãã¯Lefterã¨Righterã‚’å¤‰æ›´
       if (MODE == 1) {
         int rUL = Rand() % 2;
 
@@ -621,7 +621,7 @@ int Solve(string iunputFileNum) {
         }
       }
 
-      // ‹æØ‚è‚ğˆê‚©Š•ÏX
+      // åŒºåˆ‡ã‚Šã‚’ä¸€ã‹æ‰€å¤‰æ›´
       if (MODE == 2) {
         int rUL = Rand() % 2;
         int rN = Rand() % 30;
@@ -699,7 +699,7 @@ int Solve(string iunputFileNum) {
         }
       }
 
-      // 1ƒ‰ƒCƒ“’²®
+      // 1ãƒ©ã‚¤ãƒ³èª¿æ•´
       if (MODE == 3) {
         int rUL = Rand() % 2;
         int rN = Rand() % n;
@@ -890,7 +890,7 @@ int Solve(string iunputFileNum) {
     }
 
 
-    // ƒXƒRƒA‚ªˆ«‰»‚µ‚½‚çƒ[ƒ‹ƒoƒbƒN
+    // ã‚¹ã‚³ã‚¢ãŒæ‚ªåŒ–ã—ãŸã‚‰ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯
 
     if (BestDifferenceSum < DifferenceSum) {
 
@@ -1022,10 +1022,10 @@ int main() {
 
   int mode = 0;
 
-  if (mode == 0) { // ’ño—p
+  if (mode == 0) { // æå‡ºç”¨
     Solve("noinput");
   }
-  else if (mode == 1) { // ƒTƒ“ƒvƒ‹0~99‚Åƒ`ƒFƒbƒN
+  else if (mode == 1) { // ã‚µãƒ³ãƒ—ãƒ«0â€¾99ã§ãƒã‚§ãƒƒã‚¯
     vector<P> ranking;
     ll allScore = 0;
     srep(i, 0, 100) {

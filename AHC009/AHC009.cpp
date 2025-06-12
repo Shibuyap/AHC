@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -38,7 +38,7 @@ const int dx[4] = {-1, 0, 1, 0};
 const int dy[4] = {0, -1, 0, 1};
 const char DIR_CHAR[4] = {'U', 'L', 'D', 'R'};
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -55,7 +55,7 @@ namespace
   }
 }
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -80,9 +80,9 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
 
 int exec_mode;
 
-namespace /* •Ï” */
+namespace /* å¤‰æ•° */
 {
-  // “ü—Í—p•Ï”
+  // å…¥åŠ›ç”¨å¤‰æ•°
   const int BOARD_SIZE = 20;
   const int MAX_ROUTE_LEN = 200;
   int sx, sy, tx, ty;
@@ -90,11 +90,11 @@ namespace /* •Ï” */
   int hWall[BOARD_SIZE][BOARD_SIZE];
   int vWall[BOARD_SIZE][BOARD_SIZE];
 
-  // ‰ğ“š—p•Ï”
+  // è§£ç­”ç”¨å¤‰æ•°
   ll cur_score;
   vector<int> route;
 
-  // Ä‚«‚È‚Ü‚µ—p•Ï”
+  // ç„¼ããªã¾ã—ç”¨å¤‰æ•°
   ll best_score;
   vector<int> best_route;
 
@@ -108,7 +108,7 @@ void input_data(int case_num)
 
   if (!ifs.is_open())
   {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     cin >> sx >> sy >> tx >> ty >> forgetProb;
     for (int i = 0; i < BOARD_SIZE; ++i)
     {
@@ -131,7 +131,7 @@ void input_data(int case_num)
   }
   else
   {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> sx >> sy >> tx >> ty >> forgetProb;
     for (int i = 0; i < BOARD_SIZE; ++i)
     {
@@ -158,16 +158,16 @@ void output_data(int case_num)
 {
   if (exec_mode == 0)
   {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i)
     {
       cout << DIR_CHAR[route[i]];
     }
-    cout << '\n';
+    cout << 'Â¥n';
   }
   else
   {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -176,11 +176,11 @@ void output_data(int case_num)
     {
       ofs << DIR_CHAR[route[i]];
     }
-    ofs << '\n';
+    ofs << 'Â¥n';
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll simulate_score(vector<int> &vec)
 {
   const int TRIALS = 100;
@@ -195,7 +195,7 @@ ll simulate_score(vector<int> &vec)
     {
       if (Rand01() < forgetProb)
       {
-        // –Y‹pF‚»‚Ìê‚É—¯‚Ü‚é
+        // å¿˜å´ï¼šãã®å ´ã«ç•™ã¾ã‚‹
       }
       else
       {
@@ -248,7 +248,7 @@ int Solve(int caseId)
   }
   cur_score = simulate_score(route);
 
-  /* „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ  Dijkstra ‘Oˆ—  „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ */
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  Dijkstra å‰å‡¦ç†  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   int cost[BOARD_SIZE][BOARD_SIZE];
   int prevDir[21][21];
   int segLen[BOARD_SIZE][BOARD_SIZE];
@@ -342,7 +342,7 @@ int Solve(int caseId)
     route.push_back(rand() % 4);
   }
 
-  /* „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ  Å’ZŒo˜Hƒx[ƒXŒo˜H¶¬  „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ */
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  æœ€çŸ­çµŒè·¯ãƒ™ãƒ¼ã‚¹çµŒè·¯ç”Ÿæˆ  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   if (cost[tx][ty] <= MAX_ROUTE_LEN)
   {
     route.clear();
@@ -421,7 +421,7 @@ int Solve(int caseId)
     }
   }
 
-  /* „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ  Ä‚«‚È‚Ü‚µ  „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ */
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  ç„¼ããªã¾ã—  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   int iter = 0;
   if (needRandomInit || route.size() > MAX_ROUTE_LEN)
   {
@@ -480,10 +480,10 @@ int Solve(int caseId)
 
   if (exec_mode != 0)
   {
-    cout << "route.size() = " << route.size() << '\n';
-    cout << "iter = " << iter << '\n';
-    cout << cur_score << '\n';
-    cout << get_elapsed_time() << " sec.\n";
+    cout << "route.size() = " << route.size() << 'Â¥n';
+    cout << "iter = " << iter << 'Â¥n';
+    cout << cur_score << 'Â¥n';
+    cout << get_elapsed_time() << " sec.Â¥n";
   }
   return 0;
 }

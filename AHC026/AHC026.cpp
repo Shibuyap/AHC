@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -73,13 +73,13 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^‚Ì‰Šú‰»
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿ã®åˆæœŸåŒ–
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
 const ll INF = 1001001001001001001;
-const int INT_INF = 1001001001;     // intŒ^‚Ì”ñí‚É‘å‚«‚È’l
+const int INT_INF = 1001001001;     // intå‹ã®éå¸¸ã«å¤§ããªå€¤
 
 
 const int dx[4] = { -1, 0, 1, 0 };
@@ -101,30 +101,30 @@ double GetNowTime()
   return elapsed.count();
 }
 
-// ” ‚ÌˆÊ’u‚ğ•\‚·\‘¢‘Ì
+// ç®±ã®ä½ç½®ã‚’è¡¨ã™æ§‹é€ ä½“
 struct Point
 {
-  int x; // R‚Ì”Ô†
-  int y; // R‚Ì’†‚Å‚Ì‚‚³i‰º‚©‚ç‚ÌˆÊ’uj
+  int x; // å±±ã®ç•ªå·
+  int y; // å±±ã®ä¸­ã§ã®é«˜ã•ï¼ˆä¸‹ã‹ã‚‰ã®ä½ç½®ï¼‰
 };
 
-const int MAX_N = 30; // g—p‚³‚ê‚Ä‚¢‚È‚¢
+const int MAX_N = 30; // ä½¿ç”¨ã•ã‚Œã¦ã„ãªã„
 
-const int n = 200; // ” ‚Ì‘”
-const int m = 10;  // R‚Ì‘”
+const int n = 200; // ç®±ã®ç·æ•°
+const int m = 10;  // å±±ã®ç·æ•°
 
-vector<int> init_stacks[m];   // ‰Šúó‘Ô‚ÌŠeR‚ÉÏ‚Ü‚ê‚½” ‚Ì”Ô†ƒŠƒXƒg
-vector<Point> init_positions; // ‰Šúó‘Ô‚ÌŠe” ‚ÌˆÊ’uî•ñ
+vector<int> init_stacks[m];   // åˆæœŸçŠ¶æ…‹ã®å„å±±ã«ç©ã¾ã‚ŒãŸç®±ã®ç•ªå·ãƒªã‚¹ãƒˆ
+vector<Point> init_positions; // åˆæœŸçŠ¶æ…‹ã®å„ç®±ã®ä½ç½®æƒ…å ±
 
-// –â‘è‚Ìó‘Ô‚ğ•\‚·\‘¢‘Ì
+// å•é¡Œã®çŠ¶æ…‹ã‚’è¡¨ã™æ§‹é€ ä½“
 struct Problem
 {
-  vector<int> stacks[m];    // Œ»İ‚ÌŠeR‚Ìó‘Ô
-  vector<Point> positions;  // Œ»İ‚ÌŠe” ‚ÌˆÊ’u
-  vector<P> ans;            // ‘€ì—ñ‚Ì‹L˜^i‰ğ“šj
+  vector<int> stacks[m];    // ç¾åœ¨ã®å„å±±ã®çŠ¶æ…‹
+  vector<Point> positions;  // ç¾åœ¨ã®å„ç®±ã®ä½ç½®
+  vector<P> ans;            // æ“ä½œåˆ—ã®è¨˜éŒ²ï¼ˆè§£ç­”ï¼‰
 };
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void set_up()
 {
   rep(i, m)
@@ -134,7 +134,7 @@ void set_up()
   init_positions.clear();
 }
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void input(int problem_num)
 {
   std::ostringstream oss;
@@ -143,11 +143,11 @@ void input(int problem_num)
 
   rep(i, m)
   {
-    init_stacks[i].resize(n / m); // ŠeR‚ÌƒTƒCƒY‚ğİ’è
+    init_stacks[i].resize(n / m); // å„å±±ã®ã‚µã‚¤ã‚ºã‚’è¨­å®š
   }
-  init_positions.resize(n); // ” ‚ÌˆÊ’uî•ñ‚ÌƒTƒCƒY‚ğİ’è
+  init_positions.resize(n); // ç®±ã®ä½ç½®æƒ…å ±ã®ã‚µã‚¤ã‚ºã‚’è¨­å®š
 
-  // •W€“ü—Í‚©‚çó‚¯æ‚éê‡
+  // æ¨™æº–å…¥åŠ›ã‹ã‚‰å—ã‘å–ã‚‹å ´åˆ
   if (!ifs.is_open()) {
     int _n, _m;
     cin >> _n >> _m;
@@ -156,11 +156,11 @@ void input(int problem_num)
       rep(j, n / m)
       {
         cin >> init_stacks[i][j];
-        init_stacks[i][j]--; // 0-indexed‚É•ÏŠ·
+        init_stacks[i][j]--; // 0-indexedã«å¤‰æ›
       }
     }
   }
-  // ƒtƒ@ƒCƒ‹‚©‚çó‚¯æ‚éê‡
+  // ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å—ã‘å–ã‚‹å ´åˆ
   else {
     int _n, _m;
     ifs >> _n >> _m;
@@ -169,23 +169,23 @@ void input(int problem_num)
       rep(j, n / m)
       {
         ifs >> init_stacks[i][j];
-        init_stacks[i][j]--; // 0-indexed‚É•ÏŠ·
+        init_stacks[i][j]--; // 0-indexedã«å¤‰æ›
       }
     }
   }
 
-  // Še” ‚ÌˆÊ’uî•ñ‚ğİ’è
+  // å„ç®±ã®ä½ç½®æƒ…å ±ã‚’è¨­å®š
   rep(i, m)
   {
     rep(j, n / m)
     {
-      init_positions[init_stacks[i][j]].x = i; // R‚Ì”Ô†
-      init_positions[init_stacks[i][j]].y = j; // ‚‚³
+      init_positions[init_stacks[i][j]].x = i; // å±±ã®ç•ªå·
+      init_positions[init_stacks[i][j]].y = j; // é«˜ã•
     }
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void open_ofs(int problem_num, ofstream& ofs)
 {
   if (mode != 0) {
@@ -195,115 +195,115 @@ void open_ofs(int problem_num, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 int calc_score(const vector<P>& ans)
 {
-  vector<int> tmp_stacks[m];                     // ˆê“I‚ÈR‚Ìó‘Ô
-  vector<Point> tmp_positions = init_positions; // ˆê“I‚È” ‚ÌˆÊ’uî•ñ
+  vector<int> tmp_stacks[m];                     // ä¸€æ™‚çš„ãªå±±ã®çŠ¶æ…‹
+  vector<Point> tmp_positions = init_positions; // ä¸€æ™‚çš„ãªç®±ã®ä½ç½®æƒ…å ±
 
-  int cnt = 0; // ‰^‚Ño‚µ‚½” ‚Ì”
+  int cnt = 0; // é‹ã³å‡ºã—ãŸç®±ã®æ•°
   rep(i, m)
   {
-    tmp_stacks[i] = init_stacks[i]; // ‰Šúó‘Ô‚ğƒRƒs[
+    tmp_stacks[i] = init_stacks[i]; // åˆæœŸçŠ¶æ…‹ã‚’ã‚³ãƒ”ãƒ¼
   }
 
-  int res = 10000; // ‰ŠúƒXƒRƒA
+  int res = 10000; // åˆæœŸã‚¹ã‚³ã‚¢
   rep(i, ans.size())
   {
-    int num = ans[i].first;         // ‘€ì‚·‚é” ‚Ì”Ô†
-    int x = tmp_positions[num].x;   // ” ‚ÌŒ»İ‚ÌR‚Ì”Ô†
-    int y = tmp_positions[num].y;   // ” ‚ÌŒ»İ‚Ì‚‚³
-    int nx = ans[i].second;         // ˆÚ“®æ‚ÌR‚Ì”Ô†
+    int num = ans[i].first;         // æ“ä½œã™ã‚‹ç®±ã®ç•ªå·
+    int x = tmp_positions[num].x;   // ç®±ã®ç¾åœ¨ã®å±±ã®ç•ªå·
+    int y = tmp_positions[num].y;   // ç®±ã®ç¾åœ¨ã®é«˜ã•
+    int nx = ans[i].second;         // ç§»å‹•å…ˆã®å±±ã®ç•ªå·
     if (nx == -1) {
-      // ‘€ì2F” ‚ğ‰^‚Ño‚·
+      // æ“ä½œ2ï¼šç®±ã‚’é‹ã³å‡ºã™
       tmp_stacks[x].pop_back();
       cnt++;
     }
     else {
-      // ‘€ì1F” ‚Æ‚»‚Ìã‚Ì” ‚ğˆÚ“®
+      // æ“ä½œ1ï¼šç®±ã¨ãã®ä¸Šã®ç®±ã‚’ç§»å‹•
       int k = tmp_stacks[x].size() - y;
-      res -= (k + 1); // Á”ï‘Ì—Í‚ğŒvZ
+      res -= (k + 1); // æ¶ˆè²»ä½“åŠ›ã‚’è¨ˆç®—
 
       rep(j, tmp_stacks[x].size() - y)
       {
         int num2 = tmp_stacks[x][y + j];
-        tmp_positions[num2].x = nx;                     // ” ‚ÌV‚µ‚¢R‚Ì”Ô†‚ğİ’è
-        tmp_positions[num2].y = tmp_stacks[nx].size();  // V‚µ‚¢‚‚³‚ğİ’è
-        tmp_stacks[nx].push_back(num2);                 // ˆÚ“®æ‚ÌR‚É” ‚ğ’Ç‰Á
+        tmp_positions[num2].x = nx;                     // ç®±ã®æ–°ã—ã„å±±ã®ç•ªå·ã‚’è¨­å®š
+        tmp_positions[num2].y = tmp_stacks[nx].size();  // æ–°ã—ã„é«˜ã•ã‚’è¨­å®š
+        tmp_stacks[nx].push_back(num2);                 // ç§»å‹•å…ˆã®å±±ã«ç®±ã‚’è¿½åŠ 
       }
-      tmp_stacks[x].resize(y); // Œ³‚ÌR‚©‚çˆÚ“®‚µ‚½•ª‚ğíœ
+      tmp_stacks[x].resize(y); // å…ƒã®å±±ã‹ã‚‰ç§»å‹•ã—ãŸåˆ†ã‚’å‰Šé™¤
     }
   }
-  if (cnt != n) return -1; // ‘S‚Ä‚Ì” ‚ğ‰^‚Ño‚¹‚È‚©‚Á‚½ê‡
+  if (cnt != n) return -1; // å…¨ã¦ã®ç®±ã‚’é‹ã³å‡ºã›ãªã‹ã£ãŸå ´åˆ
   return res;
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void output(ofstream& ofs, const vector<P>& ans)
 {
   if (mode == 0) {
-    // •W€o—Í‚Éo—Í
+    // æ¨™æº–å‡ºåŠ›ã«å‡ºåŠ›
     rep(i, ans.size()) { cout << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
   }
   else {
-    // ƒtƒ@ƒCƒ‹‚Éo—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã«å‡ºåŠ›
     rep(i, ans.size()) { ofs << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
   }
 }
 
-// 1ƒ^[ƒ“‚Å‚Ì‘€ì‚ğÀs‚·‚éŠÖ”
+// 1ã‚¿ãƒ¼ãƒ³ã§ã®æ“ä½œã‚’å®Ÿè¡Œã™ã‚‹é–¢æ•°
 void execute_turn(Problem& problem, int current_box, int from_stack, const vector<int>& move_targets)
 {
-  int current_y = problem.positions[current_box].y; // Œ»İ‚Ìƒ^[ƒ“‚Å‰^‚Ño‚·” ‚Ì‚‚³
+  int current_y = problem.positions[current_box].y; // ç¾åœ¨ã®ã‚¿ãƒ¼ãƒ³ã§é‹ã³å‡ºã™ç®±ã®é«˜ã•
 
-  // ‰^‚Ño‚·” ‚Ìã‚É‚ ‚é” ‚ğˆÚ“®
+  // é‹ã³å‡ºã™ç®±ã®ä¸Šã«ã‚ã‚‹ç®±ã‚’ç§»å‹•
   for (int k = problem.stacks[from_stack].size() - 1; k > current_y;) {
-    int to_stack = move_targets[k];                            // ˆÚ“®æ‚ÌR
-    while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--; // “¯‚¶ˆÚ“®æ‚Ì” ‚ğ‚Ü‚Æ‚ß‚é
+    int to_stack = move_targets[k];                            // ç§»å‹•å…ˆã®å±±
+    while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--; // åŒã˜ç§»å‹•å…ˆã®ç®±ã‚’ã¾ã¨ã‚ã‚‹
 
-    // ” ‚ğˆÚ“®
+    // ç®±ã‚’ç§»å‹•
     srep(l, k, problem.stacks[from_stack].size())
     {
       int num = problem.stacks[from_stack][l];
-      problem.positions[num].x = to_stack;                    // V‚µ‚¢R‚Ì”Ô†
-      problem.positions[num].y = problem.stacks[to_stack].size(); // V‚µ‚¢‚‚³
-      problem.stacks[to_stack].push_back(num);                // ˆÚ“®æ‚ÌR‚É’Ç‰Á
+      problem.positions[num].x = to_stack;                    // æ–°ã—ã„å±±ã®ç•ªå·
+      problem.positions[num].y = problem.stacks[to_stack].size(); // æ–°ã—ã„é«˜ã•
+      problem.stacks[to_stack].push_back(num);                // ç§»å‹•å…ˆã®å±±ã«è¿½åŠ 
     }
 
-    // ‘€ì‚ğ‹L˜^
+    // æ“ä½œã‚’è¨˜éŒ²
     problem.ans.emplace_back(problem.stacks[from_stack][k], to_stack);
-    problem.stacks[from_stack].resize(k); // Œ³‚ÌR‚©‚çíœ
+    problem.stacks[from_stack].resize(k); // å…ƒã®å±±ã‹ã‚‰å‰Šé™¤
 
     k--;
   }
 
-  // Œ»İ‚Ìƒ^[ƒ“‚Ì” ‚ğ‰^‚Ño‚·
+  // ç¾åœ¨ã®ã‚¿ãƒ¼ãƒ³ã®ç®±ã‚’é‹ã³å‡ºã™
   problem.stacks[from_stack].pop_back();
-  problem.ans.emplace_back(current_box, -1); // ‘€ì‚ğ‹L˜^
+  problem.ans.emplace_back(current_box, -1); // æ“ä½œã‚’è¨˜éŒ²
 }
 
-// ” ‚ÌˆÚ“®æ‚ğŒˆ’è‚·‚éŠÖ”
+// ç®±ã®ç§»å‹•å…ˆã‚’æ±ºå®šã™ã‚‹é–¢æ•°
 void decide_move_destination(const Problem& problem, vector<int>& move_targets, const vector<P>& min_box_per_stack, int from_stack, int position)
 {
-  int box_num = problem.stacks[from_stack][position]; // ˆÚ“®‚·‚é” ‚Ì”Ô†
+  int box_num = problem.stacks[from_stack][position]; // ç§»å‹•ã™ã‚‹ç®±ã®ç•ªå·
   int id = 1;
   while (id + 1 < m && min_box_per_stack[id].first < box_num) id++;
-  move_targets[position] = min_box_per_stack[id].second; // ˆÚ“®æ‚ÌR‚Ì”Ô†‚ğİ’è
+  move_targets[position] = min_box_per_stack[id].second; // ç§»å‹•å…ˆã®å±±ã®ç•ªå·ã‚’è¨­å®š
 }
 
-// c‚è‚Ì‘€ì‚ğƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚·‚éŠÖ”iƒvƒŒƒCƒAƒEƒgj
+// æ®‹ã‚Šã®æ“ä½œã‚’ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã™ã‚‹é–¢æ•°ï¼ˆãƒ—ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆï¼‰
 int simulate_remaining_moves(Problem problem, int current_box, int position, vector<int> move_targets, vector<P> min_box_per_stack, int from_stack)
 {
   int current_y = problem.positions[current_box].y;
-  // ˆÚ“®æ‚ğŒˆ’è
+  // ç§»å‹•å…ˆã‚’æ±ºå®š
   srep(i, position + 1, problem.stacks[from_stack].size())
   {
     decide_move_destination(problem, move_targets, min_box_per_stack, from_stack, i);
   }
-  // 1ƒ^[ƒ“•ª‚Ì‘€ì‚ğÀs
+  // 1ã‚¿ãƒ¼ãƒ³åˆ†ã®æ“ä½œã‚’å®Ÿè¡Œ
   execute_turn(problem, current_box, from_stack, move_targets);
 
-  // c‚è‚Ìƒ^[ƒ“‚ğ‡ŸÀs
+  // æ®‹ã‚Šã®ã‚¿ãƒ¼ãƒ³ã‚’é †æ¬¡å®Ÿè¡Œ
   srep(turn, current_box + 1, n)
   {
     vector<P> min_boxes_in_stacks(m);
@@ -312,64 +312,64 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
       int min_i = INT_INF;
       rep(j, problem.stacks[i].size())
       {
-        min_i = min(min_i, problem.stacks[i][j]); // ŠeR‚ÌÅ¬‚Ì” ‚Ì”Ô†‚ğæ“¾
+        min_i = min(min_i, problem.stacks[i][j]); // å„å±±ã®æœ€å°ã®ç®±ã®ç•ªå·ã‚’å–å¾—
       }
       min_boxes_in_stacks[i] = P(min_i, i);
     }
 
-    sort(min_boxes_in_stacks.begin(), min_boxes_in_stacks.end()); // Å¬‚Ì” ‚Ì”Ô†‚Åƒ\[ƒg
+    sort(min_boxes_in_stacks.begin(), min_boxes_in_stacks.end()); // æœ€å°ã®ç®±ã®ç•ªå·ã§ã‚½ãƒ¼ãƒˆ
 
-    int next_from_stack = min_boxes_in_stacks[0].second; // Ÿ‚É‘€ì‚·‚éR
+    int next_from_stack = min_boxes_in_stacks[0].second; // æ¬¡ã«æ“ä½œã™ã‚‹å±±
     int next_y = problem.positions[turn].y;
 
     vector<int> next_move_targets(problem.stacks[next_from_stack].size(), -1);
-    // ” ‚ÌˆÚ“®æ‚ğŒˆ’è
+    // ç®±ã®ç§»å‹•å…ˆã‚’æ±ºå®š
     srep(k, next_y + 1, problem.stacks[next_from_stack].size())
     {
       decide_move_destination(problem, next_move_targets, min_boxes_in_stacks, next_from_stack, k);
     }
 
-    // 1ƒ^[ƒ“•ª‚Ì‘€ì‚ğÀs
+    // 1ã‚¿ãƒ¼ãƒ³åˆ†ã®æ“ä½œã‚’å®Ÿè¡Œ
     execute_turn(problem, turn, next_from_stack, next_move_targets);
   }
 
-  return calc_score(problem.ans); // ƒXƒRƒA‚ğŒvZ‚µ‚Ä•Ô‚·
+  return calc_score(problem.ans); // ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã—ã¦è¿”ã™
 }
 
-// Greedy‚È‰ğ–@‚ğÀ‘•‚µ‚½ŠÖ”
+// Greedyãªè§£æ³•ã‚’å®Ÿè£…ã—ãŸé–¢æ•°
 Problem greedy_solution()
 {
   Problem problem;
-  rep(i, m) problem.stacks[i] = init_stacks[i]; // ‰Šúó‘Ô‚ğƒRƒs[
+  rep(i, m) problem.stacks[i] = init_stacks[i]; // åˆæœŸçŠ¶æ…‹ã‚’ã‚³ãƒ”ãƒ¼
   problem.positions = init_positions;
 
   rep(current_box, n)
-  { // Šeƒ^[ƒ“iŠe” j‚É‚Â‚¢‚Ä
+  { // å„ã‚¿ãƒ¼ãƒ³ï¼ˆå„ç®±ï¼‰ã«ã¤ã„ã¦
     vector<P> min_box_per_stack(m);
     rep(i, m)
     {
       int min_i = INT_INF;
       rep(j, problem.stacks[i].size())
       {
-        min_i = min(min_i, problem.stacks[i][j]); // ŠeR‚ÌÅ¬‚Ì” ‚Ì”Ô†‚ğæ“¾
+        min_i = min(min_i, problem.stacks[i][j]); // å„å±±ã®æœ€å°ã®ç®±ã®ç•ªå·ã‚’å–å¾—
       }
       min_box_per_stack[i] = P(min_i, i);
     }
 
-    sort(min_box_per_stack.begin(), min_box_per_stack.end()); // Å¬‚Ì” ‚Ì”Ô†‚Åƒ\[ƒg
+    sort(min_box_per_stack.begin(), min_box_per_stack.end()); // æœ€å°ã®ç®±ã®ç•ªå·ã§ã‚½ãƒ¼ãƒˆ
 
-    int from_stack = min_box_per_stack[0].second; // Œ»İ‚Ìƒ^[ƒ“‚Å‘€ì‚·‚éR
+    int from_stack = min_box_per_stack[0].second; // ç¾åœ¨ã®ã‚¿ãƒ¼ãƒ³ã§æ“ä½œã™ã‚‹å±±
     int current_y = problem.positions[current_box].y;
 
     vector<int> move_targets(problem.stacks[from_stack].size(), -1);
 
-    // Še” ‚É‚Â‚¢‚ÄÅ“K‚ÈˆÚ“®æ‚ğ’Tõ
+    // å„ç®±ã«ã¤ã„ã¦æœ€é©ãªç§»å‹•å…ˆã‚’æ¢ç´¢
     srep(position, current_y + 1, problem.stacks[from_stack].size())
     {
       int max_score = -1;
       int max_id = -1;
 
-      // Še‰Â”\‚ÈˆÚ“®æ‚É‚Â‚¢‚ÄƒvƒŒƒCƒAƒEƒg
+      // å„å¯èƒ½ãªç§»å‹•å…ˆã«ã¤ã„ã¦ãƒ—ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
       srep(l, 1, m)
       {
         move_targets[position] = min_box_per_stack[l].second;
@@ -380,13 +380,13 @@ Problem greedy_solution()
         }
       }
 
-      move_targets[position] = max_id; // Å—Ç‚ÌˆÚ“®æ‚ğİ’è
+      move_targets[position] = max_id; // æœ€è‰¯ã®ç§»å‹•å…ˆã‚’è¨­å®š
     }
 
-    // Œ»İ‚ÌƒXƒRƒA‚ğŒvZ
+    // ç¾åœ¨ã®ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—
     int score = simulate_remaining_moves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
 
-    // ƒ‰ƒ“ƒ_ƒ€‚ÉˆÚ“®æ‚ğ•ÏX‚µ‚Ä’TõiÄ‚«‚È‚Ü‚µ“I‚Èè–@j
+    // ãƒ©ãƒ³ãƒ€ãƒ ã«ç§»å‹•å…ˆã‚’å¤‰æ›´ã—ã¦æ¢ç´¢ï¼ˆç„¼ããªã¾ã—çš„ãªæ‰‹æ³•ï¼‰
     if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && GetNowTime() < TL) {
       rep(iteration, 500)
       {
@@ -394,12 +394,12 @@ Problem greedy_solution()
         int keep = move_targets[random_position];
 
         if (Rand() % 2 == 0) {
-          // ƒ‰ƒ“ƒ_ƒ€‚ÉˆÚ“®æ‚ğ•ÏX
+          // ãƒ©ãƒ³ãƒ€ãƒ ã«ç§»å‹•å…ˆã‚’å¤‰æ›´
           int random_idx = Rand() % (m - 1) + 1;
           move_targets[random_position] = min_box_per_stack[random_idx].second;
         }
         else {
-          // ã‰º‚Ì” ‚ÌˆÚ“®æ‚É‡‚í‚¹‚é
+          // ä¸Šä¸‹ã®ç®±ã®ç§»å‹•å…ˆã«åˆã‚ã›ã‚‹
           int random_dir = -1;
           if (random_position == current_y + 1) {
             random_dir = 1;
@@ -417,37 +417,37 @@ Problem greedy_solution()
           score = tmp_score;
         }
         else {
-          move_targets[random_position] = keep; // ‰ü‘P‚µ‚È‚¯‚ê‚ÎŒ³‚É–ß‚·
+          move_targets[random_position] = keep; // æ”¹å–„ã—ãªã‘ã‚Œã°å…ƒã«æˆ»ã™
         }
       }
     }
 
-    // Œˆ’è‚µ‚½ˆÚ“®æ‚Å‘€ì‚ğÀs
+    // æ±ºå®šã—ãŸç§»å‹•å…ˆã§æ“ä½œã‚’å®Ÿè¡Œ
     execute_turn(problem, current_box, from_stack, move_targets);
   }
 
   return problem;
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll solve(int problem_num)
 {
-  ResetTime(); // ŠÔŒv‘ª‚ğƒŠƒZƒbƒg
+  ResetTime(); // æ™‚é–“è¨ˆæ¸¬ã‚’ãƒªã‚»ãƒƒãƒˆ
 
-  // “à•”ó‘Ô‚ğ‰Šú‰»
+  // å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–
   set_up();
 
-  // “ü—Í‚ğó‚¯æ‚é
+  // å…¥åŠ›ã‚’å—ã‘å–ã‚‹
   input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ã
   ofstream ofs;
   open_ofs(problem_num, ofs);
 
-  // ‰Šú‰ğ‚ğ¶¬
+  // åˆæœŸè§£ã‚’ç”Ÿæˆ
   auto problem = greedy_solution();
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   output(ofs, problem.ans);
 
   if (ofs.is_open()) {
@@ -456,32 +456,32 @@ ll solve(int problem_num)
 
   ll score = 0;
   if (mode != 0) {
-    score = calc_score(problem.ans); // ƒXƒRƒA‚ğŒvZ
+    score = calc_score(problem.ans); // ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—
   }
   return score;
 }
 
 ////////////////////////////////////////////////////////////////////
-// ƒƒ‚
+// ãƒ¡ãƒ¢
 ////////////////////////////////////////////////////////////////////
 
 int main()
 {
-  srand((unsigned)time(NULL)); // —”‚Ìí‚ğİ’è
+  srand((unsigned)time(NULL)); // ä¹±æ•°ã®ç¨®ã‚’è¨­å®š
   while (rand() % 100) {
-    Rand(); // —”‚ği‚ß‚Ä‚¨‚­
+    Rand(); // ä¹±æ•°ã‚’é€²ã‚ã¦ãŠã
   }
 
   mode = 2;
 
   if (mode == 0) {
-    solve(0); // ’Pˆê‚ÌƒP[ƒX‚ğ‰ğ‚­
+    solve(0); // å˜ä¸€ã®ã‚±ãƒ¼ã‚¹ã‚’è§£ã
   }
   else {
     ll sum = 0;
     srep(i, 0, 100)
     {
-      ll score = solve(i); // •¡”‚ÌƒP[ƒX‚ğ‰ğ‚­
+      ll score = solve(i); // è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’è§£ã
       sum += score;
       if (mode == 1) {
         cout << score << endl;

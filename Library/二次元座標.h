@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-// “ñŸŒ³À•W
+// äºŒæ¬¡å…ƒåº§æ¨™
 struct Point
 {
   int x;
@@ -10,16 +10,16 @@ struct Point
   Point(int x_, int y_) : x(x_), y(y_) {}
 };
 
-// ’·•ûŒ`
+// é•·æ–¹å½¢
 struct Rectangle
 {
-  // Å¬“_
+  // æœ€å°ç‚¹
   Point min_point;
-  // Å‘å“_
+  // æœ€å¤§ç‚¹
   Point max_point;
 };
 
-// inner ‚ª outer ‚É“à•ï‚³‚ê‚Ä‚¢‚é‚©‚ğ”»’è‚·‚éŠÖ”
+// inner ãŒ outer ã«å†…åŒ…ã•ã‚Œã¦ã„ã‚‹ã‹ã‚’åˆ¤å®šã™ã‚‹é–¢æ•°
 bool is_rectangle_inside(const Rectangle& inner, const Rectangle& outer)
 {
   return (outer.min_point.x <= inner.min_point.x &&
@@ -28,7 +28,7 @@ bool is_rectangle_inside(const Rectangle& inner, const Rectangle& outer)
     inner.max_point.y <= outer.max_point.y);
 }
 
-// “ñ‚Â‚Ì’·•ûŒ`‚ªŒğ·‚µ‚Ä‚¢‚é‚©‚ğ”»’è‚·‚éŠÖ”
+// äºŒã¤ã®é•·æ–¹å½¢ãŒäº¤å·®ã—ã¦ã„ã‚‹ã‹ã‚’åˆ¤å®šã™ã‚‹é–¢æ•°
 bool are_rectangles_intersecting(const Rectangle& rect1, const Rectangle& rect2)
 {
   if (rect1.max_point.x < rect2.min_point.x || rect2.max_point.x < rect1.min_point.x) {

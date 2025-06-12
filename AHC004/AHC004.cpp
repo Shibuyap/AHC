@@ -1,4 +1,4 @@
-#include <chrono>
+Ôªø#include <chrono>
 #include <climits>
 #include <cstdint>
 #include <fstream>
@@ -18,7 +18,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// É^ÉCÉ}Å[
+// „Çø„Ç§„Éû„Éº
 namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
@@ -32,7 +32,7 @@ namespace {
   }
 }
 
-// óêêî
+// ‰π±Êï∞
 namespace {
   static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
@@ -393,7 +393,7 @@ public:
   void greedy_after_assemble(const Patterns& patterns) {
     recalc_all(patterns);
 
-    // íuÇØÇƒÇ»Ç¢ÉpÉ^Å[ÉìÇí∑Ç¢èáÇ…íuÇØÇÈÇ∆Ç±ÇÎÇ…íuÇ¢ÇƒÇ¢Ç≠
+    // ÁΩÆ„Åë„Å¶„Å™„ÅÑ„Éë„Çø„Éº„É≥„ÇíÈï∑„ÅÑÈ†Ü„Å´ÁΩÆ„Åë„Çã„Å®„Åì„Çç„Å´ÁΩÆ„ÅÑ„Å¶„ÅÑ„Åè
     for (int len = MAX_PATTERN_LENGTH; len >= MIN_PATTERN_LENGTH; len--) {
       for (int pat_index = 0; pat_index < patterns.vv_patterns[len].size(); pat_index++) {
         if (matched_flags[len][pat_index].get_count() > 0) {
@@ -403,7 +403,7 @@ public:
         int ok = 0;
         for (int i = 0; i < N; ++i) {
           for (int j = 0; j < N; ++j) {
-            // çsÇ…íuÇØÇÈÇ©
+            // Ë°å„Å´ÁΩÆ„Åë„Çã„Åã
             {
               ok = 1;
               for (int k = 0; k < len; ++k) {
@@ -419,7 +419,7 @@ public:
                 break;
               }
             }
-            // óÒÇ…íuÇØÇÈÇ©
+            // Âàó„Å´ÁΩÆ„Åë„Çã„Åã
             {
               ok = 1;
               for (int k = 0; k < len; ++k) {
@@ -583,7 +583,7 @@ public:
               break;
             }
             for (int l = 0; l < N; ++l) {
-              // 2çsñ⁄Ç∆3çsñ⁄ÇÉZÉbÉg
+              // 2Ë°åÁõÆ„Å®3Ë°åÁõÆ„Çí„Çª„ÉÉ„Éà
               for (int m = 0; m < N; ++m) {
                 g[0][m] = CHARACTER_SIZE;
                 g[1][m] = CHARACTER_SIZE;
@@ -599,7 +599,7 @@ public:
                 g[2][(l + m) % N] = vv[j][m];
               }
 
-              // äeóÒÇåàíËÇµÇƒÇ¢Ç≠
+              // ÂêÑÂàó„ÇíÊ±∫ÂÆö„Åó„Å¶„ÅÑ„Åè
               for (int m = 0; m < N; ++m) {
                 decided_col[m] = -1;
               }
@@ -665,7 +665,7 @@ public:
                 }
               }
 
-              // é∏îsÇµÇΩÇÁå≥Ç…ñﬂÇ∑
+              // Â§±Êïó„Åó„Åü„ÇâÂÖÉ„Å´Êàª„Åô
               if (ng_count > NG_SAFE) {
                 for (int m = 0; m < vv[i].size(); ++m) {
                   g[1][(k + m) % N] = CHARACTER_SIZE;
@@ -677,7 +677,7 @@ public:
                 continue;
               }
 
-              // çsåàíËÇ…égÇ§óÒÇåàíËÇ∑ÇÈ
+              // Ë°åÊ±∫ÂÆö„Å´‰Ωø„ÅÜÂàó„ÇíÊ±∫ÂÆö„Åô„Çã
               const int COL_LENGTH = 1;
               int start_col = -1;
               for (int m = 0; m < N; ++m) {
@@ -713,7 +713,7 @@ public:
                 no_start_count++;
               }
 
-              // äeçsÇåàíËÇµÇƒÇ¢Ç≠
+              // ÂêÑË°å„ÇíÊ±∫ÂÆö„Åó„Å¶„ÅÑ„Åè
               for (int m = 0; m < N; ++m) {
                 decided_row[m] = -1;
               }
@@ -868,7 +868,7 @@ public:
                 }
               }
 
-              // å„ï–ïtÇØ
+              // ÂæåÁâá‰ªò„Åë
               for (int m = 0; m < vv[i].size(); ++m) {
                 g[1][(k + m) % N] = CHARACTER_SIZE;
               }
@@ -939,7 +939,7 @@ void input_data(int case_num, PatternsManager& patterns_manager) {
     }
   }
   else if (!ifs.is_open()) {
-    // ïWèÄì¸óÕ
+    // Ê®ôÊ∫ñÂÖ•Âäõ
     cin >> _n >> _m;
     for (int i = 0; i < _m; ++i) {
       string s;
@@ -948,7 +948,7 @@ void input_data(int case_num, PatternsManager& patterns_manager) {
     }
   }
   else {
-    // ÉtÉ@ÉCÉãì¸óÕ
+    // „Éï„Ç°„Ç§„É´ÂÖ•Âäõ
     ifs >> _n >> _m;
     for (int i = 0; i < _m; ++i) {
       string s;
@@ -983,7 +983,7 @@ void open_ofs(int case_num, ofstream& ofs) {
 
 void output_data(ofstream& ofs, State& state) {
   if (exec_mode == 0) {
-    // ïWèÄèoóÕ
+    // Ê®ôÊ∫ñÂá∫Âäõ
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
         if (state.grid[i][j] == CHARACTER_SIZE) {
@@ -997,7 +997,7 @@ void output_data(ofstream& ofs, State& state) {
     }
   }
   else {
-    // ÉtÉ@ÉCÉãèoóÕ
+    // „Éï„Ç°„Ç§„É´Âá∫Âäõ
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
         if (state.grid[i][j] == CHARACTER_SIZE) {
@@ -1036,7 +1036,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ãﬂñTâçÏê¨
+    // ËøëÂÇçËß£‰ΩúÊàê
     int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -1072,12 +1072,12 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     }
 
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ãﬂñTëÄçÏ1
+      // ËøëÂÇçÊìç‰Ωú1
       state.grid[row][col] = candidate_value;
       state.update_one_point(row, col, patterns);
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ãﬂñTëÄçÏ2
+      // ËøëÂÇçÊìç‰Ωú2
       for (int i = 0; i < len; i++) {
         if (dir == 0) {
           state.grid[row][(col + i) % N] = patterns.vv_patterns[len][index].pattern[i];
@@ -1090,7 +1090,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
       }
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-      // ãﬂñTëÄçÏ3
+      // ËøëÂÇçÊìç‰Ωú3
       int keep[N];
       for (int i = 0; i < N; i++) {
         keep[i] = state.grid[row][i];
@@ -1105,24 +1105,24 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
       }
     }
 
-    // ÉXÉRÉAåvéZ
+    // „Çπ„Ç≥„Ç¢Ë®àÁÆó
     double tmp_score = state.get_score(patterns);
 
-    // èƒÇ´Ç»Ç‹ÇµÇ≈çÃópîªíË
+    // ÁÑº„Åç„Å™„Åæ„Åó„ÅßÊé°Áî®Âà§ÂÆö
     double diff_score = (tmp_score - current_score) * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
-      // çÃóp
+      // Êé°Áî®
     }
     else {
-      // å≥Ç…ñﬂÇ∑
+      // ÂÖÉ„Å´Êàª„Åô
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ãﬂñTëÄçÏ1 ÇÃä™Ç´ñﬂÇµ
+        // ËøëÂÇçÊìç‰Ωú1 „ÅÆÂ∑ª„ÅçÊàª„Åó
         state.grid[row][col] = old_value;
         state.update_one_point(row, col, patterns);
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ãﬂñTëÄçÏ2 ÇÃä™Ç´ñﬂÇµ
+        // ËøëÂÇçÊìç‰Ωú2 „ÅÆÂ∑ª„ÅçÊàª„Åó
         for (int i = 0; i < len; i++) {
           if (dir == 0) {
             state.grid[row][(col + i) % N] = old_values[i];
@@ -1135,7 +1135,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
         }
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
-        // ãﬂñTëÄçÏ3 ÇÃä™Ç´ñﬂÇµ
+        // ËøëÂÇçÊìç‰Ωú3 „ÅÆÂ∑ª„ÅçÊàª„Åó
         int keep[N];
         for (int i = 0; i < N; i++) {
           keep[i] = state.grid[row][i];
@@ -1156,7 +1156,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     cerr << "iteration_count = " << iteration_count << endl;
   }
   if (exec_mode >= 2 && exec_mode != 4) {
-    cerr << "èƒÇ´Ç»Ç‹ÇµèàóùèIóπ : " << get_elapsed_time() << " sec" << endl;
+    cerr << "ÁÑº„Åç„Å™„Åæ„ÅóÂá¶ÁêÜÁµÇ‰∫Ü : " << get_elapsed_time() << " sec" << endl;
   }
 }
 
@@ -1183,7 +1183,7 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
     cerr << endl;
   }
   if (exec_mode >= 2 && exec_mode != 4) {
-    cerr << "ÉpÉ^Å[ÉìÉ}Å[ÉWèàóùèIóπ : " << get_elapsed_time() << " sec" << endl;
+    cerr << "„Éë„Çø„Éº„É≥„Éû„Éº„Ç∏Âá¶ÁêÜÁµÇ‰∫Ü : " << get_elapsed_time() << " sec" << endl;
   }
 
   if (exec_mode >= 3 && exec_mode != 4) {
@@ -1200,7 +1200,7 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
     }
   }
   if (exec_mode >= 2 && exec_mode != 4) {
-    cerr << "äÆëSïúå≥èàóùèIóπ : " << get_elapsed_time() << " sec" << endl;
+    cerr << "ÂÆåÂÖ®Âæ©ÂÖÉÂá¶ÁêÜÁµÇ‰∫Ü : " << get_elapsed_time() << " sec" << endl;
   }
 
   state.greedy_after_assemble(patterns_manager.merged_patterns);
@@ -1213,7 +1213,7 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
     return PERFECT_SCORE;
   }
 
-  // èƒÇ´Ç»Ç‹Çµé¿çs
+  // ÁÑº„Åç„Å™„Åæ„ÅóÂÆüË°å
   run_simulated_annealing(annealingParams, state, patterns_manager.initial_patterns);
 
   state.recalc_all(patterns_manager.initial_patterns);
@@ -1231,7 +1231,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
 
   ll score = execute_solver(annealingParams, patterns_manager, state);
 
-  // âìöÇèoóÕ
+  // Ëß£Á≠î„ÇíÂá∫Âäõ
   ofstream ofs;
   open_ofs(case_num, ofs);
   output_data(ofs, state);
@@ -1312,7 +1312,7 @@ int main() {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 
-        // ÉVÅ[Éh0Ç™à´ÇØÇÍÇŒë≈ÇøêÿÇË
+        // „Ç∑„Éº„Éâ0„ÅåÊÇ™„Åë„Çå„Å∞Êâì„Å°Âàá„Çä
         if (i == 0 && score < 0) {
           break;
         }

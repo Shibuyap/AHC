@@ -1,4 +1,4 @@
-#pragma GCC target("avx2")
+ï»¿#pragma GCC target("avx2")
 #pragma GCC optimize("O3")
 #pragma GCC optimize("unroll-loops")
 #include <chrono>
@@ -169,7 +169,7 @@ static void read_case_input(int case_num) {
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
-  if (!ifs.is_open()) { // •W€“ü—Í‚·‚é
+  if (!ifs.is_open()) { // æ¨™æº–å…¥åŠ›ã™ã‚‹
     cin >> si >> sj;
     for (int i = 0; i < (GRID_SIZE); ++i) {
       for (int j = 0; j < (GRID_SIZE); ++j) {
@@ -182,7 +182,7 @@ static void read_case_input(int case_num) {
       }
     }
   }
-  else { // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  else { // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     ifs >> si >> sj;
     for (int i = 0; i < (GRID_SIZE); ++i) {
       for (int j = 0; j < (GRID_SIZE); ++j) {
@@ -204,11 +204,11 @@ void write_case_output(int case_num) {
   }
 
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << best_string << endl;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -279,7 +279,7 @@ bool try_connect_path(Path& path, int sx, int sy, int gx, int gy) {
   return x == gx && y == gy;
 }
 
-// ‰Šú‰ð
+// åˆæœŸè§£
 void build_from_best_prefix(double time_limit_1, double time_limit_2) {
   Path current_path;
   int iter = 0;
@@ -403,7 +403,7 @@ void anneal_path_segment(const AnnealParam& param) {
   Path current_path;
   current_path.copy(best_path);
 
-  // „Ÿ„Ÿ ‹æŠÔ [seg_left, seg_right) ‚ðÄ‚«“Ý‚µ‚ÄÄ¶¬ „Ÿ„Ÿ
+  // â”€â”€ åŒºé–“ [seg_left, seg_right) ã‚’ç„¼ãéˆã—ã¦å†ç”Ÿæˆ â”€â”€
   Path before_keep_path, keep_path, after_keep_path;
 
   int iteration_cnt = 0;
@@ -425,7 +425,7 @@ void anneal_path_segment(const AnnealParam& param) {
     int seg_goal_x = current_path.x[seg_right];
     int seg_goal_y = current_path.y[seg_right];
 
-    /* „Ÿ before_keep_path „Ÿ */
+    /* â”€ before_keep_path â”€ */
     before_keep_path.init(si, sj);
     for (int i = 0; i < (seg_left); ++i) {
       before_keep_path.add(current_path.direction[i]);
@@ -434,7 +434,7 @@ void anneal_path_segment(const AnnealParam& param) {
       visited[tile_id[cx][cy]] = visited_version;
     }
 
-    /* „Ÿ keep_path (‹Œ‹æŠÔ) „Ÿ */
+    /* â”€ keep_path (æ—§åŒºé–“) â”€ */
     keep_path.init(seg_start_x, seg_start_y);
     srep(i, seg_left, seg_right) {
       keep_path.add(current_path.direction[i]);
@@ -445,7 +445,7 @@ void anneal_path_segment(const AnnealParam& param) {
 
     visited[tile_id[seg_goal_x][seg_goal_y]] = visited_version;
 
-    /* „Ÿ after_keep_path „Ÿ */
+    /* â”€ after_keep_path â”€ */
     after_keep_path.init(seg_goal_x, seg_goal_y);
     srep(i, seg_right, path_len - 1) {
       after_keep_path.add(current_path.direction[i]);

@@ -1,4 +1,4 @@
-#include <climits>
+ï»¿#include <climits>
 #include <cstdint>
 #include <fstream>
 #include <iosfwd>
@@ -19,14 +19,14 @@ typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 200005
 
-// ‚¢‚ë‚¢‚ë
+// ã„ã‚ã„ã‚
 const int INF = 1001001001;
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 const char cc[4] = { 'U', 'L', 'D', 'R' };
 const char cGetPet[4] = { 'u', 'l', 'd', 'r' };
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand() {
     static uint32_t x = 123456789;
@@ -47,36 +47,36 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 } // namespace
 
-namespace /* •Ï” */
+namespace /* å¤‰æ•° */
 {
-  // –â‘èİ’è
+  // å•é¡Œè¨­å®š
   const int MAX_HUMAN = 10;
   const int MAX_PET = 20;
   const int N = 30;
   const int T = 300;
 
-  // “ü—Í—p•Ï”
+  // å…¥åŠ›ç”¨å¤‰æ•°
   int n, m;
   vector<int> px, py, pt, hx, hy;
   int dogCount;
 
-  // ƒ}ƒX‚Ìó‘Ô
+  // ãƒã‚¹ã®çŠ¶æ…‹
   /*
-  0 : ’Ê‚ê‚é
-  1 : ò
+  0 : é€šã‚Œã‚‹
+  1 : æŸµ
   */
   int grid[N][N];
 
 } // namespace
 
-namespace /* ƒ†[ƒeƒBƒŠƒeƒB */
+namespace /* ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ */
 {
   bool NgXY(int x, int y) {
     return x < 0 || x >= N || y < 0 || y >= N;
   }
 
-  // Å’Z‹——£ŒvZ
-  // –ß‚è’l : (‹——£, 1•à–Ú‚Ì•ûŒü)
+  // æœ€çŸ­è·é›¢è¨ˆç®—
+  // æˆ»ã‚Šå€¤ : (è·é›¢, 1æ­©ç›®ã®æ–¹å‘)
   P CalcRouteBfs(int sx, int sy, int gx, int gy) {
     int dp[N][N];
     int dir[N][N];
@@ -120,7 +120,7 @@ namespace /* ƒ†[ƒeƒBƒŠƒeƒB */
     return P(dp[gx][gy], dir[gx][gy]);
   }
 
-  // ò‚ğì‚ê‚é‚©
+  // æŸµã‚’ä½œã‚Œã‚‹ã‹
   bool CanMakeFence(int x, int y) {
     if (NgXY(x, y)) {
       return false;
@@ -128,14 +128,14 @@ namespace /* ƒ†[ƒeƒBƒŠƒeƒB */
     if (grid[x][y] == 1) {
       return false;
     }
-    // ƒyƒbƒg‚Æ‚Ìƒ}ƒ“ƒnƒbƒ^ƒ“‹——£‚ª0or1‚È‚çNG
+    // ãƒšãƒƒãƒˆã¨ã®ãƒãƒ³ãƒãƒƒã‚¿ãƒ³è·é›¢ãŒ0or1ãªã‚‰NG
     for (int i = 0; i < n; ++i) {
       int dist = abs(x - px[i]) + abs(y - py[i]);
       if (dist <= 1) {
         return false;
       }
     }
-    // lŠÔ‚Æ‚Ìƒ}ƒ“ƒnƒbƒ^ƒ“‹——£‚ª0‚È‚çNG
+    // äººé–“ã¨ã®ãƒãƒ³ãƒãƒƒã‚¿ãƒ³è·é›¢ãŒ0ãªã‚‰NG
     for (int i = 0; i < m; ++i) {
       if (hx[i] == x && hy[i] == y) {
         return false;
@@ -144,8 +144,8 @@ namespace /* ƒ†[ƒeƒBƒŠƒeƒB */
     return true;
   }
 
-  // lŠÔid‚ª‚±‚Ìƒ^[ƒ“ƒyƒbƒg‚ğ•ßŠl‚Å‚«‚é‚©
-  // 1:ã‘¤‚Å•ßŠl‰Â”\A2:‰º‘¤‚Å•ßŠl‰Â”\
+  // äººé–“idãŒã“ã®ã‚¿ãƒ¼ãƒ³ãƒšãƒƒãƒˆã‚’æ•ç²ã§ãã‚‹ã‹
+  // 1:ä¸Šå´ã§æ•ç²å¯èƒ½ã€2:ä¸‹å´ã§æ•ç²å¯èƒ½
   int PetCatch(int id) {
     if (CanMakeFence(hx[id] - 1, hy[id])) {
       int ok = 1;
@@ -213,7 +213,7 @@ namespace /* ƒ†[ƒeƒBƒŠƒeƒB */
     return 0;
   }
 
-  // (sx,sy)‚Éò‚ğì‚é‚±‚Æ‚Å20ƒ}ƒXˆÈ‰º‚Ì‹æ‰æ‚Åƒyƒbƒg‚ğŒÇ—§‚³‚¹‚ç‚ê‚é‚©
+  // (sx,sy)ã«æŸµã‚’ä½œã‚‹ã“ã¨ã§20ãƒã‚¹ä»¥ä¸‹ã®åŒºç”»ã§ãƒšãƒƒãƒˆã‚’å­¤ç«‹ã•ã›ã‚‰ã‚Œã‚‹ã‹
   bool CanCatchPet(int sx, int sy) {
     if (!CanMakeFence(sx, sy))
       return false;
@@ -266,36 +266,36 @@ namespace /* ƒ†[ƒeƒBƒŠƒeƒB */
   }
 }
 
-// ‹ùó‚Éò‚ğì‚é‰ğ–@
+// æ«›çŠ¶ã«æŸµã‚’ä½œã‚‹è§£æ³•
 class SolveVer1 {
 public:
   void Solve() {
     /*
-    ‚Ü‚¸ò‚ğì‚é
-    ò‚ªì‚èI‚í‚Á‚½‚ç15—ñ‚Å‘Ò‹@
+    ã¾ãšæŸµã‚’ä½œã‚‹
+    æŸµãŒä½œã‚Šçµ‚ã‚ã£ãŸã‚‰15åˆ—ã§å¾…æ©Ÿ
     */
 
-    // lŠÔ‚Ìó‘Ô
+    // äººé–“ã®çŠ¶æ…‹
     /*
-    0 : ‰½‚à‚µ‚Ä‚¢‚È‚¢
-    1 : ò‚ÌƒXƒ^[ƒg’n“_‚ÉŒü‚©‚Á‚Ä‚¢‚é
-    2 : ò‚ğì‚Á‚Ä‚¢‚é
+    0 : ä½•ã‚‚ã—ã¦ã„ãªã„
+    1 : æŸµã®ã‚¹ã‚¿ãƒ¼ãƒˆåœ°ç‚¹ã«å‘ã‹ã£ã¦ã„ã‚‹
+    2 : æŸµã‚’ä½œã£ã¦ã„ã‚‹
     */
     int humanMode[MAX_HUMAN] = {};
-    // –Ú“I‚Ìò‚Ì—ñ”Ô†
+    // ç›®çš„ã®æŸµã®åˆ—ç•ªå·
     int myFence[MAX_HUMAN] = {};
     for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
-    // œpœj‚·‚é•ûŒü
+    // å¾˜å¾Šã™ã‚‹æ–¹å‘
     // 0:LEFT, 1:RIGHT
     int humanDir[MAX_HUMAN] = {};
 
-    // ò‚Ìó‹µ
+    // æŸµã®çŠ¶æ³
     /*
-    0 : –¢’…è
-    1 : ’…è’†
-    10 : Š®¬Ï‚İ
+    0 : æœªç€æ‰‹
+    1 : ç€æ‰‹ä¸­
+    10 : å®Œæˆæ¸ˆã¿
     */
     int finishFenceCount = 0;
     int fence[N] = {};
@@ -308,7 +308,7 @@ public:
 
     for (int turn = 0; turn < T; ++turn) {
       string outStr;
-      // lŠÔ‚Ìs“®
+      // äººé–“ã®è¡Œå‹•
       for (int i = 0; i < m; ++i) {
         if (finishFenceCount < N) {
           if (humanMode[i] == 0) {
@@ -335,7 +335,7 @@ public:
               outStr += "D";
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ¶‚É‚à‰E‚É‚àò‚ª‚È‚¢
+              // å·¦ã«ã‚‚å³ã«ã‚‚æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -349,7 +349,7 @@ public:
               }
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
-              // ¶‚Éò‚ª‚È‚¢
+              // å·¦ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -359,7 +359,7 @@ public:
               }
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ‰E‚Éò‚ª‚È‚¢
+              // å³ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] + 1)) {
                 outStr += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
@@ -369,7 +369,7 @@ public:
               }
             }
             else {
-              // —¼ƒTƒCƒhò‚ ‚è
+              // ä¸¡ã‚µã‚¤ãƒ‰æŸµã‚ã‚Š
               if (hx[i] == N - 1) {
                 humanMode[i] = 0;
                 fence[myFence[i]] = 10;
@@ -449,7 +449,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -481,8 +481,8 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
-      // òì¬‚ğ—Dæ‚·‚é‚½‚ßƒRƒƒ“ƒgƒAƒEƒg
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
+      // æŸµä½œæˆã‚’å„ªå…ˆã™ã‚‹ãŸã‚ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆ
       // for (int i = 0; i < m; ++i) {
       //   int x = -1, y = -1;
       //   if (outStr[i] == 'u') {
@@ -593,36 +593,36 @@ public:
   }
 };
 
-// Œ¢‚ğ•ß‚Ü‚¦‚é
+// çŠ¬ã‚’æ•ã¾ãˆã‚‹
 class SolveVer3 {
 public:
   void Solve2(int startTurn) {
     /*
-    ‚Ü‚¸ò‚ğì‚é
-    ò‚ªì‚èI‚í‚Á‚½‚ç15—ñ‚Å‘Ò‹@
+    ã¾ãšæŸµã‚’ä½œã‚‹
+    æŸµãŒä½œã‚Šçµ‚ã‚ã£ãŸã‚‰15åˆ—ã§å¾…æ©Ÿ
     */
 
-    // lŠÔ‚Ìó‘Ô
+    // äººé–“ã®çŠ¶æ…‹
     /*
-    0 : ‰½‚à‚µ‚Ä‚¢‚È‚¢
-    1 : ò‚ÌƒXƒ^[ƒg’n“_‚ÉŒü‚©‚Á‚Ä‚¢‚é
-    2 : ò‚ğì‚Á‚Ä‚¢‚é
+    0 : ä½•ã‚‚ã—ã¦ã„ãªã„
+    1 : æŸµã®ã‚¹ã‚¿ãƒ¼ãƒˆåœ°ç‚¹ã«å‘ã‹ã£ã¦ã„ã‚‹
+    2 : æŸµã‚’ä½œã£ã¦ã„ã‚‹
     */
     int humanMode[MAX_HUMAN] = {};
-    // –Ú“I‚Ìò‚Ì—ñ”Ô†
+    // ç›®çš„ã®æŸµã®åˆ—ç•ªå·
     int myFence[MAX_HUMAN] = {};
     for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
-    // œpœj‚·‚é•ûŒü
+    // å¾˜å¾Šã™ã‚‹æ–¹å‘
     // 0:LEFT, 1:RIGHT
     int humanDir[MAX_HUMAN] = {};
 
-    // ò‚Ìó‹µ
+    // æŸµã®çŠ¶æ³
     /*
-    0 : –¢’…è
-    1 : ’…è’†
-    10 : Š®¬Ï‚İ
+    0 : æœªç€æ‰‹
+    1 : ç€æ‰‹ä¸­
+    10 : å®Œæˆæ¸ˆã¿
     */
     int finishFenceCount = 0;
     int fence[N] = {};
@@ -636,7 +636,7 @@ public:
     srep(turn, startTurn, T) {
       // cout << "# Solve2" << endl;
       string outStr;
-      // lŠÔ‚Ìs“®
+      // äººé–“ã®è¡Œå‹•
       for (int i = 0; i < m; ++i) {
         int getPetFlag = -1;
         grid[hx[i]][hy[i]] = 1;
@@ -702,7 +702,7 @@ public:
               outStr += "D";
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ¶‚É‚à‰E‚É‚àò‚ª‚È‚¢
+              // å·¦ã«ã‚‚å³ã«ã‚‚æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -716,7 +716,7 @@ public:
               }
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
-              // ¶‚Éò‚ª‚È‚¢
+              // å·¦ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -726,7 +726,7 @@ public:
               }
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ‰E‚Éò‚ª‚È‚¢
+              // å³ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] + 1)) {
                 outStr += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
@@ -736,7 +736,7 @@ public:
               }
             }
             else {
-              // —¼ƒTƒCƒhò‚ ‚è
+              // ä¸¡ã‚µã‚¤ãƒ‰æŸµã‚ã‚Š
               if (hx[i] == N - 1) {
                 humanMode[i] = 0;
                 fence[myFence[i]] = 10;
@@ -798,7 +798,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -1009,7 +1009,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -1091,36 +1091,36 @@ public:
   }
 };
 
-// SolveVer3‚ğ‰ü—Ç
+// SolveVer3ã‚’æ”¹è‰¯
 class SolveVer4 {
 public:
   void Solve2(int startTurn) {
     /*
-    ‚Ü‚¸ò‚ğì‚é
-    ò‚ªì‚èI‚í‚Á‚½‚ç15—ñ‚Å‘Ò‹@
+    ã¾ãšæŸµã‚’ä½œã‚‹
+    æŸµãŒä½œã‚Šçµ‚ã‚ã£ãŸã‚‰15åˆ—ã§å¾…æ©Ÿ
     */
 
-    // lŠÔ‚Ìó‘Ô
+    // äººé–“ã®çŠ¶æ…‹
     /*
-    0 : ‰½‚à‚µ‚Ä‚¢‚È‚¢
-    1 : ò‚ÌƒXƒ^[ƒg’n“_‚ÉŒü‚©‚Á‚Ä‚¢‚é
-    2 : ò‚ğì‚Á‚Ä‚¢‚é
+    0 : ä½•ã‚‚ã—ã¦ã„ãªã„
+    1 : æŸµã®ã‚¹ã‚¿ãƒ¼ãƒˆåœ°ç‚¹ã«å‘ã‹ã£ã¦ã„ã‚‹
+    2 : æŸµã‚’ä½œã£ã¦ã„ã‚‹
     */
     int humanMode[MAX_HUMAN] = {};
-    // –Ú“I‚Ìò‚Ì—ñ”Ô†
+    // ç›®çš„ã®æŸµã®åˆ—ç•ªå·
     int myFence[MAX_HUMAN] = {};
     for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
-    // œpœj‚·‚é•ûŒü
+    // å¾˜å¾Šã™ã‚‹æ–¹å‘
     // 0:LEFT, 1:RIGHT
     int humanDir[MAX_HUMAN] = {};
 
-    // ò‚Ìó‹µ
+    // æŸµã®çŠ¶æ³
     /*
-    0 : –¢’…è
-    1 : ’…è’†
-    10 : Š®¬Ï‚İ
+    0 : æœªç€æ‰‹
+    1 : ç€æ‰‹ä¸­
+    10 : å®Œæˆæ¸ˆã¿
     */
     int finishFenceCount = 0;
     int fenceU[N] = {};
@@ -1137,7 +1137,7 @@ public:
     srep(turn, startTurn, T) {
       // cout << "# Solve2" << endl;
       string outStr;
-      // lŠÔ‚Ìs“®
+      // äººé–“ã®è¡Œå‹•
       for (int i = 0; i < m; ++i) {
         int getPetFlag = -1;
         grid[hx[i]][hy[i]] = 1;
@@ -1213,7 +1213,7 @@ public:
           }
           else if (humanMode[i] == 2) {
             if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ¶‚É‚à‰E‚É‚àò‚ª‚È‚¢
+              // å·¦ã«ã‚‚å³ã«ã‚‚æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -1227,7 +1227,7 @@ public:
               }
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
-              // ¶‚Éò‚ª‚È‚¢
+              // å·¦ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -1237,7 +1237,7 @@ public:
               }
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ‰E‚Éò‚ª‚È‚¢
+              // å³ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] + 1)) {
                 outStr += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
@@ -1247,7 +1247,7 @@ public:
               }
             }
             else {
-              // —¼ƒTƒCƒhò‚ ‚è
+              // ä¸¡ã‚µã‚¤ãƒ‰æŸµã‚ã‚Š
               if (myFence[i] < 100) {
                 int goalX = 2;
                 if (myFence[i] == 1 || myFence[i] == 29) {
@@ -1327,7 +1327,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -1538,7 +1538,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -1620,36 +1620,36 @@ public:
   }
 };
 
-// SolveVer4‚ÆŒü‚«‚ğ‹t‚É
+// SolveVer4ã¨å‘ãã‚’é€†ã«
 class SolveVer5 {
 public:
   void Solve2(int startTurn) {
     /*
-    ‚Ü‚¸ò‚ğì‚é
-    ò‚ªì‚èI‚í‚Á‚½‚ç15—ñ‚Å‘Ò‹@
+    ã¾ãšæŸµã‚’ä½œã‚‹
+    æŸµãŒä½œã‚Šçµ‚ã‚ã£ãŸã‚‰15åˆ—ã§å¾…æ©Ÿ
     */
 
-    // lŠÔ‚Ìó‘Ô
+    // äººé–“ã®çŠ¶æ…‹
     /*
-    0 : ‰½‚à‚µ‚Ä‚¢‚È‚¢
-    1 : ò‚ÌƒXƒ^[ƒg’n“_‚ÉŒü‚©‚Á‚Ä‚¢‚é
-    2 : ò‚ğì‚Á‚Ä‚¢‚é
+    0 : ä½•ã‚‚ã—ã¦ã„ãªã„
+    1 : æŸµã®ã‚¹ã‚¿ãƒ¼ãƒˆåœ°ç‚¹ã«å‘ã‹ã£ã¦ã„ã‚‹
+    2 : æŸµã‚’ä½œã£ã¦ã„ã‚‹
     */
     int humanMode[MAX_HUMAN] = {};
-    // –Ú“I‚Ìò‚Ì—ñ”Ô†
+    // ç›®çš„ã®æŸµã®åˆ—ç•ªå·
     int myFence[MAX_HUMAN] = {};
     for (int i = 0; i < MAX_HUMAN; ++i) {
       myFence[i] = -1;
     }
-    // œpœj‚·‚é•ûŒü
+    // å¾˜å¾Šã™ã‚‹æ–¹å‘
     // 0:LEFT, 1:RIGHT
     int humanDir[MAX_HUMAN] = {};
 
-    // ò‚Ìó‹µ
+    // æŸµã®çŠ¶æ³
     /*
-    0 : –¢’…è
-    1 : ’…è’†
-    10 : Š®¬Ï‚İ
+    0 : æœªç€æ‰‹
+    1 : ç€æ‰‹ä¸­
+    10 : å®Œæˆæ¸ˆã¿
     */
     int finishFenceCount = 0;
     int fenceU[N] = {};
@@ -1666,7 +1666,7 @@ public:
     srep(turn, startTurn, T) {
       // cout << "# Solve2" << endl;
       string outStr;
-      // lŠÔ‚Ìs“®
+      // äººé–“ã®è¡Œå‹•
       for (int i = 0; i < m; ++i) {
         int getPetFlag = -1;
         grid[hx[i]][hy[i]] = 1;
@@ -1742,7 +1742,7 @@ public:
           }
           else if (humanMode[i] == 2) {
             if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ¶‚É‚à‰E‚É‚àò‚ª‚È‚¢
+              // å·¦ã«ã‚‚å³ã«ã‚‚æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -1756,7 +1756,7 @@ public:
               }
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
-              // ¶‚Éò‚ª‚È‚¢
+              // å·¦ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] - 1)) {
                 outStr += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
@@ -1766,7 +1766,7 @@ public:
               }
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
-              // ‰E‚Éò‚ª‚È‚¢
+              // å³ã«æŸµãŒãªã„
               if (CanMakeFence(hx[i], hy[i] + 1)) {
                 outStr += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
@@ -1776,7 +1776,7 @@ public:
               }
             }
             else {
-              // —¼ƒTƒCƒhò‚ ‚è
+              // ä¸¡ã‚µã‚¤ãƒ‰æŸµã‚ã‚Š
               if (myFence[i] < 100) {
                 int goalX = 2;
                 if (myFence[i] == 1 || myFence[i] == 29) {
@@ -1856,7 +1856,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -2067,7 +2067,7 @@ public:
         }
       }
 
-      // ‚±‚Ìƒ^[ƒ“‚ÌlŠÔ‚Æò‚ÌŠ±Âƒ`ƒFƒbƒN
+      // ã“ã®ã‚¿ãƒ¼ãƒ³ã®äººé–“ã¨æŸµã®å¹²æ¸‰ãƒã‚§ãƒƒã‚¯
       for (int i = 0; i < m; ++i) {
         if (outStr[i] == 'U') {
           hx[i]--;
@@ -2149,11 +2149,11 @@ public:
   }
 };
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input() {
   string fileNameIfs = "input_0.txt";
   ifstream ifs(fileNameIfs.c_str());
-  if (!ifs.is_open()) { // •W€“ü—Í‚·‚é
+  if (!ifs.is_open()) { // æ¨™æº–å…¥åŠ›ã™ã‚‹
     cin >> n;
     for (int i = 0; i < n; ++i) {
       int x, y, t;
@@ -2174,7 +2174,7 @@ void Input() {
       hy.push_back(y);
     }
   }
-  else { // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  else { // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     ifs >> n;
     for (int i = 0; i < n; ++i) {
       int x, y, t;
@@ -2201,7 +2201,7 @@ void Input() {
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
-    ƒƒ‚
+    ãƒ¡ãƒ¢
     cat ./in/0001.txt | ./tester.exe ./a.exe > 0001_out.txt
 */
 ///////////////////////////////////////////////////////////////////////////////
@@ -2214,7 +2214,7 @@ int Solve(int mode) {
     Rand();
   }
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input();
 
   if (dogCount == 0) {

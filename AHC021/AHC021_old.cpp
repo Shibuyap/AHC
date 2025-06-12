@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -40,7 +40,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -57,7 +57,7 @@ namespace
   }
 }
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -82,7 +82,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
 
 constexpr int BOARD_SIZE = 30;
 constexpr int MAX_LOOP = 10000;
-constexpr int BALL_COUNT = BOARD_SIZE * (BOARD_SIZE + 1) / 2; // BALL_COUNT
+constexpr int BALL_COUNT = BOARD_SIZE * (BOARD_SIZE + 1) / 2; // ï¼BALL_COUNT
 constexpr int LOCK_PREFIX = 52;
 
 int board[BOARD_SIZE][BOARD_SIZE];
@@ -664,7 +664,7 @@ void load_input(int case_num)
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     rep(i, BOARD_SIZE)
     {
@@ -675,7 +675,7 @@ void load_input(int case_num)
       }
     }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     rep(i, BOARD_SIZE)
     {
@@ -701,7 +701,7 @@ void write_output(int mode, int problemNum)
     }
   }
 
-  // ƒtƒ@ƒCƒ‹o—Í
+  // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -767,7 +767,7 @@ int solve_single_problem(int mode, int probNum)
     }
   }
 
-  // –ß‚µ‚Äo—Í
+  // æˆ»ã—ã¦å‡ºåŠ›
   restore_best();
 
   if (mode != 0) {

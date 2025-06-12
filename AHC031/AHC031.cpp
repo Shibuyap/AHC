@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -37,7 +37,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -60,7 +60,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  // ”z—ñƒVƒƒƒbƒtƒ‹
+  // é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
@@ -330,7 +330,7 @@ void CopyFromTemp()
   }
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   ansScore = INF;
@@ -406,7 +406,7 @@ void InitMostVariableAs()
   }
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -421,7 +421,7 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     int www;
     cin >> www >> d >> n;
@@ -433,7 +433,7 @@ void Input(int problemNum)
       }
     }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     int www;
     ifs >> www >> d >> n;
@@ -489,7 +489,7 @@ void Input(int problemNum)
   // InitMostVariableAs();
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -507,7 +507,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
@@ -568,7 +568,7 @@ bool IsNGAns()
   return false;
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   ll res = 1;
@@ -722,7 +722,7 @@ ll CalcScoreForMethod3()
     }
   }
 
-  // cü
+  // ç¸¦ç·š
   {rep(i, d)
   {
     rep(j, ansLineCount[i] + 1)
@@ -751,7 +751,7 @@ ll CalcScoreForMethod3()
   }
   }
 
-  // ‰¡ü
+  // æ¨ªç·š
   {
     int beforeTail = 0;
     rep(i, d)
@@ -994,7 +994,7 @@ int real_ansColumnSchedules[MAX_D][MAX_LINECOUNT][MAX_N];
 int real_ansColumnSchedulesCount[MAX_D][MAX_LINECOUNT];
 int real_ansColumnSchedulesPosition[MAX_D][MAX_LINECOUNT][MAX_N];
 
-// real‚ÉŠi”[
+// realã«æ ¼ç´
 void CopyToReal_M42()
 {
   rep(i, d)
@@ -1015,7 +1015,7 @@ void CopyToReal_M42()
   }
 }
 
-// real‚©‚ç–ß‚·
+// realã‹ã‚‰æˆ»ã™
 void CoptToCurrent_M42()
 {
   rep(i, d)
@@ -1729,7 +1729,7 @@ int M43_tmpAnsNextLineAfterPosition[MAX_N];
 int M43_tmpAnsCurrentLineBeforePosition[MAX_N];
 int M43_tmpAnsCurrentLineAfterPosition[MAX_N];
 
-// 1‘Î‘½ƒXƒƒbƒv
+// 1å¯¾å¤šã‚¹ãƒ¯ãƒƒãƒ—
 int M431Count;
 void Method4_3_1()
 {
@@ -1816,7 +1816,7 @@ void Method4_3_1()
       //  widths[k] *= widths[k];
       //}
 
-      // ƒXƒƒbƒv‰Â”\
+      // ã‚¹ãƒ¯ãƒƒãƒ—å¯èƒ½
       int moveCount = 0;
       rep(jj, M43_kouhoCount)
       {
@@ -1856,7 +1856,7 @@ void Method4_3_1()
         diffScore2 += CalcDiffScore2(raD, raD + 1, nextLine);
       }
 
-      // 10‰ñƒVƒƒƒbƒtƒ‹nextLine
+      // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«nextLine
       M43_neighborPosCount = 0;
       if (raD > 0) {
         srep(k, 1, ansColumnSchedulesCount[raD - 1][nextLine])
@@ -1912,7 +1912,7 @@ void Method4_3_1()
         }
       }
 
-      // 10‰ñƒVƒƒƒbƒtƒ‹lineNum
+      // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«lineNum
       M43_neighborPosCount = 0;
       if (raD > 0) {
         srep(k, 1, ansColumnSchedulesCount[raD - 1][lineNum])
@@ -2031,7 +2031,7 @@ void Method4_3_1()
   }
 }
 
-// 1‘Î‘½ƒXƒƒbƒvi_“îj
+// 1å¯¾å¤šã‚¹ãƒ¯ãƒƒãƒ—ï¼ˆæŸ”è»Ÿï¼‰
 void Method4_3_2()
 {
   int raD = Rand() % d;
@@ -2111,7 +2111,7 @@ void Method4_3_2()
       }
     }
     if (needSpace <= lineCapacity && preCalcScheduleSizes[raD][raN][nextLine] <= nextLineCapacity + nextSpace) {
-      // ƒXƒƒbƒv‰Â”\
+      // ã‚¹ãƒ¯ãƒƒãƒ—å¯èƒ½
       int moveCount = 0;
       rep(jj, M43_kouhoCount)
       {
@@ -2139,7 +2139,7 @@ void Method4_3_2()
         diffScore2 += CalcDiffScore2(raD, raD + 1, nextLine);
       }
 
-      // 10‰ñƒVƒƒƒbƒtƒ‹nextLine
+      // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«nextLine
       M43_nonKouhos[M43_nonKouhoCount] = raN;
       M43_nonKouhoCount++;
       rep(jj, M43_kouhoCount)
@@ -2194,7 +2194,7 @@ void Method4_3_2()
         }
       }
 
-      // 10‰ñƒVƒƒƒbƒtƒ‹lineNum
+      // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«lineNum
       int tmpKouhos[MAX_N];
       int tmpKouhoCount = 0;
       rep(jj, M43_kouhoCount)
@@ -2332,7 +2332,7 @@ void Method4_3_2()
   }
 }
 
-// —ñƒXƒƒbƒv
+// åˆ—ã‚¹ãƒ¯ãƒƒãƒ—
 void Method4_3_3()
 {
   int raD = Rand() % d;
@@ -2375,7 +2375,7 @@ void Method4_3_3()
     diffScore2 += CalcDiffScore2(raD, raD + 1, line2);
   }
 
-  // 10‰ñƒVƒƒƒbƒtƒ‹line2
+  // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«line2
   M43_neighborPosCount = 0;
   if (raD > 0) {
     srep(k, 1, ansColumnSchedulesCount[raD - 1][line2])
@@ -2420,7 +2420,7 @@ void Method4_3_3()
     }
   }
 
-  // 10‰ñƒVƒƒƒbƒtƒ‹line1
+  // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«line1
   M43_neighborPosCount = 0;
   if (raD > 0) {
     srep(k, 1, ansColumnSchedulesCount[raD - 1][line1])
@@ -2502,7 +2502,7 @@ void Method4_3_3()
   }
 }
 
-// ‰¡ü‚ğˆÚ“®
+// æ¨ªç·šã‚’ç§»å‹•
 void Method4_3_4()
 {
   int raD = Rand() % d;
@@ -2553,7 +2553,7 @@ void Method4_3_4()
   }
 }
 
-// ‰¡ü‚ğˆÚ“®
+// æ¨ªç·šã‚’ç§»å‹•
 void Method4_3_4_2()
 {
   int raD = Rand() % d;
@@ -2806,7 +2806,7 @@ void Method4_3_5()
   }
 }
 
-// ŒğŠ·‚Å‚«‚é‚â‚Â‚ğŒğŠ·
+// äº¤æ›ã§ãã‚‹ã‚„ã¤ã‚’äº¤æ›
 void Method4_3_6()
 {
   int raD = Rand() % d;
@@ -2848,7 +2848,7 @@ void Method4_3_6()
   }
 }
 
-// —ñƒVƒƒƒbƒtƒ‹
+// åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 void Method4_3_7()
 {
   int raD = Rand() % d;
@@ -2860,7 +2860,7 @@ void Method4_3_7()
   int diffScore2 = 0;
   if (raD > 0) { diffScore2 += CalcDiffScore2(raD, raD - 1, lineNum); }
   if (raD < d - 1) { diffScore2 += CalcDiffScore2(raD, raD + 1, lineNum); }
-  // 10‰ñƒVƒƒƒbƒtƒ‹lineNum
+  // 10å›ã‚·ãƒ£ãƒƒãƒ•ãƒ«lineNum
   M43_neighborPosCount = 0;
   if (raD > 0) {
     srep(k, 1, ansColumnSchedulesCount[raD - 1][lineNum])
@@ -2931,7 +2931,7 @@ void Method4_3_7()
   }
 }
 
-// •‚ğ•s—v‚È—ñ‚ÉˆÚ“®
+// å¹…ã‚’ä¸è¦ãªåˆ—ã«ç§»å‹•
 int M438_yokoLineCount[MAX_LINECOUNT];
 int M438_LineNumbers[MAX_LINECOUNT];
 void Method4_3_8()
@@ -2977,8 +2977,8 @@ void Method4_3_8()
   }
   if (minLineNum == taisyouLineNum) return;
 
-  // ‘ÎÛ—ñ‚Ì’†g‚ğ‚È‚é‚×‚­¬‚³‚­‚·‚é
-  // margin‚ğŒvZ‚·‚é
+  // å¯¾è±¡åˆ—ã®ä¸­èº«ã‚’ãªã‚‹ã¹ãå°ã•ãã™ã‚‹
+  // marginã‚’è¨ˆç®—ã™ã‚‹
   int margin = widths[taisyouLineNum] - 1;
   rep(i, d)
   {
@@ -3007,7 +3007,7 @@ void Method4_3_8()
         }
       }
       int newNum = ansColumnSchedules[i][taisyouLineNum][j];
-      // marginŒvZ
+      // marginè¨ˆç®—
       margin = min(margin, widths[taisyouLineNum] - ((a[i][newNum] - 1) / height + 1));
     }
   }
@@ -3015,7 +3015,7 @@ void Method4_3_8()
   if (margin == 0) return;
   int diffScore = margin * (M438_yokoLineCount[taisyouLineNum] - minLineCount);
 
-  // ansLinePos‚ÆpreCalcScheduleSizes‚Æwidths‚ğXV
+  // ansLinePosã¨preCalcScheduleSizesã¨widthsã‚’æ›´æ–°
   widths[taisyouLineNum] -= margin;
   widths[minLineNum] += margin;
   rep(i, d)
@@ -3041,7 +3041,7 @@ void Method4_3_8()
   }
 }
 
-// ƒ\[ƒg
+// ã‚½ãƒ¼ãƒˆ
 int M439Array[MAX_N];
 int M439LineNum[MAX_N];
 int M439LineIndex[MAX_N];
@@ -3127,7 +3127,7 @@ void Method4_3(double timeLimit)
     }
   }
 
-  // ‰Šú‰ğì¬
+  // åˆæœŸè§£ä½œæˆ
   rep(i, d)
   {
     rep(j, ansLineCount[i])
@@ -3163,7 +3163,7 @@ void Method4_3(double timeLimit)
     widths[j] = ansLinePos[0][j + 1] - ansLinePos[0][j];
   }
 
-  // real‚ÉŠi”[
+  // realã«æ ¼ç´
   CopyToReal_M42();
 
   int loopCount = 0;
@@ -3215,7 +3215,7 @@ void Method4_3(double timeLimit)
   CopyFromRealAns();
   CoptToCurrent_M42();
 
-  // ansScheduleLineNum‚©‚çans‚ğì¬
+  // ansScheduleLineNumã‹ã‚‰ansã‚’ä½œæˆ
   rep(i, d)
   {
     rep(j, ansBaseLineCount)
@@ -3251,7 +3251,7 @@ int Method3_Oshii()
   {
     if (oshiiLineCount[i] == -1) { return 0; }
   }
-  // ì‚è’¼‚µ
+  // ä½œã‚Šç›´ã—
   {
     ansBaseLineCount = oshiiLineCount[0];
     rep(i, d)
@@ -3320,7 +3320,7 @@ int Method3_Oshii()
     }
   }
 
-  // ’²®
+  // èª¿æ•´
   rep(i, d)
   {
     rep(j, n)
@@ -3379,7 +3379,7 @@ int Method3_Oshii()
       if (nowSum[j] > w) ngCount++;
     }
 
-    // ‹tˆø‚«ì¬
+    // é€†å¼•ãä½œæˆ
     rep(j, ansLineCount[i])
     {
       ansColumnSchedulesCount[i][j] = 0;
@@ -3403,7 +3403,7 @@ int Method3_Oshii()
       //  int diffOver = max(0, nowSum[lineNum1] - w) + max(0, nowSum[lineNum2] - w);
       //  diffOver -= max(0, nowSum[lineNum1] - preCalcScheduleSizes[i][raN1][lineNum1] + preCalcScheduleSizes[i][raN2][lineNum1] - w) + max(0, nowSum[lineNum2] - preCalcScheduleSizes[i][raN2][lineNum2] + preCalcScheduleSizes[i][raN1][lineNum2] - w);
       //  if (diffOver >= 0) {
-      //    // ƒXƒƒbƒv
+      //    // ã‚¹ãƒ¯ãƒƒãƒ—
       //    if (nowSum[lineNum1] > w) ngCount--;
       //    if (nowSum[lineNum2] > w) ngCount--;
       //    nowSum[lineNum1] = nowSum[lineNum1] - preCalcScheduleSizes[i][raN1][lineNum1] + preCalcScheduleSizes[i][raN2][lineNum1];
@@ -3413,7 +3413,7 @@ int Method3_Oshii()
       //    ansColumnNum[i][raN1] = lineNum2;
       //    ansColumnNum[i][raN2] = lineNum1;
 
-      //    // ‹tˆø‚«XV
+      //    // é€†å¼•ãæ›´æ–°
       //    rep(k, ansColumnSchedulesCount[i][lineNum1]) {
       //      if (ansColumnSchedules[i][lineNum1][k] == raN1) {
       //        ansColumnSchedules[i][lineNum1][k] = raN2;
@@ -3466,7 +3466,7 @@ int Method3_Oshii()
           int diffOver = max(0, nowSum[lineNum] - w) + max(0, nowSum[nextLine] - w);
           diffOver -= max(0, nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace - w) + max(0, nowSum[nextLine] - nextSpace + preCalcScheduleSizes[i][raN][nextLine] - w);
           if (diffOver >= 0) {
-            // ƒXƒƒbƒv
+            // ã‚¹ãƒ¯ãƒƒãƒ—
             if (nowSum[lineNum] > w) ngCount--;
             if (nowSum[nextLine] > w) ngCount--;
             nowSum[lineNum] = nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace;
@@ -3482,7 +3482,7 @@ int Method3_Oshii()
               }
             }
 
-            // ‹tˆø‚«XV
+            // é€†å¼•ãæ›´æ–°
             rep(j, ansLineCount[i])
             {
               ansColumnSchedulesCount[i][j] = 0;
@@ -3516,7 +3516,7 @@ int Method3_Oshii()
           int diffOver = max(0, nowSum[lineNum] - w) + max(0, nowSum[nextLine] - w);
           diffOver -= max(0, nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace - w) + max(0, nowSum[nextLine] - nextSpace + preCalcScheduleSizes[i][raN][nextLine] - w);
           if (diffOver >= 0) {
-            // ƒXƒƒbƒv
+            // ã‚¹ãƒ¯ãƒƒãƒ—
             if (nowSum[lineNum] > w) ngCount--;
             if (nowSum[nextLine] > w) ngCount--;
             nowSum[lineNum] = nowSum[lineNum] - preCalcScheduleSizes[i][raN][lineNum] + needSpace;
@@ -3532,7 +3532,7 @@ int Method3_Oshii()
               }
             }
 
-            // ‹tˆø‚«XV
+            // é€†å¼•ãæ›´æ–°
             rep(j, ansLineCount[i])
             {
               ansColumnSchedulesCount[i][j] = 0;
@@ -3563,7 +3563,7 @@ int Method3_Oshii()
     return 0;
   }
 
-  // ansScheduleLineNum‚©‚çans‚ğì¬
+  // ansScheduleLineNumã‹ã‚‰ansã‚’ä½œæˆ
   {
     int now[MAX_LINECOUNT] = {};
     int lastNum[MAX_LINECOUNT] = {};
@@ -3610,7 +3610,7 @@ void Method3_Oshii2()
     if (oshiiLineCount[i] == -1) { return; }
   }
 
-  // ì‚è’¼‚µ
+  // ä½œã‚Šç›´ã—
   {
     ansBaseLineCount = oshiiLineCount[0];
     rep(i, d)
@@ -3678,7 +3678,7 @@ void Method3_Oshii2()
     }
   }
 
-  // ’²®
+  // èª¿æ•´
   {
     int ng = 0;
     int now[MAX_LINECOUNT] = {};
@@ -3765,7 +3765,7 @@ void Method3_Oshii2()
     }
   }
 
-  // ansScheduleLineNum‚©‚çans‚ğì¬
+  // ansScheduleLineNumã‹ã‚‰ansã‚’ä½œæˆ
   {
     ansScore = CalcScore();
     if (ansScore < real_ansScore) {
@@ -4160,7 +4160,7 @@ void Method3_1(double timeLimit)
       if (GetNowTime() > timeLimit) { break; }
     }
 
-    // alreadyXV
+    // alreadyæ›´æ–°
     if (false) {
       M3_alreadyCount = 0;
       rep(i, d)
@@ -4307,10 +4307,10 @@ void Method3_1(double timeLimit)
   // if (mode != 0) { cout << "loop = " << loopCount << ", keep31Count = " << keep31Count << ", ansScore = " << ansScore << endl; }
 }
 
-// cü‚ğ‚¸‚ç‚·
+// ç¸¦ç·šã‚’ãšã‚‰ã™
 void Method3_2(double timeLimit)
 {
-  // “K—p‰Â”\‚©ƒ`ƒFƒbƒN
+  // é©ç”¨å¯èƒ½ã‹ãƒã‚§ãƒƒã‚¯
   {
     rep(i, d - 1)
     {
@@ -4559,7 +4559,7 @@ void Method7()
             }
           }
           int newNum = ansColumnSchedules[i][line1][j];
-          // marginŒvZ
+          // marginè¨ˆç®—
           margin = min(margin, widths[line1] - ((a[i][newNum] - 1) / height + 1));
         }
       }
@@ -4567,7 +4567,7 @@ void Method7()
       if (margin == 0) continue;
       int diffScore = margin * (yokoLineCount[line1] - yokoLineCount[line2]);
 
-      // ansLinePos‚ÆpreCalcScheduleSizes‚Æwidths‚ğXV
+      // ansLinePosã¨preCalcScheduleSizesã¨widthsã‚’æ›´æ–°
       widths[line1] -= margin;
       widths[line2] += margin;
       rep(i, d)
@@ -4654,7 +4654,7 @@ void Method8(double timeLimit)
       if (M8_NowTime > M8_startTime + (timeLimit - M8_startTime) / 2) { break; }
     }
 
-    // cüì¬
+    // ç¸¦ç·šä½œæˆ
     ansBaseLineCount = Rand() % 5 + 2;
     int ok2 = 0;
     rep(_2, 10)
@@ -4976,9 +4976,9 @@ void Method4(int setCount)
       CopyFromRealAns();
       Method4_3(nowTime + (innerTL - nowTime) * 0.98);
 
-      // Method7(); // ƒoƒO‚Á‚Ä‚é
+      // Method7(); // ãƒã‚°ã£ã¦ã‚‹
 
-      // —ñˆÊ’uƒVƒƒƒbƒtƒ‹
+      // åˆ—ä½ç½®ã‚·ãƒ£ãƒƒãƒ•ãƒ«
       // cout << GetNowTime() << endl;
       CopyFromRealAns();
       Method6_ColumnShuffle(nowTime + (innerTL - nowTime) * 1.0);
@@ -5035,17 +5035,17 @@ ll Solve(int probNum)
   startTime = clock();
   endTime = clock();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Initialize();
 
   Method1();
@@ -5060,7 +5060,7 @@ ll Solve(int probNum)
   //  return 0;
   //}
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   CopyFromRealAns();
   Output(ofs);
 

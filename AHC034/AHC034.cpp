@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -34,7 +34,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -56,7 +56,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  // ”z—ñƒVƒƒƒbƒtƒ‹
+  // é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
@@ -68,7 +68,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-// ”z—ñƒVƒƒƒbƒtƒ‹
+// é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -127,10 +127,10 @@ void CopyToReal()
   }
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp() { ansSize = 0; }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -145,7 +145,7 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     int nn;
     cin >> nn;
@@ -154,7 +154,7 @@ void Input(int problemNum)
       rep(j, n) { cin >> h[i][j]; }
     }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     int nn;
     ifs >> nn;
@@ -170,7 +170,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -205,7 +205,7 @@ int CalcCost()
   return sum;
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 ll CalcScore()
 {
   ll base = 0;
@@ -228,7 +228,7 @@ bool IsOK(int x)
   return true;
 }
 
-// ‰Šú‰ğ¶¬
+// åˆæœŸè§£ç”Ÿæˆ
 void Initialize()
 {
   int x = 0, y = 0;
@@ -910,7 +910,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
   }
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
@@ -943,17 +943,17 @@ ll Solve(int probNum)
 {
   startTime = clock();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Initialize();
 
   InitRoute1();
@@ -987,7 +987,7 @@ ll Solve(int probNum)
   }
   CopyToAns();
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {

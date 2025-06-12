@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -36,7 +36,7 @@ typedef pair<int, int> P;
 const int INF = 1000000000;
 const ll LLINF = 1001001001001001001;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -341,7 +341,7 @@ ll CalcScore()
   return sum;
 }
 
-// ‰Šúó‘Ôì¬i‚±‚ê‚ğŒÄ‚×‚ÎƒXƒ^[ƒgˆÊ’u‚É–ß‚ê‚é‚±‚Æ‚ğ‘z’èAreal_maxScore“™‚Í–ß‚³‚È‚¢j
+// åˆæœŸçŠ¶æ…‹ä½œæˆï¼ˆã“ã‚Œã‚’å‘¼ã¹ã°ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã«æˆ»ã‚Œã‚‹ã“ã¨ã‚’æƒ³å®šã€real_maxScoreç­‰ã¯æˆ»ã•ãªã„ï¼‰
 void Init()
 {
   // distRank
@@ -358,7 +358,7 @@ void Init()
   }
 }
 
-// “ü—Íó‚¯æ‚èiÀs’†ˆê“x‚µ‚©ŒÄ‚Î‚ê‚È‚¢‚±‚Æ‚ğ‘z’èj
+// å…¥åŠ›å—ã‘å–ã‚Šï¼ˆå®Ÿè¡Œä¸­ä¸€åº¦ã—ã‹å‘¼ã°ã‚Œãªã„ã“ã¨ã‚’æƒ³å®šï¼‰
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -373,7 +373,7 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     cin >> N >> M >> D >> K;
     rep(i, M)
@@ -384,7 +384,7 @@ void Input(int problemNum)
     }
     rep(i, N) { cin >> X[i] >> Y[i]; }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     ifs >> N >> M >> D >> K;
     rep(i, M)
@@ -413,7 +413,7 @@ void InputAns(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   if (ifs.is_open()) {
     rep(i, M)
     {
@@ -423,7 +423,7 @@ void InputAns(int problemNum)
   }
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(int mode, int problemNum)
 {
   if (mode == 0) {
@@ -431,7 +431,7 @@ void Output(int mode, int problemNum)
     cout << endl;
   }
 
-  // ƒtƒ@ƒCƒ‹o—Í
+  // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -461,10 +461,10 @@ void Method2()
   rep(i, M) { ans[i] = i % D; }
 }
 
-// ‚ ‚é•Ó‚ğ‚ ‚é“ú‚É‚µ‚½‚ç‚»‚Ìü•Ó4•Ó‚Í‚»‚Ì“ú‚É‚µ‚È‚¢
+// ã‚ã‚‹è¾ºã‚’ã‚ã‚‹æ—¥ã«ã—ãŸã‚‰ãã®å‘¨è¾º4è¾ºã¯ãã®æ—¥ã«ã—ãªã„
 void Method3()
 {
-  // ƒVƒƒƒbƒtƒ‹
+  // ã‚·ãƒ£ãƒƒãƒ•ãƒ«
   mt19937 mt(Rand());
 
   rep(i, M) ans[i] = -1;
@@ -492,7 +492,7 @@ void Method3()
       if (ans[i] != -1 || flag[j][i]) continue;
       ans[i] = j;
       cnt[j]++;
-      // üˆÍ4•Ó‚ğNG‚É
+      // å‘¨å›²4è¾ºã‚’NGã«
       int uu = u[i];
       int vv = v[i];
       int uSize = G[uu].size();
@@ -519,7 +519,7 @@ void Method3()
   }
 }
 
-// Še’¸“_‚Å‚Î‚ç‚¯‚³‚¹‚é
+// å„é ‚ç‚¹ã§ã°ã‚‰ã‘ã•ã›ã‚‹
 void Method4()
 {
   rep(i, M) ans[i] = -1;
@@ -536,7 +536,7 @@ void Method4()
   }
 }
 
-// ‚ ‚é•Ó‚Ì“ú‚É‚¿‚ğ•Ï‚¦‚é
+// ã‚ã‚‹è¾ºã®æ—¥ã«ã¡ã‚’å¤‰ãˆã‚‹
 void InnerMethod1()
 {
   int id = Rand() % M;
@@ -556,7 +556,7 @@ void InnerMethod1()
   ll diff = (newOldDayScore + newNewDayScore) -
     (minScoreDays[day] + minScoreDays[newDay]);
 
-  // ¬‚³‚­‚È‚ê‚ÎXV
+  // å°ã•ããªã‚Œã°æ›´æ–°
   if (diff <= 0) {
     minScoreDays[day] = newOldDayScore;
     minScoreDays[newDay] = newNewDayScore;
@@ -569,7 +569,7 @@ void InnerMethod1()
   }
 }
 
-// —×Ú‚·‚é2‚Â‚Ì•Ó‚Ì“ú‚É‚¿‚ğƒXƒƒbƒv‚·‚é
+// éš£æ¥ã™ã‚‹2ã¤ã®è¾ºã®æ—¥ã«ã¡ã‚’ã‚¹ãƒ¯ãƒƒãƒ—ã™ã‚‹
 void InnerMethod2()
 {
   int id = Rand() % M;
@@ -588,7 +588,7 @@ void InnerMethod2()
   ll diff = (Day1Score + Day2Score) -
     (minScoreDays[ans[id]] + minScoreDays[ans[id2]]);
 
-  // ¬‚³‚­‚È‚ê‚ÎXV
+  // å°ã•ããªã‚Œã°æ›´æ–°
   if (diff <= 0) {
     minScoreDays[ans[id]] = Day1Score;
     minScoreDays[ans[id2]] = Day2Score;
@@ -599,7 +599,7 @@ void InnerMethod2()
   }
 }
 
-// ‚ ‚é•Ó‚Ì“ú‚É‚¿‚ğ•Ï‚¦‚é
+// ã‚ã‚‹è¾ºã®æ—¥ã«ã¡ã‚’å¤‰ãˆã‚‹
 void InnerMethod3()
 {
   int id = Rand() % M;
@@ -622,7 +622,7 @@ void InnerMethod3()
   ll diff =
     (newOldDayScore + newNewDayScore) - (oldOldDayScore + oldNewDayScore);
 
-  // ¬‚³‚­‚È‚ê‚ÎXV
+  // å°ã•ããªã‚Œã°æ›´æ–°
   if (diff <= 0) {
     dayCount[day]--;
     dayCount[newDay]++;
@@ -665,7 +665,7 @@ void InnerMethod4(double temperature)
   }
 }
 
-// ‚ ‚é•Ó‚Ì“ú‚É‚¿‚ğ—×Ú‚·‚é•Ó‚Æ“¯‚¶‚É‚·‚é
+// ã‚ã‚‹è¾ºã®æ—¥ã«ã¡ã‚’éš£æ¥ã™ã‚‹è¾ºã¨åŒã˜ã«ã™ã‚‹
 void InnerMethod5(double temperature)
 {
   int id = Rand() % M;
@@ -707,7 +707,7 @@ void InnerMethod5(double temperature)
   }
 }
 
-// —×Ú‚·‚é2‚Â‚Ì•Ó‚Ì“ú‚É‚¿‚ğƒXƒƒbƒv‚·‚é
+// éš£æ¥ã™ã‚‹2ã¤ã®è¾ºã®æ—¥ã«ã¡ã‚’ã‚¹ãƒ¯ãƒƒãƒ—ã™ã‚‹
 void InnerMethod6(double temperature)
 {
   int id1 = Rand() % M;
@@ -748,7 +748,7 @@ void InnerMethod6(double temperature)
   }
 }
 
-// ‚Ü‚Æ‚ß‚Äˆø‚Á‰z‚µ
+// ã¾ã¨ã‚ã¦å¼•ã£è¶Šã—
 void InnerMethod7(double temperature)
 {
   int id = Rand() % M;
@@ -831,7 +831,7 @@ void CalcIdea()
 
 int Solve(int mode, int problemNum)
 {
-  // —”’²®
+  // ä¹±æ•°èª¿æ•´
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     Rand();
@@ -841,10 +841,10 @@ int Solve(int mode, int problemNum)
   startTime = clock();
   endTime = clock();
 
-  // “ü—Í
+  // å…¥åŠ›
   Input(problemNum);
 
-  // Gì¬
+  // Gä½œæˆ
   {
     rep(i, N)
     {
@@ -860,7 +860,7 @@ int Solve(int mode, int problemNum)
       e.to = u[i];
       G[v[i]].push_back(e);
     }
-    // •ÎŠpƒ\[ƒg‚µ‚Ä‚¨‚­
+    // åè§’ã‚½ãƒ¼ãƒˆã—ã¦ãŠã
     rep(i, N)
     {
       vector<pair<double, int>> GG;
@@ -880,7 +880,7 @@ int Solve(int mode, int problemNum)
   }
 
 #if 0
-  // —˜_’lŒvZ
+  // ç†è«–å€¤è¨ˆç®—
   CalcIdea();
 #endif
 
@@ -890,7 +890,7 @@ int Solve(int mode, int problemNum)
   // Method4();
 
 #if 0
-  // ‰ß‹‚ÌƒXƒRƒA‚ğƒCƒ“ƒvƒbƒg
+  // éå»ã®ã‚¹ã‚³ã‚¢ã‚’ã‚¤ãƒ³ãƒ—ãƒƒãƒˆ
   if (mode != 0) {
     InputAns(problemNum);
 }
@@ -908,7 +908,7 @@ int Solve(int mode, int problemNum)
   rep(i, D) { dayCount[i] = 0; }
   rep(i, M) { dayCount[ans[i]]++; }
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   endTime = clock();
   nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   double TL = 5.8;
@@ -960,9 +960,9 @@ int Solve(int mode, int problemNum)
       cout << endl;
     }
 #endif
-  }  // while•¶‚±‚±‚Ü‚ÅiƒƒCƒ“ƒ‹[ƒvj
+  }  // whileæ–‡ã“ã“ã¾ã§ï¼ˆãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—ï¼‰
 
-  // o—Í
+  // å‡ºåŠ›
   Output(mode, problemNum);
 
   if (mode != 0) {

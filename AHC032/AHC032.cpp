@@ -1,4 +1,4 @@
-#include <array>
+ï»¿#include <array>
 #include <cstdint>
 #include <fstream>
 #include <iosfwd>
@@ -11,7 +11,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand() {
     static uint32_t x = 123456789;
@@ -79,7 +79,7 @@ public:
     score = calc_score();
   }
 
-  // ƒXƒRƒAŒvZ
+  // ã‚¹ã‚³ã‚¢è¨ˆç®—
   ll calc_score() {
     score = 0;
     for (int i = 0; i < n; ++i) {
@@ -91,7 +91,7 @@ public:
   }
 };
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 State Input(int problemNum) {
   State current;
 
@@ -106,7 +106,7 @@ State Input(int problemNum) {
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     int _n, _m, _k;
     cin >> _n >> _m >> _k;
@@ -123,7 +123,7 @@ State Input(int problemNum) {
       }
     }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     int _n, _m, _k;
     ifs >> _n >> _m >> _k;
@@ -150,7 +150,7 @@ State Input(int problemNum) {
   return current;
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs) {
   if (mode != 0) {
     string fileNameOfs = "./out/";
@@ -166,7 +166,7 @@ void OpenOfs(int probNum, ofstream& ofs) {
   }
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(int probNum, const State& current) {
   ofstream ofs;
   OpenOfs(probNum, ofs);
@@ -199,41 +199,41 @@ void Output(int probNum, const State& current) {
   }
 }
 
-// „Ÿ„Ÿ 3~3 ƒuƒƒbƒN“à‚ÅuƒXƒRƒA‘ÎÛ‚É‚È‚éƒ}ƒXv‚ğƒ}[ƒN‚·‚é
-// dirV = 0 c ã¨‰º‚É‘–¸A1 c ‰º¨ã
-// dirH = 0 c ¶¨‰E‚É‘–¸A1 c ‰E¨¶
-// ”Õ’[‚É’B‚µ‚½•ûŒü‚É‰‚¶‚Ä—ñ‘S‘Ì^s‘S‘Ì^‘S–Ê‚ğ—LŒø‰»
+// â”€â”€ 3Ã—3 ãƒ–ãƒ­ãƒƒã‚¯å†…ã§ã€Œã‚¹ã‚³ã‚¢å¯¾è±¡ã«ãªã‚‹ãƒã‚¹ã€ã‚’ãƒãƒ¼ã‚¯ã™ã‚‹
+// dirV = 0 â€¦ ä¸Šâ†’ä¸‹ã«èµ°æŸ»ã€1 â€¦ ä¸‹â†’ä¸Š
+// dirH = 0 â€¦ å·¦â†’å³ã«èµ°æŸ»ã€1 â€¦ å³â†’å·¦
+// ç›¤ç«¯ã«é”ã—ãŸæ–¹å‘ã«å¿œã˜ã¦åˆ—å…¨ä½“ï¼è¡Œå…¨ä½“ï¼å…¨é¢ã‚’æœ‰åŠ¹åŒ–
 void mark_edge_mask_2(int x /*0-based*/, int y /*0-based*/,
   int dirV, int dirH,
-  int(&mask)[3][3])           // o—Í: 0 or 1
+  int(&mask)[3][3])           // å‡ºåŠ›: 0 or 1
 {
-  // 1) ‘SÁ‚µ
+  // 1) å…¨æ¶ˆã—
   for (auto& row : mask) std::fill(std::begin(row), std::end(row), 0);
 
-  // 2) ƒAƒ“ƒJ[i’Êí 1 ƒ}ƒX‚¾‚¯j
-  const int anchorRow = (dirV == 0 ? 0 : 2);   // ã’[ or ‰º’[
-  const int anchorCol = (dirH == 0 ? 0 : 2);   // ¶’[ or ‰E’[
+  // 2) ã‚¢ãƒ³ã‚«ãƒ¼ï¼ˆé€šå¸¸ 1 ãƒã‚¹ã ã‘ï¼‰
+  const int anchorRow = (dirV == 0 ? 0 : 2);   // ä¸Šç«¯ or ä¸‹ç«¯
+  const int anchorCol = (dirH == 0 ? 0 : 2);   // å·¦ç«¯ or å³ç«¯
   mask[anchorRow][anchorCol] = 1;
 
-  // 3) ”Õ‚Ì’[‚É“–‚½‚Á‚½‚çs^—ñ‚²‚ÆŠg’£
+  // 3) ç›¤ã®ç«¯ã«å½“ãŸã£ãŸã‚‰è¡Œï¼åˆ—ã”ã¨æ‹¡å¼µ
   const bool hitVEdge = (dirV == 0 ? x == n - 3 : x == 0);
   const bool hitHEdge = (dirH == 0 ? y == n - 3 : y == 0);
 
-  // -- c•ûŒü‚Ì’[
+  // -- ç¸¦æ–¹å‘ã®ç«¯
   if (hitVEdge) {
     for (int r = 0; r < 3; ++r) {
       mask[r][anchorCol] = 1;
     }
   }
 
-  // -- ‰¡•ûŒü‚Ì’[
+  // -- æ¨ªæ–¹å‘ã®ç«¯
   if (hitHEdge) {
     for (int c = 0; c < 3; ++c) {
       mask[anchorRow][c] = 1;
     }
   }
 
-  // 4) Šp (—¼’[) ‚Ìê‡‚Í 3~3 ‘S–Ê
+  // 4) è§’ (ä¸¡ç«¯) ã®å ´åˆã¯ 3Ã—3 å…¨é¢
   if (hitVEdge && hitHEdge)
     for (auto& row : mask) std::fill(std::begin(row), std::end(row), 1);
 }

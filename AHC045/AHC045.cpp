@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -80,12 +80,12 @@ void FisherYates(int* data, int n)
   }
 }
 
-// ƒ‰ƒ“ƒ_ƒ€ƒfƒoƒCƒX‚Æƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^
+// ãƒ©ãƒ³ãƒ€ãƒ ãƒ‡ãƒã‚¤ã‚¹ã¨ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ»ãƒ„ã‚¤ã‚¹ã‚¿
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
 
-// 2ŸŒ³ƒLƒ…[
+// 2æ¬¡å…ƒã‚­ãƒ¥ãƒ¼
 int queueArr2[10000][2];
 int queueHead2 = 0;
 int queueTail2 = 0;
@@ -120,11 +120,11 @@ int Size2()
 namespace
 {
   const int MAX_UF = 10005;
-  int UF_par[MAX_UF];   // e
-  int UF_rank[MAX_UF];  // –Ø‚Ì[‚³
-  int UF_cnt[MAX_UF];   // ‘®‚·‚é’¸“_‚ÌŒÂ”(e‚Ì‚İ³‚µ‚¢)
+  int UF_par[MAX_UF];   // è¦ª
+  int UF_rank[MAX_UF];  // æœ¨ã®æ·±ã•
+  int UF_cnt[MAX_UF];   // å±ã™ã‚‹é ‚ç‚¹ã®å€‹æ•°(è¦ªã®ã¿æ­£ã—ã„)
 
-  // ‰Šú‰»
+  // åˆæœŸåŒ–
   void UF_Init(int n)
   {
     for (int i = 0; i < n; i++) {
@@ -134,13 +134,13 @@ namespace
     }
   }
 
-  // ‰Šú‰»
+  // åˆæœŸåŒ–
   void UF_Init()
   {
     UF_Init(MAX_UF);
   }
 
-  // –Ø‚Ìª‚ğ‹‚ß‚é
+  // æœ¨ã®æ ¹ã‚’æ±‚ã‚ã‚‹
   int UF_Find(int x)
   {
     if (UF_par[x] == x) {
@@ -151,7 +151,7 @@ namespace
     }
   }
 
-  // x‚Æy‚Ì‘®‚·‚éW‡‚ğ•¹‡
+  // xã¨yã®å±ã™ã‚‹é›†åˆã‚’ä½µåˆ
   void UF_Unite(int x, int y)
   {
     x = UF_Find(x);
@@ -169,13 +169,13 @@ namespace
     }
   }
 
-  // x‚Æy‚ª“¯‚¶W‡‚É‘®‚·‚é‚©”Û‚©
+  // xã¨yãŒåŒã˜é›†åˆã«å±ã™ã‚‹ã‹å¦ã‹
   bool UF_Same(int x, int y)
   {
     return UF_Find(x) == UF_Find(y);
   }
 
-  // x‚Ì‘®‚·‚éW‡‚ÌƒTƒCƒY
+  // xã®å±ã™ã‚‹é›†åˆã®ã‚µã‚¤ã‚º
   int UF_Count(int x)
   {
     return UF_cnt[UF_Find(x)];
@@ -288,7 +288,7 @@ void CopyToAns()
   }
 }
 
-// •¡”‚ÌƒP[ƒX‚ğˆ—‚·‚éÛ‚ÉA“à•”ó‘Ô‚ğ‰Šú‰»‚·‚éŠÖ”
+// è¤‡æ•°ã®ã‚±ãƒ¼ã‚¹ã‚’å‡¦ç†ã™ã‚‹éš›ã«ã€å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹é–¢æ•°
 void SetUp()
 {
   ansScore = INT_INF;
@@ -793,7 +793,7 @@ vector<P> BuildMST(const int g_num1, const int g_num2, bool isTrue = false)
 }
 
 bool isSimulateTruePoint = false;
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void Input(int problemNum)
 {
   std::ostringstream oss;
@@ -801,7 +801,7 @@ void Input(int problemNum)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     int _n, _q;
     cin >> _n >> m >> _q >> l >> w;
     rep(i, m)cin >> g[i];
@@ -811,7 +811,7 @@ void Input(int problemNum)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     int _n, _q;
     ifs >> _n >> m >> _q >> l >> w;
     rep(i, m)ifs >> g[i];
@@ -852,7 +852,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (ofs.is_open()) {
@@ -866,7 +866,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 int CalcScore(int g_num, bool isTrue = false)
 {
   int res = 0;
@@ -903,11 +903,11 @@ int CalcScoreLocal()
   return res;
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << '!' << endl;
     rep(i, m)
     {
@@ -922,7 +922,7 @@ void Output(ofstream& ofs)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     ofs << '!' << endl;
     rep(i, m)
     {
@@ -1033,9 +1033,9 @@ void Query()
   queryCount++;
 }
 
-// –ÊÏ‘å‚«‚¢‡‚ÉQŒÂƒNƒGƒŠ‚ğ“Š‚°‚é
-// L‚ÍÅ‘å‚Ü‚Åg‚¤
-// c‚èL-1’¸“_‚Í‹ß‚¢‡
+// é¢ç©å¤§ãã„é †ã«Qå€‹ã‚¯ã‚¨ãƒªã‚’æŠ•ã’ã‚‹
+// Lã¯æœ€å¤§ã¾ã§ä½¿ã†
+// æ®‹ã‚ŠL-1é ‚ç‚¹ã¯è¿‘ã„é †
 void Method1_Query(int start, int queryEnd)
 {
   vector<P> vp;
@@ -1079,7 +1079,7 @@ void Method1_Query(int start, int queryEnd)
   }
 }
 
-// ƒiƒC[ƒu‚È‰ğ–@
+// ãƒŠã‚¤ãƒ¼ãƒ–ãªè§£æ³•
 void Method1()
 {
   int now = 0;
@@ -1102,7 +1102,7 @@ void Method1()
   CopyToBest();
 }
 
-// ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^
+// ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 struct Hypers
 {
   double StartTemp[10];
@@ -1203,7 +1203,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
 
     double tmpScore = dScore;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int raMode = Rand() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -1258,20 +1258,20 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       }
     }
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     double diffScore = (dScore - tmpScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
     if (prob > Rand01()) {
-      // Ì—p
+      // æ¡ç”¨
       dScore = tmpScore;
 
-      // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+      // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
       if (dScore < best_dScore) {
         CopyToBest();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (raMode < hypers.Partition[0]) {
         pred_x[ra1] = keep2;
         pred_y[ra1] = keep3;
@@ -1324,7 +1324,7 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
 
     ll tmpScore = ansScore;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int raMode = Rand() % hypers.Partition[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -1352,20 +1352,20 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
 
     swap(ans[ra1], ans[ra2]);
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
     if (prob > Rand01()) {
-      // Ì—p
+      // æ¡ç”¨
       ansScore = tmpScore;
 
-      // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+      // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
       if (ansScore < best_ansScore) {
         CopyToBest();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       int g_num1 = ans[ra1];
       int g_num2 = ans[ra2];
 
@@ -1419,7 +1419,7 @@ void SimulatedAnnealing2(Hypers hypers)
 
     double tmpScore = INT_INF;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
@@ -1451,20 +1451,20 @@ void SimulatedAnnealing2(Hypers hypers)
 
     swap(ans[ra1], ans[ra2]);
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
     if (prob > Rand01()) {
-      // Ì—p
+      // æ¡ç”¨
       ansScore = tmpScore;
 
-      // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+      // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
       if (ansScore < best_ansScore) {
         CopyToBest();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       int g_num1 = ans[ra1];
       int g_num2 = ans[ra2];
 
@@ -1494,7 +1494,7 @@ int sa3_dfs(int u, int p)
 {
   free_use_parent[u] = p;
   fre_use__visited[u] = true;
-  int cnt = 1; // ©•ª©g‚ğŠÜ‚ß‚é‚Ì‚Å1‚©‚çƒXƒ^[ƒg
+  int cnt = 1; // è‡ªåˆ†è‡ªèº«ã‚’å«ã‚ã‚‹ã®ã§1ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆ
   rep(i, free_use_graph_count[u])
   {
     if (!fre_use__visited[free_use_graph[u][i]]) {
@@ -1535,7 +1535,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       if (nowTime > timeLimit) break;
     }
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int raMode = Rand() % hypers.Partition[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -1677,7 +1677,7 @@ void SimulatedAnnealing4(Hypers hypers, double timeLimit)
       if (nowTime > timeLimit) break;
     }
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra1 = Rand() % m;
     ans_edges[ra1] = BuildMSTWithEdgeCompare(ans_nums[ra1]);
     ans_MSTSums[ra1] = buildMST_sum;
@@ -1690,24 +1690,24 @@ void SimulatedAnnealing4(Hypers hypers, double timeLimit)
   CopyToBest();
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 ll Solve(int problem_num, Hypers hypers)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   OpenOfs(problem_num, ofs);
 
-  // ‰Šú‰ğ¶¬
+  // åˆæœŸè§£ç”Ÿæˆ
   Method1();
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   int aespa = 2;
   if (l <= 4)aespa = 4;
   rep(i, aespa)
@@ -1721,7 +1721,7 @@ ll Solve(int problem_num, Hypers hypers)
   SimulatedAnnealing3(hypers, TL * 0.8);
   SimulatedAnnealing4(hypers, TL * 1.0);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   Output(ofs);
 
   if (ofs.is_open()) {
@@ -1737,7 +1737,7 @@ ll Solve(int problem_num, Hypers hypers)
 
 /////////////////////////////////////////////////////////////////////////
 /*
-ƒƒ‚
+ãƒ¡ãƒ¢
 
 */
 /////////////////////////////////////////////////////////////////////////
@@ -1814,7 +1814,7 @@ int main()
         ll score = Solve(i, hypers);
         sum += score;
 
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
+        // ã‚·ãƒ¼ãƒ‰0ãŒæ‚ªã‘ã‚Œã°æ‰“ã¡åˆ‡ã‚Š
         if (i == 0 && score < 0) {
           break;
         }

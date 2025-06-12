@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -268,7 +268,7 @@ void input_data(int case_num)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     cin >> A >> B >> C;
     rep(i, A) {
       cin >> a[i].x >> a[i].y;
@@ -281,7 +281,7 @@ void input_data(int case_num)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> A >> B >> C;
     rep(i, A) {
       ifs >> a[i].x >> a[i].y;
@@ -420,7 +420,7 @@ double calculate_score_one_point(int idx) {
 void output_data(ofstream& ofs)
 {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     rep(i, max(moves_a_count, moves_b_count)) {
       if (i < moves_a_count) {
         cout << moves_a[i][0].x << " " << moves_a[i][0].y << " " << moves_a[i][1].x << " " << moves_a[i][1].y << ' ';
@@ -437,7 +437,7 @@ void output_data(ofstream& ofs)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     rep(i, max(moves_a_count, moves_b_count)) {
       if (i < moves_a_count) {
         ofs << moves_a[i][0].x << " " << moves_a[i][0].y << " " << moves_a[i][1].x << " " << moves_a[i][1].y << ' ';
@@ -832,7 +832,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
     double progress_ratio = now_time / tl;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -840,7 +840,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
     double tmp_score = current_score;
 
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ‹ß–T‘€ì1
+      // è¿‘å‚æ“ä½œ1
       ra1 = rand_xorshift() % 2;
       if (ra1 == 0) {
         ra2 = rand_xorshift() % (A - 2) + 1;
@@ -883,28 +883,28 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
       }
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
 
 
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
+    // ç„¼ããªã¾ã—ã§æ¡ç”¨åˆ¤å®š
     double diff_score = (current_score - tmp_score) * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
-      // Ì—p
+      // æ¡ç”¨
       current_score = tmp_score;
 
-      // ƒxƒXƒgXV
+      // ãƒ™ã‚¹ãƒˆæ›´æ–°
       if (current_score < best_score) {
         store_best_score();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ1 ã®å·»ãæˆ»ã—
         if (ra1 == 0) {
           swap(moves_a[ra2][0], moves_a[ra3][0]);
           swap(moves_a[ra2][1], moves_a[ra3][1]);
@@ -915,7 +915,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
         }
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
       }
     }
   }
@@ -969,7 +969,7 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -977,7 +977,7 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
     double tmp_score = current_score;
 
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ‹ß–T‘€ì1
+      // è¿‘å‚æ“ä½œ1
       ra1 = rand_xorshift() % 2;
       if (ra1 == 0) {
         ra2 = rand_xorshift() % (A - 2) + 1;
@@ -1016,28 +1016,28 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
       }
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
 
 
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
+    // ç„¼ããªã¾ã—ã§æ¡ç”¨åˆ¤å®š
     double diff_score = (current_score - tmp_score) * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
-      // Ì—p
+      // æ¡ç”¨
       current_score = tmp_score;
 
-      // ƒxƒXƒgXV
+      // ãƒ™ã‚¹ãƒˆæ›´æ–°
       if (current_score < best_score) {
         store_best_score();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ1 ã®å·»ãæˆ»ã—
         if (ra1 == 0) {
           rep(j, 3) {
             swap(moves_a[ra2 * 3 + j][0], moves_a[ra3 * 3 + j][0]);
@@ -1052,7 +1052,7 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
         }
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
       }
     }
   }
@@ -1104,7 +1104,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -1112,7 +1112,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
     double tmp_score = current_score;
 
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ‹ß–T‘€ì1
+      // è¿‘å‚æ“ä½œ1
       ra1 = rand_xorshift() % 2;
       if (ra1 == 0) {
         ra2 = rand_xorshift() % (A - 2) + 1;
@@ -1148,20 +1148,20 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
       }
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
 
 
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
+    // ç„¼ããªã¾ã—ã§æ¡ç”¨åˆ¤å®š
     double diff_score = (current_score - tmp_score) * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01() || isFirst) {
-      // Ì—p
+      // æ¡ç”¨
       current_score = tmp_score;
 
-      // ƒxƒXƒgXV
+      // ãƒ™ã‚¹ãƒˆæ›´æ–°
       if (current_score < best_score || isFirst) {
         cerr << current_score << endl;
         store_best_score();
@@ -1169,9 +1169,9 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ1 ã®å·»ãæˆ»ã—
         if (ra1 == 0) {
           restore_keep_score();
         }
@@ -1179,7 +1179,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
         }
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
       }
     }
   }
@@ -1225,7 +1225,7 @@ void run_simulated_annealing_B(AnnealingParams annealingParams)
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    // ‹ß–T‰ğì¬
+    // è¿‘å‚è§£ä½œæˆ
     int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[0];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
@@ -1233,7 +1233,7 @@ void run_simulated_annealing_B(AnnealingParams annealingParams)
     double tmp_score = current_score;
 
     if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      // ‹ß–T‘€ì1
+      // è¿‘å‚æ“ä½œ1
       ra1 = rand_xorshift() % 1;
       if (ra1 == 0) {
         ra2 = rand_xorshift() % (A - 2) + 1;
@@ -1275,28 +1275,28 @@ void run_simulated_annealing_B(AnnealingParams annealingParams)
       }
     }
     else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      // ‹ß–T‘€ì2
+      // è¿‘å‚æ“ä½œ2
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
 
 
-    // Ä‚«‚È‚Ü‚µ‚ÅÌ—p”»’è
+    // ç„¼ããªã¾ã—ã§æ¡ç”¨åˆ¤å®š
     double diff_score = (current_score - tmp_score) * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
     if (prob > rand_01()) {
-      // Ì—p
+      // æ¡ç”¨
       current_score = tmp_score;
 
-      // ƒxƒXƒgXV
+      // ãƒ™ã‚¹ãƒˆæ›´æ–°
       if (current_score < best_score) {
         store_best_score();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
-        // ‹ß–T‘€ì1 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ1 ã®å·»ãæˆ»ã—
         if (ra1 == 0) {
           swap(moves_a[ra2][0], moves_a[ra3][0]);
           swap(moves_a[ra2][1], moves_a[ra3][1]);
@@ -1307,7 +1307,7 @@ void run_simulated_annealing_B(AnnealingParams annealingParams)
         }
       }
       else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-        // ‹ß–T‘€ì2 ‚ÌŠª‚«–ß‚µ
+        // è¿‘å‚æ“ä½œ2 ã®å·»ãæˆ»ã—
       }
     }
   }
@@ -1383,7 +1383,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
     run_simulated_annealing_merge(annealingParams);
   }
 
-  // Ä‚«‚È‚Ü‚µÀs
+  // ç„¼ããªã¾ã—å®Ÿè¡Œ
   //if (B == 0 && C == 0) {
   //  run_simulated_annealing_B(annealingParams);
   //  moves_b_count = 0;
@@ -1410,7 +1410,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   //  //run_simulated_annealing_box(annealingParams);
   //}
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   output_data(ofs);
 
   if (ofs.is_open()) {
@@ -1491,7 +1491,7 @@ int main()
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 
-        // ƒV[ƒh0‚ªˆ«‚¯‚ê‚Î‘Å‚¿Ø‚è
+        // ã‚·ãƒ¼ãƒ‰0ãŒæ‚ªã‘ã‚Œã°æ‰“ã¡åˆ‡ã‚Š
         if (i == 0 && score < 0) {
           break;
         }

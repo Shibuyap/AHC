@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -35,7 +35,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -57,7 +57,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  // ”z—ñƒVƒƒƒbƒtƒ‹
+  // é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
   void FisherYates(int* data, int n)
   {
     for (int i = n - 1; i >= 0; i--) {
@@ -69,7 +69,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-// ”z—ñƒVƒƒƒbƒtƒ‹
+// é…åˆ—ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 std::random_device seed_gen;
 std::mt19937 engine(seed_gen());
 // std::shuffle(v.begin(), v.end(), engine);
@@ -228,7 +228,7 @@ bool IsNG(int x, int y)
   return false;
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
 void SetUp()
 {
   V = 0;
@@ -241,14 +241,14 @@ void SetUp()
   }
 }
 
-// “ü—Íó‚¯æ‚è
+// å…¥åŠ›å—ã‘å–ã‚Š
 void Input(int problemNum)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     cin >> n >> m >> v;
     rep(i, n)
@@ -271,7 +271,7 @@ void Input(int problemNum)
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
     ifs >> n >> m >> v;
     rep(i, n)
     {
@@ -294,7 +294,7 @@ void Input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
 void OpenOfs(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -304,13 +304,13 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 int CalcScore()
 {
   return ansCount;
 }
 
-// NGƒ`ƒFƒbƒN
+// NGãƒã‚§ãƒƒã‚¯
 bool IsValidAnswer()
 {
   if (mode == 0) {
@@ -351,13 +351,13 @@ bool IsValidAnswer()
     rep(i, V)
     {
       if (tip[t][i] == 1) {
-        // ‚±‚±‚ÅƒA[ƒ€ˆÊ’u‚ğŒvZ
+        // ã“ã“ã§ã‚¢ãƒ¼ãƒ ä½ç½®ã‚’è¨ˆç®—
       }
     }
   }
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
@@ -370,7 +370,7 @@ void Output(ofstream& ofs)
     rep(i, ansCount)
     {
       cout << dirChar[dir[i]];
-      srep(j, 1, v)cout << rotChar[rot[i][j] + 1]; // rot‚Í-1`1‚Ì‚½‚ß’ K‡‚í‚¹
+      srep(j, 1, v)cout << rotChar[rot[i][j] + 1]; // rotã¯-1ã€œ1ã®ãŸã‚å¸³å°»åˆã‚ã›
       rep(j, V)cout << tipChar[tip[i][j]];
       cout << endl;
     }
@@ -385,7 +385,7 @@ void Output(ofstream& ofs)
     rep(i, ansCount)
     {
       ofs << dirChar[dir[i]];
-      srep(j, 1, v)ofs << rotChar[rot[i][j] + 1]; // rot‚Í-1`1‚Ì‚½‚ß’ K‡‚í‚¹
+      srep(j, 1, v)ofs << rotChar[rot[i][j] + 1]; // rotã¯-1ã€œ1ã®ãŸã‚å¸³å°»åˆã‚ã›
       rep(j, V)ofs << tipChar[tip[i][j]];
       ofs << endl;
     }
@@ -1917,7 +1917,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     double time = GetNowTime();
     if (time > timeLimit)break;
 
-    // ƒƒ\ƒbƒhŒˆ’è
+    // ãƒ¡ã‚½ãƒƒãƒ‰æ±ºå®š
     if (v < 7) {
       int ra = Rand() % 100;
       if (ra < 20) {
@@ -1958,7 +1958,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
     loop[Method]++;
 
-    // –Øì¬
+    // æœ¨ä½œæˆ
     switch (Method) {
     case 42:
       MakeTree1();
@@ -1986,7 +1986,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
       break;
     }
 
-    // ‰ŠúˆÊ’uì¬
+    // åˆæœŸä½ç½®ä½œæˆ
     sx = Rand() % n;
     sy = Rand() % n;
 
@@ -2005,7 +2005,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
       }
     }
 
-    // ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“ŠJn
+    // ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹
     int x = sx;
     int y = sy;
     int _t = 0;
@@ -2115,7 +2115,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     doOneSetCount = 0;
   }
 
-  //@ƒxƒXƒg‚È‰ğ‚É‘Î‚µ‚Äƒr[ƒ€ƒT[ƒ`
+  //ã€€ãƒ™ã‚¹ãƒˆãªè§£ã«å¯¾ã—ã¦ãƒ“ãƒ¼ãƒ ã‚µãƒ¼ãƒ
   ResetTime();
   int karina = 0;
   while (true) {
@@ -2131,7 +2131,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
       }
     }
 
-    // ƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“ŠJn
+    // ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³é–‹å§‹
     int x = sx;
     int y = sy;
     int _t = 0;
@@ -2182,13 +2182,13 @@ ll Solve(int probNum)
 {
   ResetTime();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹å›ã™ã¨ãã«å†…éƒ¨çŠ¶æ…‹ã‚’åˆæœŸå€¤ã«æˆ»ã™
   SetUp();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   OpenOfs(probNum, ofs);
 
@@ -2201,7 +2201,7 @@ ll Solve(int probNum)
 
   CopyToAns();
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   if (ofs.is_open()) {
     ofs.close();
   }
@@ -2222,31 +2222,31 @@ ll Solve(int probNum)
 /////////////////////////////////////////////////////////////////////////
 /*
  TODO
- Eæ‚è‡‚Æ’u‚«‡‚·‚²‚¢‘å–‚»‚¤
+ ãƒ»å–ã‚Šé †ã¨ç½®ãé †ã™ã”ã„å¤§äº‹ãã†
 
- E˜r‚Ì’·‚³‚ğƒ‰ƒ“ƒ_ƒ€‚É‚µ‚È‚¢
+ ãƒ»è…•ã®é•·ã•ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ã—ãªã„
 
- E}Š ‚è‚‘¬‰»
-   Ec‚Æ‰¡‚É•ª‚¯‚é
-     E”ÕŠOŠm’è‚Í}Š ‚è
+ ãƒ»æåˆˆã‚Šé«˜é€ŸåŒ–
+   ãƒ»ç¸¦ã¨æ¨ªã«åˆ†ã‘ã‚‹
+     ãƒ»ç›¤å¤–ç¢ºå®šã¯æåˆˆã‚Š
 
- Eƒr[ƒ€ƒT[ƒ`‰»
+ ãƒ»ãƒ“ãƒ¼ãƒ ã‚µãƒ¼ãƒåŒ–
 
- E‹ß–T’Tõ
+ ãƒ»è¿‘å‚æ¢ç´¢
 
- EƒAƒhƒzƒbƒN‚Èè–@l‚¦‚é
+ ãƒ»ã‚¢ãƒ‰ãƒ›ãƒƒã‚¯ãªæ‰‹æ³•è€ƒãˆã‚‹
 
-—‚¿‚Ä‚¢‚é‚½‚±Ä‚«‚Ìæ‚è‡
- EŒÇ—§‚µ‚Ä‚é‚â‚Â
- E•Ç‚É‹ß‚¢‚â‚Â
- E˜r‚Íˆê’¼ü‚Éæ‚Á‚½•û‚ª‚¨“¾H
+è½ã¡ã¦ã„ã‚‹ãŸã“ç„¼ãã®å–ã‚Šé †
+ ãƒ»å­¤ç«‹ã—ã¦ã‚‹ã‚„ã¤
+ ãƒ»å£ã«è¿‘ã„ã‚„ã¤
+ ãƒ»è…•ã¯ä¸€ç›´ç·šã«å–ã£ãŸæ–¹ãŒãŠå¾—ï¼Ÿ
 
-ˆê’U’u‚­‚ÌƒAƒŠH
+ä¸€æ—¦ç½®ãã®ã‚¢ãƒªï¼Ÿ
 
-ƒŠƒtƒ@ƒNƒ^
+ãƒªãƒ•ã‚¡ã‚¯ã‚¿
 
- EŠÖ”‚Ì‹¤’Ê‰»
-   E‚Ğ‚Æ‚Ü‚¸‹¤’Ê‰»‚·‚é
+ ãƒ»é–¢æ•°ã®å…±é€šåŒ–
+   ãƒ»ã²ã¨ã¾ãšå…±é€šåŒ–ã™ã‚‹
 
 */
 /////////////////////////////////////////////////////////////////////////

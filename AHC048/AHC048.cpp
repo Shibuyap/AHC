@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -33,7 +33,7 @@ using namespace std;
 
 typedef long long int ll;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace {
   std::chrono::steady_clock::time_point start_time_clock;
 
@@ -47,7 +47,7 @@ namespace {
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace {
   static uint32_t rand_xorshift() {
     static uint32_t x = 123456789;
@@ -89,12 +89,12 @@ constexpr double EPS = 1e-6;
 
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
-constexpr int UP = 0;    // ã
-constexpr int LEFT = 1;  // ¶
-constexpr int DOWN = 2;  // ‰º
-constexpr int RIGHT = 3; // ‰E
+constexpr int UP = 0;    // ä¸Š
+constexpr int LEFT = 1;  // å·¦
+constexpr int DOWN = 2;  // ä¸‹
+constexpr int RIGHT = 3; // å³
 
-// 2ŸŒ³ƒLƒ…[‚ÌƒNƒ‰ƒX
+// 2æ¬¡å…ƒã‚­ãƒ¥ãƒ¼ã®ã‚¯ãƒ©ã‚¹
 class Queue2D {
 private:
   static const int MAX_SIZE = 10000;
@@ -103,7 +103,7 @@ private:
   int tail;
 
 public:
-  // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+  // ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
   Queue2D() : head(0), tail(0) {}
 
   void clear_queue() {
@@ -137,7 +137,7 @@ Queue2D queue2d;
 
 int exec_mode;
 
-// Œë·‚ğŒvZ
+// èª¤å·®ã‚’è¨ˆç®—
 inline double calc_error(const vector<double>& col1, const vector<double>& col2) {
   return sqrt(
     (col1[0] - col2[0]) * (col1[0] - col2[0])
@@ -159,12 +159,12 @@ public:
 class Board {
 public:
   int n;
-  vector<vector<int>> v; // ‚’¼‚Ì•Ç
-  vector<vector<int>> h; // …•½‚Ì•Ç
+  vector<vector<int>> v; // å‚ç›´ã®å£
+  vector<vector<int>> h; // æ°´å¹³ã®å£
 
-  vector<vector<int>> counts; // ƒZƒ‹‚ªŠÜ‚Ü‚ê‚éƒEƒFƒ‹‚ÌƒTƒCƒY
-  vector<vector<double>> volumes; // ƒZƒ‹‚ªŠÜ‚Ü‚ê‚éƒEƒFƒ‹‚ÌŠG‹ï‚Ì—Ê
-  vector<vector<vector<double>>> colors; // ƒZƒ‹‚ªŠÜ‚Ü‚ê‚éƒEƒFƒ‹‚ÌF(CMY)
+  vector<vector<int>> counts; // ã‚»ãƒ«ãŒå«ã¾ã‚Œã‚‹ã‚¦ã‚§ãƒ«ã®ã‚µã‚¤ã‚º
+  vector<vector<double>> volumes; // ã‚»ãƒ«ãŒå«ã¾ã‚Œã‚‹ã‚¦ã‚§ãƒ«ã®çµµå…·ã®é‡
+  vector<vector<vector<double>>> colors; // ã‚»ãƒ«ãŒå«ã¾ã‚Œã‚‹ã‚¦ã‚§ãƒ«ã®è‰²(CMY)
 
   bool is_ng(int x, int y, int dir) {
     int nx = x + DX[dir];
@@ -172,16 +172,16 @@ public:
     if (nx < 0 || nx >= n || ny < 0 || ny >= n) {
       return true;
     }
-    if (dir == 0) { // ã
+    if (dir == 0) { // ä¸Š
       return h[nx][ny] == 1;
     }
-    else if (dir == 1) { // ¶
+    else if (dir == 1) { // å·¦
       return v[nx][ny] == 1;
     }
-    else if (dir == 2) { // ‰º
+    else if (dir == 2) { // ä¸‹
       return h[x][y] == 1;
     }
-    else if (dir == 3) { // ‰E
+    else if (dir == 3) { // å³
       return v[x][y] == 1;
     }
   }
@@ -260,31 +260,31 @@ public:
   }
 
   int get_wall(int x, int y, int d) {
-    if (d == 0) { // ã
+    if (d == 0) { // ä¸Š
       return h[x - 1][y];
     }
-    else if (d == 1) { // ¶
+    else if (d == 1) { // å·¦
       return v[x][y - 1];
     }
-    else if (d == 2) { // ‰º
+    else if (d == 2) { // ä¸‹
       return h[x][y];
     }
-    else if (d == 3) { // ‰E
+    else if (d == 3) { // å³
       return v[x][y];
     }
   }
 
   void toggle_wall(int x, int y, int d) {
-    if (d == 0) { // ã
+    if (d == 0) { // ä¸Š
       h[x - 1][y] = 1 - h[x - 1][y];
     }
-    else if (d == 1) { // ¶
+    else if (d == 1) { // å·¦
       v[x][y - 1] = 1 - v[x][y - 1];
     }
-    else if (d == 2) { // ‰º
+    else if (d == 2) { // ä¸‹
       h[x][y] = 1 - h[x][y];
     }
-    else if (d == 3) { // ‰E
+    else if (d == 3) { // å³
       v[x][y] = 1 - v[x][y];
     }
   }
@@ -338,14 +338,14 @@ public:
   }
 
   void add_turn_1(int x, int y, const vector<double>& col) {
-    // ÀÛ‚É‰Á‚¦‚é‚±‚Æ‚Ì‚Å‚«‚é—Ê
+    // å®Ÿéš›ã«åŠ ãˆã‚‹ã“ã¨ã®ã§ãã‚‹é‡
     double w = min(1.0, counts[x][y] - volumes[x][y]);
     double after_vol = volumes[x][y] + w;
 
-    // ¬‚º‚½Œã‚ÌŠG‚Ì‹ï‚ÌF
+    // æ··ãœãŸå¾Œã®çµµã®å…·ã®è‰²
     vector<double> mixed_color = calc_mixed_color(colors[x][y], col, volumes[x][y], w);
 
-    // ƒZƒ‹‚ÌŠG‹ï—Ê‚ğXV
+    // ã‚»ãƒ«ã®çµµå…·é‡ã‚’æ›´æ–°
     auto cells = get_well_cells(x, y);
     for (const auto& cell : cells) {
       int cx = cell.first;
@@ -374,13 +374,13 @@ public:
 
     int before_wall = get_wall(x, y, d);
     if (before_wall == 0) {
-      // dØ‚è‚ğã‚°‚é
+      // ä»•åˆ‡ã‚Šã‚’ä¸Šã’ã‚‹
       int before_count = counts[x][y];
       double before_volume = volumes[x][y];
       toggle_wall(x, y, d);
       auto after_cells = get_well_cells(x, y);
       if (after_cells.size() == before_count) {
-        // •Ï‰»‚È‚µ
+        // å¤‰åŒ–ãªã—
       }
       else {
         auto other_cells = get_well_cells(nx, ny);
@@ -397,16 +397,16 @@ public:
       }
     }
     else {
-      // dØ‚è‚ğ‰º‚·
+      // ä»•åˆ‡ã‚Šã‚’ä¸‹ã™
       int before_count = counts[x][y];
       int before_other_count = counts[nx][ny];
       toggle_wall(x, y, d);
       auto after_cells = get_well_cells(x, y);
       if (after_cells.size() == before_count) {
-        // •Ï‰»‚È‚µ
+        // å¤‰åŒ–ãªã—
       }
       else {
-        // ¬‚º‚½Œã‚ÌŠG‚Ì‹ï‚ÌF
+        // æ··ãœãŸå¾Œã®çµµã®å…·ã®è‰²
         auto mixed_color = calc_mixed_color(colors[x][y], colors[nx][ny], volumes[x][y], volumes[nx][ny]);
         double after_volume = volumes[x][y] + volumes[nx][ny];
         for (const auto& cell : after_cells) {
@@ -448,7 +448,7 @@ public:
     board.add_turn_1(x, y, input.owns[k]);
   }
 
-  // ŠG‹ï‚ğƒEƒFƒ‹‚É’Ç‰Á‚·‚é
+  // çµµå…·ã‚’ã‚¦ã‚§ãƒ«ã«è¿½åŠ ã™ã‚‹
   void add_turn_1(int x, int y, int k, const Input& input) {
     if (t >= max_t) {
       if (exec_mode != 778) {
@@ -476,7 +476,7 @@ public:
     board.add_turn_2(x, y);
   }
 
-  // ŠG‹ï‚ğ‰æ”Œ‚É“n‚·
+  // çµµå…·ã‚’ç”»ä¼¯ã«æ¸¡ã™
   void add_turn_2(int x, int y) {
     if (!can_turn_2(x, y)) {
       if (exec_mode != 778) {
@@ -507,7 +507,7 @@ public:
     board.add_turn_3(x, y);
   }
 
-  // ŠG‹ï‚ğ”jŠü‚·‚é
+  // çµµå…·ã‚’ç ´æ£„ã™ã‚‹
   void add_turn_3(int x, int y) {
     if (t >= max_t) {
       cerr << "Error: add_turn_3 called after max_t reached." << endl;
@@ -528,7 +528,7 @@ public:
     board.add_turn_4(x, y, d);
   }
 
-  // dØ‚è‚ğo‚µ“ü‚ê‚·‚é
+  // ä»•åˆ‡ã‚Šã‚’å‡ºã—å…¥ã‚Œã™ã‚‹
   void add_turn_4(int x, int y, int d) {
     if (t >= max_t) {
       if (exec_mode != 778) {
@@ -560,7 +560,7 @@ Input input_data(int case_num) {
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     cin >> input.n >> input.k >> input.h >> input.t >> input.d;
     for (int i = 0; i < input.k; i++) {
       vector<double> own(3);
@@ -578,7 +578,7 @@ Input input_data(int case_num) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> input.n >> input.k >> input.h >> input.t >> input.d;
     for (int i = 0; i < input.k; i++) {
       vector<double> own(3);
@@ -601,7 +601,7 @@ Input input_data(int case_num) {
 
 void output_data(int case_num, const Answer& answer) {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     for (int i = 0; i < answer.initial_board.n; i++) {
       for (int j = 0; j < answer.initial_board.n - 1; j++) {
         cout << answer.initial_board.v[i][j] << " ";
@@ -630,7 +630,7 @@ void output_data(int case_num, const Answer& answer) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
@@ -674,7 +674,7 @@ struct Score {
   int e_scrore;
   double max_e_score;
 
-  vector<double> e_score_list; // Šeƒ^[ƒ“‚ÌŒë·‚ğŠi”[‚·‚éƒŠƒXƒg
+  vector<double> e_score_list; // å„ã‚¿ãƒ¼ãƒ³ã®èª¤å·®ã‚’æ ¼ç´ã™ã‚‹ãƒªã‚¹ãƒˆ
 
   Score() : score(0), d_score(0), e_scrore(0), max_e_score(0.0) {}
 };
@@ -704,7 +704,7 @@ Score calculate_score(Answer& ans, const Input& input) {
       ans.sim_turn_2(x, y);
       count_add_2++;
 
-      // Œë·‚ğŒvZ
+      // èª¤å·®ã‚’è¨ˆç®—
       double e_score = calc_error(ans.board.colors[x][y], input.targets[count_add_2 - 1]);
       sum_e_score += e_score;
       score.e_score_list[count_add_2 - 1] = e_score;
@@ -861,17 +861,17 @@ vector<vector<int>> create_candidates(int max_num, int max_count) {
   vector<vector<int>> res;
   vector<int> cur;
 
-  // [‚³—Dæ‚Å”ñŒ¸­—ñ‚ğ¶¬
+  // æ·±ã•å„ªå…ˆã§éæ¸›å°‘åˆ—ã‚’ç”Ÿæˆ
   function<void(int, int)> dfs = [&](int start, int remain)
     {
-      if (remain == 0) {            // ‚¿‚å‚¤‚Ç max_count ŒÂ‚»‚ë‚Á‚½
+      if (remain == 0) {            // ã¡ã‚‡ã†ã© max_count å€‹ãã‚ã£ãŸ
         res.push_back(cur);
         return;
       }
       for (int i = start; i < max_num; ++i) {
-        cur.push_back(i);         // i ‚ğ‘I‚Ô
-        dfs(i, remain - 1);       // “¯‚¶ i ‚ğd•¡‚µ‚Ä‘I‚×‚é‚Ì‚Å start ‚Í i
-        cur.pop_back();           // –ß‚·
+        cur.push_back(i);         // i ã‚’é¸ã¶
+        dfs(i, remain - 1);       // åŒã˜ i ã‚’é‡è¤‡ã—ã¦é¸ã¹ã‚‹ã®ã§ start ã¯ i
+        cur.pop_back();           // æˆ»ã™
       }
     };
 
@@ -882,10 +882,10 @@ vector<vector<int>> create_candidates(int max_num, int max_count) {
 vector<pair<vector<double>, vector<int>>> create_candidate_pairs(int max_num, int max_count, const Input& input) {
   vector<pair<vector<double>, vector<int>>> res;
   vector<int> cur;
-  // [‚³—Dæ‚Å”ñŒ¸­—ñ‚ğ¶¬
+  // æ·±ã•å„ªå…ˆã§éæ¸›å°‘åˆ—ã‚’ç”Ÿæˆ
   function<void(int, int)> dfs = [&](int start, int remain)
     {
-      if (remain == 0) {            // ‚¿‚å‚¤‚Ç max_count ŒÂ‚»‚ë‚Á‚½
+      if (remain == 0) {            // ã¡ã‚‡ã†ã© max_count å€‹ãã‚ã£ãŸ
         vector<double> col(3, 0.0);
         for (int i = 0; i < cur.size(); i++) {
           for (int j = 0; j < 3; j++) {
@@ -899,9 +899,9 @@ vector<pair<vector<double>, vector<int>>> create_candidate_pairs(int max_num, in
         return;
       }
       for (int i = start; i < max_num; ++i) {
-        cur.push_back(i);         // i ‚ğ‘I‚Ô
-        dfs(i, remain - 1);       // “¯‚¶ i ‚ğd•¡‚µ‚Ä‘I‚×‚é‚Ì‚Å start ‚Í i
-        cur.pop_back();           // –ß‚·
+        cur.push_back(i);         // i ã‚’é¸ã¶
+        dfs(i, remain - 1);       // åŒã˜ i ã‚’é‡è¤‡ã—ã¦é¸ã¹ã‚‹ã®ã§ start ã¯ i
+        cur.pop_back();           // æˆ»ã™
       }
     };
   if (max_count >= 0 && max_num > 0) dfs(0, max_count);
@@ -938,7 +938,7 @@ public:
     for (int paint_count = 1; paint_count < 100; paint_count++) {
       //cerr << paint_count << endl;
 
-      // d•¡‘g‚İ‡‚í‚¹‚ª‘å‚«‚¢break
+      // é‡è¤‡çµ„ã¿åˆã‚ã›ãŒå¤§ãã„æ™‚break
       if (nCr(input.k + paint_count - 1, paint_count) > 2e6) {
         break;
       }
@@ -1037,7 +1037,7 @@ public:
   }
 };
 
-// dØ‚èŒÅ’è(T¬Œü‚¯)
+// ä»•åˆ‡ã‚Šå›ºå®š(Tå°å‘ã‘)
 class Solver_3 {
 public:
   double time_limit;
@@ -1110,7 +1110,7 @@ public:
               }
             }
             else {
-              // ‘«‚³‚È‚¢
+              // è¶³ã•ãªã„
               double cost = calc_one_cost(0, input.targets[i], answer.board.colors[x][y], input.d);
               if (cost < min_cost) {
                 min_cost = cost;
@@ -1148,7 +1148,7 @@ public:
         }
 
         if (query == 0) {
-          // ‹ó‚ÌƒEƒFƒ‹
+          // ç©ºã®ã‚¦ã‚§ãƒ«
           for (int j = 0; j < num; j++) {
             if (col_indices[j] == -1) {
               continue;
@@ -1157,7 +1157,7 @@ public:
           }
         }
         else if (query == 1) {
-          // ‹ó‚Å‚È‚¢ƒEƒFƒ‹‚É’Ç‰Á
+          // ç©ºã§ãªã„ã‚¦ã‚§ãƒ«ã«è¿½åŠ 
           for (int j = 0; j < num; j++) {
             if (col_indices[j] == -1) {
               continue;
@@ -1166,8 +1166,8 @@ public:
           }
         }
         else if (query == 2) {
-          // ‹ó‚Å‚È‚¢ƒEƒFƒ‹‚©‚çæ“¾
-          // ‰½‚à‚µ‚È‚¢
+          // ç©ºã§ãªã„ã‚¦ã‚§ãƒ«ã‹ã‚‰å–å¾—
+          // ä½•ã‚‚ã—ãªã„
         }
         answer.add_turn_2(min_x, min_y);
       }
@@ -1266,7 +1266,7 @@ public:
               }
             }
             else {
-              // ‘«‚³‚È‚¢
+              // è¶³ã•ãªã„
               double cost = calc_one_cost(0, input.targets[i], answer.board.colors[x][y], input.d);
               if (cost < min_cost) {
                 min_cost = cost;
@@ -1330,7 +1330,7 @@ public:
         }
 
         if (query == 0) {
-          // ‹ó‚ÌƒEƒFƒ‹
+          // ç©ºã®ã‚¦ã‚§ãƒ«
           for (int j = 0; j < num; j++) {
             if (col_indices[j] == -1) {
               continue;
@@ -1339,7 +1339,7 @@ public:
           }
         }
         else if (query == 1) {
-          // ‹ó‚Å‚È‚¢ƒEƒFƒ‹‚É’Ç‰Á
+          // ç©ºã§ãªã„ã‚¦ã‚§ãƒ«ã«è¿½åŠ 
           for (int j = 0; j < eliminate_count; j++) {
             answer.add_turn_3(min_x, min_y);
           }
@@ -1351,11 +1351,11 @@ public:
           }
         }
         else if (query == 2) {
-          // ‹ó‚Å‚È‚¢ƒEƒFƒ‹‚©‚çæ“¾
-          // ‰½‚à‚µ‚È‚¢
+          // ç©ºã§ãªã„ã‚¦ã‚§ãƒ«ã‹ã‚‰å–å¾—
+          // ä½•ã‚‚ã—ãªã„
         }
         else if (query == 3) {
-          // ‹ó‚É‚µ‚Ä‚©‚ç’Ç‰Á
+          // ç©ºã«ã—ã¦ã‹ã‚‰è¿½åŠ 
           while (answer.board.volumes[min_x][min_y] > EPS) {
             answer.add_turn_3(min_x, min_y);
             if (answer.is_over) {
@@ -1512,7 +1512,7 @@ public:
 
       int ra = rand_xorshift() % max_threshold;
       if (ra < thresholds[0]) {
-        // dØ‚è‚ğ+-1‚·‚é
+        // ä»•åˆ‡ã‚Šã‚’+-1ã™ã‚‹
         idx1 = rand_xorshift() % input.n;
         diff1 = rand_xorshift() % 2 == 0 ? 1 : -1;
         if (next_state.vertical_lines[idx1] + diff1 < state.vertical_lines[idx1] || next_state.vertical_lines[idx1] + diff1 > input.n - 2) {
@@ -1523,7 +1523,7 @@ public:
         move_diff(state, next_state, idx1, diff1, diff_vol);
       }
       else if (ra < thresholds[1]) {
-        // dØ‚è‚ğƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚é
+        // ä»•åˆ‡ã‚Šã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«å¤‰ãˆã‚‹
         idx1 = rand_xorshift() % input.n;
         // [vertical_lines[idx1], input.n - 2]
         int new1 = rand_xorshift() % (input.n - 2 - state.vertical_lines[idx1] + 1) + state.vertical_lines[idx1];
@@ -1539,7 +1539,7 @@ public:
         move_diff(state, next_state, idx1, diff1, diff_vol);
       }
       else if (ra < thresholds[2]) {
-        // “¯‚¶F‚ÌdØ‚è‚ğˆê‚Â-1‚µ‚ÄA•Ê‚ÌdØ‚è‚ğ+1‚·‚é
+        // åŒã˜è‰²ã®ä»•åˆ‡ã‚Šã‚’ä¸€ã¤-1ã—ã¦ã€åˆ¥ã®ä»•åˆ‡ã‚Šã‚’+1ã™ã‚‹
         diff1 = -1;
         if (used_indices.size() == 0) {
           //iter--;
@@ -1578,8 +1578,8 @@ public:
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
       count1++;
       double diff_score = (current_score - next_state.score) * 12345.6;
-      const double START_TEMP = 1000000; // ‰Šú‰·“x
-      const double END_TEMP = 0.01; // I—¹‰·“x
+      const double START_TEMP = 1000000; // åˆæœŸæ¸©åº¦
+      const double END_TEMP = 0.01; // çµ‚äº†æ¸©åº¦
       double temp = START_TEMP - (START_TEMP - END_TEMP) * (double)iter / loop_count;
       bool accept = false;
       if (mode == 0) {
@@ -1596,13 +1596,13 @@ public:
       }
       if (accept) {
         last_update_iter = iter;
-        // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
+        // ã‚¹ã‚³ã‚¢ãŒæ”¹å–„ã—ãŸ
         count2++;
         used_indices = calc_used_indices(state, next_state);
         //cerr << "Iter: " << iter << ", Score: " << next_state.score << ", Change: " << diff_score << ", Temp: " << temp;
       }
       else {
-        // –ß‚·
+        // æˆ»ã™
         next_state.score = current_score;
         if (ra < thresholds[0]) {
           move_diff(state, next_state, idx1, -diff1, -diff_vol);
@@ -1717,7 +1717,7 @@ public:
 
       Solver5State next_state = state;
 
-      // R“o‚è
+      // å±±ç™»ã‚Š
       change_vertical_lines_count_limit = params.start_change_vertical_lines_count_limit;
       int attempt_count = 0;
       int attempt_count_2 = 0;
@@ -1765,12 +1765,12 @@ public:
 
           next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
           if (next_state.score < best_state.score) {
-            // best‚É•Û‘¶
+            // bestã«ä¿å­˜
             best_state = next_state;
           }
         }
 
-        // best‚©‚ç–ß‚·
+        // bestã‹ã‚‰æˆ»ã™
         next_state = best_state;
         used_indices = calc_used_indices(state, next_state);
 
@@ -1819,7 +1819,7 @@ public:
           }
         }
 
-        // best_best‚©‚ç–ß‚·
+        // best_bestã‹ã‚‰æˆ»ã™
         next_state = best_best_state;
         used_indices = calc_used_indices(state, next_state);
 
@@ -2046,7 +2046,7 @@ public:
 
       int ra = rand_xorshift() % max_threshold;
       if (ra < thresholds[0]) {
-        // dØ‚è‚ğ+-1‚·‚é
+        // ä»•åˆ‡ã‚Šã‚’+-1ã™ã‚‹
         idx1 = rand_xorshift() % input.n;
         diff1 = rand_xorshift() % 3 - 1;
         while (next_state.row_op_indices[idx1] + diff1 < 0 || next_state.row_op_indices[idx1] + diff1 >= saState.row_op_volumes[idx1].size() || diff1 == 0) {
@@ -2075,7 +2075,7 @@ public:
         move_diff(state, next_state, idx1, diff1, diff_vol, saState, diff_col1);
       }
       else if (ra < thresholds[1]) {
-        // dØ‚è‚ğƒ‰ƒ“ƒ_ƒ€‚É•Ï‚¦‚é
+        // ä»•åˆ‡ã‚Šã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«å¤‰ãˆã‚‹
         idx1 = rand_xorshift() % input.n;
 
         int new1 = rand_xorshift() % saState.row_op_volumes[idx1].size();
@@ -2108,7 +2108,7 @@ public:
         move_diff(state, next_state, idx1, diff1, diff_vol, saState, diff_col1);
       }
       else if (ra < thresholds[2]) {
-        // ŠG‹ï‚ğ‘«‚·/ˆø‚­
+        // çµµå…·ã‚’è¶³ã™/å¼•ã
         if (saState.row_op_can_add_indices.size() == 0) {
           iter--;
           continue;
@@ -2123,7 +2123,7 @@ public:
         if (keep_col1 == -1) {
           iter--;
           continue;
-          // case 1: ‘«‚·
+          // case 1: è¶³ã™
           diff_vol = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           {
@@ -2138,7 +2138,7 @@ public:
         else if (col1 == -1) {
           iter--;
           continue;
-          // case 2: ˆø‚­
+          // case 2: å¼•ã
           diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes[idx1][next_state.row_op_indices[idx1]].first;
           {
@@ -2151,7 +2151,7 @@ public:
           }
         }
         else {
-          // case 3: F‚ğ•Ï‚¦‚é
+          // case 3: è‰²ã‚’å¤‰ãˆã‚‹
           diff_vol = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           diff_vol2 = saState.row_op_volumes_add[idx1][next_state.row_op_indices[idx1]].first;
           {
@@ -2170,8 +2170,8 @@ public:
 
       next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
       double diff_score = (current_score - next_state.score) * 12345.6;
-      const double START_TEMP = 100000; // ‰Šú‰·“x
-      const double END_TEMP = 0.01; // I—¹‰·“x
+      const double START_TEMP = 100000; // åˆæœŸæ¸©åº¦
+      const double END_TEMP = 0.01; // çµ‚äº†æ¸©åº¦
       double temp = START_TEMP - (START_TEMP - END_TEMP) * (double)iter / loop_count;
       bool accept = false;
       if (mode == 0) {
@@ -2187,12 +2187,12 @@ public:
         }
       }
       if (accept) {
-        // ƒXƒRƒA‚ª‰ü‘P‚µ‚½
+        // ã‚¹ã‚³ã‚¢ãŒæ”¹å–„ã—ãŸ
         last_update_iter = iter;
         saState.calc_used_indices(next_state);
       }
       else {
-        // –ß‚·
+        // æˆ»ã™
         next_state.score = current_score;
         if (ra < thresholds[0]) {
           move_diff(state, next_state, idx1, -diff1, -diff_vol, saState, diff_col1);
@@ -2230,7 +2230,7 @@ public:
     }
 
     for (int i = 0; i < input.h; i++) {
-      // mixed_volume‚ğ@‚«æ‚è
+      // mixed_volumeã‚’æ‹­ãå–ã‚Š
       if (params.is_mixed_volume_reset) {
         while (state.mixed_volume > EPS) {
           answer.add_turn_3(0, 0);
@@ -2241,8 +2241,8 @@ public:
       state.one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
       state.mixed_block_count = 0;
 
-      // row_op_volumes‚ğŒvZ
-      // answer.board.volumes[0][0]‚Í0.0‚Ì‘O’ñ
+      // row_op_volumesã‚’è¨ˆç®—
+      // answer.board.volumes[0][0]ã¯0.0ã®å‰æ
       state.reset_each_row_each_operation_indices();
       for (int j = 0; j < input.n; j++) {
         saConfig.row_op_volumes[j].clear();
@@ -2250,7 +2250,7 @@ public:
 
         double current_row_volume = answer.board.volumes[j][input.n - 1];
 
-        // L‚°‚é ¨ k‚ß‚é
+        // åºƒã’ã‚‹ â†’ ç¸®ã‚ã‚‹
         double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
         for (int k = state.vertical_lines[j]; k >= 0; k--) {
           int add_count = state.vertical_lines[j] - k;
@@ -2266,21 +2266,21 @@ public:
         sort(saConfig.row_op_volumes[j].begin(), saConfig.row_op_volumes[j].end());
       }
 
-      // row_op_volumes_add‚ğŒvZ
+      // row_op_volumes_addã‚’è¨ˆç®—
       saConfig.row_op_can_add_indices.clear();
       for (int j = 0; j < input.n; j++) {
         saConfig.row_op_volumes_add[j].clear();
         saConfig.row_op_volumes_add[j].emplace_back(0.0, make_pair(state.vertical_lines[j], state.vertical_lines[j]));
 
         if (answer.board.volumes[j][input.n - 1] >= params.discard_value) {
-          continue; // F‚ª‘«‚¹‚È‚¢
+          continue; // è‰²ãŒè¶³ã›ãªã„
         }
 
         saConfig.row_op_can_add_indices.push_back(j);
 
         double current_row_volume = (answer.board.volumes[j][input.n - 1] + 1.0);
 
-        // L‚°‚é ¨ k‚ß‚é
+        // åºƒã’ã‚‹ â†’ ç¸®ã‚ã‚‹
         double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
         for (int k = state.vertical_lines[j]; k >= 0; k--) {
           int add_count = state.vertical_lines[j] - k;
@@ -2296,7 +2296,7 @@ public:
         sort(saConfig.row_op_volumes_add[j].begin(), saConfig.row_op_volumes_add[j].end());
       }
 
-      // row_op_colors‚ğŒvZ
+      // row_op_colorsã‚’è¨ˆç®—
       for (int j = 0; j < input.n; j++) {
         double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
         vector<double> mixed_color = answer.board.colors[0][0];
@@ -2313,7 +2313,7 @@ public:
         }
       }
 
-      // row_op_colors_add‚ğŒvZ
+      // row_op_colors_addã‚’è¨ˆç®—
       for (int j = 0; j < input.n; j++) {
         double one_block_mixed_volume = answer.board.volumes[0][0] / answer.board.counts[0][0];
         vector<double> mixed_color = answer.board.colors[0][0];
@@ -2335,7 +2335,7 @@ public:
         }
       }
 
-      // F‚ğ‘«‚·
+      // è‰²ã‚’è¶³ã™
       vector<double> each_color_volumes(input.k, 0.0);
       while (true) {
         int idx = rand_xorshift() % input.n;
@@ -2373,7 +2373,7 @@ public:
         state.row_op_add_colors[idx] = col;
       }
 
-      // R“o‚è
+      // å±±ç™»ã‚Š
       change_vertical_lines_count_limit = params.start_change_vertical_lines_count_limit;
       int attempt_count = 0;
       Solver6State next_state = state;
@@ -2393,12 +2393,12 @@ public:
 
           next_state.calc_eval(input.targets[i], change_vertical_lines_count_limit, input.d);
           if (next_state.score < best_state.score) {
-            // best‚É•Û‘¶
+            // bestã«ä¿å­˜
             best_state = next_state;
           }
         }
 
-        // best‚©‚ç–ß‚·
+        // bestã‹ã‚‰æˆ»ã™
         next_state = best_state;
         saConfig.calc_used_indices(next_state);
 
@@ -2425,14 +2425,14 @@ public:
           continue;
         }
 
-        // best_best‚©‚ç–ß‚·
+        // best_bestã‹ã‚‰æˆ»ã™
         next_state = best_best_state;
         saConfig.calc_used_indices(next_state);
 
         break;
       }
 
-      // ŠG‹ï‚ğ‘«‚·
+      // çµµå…·ã‚’è¶³ã™
       for (int j = 0; j < input.n; j++) {
         if (next_state.row_op_add_colors[j] == -1) {
           continue;
@@ -2444,7 +2444,7 @@ public:
         next_state.row_color_indices[j] = next_state.row_op_add_colors[j];
       }
 
-      // L‚°‚é
+      // åºƒã’ã‚‹
       for (int j = 0; j < input.n; j++) {
         int new_vertical_line = saConfig.row_op_volumes[j][next_state.row_op_indices[j]].second.first;
         if (new_vertical_line != next_state.vertical_lines[j]) {
@@ -2454,7 +2454,7 @@ public:
         }
       }
 
-      // k‚ß‚é
+      // ç¸®ã‚ã‚‹
       for (int j = 0; j < input.n; j++) {
         int new_vertical_line = saConfig.row_op_volumes[j][next_state.row_op_indices[j]].second.second;
         if (new_vertical_line != next_state.vertical_lines[j]) {

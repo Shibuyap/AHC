@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -112,7 +112,7 @@ public:
   }
 };
 
-// “ü—Í‚ğó‚¯æ‚éŠÖ”
+// å…¥åŠ›ã‚’å—ã‘å–ã‚‹é–¢æ•°
 void read_input(int case_num)
 {
   std::ostringstream oss;
@@ -120,13 +120,13 @@ void read_input(int case_num)
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     int _n, _l;
     cin >> _n >> _l;
     for (int i = 0; i < NODE_COUNT; ++i)cin >> t[i];
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     int _n, _l;
     ifs >> _n >> _l;
     for (int i = 0; i < NODE_COUNT; ++i)ifs >> t[i];
@@ -143,7 +143,7 @@ void read_input(int case_num)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€‚ğŠJ‚­ŠÖ”
+// å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’é–‹ãé–¢æ•°
 static void open_output_file(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
@@ -153,7 +153,7 @@ static void open_output_file(int case_num, ofstream& ofs)
   }
 }
 
-// ƒXƒRƒA‚ğŒvZ‚·‚éŠÖ”
+// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°
 static int calc_score_exact(const SolverState& st)
 {
   int visit_cnt[NODE_COUNT] = {};
@@ -299,7 +299,7 @@ static double calc_estimated_score()
   return max(0, (int)round(res));
 }
 
-// ‰ğ“š‚ğo—Í‚·‚éŠÖ”
+// è§£ç­”ã‚’å‡ºåŠ›ã™ã‚‹é–¢æ•°
 static void write_output(ofstream& ofs, const SolverState& st)
 {
   int aaaa[NODE_COUNT] = {};
@@ -310,18 +310,18 @@ static void write_output(ofstream& ofs, const SolverState& st)
   }
 
   if (mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     for (int i = 0; i < NODE_COUNT; ++i)cout << aaaa[i] << ' ' << bbbb[i] << endl;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     for (int i = 0; i < NODE_COUNT; ++i)ofs << aaaa[i] << ' ' << bbbb[i] << endl;
   }
 }
 
 static void build_initial_solution(SolverState& st)
 {
-  // ƒ‰ƒ“ƒ_ƒ€‚É‰Šú‰ğì¬
+  // ãƒ©ãƒ³ãƒ€ãƒ ã«åˆæœŸè§£ä½œæˆ
   double now_time = get_elapsed_time();
   int loop_cnt_init = 0;
   while (true) {
@@ -372,7 +372,7 @@ static void build_initial_solution(SolverState& st)
   }
 }
 
-// ƒnƒCƒp[ƒpƒ‰ƒ[ƒ^
+// ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 struct AnnealingParams
 {
   double start_temp;
@@ -528,7 +528,7 @@ static void simulated_annealing(const AnnealingParams& params, SolverState& st)
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     double trial_score = 0;
     if (accept_move) {
       trial_score = sort_and_estimate(25000, st);
@@ -539,7 +539,7 @@ static void simulated_annealing(const AnnealingParams& params, SolverState& st)
     }
 
     if (accept_move) {
-      // Ì—p
+      // æ¡ç”¨
       st.current_score = trial_score;
       for (int i = 0; i < NODE_COUNT; ++i) {
         st.a[i] = sorted_a[i];
@@ -547,13 +547,13 @@ static void simulated_annealing(const AnnealingParams& params, SolverState& st)
         st.est_counts_cur[i] = st.est_counts[i];
       }
 
-      // Best‰ğ‚æ‚è‚à‚¢‚¢‚©
+      // Bestè§£ã‚ˆã‚Šã‚‚ã„ã„ã‹
       if (st.current_score > st.best_score) {
         st.copy_to_best();
       }
     }
     else {
-      // Œ³‚É–ß‚·
+      // å…ƒã«æˆ»ã™
       if (op_rand < params.operation_thresholds[0]) {
         accept_stat[0][0]++;
         if (choice_flag == 0) {
@@ -593,7 +593,7 @@ static void simulated_annealing(const AnnealingParams& params, SolverState& st)
   st.copy_from_best();
 }
 
-// –â‘è‚ğ‰ğ‚­ŠÖ”
+// å•é¡Œã‚’è§£ãé–¢æ•°
 static ll solve_case(int problem_num, AnnealingParams hypers)
 {
   reset_timer();
@@ -601,17 +601,17 @@ static ll solve_case(int problem_num, AnnealingParams hypers)
   SolverState st;
   st.init_state();
 
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   read_input(problem_num);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // å‡ºåŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚ªãƒ¼ãƒ—ãƒ³
   ofstream ofs;
   open_output_file(problem_num, ofs);
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   simulated_annealing(hypers, st);
 
-  // ‰ğ“š‚ğo—Í
+  // è§£ç­”ã‚’å‡ºåŠ›
   write_output(ofs, st);
 
   if (ofs.is_open()) {

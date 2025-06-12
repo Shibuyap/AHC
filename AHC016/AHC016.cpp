@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -37,7 +37,7 @@ typedef pair<int, int> P;
 const int dx[4] = { -1, 1, 0, 0 };
 const int dy[4] = { 0, 0, -1, 1 };
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -62,7 +62,7 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
 
 namespace
 {
-  // ‹¤’Ê•Ï”
+  // å…±é€šå¤‰æ•°
   double com[105][105];
   int MODE = 0;
   const int TURN = 100;
@@ -80,7 +80,7 @@ namespace
   int numThreeArr[1000][3];
   int numFourArr[1000][4];
 
-  // ƒnƒCƒpƒ‰’²®—p
+  // ãƒã‚¤ãƒ‘ãƒ©èª¿æ•´ç”¨
   int hyperSolverNum;
   int hyperMinDiff = 10;
   int hyperMaxRound = 7;
@@ -88,7 +88,7 @@ namespace
   int hyperStep2 = 1;
 }  // namespace
 
-// ƒnƒCƒpƒ‰
+// ãƒã‚¤ãƒ‘ãƒ©
 namespace
 {
   int maxNumArray[100] = {
@@ -901,7 +901,7 @@ namespace
 
 }  // namespace
 
-// Inputim, eps, iEps‚Ìİ’èj
+// Inputï¼ˆm, eps, iEpsã®è¨­å®šï¼‰
 namespace
 {
   int judgeArr[100];
@@ -1790,12 +1790,12 @@ namespace
         while (j <= n) {
           int i = j + hyperMinDiff;
           while (i <= n) {
-            // 1ƒNƒ‰
+            // 1ã‚¯ãƒ©
             if (iset.find(i) == iset.end()) {
               iset.insert(i);
               cnt++;
             }
-            // 2ƒNƒ‰
+            // 2ã‚¯ãƒ©
             if (i + j <= n) {
               if (jset.find(P(i, j)) == jset.end()) {
                 jset.insert(P(i, j));
@@ -1803,7 +1803,7 @@ namespace
               }
             }
 
-            // 3ƒNƒ‰
+            // 3ã‚¯ãƒ©
             if (i + j + k <= n) {
               cnt++;
             }
@@ -1834,7 +1834,7 @@ namespace
         while (j <= n) {
           int i = j + hyperMinDiff;
           while (i <= n) {
-            // 1ƒNƒ‰
+            // 1ã‚¯ãƒ©
             if (iset.find(i) == iset.end()) {
               iset.insert(i);
               numThreeArr[cnt][0] = i;
@@ -1842,7 +1842,7 @@ namespace
               numThreeArr[cnt][2] = 0;
               cnt++;
             }
-            // 2ƒNƒ‰
+            // 2ã‚¯ãƒ©
             if (i + j <= n) {
               if (jset.find(P(i, j)) == jset.end()) {
                 jset.insert(P(i, j));
@@ -1853,7 +1853,7 @@ namespace
               }
             }
 
-            // 3ƒNƒ‰
+            // 3ã‚¯ãƒ©
             if (i + j + k <= n) {
               numThreeArr[cnt][0] = i;
               numThreeArr[cnt][1] = j;
@@ -1924,12 +1924,12 @@ namespace
         while (j <= n) {
           int i = j + hyperMinDiff;
           while (i <= n) {
-            // 1ƒNƒ‰
+            // 1ã‚¯ãƒ©
             // if (iset.find(i) == iset.end()) {
             //  iset.insert(i);
             //  cnt++;
             //}
-            // 2ƒNƒ‰
+            // 2ã‚¯ãƒ©
             // if (i + j <= n) {
             //  if (jset.find(P(i, j)) == jset.end()) {
             //    jset.insert(P(i, j));
@@ -1937,7 +1937,7 @@ namespace
             //  }
             //}
 
-            // 3ƒNƒ‰
+            // 3ã‚¯ãƒ©
             if (i + j + k <= n) {
               cnt++;
             }
@@ -1968,7 +1968,7 @@ namespace
         while (j <= n) {
           int i = j + hyperMinDiff;
           while (i <= n) {
-            //// 1ƒNƒ‰
+            //// 1ã‚¯ãƒ©
             // if (iset.find(i) == iset.end()) {
             //   iset.insert(i);
             //   numThreeArr[cnt][0] = i;
@@ -1976,7 +1976,7 @@ namespace
             //   numThreeArr[cnt][2] = 0;
             //   cnt++;
             // }
-            //// 2ƒNƒ‰
+            //// 2ã‚¯ãƒ©
             // if (i + j <= n) {
             //   if (jset.find(P(i, j)) == jset.end()) {
             //     jset.insert(P(i, j));
@@ -1987,7 +1987,7 @@ namespace
             //   }
             // }
 
-            // 3ƒNƒ‰
+            // 3ã‚¯ãƒ©
             if (i + j + k <= n) {
               numThreeArr[cnt][0] = i;
               numThreeArr[cnt][1] = j;
@@ -2043,7 +2043,7 @@ namespace
     }
   }
 
-  // 4ƒRƒA
+  // 4ã‚³ã‚¢
   void InitNumArray17()
   {
     numPairArrOK = 0;
@@ -2064,12 +2064,12 @@ namespace
           while (j <= n) {
             int i = j + hyperMinDiff;
             while (i <= n) {
-              // 1ƒNƒ‰
+              // 1ã‚¯ãƒ©
               if (iset.find(i) == iset.end()) {
                 iset.insert(i);
                 cnt++;
               }
-              // 2ƒNƒ‰
+              // 2ã‚¯ãƒ©
               if (i + j <= n) {
                 if (jset.find(P(i, j)) == jset.end()) {
                   jset.insert(P(i, j));
@@ -2077,7 +2077,7 @@ namespace
                 }
               }
 
-              // 3ƒNƒ‰
+              // 3ã‚¯ãƒ©
               if (i + j + k <= n) {
                 p.first.first = i;
                 p.first.second = j;
@@ -2087,7 +2087,7 @@ namespace
                   cnt++;
                 }
               }
-              // 4ƒNƒ‰
+              // 4ã‚¯ãƒ©
               if (i + j + k + l <= n) {
                 cnt++;
               }
@@ -2127,7 +2127,7 @@ namespace
           while (j <= n) {
             int i = j + hyperMinDiff;
             while (i <= n) {
-              // 1ƒNƒ‰
+              // 1ã‚¯ãƒ©
               if (iset.find(i) == iset.end()) {
                 iset.insert(i);
                 numFourArr[cnt][0] = i;
@@ -2136,7 +2136,7 @@ namespace
                 numFourArr[cnt][3] = 0;
                 cnt++;
               }
-              // 2ƒNƒ‰
+              // 2ã‚¯ãƒ©
               if (i + j <= n) {
                 if (jset.find(P(i, j)) == jset.end()) {
                   jset.insert(P(i, j));
@@ -2148,7 +2148,7 @@ namespace
                 }
               }
 
-              // 3ƒNƒ‰
+              // 3ã‚¯ãƒ©
               if (i + j + k <= n) {
                 p.first.first = i;
                 p.first.second = j;
@@ -2163,7 +2163,7 @@ namespace
                 }
               }
 
-              // 4ƒNƒ‰
+              // 4ã‚¯ãƒ©
               if (i + j + k + l <= n) {
                 numFourArr[cnt][0] = i;
                 numFourArr[cnt][1] = j;
@@ -2230,7 +2230,7 @@ namespace
     }
   }
 
-  // 13•\— 
+  // 13è¡¨è£
   int omoteArr[1000];
   void InitNumArray18()
   {
@@ -2296,7 +2296,7 @@ namespace
     if (cnt < m) numPairArrOK = 0;
   }
 
-  // 10•\— 
+  // 10è¡¨è£
   void InitNumArray19()
   {
     rep(i, 1000)omoteArr[i] = 0;
@@ -2357,7 +2357,7 @@ namespace
     if (cnt < m) numPairArrOK = 0;
   }
 
-  // 0.0—p
+  // 0.0ç”¨
   vector<vector<P>> zeroPairs;
   vector<int> dfsvec;
   void dfs(int sum, int x)
@@ -2442,7 +2442,7 @@ namespace
     }
   }
 
-  // 1ƒRƒA
+  // 1ã‚³ã‚¢
   void InitNumArray21()
   {
     rep(i, 1000)omoteArr[i] = 0;
@@ -3010,10 +3010,10 @@ int Solver6()
     int tmp = score;
     int keep = f[x];
 
-    // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+    // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
     if (f[x] == 0) {
       tmp -= n - bib[x].count();
-      tmp++;  // ©•ª‚Ì•ª
+      tmp++;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp -= (bif[f[x]] & bib[x]).count();
@@ -3023,10 +3023,10 @@ int Solver6()
     bif[f[x]][x] = 0;
     f[x] = ra;
     bif[f[x]][x] = 1;
-    // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+    // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
     if (f[x] == 0) {
       tmp += n - bib[x].count();
-      tmp--;  // ©•ª‚Ì•ª
+      tmp--;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp += (bif[f[x]] & bib[x]).count();
@@ -3194,10 +3194,10 @@ int Solver7()
     int tmp = score;
     int keep = f[x];
 
-    // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+    // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
     if (f[x] == 0) {
       tmp -= n - bib[x].count();
-      tmp++;  // ©•ª‚Ì•ª
+      tmp++;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp -= (bif[f[x]] & bib[x]).count();
@@ -3207,10 +3207,10 @@ int Solver7()
     bif[f[x]][x] = 0;
     f[x] = ra;
     bif[f[x]][x] = 1;
-    // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+    // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
     if (f[x] == 0) {
       tmp += n - bib[x].count();
-      tmp--;  // ©•ª‚Ì•ª
+      tmp--;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp += (bif[f[x]] & bib[x]).count();
@@ -3441,10 +3441,10 @@ int Solver9()
     int tmp = score;
     int keep = f[x];
 
-    // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+    // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
     if (f[x] == 0) {
       tmp -= n - bib[x].count();
-      tmp++;  // ©•ª‚Ì•ª
+      tmp++;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp -= (bif[f[x]] & bib[x]).count();
@@ -3454,10 +3454,10 @@ int Solver9()
     bif[f[x]][x] = 0;
     f[x] = ra;
     bif[f[x]][x] = 1;
-    // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+    // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
     if (f[x] == 0) {
       tmp += n - bib[x].count();
-      tmp--;  // ©•ª‚Ì•ª
+      tmp--;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp += (bif[f[x]] & bib[x]).count();
@@ -3649,7 +3649,7 @@ int Solver11()
 {
   int f[110] = {};
 
-  // ƒRƒA1‚ğì‚é
+  // ã‚³ã‚¢1ã‚’ä½œã‚‹
   vector<int> cores1;
   vector<int> kouho;
   rep(i, n) kouho.push_back(i);
@@ -3687,7 +3687,7 @@ int Solver11()
   }
   if (cores1.size() == 0) return 0;
 
-  // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+  // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
   while (true) {
     int sz = cores1.size();
     int arg = -1;
@@ -3710,7 +3710,7 @@ int Solver11()
     cores1.push_back(arg);
   }
 
-  // ƒRƒA2‚ğì‚é
+  // ã‚³ã‚¢2ã‚’ä½œã‚‹
   vector<int> cores2;
   kouho.clear();
   rep(i, n)
@@ -3758,7 +3758,7 @@ int Solver11()
       }
     }
     if (cores2.size() > 0) {
-      // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+      // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
       while (true) {
         int sz = cores2.size();
         int arg = -1;
@@ -3833,10 +3833,10 @@ int Solver11()
     int tmp = score;
     int keep = f[x];
 
-    // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+    // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
     if (f[x] == 0) {
       tmp -= n - bib[x].count();
-      tmp++;  // ©•ª‚Ì•ª
+      tmp++;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp -= (bif[f[x]] & bib[x]).count();
@@ -3846,10 +3846,10 @@ int Solver11()
     bif[f[x]][x] = 0;
     f[x] = ra;
     bif[f[x]][x] = 1;
-    // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+    // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
     if (f[x] == 0) {
       tmp += n - bib[x].count();
-      tmp--;  // ©•ª‚Ì•ª
+      tmp--;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp += (bif[f[x]] & bib[x]).count();
@@ -3907,7 +3907,7 @@ int Solver12()
 {
   int f[110] = {};
 
-  // ƒRƒA1‚ğì‚é
+  // ã‚³ã‚¢1ã‚’ä½œã‚‹
   vector<int> cores1;
   vector<int> kouho;
   rep(i, n) kouho.push_back(i);
@@ -3945,7 +3945,7 @@ int Solver12()
   }
   if (cores1.size() == 0) return 0;
 
-  // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+  // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
   while (true) {
     int sz = cores1.size();
     int arg = -1;
@@ -3968,7 +3968,7 @@ int Solver12()
     cores1.push_back(arg);
   }
 
-  // ƒRƒA2‚ğì‚é
+  // ã‚³ã‚¢2ã‚’ä½œã‚‹
   vector<int> cores2;
   kouho.clear();
   rep(i, n)
@@ -4016,7 +4016,7 @@ int Solver12()
       }
     }
     if (cores2.size() > 0) {
-      // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+      // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
       while (true) {
         int sz = cores2.size();
         int arg = -1;
@@ -4041,7 +4041,7 @@ int Solver12()
     }
   }
 
-  // ƒRƒA3‚ğì‚é
+  // ã‚³ã‚¢3ã‚’ä½œã‚‹
   vector<int> cores3;
   if (cores2.size() > 0) {
     kouho.clear();
@@ -4090,7 +4090,7 @@ int Solver12()
         }
       }
       if (cores3.size() > 0) {
-        // ƒRƒA3‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢3ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores3.size();
           int arg = -1;
@@ -4173,10 +4173,10 @@ int Solver12()
     int tmp = score;
     int keep = f[x];
 
-    // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+    // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
     if (f[x] == 0) {
       tmp -= n - bib[x].count();
-      tmp++;  // ©•ª‚Ì•ª
+      tmp++;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp -= (bif[f[x]] & bib[x]).count();
@@ -4186,10 +4186,10 @@ int Solver12()
     bif[f[x]][x] = 0;
     f[x] = ra;
     bif[f[x]][x] = 1;
-    // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+    // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
     if (f[x] == 0) {
       tmp += n - bib[x].count();
-      tmp--;  // ©•ª‚Ì•ª
+      tmp--;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp += (bif[f[x]] & bib[x]).count();
@@ -4245,12 +4245,12 @@ int Solver12()
   return argRes;
 }
 
-// 4ƒRƒA
+// 4ã‚³ã‚¢
 int Solver13()
 {
   int f[110] = {};
 
-  // ƒRƒA1‚ğì‚é
+  // ã‚³ã‚¢1ã‚’ä½œã‚‹
   vector<int> cores1;
   vector<int> kouho;
   rep(i, n) kouho.push_back(i);
@@ -4288,7 +4288,7 @@ int Solver13()
   }
   if (cores1.size() == 0) return 0;
 
-  // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+  // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
   while (true) {
     int sz = cores1.size();
     int arg = -1;
@@ -4311,7 +4311,7 @@ int Solver13()
     cores1.push_back(arg);
   }
 
-  // ƒRƒA2‚ğì‚é
+  // ã‚³ã‚¢2ã‚’ä½œã‚‹
   vector<int> cores2;
   kouho.clear();
   rep(i, n)
@@ -4359,7 +4359,7 @@ int Solver13()
       }
     }
     if (cores2.size() > 0) {
-      // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+      // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
       while (true) {
         int sz = cores2.size();
         int arg = -1;
@@ -4384,7 +4384,7 @@ int Solver13()
     }
   }
 
-  // ƒRƒA3‚ğì‚é
+  // ã‚³ã‚¢3ã‚’ä½œã‚‹
   vector<int> cores3;
   if (cores2.size() > 0) {
     kouho.clear();
@@ -4433,7 +4433,7 @@ int Solver13()
         }
       }
       if (cores3.size() > 0) {
-        // ƒRƒA3‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢3ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores3.size();
           int arg = -1;
@@ -4459,7 +4459,7 @@ int Solver13()
     }
   }
 
-  // ƒRƒA4‚ğì‚é
+  // ã‚³ã‚¢4ã‚’ä½œã‚‹
   vector<int> cores4;
   if (cores3.size() > 0) {
     kouho.clear();
@@ -4508,7 +4508,7 @@ int Solver13()
         }
       }
       if (cores4.size() > 0) {
-        // ƒRƒA4‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢4ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores4.size();
           int arg = -1;
@@ -4598,10 +4598,10 @@ int Solver13()
     int tmp = score;
     int keep = f[x];
 
-    // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+    // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
     if (f[x] == 0) {
       tmp -= n - bib[x].count();
-      tmp++;  // ©•ª‚Ì•ª
+      tmp++;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp -= (bif[f[x]] & bib[x]).count();
@@ -4611,10 +4611,10 @@ int Solver13()
     bif[f[x]][x] = 0;
     f[x] = ra;
     bif[f[x]][x] = 1;
-    // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+    // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
     if (f[x] == 0) {
       tmp += n - bib[x].count();
-      tmp--;  // ©•ª‚Ì•ª
+      tmp--;  // è‡ªåˆ†ã®åˆ†
     }
     else {
       tmp += (bif[f[x]] & bib[x]).count();
@@ -4681,7 +4681,7 @@ int Solver14()
   {
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -4720,7 +4720,7 @@ int Solver14()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -4743,7 +4743,7 @@ int Solver14()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -4791,7 +4791,7 @@ int Solver14()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -4866,10 +4866,10 @@ int Solver14()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -4879,10 +4879,10 @@ int Solver14()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -4936,7 +4936,7 @@ int Solver15()
   {
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -4975,7 +4975,7 @@ int Solver15()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -4998,7 +4998,7 @@ int Solver15()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -5046,7 +5046,7 @@ int Solver15()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -5121,10 +5121,10 @@ int Solver15()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -5134,10 +5134,10 @@ int Solver15()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -5203,7 +5203,7 @@ int Solver15()
   return real_argRes;
 }
 
-// 11•\— 
+// 11è¡¨è£
 int Solver16()
 {
   int real_argRes = 0;
@@ -5240,7 +5240,7 @@ int Solver16()
 
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -5278,7 +5278,7 @@ int Solver16()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -5301,7 +5301,7 @@ int Solver16()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -5349,7 +5349,7 @@ int Solver16()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -5424,10 +5424,10 @@ int Solver16()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -5437,10 +5437,10 @@ int Solver16()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -5477,7 +5477,7 @@ int Solver16()
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     int tmpScore = 0;
     rep(i, n)
     {
@@ -5500,7 +5500,7 @@ int Solver16()
   return real_argRes;
 }
 
-// 11•\— 5ƒZƒbƒg
+// 11è¡¨è£5ã‚»ãƒƒãƒˆ
 int Solver17()
 {
   int real_argRes = 0;
@@ -5537,7 +5537,7 @@ int Solver17()
 
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -5575,7 +5575,7 @@ int Solver17()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -5598,7 +5598,7 @@ int Solver17()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -5646,7 +5646,7 @@ int Solver17()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -5721,10 +5721,10 @@ int Solver17()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -5734,10 +5734,10 @@ int Solver17()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -5774,7 +5774,7 @@ int Solver17()
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     int tmpScore = 0;
     rep(i, n)
     {
@@ -5797,7 +5797,7 @@ int Solver17()
   return real_argRes;
 }
 
-// 0.0—p
+// 0.0ç”¨
 int Solver18()
 {
   int visit[110] = {};
@@ -5853,7 +5853,7 @@ int Solver18()
   return argRes;
 }
 
-// 14•\— 
+// 14è¡¨è£
 int Solver19()
 {
   int real_argRes[2] = {};
@@ -5890,7 +5890,7 @@ int Solver19()
 
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -5929,7 +5929,7 @@ int Solver19()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -5952,7 +5952,7 @@ int Solver19()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -6000,7 +6000,7 @@ int Solver19()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -6075,10 +6075,10 @@ int Solver19()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -6088,10 +6088,10 @@ int Solver19()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -6141,7 +6141,7 @@ int Solver19()
   return real_real_argRes;
 }
 
-// 21•\— 5ƒZƒbƒg
+// 21è¡¨è£5ã‚»ãƒƒãƒˆ
 int Solver20()
 {
   int real_argRes = 0;
@@ -6178,7 +6178,7 @@ int Solver20()
 
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -6216,7 +6216,7 @@ int Solver20()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -6285,10 +6285,10 @@ int Solver20()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -6298,10 +6298,10 @@ int Solver20()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -6334,7 +6334,7 @@ int Solver20()
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     int tmpScore = 0;
     rep(i, n)
     {
@@ -6357,7 +6357,7 @@ int Solver20()
   return real_argRes;
 }
 
-// 14ˆŸí
+// 14äºœç¨®
 int Solver21()
 {
   int real_argRes = 0;
@@ -6367,7 +6367,7 @@ int Solver21()
   {
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -6406,7 +6406,7 @@ int Solver21()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -6429,7 +6429,7 @@ int Solver21()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -6477,7 +6477,7 @@ int Solver21()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -6552,10 +6552,10 @@ int Solver21()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -6565,10 +6565,10 @@ int Solver21()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -6614,7 +6614,7 @@ int Solver21()
   return real_argRes;
 }
 
-// 14ˆŸí
+// 14äºœç¨®
 int Solver22()
 {
   int real_argRes = 0;
@@ -6624,7 +6624,7 @@ int Solver22()
   {
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -6663,7 +6663,7 @@ int Solver22()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -6686,7 +6686,7 @@ int Solver22()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -6734,7 +6734,7 @@ int Solver22()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -6809,10 +6809,10 @@ int Solver22()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -6822,10 +6822,10 @@ int Solver22()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -6871,7 +6871,7 @@ int Solver22()
   return real_argRes;
 }
 
-// 16ˆŸí
+// 16äºœç¨®
 int Solver23()
 {
   int real_argRes = 0;
@@ -6908,7 +6908,7 @@ int Solver23()
 
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -6946,7 +6946,7 @@ int Solver23()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -6969,7 +6969,7 @@ int Solver23()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -7017,7 +7017,7 @@ int Solver23()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -7092,10 +7092,10 @@ int Solver23()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -7105,10 +7105,10 @@ int Solver23()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -7145,7 +7145,7 @@ int Solver23()
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     int tmpScore = 0;
     rep(i, n)
     {
@@ -7168,7 +7168,7 @@ int Solver23()
   return real_argRes;
 }
 
-// 16ˆŸí
+// 16äºœç¨®
 int Solver24()
 {
   int real_argRes = 0;
@@ -7205,7 +7205,7 @@ int Solver24()
 
     int f[110] = {};
 
-    // ƒRƒA1‚ğì‚é
+    // ã‚³ã‚¢1ã‚’ä½œã‚‹
     vector<int> cores1;
     vector<int> kouho;
     rep(i, n) kouho.push_back(i);
@@ -7243,7 +7243,7 @@ int Solver24()
     }
     if (cores1.size() == 0) continue;
 
-    // ƒRƒA1‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+    // ã‚³ã‚¢1ã‚’å¤§ããã—ã¦ã„ã
     while (true) {
       int sz = cores1.size();
       int arg = -1;
@@ -7266,7 +7266,7 @@ int Solver24()
       cores1.push_back(arg);
     }
 
-    // ƒRƒA2‚ğì‚é
+    // ã‚³ã‚¢2ã‚’ä½œã‚‹
     vector<int> cores2;
     kouho.clear();
     rep(i, n)
@@ -7314,7 +7314,7 @@ int Solver24()
         }
       }
       if (cores2.size() > 0) {
-        // ƒRƒA2‚ğ‘å‚«‚­‚µ‚Ä‚¢‚­
+        // ã‚³ã‚¢2ã‚’å¤§ããã—ã¦ã„ã
         while (true) {
           int sz = cores2.size();
           int arg = -1;
@@ -7389,10 +7389,10 @@ int Solver24()
       int tmp = score;
       int keep = f[x];
 
-      // tmp‚©‚çx‚Ì“_‚ğˆø‚­
+      // tmpã‹ã‚‰xã®ç‚¹ã‚’å¼•ã
       if (f[x] == 0) {
         tmp -= n - bib[x].count();
-        tmp++;  // ©•ª‚Ì•ª
+        tmp++;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp -= (bif[f[x]] & bib[x]).count();
@@ -7402,10 +7402,10 @@ int Solver24()
       bif[f[x]][x] = 0;
       f[x] = ra;
       bif[f[x]][x] = 1;
-      // tmp‚©‚çra‚Ì“_‚ğ‘«‚·
+      // tmpã‹ã‚‰raã®ç‚¹ã‚’è¶³ã™
       if (f[x] == 0) {
         tmp += n - bib[x].count();
-        tmp--;  // ©•ª‚Ì•ª
+        tmp--;  // è‡ªåˆ†ã®åˆ†
       }
       else {
         tmp += (bif[f[x]] & bib[x]).count();
@@ -7442,7 +7442,7 @@ int Solver24()
       }
     }
 
-    // ƒXƒRƒAŒvZ
+    // ã‚¹ã‚³ã‚¢è¨ˆç®—
     int tmpScore = 0;
     rep(i, n)
     {
@@ -7571,7 +7571,7 @@ void solve(int mode)
   startTime = clock();
   endTime = clock();
 
-  // ’ño—p
+  // æå‡ºç”¨
   if (mode == 0) {
     Input(mode);
 
@@ -7589,7 +7589,7 @@ void solve(int mode)
     Simulate(mode);
   }
 
-  // ƒnƒCƒpƒ‰’²®
+  // ãƒã‚¤ãƒ‘ãƒ©èª¿æ•´
   if (mode == 100) {
     int loop = 0;
     struct winner
@@ -7616,7 +7616,7 @@ void solve(int mode)
       if (loop % 2000 == 1833) {
         mode = 1000;
         MODE = 1000;
-        // 1000ƒP[ƒXÀs
+        // 1000ã‚±ãƒ¼ã‚¹å®Ÿè¡Œ
         double sumScore = 0;
         ofstream ofsScore("Score.txt");
         double hi = 0;
@@ -7692,7 +7692,7 @@ void solve(int mode)
       // }
       // initMode = 0;
       if (initMode == 1 || !winners.empty()) {
-        // ã‰º¶‰E‚ÌŠÛƒRƒs[
+        // ä¸Šä¸‹å·¦å³ã®ä¸¸ã‚³ãƒ”ãƒ¼
         int nm = m;
         int niEps = iEps;
         while (true) {
@@ -7725,7 +7725,7 @@ void solve(int mode)
         hyperStep1 = hyperStep1Arr[nm][niEps];
         hyperStep2 = hyperStep2Arr[nm][niEps];
 
-        // —×‚ğ‰ü•Ï
+        // éš£ã‚’æ”¹å¤‰
         if (winners.empty() && Rand() % 2 == 0) {
           //vector<int> selection = { 1114, 1134, 1134, 1134, 1152,
           //                         1152, 1135, 1135, 1135 };
@@ -7756,7 +7756,7 @@ void solve(int mode)
           hyperMaxRound = max(1, hyperMaxRound);
         }
       }
-      // ƒ‰ƒ“ƒ_ƒ€¶¬
+      // ãƒ©ãƒ³ãƒ€ãƒ ç”Ÿæˆ
       else {
         n = hyperN[m][iEps];
         hyperSolverNum = hyperSolver[m][iEps];
@@ -7926,7 +7926,7 @@ void solve(int mode)
     OutputHaipara();
   }
 
-  // 1000ƒP[ƒXÀs
+  // 1000ã‚±ãƒ¼ã‚¹å®Ÿè¡Œ
   if (mode == 1000) {
     double sumScore = 0;
     ofstream ofsScore("Score.txt");
@@ -7977,10 +7977,10 @@ void solve(int mode)
     ofsScore.close();
   }
 
-  // ƒP[ƒX19‚ğ100‰ñÀs
+  // ã‚±ãƒ¼ã‚¹19ã‚’100å›å®Ÿè¡Œ
   if (mode == 1001) {
     mode = 1000;
-    // 1000ƒP[ƒXÀs
+    // 1000ã‚±ãƒ¼ã‚¹å®Ÿè¡Œ
     double sumScore = 0;
     ofstream ofsScore("Score.txt");
     double hi = 0;
@@ -8031,7 +8031,7 @@ void solve(int mode)
   }
 
 #if 0
-  // hyperMaxScore‚ğ20‰ñ3ƒZƒbƒg‚Ìˆê”Ô‚¢‚¢‚â‚Â‚ÅXV
+  // hyperMaxScoreã‚’20å›3ã‚»ãƒƒãƒˆã®ä¸€ç•ªã„ã„ã‚„ã¤ã§æ›´æ–°
   if (mode == 200) {
     srep(i, 10, 101)
     {
@@ -8097,7 +8097,7 @@ int main()
     }
   }
 
-  // —”’²®
+  // ä¹±æ•°èª¿æ•´
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     Rand();

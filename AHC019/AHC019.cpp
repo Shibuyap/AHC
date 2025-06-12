@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-//=== Macros (•K—v‚É‰‚¶‚Ä’²®) ===//
+//=== Macros (å¿…è¦ã«å¿œã˜ã¦èª¿æ•´) ===//
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -39,15 +39,15 @@ typedef long long int ll;
 typedef pair<int, int> P;
 
 //------------------------------------------------------------------------------
-// ’è” (UPPER_SNAKE_CASE)
+// å®šæ•° (UPPER_SNAKE_CASE)
 //------------------------------------------------------------------------------
-const ll INF_LL = 1001001001001001001LL;  // ‹Œ: INF
+const ll INF_LL = 1001001001001001001LL;  // æ—§: INF
 const int DX[6] = { -1, 0, 0, 1, 0, 0 };
 const int DY[6] = { 0, -1, 0, 0, 1, 0 };
 const int DZ[6] = { 0, 0, -1, 0, 0, 1 };
 
 //------------------------------------------------------------------------------
-// ŠÖ”ƒvƒƒgƒ^ƒCƒv (æ‚ÉéŒ¾‚µ‚Ä‚¨‚­)
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ— (å…ˆã«å®£è¨€ã—ã¦ãŠã)
 //------------------------------------------------------------------------------
 int get_direction(int num);
 double rand_double_01();
@@ -74,36 +74,36 @@ void read_input(int problem_num);
 void write_output(int run_mode, int problem_num);
 
 //------------------------------------------------------------------------------
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 //------------------------------------------------------------------------------
 namespace {
-  //=== “ü—ÍŠÖ˜A (‹Œ: •Ï”) ===//
-  int dimension;             // ‹Œ: D
-  bool f_matrix[2][20][20];  // ‹Œ: F
-  bool r_matrix[2][20][20];  // ‹Œ: R
+  //=== å…¥åŠ›é–¢é€£ (æ—§: å¤‰æ•°) ===//
+  int dimension;             // æ—§: D
+  bool f_matrix[2][20][20];  // æ—§: F
+  bool r_matrix[2][20][20];  // æ—§: R
 
-  //=== ‰ğ“š—p•Ï” ===//
-  double min_score;               // ‹Œ: minScore
-  int answer_grid[2][15][15][15]; // ‹Œ: ans
-  int block_count[2][100];        // ‹Œ: bcount
+  //=== è§£ç­”ç”¨å¤‰æ•° ===//
+  double min_score;               // æ—§: minScore
+  int answer_grid[2][15][15][15]; // æ—§: ans
+  int block_count[2][100];        // æ—§: bcount
 
-  double real_min_score;               // ‹Œ: real_minScore
-  int real_answer_grid[2][15][15][15]; // ‹Œ: real_ans
-  int real_block_count[2][100];        // ‹Œ: real_bcount
+  double real_min_score;               // æ—§: real_minScore
+  int real_answer_grid[2][15][15][15]; // æ—§: real_ans
+  int real_block_count[2][100];        // æ—§: real_bcount
 
-  double seed_min_score;               // ‹Œ: seed_minScore
-  int seed_answer_grid[2][15][15][15]; // ‹Œ: seed_ans
-  int seed_block_count[2][100];        // ‹Œ: seed_bcount
+  double seed_min_score;               // æ—§: seed_minScore
+  int seed_answer_grid[2][15][15][15]; // æ—§: seed_ans
+  int seed_block_count[2][100];        // æ—§: seed_bcount
 
-  int method_count[20][2];  // ‹Œ: methodCount
+  int method_count[20][2];  // æ—§: methodCount
 
 } // unnamed namespace
 
 //------------------------------------------------------------------------------
-// (1) ƒ†[ƒeƒBƒŠƒeƒBŒn ŠÖ”
+// (1) ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ç³» é–¢æ•°
 //------------------------------------------------------------------------------
 
-// ‹Œ: GetDir
+// æ—§: GetDir
 int get_direction(int num) {
   rep(i, 6) {
     if (num & (1 << i)) return i;
@@ -112,7 +112,7 @@ int get_direction(int num) {
 }
 
 //------------------------------------------------------------------------------
-// (2) —”ƒ‰ƒCƒuƒ‰ƒŠ
+// (2) ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
 //------------------------------------------------------------------------------
 static uint32_t rand_uint32() {
   static uint32_t x = 123456789;
@@ -133,7 +133,7 @@ static double rand_double_01() {
 }
 
 //------------------------------------------------------------------------------
-// (3) •Ï”‚Ì‰Šú‰»ƒŠƒZƒbƒgŒn ŠÖ”
+// (3) å¤‰æ•°ã®åˆæœŸåŒ–ãƒªã‚»ãƒƒãƒˆç³» é–¢æ•°
 //------------------------------------------------------------------------------
 void normal_clear() {
   min_score = INF_LL;
@@ -165,7 +165,7 @@ void seed_clear() {
   }
 }
 
-// ƒ[ƒJƒ‹‚Å•¡”ƒP[ƒX‚·‚½‚ß‚Ì‘S‚ÄÁ‚·ŠÖ” (‹Œ: AllClear_MultiCase)
+// ãƒ­ãƒ¼ã‚«ãƒ«ã§è¤‡æ•°ã‚±ãƒ¼ã‚¹è©¦ã™ãŸã‚ã®å…¨ã¦æ¶ˆã™é–¢æ•° (æ—§: AllClear_MultiCase)
 void clear_all_multicase() {
   normal_clear();
   real_clear();
@@ -173,16 +173,16 @@ void clear_all_multicase() {
 }
 
 //------------------------------------------------------------------------------
-// (4) ‰Šúó‘Ôì¬ (‹Œ: Init)
+// (4) åˆæœŸçŠ¶æ…‹ä½œæˆ (æ—§: Init)
 //------------------------------------------------------------------------------
 void init_state() {
-  // block_count‚Ì‰Šú‰»
+  // block_countã®åˆæœŸåŒ–
   rep(i, 2) {
     rep(j, 100) {
       block_count[i][j] = 0;
     }
   }
-  // answer_grid ‚Ì‰Šú‰» (F‚âR‚ªtrue‚È‚çÅ‰‚©‚çƒuƒƒbƒNID=0)
+  // answer_grid ã®åˆæœŸåŒ– (Fã‚„RãŒtrueãªã‚‰æœ€åˆã‹ã‚‰ãƒ–ãƒ­ãƒƒã‚¯ID=0)
   rep(i, 2) {
     rep(x, dimension) {
       rep(y, dimension) {
@@ -201,7 +201,7 @@ void init_state() {
 }
 
 //------------------------------------------------------------------------------
-// (5) “ü—Íó‚¯æ‚è (‹Œ: Input)
+// (5) å…¥åŠ›å—ã‘å–ã‚Š (æ—§: Input)
 //------------------------------------------------------------------------------
 void read_input(int problem_num) {
   string file_name_ifs = "./in/";
@@ -218,7 +218,7 @@ void read_input(int problem_num) {
   ifstream ifs(file_name_ifs);
 
   if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     cin >> dimension;
     rep(i, 2) {
       rep(j, dimension) {
@@ -238,7 +238,7 @@ void read_input(int problem_num) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> dimension;
     rep(i, 2) {
       rep(j, dimension) {
@@ -258,17 +258,17 @@ void read_input(int problem_num) {
     }
   }
 
-  // ‰Šú‰»
+  // åˆæœŸåŒ–
   init_state();
 }
 
 //------------------------------------------------------------------------------
-// (6) ‰ğ“šo—Í (‹Œ: Output)
+// (6) è§£ç­”å‡ºåŠ› (æ—§: Output)
 //------------------------------------------------------------------------------
 void write_output(int run_mode, int problem_num) {
   int ans_n[100] = {};
   int ans_sum[100] = {};
-  // ‘å‚«‚¢•û‚ğæ‚Á‚Ä‡Œv‚·‚éƒƒWƒbƒN
+  // å¤§ãã„æ–¹ã‚’å–ã£ã¦åˆè¨ˆã™ã‚‹ãƒ­ã‚¸ãƒƒã‚¯
   rep(j, 100) {
     ans_n[j] = max(block_count[0][j], block_count[1][j]);
     ans_sum[j] = ans_n[j];
@@ -286,7 +286,7 @@ void write_output(int run_mode, int problem_num) {
     }
   }
 
-  // ŠeƒuƒƒbƒN‚ÌIDŠ„‚èU‚è
+  // å„ãƒ–ãƒ­ãƒƒã‚¯ã®IDå‰²ã‚ŠæŒ¯ã‚Š
   rep(i, 2) {
     int count_sum[100] = {};
     srep(j, 1, 100) {
@@ -304,7 +304,7 @@ void write_output(int run_mode, int problem_num) {
             ans_print[i][j][k][l] = count_sum[1];
           }
           else {
-            // 2ƒuƒƒbƒN‚Â‚È‚¬
+            // 2ãƒ–ãƒ­ãƒƒã‚¯ã¤ãªã
             count_sum[2]++;
             ans_print[i][j][k][l] = count_sum[2];
             int dir = get_direction(answer_grid[i][j][k][l]);
@@ -319,7 +319,7 @@ void write_output(int run_mode, int problem_num) {
   }
 
   if (run_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << ans_sum[99] << endl;
     rep(i, 2) {
       rep(j, dimension) {
@@ -333,7 +333,7 @@ void write_output(int run_mode, int problem_num) {
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     string file_name_ofs = "./out/";
     {
       string str_num;
@@ -363,7 +363,7 @@ void write_output(int run_mode, int problem_num) {
 }
 
 //------------------------------------------------------------------------------
-// (7) ƒ[ƒ‹ƒoƒbƒN—p ŠÖ”
+// (7) ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯ç”¨ é–¢æ•°
 //------------------------------------------------------------------------------
 void copy_to_real() {
   real_min_score = min_score;
@@ -406,7 +406,7 @@ void roll_back_from_seed() {
 }
 
 //------------------------------------------------------------------------------
-// (8) ƒXƒRƒAŒvZ (‹Œ: CalcScore)
+// (8) ã‚¹ã‚³ã‚¢è¨ˆç®— (æ—§: CalcScore)
 //------------------------------------------------------------------------------
 double calc_score() {
   double resd = 0;
@@ -429,10 +429,10 @@ double calc_score() {
 }
 
 //------------------------------------------------------------------------------
-// (9) ƒuƒƒbƒNÁ‹‚Ì‰Â”Û”»’è (‹Œ: CanDelete)
+// (9) ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»ã®å¯å¦åˆ¤å®š (æ—§: CanDelete)
 //------------------------------------------------------------------------------
 bool can_delete_block(int i, int x, int y, int z) {
-  // ğŒ: F[i][z][x] ‚ª true ‚Ìê‡
+  // æ¡ä»¶: F[i][z][x] ãŒ true ã®å ´åˆ
   if (f_matrix[i][z][x]) {
     bool ok = false;
     rep(k, dimension) {
@@ -444,7 +444,7 @@ bool can_delete_block(int i, int x, int y, int z) {
     }
     if (!ok) return false;
   }
-  // ğŒ: R[i][z][y] ‚ª true ‚Ìê‡
+  // æ¡ä»¶: R[i][z][y] ãŒ true ã®å ´åˆ
   if (r_matrix[i][z][y]) {
     bool ok = false;
     rep(j, dimension) {
@@ -460,7 +460,7 @@ bool can_delete_block(int i, int x, int y, int z) {
 }
 
 //------------------------------------------------------------------------------
-// (10) À•Wƒ`ƒFƒbƒN (‹Œ: IsNG)
+// (10) åº§æ¨™ãƒã‚§ãƒƒã‚¯ (æ—§: IsNG)
 //------------------------------------------------------------------------------
 bool is_invalid_coord(int x, int y, int z) {
   if (x < 0 || x >= dimension) return true;
@@ -470,7 +470,7 @@ bool is_invalid_coord(int x, int y, int z) {
 }
 
 //------------------------------------------------------------------------------
-// (11) ƒƒ\ƒbƒhŒQ (Ä‚«‚È‚Ü‚µ‘€ì) - ‹Œ: Method1/2/3/4
+// (11) ãƒ¡ã‚½ãƒƒãƒ‰ç¾¤ (ç„¼ããªã¾ã—æ“ä½œ) - æ—§: Method1/2/3/4
 //------------------------------------------------------------------------------
 void method_1(double temperature) {
   int i = rand_uint32() % 2;
@@ -489,7 +489,7 @@ void method_1(double temperature) {
   double prob = exp(diff_score / temperature);
 
   if (prob > rand_double_01()) {
-    // ó‚¯“ü‚ê‚é
+    // å—ã‘å…¥ã‚Œã‚‹
     method_count[1][0]++;
     min_score = tmp_score;
     if (min_score < real_min_score) {
@@ -497,7 +497,7 @@ void method_1(double temperature) {
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     block_count[i][1]--;
     answer_grid[i][x][y][z] = -1;
   }
@@ -527,7 +527,7 @@ void method_2(double temperature) {
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
     block_count[i][1]++;
     answer_grid[i][x][y][z] = 0;
   }
@@ -547,7 +547,7 @@ void method_3(double temperature) {
   if (answer_grid[i][nx][ny][nz] != 0) return;
 
   method_count[3][1]++;
-  // ‚Â‚È‚°‚é
+  // ã¤ãªã’ã‚‹
   answer_grid[i][x][y][z] = (1 << dir);
   answer_grid[i][nx][ny][nz] = (1 << ((dir + 3) % 6));
   block_count[i][1] -= 2;
@@ -565,7 +565,7 @@ void method_3(double temperature) {
     }
   }
   else {
-    // ƒ[ƒ‹ƒoƒbƒN
+    // ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯
     block_count[i][2]--;
     block_count[i][1] += 2;
     answer_grid[i][x][y][z] = 0;
@@ -585,7 +585,7 @@ void method_4(double temperature) {
   int nz = z + DZ[dir];
 
   method_count[4][1]++;
-  // •ª—£
+  // åˆ†é›¢
   answer_grid[i][x][y][z] = 0;
   answer_grid[i][nx][ny][nz] = 0;
   block_count[i][1] += 2;
@@ -603,7 +603,7 @@ void method_4(double temperature) {
     }
   }
   else {
-    // ƒ[ƒ‹ƒoƒbƒN
+    // ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯
     block_count[i][2]++;
     block_count[i][1] -= 2;
     answer_grid[i][x][y][z] = (1 << dir);
@@ -612,33 +612,33 @@ void method_4(double temperature) {
 }
 
 //------------------------------------------------------------------------------
-// (12) ƒƒCƒ“‚ÌÄ‚«‚È‚Ü‚µˆ— (‹Œ: Solve)
+// (12) ãƒ¡ã‚¤ãƒ³ã®ç„¼ããªã¾ã—å‡¦ç† (æ—§: Solve)
 //------------------------------------------------------------------------------
 double solve_problem(int run_mode, int problem_num) {
   clock_t start_time, end_time;
   start_time = clock();
   end_time = clock();
 
-  // ‰Šúó‘Ô (init_state ‚Í read_input“à‚ÅŒÄ‚Î‚ê‚½Œã‚É‚àŒÄ‚Î‚ê‚é‚ª”O‚Ì‚½‚ß)
+  // åˆæœŸçŠ¶æ…‹ (init_state ã¯ read_inputå†…ã§å‘¼ã°ã‚ŒãŸå¾Œã«ã‚‚å‘¼ã°ã‚Œã‚‹ãŒå¿µã®ãŸã‚)
   init_state();
 
-  // Å‰‚ÌƒXƒRƒA
+  // æœ€åˆã®ã‚¹ã‚³ã‚¢
   min_score = calc_score();
   copy_to_real();
   copy_to_seed();
 
-  //--- ƒV[ƒhì¬—p (‰’iŠK) ---
+  //--- ã‚·ãƒ¼ãƒ‰ä½œæˆç”¨ (åˆæ®µéš) ---
   int seed_count = 100;
   rep(tei, seed_count) {
     start_time = clock();
-    // ‰Šú‰»‚µ’¼‚·
+    // åˆæœŸåŒ–ã—ç›´ã™
     init_state();
     min_score = calc_score();
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     end_time = clock();
     double now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
-    double time_limit = 4.0 / seed_count; // ‹Œ: TL
+    double time_limit = 4.0 / seed_count; // æ—§: TL
     double now_progress = now_time / time_limit;
     double start_temperature = 20;
     double end_temperature = 0;
@@ -654,7 +654,7 @@ double solve_problem(int run_mode, int problem_num) {
       }
       if (now_progress > 1.0) break;
 
-      // ‚à‚µƒXƒRƒA‚ª‘å‚«‚­ˆ«‰»‚µ‚Ä‚¢‚ê‚Îƒ[ƒ‹ƒoƒbƒN (ƒRƒƒ“ƒgƒAƒEƒgŒ´•¶’Ê‚è)
+      // ã‚‚ã—ã‚¹ã‚³ã‚¢ãŒå¤§ããæ‚ªåŒ–ã—ã¦ã„ã‚Œã°ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯ (ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆåŸæ–‡é€šã‚Š)
       if (min_score > real_min_score * 10) {
         // roll_back_from_real();
         // rollback_count++;
@@ -676,25 +676,25 @@ double solve_problem(int run_mode, int problem_num) {
       else {
         method_4(temperature);
       }
-    } // while(ƒV[ƒhì¬)
+    } // while(ã‚·ãƒ¼ãƒ‰ä½œæˆ)
 
-    // Å—Ç‚ğ–ß‚·
+    // æœ€è‰¯ã‚’æˆ»ã™
     roll_back_from_real();
-    // ƒV[ƒhXV
+    // ã‚·ãƒ¼ãƒ‰æ›´æ–°
     if (min_score <= seed_min_score) {
       copy_to_seed();
     }
   }
 
-  // ƒV[ƒh‚©‚çƒ[ƒ‹ƒoƒbƒN
+  // ã‚·ãƒ¼ãƒ‰ã‹ã‚‰ãƒ­ãƒ¼ãƒ«ãƒãƒƒã‚¯
   roll_back_from_seed();
   copy_to_real();
 
-  //--- ƒƒCƒ“Ä‚«‚È‚Ü‚µ ---
+  //--- ãƒ¡ã‚¤ãƒ³ç„¼ããªã¾ã— ---
   start_time = clock();
   end_time = clock();
   double now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
-  double time_limit = 0.9;  // ‹Œ: TL
+  double time_limit = 0.9;  // æ—§: TL
   double now_progress = now_time / time_limit;
   double start_temperature = 2;
   double end_temperature = 0;
@@ -733,10 +733,10 @@ double solve_problem(int run_mode, int problem_num) {
     }
   }
 
-  // Å—Ç‰ğ‚ğ“K—p
+  // æœ€è‰¯è§£ã‚’é©ç”¨
   roll_back_from_real();
 
-  // ƒfƒoƒbƒOo—Í
+  // ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›
   if (run_mode != 0) {
     cout << "problem_num = " << problem_num << ", D = " << dimension << endl;
     cout << "min_score = " << min_score << endl;
@@ -753,16 +753,16 @@ double solve_problem(int run_mode, int problem_num) {
 }
 
 //------------------------------------------------------------------------------
-// (13) solve_outer (‹Œ: SolveOuter)
+// (13) solve_outer (æ—§: SolveOuter)
 //------------------------------------------------------------------------------
 double solve_outer(int run_mode, int problem_num) {
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   read_input(problem_num);
 
-  // Às
+  // å®Ÿè¡Œ
   double score = solve_problem(run_mode, problem_num);
 
-  // ‰ğ“š‚Ìo—Í
+  // è§£ç­”ã®å‡ºåŠ›
   write_output(run_mode, problem_num);
 
   return score;
@@ -772,13 +772,13 @@ double solve_outer(int run_mode, int problem_num) {
 // (14) main
 //------------------------------------------------------------------------------
 int main() {
-  // —”’²®
+  // ä¹±æ•°èª¿æ•´
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     rand_uint32();
   }
 
-  int mode = 2;  // 0: ’ño—p, 1: 1ƒP[ƒX‚Ì‚İ, 2: •¡”ƒP[ƒX
+  int mode = 2;  // 0: æå‡ºç”¨, 1: 1ã‚±ãƒ¼ã‚¹ã®ã¿, 2: è¤‡æ•°ã‚±ãƒ¼ã‚¹
 
   if (mode == 0) {
     solve_outer(mode);

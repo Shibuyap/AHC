@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cassert>
@@ -33,7 +33,7 @@ using namespace std;
 
 typedef long long int ll;
 
-// ƒ^ƒCƒ}[
+// ã‚¿ã‚¤ãƒãƒ¼
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -50,7 +50,7 @@ namespace
   }
 }
 
-// —”
+// ä¹±æ•°
 namespace
 {
   static uint32_t rand_xorshift()
@@ -110,7 +110,7 @@ inline void normalize(vector<double>& vec)
 inline void normalize_matrix(vector<vector<double>>& mat, int dir, int index)
 {
   if (dir == 0) {
-    // s•ûŒü‚Ì³‹K‰»
+    // è¡Œæ–¹å‘ã®æ­£è¦åŒ–
     double sum = 0.0;
     for (int j = 0; j < mat[index].size(); j++) {
       sum += mat[index][j];
@@ -120,7 +120,7 @@ inline void normalize_matrix(vector<vector<double>>& mat, int dir, int index)
     }
   }
   else if (dir == 1) {
-    // —ñ•ûŒü‚Ì³‹K‰»
+    // åˆ—æ–¹å‘ã®æ­£è¦åŒ–
     double sum = 0.0;
     for (int i = 0; i < mat.size(); i++) {
       sum += mat[i][index];
@@ -503,17 +503,17 @@ public:
     }
 
     for(int times = 0; times < 1; times++) {
-      // s•ûŒü‚É³‹K‰»
+      // è¡Œæ–¹å‘ã«æ­£è¦åŒ–
       for (int i = 0; i < N; i++) {
         normalize_matrix(prob, 0, i);
       }
-      // —ñ•ûŒü‚É³‹K‰»
+      // åˆ—æ–¹å‘ã«æ­£è¦åŒ–
       for (int j = 0; j < N; j++) {
         normalize_matrix(prob, 1, j);
       }
     }
     if (dir == 0) {
-      // s•ûŒü‚É³‹K‰»
+      // è¡Œæ–¹å‘ã«æ­£è¦åŒ–
       for (int i = 0; i < N; i++) {
         normalize_matrix(prob, 0, i);
       }
@@ -555,7 +555,7 @@ void generate_test_case(int l, int n, int s)
 
   local_case.init(N);
 
-  // Y,X‚Ì‰Šú‰»
+  // Y,Xã®åˆæœŸåŒ–
   set<pair<int, int>> YX;
   for (int i = 0; i < N; i++) {
     int y = rand_range(0, L - 1);
@@ -573,17 +573,17 @@ void generate_test_case(int l, int n, int s)
     X[i] = it->second;
   }
 
-  // A‚Ì‰Šú‰»
+  // Aã®åˆæœŸåŒ–
   for (int i = 0; i < N; i++) {
     local_case.A[i] = i;
   }
   shuffle_array(local_case.A.data(), N);
 
-  // f‚Ì‰Šú‰»
+  // fã®åˆæœŸåŒ–
   std::normal_distribution<>::param_type param(0.0, S);
   normal_dist.param(param);
   for (int i = 0; i < MAX_Q; i++) {
-    // •½‹Ï0, •W€•Î·S ‚Ì³‹K•ª•z‚©‚ç’l‚ğƒTƒ“ƒvƒŠƒ“ƒO‚·‚é
+    // å¹³å‡0, æ¨™æº–åå·®S ã®æ­£è¦åˆ†å¸ƒã‹ã‚‰å€¤ã‚’ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã™ã‚‹
     local_case.f[i] = round(normal_dist(rng_engine));
   }
 }
@@ -595,18 +595,18 @@ void input_data(int case_num)
   ifstream ifs(oss.str());
 
   if (exec_mode == 3) {
-    // ƒeƒXƒgƒP[ƒXƒWƒFƒlƒŒ[ƒgÏ‚Ì‚½‚ß‰½‚à‚µ‚È‚¢
+    // ãƒ†ã‚¹ãƒˆã‚±ãƒ¼ã‚¹ã‚¸ã‚§ãƒãƒ¬ãƒ¼ãƒˆæ¸ˆã®ãŸã‚ä½•ã‚‚ã—ãªã„
     local_case.reset();
   }
   else if (!ifs.is_open()) {
-    // •W€“ü—Í
+    // æ¨™æº–å…¥åŠ›
     cin >> L >> N >> S;
     for (int i = 0; i < N; i++) {
       cin >> Y[i] >> X[i];
     }
   }
   else {
-    // ƒtƒ@ƒCƒ‹“ü—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›
     ifs >> L >> N >> S;
     for (int i = 0; i < N; i++) {
       ifs >> Y[i] >> X[i];
@@ -664,7 +664,7 @@ void open_ofs(int case_num, ofstream& ofs)
 void output_layout(ofstream& ofs, const Layout& layout)
 {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
         cout << layout.p[i][j] << " ";
@@ -674,7 +674,7 @@ void output_layout(ofstream& ofs, const Layout& layout)
     cout.flush();
   }
   else if (exec_mode != 3) {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
         ofs << layout.p[i][j] << " ";
@@ -687,7 +687,7 @@ void output_layout(ofstream& ofs, const Layout& layout)
 void output_estimation(ofstream& ofs, const Estimation& estimation)
 {
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << "-1 -1 -1" << endl;
     for (int i = 0; i < N; i++) {
       cout << estimation.E[i] << endl;
@@ -695,7 +695,7 @@ void output_estimation(ofstream& ofs, const Estimation& estimation)
     cout.flush();
   }
   else if (exec_mode != 3) {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     ofs << "-1 -1 -1" << endl;
     for (int i = 0; i < N; i++) {
       ofs << estimation.E[i] << endl;
@@ -707,13 +707,13 @@ int query(ofstream& ofs, int i, int y, int x, const Layout& layout)
 {
   int m = 0;
   if (exec_mode == 0) {
-    // •W€o—Í
+    // æ¨™æº–å‡ºåŠ›
     cout << i << " " << y << " " << x << endl;
     cout.flush();
     cin >> m;
   }
   else {
-    // ƒtƒ@ƒCƒ‹o—Í
+    // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
     if (exec_mode != 3) {
       ofs << i << " " << y << " " << x << endl;
     }
@@ -727,7 +727,7 @@ void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
   int max_tate_length = hyper_parameters[HyperKeys(S, L / 10)].value_5;
   int iter = 0;
 
-  // —ñ‚ÅŒ©‚é
+  // åˆ—ã§è¦‹ã‚‹
   vector<pair<int, int>> vp;
   for (int i = 0; i < N; i++) {
     int y = (layout.top_y - Y[i] + L) % L;
@@ -776,7 +776,7 @@ void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
     }
   }
 
-  // s‚ÅŒ©‚é
+  // è¡Œã§è¦‹ã‚‹
   int idx_in = 0;
   int idx_out = 0;
   while (iter < MAX_Q) {
@@ -893,7 +893,7 @@ int main()
     while (true)
     {
       iter++;
-      // 100‰ñí‚í‚¹‚Ä70ŸˆÈã‚µ‚½‚çƒnƒCƒp[ƒpƒ‰ƒ[ƒ^‚ğXV‚·‚é
+      // 100å›æˆ¦ã‚ã›ã¦70å‹ä»¥ä¸Šã—ãŸã‚‰ãƒã‚¤ãƒ‘ãƒ¼ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹
       int s = rand_range(1, 30);
       int ss = s * s;
       int l_key = rand_xorshift() % 5 + 1;
@@ -1043,7 +1043,7 @@ int main()
         }
       }
 
-      // Œ…‚ğ‚»‚ë‚¦‚Äo—Í
+      // æ¡ã‚’ãã‚ãˆã¦å‡ºåŠ›
       cerr << "iter = " << iter << ", "
         << "s = " << std::setw(3) << ss << ", "
         << "l_key = " << std::setw(2) << l_key << ", "

@@ -1,4 +1,4 @@
-#include <algorithm>
+ï»¿#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -36,7 +36,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 
 /*
-‚¢‚ë‚¢‚ë
+ã„ã‚ã„ã‚
 const int INF = 1001001001;
 const char cc[4] = {'U', 'L', 'D', 'R'};
 
@@ -46,7 +46,7 @@ const char cc[4] = {'U', 'L', 'D', 'R'};
 const int dx[8] = { -1, 0, 1, 0, -1, 1, 1, -1 };
 const int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ä¹±æ•°ãƒ©ã‚¤ãƒ–ãƒ©ãƒª */
 {
   static uint32_t Rand()
   {
@@ -69,15 +69,15 @@ namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
   }
 }  // namespace
 
-namespace /* •Ï” */
+namespace /* å¤‰æ•° */
 {
-  // “ü—Í—p•Ï”
+  // å…¥åŠ›ç”¨å¤‰æ•°
   int N, M;
   int X[1000], Y[1000];
   int S;
   int W[64][64];
 
-  // ‰ğ“š—p•Ï”
+  // è§£ç­”ç”¨å¤‰æ•°
   const int ANS_SIZE = 20000;
   double maxScore;
   int ansSize;
@@ -109,7 +109,7 @@ namespace /* •Ï” */
   int seed_use[64][64];
   int seed_cntH[64], seed_cntW[64];
 
-  // ‚»‚Ì‘¼
+  // ãã®ä»–
   int methodCount[20][2];
 
 }  // namespace
@@ -128,7 +128,7 @@ bool IsNGXY(int x, int y)
   return false;
 }
 
-// ƒXƒRƒAŒvZ
+// ã‚¹ã‚³ã‚¢è¨ˆç®—
 double CalcScore()
 {
   double resd = 1000000.0 * N * N / M;
@@ -228,7 +228,7 @@ void RefleshAns()
   ansDeleteCount = 0;
 }
 
-// ƒ[ƒJƒ‹‚Å•¡”ƒP[ƒX‚·‚½‚ß‚Ì‘S‚ÄÁ‚·ŠÖ”
+// ãƒ­ãƒ¼ã‚«ãƒ«ã§è¤‡æ•°ã‚±ãƒ¼ã‚¹è©¦ã™ãŸã‚ã®å…¨ã¦æ¶ˆã™é–¢æ•°
 void AllClear_MultiCase()
 {
   NormalClear();
@@ -237,7 +237,7 @@ void AllClear_MultiCase()
   MethodCountReset();
 }
 
-// ‰Šúó‘Ôì¬i‚±‚ê‚ğŒÄ‚×‚ÎƒXƒ^[ƒgˆÊ’u‚É–ß‚ê‚é‚±‚Æ‚ğ‘z’èAreal_maxScore“™‚Í–ß‚³‚È‚¢j
+// åˆæœŸçŠ¶æ…‹ä½œæˆï¼ˆã“ã‚Œã‚’å‘¼ã¹ã°ã‚¹ã‚¿ãƒ¼ãƒˆä½ç½®ã«æˆ»ã‚Œã‚‹ã“ã¨ã‚’æƒ³å®šã€real_maxScoreç­‰ã¯æˆ»ã•ãªã„ï¼‰
 void Init()
 {
   NormalClear();
@@ -250,7 +250,7 @@ void Init()
   }
 }
 
-// “ü—Íó‚¯æ‚èiÀs’†ˆê“x‚µ‚©ŒÄ‚Î‚ê‚È‚¢‚±‚Æ‚ğ‘z’èj
+// å…¥åŠ›å—ã‘å–ã‚Šï¼ˆå®Ÿè¡Œä¸­ä¸€åº¦ã—ã‹å‘¼ã°ã‚Œãªã„ã“ã¨ã‚’æƒ³å®šï¼‰
 void Input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -265,12 +265,12 @@ void Input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // æ¨™æº–å…¥åŠ›ã™ã‚‹
   if (!ifs.is_open()) {
     cin >> N >> M;
     rep(i, M) { cin >> X[i] >> Y[i]; }
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ãƒ•ã‚¡ã‚¤ãƒ«å…¥åŠ›ã™ã‚‹
   else {
     ifs >> N >> M;
     rep(i, M) { ifs >> X[i] >> Y[i]; }
@@ -290,7 +290,7 @@ void Input(int problemNum)
   Init();
 }
 
-// ‰ğ“šo—Í
+// è§£ç­”å‡ºåŠ›
 void Output(int mode, int problemNum)
 {
   if (mode == 0) {
@@ -303,7 +303,7 @@ void Output(int mode, int problemNum)
     }
   }
 
-  // ƒtƒ@ƒCƒ‹o—Í
+  // ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
@@ -422,23 +422,23 @@ void RollBackFromSeed()
 }
 
 /*
-  8•ûŒü‚Ì‡˜‚Ìƒ‹[ƒ‹
-  0 : ã : U
-  1 : ¶ : L
-  2 : ‰º : D
-  3 : ‰E : R
-  4 : ¶ã : UL
-  5 : ¶‰º : LD
-  6 : ‰E‰º : DR
-  7 : ‰Eã : RU
+  8æ–¹å‘ã®é †åºã®ãƒ«ãƒ¼ãƒ«
+  0 : ä¸Š : U
+  1 : å·¦ : L
+  2 : ä¸‹ : D
+  3 : å³ : R
+  4 : å·¦ä¸Š : UL
+  5 : å·¦ä¸‹ : LD
+  6 : å³ä¸‹ : DR
+  7 : å³ä¸Š : RU
 */
 
-// Še•ûŒü‚Ì1”Ô‹ß‚¢“_‚ªg‚¦‚é‚©‚Ç‚¤‚©
-// “ü—Í zF•ûŒü
-// –ß‚è’lF‹——£
+// å„æ–¹å‘ã®1ç•ªè¿‘ã„ç‚¹ãŒä½¿ãˆã‚‹ã‹ã©ã†ã‹
+// å…¥åŠ› zï¼šæ–¹å‘
+// æˆ»ã‚Šå€¤ï¼šè·é›¢
 inline int FindNeighborPoint(int x, int y, int z)
 {
-  // ã
+  // ä¸Š
   if (z == 0) {
     drep(i, x)
     {
@@ -450,7 +450,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ¶
+  // å·¦
   if (z == 1) {
     drep(j, y)
     {
@@ -462,7 +462,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ‰º
+  // ä¸‹
   if (z == 2) {
     srep(i, x + 1, N)
     {
@@ -474,7 +474,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ‰E
+  // å³
   if (z == 3) {
     srep(j, y + 1, N)
     {
@@ -486,7 +486,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ¶ã
+  // å·¦ä¸Š
   if (z == 4) {
     int ma = min(x, y);
     srep(i, 1, ma + 1)
@@ -499,7 +499,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ¶‰º
+  // å·¦ä¸‹
   if (z == 5) {
     int ma = min(N - 1 - x, y);
     srep(i, 1, ma + 1)
@@ -512,7 +512,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ‰E‰º
+  // å³ä¸‹
   if (z == 6) {
     int ma = min(N - 1 - x, N - 1 - y);
     srep(i, 1, ma + 1)
@@ -525,7 +525,7 @@ inline int FindNeighborPoint(int x, int y, int z)
     return -1;
   }
 
-  // ‰Eã
+  // å³ä¸Š
   if (z == 7) {
     int ma = min(x, N - 1 - y);
     srep(i, 1, ma + 1)
@@ -542,173 +542,173 @@ inline int FindNeighborPoint(int x, int y, int z)
   return -2;
 }
 
-// 4“_–Ú‚ÌŠm”F
+// 4ç‚¹ç›®ã®ç¢ºèª
 inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
 {
-  // •K‚¸”½Œv‰ñ‚è
+  // å¿…ãšåæ™‚è¨ˆå›ã‚Š
 
-  // ã¶
+  // ä¸Šå·¦
   if (z == 0) {
     int xx = x - diff1;
     int yy = y - diff2;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][3] || line[xx][yy][2]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     srep(j, yy + 1, y) if (f[xx][j]) return false;
     srep(i, xx + 1, x) if (f[i][yy]) return false;
 
     return true;
   }
 
-  // ¶‰º
+  // å·¦ä¸‹
   if (z == 1) {
     int xx = x + diff2;
     int yy = y - diff1;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][0] || line[xx][yy][3]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     dsrep(i, xx - 1, x) if (f[i][yy]) return false;
     srep(j, yy + 1, y) if (f[xx][j]) return false;
 
     return true;
   }
 
-  // ‰º‰E
+  // ä¸‹å³
   if (z == 2) {
     int xx = x + diff1;
     int yy = y + diff2;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][1] || line[xx][yy][0]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     dsrep(j, yy - 1, y) if (f[xx][j]) return false;
     dsrep(i, xx - 1, x) if (f[i][yy]) return false;
 
     return true;
   }
 
-  // ‰Eã
+  // å³ä¸Š
   if (z == 3) {
     int xx = x - diff2;
     int yy = y + diff1;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][2] || line[xx][yy][1]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     srep(i, xx + 1, x) if (f[i][yy]) return false;
     dsrep(j, yy - 1, y) if (f[xx][j]) return false;
 
     return true;
   }
 
-  // ¶ãE¶‰º
+  // å·¦ä¸Šãƒ»å·¦ä¸‹
   if (z == 4) {
     int xx = x - diff1 + diff2;
     int yy = y - diff1 - diff2;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][7] || line[xx][yy][6]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     srep(i, 1, diff2) if (f[xx - i][yy + i]) return false;
     srep(i, 1, diff1) if (f[xx + i][yy + i]) return false;
 
     return true;
   }
 
-  // ¶‰ºE‰E‰º
+  // å·¦ä¸‹ãƒ»å³ä¸‹
   if (z == 5) {
     int xx = x + diff1 + diff2;
     int yy = y - diff1 + diff2;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][4] || line[xx][yy][7]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     srep(i, 1, diff2) if (f[xx - i][yy - i]) return false;
     srep(i, 1, diff1) if (f[xx - i][yy + i]) return false;
 
     return true;
   }
 
-  // ‰E‰ºE‰Eã
+  // å³ä¸‹ãƒ»å³ä¸Š
   if (z == 6) {
     int xx = x + diff1 - diff2;
     int yy = y + diff1 + diff2;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][5] || line[xx][yy][4]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     srep(i, 1, diff2) if (f[xx + i][yy - i]) return false;
     srep(i, 1, diff1) if (f[xx - i][yy - i]) return false;
 
     return true;
   }
 
-  // ‰EãE¶ã
+  // å³ä¸Šãƒ»å·¦ä¸Š
   if (z == 7) {
     int xx = x - diff1 - diff2;
     int yy = y + diff1 - diff2;
 
-    // ‚»‚Ì“_‚ªƒOƒŠƒbƒh“à‚©
+    // ãã®ç‚¹ãŒã‚°ãƒªãƒƒãƒ‰å†…ã‹
     if (IsNGXY(xx, yy)) return false;
 
-    // ‚»‚±‚É“_‚ª‘¶İ‚µ‚Ä‚¢‚é‚©
+    // ãã“ã«ç‚¹ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã‹
     if (!f[xx][yy]) return false;
 
-    // •Ó‚ªŠù‚É‘¶İ‚µ‚Ä‚¢‚È‚¢‚©
+    // è¾ºãŒæ—¢ã«å­˜åœ¨ã—ã¦ã„ãªã„ã‹
     if (line[xx][yy][6] || line[xx][yy][5]) return false;
 
-    // ŠÔ‚É×–‚‚È’¸“_‚ª‚È‚¢‚©
+    // é–“ã«é‚ªé­”ãªé ‚ç‚¹ãŒãªã„ã‹
     srep(i, 1, diff2) if (f[xx + i][yy + i]) return false;
     srep(i, 1, diff1) if (f[xx + i][yy - i]) return false;
 
@@ -720,12 +720,12 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
 }
 
 /*
-  ƒƒ‚
-  - ‚ ‚é1“_‚ğ—p‚¢‚Ä•`‚¯‚élŠpŒ`‚Í8í—Ş
-  - g—p‚·‚é‰Â”\«‚Ì‚ ‚é’¸“_‚à8ŒÂ
+  ãƒ¡ãƒ¢
+  - ã‚ã‚‹1ç‚¹ã‚’ç”¨ã„ã¦æã‘ã‚‹å››è§’å½¢ã¯8ç¨®é¡
+  - ä½¿ç”¨ã™ã‚‹å¯èƒ½æ€§ã®ã‚ã‚‹é ‚ç‚¹ã‚‚8å€‹
 */
 
-// ƒ‰ƒ“ƒ_ƒ€‚É1“_‚ª‘«‚¹‚é‚©‚Ç‚¤‚©
+// ãƒ©ãƒ³ãƒ€ãƒ ã«1ç‚¹ãŒè¶³ã›ã‚‹ã‹ã©ã†ã‹
 void Method1(double temperature)
 {
   int x = Rand() % N;
@@ -764,13 +764,13 @@ void Method1(double temperature)
   int ru = FindNeighborPoint(x, y, 7);
   if (ru == -2) return;
 
-  // 8í—Ş‚Ì’·•ûŒ`
+  // 8ç¨®é¡ã®é•·æ–¹å½¢
   int RectDir = -1;
   int xx = -1, yy = -1;
   int x1 = -1, y1 = -1;
   int x3 = -1, y3 = -1;
 
-  // ã¶
+  // ä¸Šå·¦
   if (RectDir == -1 && u != -1 && l != -1 && CanMakeRectangle(x, y, 0, u, l)) {
     RectDir = 0;
     xx = x - u;
@@ -780,7 +780,7 @@ void Method1(double temperature)
     x3 = x;
     y3 = y - l;
   }
-  // ¶‰º
+  // å·¦ä¸‹
   if (RectDir == -1 && l != -1 && d != -1 && CanMakeRectangle(x, y, 1, l, d)) {
     RectDir = 1;
     xx = x + d;
@@ -790,7 +790,7 @@ void Method1(double temperature)
     x3 = x + d;
     y3 = y;
   }
-  // ‰º‰E
+  // ä¸‹å³
   if (RectDir == -1 && d != -1 && r != -1 && CanMakeRectangle(x, y, 2, d, r)) {
     RectDir = 2;
     xx = x + d;
@@ -800,7 +800,7 @@ void Method1(double temperature)
     x3 = x;
     y3 = y + r;
   }
-  // ‰Eã
+  // å³ä¸Š
   if (RectDir == -1 && r != -1 && u != -1 && CanMakeRectangle(x, y, 3, r, u)) {
     RectDir = 3;
     xx = x - u;
@@ -811,7 +811,7 @@ void Method1(double temperature)
     y3 = y;
   }
 
-  // ¶ãE¶‰º
+  // å·¦ä¸Šãƒ»å·¦ä¸‹
   if (RectDir == -1 && ul != -1 && ld != -1 &&
     CanMakeRectangle(x, y, 4, ul, ld)) {
     RectDir = 4;
@@ -822,7 +822,7 @@ void Method1(double temperature)
     x3 = x + ld;
     y3 = y - ld;
   }
-  // ¶‰ºE‰E‰º
+  // å·¦ä¸‹ãƒ»å³ä¸‹
   if (RectDir == -1 && ld != -1 && dr != -1 &&
     CanMakeRectangle(x, y, 5, ld, dr)) {
     RectDir = 5;
@@ -833,7 +833,7 @@ void Method1(double temperature)
     x3 = x + dr;
     y3 = y + dr;
   }
-  // ‰E‰ºE‰Eã
+  // å³ä¸‹ãƒ»å³ä¸Š
   if (RectDir == -1 && dr != -1 && ru != -1 &&
     CanMakeRectangle(x, y, 6, dr, ru)) {
     RectDir = 6;
@@ -844,7 +844,7 @@ void Method1(double temperature)
     x3 = x - ru;
     y3 = y + ru;
   }
-  // ‰EãE¶ã
+  // å³ä¸Šãƒ»å·¦ä¸Š
   if (RectDir == -1 && ru != -1 && ul != -1 &&
     CanMakeRectangle(x, y, 7, ru, ul)) {
     RectDir = 7;
@@ -971,7 +971,7 @@ void Method1(double temperature)
     }
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
   }
 }
 
@@ -988,7 +988,7 @@ inline int GetDir(int x1, int y1, int x2, int y2)
   return -1;
 }
 
-// ƒ‰ƒ“ƒ_ƒ€‚É1“_‘I‚Ñ‚Ù‚©‚É‰e‹¿‚È‚¢‚È‚çíœ
+// ãƒ©ãƒ³ãƒ€ãƒ ã«1ç‚¹é¸ã³ã»ã‹ã«å½±éŸ¿ãªã„ãªã‚‰å‰Šé™¤
 void Method2(double temperature)
 {
   if (ansSize == 0) return;
@@ -1104,7 +1104,7 @@ void Method2(double temperature)
     ansDeleteCount++;
   }
   else {
-    // Œ³‚É–ß‚·
+    // å…ƒã«æˆ»ã™
   }
 }
 
@@ -1114,25 +1114,25 @@ int Solve(int mode, int problemNum = 0)
   startTime = clock();
   endTime = clock();
 
-  // ‰Šúó‘Ôì¬
+  // åˆæœŸçŠ¶æ…‹ä½œæˆ
   Init();
 
-  // ‹ğ’¼‰ğì¬
+  // æ„šç›´è§£ä½œæˆ
   maxScore = CalcScore();
   CopyToReal();
   CopyToSeed();
 
-  // ƒV[ƒhì‚è
-  int seedCount = 20;  // 0‚É‚·‚é‚ÆƒV[ƒhì¬‚ğs‚í‚È‚¢
+  // ã‚·ãƒ¼ãƒ‰ä½œã‚Š
+  int seedCount = 20;  // 0ã«ã™ã‚‹ã¨ã‚·ãƒ¼ãƒ‰ä½œæˆã‚’è¡Œã‚ãªã„
   rep(tei, seedCount)
   {
     startTime = clock();
 
-    // ‰Šúó‘Ô‚É–ß‚·
+    // åˆæœŸçŠ¶æ…‹ã«æˆ»ã™
     Init();
     maxScore = CalcScore();
 
-    // Ä‚«‚È‚Ü‚µ
+    // ç„¼ããªã¾ã—
     endTime = clock();
     double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
 
@@ -1151,7 +1151,7 @@ int Solve(int mode, int problemNum = 0)
       }
       if (nowProgress > 1.0) break;
 
-      // Œ»İ‚ÌƒXƒRƒA‚ªˆ«‚¢‚Æ‚«‚ÍŒ³‚É–ß‚·
+      // ç¾åœ¨ã®ã‚¹ã‚³ã‚¢ãŒæ‚ªã„ã¨ãã¯å…ƒã«æˆ»ã™
       if (maxScore * 1.2 < real_maxScore) {
         RollBackFromReal();
         rollbackCount++;
@@ -1164,13 +1164,13 @@ int Solve(int mode, int problemNum = 0)
       double temperature =
         startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-      // ƒƒ\ƒbƒh‘I‘ğ
+      // ãƒ¡ã‚½ãƒƒãƒ‰é¸æŠ
       int me = 1;
       if (Rand() % 2 == 0) {
         me = 2;
       }
 
-      // Šeƒƒ\ƒbƒhˆ—
+      // å„ãƒ¡ã‚½ãƒƒãƒ‰å‡¦ç†
 
       if (me == 1) {
         Method1(temperature);
@@ -1179,22 +1179,22 @@ int Solve(int mode, int problemNum = 0)
       if (me == 2) {
         Method2(temperature);
       }
-    }  // while•¶‚±‚±‚Ü‚ÅiƒV[ƒhì¬j
+    }  // whileæ–‡ã“ã“ã¾ã§ï¼ˆã‚·ãƒ¼ãƒ‰ä½œæˆï¼‰
 
-    // ƒXƒRƒA‚ª—Ç‚¯‚ê‚ÎƒV[ƒh‚ğXV
+    // ã‚¹ã‚³ã‚¢ãŒè‰¯ã‘ã‚Œã°ã‚·ãƒ¼ãƒ‰ã‚’æ›´æ–°
     RollBackFromReal();
     if (maxScore > seed_maxScore) {
       CopyToSeed();
     }
 
-    // ‚±‚±‚ÅÁ‹‚·‚é‚à‚Ì‚ª‚ ‚ê‚ÎÁ‹‚·‚é
+    // ã“ã“ã§æ¶ˆå»ã™ã‚‹ã‚‚ã®ãŒã‚ã‚Œã°æ¶ˆå»ã™ã‚‹
   }
 
-  // ƒV[ƒh‚©‚ç–ß‚·
+  // ã‚·ãƒ¼ãƒ‰ã‹ã‚‰æˆ»ã™
   RollBackFromSeed();
   CopyToReal();
 
-  // Ä‚«‚È‚Ü‚µ
+  // ç„¼ããªã¾ã—
   startTime = clock();
   endTime = clock();
   double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
@@ -1213,7 +1213,7 @@ int Solve(int mode, int problemNum = 0)
     }
     if (nowProgress > 1.0) break;
 
-    // Œ»İ‚ÌƒXƒRƒA‚ªˆ«‚¢‚Æ‚«‚ÍŒ³‚É–ß‚·
+    // ç¾åœ¨ã®ã‚¹ã‚³ã‚¢ãŒæ‚ªã„ã¨ãã¯å…ƒã«æˆ»ã™
     if (maxScore * 1.2 < real_maxScore) {
       RollBackFromReal();
       rollbackCount++;
@@ -1226,13 +1226,13 @@ int Solve(int mode, int problemNum = 0)
     double temperature =
       startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-    // ƒƒ\ƒbƒh‘I‘ğ
+    // ãƒ¡ã‚½ãƒƒãƒ‰é¸æŠ
     int me = 1;
     if (Rand() % 2 == 0) {
       me = 2;
     }
 
-    // Šeƒƒ\ƒbƒhˆ—
+    // å„ãƒ¡ã‚½ãƒƒãƒ‰å‡¦ç†
 
     if (me == 1) {
       Method1(temperature);
@@ -1241,16 +1241,16 @@ int Solve(int mode, int problemNum = 0)
     if (me == 2) {
       Method2(temperature);
     }
-  }  // while•¶‚±‚±‚Ü‚ÅiƒƒCƒ“ƒ‹[ƒvj
+  }  // whileæ–‡ã“ã“ã¾ã§ï¼ˆãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—ï¼‰
 
-  // ˆê”ÔƒXƒRƒA‚Ì—Ç‚¢‰ğ
+  // ä¸€ç•ªã‚¹ã‚³ã‚¢ã®è‰¯ã„è§£
   RollBackFromReal();
 
   RefleshAns();
 
   CalcScore();
 
-  // ƒfƒoƒbƒOƒƒO
+  // ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°
   if (mode != 0) {
     cout << "problemNum = " << problemNum << ", N = " << N << endl;
     cout << "ansSize = " << ansSize << ", ansDeleteCount = " << ansDeleteCount
@@ -1271,12 +1271,12 @@ int Solve(int mode, int problemNum = 0)
 
 int SolveOuter(int mode, int problemNum = 0)
 {
-  // “ü—Íó‚¯æ‚è
+  // å…¥åŠ›å—ã‘å–ã‚Š
   Input(problemNum);
 
   int score = Solve(mode, problemNum);
 
-  // ‰ğ“š‚Ìo—Í
+  // è§£ç­”ã®å‡ºåŠ›
   Output(mode, problemNum);
 
   return score;
@@ -1288,7 +1288,7 @@ int main()
   mainStart = clock();
   mainEnd = clock();
 
-  // —”’²®
+  // ä¹±æ•°èª¿æ•´
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     Rand();
@@ -1296,7 +1296,7 @@ int main()
 
   int mode = 0;
 
-  // ’ño—p
+  // æå‡ºç”¨
   if (mode == 0) {
     rep(i, 1)
     {
@@ -1304,11 +1304,11 @@ int main()
       AllClear_MultiCase();
     }
   }
-  // 1ƒP[ƒX‚·
+  // 1ã‚±ãƒ¼ã‚¹è©¦ã™
   else if (mode == 1) {
     SolveOuter(mode, 3);
   }
-  // •¡”ƒP[ƒX‚·
+  // è¤‡æ•°ã‚±ãƒ¼ã‚¹è©¦ã™
   else if (mode == 2) {
     int scoreSum = 0;
     rep(i, 100)
