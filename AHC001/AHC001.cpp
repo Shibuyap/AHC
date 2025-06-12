@@ -17,8 +17,7 @@
 #include <utility>
 #include <vector>
 
-#define srep(i,s,t) for (int i = s; i < t; ++i)
-#define drep(i,n) for(int i = (n)-1; i >= 0; --i)
+// Removed macro definitions - using standard for loops instead
 using namespace std;
 using namespace chrono;
 typedef long long int ll;
@@ -211,7 +210,7 @@ inline int isOK2(int ite) {
       if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
     for (int i = 0; i < (n); ++i) {
-      srep(j, i + 1, n) {
+      for (int j = i + 1; j < n; ++j) {
         if (kasanarihantei(i, j)) return 0;
       }
     }
@@ -250,7 +249,7 @@ inline int isOK(int ite) {
       if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
     for (int i = 0; i < (n); ++i) {
-      srep(j, i + 1, n) {
+      for (int j = i + 1; j < n; ++j) {
         if (kasanarihantei(i, j)) return 0;
       }
     }
@@ -266,7 +265,7 @@ inline int isOK(int ite) {
     if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 0;
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
-    drep(ii, argX) {
+    for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
@@ -275,7 +274,7 @@ inline int isOK(int ite) {
       }
     }
     nowLeft = rects[ite].p1.y;
-    srep(ii, argX + 1, n) {
+    for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
@@ -303,7 +302,7 @@ inline void hukuramashi(int ite) {
     vExtend.p1.x = 0;
     vExtend.p2.x = 10000;
     int argX = arg_sort_x[ite];
-    drep(ii, argX) {
+    for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -318,7 +317,7 @@ inline void hukuramashi(int ite) {
         break;
       }
     }
-    srep(ii, argX + 1, n) {
+    for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -338,7 +337,7 @@ inline void hukuramashi(int ite) {
     vExtend.p2.y = 10000;
     int argY = arg_sort_y[ite];
     int nowLeft = vExtend.p1.x;
-    drep(ii, argY) {
+    for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -358,7 +357,7 @@ inline void hukuramashi(int ite) {
     }
 
     nowLeft = vExtend.p1.x;
-    srep(ii, argY + 1, n) {
+    for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -381,7 +380,7 @@ inline void hukuramashi(int ite) {
     vExtend.p1.y = 0;
     vExtend.p2.y = 10000;
     int argY = arg_sort_y[ite];
-    drep(ii, argY) {
+    for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -396,7 +395,7 @@ inline void hukuramashi(int ite) {
         break;
       }
     }
-    srep(ii, argY + 1, n) {
+    for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
       int flagKasanari = 0;
       if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
@@ -416,7 +415,7 @@ inline void hukuramashi(int ite) {
     vExtend.p2.x = 10000;
     int argX = arg_sort_x[ite];
     int nowLeft = vExtend.p1.y;
-    drep(ii, argX) {
+    for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -435,7 +434,7 @@ inline void hukuramashi(int ite) {
       }
     }
     nowLeft = vExtend.p1.y;
-    srep(ii, argX + 1, n) {
+    for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
       int flagKasanari = 0;
       if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
@@ -627,7 +626,7 @@ inline void hukuramashiKing(int ite) {
 
   if (tateyoko == 0) {
     int argX = arg_sort_x[ite];
-    drep(ii, argX) {
+    for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -642,7 +641,7 @@ inline void hukuramashiKing(int ite) {
         }
       }
     }
-    srep(ii, argX + 1, n) {
+    for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -659,7 +658,7 @@ inline void hukuramashiKing(int ite) {
     }
 
     int argY = arg_sort_y[ite];
-    drep(ii, argY) {
+    for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -674,7 +673,7 @@ inline void hukuramashiKing(int ite) {
         }
       }
     }
-    srep(ii, argY + 1, n) {
+    for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -692,7 +691,7 @@ inline void hukuramashiKing(int ite) {
   }
   else {
     int argY = arg_sort_y[ite];
-    drep(ii, argY) {
+    for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -707,7 +706,7 @@ inline void hukuramashiKing(int ite) {
         }
       }
     }
-    srep(ii, argY + 1, n) {
+    for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
       if (target_points[i].y == target_points[ite].y) continue;
       int flagKasanari = 0;
@@ -724,7 +723,7 @@ inline void hukuramashiKing(int ite) {
     }
 
     int argX = arg_sort_x[ite];
-    drep(ii, argX) {
+    for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -739,7 +738,7 @@ inline void hukuramashiKing(int ite) {
         }
       }
     }
-    srep(ii, argX + 1, n) {
+    for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
       if (target_points[i].x == target_points[ite].x) continue;
       int flagKasanari = 0;
@@ -1070,7 +1069,7 @@ inline void kasanaritati(int ite, int abcd) {
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
     int nowRight = rects[ite].p2.y;
-    drep(ii, argX) {
+    for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) {
         if (rects[ite].p1.x <= target_points[i].x) {
@@ -1095,7 +1094,7 @@ inline void kasanaritati(int ite, int abcd) {
     int argY = arg_sort_y[ite];
     int nowLeft = rects[ite].p1.x;
     int nowRight = rects[ite].p2.x;
-    drep(ii, argY) {
+    for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
       if (kasanarihantei(i, ite)) {
         if (rects[ite].p1.y <= target_points[i].y) {
@@ -1120,7 +1119,7 @@ inline void kasanaritati(int ite, int abcd) {
     int argX = arg_sort_x[ite];
     int nowLeft = rects[ite].p1.y;
     int nowRight = rects[ite].p2.y;
-    srep(ii, argX + 1, n) {
+    for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
       if (kasanarihantei(i, ite)) {
         if (target_points[i].x < rects[ite].p2.x) {
@@ -1145,7 +1144,7 @@ inline void kasanaritati(int ite, int abcd) {
     int argY = arg_sort_y[ite];
     int nowLeft = rects[ite].p1.x;
     int nowRight = rects[ite].p2.x;
-    srep(ii, argY + 1, n) {
+    for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
       if (kasanarihantei(i, ite)) {
         if (target_points[i].y < rects[ite].p2.y) {
@@ -1728,7 +1727,7 @@ int main() {
 
     if (mode == 1) { // スコア確認用
       for (int i = 0; i < (1000); ++i) {
-        srep(i, 0, 50) {
+        for (int i = 0; i < 50; ++i) {
           for (int j = 0; j < (10); ++j) {
             AllClear();
             solve(teisyutu, i);
@@ -1755,7 +1754,7 @@ int main() {
           if (l == 3) haipara_TT = haipara_oya * 4;
 
           ll sum = 0;
-          srep(i, 0, 50) {
+          for (int i = 0; i < 50; ++i) {
             for (int j = 0; j < (1); ++j) {
               AllClear();
               sum += solve(teisyutu, i);

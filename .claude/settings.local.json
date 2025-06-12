@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(claude config --model opus)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
