@@ -171,9 +171,7 @@ namespace
     }
     else if (mode == 100 || mode == 110) {
       m = Rand() % 91 + 10;
-      // m = Rand() % 41 + 10;
       iEps = Rand() % 41;
-      // iEps = Rand() % 11 + 30;
       eps = iEps / 100.0;
       for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
     }
@@ -866,19 +864,6 @@ namespace
         while (j <= n) {
           int i = j + hyperMinDiff;
           while (i <= n) {
-            // 1クラ
-            // if (iset.find(i) == iset.end()) {
-            //  iset.insert(i);
-            //  cnt++;
-            //}
-            // 2クラ
-            // if (i + j <= n) {
-            //  if (jset.find(P(i, j)) == jset.end()) {
-            //    jset.insert(P(i, j));
-            //    cnt++;
-            //  }
-            //}
-
             // 3クラ
             if (i + j + k <= n) {
               cnt++;
@@ -910,25 +895,6 @@ namespace
         while (j <= n) {
           int i = j + hyperMinDiff;
           while (i <= n) {
-            //// 1クラ
-            // if (iset.find(i) == iset.end()) {
-            //   iset.insert(i);
-            //   numThreeArr[cnt][0] = i;
-            //   numThreeArr[cnt][1] = 0;
-            //   numThreeArr[cnt][2] = 0;
-            //   cnt++;
-            // }
-            //// 2クラ
-            // if (i + j <= n) {
-            //   if (jset.find(P(i, j)) == jset.end()) {
-            //     jset.insert(P(i, j));
-            //     numThreeArr[cnt][0] = i;
-            //     numThreeArr[cnt][1] = j;
-            //     numThreeArr[cnt][2] = 0;
-            //     cnt++;
-            //   }
-            // }
-
             // 3クラ
             if (i + j + k <= n) {
               numThreeArr[cnt][0] = i;
@@ -1547,7 +1513,6 @@ int Solver3()
     for (int i = 0; i < (2); ++i) vec[i] = nxt[i];
   }
   int res = min(vec[0].size(), vec[1].size());
-  // cout << res << endl;
   int diff = 1000;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
@@ -2516,7 +2481,6 @@ int Solver12()
     if (f[i] == 3) res3++;
   }
   vector<int> resv;
-  // cout << res1 << ' ' << res2 << ' ' << res3 << endl;
   resv.push_back(res1);
   resv.push_back(res2);
   resv.push_back(res3);
@@ -3950,9 +3914,6 @@ void solve(int mode)
         ofstream ofsScore("Score.txt");
         double hi = 0;
         for (int _ = 0; _ < (1000); ++_) {
-          if (_ % 100 == 0) {
-            // cout << _ << endl;
-          }
           if (_ < 100) {
             OpenOfs1000Out(_);
           }
@@ -3984,10 +3945,6 @@ void solve(int mode)
           ofsScore << score / hyperMaxScore[m][iEps] << ' ' << fixed
             << setprecision(6) << score << ' ' << hyperMaxScore[m][iEps]
             << endl;
-            // cout << _ << ' ' << score << endl;
-            // if (_ < 100)
-            //   ofsScore << setw(4) << setfill('0') << _ << " : " << score <<
-            //   endl;
         }
         changeOfs << hi << endl;
         changeOfs << "sumScore = " << sumScore << endl;
@@ -4005,20 +3962,6 @@ void solve(int mode)
 
       int initMode = loop % 2;
 
-      // if (initMode == 99) {
-      //   iEps = Rand() % 6 + 35;
-      //   m = Rand() % 11 + 90;
-      //   eps = iEps / 100.0;
-      //   n = hyperN[m][iEps];
-      //   hyperSolverNum = hyperSolver[m][iEps];
-      //   hyperMinDiff = hyperMinDiffArr[m][iEps];
-      //   hyperMaxRound = hyperMaxRoundArr[m][iEps];
-      //   hyperStep1 = hyperStep1Arr[m][iEps];
-      //   hyperStep2 = hyperStep2Arr[m][iEps];
-      //   hyperSolverNum = 148;
-      //   n = 4;
-      // }
-      // initMode = 0;
       if (initMode == 1 || !winners.empty()) {
         // 上下左右の丸コピー
         int nm = m;
@@ -4055,10 +3998,6 @@ void solve(int mode)
 
         // 隣を改変
         if (winners.empty() && Rand() % 2 == 0) {
-          //vector<int> selection = { 1114, 1134, 1134, 1134, 1152,
-          //                         1152, 1135, 1135, 1135 };
-          //vector<int> selection = { 1186,1196 ,1187,1197};
-          // vector<int> selection = { 1186,1196 ,1187,1197};
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
           hyperSolverNum = selection[Rand() % selection.size()];
 
@@ -4094,21 +4033,10 @@ void solve(int mode)
         hyperStep2 = hyperStep2Arr[m][iEps];
 
         if (false && Rand() % 2 == 0) {
-          //vector<int> selection = { 1186,1196 ,1187,1197};
-          //vector<int> selection = { 1189,1199 };
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
           hyperSolverNum = selection[Rand() % selection.size()];
         }
         else {
-          // vector<int> selection = {
-          //     105,  106,  107,  115,  116,  117,  125,  126,  127,  135,
-          //     136,  137,  109,  119,  129,  139,  1100, 1110, 1120, 1130,
-          //     1101, 1111, 1121, 1131, 1104, 1114, 1124, 1134, 1152, 1152,
-          //     1152, 1152, 1152, 1134, 1134, 1134, 1134};
-          //vector<int> selection = { 1114, 1134, 1134, 1134, 1152,
-          //                         1152, 1135, 1135, 1135 };
-          //vector<int> selection = { 1186,1196 ,1187,1197};
-          // vector<int> selection = { 1189,1199 };
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
 
           hyperSolverNum = selection[Rand() % selection.size()];
@@ -4199,14 +4127,11 @@ void solve(int mode)
         InitNumArray(mode);
         double chascore = Simulate(mode);
         score += chascore;
-        // cout << chascore << ' ' << nowscore << endl;
+
         if (chascore > nowscore) {
           winCount++;
-          // cout << "WIN" << endl;
-          // cout << hyperSolverNum << ' ' << chascore << ' ' << nowscore << endl;
         }
         else if (chascore < nowscore) {
-          // cout << "LOSE" << endl;
           loseCount++;
         }
         if (loseCount > LOSE) {
@@ -4216,11 +4141,6 @@ void solve(int mode)
         if (winCount == CHAMP) break;
       }
       score /= matchCount;
-
-      // double score = 0;
-      // for (int i = 0; i < (30); ++i) score += Simulate(mode);
-      // score /= 30;
-      // if (score >= hyperMaxScore[m][iEps]) {
 
       if (winCount == CHAMP && (hyperMaxScore[m][iEps] < score)) {
         changeOfs << loop << ' ' << hyperSolver[m][iEps] << ' '
@@ -4293,9 +4213,6 @@ void solve(int mode)
       ofsScore << score / hyperMaxScore[m][iEps] << ' ' << fixed
         << setprecision(6) << score << ' ' << hyperMaxScore[m][iEps]
         << endl;
-        // cout << _ << ' ' << score << endl;
-        // if (_ < 100)
-        //   ofsScore << setw(4) << setfill('0') << _ << " : " << score << endl;
     }
     cout << hi << endl;
     cout << "sumScore = " << sumScore << endl;
