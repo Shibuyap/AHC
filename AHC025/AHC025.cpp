@@ -2537,6 +2537,110 @@ void randomSwap(vector<int>& items, int kosuu, int saidai)
 
 // ========== End of Common Helper Functions for Method226/266 ==========
 
+// ========== Common Helper Functions for Method106/246/112 ==========
+
+// Initialize items with merge sort and assign heaviest items to groups
+void initializeItemsWithHeaviestAssignment(vector<int>& items, int& countQ, int ikichi = 1001001)
+{
+  initializeItems(items);
+  MergeSort(items, countQ, ikichi);
+  updateKarusaArray(items);
+
+  // 各グループに1個ずつ入れる
+  rep(i, D)
+  {
+    int id = items[N - 1 - i];
+    ans[id] = i;
+  }
+}
+
+// Assign items using PseudoItems until totyuu threshold
+void assignItemsWithPseudoQuery(vector<int>& items, vector<int>& groups, int& countQ, int totyuu)
+{
+  drep(i, N - D)
+  {
+    if (N - i >= totyuu) {
+      break;
+    }
+    int id = items[i];
+    int gId = groups[D - 1];
+    ans[id] = gId;
+
+    int left = 0;
+    int right = D - 1;
+    while (left < right) {
+      int mid = (left + right) / 2;
+      rep(j, N)
+      {
+        if (ans[j] == gId) {
+          l[countQ].push_back(j);
+        }
+        if (ans[j] == groups[mid]) {
+          r[countQ].push_back(j);
+        }
+      }
+      char c = PseudoItemsQuery(countQ);
+      l[countQ].clear();
+      r[countQ].clear();
+      if (c == '=') {
+        left = right = mid;
+      }
+      else if (c == '>') {
+        right = mid;
+      }
+      else {
+        left = mid + 1;
+      }
+    }
+    moveGroupToPosition(groups, D - 1, left);
+  }
+}
+
+// Find tail position for remaining items (Method106/246 style)
+int findTailPosition(const vector<int>& items)
+{
+  int tail = N;
+  while (tail > 0) {
+    if (ans[items[tail - 1]] != -1) {
+      tail--;
+    }
+    else {
+      break;
+    }
+  }
+  return tail;
+}
+
+// Assign remaining items to lightest group
+void assignRemainingItems(const vector<int>& items, vector<int>& groups, int& countQ, int startPos, int endPos = 0)
+{
+  for (int i = startPos - 1; i >= endPos; --i) {
+    int id = items[i];
+    int gId = groups[D - 1];
+    ans[id] = gId;
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
+    moveGroupToPosition(groups, D - 1, left);
+  }
+}
+
+// Common structure for Method106/246/112
+void initializeWithPseudoQueryMethod(vector<int>& items, vector<int>& groups, int& countQ, int totyuu, int ikichi = 1001001)
+{
+  // Initialize items and assign heaviest
+  initializeItemsWithHeaviestAssignment(items, countQ, ikichi);
+
+  // Initialize groups
+  initializeGroups(groups);
+
+  // Assign items with pseudo query until totyuu
+  assignItemsWithPseudoQuery(items, groups, countQ, totyuu);
+
+  // Merge sort groups
+  MergeSort_Group(groups, countQ);
+}
+
+// ========== End of Common Helper Functions for Method106/246/112 ==========
+
 void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCount = 1000)
 {
   if (maxFailedCount < 10) {
@@ -3373,83 +3477,17 @@ void Method12(int ikichi = N)
 void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ);
-  updateKarusaArray(items);
+  // Common initialization with pseudo query method
+  initializeWithPseudoQueryMethod(items, groups, countQ, totyuu);
 
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
+  // Find tail position and assign remaining items
+  int tail = findTailPosition(items);
+  assignRemainingItems(items, groups, countQ, tail);
 
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-
-  // 途中までpseudoItemsを用いて一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    if (N - i >= totyuu) {
-      break;
-    }
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = PseudoItemsQuery(countQ);
-      l[countQ].clear();
-      r[countQ].clear();
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    moveGroupToPosition(groups, D - 1, left);
-  }
-
-  // ここでグループを一度マージソートして正しい順序に並び替える
-  MergeSort_Group(groups, countQ);
-
-  // 一番軽いグループに入れていく
-  int tail = N;
-  while (tail > 0) {
-    if (ans[items[tail - 1]] != -1) {
-      tail--;
-    }
-    else {
-      break;
-    }
-  }
-  drep(i, tail)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
-
+  // Optimization loop
   while (countQ < Q) {
     int qu = getRandomPercentage();
     if (qu < hiritu) {
@@ -3704,83 +3742,17 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
 void Method246(int hiritu, int totyuu, int small1, int small2)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ);
-  updateKarusaArray(items);
+  // Common initialization with pseudo query method
+  initializeWithPseudoQueryMethod(items, groups, countQ, totyuu);
 
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
+  // Find tail position and assign remaining items
+  int tail = findTailPosition(items);
+  assignRemainingItems(items, groups, countQ, tail);
 
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-
-  // 途中までpseudoItemsを用いて一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    if (N - i >= totyuu) {
-      break;
-    }
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = PseudoItemsQuery(countQ);
-      l[countQ].clear();
-      r[countQ].clear();
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    moveGroupToPosition(groups, D - 1, left);
-  }
-
-  // ここでグループを一度マージソートして正しい順序に並び替える
-  MergeSort_Group(groups, countQ);
-
-  // 一番軽いグループに入れていく
-  int tail = N;
-  while (tail > 0) {
-    if (ans[items[tail - 1]] != -1) {
-      tail--;
-    }
-    else {
-      break;
-    }
-  }
-  drep(i, tail)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
-
+  // Optimization loop with special small parameters
   while (countQ < Q) {
     int qu = getRandomPercentage();
     if (qu < hiritu) {
@@ -3803,74 +3775,16 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
 void Method112(int ikichi = N, int totyuu = 999)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ, ikichi);
-  updateKarusaArray(items);
+  // Common initialization with pseudo query method (with custom ikichi)
+  initializeWithPseudoQueryMethod(items, groups, countQ, totyuu, ikichi);
 
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
+  // Assign ALL remaining items (Method112 doesn't use tail finding)
+  assignRemainingItems(items, groups, countQ, N - D);
 
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-
-  // 途中までpseudoItemsを用いて一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    if (N - i >= totyuu) {
-      break;
-    }
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = PseudoItemsQuery(countQ);
-      l[countQ].clear();
-      r[countQ].clear();
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    moveGroupToPosition(groups, D - 1, left);
-  }
-
-  // ここでグループを一度マージソートして正しい順序に並び替える
-  MergeSort_Group(groups, countQ);
-
-  // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
-
+  // Optimization loop - simple SwapNeighbor1 only
   while (countQ < Q) {
     SwapNeighbor1(items, countQ);
   }
