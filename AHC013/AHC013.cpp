@@ -81,7 +81,18 @@ public:
   vector<int> parent;
   vector<int> unionSize;
   set<P> vp;
+
+  // Member functions
+  void clear();
+  void copyTo(GameState& target) const;
+  void copyFrom(const GameState& source);
+  void updateSingleR(int i);  // Update R for a single computer
+  void updateSingleD(int j);  // Update D for a single computer
+  void updateRowR(int i);     // Update all R values in row i
+  void updateColD(int j);     // Update all D values in column j
+  int calcScore(int times, bool makeAns = false);
 };
+
 
 namespace /* 変数 */
 {
@@ -261,46 +272,141 @@ void MethodCountReset()
   methodSum[1] = 0;
 }
 
-void UpdateR(int i)
+
+// Forward declaration
+bool HasServer(int xx, int yy);
+
+// GameState member function implementations
+void GameState::clear()
+{
+  viewOrder = 0;
+  maxScore = 0;
+  ope1 = 0;
+  ope2 = 0;
+}
+
+void GameState::copyTo(GameState& target) const
+{
+  target.viewOrder = viewOrder;
+  target.maxScore = maxScore;
+  target.ope1 = ope1;
+  target.ope2 = ope2;
+
+  rep(i, ope1)
+  {
+    rep(j, 5) { target.ans1[i][j] = ans1[i][j]; }
+  }
+  rep(i, ope2)
+  {
+    rep(j, 4) { target.ans2[i][j] = ans2[i][j]; }
+  }
+  rep(i, n)
+  {
+    rep(j, n) { target.a[i][j] = a[i][j]; }
+  }
+  rep(i, K100)
+  {
+    target.x[i] = x[i];
+    target.y[i] = y[i];
+    target.R[i] = R[i];
+    target.D[i] = D[i];
+  }
+
+  rep(i, n)
+  {
+    rep(j, n) { target.cellUse[i][j] = cellUse[i][j]; }
+  }
+
+  rep(i, K100)
+  {
+    target.moveCnt[i] = moveCnt[i];
+    rep(j, moveCnt[i]) { target.moves[i][j] = moves[i][j]; }
+    rep(j, 4) { target.udlr[i][j] = udlr[i][j]; }
+  }
+
+  rep(i, K100)
+  {
+    target.parent[i] = parent[i];
+    target.unionSize[i] = unionSize[i];
+  }
+  target.vp = vp;
+}
+
+void GameState::copyFrom(const GameState& source)
+{
+  source.copyTo(*this);
+}
+
+void GameState::updateSingleR(int i)
+{
+  int xx = x[i];
+  int yy = y[i];
+  yy++;
+  while (yy < n && !HasServer(xx, yy)) {
+    yy++;
+  }
+  if (yy < n) {
+    R[i] = a[xx][yy];
+  }
+  else {
+    R[i] = -1;
+  }
+}
+
+void GameState::updateSingleD(int j)
+{
+  int xx = x[j];
+  int yy = y[j];
+  xx++;
+  while (xx < n && !HasServer(xx, yy)) {
+    xx++;
+  }
+  if (xx < n) {
+    D[j] = a[xx][yy];
+  }
+  else {
+    D[j] = -1;
+  }
+}
+
+void GameState::updateRowR(int i)
 {
   int now = -1;
   rep(j, n)
   {
-    if (0 <= gameState.a[i][j] && gameState.a[i][j] < K100) {
-      gameState.R[gameState.a[i][j]] = -1;
+    if (0 <= a[i][j] && a[i][j] < K100) {
+      R[a[i][j]] = -1;
       if (now != -1) {
-        gameState.R[now] = gameState.a[i][j];
+        R[now] = a[i][j];
       }
-      now = gameState.a[i][j];
+      now = a[i][j];
     }
   }
 }
 
-void UpdateD(int j)
+void GameState::updateColD(int j)
 {
   int now = -1;
   rep(i, n)
   {
-    if (0 <= gameState.a[i][j] && gameState.a[i][j] < K100) {
-      gameState.D[gameState.a[i][j]] = -1;
+    if (0 <= a[i][j] && a[i][j] < K100) {
+      D[a[i][j]] = -1;
       if (now != -1) {
-        gameState.D[now] = gameState.a[i][j];
+        D[now] = a[i][j];
       }
-      now = gameState.a[i][j];
+      now = a[i][j];
     }
   }
 }
 
-// スコア計算
-// 要素数の大きい順に使う
-int CalcScore(int times, bool makeAns = false)
+int GameState::calcScore(int times, bool makeAns)
 {
   int res = 0;
 
   {
     int nokori = times;
 
-    for (auto&& p : gameState.vp) {
+    for (auto&& p : vp) {
       if (nokori == 0) {
         break;
       }
@@ -324,9 +430,9 @@ int CalcScore(int times, bool makeAns = false)
   if (makeAns) {
     visitedCnt++;
 
-    gameState.ope2 = 0;
+    ope2 = 0;
 
-    for (auto&& p : gameState.vp) {
+    for (auto&& p : vp) {
       if (times == 0) {
         break;
       }
@@ -343,28 +449,28 @@ int CalcScore(int times, bool makeAns = false)
         queL++;
         rep(j, 4)
         {
-          int nxt = gameState.udlr[ite][j];
+          int nxt = udlr[ite][j];
           if (nxt != -1 && visited[nxt] != visitedCnt) {
             que[queR] = nxt;
             queR++;
             visited[nxt] = visitedCnt;
 
-            gameState.ans2[gameState.ope2][0] = gameState.x[ite];
-            gameState.ans2[gameState.ope2][1] = gameState.y[ite];
-            gameState.ans2[gameState.ope2][2] = gameState.x[nxt];
-            gameState.ans2[gameState.ope2][3] = gameState.y[nxt];
+            ans2[ope2][0] = x[ite];
+            ans2[ope2][1] = y[ite];
+            ans2[ope2][2] = x[nxt];
+            ans2[ope2][3] = y[nxt];
 
-            gameState.ope2++;
-            if (gameState.ope2 == times) {
+            ope2++;
+            if (ope2 == times) {
               break;
             }
           }
         }
-        if (gameState.ope2 == times) {
+        if (ope2 == times) {
           break;
         }
       }
-      if (gameState.ope2 == times) {
+      if (ope2 == times) {
         break;
       }
     }
@@ -470,8 +576,8 @@ void Init()
   }
 
   // R,D
-  rep(i, n) { UpdateR(i); }
-  rep(j, n) { UpdateD(j); }
+  rep(i, n) { gameState.updateRowR(i); }
+  rep(j, n) { gameState.updateColD(j); }
 
   // gameState.udlr
   rep(i, K100)
@@ -707,338 +813,37 @@ void Output(int mode, int problemNum)
   }
 }
 
-void NormalClear()
-{
-  gameState.viewOrder = 0;
-  gameState.maxScore = 0;
-  gameState.ope1 = 0;
-  gameState.ope2 = 0;
-}
-
-void RealClear()
-{
-  real_GameState.viewOrder = 0;
-  real_GameState.maxScore = 0;
-  real_GameState.ope1 = 0;
-  real_GameState.ope2 = 0;
-}
-
-void SeedClear()
-{
-  seed_GameState.viewOrder = 0;
-  seed_GameState.maxScore = 0;
-  seed_GameState.ope1 = 0;
-  seed_GameState.ope2 = 0;
-}
-
-void OuterClear()
-{
-  outer_GameState.viewOrder = 0;
-  outer_GameState.maxScore = 0;
-  outer_GameState.ope1 = 0;
-  outer_GameState.ope2 = 0;
-}
 
 // maxとreal_maxを初期化
 void AllClear()
 {
-  NormalClear();
-  RealClear();
+  gameState.clear();
+  real_GameState.clear();
   MethodCountReset();
 }
 
 void AllClear_seed()
 {
-  NormalClear();
-  RealClear();
-  SeedClear();
+  gameState.clear();
+  real_GameState.clear();
+  seed_GameState.clear();
   MethodCountReset();
 }
 
 void AllClear_outer()
 {
-  NormalClear();
-  RealClear();
-  SeedClear();
-  OuterClear();
+  gameState.clear();
+  real_GameState.clear();
+  seed_GameState.clear();
+  outer_GameState.clear();
   MethodCountReset();
 }
 
-void CopyToReal()
-{
-  real_GameState.viewOrder = gameState.viewOrder;
-  real_GameState.maxScore = gameState.maxScore;
-  real_GameState.ope1 = gameState.ope1;
-  real_GameState.ope2 = gameState.ope2;
-  rep(i, gameState.ope1)
-  {
-    rep(j, 5) { real_GameState.ans1[i][j] = gameState.ans1[i][j]; }
-  }
-  rep(i, gameState.ope2)
-  {
-    rep(j, 4) { real_GameState.ans2[i][j] = gameState.ans2[i][j]; }
-  }
-  rep(i, n)
-  {
-    rep(j, n) { real_GameState.a[i][j] = gameState.a[i][j]; }
-  }
-  rep(i, K100)
-  {
-    real_GameState.x[i] = gameState.x[i];
-    real_GameState.y[i] = gameState.y[i];
-    real_GameState.R[i] = gameState.R[i];
-    real_GameState.D[i] = gameState.D[i];
-  }
 
-  rep(i, n)
-  {
-    rep(j, n) { real_GameState.cellUse[i][j] = gameState.cellUse[i][j]; }
-  }
 
-  rep(i, K100)
-  {
-    real_GameState.moveCnt[i] = gameState.moveCnt[i];
-    rep(j, gameState.moveCnt[i]) { real_GameState.moves[i][j] = gameState.moves[i][j]; }
-    rep(j, 4) { real_GameState.udlr[i][j] = gameState.udlr[i][j]; }
-  }
 
-  rep(i, K100)
-  {
-    real_GameState.parent[i] = gameState.parent[i];
-    real_GameState.unionSize[i] = gameState.unionSize[i];
-  }
-  real_GameState.vp = gameState.vp;
-}
 
-void CopyToSeed()
-{
-  seed_GameState.viewOrder = gameState.viewOrder;
-  seed_GameState.maxScore = gameState.maxScore;
-  seed_GameState.ope1 = gameState.ope1;
-  seed_GameState.ope2 = gameState.ope2;
-  rep(i, gameState.ope1)
-  {
-    rep(j, 5) { seed_GameState.ans1[i][j] = gameState.ans1[i][j]; }
-  }
-  rep(i, gameState.ope2)
-  {
-    rep(j, 4) { seed_GameState.ans2[i][j] = gameState.ans2[i][j]; }
-  }
-  rep(i, n)
-  {
-    rep(j, n) { seed_GameState.a[i][j] = gameState.a[i][j]; }
-  }
-  rep(i, K100)
-  {
-    seed_GameState.x[i] = gameState.x[i];
-    seed_GameState.y[i] = gameState.y[i];
-    seed_GameState.R[i] = gameState.R[i];
-    seed_GameState.D[i] = gameState.D[i];
-  }
 
-  rep(i, n)
-  {
-    rep(j, n) { seed_GameState.cellUse[i][j] = gameState.cellUse[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    seed_GameState.moveCnt[i] = gameState.moveCnt[i];
-    rep(j, gameState.moveCnt[i]) { seed_GameState.moves[i][j] = gameState.moves[i][j]; }
-    rep(j, 4) { seed_GameState.udlr[i][j] = gameState.udlr[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    seed_GameState.parent[i] = gameState.parent[i];
-    seed_GameState.unionSize[i] = gameState.unionSize[i];
-  }
-  seed_GameState.vp = gameState.vp;
-}
-
-void CopyToOuter()
-{
-  outer_GameState.viewOrder = gameState.viewOrder;
-  outer_GameState.maxScore = gameState.maxScore;
-  outer_GameState.ope1 = gameState.ope1;
-  outer_GameState.ope2 = gameState.ope2;
-  rep(i, gameState.ope1)
-  {
-    rep(j, 5) { outer_GameState.ans1[i][j] = gameState.ans1[i][j]; }
-  }
-  rep(i, gameState.ope2)
-  {
-    rep(j, 4) { outer_GameState.ans2[i][j] = gameState.ans2[i][j]; }
-  }
-  rep(i, n)
-  {
-    rep(j, n) { outer_GameState.a[i][j] = gameState.a[i][j]; }
-  }
-  rep(i, K100)
-  {
-    outer_GameState.x[i] = gameState.x[i];
-    outer_GameState.y[i] = gameState.y[i];
-    outer_GameState.R[i] = gameState.R[i];
-    outer_GameState.D[i] = gameState.D[i];
-  }
-
-  rep(i, n)
-  {
-    rep(j, n) { outer_GameState.cellUse[i][j] = gameState.cellUse[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    outer_GameState.moveCnt[i] = gameState.moveCnt[i];
-    rep(j, gameState.moveCnt[i]) { outer_GameState.moves[i][j] = gameState.moves[i][j]; }
-    rep(j, 4) { outer_GameState.udlr[i][j] = gameState.udlr[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    outer_GameState.parent[i] = gameState.parent[i];
-    outer_GameState.unionSize[i] = gameState.unionSize[i];
-  }
-  outer_GameState.vp = gameState.vp;
-}
-
-void RollBackFromReal()
-{
-  gameState.viewOrder = real_GameState.viewOrder;
-  gameState.maxScore = real_GameState.maxScore;
-  gameState.ope1 = real_GameState.ope1;
-  gameState.ope2 = real_GameState.ope2;
-  rep(i, gameState.ope1)
-  {
-    rep(j, 5) { gameState.ans1[i][j] = real_GameState.ans1[i][j]; }
-  }
-  rep(i, gameState.ope2)
-  {
-    rep(j, 4) { gameState.ans2[i][j] = real_GameState.ans2[i][j]; }
-  }
-  rep(i, n)
-  {
-    rep(j, n) { gameState.a[i][j] = real_GameState.a[i][j]; }
-  }
-  rep(i, K100)
-  {
-    gameState.x[i] = real_GameState.x[i];
-    gameState.y[i] = real_GameState.y[i];
-    gameState.R[i] = real_GameState.R[i];
-    gameState.D[i] = real_GameState.D[i];
-  }
-
-  rep(i, n)
-  {
-    rep(j, n) { gameState.cellUse[i][j] = real_GameState.cellUse[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    gameState.moveCnt[i] = real_GameState.moveCnt[i];
-    rep(j, gameState.moveCnt[i]) { gameState.moves[i][j] = real_GameState.moves[i][j]; }
-    rep(j, 4) { gameState.udlr[i][j] = real_GameState.udlr[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    gameState.parent[i] = real_GameState.parent[i];
-    gameState.unionSize[i] = real_GameState.unionSize[i];
-  }
-  gameState.vp = real_GameState.vp;
-}
-
-void RollBackFromSeed()
-{
-  gameState.viewOrder = seed_GameState.viewOrder;
-  gameState.maxScore = seed_GameState.maxScore;
-  gameState.ope1 = seed_GameState.ope1;
-  gameState.ope2 = seed_GameState.ope2;
-  rep(i, gameState.ope1)
-  {
-    rep(j, 5) { gameState.ans1[i][j] = seed_GameState.ans1[i][j]; }
-  }
-  rep(i, gameState.ope2)
-  {
-    rep(j, 4) { gameState.ans2[i][j] = seed_GameState.ans2[i][j]; }
-  }
-  rep(i, n)
-  {
-    rep(j, n) { gameState.a[i][j] = seed_GameState.a[i][j]; }
-  }
-  rep(i, K100)
-  {
-    gameState.x[i] = seed_GameState.x[i];
-    gameState.y[i] = seed_GameState.y[i];
-    gameState.R[i] = seed_GameState.R[i];
-    gameState.D[i] = seed_GameState.D[i];
-  }
-
-  rep(i, n)
-  {
-    rep(j, n) { gameState.cellUse[i][j] = seed_GameState.cellUse[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    gameState.moveCnt[i] = seed_GameState.moveCnt[i];
-    rep(j, gameState.moveCnt[i]) { gameState.moves[i][j] = seed_GameState.moves[i][j]; }
-    rep(j, 4) { gameState.udlr[i][j] = seed_GameState.udlr[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    gameState.parent[i] = seed_GameState.parent[i];
-    gameState.unionSize[i] = seed_GameState.unionSize[i];
-  }
-  gameState.vp = seed_GameState.vp;
-}
-
-void RollBackFromOuter()
-{
-  gameState.viewOrder = outer_GameState.viewOrder;
-  gameState.maxScore = outer_GameState.maxScore;
-  gameState.ope1 = outer_GameState.ope1;
-  gameState.ope2 = outer_GameState.ope2;
-  rep(i, gameState.ope1)
-  {
-    rep(j, 5) { gameState.ans1[i][j] = outer_GameState.ans1[i][j]; }
-  }
-  rep(i, gameState.ope2)
-  {
-    rep(j, 4) { gameState.ans2[i][j] = outer_GameState.ans2[i][j]; }
-  }
-  rep(i, n)
-  {
-    rep(j, n) { gameState.a[i][j] = outer_GameState.a[i][j]; }
-  }
-  rep(i, K100)
-  {
-    gameState.x[i] = outer_GameState.x[i];
-    gameState.y[i] = outer_GameState.y[i];
-    gameState.R[i] = outer_GameState.R[i];
-    gameState.D[i] = outer_GameState.D[i];
-  }
-
-  rep(i, n)
-  {
-    rep(j, n) { gameState.cellUse[i][j] = outer_GameState.cellUse[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    gameState.moveCnt[i] = outer_GameState.moveCnt[i];
-    rep(j, gameState.moveCnt[i]) { gameState.moves[i][j] = outer_GameState.moves[i][j]; }
-    rep(j, 4) { gameState.udlr[i][j] = outer_GameState.udlr[i][j]; }
-  }
-
-  rep(i, K100)
-  {
-    gameState.parent[i] = outer_GameState.parent[i];
-    gameState.unionSize[i] = outer_GameState.unionSize[i];
-  }
-  gameState.vp = outer_GameState.vp;
-}
 
 // コンピュータをランダムに1マス移動
 void PushACnt(int xx, int yy)
@@ -2170,14 +1975,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
 
   if (nx != xx) {
-    UpdateR(xx);
-    UpdateR(nx);
+    gameState.updateRowR(xx);
+    gameState.updateRowR(nx);
   }
 
 
   if (ny != yy) {
-    UpdateD(yy);
-    UpdateD(ny);
+    gameState.updateColD(yy);
+    gameState.updateColD(ny);
   }
 
 
@@ -2224,10 +2029,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
   int tmpScore = 0;
   if (MethodeMode == 5) {
-    tmpScore = CalcScore(K100 - (gameState.ope1 - 1));
+    tmpScore = gameState.calcScore(K100 - (gameState.ope1 - 1));
   }
   else {
-    tmpScore = CalcScore(K100 - (gameState.ope1 + 1));
+    tmpScore = gameState.calcScore(K100 - (gameState.ope1 + 1));
   }
 
   methodCount[1][1]++;
@@ -2256,7 +2061,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (MethodeMode == 5) {
         isDo = 5;
       }
-      CopyToReal();
+      gameState.copyTo(real_GameState);
     }
   }
   else {
@@ -2270,14 +2075,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
     BackVp();
 
     if (nx != xx) {
-      UpdateR(xx);
-      UpdateR(nx);
+      gameState.updateRowR(xx);
+      gameState.updateRowR(nx);
     }
 
 
     if (ny != yy) {
-      UpdateD(yy);
-      UpdateD(ny);
+      gameState.updateColD(yy);
+      gameState.updateColD(ny);
     }
   }
 
@@ -2343,14 +2148,14 @@ void Method3(double start_temp, double end_temp, double now_progress)
   gameState.x[ite2] = nx1;
   gameState.y[ite2] = ny1;
 
-  UpdateR(xx);
-  UpdateR(nx1);
-  UpdateR(nx2);
-  UpdateD(yy);
-  UpdateD(ny1);
-  UpdateD(ny2);
+  gameState.updateRowR(xx);
+  gameState.updateRowR(nx1);
+  gameState.updateRowR(nx2);
+  gameState.updateColD(yy);
+  gameState.updateColD(ny1);
+  gameState.updateColD(ny2);
 
-  int tmpScore = CalcScore(K100 - (gameState.ope1 + 2));
+  int tmpScore = gameState.calcScore(K100 - (gameState.ope1 + 2));
   methodCount[3][1]++;
   methodSum[1]++;
 
@@ -2379,7 +2184,7 @@ void Method3(double start_temp, double end_temp, double now_progress)
     gameState.ope1++;
 
     if (gameState.maxScore > real_GameState.maxScore) {
-      CopyToReal();
+      gameState.copyTo(real_GameState);
     }
   }
   else {
@@ -2392,12 +2197,12 @@ void Method3(double start_temp, double end_temp, double now_progress)
     gameState.y[ite1] = ny1;
     std::swap(gameState.a[nx1][ny1], gameState.a[xx][yy]);
 
-    UpdateR(xx);
-    UpdateR(nx1);
-    UpdateR(nx2);
-    UpdateD(yy);
-    UpdateD(ny1);
-    UpdateD(ny2);
+    gameState.updateRowR(xx);
+    gameState.updateRowR(nx1);
+    gameState.updateRowR(nx2);
+    gameState.updateColD(yy);
+    gameState.updateColD(ny1);
+    gameState.updateColD(ny2);
   }
 }
 
@@ -2425,14 +2230,14 @@ void Method4(double start_temp, double end_temp, double now_progress)
   gameState.x[ite] = nx2;
   gameState.y[ite] = ny2;
 
-  UpdateR(xx);
-  UpdateR(nx1);
-  UpdateR(nx2);
-  UpdateD(yy);
-  UpdateD(ny1);
-  UpdateD(ny2);
+  gameState.updateRowR(xx);
+  gameState.updateRowR(nx1);
+  gameState.updateRowR(nx2);
+  gameState.updateColD(yy);
+  gameState.updateColD(ny1);
+  gameState.updateColD(ny2);
 
-  int tmpScore = CalcScore(K100 - (gameState.ope1 + 2));
+  int tmpScore = gameState.calcScore(K100 - (gameState.ope1 + 2));
   methodCount[4][1]++;
   methodSum[1]++;
 
@@ -2461,7 +2266,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
     gameState.ope1++;
 
     if (gameState.maxScore > real_GameState.maxScore) {
-      CopyToReal();
+      gameState.copyTo(real_GameState);
     }
   }
   else {
@@ -2470,12 +2275,12 @@ void Method4(double start_temp, double end_temp, double now_progress)
     gameState.x[ite] = xx;
     gameState.y[ite] = yy;
 
-    UpdateR(xx);
-    UpdateR(nx1);
-    UpdateR(nx2);
-    UpdateD(yy);
-    UpdateD(ny1);
-    UpdateD(ny2);
+    gameState.updateRowR(xx);
+    gameState.updateRowR(nx1);
+    gameState.updateRowR(nx2);
+    gameState.updateColD(yy);
+    gameState.updateColD(ny1);
+    gameState.updateColD(ny2);
   }
 }
 
@@ -2529,7 +2334,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
     }
     gameState.ope1--;
     if (isDo == 5) {
-      CopyToReal();
+      gameState.copyTo(real_GameState);
     }
   }
   else {
@@ -2558,7 +2363,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
       return;
     }
 
-    gameState.maxScore = CalcScore(K100 - (gameState.ope1 - 2));
+    gameState.maxScore = gameState.calcScore(K100 - (gameState.ope1 - 2));
 
     methodCount[6][0]++;
     methodSum[0]++;
@@ -2571,7 +2376,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
     gameState.ope1 -= 2;
 
     if (gameState.maxScore > real_GameState.maxScore) {
-      CopyToReal();
+      gameState.copyTo(real_GameState);
     }
   }
 }
@@ -2649,12 +2454,12 @@ void Method7(double start_temp, double end_temp, double now_progress)
       }
       gameState.ope1--;
 
-      gameState.maxScore = CalcScore(K100 - gameState.ope1);
+      gameState.maxScore = gameState.calcScore(K100 - gameState.ope1);
       methodCount[7][0]++;
       methodSum[0]++;
 
       if (gameState.maxScore > real_GameState.maxScore) {
-        CopyToReal();
+        gameState.copyTo(real_GameState);
       }
 
     }
@@ -2670,9 +2475,9 @@ int Solve(int mode, int problemNum = 0)
   Init();
 
   // 愚直解
-  gameState.maxScore = CalcScore(K100, true);
-  CopyToReal();
-  CopyToSeed();
+  gameState.maxScore = gameState.calcScore(K100, true);
+  gameState.copyTo(real_GameState);
+  gameState.copyTo(seed_GameState);
 
   // シード作り
   int seedCount = 10;
@@ -2682,7 +2487,7 @@ int Solve(int mode, int problemNum = 0)
 
     Init();
     gameState.viewOrder = tei % 2;
-    gameState.maxScore = CalcScore(K100, true);
+    gameState.maxScore = gameState.calcScore(K100, true);
 
     // 焼きなまし
     end_time = clock();
@@ -2704,7 +2509,7 @@ int Solve(int mode, int problemNum = 0)
 
       // 現在のスコアが悪いときは元に戻す
       if (gameState.maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
-        RollBackFromReal();
+        gameState.copyFrom(real_GameState);
         rollbackCount++;
       }
 
@@ -2757,17 +2562,17 @@ int Solve(int mode, int problemNum = 0)
     }
 
     // スコアが良ければシードを更新
-    RollBackFromReal();
+    gameState.copyFrom(real_GameState);
     if (gameState.maxScore > seed_GameState.maxScore) {
-      CopyToSeed();
+      gameState.copyTo(seed_GameState);
     }
 
     AllClear();
   }
 
   // シードから戻す
-  RollBackFromSeed();
-  CopyToReal();
+  gameState.copyFrom(seed_GameState);
+  gameState.copyTo(real_GameState);
 
   // 焼きなまし
   start_time = clock();
@@ -2790,7 +2595,7 @@ int Solve(int mode, int problemNum = 0)
 
     // 現在のスコアが悪いときは元に戻す
     if (gameState.maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
-      RollBackFromReal();
+      gameState.copyFrom(real_GameState);
       rollbackCount++;
     }
 
@@ -2852,9 +2657,9 @@ int Solve(int mode, int problemNum = 0)
     }
   }
 
-  RollBackFromReal();
+  gameState.copyFrom(real_GameState);
 
-  int cal = CalcScore(K100 - gameState.ope1, true);
+  int cal = gameState.calcScore(K100 - gameState.ope1, true);
 
   if (true) {
     cerr << "problemNum = " << problemNum << ", N = " << n << ", K = " << K << endl;
@@ -2884,11 +2689,11 @@ int SolveOuter(int mode, int problemNum)
     gameState.viewOrder = _ % 2;
     int score = Solve(mode, problemNum);
     if (score >= outer_GameState.maxScore) {
-      CopyToOuter();
+      gameState.copyTo(outer_GameState);
     }
     AllClear();
   }
-  RollBackFromOuter();
+  gameState.copyFrom(outer_GameState);
 
   // 解の出力
   Output(mode, problemNum);
