@@ -545,151 +545,189 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& fie
 }
 
 
-void planCropPlacement()
+// 空白マスから関節点を除外して取得
+vector<P> getNonArticulationBlanks(const vector<vector<int>>& fieldStatus)
 {
-  vector<vector<int>> fieldStatus(20, vector<int>(20));
-  for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) {
-      fieldStatus[i][j] = -1;
+  LowLinkGraph Graph;
+  map<int, P> mp;     // {頂点番号,座標}
+  map<P, int> mpInv;  // {座標,頂点番号}
+
+  // 空のグラフ作成
+  for (int i = 0; i < HW; ++i) {
+    auto [x, y] = toCoord(i);
+    if (fieldStatus[x][y] == -1) {
+      int num = mp.size();
+      mp[num] = P(x, y);
+      mpInv[P(x, y)] = num;
+      Graph.push_back(vector<LowLinkEdge>());
     }
   }
 
-  for (int turn = 0; turn < (T); ++turn) {
-    // 設置
-    drep(i, plantableCrops[turn].size())
-    {
+  // エッジを追加
+  for (int num = 0; num < mp.size(); ++num) {
+    int x = mp[num].first;
+    int y = mp[num].second;
+    for (int j = 0; j < 4; ++j) {
+      if (canalsAround[x][y][j]) { continue; }
+      int nx = x + dx[j];
+      int ny = y + dy[j];
+      if (fieldStatus[nx][ny] == -1) {
+        LowLinkEdge e;
+        e.to = mpInv[P(nx, ny)];
+        Graph[num].push_back(e);
+      }
+    }
+  }
+
+  // 関節点列挙
+  LowLink lowLink(Graph);
+  set<int> aps;
+  for (auto ap : lowLink.aps) {
+    aps.insert(ap);
+  }
+
+  vector<P> blanks;
+  for (int i = 0; i < mp.size(); ++i) {
+    if (aps.find(i) != aps.end()) {
+      continue;
+    }
+    blanks.push_back(mp[i]);
+  }
+
+  return blanks;
+}
+
+// 各マスへの歩数を計算
+vector<vector<int>> calculateWalkCount(const vector<vector<int>>& fieldStatus)
+{
+  vector<vector<int>> walkCount(H, vector<int>(W, INF));
+  walkCount[entranceX][SY] = 0;
+  queue<P> que;
+  que.push(P(entranceX, SY));
+
+  while (!que.empty()) {
+    int x = que.front().first;
+    int y = que.front().second;
+    que.pop();
+    for (int j = 0; j < 4; ++j) {
+      if (canalsAround[x][y][j]) { continue; }
+      int nx = x + dx[j];
+      int ny = y + dy[j];
+      if (fieldStatus[nx][ny] == -1 && walkCount[x][y] + 1 < walkCount[nx][ny]) {
+        walkCount[nx][ny] = walkCount[x][y] + 1;
+        que.push(P(nx, ny));
+      }
+    }
+  }
+
+  return walkCount;
+}
+
+// 配置可能な場所を探す
+vector<P> findValidPlacements(const vector<P>& candidates, int harvestMonth, vector<vector<int>>& fieldStatus)
+{
+  vector<P> validPlacements;
+
+  for (const auto& pos : candidates) {
+    int x = pos.first;
+    int y = pos.second;
+
+    fieldStatus[x][y] = harvestMonth;
+    bool isValid = false;
+
+    if (isValidPlotForCrop(x, y, fieldStatus)) {
+      isValid = true;
+    }
+    else if (isFieldAccessible(fieldStatus) && canReachAllPlotsFromEntrance(fieldStatus)) {
+      isValid = true;
+    }
+
+    if (isValid) {
+      validPlacements.push_back(P(x, y));
+    }
+
+    fieldStatus[x][y] = -1;
+  }
+
+  return validPlacements;
+}
+
+// 最適な配置場所を選択
+P selectBestPlacement(const vector<P>& validPlacements, int harvestMonth,
+  const vector<vector<int>>& fieldStatus, const vector<vector<int>>& walkCount)
+{
+  P bestPos = { -1, -1 };
+  double bestScore = 0;
+
+  for (const auto& pos : validPlacements) {
+    double score = Score_1_Dijkstra(pos.first, pos.second, harvestMonth, fieldStatus, walkCount[pos.first][pos.second]);
+    if (score > bestScore) {
+      bestScore = score;
+      bestPos = pos;
+    }
+  }
+
+  return bestPos;
+}
+
+// 作物を配置
+void placeCrop(const CropType& crop, int x, int y, int turn, vector<vector<int>>& fieldStatus)
+{
+  fieldStatus[x][y] = crop.harvestMonth;
+  plantedCropId[totalPlantedCrops] = crop.id;
+  plantedX[totalPlantedCrops] = x;
+  plantedY[totalPlantedCrops] = y;
+  plantedMonth[totalPlantedCrops] = turn;
+  isPlanted[crop.id] = 1;
+  totalPlantedCrops++;
+}
+
+// 収穫処理
+void harvestCrops(int turn, vector<vector<int>>& fieldStatus)
+{
+  for (int i = 0; i < H; ++i) {
+    for (int j = 0; j < W; ++j) {
+      if (fieldStatus[i][j] == turn) {
+        fieldStatus[i][j] = -1;
+      }
+    }
+  }
+}
+
+void planCropPlacement()
+{
+  vector<vector<int>> fieldStatus(H, vector<int>(W, -1));
+
+  for (int turn = 0; turn < T; ++turn) {
+    // 作物の配置処理
+    for (int i = plantableCrops[turn].size() - 1; i >= 0; --i) {
       CropType crop = plantableCrops[turn][i];
       if (isPlanted[crop.id]) {
         continue;
       }
-      int d = crop.harvestMonth;
 
-      // 関節点じゃない空白マスを列挙
-      LowLinkGraph Graph;
-      map<int, P> mp;     // {頂点番号,座標}
-      map<P, int> mpInv;  // {座標,頂点番号}
-      // 空のグラフ作成
-      for (int i = 0; i < HW; ++i) {
-        auto [x, y] = toCoord(i);
-        if (fieldStatus[x][y] == -1) {
-          int num = mp.size();
-          mp[num] = P(x, y);
-          mpInv[P(x, y)] = num;
-          Graph.push_back(vector<LowLinkEdge>());
-        }
-      }
-      // エッジ
-      for (int num = 0; num < mp.size(); ++num) {
-        int x = mp[num].first;
-        int y = mp[num].second;
-        for (int j = 0; j < (4); ++j) {
-          if (canalsAround[x][y][j]) { continue; }
-          int nx = x + dx[j];
-          int ny = y + dy[j];
-          if (fieldStatus[nx][ny] == -1) {
-            LowLinkEdge e;
-            e.to = mpInv[P(nx, ny)];
-            Graph[num].push_back(e);
-          }
-        }
-      }
-      // 関節点列挙
-      LowLink lowLink(Graph);
-      set<int> aps;
-      for (auto ap : lowLink.aps) {
-        aps.insert(ap);
-      }
-      vector<P> blanks;
-      for (int i = 0; i < mp.size(); ++i) {
-        if (aps.find(i) != aps.end()) {
-          continue;
-        }
-        blanks.push_back(mp[i]);
-      }
+      // 配置可能な候補地を取得
+      vector<P> blanks = getNonArticulationBlanks(fieldStatus);
       std::shuffle(blanks.begin(), blanks.end(), engine);
 
-      int walkCount[H][W];
-      for (int j = 0; j < (H); ++j) {
-        for (int k = 0; k < (W); ++k) {
-          walkCount[j][k] = INF;
-        }
-      }
-      walkCount[entranceX][SY] = 0;
-      queue<P> que;
-      que.push(P(entranceX, SY));
-      while (que.size()) {
-        int x = que.front().first;
-        int y = que.front().second;
-        que.pop();
-        for (int j = 0; j < (4); ++j) {
-          if (canalsAround[x][y][j]) { continue; }
-          int nx = x + dx[j];
-          int ny = y + dy[j];
-          if (fieldStatus[nx][ny] == -1 && walkCount[x][y] + 1 < walkCount[nx][ny]) {
-            walkCount[nx][ny] = walkCount[x][y] + 1;
-            que.push(P(nx, ny));
-          }
-        }
-      }
+      // 歩数を計算
+      vector<vector<int>> walkCount = calculateWalkCount(fieldStatus);
 
-      // 配置決め
-      vector<P> OKs;
-      for (auto ap : blanks) {
-        int x = ap.first;
-        int y = ap.second;
-        if (fieldStatus[x][y] != -1) {
-          assert(false);
-        }
+      // 有効な配置場所を探す
+      vector<P> validPlacements = findValidPlacements(blanks, crop.harvestMonth, fieldStatus);
 
-        fieldStatus[x][y] = d;
-        bool OK = false;
-        if (isValidPlotForCrop(x, y, fieldStatus)) {
-          OK = true;
-        }
-        if (!OK) {
-          if (isFieldAccessible(fieldStatus) && canReachAllPlotsFromEntrance(fieldStatus)) {
-            OK = true;
-          }
-        }
-        if (OK) {
-          OKs.push_back(P(x, y));
-        }
-        fieldStatus[x][y] = -1;
-      }
-      if (!OKs.empty()) {
-        double ma = 0;
-        P best;
-        best.first = -1;
-        for (auto p : OKs) {
-          double tmpScore = Score_1_Dijkstra(p.first, p.second, d, fieldStatus, walkCount[p.first][p.second]);
-          //double tmpScore = Score_2(p.first, p.second, d, fieldStatus);
-          if (ma < tmpScore) {
-            ma = tmpScore;
-            best = p;
-          }
-        }
-        if (best.first != -1) {
-          int x = best.first;
-          int y = best.second;
-          fieldStatus[x][y] = d;
-          plantedCropId[totalPlantedCrops] = crop.id;
-          plantedX[totalPlantedCrops] = x;
-          plantedY[totalPlantedCrops] = y;
-          plantedMonth[totalPlantedCrops] = turn;
-          isPlanted[crop.id] = 1;
-          totalPlantedCrops++;
+      if (!validPlacements.empty()) {
+        // 最適な場所を選択
+        P bestPos = selectBestPlacement(validPlacements, crop.harvestMonth, fieldStatus, walkCount);
+
+        if (bestPos.first != -1) {
+          placeCrop(crop, bestPos.first, bestPos.second, turn, fieldStatus);
         }
       }
     }
 
-    // 収穫
-    for (int i = 0; i < (H); ++i) {
-      for (int j = 0; j < (W); ++j) {
-        if (fieldStatus[i][j] == turn) {
-          fieldStatus[i][j] = -1;
-        }
-      }
-    }
+    // 収穫処理
+    harvestCrops(turn, fieldStatus);
   }
 }
 
