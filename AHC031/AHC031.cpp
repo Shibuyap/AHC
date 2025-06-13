@@ -41,6 +41,22 @@ const int MAX_D = 55;
 const int MAX_N = 56;
 const int MAX_LINECOUNT = 60;
 
+// スコア計算関連の定数
+const int SCORE_MULTIPLIER = 100;
+const int GRID_WIDTH = 1000;
+const int INVALID_SIZE = 1001001;
+
+// 最適化パラメータ
+const int MAX_CANDIDATES = 30;
+const int RANDOM_TRIAL_COUNT = 32;
+const int SMALL_DATA_THRESHOLD = 5;
+const int DEFAULT_TRIAL_LIMIT = 10;
+
+// 焼きなまし法のパラメータ
+const double ANNEALING_START_TEMP = 10000.1;
+const double ANNEALING_END_TEMP = 0.1;
+const int ANNEALING_TEMP_COEFFICIENT = 100;
+
 class Solution
 {
 public:
@@ -114,10 +130,11 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
-const ll INF = 1001001001001001001;
+const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
 
-double TL = 2.8;
+const double TIME_LIMIT = 2.8;
+double TL = TIME_LIMIT;
 int mode;
 clock_t startTime, endTime;
 
@@ -131,7 +148,7 @@ double GetNowTime()
 // Constants are already defined in Solution.hpp
 int lineMaxLimit = 100;
 
-const int w = 1000;
+const int w = GRID_WIDTH;
 int d, n;
 double ee;
 int a[MAX_D][MAX_N];
@@ -168,135 +185,31 @@ void CopyToRealAns()
 void CopyFromRealRealAns()
 {
   real_ans.copyFrom(real_real_ans);
-  real_ans.ansBaseLineCount = real_real_ans.ansBaseLineCount;
-  rep(i, d)
-  {
-    real_ans.ansLineCount[i] = real_real_ans.ansLineCount[i];
-    rep(j, real_ans.ansLineCount[i] + 1)
-    {
-      real_ans.ansLinePos[i][j] = real_real_ans.ansLinePos[i][j];
-    }
-  }
 }
 
 void CopyFromRealAns()
 {
-  ans.ansScore = real_ans.ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        ans.ans[i][j][k] = real_ans.ans[i][j][k];
-      }
-    }
-  }
-  ans.ansBaseLineCount = real_ans.ansBaseLineCount;
-  rep(i, d)
-  {
-    ans.ansLineCount[i] = real_ans.ansLineCount[i];
-    rep(j, ans.ansLineCount[i] + 1)
-    {
-      ans.ansLinePos[i][j] = real_ans.ansLinePos[i][j];
-    }
-  }
+  ans.copyFrom(real_ans);
 }
 
 void CopyToKeep31(int idx)
 {
-  keep31_ans[idx].ansScore = ans.ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        keep31_ans[idx].ans[i][j][k] = ans.ans[i][j][k];
-      }
-    }
-  }
-  keep31_ans[idx].ansBaseLineCount = ans.ansBaseLineCount;
-  rep(i, d)
-  {
-    keep31_ans[idx].ansLineCount[i] = ans.ansLineCount[i];
-    rep(j, ans.ansLineCount[i] + 1)
-    {
-      keep31_ans[idx].ansLinePos[i][j] = ans.ansLinePos[i][j];
-    }
-  }
+  keep31_ans[idx].copyFrom(ans);
 }
 
 void CopyFromKeep31(int idx)
 {
-  ans.ansScore = keep31_ans[idx].ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        ans.ans[i][j][k] = keep31_ans[idx].ans[i][j][k];
-      }
-    }
-  }
-  ans.ansBaseLineCount = keep31_ans[idx].ansBaseLineCount;
-  rep(i, d)
-  {
-    ans.ansLineCount[i] = keep31_ans[idx].ansLineCount[i];
-    rep(j, ans.ansLineCount[i] + 1)
-    {
-      ans.ansLinePos[i][j] = keep31_ans[idx].ansLinePos[i][j];
-    }
-  }
+  ans.copyFrom(keep31_ans[idx]);
 }
 
 void CopyToTemp()
 {
-  temp_ans.ansScore = ans.ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        temp_ans.ans[i][j][k] = ans.ans[i][j][k];
-      }
-    }
-  }
-  temp_ans.ansBaseLineCount = ans.ansBaseLineCount;
-  rep(i, d)
-  {
-    temp_ans.ansLineCount[i] = ans.ansLineCount[i];
-    rep(j, ans.ansLineCount[i] + 1)
-    {
-      temp_ans.ansLinePos[i][j] = ans.ansLinePos[i][j];
-    }
-  }
+  temp_ans.copyFrom(ans);
 }
 
 void CopyFromTemp()
 {
-  ans.ansScore = temp_ans.ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        ans.ans[i][j][k] = temp_ans.ans[i][j][k];
-      }
-    }
-  }
-  ans.ansBaseLineCount = temp_ans.ansBaseLineCount;
-  rep(i, d)
-  {
-    ans.ansLineCount[i] = temp_ans.ansLineCount[i];
-    rep(j, ans.ansLineCount[i] + 1)
-    {
-      ans.ansLinePos[i][j] = temp_ans.ansLinePos[i][j];
-    }
-  }
+  ans.copyFrom(temp_ans);
 }
 
 // 複数ケース回すときに内部状態を初期値に戻す
@@ -549,7 +462,7 @@ ll CalcScore()
       int sy = ans.ans[i][j][1];
       int tx = ans.ans[i][j][2];
       int ty = ans.ans[i][j][3];
-      res += (ll)max(0, a[i][j] - (tx - sx) * (ty - sy)) * 100;
+      res += (ll)max(0, a[i][j] - (tx - sx) * (ty - sy)) * SCORE_MULTIPLIER;
     }
   }
   {
@@ -687,7 +600,7 @@ ll CalcScoreForMethod3()
       int sy = ans.ans[i][j][1];
       int tx = ans.ans[i][j][2];
       int ty = ans.ans[i][j][3];
-      res += (ll)max(0, a[i][j] - (tx - sx) * (ty - sy)) * 100;
+      res += (ll)max(0, a[i][j] - (tx - sx) * (ty - sy)) * SCORE_MULTIPLIER;
     }
   }
 
@@ -1674,8 +1587,8 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
   return diffScore3;
 }
 
-double M43_start_temp = 10000.1;
-double M43_end_temp = 0.1;
+double M43_start_temp = ANNEALING_START_TEMP;
+double M43_end_temp = ANNEALING_END_TEMP;
 double M43_startTime = 0;
 double M43_nowTime = 0;
 double M43_timeLimit = 0;
@@ -1738,7 +1651,7 @@ void Method4_3_1()
     }
   }
 
-  if (M43_kouhoCount > 30) return;
+  if (M43_kouhoCount > MAX_CANDIDATES) return;
   // if (M43_kouhoCount == 0 && afterCount > 0) return;
   if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) return;
 
@@ -1747,7 +1660,7 @@ void Method4_3_1()
     M43_karinas[karinaCount] = 0;
     karinaCount++;
   }
-  else if (M43_kouhoCount <= 5) {
+  else if (M43_kouhoCount <= SMALL_DATA_THRESHOLD) {
     rep(karina, (1 << M43_kouhoCount))
     {
       // if (karina == 0) continue;
@@ -1756,7 +1669,7 @@ void Method4_3_1()
     }
   }
   else {
-    rep(aespa, 32)
+    rep(aespa, RANDOM_TRIAL_COUNT)
     {
       // int karina               = Rand() % ((1 << M43_kouhoCount) - 1) + 1;
       int karina = Rand() % ((1 << M43_kouhoCount));
@@ -1957,7 +1870,7 @@ void Method4_3_1()
       // double timeRatio = (M43_nowTime - M43_startTime) / (M43_timeLimit - M43_startTime);
       // double temp      = pow(M43_start_temp, 1.0 - timeRatio) * pow(M43_end_temp, timeRatio);
       // cout << temp << endl;
-      const double prob = exp((double)totalDiffScore * 100 / temp);
+      const double prob = exp((double)totalDiffScore * ANNEALING_TEMP_COEFFICIENT / temp);
 
       // rep(k, ans.ansBaseLineCount) {
       //  widths[k] = widths2[k];
@@ -2039,7 +1952,7 @@ void Method4_3_2()
     }
   }
 
-  if (M43_kouhoCount > 30) return;
+  if (M43_kouhoCount > MAX_CANDIDATES) return;
   // if (kouhoCount == 0 && afterCount > 0) return;
   if (M43_kouhoCount == 0) return;
   if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) return;
@@ -2049,7 +1962,7 @@ void Method4_3_2()
     M43_karinas[karinaCount] = 0;
     karinaCount++;
   }
-  else if (M43_kouhoCount <= 5) {
+  else if (M43_kouhoCount <= SMALL_DATA_THRESHOLD) {
     rep(karina, (1 << M43_kouhoCount))
     {
       if (karina == 0) continue;
@@ -2058,7 +1971,7 @@ void Method4_3_2()
     }
   }
   else {
-    rep(aespa, 32)
+    rep(aespa, RANDOM_TRIAL_COUNT)
     {
       int karina = Rand() % ((1 << M43_kouhoCount) - 1) + 1;
       M43_karinas[karinaCount] = karina;
@@ -2235,7 +2148,7 @@ void Method4_3_2()
       int totalDiffScore = diffScore1 + diffScore2 + diffScore3 + diffScore4;
 
       double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
-      const double prob = exp((double)totalDiffScore * 100 / temp);
+      const double prob = exp((double)totalDiffScore * ANNEALING_TEMP_COEFFICIENT / temp);
 
       if (prob > Rand01()) {
         ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
@@ -2826,7 +2739,7 @@ void Method4_3_7()
   int totalDiffScore = diffScore2 + diffScore4;
 
   double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * M43_nowTime / M43_timeLimit);
-  const double prob = exp((double)totalDiffScore * 100 / temp);
+  const double prob = exp((double)totalDiffScore * ANNEALING_TEMP_COEFFICIENT / temp);
 
   if (prob > Rand01()) {
     ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
@@ -3037,7 +2950,7 @@ void Method4_3(double timeLimit)
       {
         int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
         if (width == 0) {
-          preCalcScheduleSizes[i][j][k] = 1001001;
+          preCalcScheduleSizes[i][j][k] = INVALID_SIZE;
         }
         else {
           preCalcScheduleSizes[i][j][k] = (a[i][j] - 1) / width + 1;
@@ -3262,7 +3175,7 @@ int Method3_Oshii()
       {
         int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
         if (width == 0) {
-          preCalcScheduleSizes[i][j][k] = 1001001;
+          preCalcScheduleSizes[i][j][k] = INVALID_SIZE;
         }
         else {
           preCalcScheduleSizes[i][j][k] = (a[i][j] - 1) / width + 1;
@@ -3366,9 +3279,9 @@ int Method3_Oshii()
         kouhoCount++;
       }
 
-      if (kouhoCount == 0 || kouhoCount > 30) continue;
+      if (kouhoCount == 0 || kouhoCount > MAX_CANDIDATES) continue;
 
-      if (kouhoCount <= 5) {
+      if (kouhoCount <= SMALL_DATA_THRESHOLD) {
         drep(chaewon, (1 << kouhoCount))
         {
           if (chaewon == 0) continue;
@@ -4094,7 +4007,7 @@ void Method3_1(double timeLimit)
         M3_alreadyCount = Rand() % 3;
       }
       else {
-        if (real_ans.ansBaseLineCount <= 5) {
+        if (real_ans.ansBaseLineCount <= SMALL_DATA_THRESHOLD) {
           M3_alreadyCount = Rand() % 3;
         }
         else {
@@ -4553,7 +4466,7 @@ void Method8(double timeLimit)
   rep(i, d)
   {
     M8ansNum[i] = NG_NUM;
-    M8ansScore[NG_NUM][i] = 1001001;
+    M8ansScore[NG_NUM][i] = INVALID_SIZE;
     rep(j, n)
     {
       rep(k, 4)
@@ -4844,7 +4757,7 @@ void Method8(double timeLimit)
 
     double timeRatio = (M8_NowTime - M8_startTime2) / (timeLimit - M8_startTime2);
     double temp = (M43_start_temp + (M43_end_temp - M43_start_temp) * timeRatio);
-    const double prob = exp((double)diffScore * 100 / temp);
+    const double prob = exp((double)diffScore * ANNEALING_TEMP_COEFFICIENT / temp);
 
     if (prob > Rand01()) { M8ansNum[raD] = raNum; }
   }
