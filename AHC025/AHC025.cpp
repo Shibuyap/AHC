@@ -276,6 +276,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 
 // Forward declarations
 char Query(int& turn);
+int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLeft, int initialRight, int& countQ);
 
 // Common refactored functions
 void initializeAnsArray()
@@ -309,6 +310,24 @@ void moveGroupToPosition(vector<int>& groups, int from, int to)
     swap(groups[from - 1], groups[from]);
     from--;
   }
+}
+
+void assignHeaviestToGroups(const vector<int>& items, int startIdx)
+{
+  rep(i, D)
+  {
+    int id = items[startIdx - i];
+    ans[id] = i;
+  }
+}
+
+void assignToLightestGroup(const vector<int>& items, int itemIdx, int& countQ, vector<int>& groups)
+{
+  int id = items[itemIdx];
+  int gId = groups[D - 1];
+  ans[id] = gId;
+  int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
+  moveGroupToPosition(groups, D - 1, left);
 }
 
 template<typename T>
@@ -379,6 +398,37 @@ bool shouldSkipBasedOnCutline(int z, int cutLine)
     else if (hikaku[z][j] == -1) lose++;
   }
   return (win + lose >= cutLine && win >= lose);
+}
+
+int selectRandomFromGroup(int groupId)
+{
+  vector<int> groupItems;
+  rep(j, N)
+  {
+    if (ans[j] == groupId) {
+      groupItems.push_back(j);
+    }
+  }
+  return groupItems.empty() ? -1 : groupItems[Rand() % groupItems.size()];
+}
+
+int selectGroupWithMinSize(int minSize)
+{
+  int x = Rand() % D;
+  int loop = 0;
+  while (true) {
+    loop++;
+    if (loop >= 100) return -1;
+    x = Rand() % D;
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == x) {
+        cnt++;
+        if (cnt >= minSize) return x;
+      }
+    }
+  }
 }
 
 
@@ -754,54 +804,38 @@ void ResetMemory()
   }
 }
 
+// Base Move1 implementation
+void Move1Base(int& countQ, int srcGroup, int dstGroup, int itemToMove, const string& methodName)
+{
+  buildQueryGroups(countQ, srcGroup, dstGroup, itemToMove);
+
+  char c = Query(countQ);
+  if (c == '>') {
+    ans[itemToMove] = dstGroup;
+    comments[countQ] += methodName + " ";
+    ResetMemory();
+  }
+}
+
 // 1個移動
 void Move1(int& countQ, int cutLine = 999)
 {
-  int x = Rand() % D;
-  int loop = 0;
-  while (true) {
-    loop++;
-    if (loop >= 100) {
-      return;
-    }
-    x = Rand() % D;
-    int cnt = 0;
-    rep(j, N)
-    {
-      if (ans[j] == x) {
-        cnt++;
-        if (cnt >= 2) break;
-      }
-    }
-    if (cnt >= 2) {
-      break;
-    }
-  }
+  int x = selectGroupWithMinSize(2);
+  if (x == -1) return;
+
   int y = Rand() % D;
   while (x == y) {
     y = Rand() % D;
   }
-  vector<int> vx;
-  rep(j, N)
-  {
-    if (ans[j] == x) {
-      vx.push_back(j);
-    }
-  }
-  int z = vx[Rand() % vx.size()];
+
+  int z = selectRandomFromGroup(x);
+  if (z == -1) return;
 
   if (shouldSkipBasedOnCutline(z, cutLine)) {
     return;
   }
 
-  buildQueryGroups(countQ, x, y, z);
-
-  char c = Query(countQ);
-  if (c == '>') {
-    ans[z] = y;
-    comments[countQ] += "Move1 ";
-    ResetMemory();
-  }
+  Move1Base(countQ, x, y, z, "Move1");
 }
 
 // 戻り値：移動先グループ
@@ -863,21 +897,10 @@ void Move1_Two(int& countQ, int cutLine = 999)
     Move1(countQ, cutLine);
     return;
   }
-  int x = Rand() % D;
-  while (true) {
-    x = Rand() % D;
-    int cnt = 0;
-    rep(j, N)
-    {
-      if (ans[j] == x) {
-        cnt++;
-        if (cnt >= 2) break;
-      }
-    }
-    if (cnt >= 2) {
-      break;
-    }
-  }
+
+  int x = selectGroupWithMinSize(2);
+  if (x == -1) return;
+
   int y1 = Rand() % D;
   while (x == y1) {
     y1 = Rand() % D;
@@ -886,53 +909,30 @@ void Move1_Two(int& countQ, int cutLine = 999)
   while (x == y2 || y1 == y2) {
     y2 = Rand() % D;
   }
+
   char c1 = QueryGroup(countQ, y1, y2);
-  int y = y1;
-  if (c1 == '>') y = y2;
-  vector<int> vx;
-  rep(j, N)
-  {
-    if (ans[j] == x) {
-      vx.push_back(j);
-    }
-  }
-  int z = vx[Rand() % vx.size()];
+  int y = (c1 == '>') ? y2 : y1;
+
+  int z = selectRandomFromGroup(x);
+  if (z == -1) return;
 
   if (shouldSkipBasedOnCutline(z, cutLine)) {
     return;
   }
 
-  buildQueryGroups(countQ, x, y, z);
-
-  char c = Query(countQ);
-  if (c == '>') {
-    ans[z] = y;
-    comments[countQ] += "Move1 ";
-    ResetMemory();
-  }
+  Move1Base(countQ, x, y, z, "Move1");
 }
 
 void Move1Minimum(int& countQ, int cutLine = 999)
 {
-  int x = Rand() % D;
-  while (true) {
-    x = Rand() % D;
-    int cnt = 0;
-    rep(j, N)
-    {
-      if (ans[j] == x) {
-        cnt++;
-        if (cnt >= 2) break;
-      }
-    }
-    if (cnt >= 2) {
-      break;
-    }
-  }
+  int x = selectGroupWithMinSize(2);
+  if (x == -1) return;
+
   int y = Rand() % D;
   while (x == y) {
     y = Rand() % D;
   }
+
   vector<int> vv;
   rep(j, N)
   {
@@ -940,6 +940,8 @@ void Move1Minimum(int& countQ, int cutLine = 999)
       vv.push_back(j);
     }
   }
+  if (vv.empty()) return;
+
   int z = vv[Rand() % vv.size()];
   rep(_, 30)
   {
@@ -953,14 +955,7 @@ void Move1Minimum(int& countQ, int cutLine = 999)
     return;
   }
 
-  buildQueryGroups(countQ, x, y, z);
-
-  char c = Query(countQ);
-  if (c == '>') {
-    ans[z] = y;
-    comments[countQ] += "Move1Minimum ";
-    ResetMemory();
-  }
+  Move1Base(countQ, x, y, z, "Move1Minimum");
 }
 
 int Move1Combo(int& countQ, int combo, int cutLine = 999)
@@ -1025,49 +1020,38 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
   return -1;
 }
 
-// 1個交換
-int arr8_2_L[110];
-int arr8_2_R[110];
-void Swap1(int& countQ, int diffLine = 999)
+// Helper to select two different groups with minimum size
+bool selectTwoGroupsWithMinSize(int& x, int& y, int minSize = 2)
 {
-  int x = Rand() % D;
-  while (true) {
-    x = Rand() % D;
-    int cnt = 0;
-    rep(j, N)
-    {
-      if (ans[j] == x) {
-        cnt++;
-        if (cnt >= 2) break;
-      }
-    }
-    if (cnt >= 2) {
-      break;
-    }
-  }
-  int y = Rand() % D;
+  x = selectGroupWithMinSize(minSize);
+  if (x == -1) return false;
+
   int yloop = 0;
   while (true) {
     yloop++;
-    if (yloop == 30) {
-      break;
-    }
+    if (yloop == 30) return false;
+
     y = Rand() % D;
-    if (x == y) {
-      continue;
-    }
+    if (x == y) continue;
+
     int cnt = 0;
     rep(j, N)
     {
       if (ans[j] == y) {
         cnt++;
-        if (cnt >= 2) break;
+        if (cnt >= minSize) return true;
       }
     }
-    if (cnt >= 2) {
-      break;
-    }
   }
+}
+
+// 1個交換
+int arr8_2_L[110];
+int arr8_2_R[110];
+void Swap1(int& countQ, int diffLine = 999)
+{
+  int x, y;
+  if (!selectTwoGroupsWithMinSize(x, y)) return;
 
   int szL = 0;
   int szR = 0;
@@ -1356,6 +1340,24 @@ bool IsAllSearched_SwapNeighbor1(const vector<int>& items)
   return true;
 }
 
+// Helper for SwapNeighbor methods
+void buildSwapNeighborQuery(int& countQ, int x, int y, int xg, int yg)
+{
+  if (DItems[0].empty()) {
+    populateAnsItems(DItems);
+  }
+  for (auto i : DItems[xg]) {
+    if (i != x) {
+      l[countQ].push_back(i);
+    }
+  }
+  for (auto i : DItems[yg]) {
+    if (i != y) {
+      r[countQ].push_back(i);
+    }
+  }
+}
+
 // 重さの近いものをスワップ
 bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
 {
@@ -1394,20 +1396,8 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
         }
       }
     }
-    if (DItems[0].empty()) {
-      populateAnsItems(DItems);
-    }
-    for (auto i : DItems[xg]) {
-      if (i != x) {
-        l[countQ].push_back(i);
-      }
-    }
-    for (auto i : DItems[yg]) {
-      if (i != y) {
-        r[countQ].push_back(i);
-      }
-    }
 
+    buildSwapNeighborQuery(countQ, x, y, xg, yg);
     char c = Query(countQ);
 
     if (c == '<') {
@@ -1435,19 +1425,8 @@ bool SwapNeighborSmall1(const vector<int>& items, int& countQ, int smallLine)
     if (xg == yg) {
       break;
     }
-    if (DItems[0].empty()) {
-      populateAnsItems(DItems);
-    }
-    for (auto i : DItems[xg]) {
-      if (i != x) {
-        l[countQ].push_back(i);
-      }
-    }
-    for (auto i : DItems[yg]) {
-      if (i != y) {
-        r[countQ].push_back(i);
-      }
-    }
+
+    buildSwapNeighborQuery(countQ, x, y, xg, yg);
 
     if (l[countQ].empty() || r[countQ].empty()) {
       l[countQ].clear();
@@ -2616,35 +2595,29 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   DummyQuery(countQ);
 }
 
+// Common initialization for methods using merge sort
+void initializeWithMergeSort(vector<int>& items, vector<int>& groups, int& countQ, int ikichi = 1001001)
+{
+  initializeItems(items);
+  MergeSort(items, countQ, ikichi);
+  updateKarusaArray(items);
+
+  assignHeaviestToGroups(items, N - 1);
+  initializeGroups(groups);
+
+  drep(i, N - D)
+  {
+    assignToLightestGroup(items, i, countQ, groups);
+  }
+}
+
 void Method226(int hiritu = 100, int minDiff = 10)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ);
-  updateKarusaArray(items);
-
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
-
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-
-  // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  initializeWithMergeSort(items, groups, countQ);
 
   int keepInitialAns[110];
   rep(i, N)
@@ -2806,31 +2779,10 @@ void Method226(int hiritu = 100, int minDiff = 10)
 void Method6(int hiritu = 100, int minDiff = 10)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ);
-  updateKarusaArray(items);
-
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
-
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-  // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  initializeWithMergeSort(items, groups, countQ);
 
   int failedCount = 0;
   while (countQ < Q) {
@@ -2866,31 +2818,10 @@ void Method6(int hiritu = 100, int minDiff = 10)
 void Method706(int hiritu1, int minDiff, int hiritu2)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ);
-  updateKarusaArray(items);
-
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
-
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-  // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  initializeWithMergeSort(items, groups, countQ);
 
   int failedCount = 0;
   if (hiritu1 < 10) {
@@ -2930,11 +2861,9 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
   DummyQuery(countQ);
 }
 
-void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
+// Common initialization for block-based methods
+bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& countQ, int blockSize)
 {
-  int countQ = 0;
-
-  vector<vector<int>> blocks;
   rep(i, N)
   {
     if (i % blockSize == 0) {
@@ -2945,11 +2874,10 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
   if (blocks.size() < D) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    return;
+    return false;
   }
 
   int M = blocks.size();
-  // アイテムをマージソート(軽い順)
   MergeSortBlock(blocks, countQ);
 
   // 各グループに1個ずつ入れる
@@ -2962,7 +2890,6 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
     }
   }
 
-  vector<int> groups;  // 常に重い順に並んでいるようにする
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
@@ -2978,6 +2905,16 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
     int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
+  return true;
+}
+
+void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
+{
+  int countQ = 0;
+  vector<vector<int>> blocks;
+  vector<int> groups;
+
+  if (!initializeBlocks(blocks, groups, countQ, blockSize)) return;
 
   int loopCount = 0;
   while (countQ < Q) {
@@ -3685,32 +3622,10 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 void Method12(int ikichi = N)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ, ikichi);
-  updateKarusaArray(items);
-
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
-
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-
-  // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  initializeWithMergeSort(items, groups, countQ, ikichi);
 
   while (countQ < Q) {
     SwapNeighbor1(items, countQ);
@@ -4234,32 +4149,10 @@ void Method112(int ikichi = N, int totyuu = 999)
 void Method17(int ikichi, int hiritu)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
-  MergeSort(items, countQ, ikichi);
-  updateKarusaArray(items);
-
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
-
-  vector<int> groups;  // 常に重い順に並んでいるようにする
-  initializeGroups(groups);
-
-  // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  initializeWithMergeSort(items, groups, countQ, ikichi);
 
   while (countQ < Q) {
     int qu = Rand() % 100;
@@ -4283,21 +4176,14 @@ void Method17(int ikichi, int hiritu)
 void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
 {
   vector<int> items;
-  initializeItems(items);
+  vector<int> groups;
   int countQ = 0;
 
-  // アイテムをマージソート(軽い順)
+  initializeItems(items);
   MergeSort(items, countQ);
   updateKarusaArray(items);
 
-  // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    int id = items[N - 1 - i];
-    ans[id] = i;
-  }
-
-  vector<int> groups;  // 常に重い順に並んでいるようにする
+  assignHeaviestToGroups(items, N - 1);
   initializeGroups(groups);
 
   // pseudoItemsを用いて一番軽いグループに入れていく
@@ -4581,10 +4467,8 @@ ll Solve(int probNum, ll hai2 = D18)
     }
   }
 
-  if (true || mode < 1000000) {
-    if (!ErrorCheck()) {
-      cerr << "ErrorCheck :  haipara = " << haipara[NN][QQ][DD] << ", haiapara2 = " << haipara2[NN][QQ][DD] << endl;
-    }
+  if (!ErrorCheck()) {
+    cerr << "ErrorCheck :  haipara = " << haipara[NN][QQ][DD] << ", haiapara2 = " << haipara2[NN][QQ][DD] << endl;
   }
 
   if (mode != 0) {
@@ -4628,7 +4512,6 @@ void PrintHaipara(int loop)
     rep(j, 40)
     {
       file << "{";
-      int kk = ii / 4 - 1;
       rep(k, haipara[i][j].size())
       {
         file << setw(7) << haipara[i][j][k];
@@ -4661,7 +4544,6 @@ void PrintHaipara(int loop)
     rep(j, 40)
     {
       file << "{";
-      int kk = ii / 4 - 1;
       rep(k, haipara2[i][j].size())
       {
         file << setw(19) << haipara2[i][j][k];
@@ -4739,13 +4621,12 @@ int main()
       loop++;
       GenerateNNDDQQ();
 
-      ll hai = haipara[NN][QQ][DD];
       ll hai2 = haipara2[NN][QQ][DD];
 
       GeneratecaseFromNNDDQQ();
 
 
-      ll score = Solve(2, hai2);
+      Solve(2, hai2);
       endTime = clock();
       nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
 
