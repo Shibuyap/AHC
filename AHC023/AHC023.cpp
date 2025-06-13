@@ -738,14 +738,14 @@ int main()
   std::random_device rnd;
   engine.seed(rnd());
 
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
   }
   else if (mode == 1) {
     ll sum = 0;
-    srep(i, 0, 20)
+    srep(i, 0, 10)
     {
       for (int j = 0; j < (1); ++j) {
         ll score = Solve(i);
