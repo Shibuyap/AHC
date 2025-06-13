@@ -94,6 +94,30 @@ public:
   {
     other.copyFrom(*this);
   }
+
+  // 座標を取得するヘルパー関数
+  struct Rectangle
+  {
+    int startX, startY, endX, endY;
+  };
+
+  Rectangle getRect(int day, int element) const
+  {
+    return {
+      ans[day][element][0],
+      ans[day][element][1],
+      ans[day][element][2],
+      ans[day][element][3]
+    };
+  }
+
+  void setRect(int day, int element, int sx, int sy, int ex, int ey)
+  {
+    ans[day][element][0] = sx;
+    ans[day][element][1] = sy;
+    ans[day][element][2] = ex;
+    ans[day][element][3] = ey;
+  }
 };
 
 namespace /* 乱数ライブラリ */
@@ -143,6 +167,60 @@ namespace /* 乱数ライブラリ */
 
 const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
+
+// 2つのソート済み配列をマージしながらスコアを計算する関数
+ll calculateMergedScore(const vector<P>& before, const vector<P>& now)
+{
+  ll score = 0;
+  int itr1 = 0, itr2 = 0;
+  int cnt1 = 0, cnt2 = 0;
+  int pos = 0;
+
+  while (itr1 < before.size() || itr2 < now.size()) {
+    int val;
+    if (itr1 == before.size()) {
+      val = now[itr2].first;
+      cnt2 += now[itr2].second;
+      itr2++;
+    }
+    else if (itr2 == now.size()) {
+      val = before[itr1].first;
+      cnt1 += before[itr1].second;
+      itr1++;
+    }
+    else if (before[itr1].first <= now[itr2].first) {
+      val = before[itr1].first;
+      cnt1 += before[itr1].second;
+      itr1++;
+    }
+    else {
+      val = now[itr2].first;
+      cnt2 += now[itr2].second;
+      itr2++;
+    }
+
+    if ((cnt1 == 0 && cnt2 > 0) || (cnt1 > 0 && cnt2 == 0)) {
+      score += (ll)val - pos;
+    }
+    pos = val;
+  }
+
+  return score;
+}
+
+// 要素が指定された幅に収まるために必要な高さを計算
+inline int calculateRequiredSize(int elementSize, int width)
+{
+  return (elementSize - 1) / width + 1;
+}
+
+// 焼きなまし法の受理確率を計算
+inline bool acceptByAnnealing(double diffScore, double startTemp, double endTemp, double currentTime, double timeLimit)
+{
+  double temp = startTemp + (endTemp - startTemp) * currentTime / timeLimit;
+  double prob = exp(diffScore * ANNEALING_TEMP_COEFFICIENT / temp);
+  return prob > Rand01();
+}
 
 const double TIME_LIMIT = 2.8;
 double TL = TIME_LIMIT;
@@ -242,7 +320,7 @@ void InitMostVariableAs()
         mostVariableAsValue[i][j][k] = 0;
       }
       int n2 = 0;
-      int n2Need = (elementSizes[i][n2] - 1) / j + 1;
+      int n2Need = calculateRequiredSize(elementSizes[i][n2], j);
       if (n2Need > w) continue;
       drep(n1, elementCount)
       {
@@ -251,7 +329,7 @@ void InitMostVariableAs()
         int n1Need = (val - 1) / j + 1;
         if (n1Need + n2Need > w) continue;
         while (n2 < elementCount - 1) {
-          int nxtNeed = (elementSizes[i][n2 + 1] - 1) / j + 1;
+          int nxtNeed = calculateRequiredSize(elementSizes[i][n2 + 1], j);
           if (n1Need + nxtNeed <= w) {
             n2++;
             n2Need = nxtNeed;
@@ -469,11 +547,8 @@ ll CalcScore()
   {
     rep(j, elementCount)
     {
-      int startX = ans.ans[i][j][0];
-      int startY = ans.ans[i][j][1];
-      int endX = ans.ans[i][j][2];
-      int endY = ans.ans[i][j][3];
-      totalScore += (ll)max(0, elementSizes[i][j] - (endX - startX) * (endY - startY)) * SCORE_MULTIPLIER;
+      auto rect = ans.getRect(i, j);
+      totalScore += (ll)max(0, elementSizes[i][j] - (rect.endX - rect.startX) * (rect.endY - rect.startY)) * SCORE_MULTIPLIER;
     }
   }
   {
@@ -483,17 +558,14 @@ ll CalcScore()
       vector<P> now;
       rep(j, elementCount)
       {
-        int startX = ans.ans[i][j][0];
-        int startY = ans.ans[i][j][1];
-        int endX = ans.ans[i][j][2];
-        int endY = ans.ans[i][j][3];
-        if (startY != 0 && startY != w) {
-          now.emplace_back(startY * w + startX, 1);
-          now.emplace_back(startY * w + endX, -1);
+        auto rect = ans.getRect(i, j);
+        if (rect.startY != 0 && rect.startY != w) {
+          now.emplace_back(rect.startY * w + rect.startX, 1);
+          now.emplace_back(rect.startY * w + rect.endX, -1);
         }
-        if (endY != 0 && endY != w) {
-          now.emplace_back(endY * w + startX, 1);
-          now.emplace_back(endY * w + endX, -1);
+        if (rect.endY != 0 && rect.endY != w) {
+          now.emplace_back(rect.endY * w + rect.startX, 1);
+          now.emplace_back(rect.endY * w + rect.endX, -1);
         }
       }
       sort(now.begin(), now.end());
@@ -542,17 +614,14 @@ ll CalcScore()
       vector<P> now;
       rep(j, elementCount)
       {
-        int startX = ans.ans[i][j][0];
-        int startY = ans.ans[i][j][1];
-        int endX = ans.ans[i][j][2];
-        int endY = ans.ans[i][j][3];
-        if (startX != 0 && startX != w) {
-          now.emplace_back(startX * w + startY, 1);
-          now.emplace_back(startX * w + endY, -1);
+        auto rect = ans.getRect(i, j);
+        if (rect.startX != 0 && rect.startX != w) {
+          now.emplace_back(rect.startX * w + rect.startY, 1);
+          now.emplace_back(rect.startX * w + rect.endY, -1);
         }
-        if (endX != 0 && endX != w) {
-          now.emplace_back(endX * w + startY, 1);
-          now.emplace_back(endX * w + endY, -1);
+        if (rect.endX != 0 && rect.endX != w) {
+          now.emplace_back(rect.endX * w + rect.startY, 1);
+          now.emplace_back(rect.endX * w + rect.endY, -1);
         }
       }
       sort(now.begin(), now.end());
@@ -607,11 +676,8 @@ ll CalcScoreForMethod3()
   {
     rep(j, elementCount)
     {
-      int startX = ans.ans[i][j][0];
-      int startY = ans.ans[i][j][1];
-      int endX = ans.ans[i][j][2];
-      int endY = ans.ans[i][j][3];
-      totalScore += (ll)max(0, elementSizes[i][j] - (endX - startX) * (endY - startY)) * SCORE_MULTIPLIER;
+      auto rect = ans.getRect(i, j);
+      totalScore += (ll)max(0, elementSizes[i][j] - (rect.endX - rect.startX) * (rect.endY - rect.startY)) * SCORE_MULTIPLIER;
     }
   }
 
@@ -653,20 +719,17 @@ ll CalcScoreForMethod3()
       int nowTail = 0;
       rep(j, elementCount)
       {
-        int startX = ans.ans[i][j][0];
-        int startY = ans.ans[i][j][1];
-        int endX = ans.ans[i][j][2];
-        int endY = ans.ans[i][j][3];
-        if (startX != 0 && startX != w) {
-          CalcScoreForMethod3NowArr[nowTail] = (startX * w + startY) * 10 + 1;
+        auto rect = ans.getRect(i, j);
+        if (rect.startX != 0 && rect.startX != w) {
+          CalcScoreForMethod3NowArr[nowTail] = (rect.startX * w + rect.startY) * 10 + 1;
           nowTail++;
-          CalcScoreForMethod3NowArr[nowTail] = (startX * w + endY) * 10 - 1;
+          CalcScoreForMethod3NowArr[nowTail] = (rect.startX * w + rect.endY) * 10 - 1;
           nowTail++;
         }
-        if (endX != 0 && endX != w) {
-          CalcScoreForMethod3NowArr[nowTail] = (endX * w + startY) * 10 + 1;
+        if (rect.endX != 0 && rect.endX != w) {
+          CalcScoreForMethod3NowArr[nowTail] = (rect.endX * w + rect.startY) * 10 + 1;
           nowTail++;
-          CalcScoreForMethod3NowArr[nowTail] = (endX * w + endY) * 10 - 1;
+          CalcScoreForMethod3NowArr[nowTail] = (rect.endX * w + rect.endY) * 10 - 1;
           nowTail++;
         }
       }
@@ -725,7 +788,7 @@ void Initialize()
     int now = 0;
     rep(j, elementCount)
     {
-      int need = (elementSizes[i][j] - 1) / w + 1;
+      int need = calculateRequiredSize(elementSizes[i][j], w);
       int newY = min(now + need, w - (elementCount - 1 - j));
       ans.ans[i][j][0] = 0;
       ans.ans[i][j][1] = now;
@@ -761,8 +824,8 @@ void Method1()
         int lenx = w - x;
         int leny = w - y;
         if (elementSizes[i][jj] > lenx * leny) continue;
-        int need1 = (elementSizes[i][jj] - 1) / leny + 1;
-        int need2 = (elementSizes[i][jj] - 1) / lenx + 1;
+        int need1 = calculateRequiredSize(elementSizes[i][jj], leny);
+        int need2 = calculateRequiredSize(elementSizes[i][jj], lenx);
         int amari1 = need1 * leny - elementSizes[i][jj];
         int amari2 = need2 * lenx - elementSizes[i][jj];
         if (amari1 <= minAmari) {

@@ -40,7 +40,8 @@
       "WebFetch(domain:atcoder.jp)",
       "WebFetch(domain:atcoder.jp)",
       "WebFetch(domain:atcoder.jp)",
-      "Bash(./AHC023 2 >& 1)"
+      "Bash(./AHC023 2 >& 1)",
+      "Bash(./AHC028_new)"
     ],
     "deny": []
   }
