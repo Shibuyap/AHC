@@ -6443,7 +6443,7 @@ int main()
   //}
   //return 0;
 
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
