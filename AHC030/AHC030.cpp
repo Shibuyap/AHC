@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -649,7 +647,7 @@ P Method2_SelectQueryPosition()
       for (int j = 0; j < n; ++j)
       {
         int numsSum = 0;
-        srep(k, 1, m + 1) numsSum += m2_nums[i][j][k];
+        for (int k = 1; k < m + 1; ++k) numsSum += m2_nums[i][j][k];
         if (numsSum > maxNums && m2_kakuteiValue1[i][j] == -1) {
           maxNums = numsSum;
           result.first = i;
@@ -1527,9 +1525,9 @@ void Method3_QueryEmptyCell(ofstream& ofs, int& cnt, int& cnt2)
         // 初期段階では離れた場所を優先
         if (m3_findMCount == 0 && m >= 10 && g_cost < 5) {
           int hasNeighbor = false;
-          srep(k, -3, 4)
+          for (int k = -3; k < 4; ++k)
           {
-            srep(l, -3, 4)
+            for (int l = -3; l < 4; ++l)
             {
               int ni = i + k;
               int nj = j + l;
@@ -1909,7 +1907,7 @@ int main()
   else if (mode == 1) {
     ll sum = 0;
     ll onesEmptySum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       onesEmptyCount = 0;
       ll score = Solve(i);
