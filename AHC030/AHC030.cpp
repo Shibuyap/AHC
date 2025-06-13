@@ -1257,60 +1257,6 @@ void Method3(ofstream& ofs)
       Method3_PrintAns(ofs);
       break;
     }
-    // else if (m3_findMCount == m) {
-    //  Method3_PrintAns(ofs);
-    //  break;
-    //}
-    // else if (m3_findMCount == m - 1) {
-    //  int mNum0 = -1;
-    //  rep(i, m) {
-    //    if (m3_usedM[i] == 0) {
-    //      if (mNum0 == -1) mNum0 = i;
-    //    }
-    //  }
-    //  vector<vector<int>> kakuteiValue1(n);
-    //  vector<vector<int>> kakuteiValue2(n);
-    //  rep(i, n) {
-    //    vector<int> tmp(n);
-    //    kakuteiValue1[i] = tmp;
-    //    kakuteiValue2[i] = tmp;
-    //  }
-    //  rep(i, n) {
-    //    rep(j, n) {
-    //      kakuteiValue1[i][j] = m3_used[i][j];
-    //      kakuteiValue2[i][j] = m3_used2[i][j];
-    //    }
-    //  }
-    //  Method2(ofs, 1, mNum0, -1, kakuteiValue1, kakuteiValue2);
-    //  break;
-    //}
-    // else if (m3_findMCount == m - 2) {
-    //  int mNum0 = -1;
-    //  int mNum1 = -1;
-    //  rep(i, m) {
-    //    if (m3_usedM[i] == 0) {
-    //      if (mNum0 == -1)
-    //        mNum0 = i;
-    //      else
-    //        mNum1 = i;
-    //    }
-    //  }
-    //  vector<vector<int>> kakuteiValue1(n);
-    //  vector<vector<int>> kakuteiValue2(n);
-    //  rep(i, n) {
-    //    vector<int> tmp(n);
-    //    kakuteiValue1[i] = tmp;
-    //    kakuteiValue2[i] = tmp;
-    //  }
-    //  rep(i, n) {
-    //    rep(j, n) {
-    //      kakuteiValue1[i][j] = m3_used[i][j];
-    //      kakuteiValue2[i][j] = m3_used2[i][j];
-    //    }
-    //  }
-    //  Method2(ofs, 2, mNum0, mNum1, kakuteiValue1, kakuteiValue2);
-    //  break;
-    //}
     else {
       vector<P> ones = Method3_GetOnes();
       if (ones.empty() || (m3_findMCount == 0 && m >= 5 && g_cost < 10)) {
@@ -1768,8 +1714,6 @@ void Battle()
         hyperParams[mIndex][epsIndex] = newPara;
         ll newScore = Solve(0);
         hyperParams[mIndex][epsIndex] = oldPara;
-
-        // cout << "n = " << n << ", d[0] = " << d[0] << ", d[1] = " << d[1] << ", oldScore = " << oldScore << ", newScore = " << newScore << endl;
 
         if (newScore < oldScore) {
           // AHC030はスコアが小さいほど良い
