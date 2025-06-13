@@ -1244,291 +1244,292 @@ void Method3_Initialize()
   m3_findMCount = 0;
 }
 
+// Method3: 空白マスを探索してクエリを投げ、パターンをマッチングする
+
+// パターンが一意に定まるかチェックし、定まる場合は確定させる
+bool Method3_CheckUniquePattern(const vector<P>& ones, ofstream& ofs, int& cnt, int& cnt2)
+{
+  for (auto p : ones) {
+    int x = p.first;
+    int y = p.second;
+    vector<P> allKouho;
+    if (GetNowTime() < 1.0) {
+      allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
+    }
+    else {
+      allKouho = Method3_GetAllKouhoSpecificPoint1(x, y);
+    }
+
+    int realCount = 0;
+    vector<P> v1;
+    int onem = -1;
+
+    // 候補パターンをチェック
+    for (auto md : allKouho) {
+      int i = md.first;
+      int j = md.second;
+
+      vector<P> v2;
+      rep(k, d[i])
+      {
+        int xx = x + ii[i][k] - ii[i][j];
+        int yy = y + jj[i][k] - jj[i][j];
+        v2.emplace_back(xx, yy);
+      }
+      sort(v2.begin(), v2.end());
+
+      if (realCount == 0) {
+        v1 = v2;
+        onem = i;
+        realCount++;
+      }
+      else {
+        if (v1 != v2) {
+          realCount++;
+          break;
+        }
+      }
+    }
+
+    // パターンが一意に定まる場合
+    if (realCount == 1) {
+      for (auto p : v1) {
+        int xx = p.first;
+        int yy = p.second;
+        if (m3_used[xx][yy] > 0) {
+          cnt--;
+          cnt2++;
+          m3_used[xx][yy]--;
+          m3_used2[xx][yy]++;
+        }
+        else {
+          cnt2++;
+          m3_used2[xx][yy]++;
+        }
+      }
+      m3_usedM[onem] = 1;
+      m3_findMCount++;
+      return true;
+    }
+  }
+  return false;
+}
+
+// パターン候補から最適なクエリ位置を選択
+void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, int& cnt2)
+{
+  int minKouhoCount = INF;
+  int minNums[MAX_N][MAX_N];
+  int minx = -1, miny = -1;
+
+  // 各点での候補数を計算
+  for (auto p : ones) {
+    int x = p.first;
+    int y = p.second;
+    int kouhoCount = 0;
+    int nums[MAX_N][MAX_N];
+
+    rep(i, n) rep(j, n) nums[i][j] = 0;
+
+    vector<P> allKouho;
+    if (GetNowTime() < 1.0) {
+      allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
+    }
+    else {
+      allKouho = Method3_GetAllKouhoSpecificPoint1(x, y);
+    }
+
+    for (auto md : allKouho) {
+      int i = md.first;
+      int j = md.second;
+      kouhoCount++;
+      rep(k, d[i])
+      {
+        int xx = x + ii[i][k] - ii[i][j];
+        int yy = y + jj[i][k] - jj[i][j];
+        nums[xx][yy]++;
+      }
+    }
+
+    // 最も候補数が少ない点を選択
+    if (kouhoCount < minKouhoCount) {
+      // 適切な探索点があるか確認
+      int nx = -1;
+      int ny = -1;
+      int minDiff = INF;
+      rep(i, n) rep(j, n)
+      {
+        if (m3_used[i][j] != -1 || nums[i][j] == 0) continue;
+        int diff = abs(kouhoCount / 2 - nums[i][j]);
+        if (diff < minDiff) {
+          minDiff = diff;
+          nx = i;
+          ny = j;
+        }
+      }
+      if (nx == -1) continue;
+
+      minKouhoCount = kouhoCount;
+      rep(i, n) rep(j, n) minNums[i][j] = nums[i][j];
+      minx = x;
+      miny = y;
+    }
+  }
+
+  if (minKouhoCount > 1) {
+    // クエリ位置を決定
+    int nx = -1;
+    int ny = -1;
+    int minDiff = INF;
+    rep(i, n) rep(j, n)
+    {
+      if (m3_used[i][j] != -1 || minNums[i][j] == 0) continue;
+      int diff = abs(minKouhoCount / 2 - minNums[i][j]);
+      if (diff < minDiff) {
+        minDiff = diff;
+        nx = i;
+        ny = j;
+      }
+    }
+
+    // 適切な位置が見つからない場合はランダム選択
+    if (nx == -1) {
+      if (mode != 0) {
+        ofs << "# random choice, kouhoCount = " << minKouhoCount << endl;
+      }
+      while (nx == -1) {
+        int nnx = Rand() % n;
+        int nny = Rand() % n;
+        if (m3_used[nnx][nny] == -1) {
+          nx = nnx;
+          ny = nny;
+        }
+      }
+    }
+
+    // 現在のグリッド状態を出力（デバッグ用）
+    if (mode != 0) {
+      rep(i, n)
+      {
+        ofs << "# ";
+        rep(j, n)
+        {
+          if (m3_used[i][j] == -1) {
+            ofs << 'X';
+          }
+          else {
+            ofs << m3_used[i][j];
+          }
+        }
+        ofs << endl;
+      }
+    }
+
+    int val = Query1(nx, ny, ofs);
+    m3_used[nx][ny] = val - m3_used2[nx][ny];
+    cnt += m3_used[nx][ny];
+  }
+}
+
+// 空白マスからパターン候補を生成して最適な場所にクエリを投げる
+void Method3_QueryEmptyCell(ofstream& ofs, int& cnt, int& cnt2)
+{
+  int nums[MAX_N][MAX_N];
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      nums[i][j] = 0;
+    }
+  }
+
+  // 全ての候補パターンを取得
+  auto allKouho = Method3_GetAllKouho();
+  for (const auto& kouho : allKouho) {
+    int i = kouho.mNum;
+    int j = kouho.dNum;
+    rep(k, d[i])
+    {
+      int xx = kouho.xPos + ii[i][k] - ii[i][j];
+      int yy = kouho.yPos + jj[i][k] - jj[i][j];
+      nums[xx][yy]++;
+    }
+  }
+
+  // 最も多くの候補がある場所を選択
+  int maxNums = 0;
+  int x = -1, y = -1;
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      if (nums[i][j] > maxNums && m3_used[i][j] == -1) {
+        // 初期段階では離れた場所を優先
+        if (m3_findMCount == 0 && m >= 10 && g_cost < 5) {
+          int hasNeighbor = false;
+          srep(k, -3, 4)
+          {
+            srep(l, -3, 4)
+            {
+              int ni = i + k;
+              int nj = j + l;
+              if (!IsNG(ni, nj) && m3_used[ni][nj] >= 1) {
+                hasNeighbor = true;
+                break;
+              }
+            }
+          }
+          if (hasNeighbor) continue;
+        }
+        maxNums = nums[i][j];
+        x = i;
+        y = j;
+      }
+    }
+  }
+
+  int val = Query1(x, y, ofs);
+  m3_used[x][y] = val - m3_used2[x][y];
+  cnt += m3_used[x][y];
+}
+
+// Method3: パターンマッチングによる油田探索
 void Method3(ofstream& ofs)
 {
   Method3_Initialize();
-
   onesEmptyCount = 0;
 
-  int cnt = 0;
-  int cnt2 = 0;
+  int cnt = 0;   // 確定した油田セル数（m3_used）
+  int cnt2 = 0;  // 確定した油田セル数（m3_used2）
+
   while (true) {
+    // 全ての油田を発見した場合
     if (cnt + cnt2 == sum) {
       Method3_PrintAns(ofs);
       break;
     }
+
+    vector<P> ones = Method3_GetOnes();
+
+    // 油田があると分かっているマスがない場合
+    if (ones.empty() || (m3_findMCount == 0 && m >= 5 && g_cost < 10)) {
+      if (mode != 0) {
+        onesEmptyCount++;
+        ofs << "# ones.empty() : count = " << onesEmptyCount << endl;
+      }
+      Method3_QueryEmptyCell(ofs, cnt, cnt2);
+    }
+    // 油田があるマスからパターンを探索
     else {
-      vector<P> ones = Method3_GetOnes();
-      if (ones.empty() || (m3_findMCount == 0 && m >= 5 && g_cost < 10)) {
-        if (mode != 0) {
-          onesEmptyCount++;
-          ofs << "# ones.empty() : count = " << onesEmptyCount << endl;
-        }
-        int nums[MAX_N][MAX_N];
-        rep(i, n)
-        {
-          rep(j, n)
-          {
-            nums[i][j] = 0;
-          }
-        }
-        auto allKouho = Method3_GetAllKouho();
-        for (const auto& kouho : allKouho) {
-          int i = kouho.mNum;
-          int j = kouho.dNum;
-          rep(k, d[i])
-          {
-            int xx = kouho.xPos + ii[i][k] - ii[i][j];
-            int yy = kouho.yPos + jj[i][k] - jj[i][j];
-            nums[xx][yy]++;
-          }
-        }
-        int maxNums = 0;
-        int x = -1, y = -1;
-        rep(i, n)
-        {
-          rep(j, n)
-          {
-            if (nums[i][j] > maxNums && m3_used[i][j] == -1) {
-              if (m3_findMCount == 0 && m >= 10 && g_cost < 5) {
-                int hasNeighbor = false;
-                srep(k, -3, 4)
-                {
-                  srep(l, -3, 4)
-                  {
-                    int ni = i + k;
-                    int nj = j + l;
-                    if (!IsNG(ni, nj) && m3_used[ni][nj] >= 1) {
-                      hasNeighbor = true;
-                      break;
-                    }
-                  }
-                }
-                if (hasNeighbor) continue;
-              }
-              maxNums = nums[i][j];
-              x = i;
-              y = j;
-            }
-          }
-        }
+      std::shuffle(ones.begin(), ones.end(), engine);
 
-        int val = Query1(x, y, ofs);
-        m3_used[x][y] = val - m3_used2[x][y];
-        cnt += m3_used[x][y];
+      // パターンが一意に定まるかチェック
+      if (Method3_CheckUniquePattern(ones, ofs, cnt, cnt2)) {
+        continue;
       }
-      else {
-        std::shuffle(ones.begin(), ones.end(), engine);
 
-        // 一意に定まるかチェック
-        {
-          int realFlag = 0;
-          for (auto p : ones) {
-            int x = p.first;
-            int y = p.second;
-            vector<P> allKouho;
-            if (GetNowTime() < 1.0) {
-              allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
-            }
-            else {
-              allKouho = Method3_GetAllKouhoSpecificPoint1(x, y);
-            }
-            int realCount = 0;
-            vector<P> v1;
-            int onem = -1;
-            for (auto md : allKouho) {
-              int i = md.first;
-              int j = md.second;
-
-              vector<P> v2;
-              rep(k, d[i])
-              {
-                int xx = x + ii[i][k] - ii[i][j];
-                int yy = y + jj[i][k] - jj[i][j];
-                v2.emplace_back(xx, yy);
-              }
-              sort(v2.begin(), v2.end());
-              if (realCount == 0) {
-                v1 = v2;
-                onem = i;
-                realCount++;
-              }
-              else {
-                if (v1 != v2) {
-                  realCount++;
-                  break;
-                }
-              }
-            }
-            if (realCount == 1) {
-              for (auto p : v1) {
-                int xx = p.first;
-                int yy = p.second;
-                if (m3_used[xx][yy] > 0) {
-                  cnt--;
-                  cnt2++;
-                  m3_used[xx][yy]--;
-                  m3_used2[xx][yy]++;
-                }
-                else {
-                  cnt2++;
-                  m3_used2[xx][yy]++;
-                }
-              }
-              m3_usedM[onem] = 1;
-              m3_findMCount++;
-              realFlag = 1;
-              break;
-            }
-          }
-          if (realFlag) { continue; }
-        }
-
-        int minKouhoCount = INF;
-        int minNums[MAX_N][MAX_N];
-        int kouhoCount = 0;
-        int nums[MAX_N][MAX_N];
-        int x, y, minx, miny;
-
-        rep(aespa, ones.size())
-        {
-          P p = ones[aespa];
-          x = p.first;
-          y = p.second;
-
-          kouhoCount = 0;
-          rep(i, n)
-          {
-            rep(j, n)
-            {
-              nums[i][j] = 0;
-            }
-          }
-
-          vector<P> allKouho;
-          if (GetNowTime() < 1.0) {
-            allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
-          }
-          else {
-            allKouho = Method3_GetAllKouhoSpecificPoint1(x, y);
-          }
-          for (auto md : allKouho) {
-            int i = md.first;
-            int j = md.second;
-
-            kouhoCount++;
-            rep(k, d[i])
-            {
-              int xx = x + ii[i][k] - ii[i][j];
-              int yy = y + jj[i][k] - jj[i][j];
-              nums[xx][yy]++;
-            }
-          }
-
-          if (kouhoCount < minKouhoCount) {
-            if (true) {
-              int nx = -1;
-              int ny = -1;
-              int minDiff = INF;
-              rep(i, n)
-              {
-                rep(j, n)
-                {
-                  if (m3_used[i][j] != -1) continue;
-                  if (nums[i][j] > 0) {
-                    if (abs(kouhoCount / 2 - nums[i][j]) < minDiff) {
-                      minDiff = abs(kouhoCount / 2 - nums[i][j]);
-                      nx = i;
-                      ny = j;
-                    }
-                  }
-                }
-              }
-              if (nx == -1) continue;
-            }
-            minKouhoCount = kouhoCount;
-            rep(i, n)
-            {
-              rep(j, n)
-              {
-                minNums[i][j] = nums[i][j];
-              }
-            }
-            minx = x;
-            miny = y;
-          }
-        }
-
-        kouhoCount = minKouhoCount;
-        rep(i, n)
-        {
-          rep(j, n)
-          {
-            nums[i][j] = minNums[i][j];
-          }
-        }
-        x = minx;
-        y = miny;
-
-        if (kouhoCount > 1) {
-          int nx = -1;
-          int ny = -1;
-          int minDiff = INF;
-          if (kouhoCount < INF) {
-            rep(i, n)
-            {
-              rep(j, n)
-              {
-                if (m3_used[i][j] != -1) continue;
-                if (nums[i][j] > 0) {
-                  if (abs(kouhoCount / 2 - nums[i][j]) < minDiff) {
-                    minDiff = abs(kouhoCount / 2 - nums[i][j]);
-                    nx = i;
-                    ny = j;
-                  }
-                }
-              }
-            }
-          }
-
-          if (nx == -1) {
-            if (mode != 0) {
-              ofs << "# random choice"
-                << "kouhoCount = " << kouhoCount << endl;
-            }
-            while (nx == -1) {
-              int nnx = Rand() % n;
-              int nny = Rand() % n;
-              if (m3_used[nnx][nny] == -1) {
-                nx = nnx;
-                ny = nny;
-              }
-            }
-          }
-
-          if (mode != 0) {
-            rep(i, n)
-            {
-              ofs << "# ";
-              rep(j, n)
-              {
-                if (m3_used[i][j] == -1) {
-                  ofs << 'X';
-                }
-                else {
-                  ofs << m3_used[i][j];
-                }
-              }
-              ofs << endl;
-            }
-          }
-
-          int val = Query1(nx, ny, ofs);
-          m3_used[nx][ny] = val;
-          m3_used[nx][ny] -= m3_used2[nx][ny];
-          cnt += m3_used[nx][ny];
-        }
-      }
+      // 最適な位置にクエリを投げる
+      Method3_QueryBestPosition(ones, ofs, cnt, cnt2);
     }
   }
 }
