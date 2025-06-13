@@ -1386,7 +1386,7 @@ namespace
 
 int Solver1()
 {
-  vector<int> keep[110];
+  vector<int> keep[100];
 
   int cnt[100] = {};
   for (int i = 0; i < (n); ++i) {
@@ -1408,7 +1408,7 @@ int Solver1()
   }
 
   int res = -1;
-  for (int i = 0; i < (110); ++i) {
+  for (int i = 0; i < 100; ++i) {
     if (keep[i].size()) {
       int sz = keep[i].size();
       res = keep[i][sz / 2];
@@ -1484,7 +1484,7 @@ int Solver3()
   }
   for (int _ = 0; _ < (100); ++_) {
     if (vec[0].empty() || vec[1].empty()) break;
-    double cnt[110][2];
+    double cnt[100][2];
     for (int i = 0; i < (n); ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
     vector<int> nxt[2];
     for (int i = 0; i < (n); ++i) {
@@ -2345,7 +2345,7 @@ void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>
 
 int Solver11()
 {
-  int f[110] = {};
+  int f[100] = {};
 
   // コア1を作る
   vector<int> cores1;
@@ -2402,7 +2402,7 @@ int Solver11()
 
 int Solver12()
 {
-  int f[110] = {};
+  int f[100] = {};
 
   // コア1を作る
   vector<int> cores1;
@@ -2506,7 +2506,7 @@ int Solver12()
 // 4コア
 int Solver13()
 {
-  int f[110] = {};
+  int f[100] = {};
 
   // コア1を作る
   vector<int> cores1;
@@ -2645,7 +2645,7 @@ int Solver14()
   int real_minDiff = 1000;
 
   for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2711,7 +2711,7 @@ int Solver15()
   map<int, int> argMap;
 
   for (int wataruoop = 0; wataruoop < (5); ++wataruoop) {
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2805,7 +2805,7 @@ int Solver16()
     }
 
 
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2906,7 +2906,7 @@ int Solver17()
     }
 
 
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2982,8 +2982,8 @@ int Solver17()
 // 0.0用
 int Solver18()
 {
-  int visit[110] = {};
-  int bb[110][110];
+  int visit[100] = {};
+  int bb[100][100];
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) {
       bb[i][j] = b[i][j];
@@ -3058,7 +3058,7 @@ int Solver19()
       }
     }
 
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3151,7 +3151,7 @@ int Solver20()
     }
 
 
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3208,7 +3208,7 @@ int Solver21()
   int real_minDiff = 1000;
 
   for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3331,7 +3331,7 @@ int Solver22()
   int real_minDiff = 1000;
 
   for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3475,7 +3475,7 @@ int Solver23()
     }
 
 
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3631,7 +3631,7 @@ int Solver24()
     }
 
 
-    int f[110] = {};
+    int f[100] = {};
 
     // コア1を作る
     vector<int> cores1;
