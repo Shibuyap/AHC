@@ -284,6 +284,7 @@ namespace
 // 前方宣言
 void setSymmetricValue(int i, int j, int k, int value);
 int calculateScore(std::array<int, 100>& f);
+int performGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt, int initialRes);
 template<size_t N>
 void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione);
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
@@ -1434,25 +1435,7 @@ int Solver2()
     f[i] = 1;
   }
 
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
 
   int diff = 1000;
   int argRes = 0;
@@ -1541,25 +1524,7 @@ int Solver4()
     f[i] = 1;
   }
 
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
 
   if (res >= 20) {
     int res2 = 0;
@@ -1616,25 +1581,7 @@ int Solver5()
     f[i] = 1;
   }
 
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
 
   int res1 = res;
   res = n - res;
@@ -1645,25 +1592,7 @@ int Solver5()
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
   int res2 = res;
   if (res2 <= hyperMaxRound) res2 = 0;
   int diff = 1000;
@@ -1691,25 +1620,7 @@ int Solver6()
     f[i] = 1;
   }
 
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
 
   int res1 = res;
   res = n - res;
@@ -1723,25 +1634,7 @@ int Solver6()
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
   int res2 = res;
   if (res2 <= hyperMaxRound) {
     res2 = 0;
@@ -1789,25 +1682,7 @@ int Solver7()
     f[i] = 1;
   }
 
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
 
   int res1 = res;
   res = n - res;
@@ -1821,25 +1696,7 @@ int Solver7()
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
-  while (res > 1) {
-    int mi = 1000;
-    int arg = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
-        mi = cnt[i];
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    for (int i = 0; i < (n); ++i) {
-      if (i == arg) continue;
-      if (f[i] && b[i][arg]) {
-        cnt[i]--;
-      }
-    }
-    res--;
-    f[arg] = 0;
-  }
+  res = performGreedyElimination(f, cnt, res);
   int res2 = res;
   if (res2 <= hyperMaxRound) {
     res2 = 0;
@@ -2187,7 +2044,7 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
         if (!duplicate) break;
       }
     }
-    
+
     bool isClique = true;
     for (int i = 0; i < cliqueSize; ++i) {
       for (int j = i + 1; j < cliqueSize; ++j) {
@@ -2198,7 +2055,7 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
       }
       if (!isClique) break;
     }
-    
+
     if (isClique) {
       for (int i = 0; i < cliqueSize; ++i) {
         f[core[i]] = markValue;
@@ -2257,6 +2114,37 @@ int calculateScore(std::array<int, 100>& f)
     }
   }
   return score;
+}
+
+// 貪欲除去アルゴリズムの共通関数
+// 最小次数の頂点を繰り返し除去し、残った頂点数を返す
+int performGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt, int initialRes)
+{
+  int res = initialRes;
+
+  while (res > 1) {
+    int mi = 1000;
+    int arg = -1;
+    for (int i = 0; i < n; ++i) {
+      if (f[i] && cnt[i] < mi && cnt[i] < (res + 1) / 2) {
+        mi = cnt[i];
+        arg = i;
+      }
+    }
+    if (arg == -1) break;
+
+    for (int i = 0; i < n; ++i) {
+      if (i == arg) continue;
+      if (f[i] && b[i][arg]) {
+        cnt[i]--;
+      }
+    }
+
+    res--;
+    f[arg] = 0;
+  }
+
+  return res;
 }
 
 // ビットセット初期化の共通関数
