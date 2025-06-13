@@ -1896,11 +1896,6 @@ void Battle()
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   mode = 0;
 
   if (mode == 0) {

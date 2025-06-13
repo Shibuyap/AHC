@@ -2133,11 +2133,6 @@ ll Solve(int probNum)
 /////////////////////////////////////////////////////////////////////////
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   mode = 2;
 
   if (mode == 0) {

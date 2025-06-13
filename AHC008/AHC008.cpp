@@ -1873,13 +1873,9 @@ void Input()
 ///////////////////////////////////////////////////////////////////////////////
 int Solve(int mode)
 {
-  srand((unsigned)time(NULL));
   clock_t start_time, end_time;
   start_time = clock();
   end_time = clock();
-  while (rand() % 100) {
-    Rand();
-  }
 
   // 入力受け取り
   Input();

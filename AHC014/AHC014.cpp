@@ -1289,12 +1289,6 @@ int main()
   mainStart = clock();
   mainEnd = clock();
 
-  // 乱数調整
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   int mode = 0;
 
   // 提出用

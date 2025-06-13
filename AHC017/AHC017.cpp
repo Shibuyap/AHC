@@ -832,12 +832,6 @@ void CalcIdea()
 
 int Solve(int mode, int problemNum)
 {
-  // 乱数調整
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();

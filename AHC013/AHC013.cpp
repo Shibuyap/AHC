@@ -2680,13 +2680,9 @@ void Method7(double start_temp, double end_temp, double now_progress)
 
 int Solve(int mode, int problemNum = 0)
 {
-  srand((unsigned)time(NULL));
   clock_t start_time, end_time;
   start_time = clock();
   end_time = clock();
-  while (rand() % 100) {
-    Rand();
-  }
 
   Init();
 

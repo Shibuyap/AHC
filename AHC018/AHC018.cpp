@@ -598,12 +598,6 @@ int solve_outer(int problem_num = 0)
 //------------------------------------------------------------------------------
 int main()
 {
-  srand((unsigned)time(NULL));
-  // 乱数調整
-  while (rand() % 100) {
-    rand_uint32();
-  }
-
   // execution_mode = 0 => 提出用
   execution_mode = 2;
 

@@ -1031,9 +1031,6 @@ int main()
   clock_t start, end;
   start = clock();
 
-  srand((unsigned)time(NULL));
-  while (rand() % 128) Rand();
-
   int mode = 1;
 
   if (mode == 0) { // 提出用

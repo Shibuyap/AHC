@@ -468,11 +468,6 @@ ll solve(int problem_num)
 
 int main()
 {
-  srand((unsigned)time(NULL)); // 乱数の種を設定
-  while (rand() % 100) {
-    Rand(); // 乱数を進めておく
-  }
-
   mode = 2;
 
   if (mode == 0) {

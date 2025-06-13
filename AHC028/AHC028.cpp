@@ -838,11 +838,6 @@ ll solve_single_case(int probNum)
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    rand_uint32();
-  }
-
   mode = 1;
 
   if (mode == 0) {

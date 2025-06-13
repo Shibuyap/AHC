@@ -735,10 +735,6 @@ ll Solve(int probNum)
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
   std::random_device rnd;
   engine.seed(rnd());
 

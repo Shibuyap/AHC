@@ -853,12 +853,6 @@ double solve_outer(int run_mode, int problem_num)
 //------------------------------------------------------------------------------
 int main()
 {
-  // 乱数調整
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    rand_uint32();
-  }
-
   int mode = 2;  // 0: 提出用, 1: 1ケースのみ, 2: 複数ケース
 
   if (mode == 0) {

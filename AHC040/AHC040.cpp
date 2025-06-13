@@ -1455,11 +1455,6 @@ ll ExecuteSolution(int problem_num)
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   executionMode = 1;
 
   if (executionMode == 0) {

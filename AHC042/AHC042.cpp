@@ -967,11 +967,6 @@ ll Solve(int problem_num, Haiparas haiparas)
 /////////////////////////////////////////////////////////////////////////
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   mode = 2;
 
   Haiparas HAIPARAS;
