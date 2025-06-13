@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -146,9 +146,9 @@ void InitIndices()
 
 void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
 {
-  rep(i, MAX_N)
+  for (int i = 0; i < MAX_N; ++i)
   {
-    rep(j, MAX_N)
+    for (int j = 0; j < MAX_N; ++j)
     {
       localAnsGrid[i][j] = 0;
     }
@@ -177,27 +177,27 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
   {
     int paraA = (Rand() % (n * n / 2 - n * n / 5 + 1) + n * n / 5) / m;
     int paraD = Rand() % ((paraA - 4) - 0 + 1) + 0;
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
       d[i] = Rand() % ((paraA + paraD) - (paraA - paraD) + 1) + (paraA - paraD);
       int grid[MAX_N][MAX_N];
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
-        rep(k, n)
+        for (int k = 0; k < n; ++k)
         {
           grid[j][k] = 0;
         }
       }
       grid[n / 2][n / 2] = 1;
-      rep(j, d[i] - 1)
+      for (int j = 0; j < d[i] - 1; ++j)
       {
         set<P> se;
-        rep(k, n)
+        for (int k = 0; k < n; ++k)
         {
-          rep(l, n)
+          for (int l = 0; l < n; ++l)
           {
             if (grid[k][l] == 1) {
-              rep(z, 4)
+              for (int z = 0; z < 4; ++z)
               {
                 int nk = k + dx[z];
                 int nl = l + dy[z];
@@ -212,9 +212,9 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
       }
       int miX = INF, miY = INF;
       int maX = -1, maY = -1;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
-        rep(k, n)
+        for (int k = 0; k < n; ++k)
         {
           if (grid[j][k] == 1) {
             miX = min(miX, j);
@@ -225,9 +225,9 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
         }
       }
       int now = 0;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
-        rep(k, n)
+        for (int k = 0; k < n; ++k)
         {
           if (grid[j][k] == 1) {
             ii[i][now] = j - miX;
@@ -242,15 +242,15 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
       int sy = Rand() % ((n - 1 - (maY - miY)) - 0 + 1);
       di[i] = sx;
       dj[i] = sy;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
-        rep(k, n)
+        for (int k = 0; k < n; ++k)
         {
           if (grid[j][k] == 1) { localAnsGrid[j + sx - miX][k + sy - miY]++; }
         }
       }
     }
-    rep(i, n * n * 2)
+    for (int i = 0; i < n * n * 2; ++i)
     {
       sampleEs[i] = normalDistribution(engine);
     }
@@ -363,7 +363,7 @@ void Input(int problemNum)
   if (mode == 0 || mode == 1) {
     string fileNameIfs = "./in/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
@@ -376,10 +376,10 @@ void Input(int problemNum)
     // 標準入力する
     if (!ifs.is_open()) {
       cin >> n >> m >> eps;
-      rep(i, m)
+      for (int i = 0; i < m; ++i)
       {
         cin >> d[i];
-        rep(j, d[i])
+        for (int j = 0; j < d[i]; ++j)
         {
           cin >> ii[i][j] >> jj[i][j];
         }
@@ -388,26 +388,26 @@ void Input(int problemNum)
     // ファイル入力する
     else {
       ifs >> n >> m >> eps;
-      rep(i, m)
+      for (int i = 0; i < m; ++i)
       {
         ifs >> d[i];
-        rep(j, d[i])
+        for (int j = 0; j < d[i]; ++j)
         {
           ifs >> ii[i][j] >> jj[i][j];
         }
       }
-      rep(i, m)
+      for (int i = 0; i < m; ++i)
       {
         ifs >> di[i] >> dj[i];
       }
-      rep(i, n)
+      for (int i = 0; i < n; ++i)
       {
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
           ifs >> localAnsGrid[i][j];
         }
       }
-      rep(i, n * n * 2)
+      for (int i = 0; i < n * n * 2; ++i)
       {
         ifs >> sampleEs[i];
       }
@@ -425,14 +425,14 @@ void Initialize()
   nnnn = n * n * n * n;
 
   sum = 0;
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     sum += d[i];
   }
   if (mode != 0) {
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         if (localAnsGrid[i][j] > 0) { localAns.emplace_back(i, j); }
       }
@@ -440,13 +440,13 @@ void Initialize()
     sort(localAns.begin(), localAns.end());
   }
 
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     minIi[i] = 0;
     minJj[i] = 0;
     maxIi[i] = 0;
     maxJj[i] = 0;
-    rep(j, d[i])
+    for (int j = 0; j < d[i]; ++j)
     {
       maxIi[i] = max(maxIi[i], ii[i][j]);
       maxJj[i] = max(maxJj[i], jj[i][j]);
@@ -464,7 +464,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
@@ -494,9 +494,9 @@ int m2_nums[MAX_N][MAX_N][MAX_M + 1];
 bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
 {
   vector<P> ans;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (m2_kouho[idx][i][j] >= 1 || m2_kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
     }
@@ -511,11 +511,11 @@ int Method2_CountCandidates()
   int kouhoCount = 0;
 
   // カウント配列を初期化
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(k, m + 1)
+      for (int k = 0; k < m + 1; ++k)
       {
         m2_nums[i][j][k] = 0;
       }
@@ -523,13 +523,13 @@ int Method2_CountCandidates()
   }
 
   // 各候補パターンでの値をカウント
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
     if (!m2_ok[i]) continue;
     kouhoCount++;
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(k, n)
+      for (int k = 0; k < n; ++k)
       {
         m2_nums[j][k][m2_kouho[i][j][k]]++;
       }
@@ -544,18 +544,18 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
 {
   if (isTotyuu == 0 || isTotyuu == 2) {
     // 2つのパターンの全組み合わせを列挙
-    rep(i0, n)
+    for (int i0 = 0; i0 < n; ++i0)
     {
-      rep(j0, n)
+      for (int j0 = 0; j0 < n; ++j0)
       {
-        rep(i1, n)
+        for (int i1 = 0; i1 < n; ++i1)
         {
-          rep(j1, n)
+          for (int j1 = 0; j1 < n; ++j1)
           {
             int idx = i0 * nnn + j0 * nn + i1 * n + j1;
 
             // パターン0の配置チェック
-            rep(k, d[mNum0])
+            for (int k = 0; k < d[mNum0]; ++k)
             {
               int x = i0 + ii[mNum0][k];
               int y = j0 + jj[mNum0][k];
@@ -567,7 +567,7 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
             }
 
             // パターン1の配置チェック
-            rep(k, d[mNum1])
+            for (int k = 0; k < d[mNum1]; ++k)
             {
               int x = i1 + ii[mNum1][k];
               int y = j1 + jj[mNum1][k];
@@ -584,17 +584,17 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
   }
   else if (isTotyuu == 1) {
     // 1つのパターンのみ列挙
-    rep(i, nnnn)
+    for (int i = 0; i < nnnn; ++i)
     {
       m2_ok[i] = false;
     }
-    rep(i0, n)
+    for (int i0 = 0; i0 < n; ++i0)
     {
-      rep(j0, n)
+      for (int j0 = 0; j0 < n; ++j0)
       {
         int idx = i0 * n + j0;
         m2_ok[idx] = true;
-        rep(k, d[mNum0])
+        for (int k = 0; k < d[mNum0]; ++k)
         {
           int x = i0 + ii[mNum0][k];
           int y = j0 + jj[mNum0][k];
@@ -616,9 +616,9 @@ P Method2_SelectQueryPosition()
   bool findOne = false;
 
   // 既に確定した1があるかチェック
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (m2_kakuteiValue1[i][j] >= 1) { findOne = true; }
     }
@@ -627,9 +627,9 @@ P Method2_SelectQueryPosition()
   if (findOne) {
     // 最も候補が少ない位置を選択
     int minMax = INF;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         if (m2_kakuteiValue1[i][j] != -1) continue;
         int ma = max(m2_nums[i][j][0], max(m2_nums[i][j][1], m2_nums[i][j][2]));
@@ -644,9 +644,9 @@ P Method2_SelectQueryPosition()
   else {
     // 最も多くの候補がある位置を選択
     int maxNums = 0;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         int numsSum = 0;
         srep(k, 1, m + 1) numsSum += m2_nums[i][j][k];
@@ -666,7 +666,7 @@ P Method2_SelectQueryPosition()
 void Method2_HandleSingleCandidate(ofstream& ofs)
 {
   int idx = -1;
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
     if (m2_ok[i]) {
       idx = i;
@@ -689,7 +689,7 @@ void Method2_QueryAndUpdate(ofstream& ofs, int& cnt)
   cnt += val;
 
   // 候補を更新
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
     if (!m2_ok[i]) continue;
     if (m2_kouho[i][x][y] != val) m2_ok[i] = false;
@@ -699,9 +699,9 @@ void Method2_QueryAndUpdate(ofstream& ofs, int& cnt)
 void Method2_Kakutei(ofstream& ofs)
 {
   vector<P> ans;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (m2_kakuteiValue1[i][j] >= 1 || m2_kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
     }
@@ -713,11 +713,11 @@ void Method2_Kakutei(ofstream& ofs)
 void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, const vector<vector<int>>& kakuteiValue2, int& cnt, int& cnt2)
 {
   // 候補配列の初期化
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(k, n)
+      for (int k = 0; k < n; ++k)
       {
         m2_kouho[i][j][k] = 0;
       }
@@ -726,9 +726,9 @@ void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, 
   }
 
   // 確定値の初期化
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       m2_kakuteiValue1[i][j] = -1;
       m2_kakuteiValue2[i][j] = -1;
@@ -740,9 +740,9 @@ void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, 
   cnt = 0;
   cnt2 = 0;
   if (isTotyuu != 0) {
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         m2_kakuteiValue1[i][j] = kakuteiValue1[i][j];
         m2_kakuteiValue2[i][j] = kakuteiValue2[i][j];
@@ -784,7 +784,7 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
 // M番号、D番号の配置がN*Nの枠内に収まっているか（障害物無し）
 bool CanHaiti(int sx, int sy, int mNum)
 {
-  rep(i, d[mNum])
+  for (int i = 0; i < d[mNum]; ++i)
   {
     int x = sx + ii[mNum][i];
     int y = sy + jj[mNum][i];
@@ -797,24 +797,24 @@ double m2_2_penalty[MAX_NNNN];
 
 void Method2_2_Initialize()
 {
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(k, n)
+      for (int k = 0; k < n; ++k)
       {
         m2_kouho[i][j][k] = 0;
       }
     }
     m2_ok[i] = true;
   }
-  rep(i0, n)
+  for (int i0 = 0; i0 < n; ++i0)
   {
-    rep(j0, n)
+    for (int j0 = 0; j0 < n; ++j0)
     {
-      rep(i1, n)
+      for (int i1 = 0; i1 < n; ++i1)
       {
-        rep(j1, n)
+        for (int j1 = 0; j1 < n; ++j1)
         {
           int idx = i0 * nnn + j0 * nn + i1 * n + j1;
           if (!CanHaiti(i0, j0, 0)) { m2_ok[idx] = false; }
@@ -823,23 +823,23 @@ void Method2_2_Initialize()
       }
     }
   }
-  rep(i0, n)
+  for (int i0 = 0; i0 < n; ++i0)
   {
-    rep(j0, n)
+    for (int j0 = 0; j0 < n; ++j0)
     {
-      rep(i1, n)
+      for (int i1 = 0; i1 < n; ++i1)
       {
-        rep(j1, n)
+        for (int j1 = 0; j1 < n; ++j1)
         {
           int idx = i0 * nnn + j0 * nn + i1 * n + j1;
           if (!m2_ok[idx]) continue;
-          rep(k, d[0])
+          for (int k = 0; k < d[0]; ++k)
           {
             int x = i0 + ii[0][k];
             int y = j0 + jj[0][k];
             m2_kouho[idx][x][y]++;
           }
-          rep(k, d[1])
+          for (int k = 0; k < d[1]; ++k)
           {
             int x = i1 + ii[1][k];
             int y = j1 + jj[1][k];
@@ -850,9 +850,9 @@ void Method2_2_Initialize()
     }
   }
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       m2_kakuteiValue1[i][j] = -1;
       m2_kakuteiValue2[i][j] = -1;
@@ -864,27 +864,27 @@ void Method2_2_Initialize()
 void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues)
 {
   int valCount[MAX_N][MAX_N];
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       valCount[i][j] = 0;
     }
   }
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
     if (!m2_ok[i]) continue;
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(k, n)
+      for (int k = 0; k < n; ++k)
       {
         valCount[j][k] += m2_kouho[i][j][k];
       }
     }
   }
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (valCount[i][j] == 0) {
         kakuteiValues.emplace_back(P(i, j), 0);
@@ -900,16 +900,16 @@ int m2_2_kouhoCount;
 
 int Method2_2_ChallengeAns(ofstream& ofs)
 {
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
     if (!m2_ok[i]) {
       m2_2_penalty[i] = INF;
     }
     else {
       m2_2_penalty[i] = 0;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
-        rep(k, n)
+        for (int k = 0; k < n; ++k)
         {
           if (m2_kakuteiValue1[j][k] != -1) {
             if (m2_kouho[i][j][k] != m2_kakuteiValue1[j][k]) { m2_ok[i] = false; }
@@ -924,7 +924,7 @@ int Method2_2_ChallengeAns(ofstream& ofs)
 
   pair<double, int> tmp;
   m2_2_kouhoCount = 0;
-  rep(i, nnnn)
+  for (int i = 0; i < nnnn; ++i)
   {
     if (m2_ok[i]) {
       tmp.first = m2_2_penalty[i];
@@ -983,11 +983,11 @@ void Method2_2(int query2Size, ofstream& ofs)
     // 次のクエリ作成
     {
       int nums[MAX_N][MAX_N][3];
-      rep(i, n)
+      for (int i = 0; i < n; ++i)
       {
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
-          rep(k, 3)
+          for (int k = 0; k < 3; ++k)
           {
             nums[i][j][k] = 0;
           }
@@ -997,13 +997,13 @@ void Method2_2(int query2Size, ofstream& ofs)
       if (kakuteiValues.size() >= query2Size - 1) {
         // あいまいクエリ
         double minPenalty = m2_2_penaltySortedArray[0].first;
-        rep(i, m2_2_kouhoCount)
+        for (int i = 0; i < m2_2_kouhoCount; ++i)
         {
           if (m2_2_penaltySortedArray[i].first > minPenalty + 180.0) { break; }
           int idx = m2_2_penaltySortedArray[i].second;
-          rep(j, n)
+          for (int j = 0; j < n; ++j)
           {
-            rep(k, n)
+            for (int k = 0; k < n; ++k)
             {
               if (m2_kakuteiValue1[j][k] != -1 || m2_aimaiValue[j][k] != -1) continue;
               nums[j][k][m2_kouho[idx][j][k]]++;
@@ -1011,9 +1011,9 @@ void Method2_2(int query2Size, ofstream& ofs)
           }
         }
         int x = -1, y = -1, minMax = INF;
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
-          rep(k, n)
+          for (int k = 0; k < n; ++k)
           {
             int ma = max(nums[j][k][0], max(nums[j][k][1], nums[j][k][2]));
             if (ma == 0) continue;
@@ -1028,7 +1028,7 @@ void Method2_2(int query2Size, ofstream& ofs)
         if (x != -1) {
           vector<P> points;
           int valSum = 0;
-          rep(i, query2Size - 1)
+          for (int i = 0; i < query2Size - 1; ++i)
           {
             points.push_back(kakuteiValues[i].first);
             valSum += kakuteiValues[i].second;
@@ -1042,24 +1042,24 @@ void Method2_2(int query2Size, ofstream& ofs)
 
       // 確定クエリ
       {
-        rep(i, n)
+        for (int i = 0; i < n; ++i)
         {
-          rep(j, n)
+          for (int j = 0; j < n; ++j)
           {
-            rep(k, n)
+            for (int k = 0; k < n; ++k)
             {
               nums[i][j][k] = 0;
             }
           }
         }
         double minPenalty = m2_2_penaltySortedArray[0].first;
-        rep(i, m2_2_kouhoCount)
+        for (int i = 0; i < m2_2_kouhoCount; ++i)
         {
           if (m2_2_penaltySortedArray[i].first > minPenalty + 180.0) { break; }
           int idx = m2_2_penaltySortedArray[i].second;
-          rep(j, n)
+          for (int j = 0; j < n; ++j)
           {
-            rep(k, n)
+            for (int k = 0; k < n; ++k)
             {
               if (m2_kakuteiValue1[j][k] != -1) continue;
               nums[j][k][m2_kouho[idx][j][k]]++;
@@ -1068,9 +1068,9 @@ void Method2_2(int query2Size, ofstream& ofs)
         }
 
         int x = -1, y = -1, minMax = INF;
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
-          rep(k, n)
+          for (int k = 0; k < n; ++k)
           {
             int ma = max(nums[j][k][0], max(nums[j][k][1], nums[j][k][2]));
             if (ma == 0) continue;
@@ -1100,9 +1100,9 @@ int m3_findMCount;
 void Method3_PrintAns(ofstream& ofs)
 {
   vector<P> ans;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (m3_used[i][j] >= 1) {
         ans.emplace_back(i, j);
@@ -1118,9 +1118,9 @@ void Method3_PrintAns(ofstream& ofs)
 vector<P> Method3_GetOnes()
 {
   vector<P> ones;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (m3_used[i][j] >= 1) { ones.emplace_back(i, j); }
     }
@@ -1139,18 +1139,18 @@ struct Kouho
 vector<Kouho> Method3_GetAllKouho()
 {
   vector<Kouho> res;
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     if (m3_usedM[i]) continue;
     // チェック
-    rep(j, d[i])
+    for (int j = 0; j < d[i]; ++j)
     {
-      rep(xxx, n)
+      for (int xxx = 0; xxx < n; ++xxx)
       {
-        rep(yyy, n)
+        for (int yyy = 0; yyy < n; ++yyy)
         {
           int isOk = 1;
-          rep(k, d[i])
+          for (int k = 0; k < d[i]; ++k)
           {
             int xx = xxx + ii[i][k] - ii[i][j];
             int yy = yyy + jj[i][k] - jj[i][j];
@@ -1175,14 +1175,14 @@ vector<Kouho> Method3_GetAllKouho()
 vector<P> Method3_GetAllKouhoSpecificPoint1(int xxx, int yyy)
 {
   vector<P> res;
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     if (m3_usedM[i]) continue;
     // チェック
-    rep(j, d[i])
+    for (int j = 0; j < d[i]; ++j)
     {
       int isOk = 1;
-      rep(k, d[i])
+      for (int k = 0; k < d[i]; ++k)
       {
         int xx = xxx + ii[i][k] - ii[i][j];
         int yy = yyy + jj[i][k] - jj[i][j];
@@ -1206,18 +1206,18 @@ vector<P> Method3_GetAllKouhoSpecificPoint1(int xxx, int yyy)
 vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
 {
   vector<P> res;
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     if (m3_usedM[i]) continue;
     // チェック
     const int shuuiSize = 3;
-    rep(j, d[i])
+    for (int j = 0; j < d[i]; ++j)
     {
       int isOk = 1;
       int unused[shuuiSize][shuuiSize];
-      rep(k, shuuiSize)
+      for (int k = 0; k < shuuiSize; ++k)
       {
-        rep(l, shuuiSize)
+        for (int l = 0; l < shuuiSize; ++l)
         {
           unused[k][l] = 0;
           int xx = xxx + k - (shuuiSize / 2);
@@ -1225,7 +1225,7 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
           if (!IsNG(xx, yy) && m3_used[xx][yy] >= 1) { unused[k][l] = m3_used[xx][yy]; }
         }
       }
-      rep(k, d[i])
+      for (int k = 0; k < d[i]; ++k)
       {
         int xx = xxx + ii[i][k] - ii[i][j];
         int yy = yyy + jj[i][k] - jj[i][j];
@@ -1245,9 +1245,9 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
 
       // 周囲9マスで使っていないマスのチェック
       vector<P> unusedPoints;
-      rep(k, shuuiSize)
+      for (int k = 0; k < shuuiSize; ++k)
       {
-        rep(l, shuuiSize)
+        for (int l = 0; l < shuuiSize; ++l)
         {
           if (unused[k][l] > 0) { unusedPoints.emplace_back(xxx + k - (shuuiSize / 2), yyy + l - (shuuiSize / 2)); }
         }
@@ -1257,14 +1257,14 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
         int ux = unusedPoint.first;
         int uy = unusedPoint.second;
         m3_usedM[i] = 1;
-        rep(k, d[i])
+        for (int k = 0; k < d[i]; ++k)
         {
           int xx = xxx + ii[i][k] - ii[i][j];
           int yy = yyy + jj[i][k] - jj[i][j];
           if (m3_used[xx][yy] >= 1) { m3_used[xx][yy]--; }
         }
         auto kouho2 = Method3_GetAllKouhoSpecificPoint1(ux, uy);
-        rep(k, d[i])
+        for (int k = 0; k < d[i]; ++k)
         {
           int xx = xxx + ii[i][k] - ii[i][j];
           int yy = yyy + jj[i][k] - jj[i][j];
@@ -1289,15 +1289,15 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
 int onesEmptyCount = 0;
 void Method3_Initialize()
 {
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       m3_used[i][j] = -1;
       m3_used2[i][j] = 0;
     }
   }
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     m3_usedM[i] = 0;
   }
@@ -1330,7 +1330,7 @@ bool Method3_CheckUniquePattern(const vector<P>& ones, ofstream& ofs, int& cnt, 
       int j = md.second;
 
       vector<P> v2;
-      rep(k, d[i])
+      for (int k = 0; k < d[i]; ++k)
       {
         int xx = x + ii[i][k] - ii[i][j];
         int yy = y + jj[i][k] - jj[i][j];
@@ -1389,7 +1389,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
     int kouhoCount = 0;
     int nums[MAX_N][MAX_N];
 
-    rep(i, n) rep(j, n) nums[i][j] = 0;
+    for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) nums[i][j] = 0;
 
     vector<P> allKouho;
     if (GetNowTime() < 1.0) {
@@ -1403,7 +1403,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
       int i = md.first;
       int j = md.second;
       kouhoCount++;
-      rep(k, d[i])
+      for (int k = 0; k < d[i]; ++k)
       {
         int xx = x + ii[i][k] - ii[i][j];
         int yy = y + jj[i][k] - jj[i][j];
@@ -1417,7 +1417,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
       int nx = -1;
       int ny = -1;
       int minDiff = INF;
-      rep(i, n) rep(j, n)
+      for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j)
       {
         if (m3_used[i][j] != -1 || nums[i][j] == 0) continue;
         int diff = abs(kouhoCount / 2 - nums[i][j]);
@@ -1430,7 +1430,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
       if (nx == -1) continue;
 
       minKouhoCount = kouhoCount;
-      rep(i, n) rep(j, n) minNums[i][j] = nums[i][j];
+      for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) minNums[i][j] = nums[i][j];
       minx = x;
       miny = y;
     }
@@ -1441,7 +1441,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
     int nx = -1;
     int ny = -1;
     int minDiff = INF;
-    rep(i, n) rep(j, n)
+    for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j)
     {
       if (m3_used[i][j] != -1 || minNums[i][j] == 0) continue;
       int diff = abs(minKouhoCount / 2 - minNums[i][j]);
@@ -1469,10 +1469,10 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
 
     // 現在のグリッド状態を出力（デバッグ用）
     if (mode != 0) {
-      rep(i, n)
+      for (int i = 0; i < n; ++i)
       {
         ofs << "# ";
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
           if (m3_used[i][j] == -1) {
             ofs << 'X';
@@ -1495,9 +1495,9 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
 void Method3_QueryEmptyCell(ofstream& ofs, int& cnt, int& cnt2)
 {
   int nums[MAX_N][MAX_N];
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       nums[i][j] = 0;
     }
@@ -1508,7 +1508,7 @@ void Method3_QueryEmptyCell(ofstream& ofs, int& cnt, int& cnt2)
   for (const auto& kouho : allKouho) {
     int i = kouho.mNum;
     int j = kouho.dNum;
-    rep(k, d[i])
+    for (int k = 0; k < d[i]; ++k)
     {
       int xx = kouho.xPos + ii[i][k] - ii[i][j];
       int yy = kouho.yPos + jj[i][k] - jj[i][j];
@@ -1519,9 +1519,9 @@ void Method3_QueryEmptyCell(ofstream& ofs, int& cnt, int& cnt2)
   // 最も多くの候補がある場所を選択
   int maxNums = 0;
   int x = -1, y = -1;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       if (nums[i][j] > maxNums && m3_used[i][j] == -1) {
         // 初期段階では離れた場所を優先
@@ -1600,9 +1600,9 @@ vector<P> m4_kouhos[MAX_N][MAX_N];  // {M番号,D番号}
 vector<int> m4_kouhos_OK[MAX_N][MAX_N];
 void Method4(int kakuteiCount, ofstream& ofs)
 {
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       m4_values1[i][j] = -1;
       m4_values2[i][j] = -1;
@@ -1613,13 +1613,13 @@ void Method4(int kakuteiCount, ofstream& ofs)
   vector<pair<P, int>> kakuteiValues;
 
   // 全てのマスの候補を列挙する
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
-      rep(k, m)
+      for (int k = 0; k < m; ++k)
       {
-        rep(l, d[k])
+        for (int l = 0; l < d[k]; ++l)
         {
           int miI = i - ii[k][l];
           int maI = i + (maxIi[k] - ii[k][l]);
@@ -1640,12 +1640,12 @@ void Method4(int kakuteiCount, ofstream& ofs)
   while (true) {
     // 解答できるかチェック
     {
-      rep(i, n)
+      for (int i = 0; i < n; ++i)
       {
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
           if (m4_values1[i][j] <= 0 && m4_values2[i][j] <= 0) continue;
-          rep(k, m4_kouhos[i][j].size())
+          for (int k = 0; k < m4_kouhos[i][j].size(); ++k)
           {
             if (m4_kouhos_OK[i][j][k] == 0) continue;
           }
