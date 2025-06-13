@@ -493,11 +493,54 @@ void writeAnswer(ofstream& ofs)
   }
 }
 
+// ヘルパー関数：タスクのパスを取得
+inline const Path& getTaskPath(int idx)
+{
+  return task_paths[task_order[idx]][path_index[idx]];
+}
+
+// ヘルパー関数：2点間の距離を計算
+inline int calcDistance(int idx1, int idx2, bool useGoalForFirst, bool useStartForSecond)
+{
+  const Path& path1 = getTaskPath(idx1);
+  const Path& path2 = getTaskPath(idx2);
+
+  int i1 = useGoalForFirst ? path1.goal_i : path1.start_i;
+  int j1 = useGoalForFirst ? path1.goal_j : path1.start_j;
+  int i2 = useStartForSecond ? path2.start_i : path2.goal_i;
+  int j2 = useStartForSecond ? path2.start_j : path2.goal_j;
+
+  return manhattanDistance(i1, j1, i2, j2);
+}
+
+// ヘルパー関数：スタート地点からの距離を計算
+inline int calcDistanceFromStart(int idx)
+{
+  const Path& path = getTaskPath(idx);
+  return manhattanDistance(path.start_i, path.start_j, start_i, start_j);
+}
+
+// ヘルパー関数：コストを計算（距離の合計 - 同一地点ボーナス）
+inline int calcCost(const vector<int>& distances)
+{
+  int total = 0;
+  int sameCount = 0;
+  for (int d : distances) {
+    total += d;
+    if (d == 0) sameCount++;
+  }
+  return total - sameCount;
+}
+
 void twoSwap(double temperature)
 {
+  // 2つのタスクインデックスをランダムに選択
   int idx_a = Random::xorshift() % TASK_COUNT;
   int idx_b = Random::xorshift() % TASK_COUNT;
   if (idx_a > idx_b) std::swap(idx_a, idx_b);
+
+  // 隣接要素の入れ替えは無効
+  if (idx_b - idx_a <= 1) return;
 
   int prev_a = idx_a - 1;
   int next_a = idx_a + 1;
@@ -507,129 +550,69 @@ void twoSwap(double temperature)
   int cost_before = 0;
   int cost_after = 0;
 
+  // ケース1: 両方とも中間要素
   if (idx_a != 0 && idx_b != TASK_COUNT - 1) {
-    {
-      int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_j);
-      int d2 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].goal_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].goal_j,
-        task_paths[task_order[next_a]][path_index[next_a]].start_i,
-        task_paths[task_order[next_a]][path_index[next_a]].start_j);
-      int d3 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].start_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].start_j,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_j);
-      int d4 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].goal_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].goal_j,
-        task_paths[task_order[next_b]][path_index[next_b]].start_i,
-        task_paths[task_order[next_b]][path_index[next_b]].start_j);
-      int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0) + (d4 == 0);
-      cost_before = d1 + d2 + d3 + d4 - same_cnt;
-    }
-    {
-      int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_j);
-      int d2 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].goal_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].goal_j,
-        task_paths[task_order[next_b]][path_index[next_b]].start_i,
-        task_paths[task_order[next_b]][path_index[next_b]].start_j);
-      int d3 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].start_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].start_j,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_j);
-      int d4 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].goal_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].goal_j,
-        task_paths[task_order[next_a]][path_index[next_a]].start_i,
-        task_paths[task_order[next_a]][path_index[next_a]].start_j);
-      int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0) + (d4 == 0);
-      cost_after = d1 + d2 + d3 + d4 - same_cnt;
-    }
+    // 現在のコスト
+    vector<int> distances_before = {
+      calcDistance(prev_a, idx_a, true, true),   // prev_a -> idx_a
+      calcDistance(idx_a, next_a, true, true),   // idx_a -> next_a
+      calcDistance(prev_b, idx_b, true, true),   // prev_b -> idx_b
+      calcDistance(idx_b, next_b, true, true)    // idx_b -> next_b
+    };
+    cost_before = calcCost(distances_before);
+
+    // 入れ替え後のコスト
+    vector<int> distances_after = {
+      calcDistance(prev_a, idx_b, true, true),   // prev_a -> idx_b
+      calcDistance(idx_b, next_a, true, true),   // idx_b -> next_a
+      calcDistance(prev_b, idx_a, true, true),   // prev_b -> idx_a
+      calcDistance(idx_a, next_b, true, true)    // idx_a -> next_b
+    };
+    cost_after = calcCost(distances_after);
   }
+  // ケース2: idx_aが先頭
   else if (idx_a == 0 && idx_b != TASK_COUNT - 1) {
-    {
-      int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
-        start_i, start_j);
-      int d2 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].goal_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].goal_j,
-        task_paths[task_order[next_a]][path_index[next_a]].start_i,
-        task_paths[task_order[next_a]][path_index[next_a]].start_j);
-      int d3 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].start_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].start_j,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_j);
-      int d4 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].goal_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].goal_j,
-        task_paths[task_order[next_b]][path_index[next_b]].start_i,
-        task_paths[task_order[next_b]][path_index[next_b]].start_j);
-      int same_cnt = (d2 == 0) + (d3 == 0) + (d4 == 0);
-      cost_before = d1 + d2 + d3 + d4 - same_cnt;
-    }
-    {
-      int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_j);
-      int d2 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].goal_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].goal_j,
-        task_paths[task_order[next_b]][path_index[next_b]].start_i,
-        task_paths[task_order[next_b]][path_index[next_b]].start_j);
-      int d3 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].start_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].start_j,
-        start_i, start_j);
-      int d4 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].goal_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].goal_j,
-        task_paths[task_order[next_a]][path_index[next_a]].start_i,
-        task_paths[task_order[next_a]][path_index[next_a]].start_j);
-      int same_cnt = (d1 == 0) + (d2 == 0) + (d4 == 0);
-      cost_after = d1 + d2 + d3 + d4 - same_cnt;
-    }
+    // 現在のコスト
+    vector<int> distances_before = {
+      calcDistanceFromStart(idx_a),              // start -> idx_a
+      calcDistance(idx_a, next_a, true, true),   // idx_a -> next_a
+      calcDistance(prev_b, idx_b, true, true),   // prev_b -> idx_b
+      calcDistance(idx_b, next_b, true, true)    // idx_b -> next_b
+    };
+    cost_before = calcCost(distances_before);
+
+    // 入れ替え後のコスト（d1がカウントされないバグを修正）
+    int d1 = calcDistanceFromStart(idx_b);
+    int d2 = calcDistance(idx_b, next_a, true, true);
+    int d3 = calcDistance(prev_b, idx_a, true, true);
+    int d4 = calcDistance(idx_a, next_b, true, true);
+    int same_cnt = (d1 == 0) + (d2 == 0) + (d4 == 0);
+    cost_after = d1 + d2 + d3 + d4 - same_cnt;
   }
+  // ケース3: idx_bが末尾
   else if (idx_a != 0 && idx_b == TASK_COUNT - 1) {
-    {
-      int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_j);
-      int d2 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].goal_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].goal_j,
-        task_paths[task_order[next_a]][path_index[next_a]].start_i,
-        task_paths[task_order[next_a]][path_index[next_a]].start_j);
-      int d3 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].start_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].start_j,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_j);
-      int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0);
-      cost_before = d1 + d2 + d3 - same_cnt;
-    }
-    {
-      int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
-        task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
-        task_paths[task_order[prev_b]][path_index[prev_b]].goal_j);
-      int d3 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].start_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].start_j,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
-        task_paths[task_order[prev_a]][path_index[prev_a]].goal_j);
-      int d4 = manhattanDistance(task_paths[task_order[idx_b]][path_index[idx_b]].goal_i,
-        task_paths[task_order[idx_b]][path_index[idx_b]].goal_j,
-        task_paths[task_order[next_a]][path_index[next_a]].start_i,
-        task_paths[task_order[next_a]][path_index[next_a]].start_j);
-      int same_cnt = (d1 == 0) + (d3 == 0) + (d4 == 0);
-      cost_after = d1 + d3 + d4 - same_cnt;
-    }
+    // 現在のコスト
+    vector<int> distances_before = {
+      calcDistance(prev_a, idx_a, true, true),   // prev_a -> idx_a
+      calcDistance(idx_a, next_a, true, true),   // idx_a -> next_a
+      calcDistance(prev_b, idx_b, true, true)    // prev_b -> idx_b
+    };
+    cost_before = calcCost(distances_before);
+
+    // 入れ替え後のコスト
+    vector<int> distances_after = {
+      calcDistance(prev_a, idx_b, true, true),   // prev_a -> idx_b
+      calcDistance(idx_b, next_a, true, true),   // idx_b -> next_a
+      calcDistance(prev_b, idx_a, true, true)    // prev_b -> idx_a
+    };
+    cost_after = calcCost(distances_after);
   }
   else {
     return;
   }
 
-  int    delta_cost = cost_before - cost_after;
-  double accept_prob = std::exp(static_cast<double>(delta_cost) / temperature);
-
+  // 受理判定
+  int delta_cost = cost_before - cost_after;
   if (delta_cost >= 0) {
     std::swap(task_order[idx_a], task_order[idx_b]);
     std::swap(path_index[idx_a], path_index[idx_b]);
