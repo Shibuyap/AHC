@@ -57,16 +57,44 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
+// 定数
+namespace Constants
+{
+  constexpr int T = 100;
+  constexpr int H = 20;
+  constexpr int W = 20;
+  constexpr int HW = H * W;
+  constexpr int HWT = HW * T;
+  constexpr int SY = 0;
+  constexpr int INF = 1001001;
+  constexpr double TL = 1.8;
+  constexpr int MAX_K = 44000;
+  constexpr int GRID_SIZE = 25;
+  constexpr int QUEUE_SIZE = 10000;
+  constexpr int DIJKSTRA_QUEUE_SIZE = 110;
+  constexpr ll SCORE_BASE = 1000000LL;
+}
+
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
-const int INF = 1001001;
+using namespace Constants;
+
+// 座標変換ヘルパー関数
+inline int toIndex(int x, int y)
+{
+  return x * H + y;
+}
+
+inline P toCoord(int index)
+{
+  return P(index / H, index % H);
+}
 
 std::mt19937 engine;
-double TL = 1.8;
 int mode;
 
 /////////////////////////////////////////////////////////////////////////////////
-// 変数
+// 構造体・比較関数
 
 struct Crop
 {
@@ -78,25 +106,29 @@ struct Crop
 bool compD(const Crop& a, const Crop& b) { return a.d < b.d; }
 bool compS(const Crop& a, const Crop& b) { return a.s < b.s; }
 
-// 入力
-const int T = 100;
-const int H = 20;
-const int W = 20;
-const int HW = 400;
-const int HWT = 40000;
-const int SY = 0;
-int SX;
-int ho[25][25];
-int ve[25][25];
-int K;
-int S[44000], D[44000];
-int wall[25][25][4];
-vector<Crop> SVec[100], DVec[100];
-int Used[44000];
+// グローバル変数を名前空間に整理
+namespace GlobalVars
+{
+  // 入力
+  int SX;
+  int ho[GRID_SIZE][GRID_SIZE];
+  int ve[GRID_SIZE][GRID_SIZE];
+  int K;
+  int S[MAX_K], D[MAX_K];
+  int wall[GRID_SIZE][GRID_SIZE][4];
+  vector<Crop> SVec[T], DVec[T];
+  int Used[MAX_K];
 
-// 出力
-int M;
-int ansK[44000], ansX[44000], ansY[44000], ansS[44000];
+  // 出力
+  int M;
+  int ansK[MAX_K], ansX[MAX_K], ansY[MAX_K], ansS[MAX_K];
+
+  // キュー
+  int bfsQueue[QUEUE_SIZE][2];
+  int dijkstraQueue[DIJKSTRA_QUEUE_SIZE][HW + 10][2];
+}
+
+using namespace GlobalVars;
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -163,102 +195,90 @@ namespace /* 関節点ライブラリ */
 }  // namespace
 
 // 複数ケース回すときに内部状態を初期値に戻す
-void SetUp()
+void resetGlobalState()
 {
   M = 0;
-  for (int i = 0; i < (100); ++i) {
+  for (int i = 0; i < T; ++i) {
     SVec[i].clear();
     DVec[i].clear();
   }
-  for (int i = 0; i < (44000); ++i) {
+  for (int i = 0; i < MAX_K; ++i) {
     Used[i] = 0;
   }
 }
 
-// 入力受け取り
-void Input(int problemNum)
+// 数値をゼロ埋め4桁の文字列に変換
+string formatProblemNumber(int problemNum)
 {
-  string fileNameIfs = "./in/";
   string strNum;
-  for (int i = 0; i < (4); ++i) {
+  for (int i = 0; i < 4; ++i) {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
   reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
+  return strNum;
+}
 
+// 入力データを読み込む共通処理
+template<typename Stream>
+void readInputData(Stream& stream)
+{
+  int TTT, HHH, WWW;
+  stream >> TTT >> HHH >> WWW >> SX;
+
+  for (int i = 0; i < H - 1; ++i) {
+    string str;
+    stream >> str;
+    for (int j = 0; j < W; ++j) {
+      ho[i][j] = str[j] - '0';
+    }
+  }
+
+  for (int i = 0; i < H; ++i) {
+    string str;
+    stream >> str;
+    for (int j = 0; j < W - 1; ++j) {
+      ve[i][j] = str[j] - '0';
+    }
+  }
+
+  stream >> K;
+  for (int i = 0; i < K; ++i) {
+    stream >> S[i] >> D[i];
+  }
+}
+
+// 入力受け取り
+void readInput(int problemNum)
+{
+  string fileNameIfs = "./in/" + formatProblemNumber(problemNum) + ".txt";
   ifstream ifs(fileNameIfs);
 
-  // 標準入力する
   if (!ifs.is_open()) {
-    int TTT, HHH, WWW;
-    cin >> TTT >> HHH >> WWW >> SX;
-    for (int i = 0; i < (H - 1); ++i) {
-      string str;
-      cin >> str;
-      for (int j = 0; j < (W); ++j) { ho[i][j] = str[j] - '0'; }
-    }
-    for (int i = 0; i < (H); ++i) {
-      string str;
-      cin >> str;
-      for (int j = 0; j < (W - 1); ++j) { ve[i][j] = str[j] - '0'; }
-    }
-    cin >> K;
-    for (int i = 0; i < (K); ++i) { cin >> S[i] >> D[i]; }
+    readInputData(cin);
   }
-  // ファイル入力する
   else {
-    int TTT, HHH, WWW;
-    ifs >> TTT >> HHH >> WWW >> SX;
-    for (int i = 0; i < (H - 1); ++i) {
-      string str;
-      ifs >> str;
-      for (int j = 0; j < (W); ++j) { ho[i][j] = str[j] - '0'; }
-    }
-    for (int i = 0; i < (H); ++i) {
-      string str;
-      ifs >> str;
-      for (int j = 0; j < (W - 1); ++j) { ve[i][j] = str[j] - '0'; }
-    }
-    ifs >> K;
-    for (int i = 0; i < (K); ++i) { ifs >> S[i] >> D[i]; }
+    readInputData(ifs);
   }
 
-  for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) {
-      for (int k = 0; k < (4); ++k) { wall[i][j][k] = 0; }
-      if (i == 0) {
-        wall[i][j][0] = 1;
+  // 壁情報を初期化
+  for (int i = 0; i < H; ++i) {
+    for (int j = 0; j < W; ++j) {
+      for (int k = 0; k < 4; ++k) {
+        wall[i][j][k] = 0;
       }
-      else {
-        if (ho[i - 1][j]) {
-          wall[i][j][0] = 1;
-        }
-      }
-      if (j == 0) {
-        wall[i][j][1] = 1;
-      }
-      else {
-        if (ve[i][j - 1]) {
-          wall[i][j][1] = 1;
-        }
-      }
-      if (i == H - 1) {
-        wall[i][j][2] = 1;
-      }
-      else {
-        if (ho[i][j]) {
-          wall[i][j][2] = 1;
-        }
-      }
-      if (j == W - 1) {
-        wall[i][j][3] = 1;
-      }
-      else {
-        if (ve[i][j]) {
-          wall[i][j][3] = 1;
-        }
-      }
+
+      // 上の壁
+      wall[i][j][0] = (i == 0) || (ho[i - 1][j] != 0);
+
+      // 左の壁
+      wall[i][j][1] = (j == 0) || (ve[i][j - 1] != 0);
+
+      // 下の壁
+      wall[i][j][2] = (i == H - 1) || (ho[i][j] != 0);
+
+      // 右の壁
+      wall[i][j][3] = (j == W - 1) || (ve[i][j] != 0);
     }
   }
 
@@ -291,35 +311,27 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void openOutputFile(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < (4); ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
+    string fileNameOfs = "./out/" + formatProblemNumber(probNum) + ".txt";
     ofs.open(fileNameOfs);
   }
 }
 
 // スコア計算
-ll CalcScore()
+ll calculateScore()
 {
   ll sum = 0;
   for (int i = 0; i < (M); ++i) { sum += D[ansK[i] - 1] - S[ansK[i] - 1] + 1; }
-  ll res = 1000000LL * sum / HWT;
+  ll res = SCORE_BASE * sum / HWT;
   return res;
 }
 
 // 初期解生成
-void Initialize() {}
+void initializeSolution() {}
 
-bool OKCheck(const int x, const int y, const vector<vector<int>>& use)
+bool isValidPlacement(const int x, const int y, const vector<vector<int>>& use)
 {
   if (x == SX && y == SY) {
     return false;
@@ -342,8 +354,7 @@ bool OKCheck(const int x, const int y, const vector<vector<int>>& use)
   return false;
 }
 
-int bfsQueue[10000][2];
-bool NGCheck_BFS(const vector<vector<int>>& use)
+bool isConnectedBFS(const vector<vector<int>>& use)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
@@ -392,8 +403,7 @@ bool NGCheck_BFS(const vector<vector<int>>& use)
   return false;
 }
 
-int dijkstraQueue[110][410][2];
-bool NGCheck_Dijkstra(const vector<vector<int>>& use)
+bool isReachableFromStart(const vector<vector<int>>& use)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
@@ -402,8 +412,8 @@ bool NGCheck_Dijkstra(const vector<vector<int>>& use)
 
   int cnt = 0;
 
-  int heads[110] = {};
-  int tails[110] = {};
+  int heads[DIJKSTRA_QUEUE_SIZE] = {};
+  int tails[DIJKSTRA_QUEUE_SIZE] = {};
   f[SX][SY] = use[SX][SY];
   cnt++;
   int hash = f[SX][SY] + 1;
@@ -449,8 +459,8 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
   }
 
 
-  int heads[110] = {};
-  int tails[110] = {};
+  int heads[DIJKSTRA_QUEUE_SIZE] = {};
+  int tails[DIJKSTRA_QUEUE_SIZE] = {};
   f[sx][sy] = use[sx][sy];
 
   int hash = f[sx][sy] + 1;
@@ -459,7 +469,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
   tails[hash]++;
 
   vector<int> days;
-  int kind[110] = {};
+  int kind[DIJKSTRA_QUEUE_SIZE] = {};
   for (int turn = 0; turn < (T); ++turn) {
     while (heads[turn] < tails[turn]) {
       kind[turn] = 1;
@@ -497,7 +507,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
       score -= (double)abs(d - day) / ((i + 1) * (i + 1));
     }
   }
-  for (int i = 0; i < (110); ++i) {
+  for (int i = 0; i < DIJKSTRA_QUEUE_SIZE; ++i) {
     score += kind[i] * 1e6;
   }
   score += walkCount * 1e5;
@@ -533,7 +543,7 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use
 }
 
 
-void Method1()
+void greedyPlacement()
 {
   vector<vector<int>> use(20, vector<int>(20));
   for (int i = 0; i < (H); ++i) {
@@ -557,9 +567,8 @@ void Method1()
       map<int, P> mp;     // {頂点番号,座標}
       map<P, int> mpInv;  // {座標,頂点番号}
       // 空のグラフ作成
-      for (int i = 0; i < (HW); ++i) {
-        int x = i / H;
-        int y = i % H;
+      for (int i = 0; i < HW; ++i) {
+        auto [x, y] = toCoord(i);
         if (use[x][y] == -1) {
           int num = mp.size();
           mp[num] = P(x, y);
@@ -632,11 +641,11 @@ void Method1()
 
         use[x][y] = d;
         bool OK = false;
-        if (OKCheck(x, y, use)) {
+        if (isValidPlacement(x, y, use)) {
           OK = true;
         }
         if (!OK) {
-          if (NGCheck_BFS(use) && NGCheck_Dijkstra(use)) {
+          if (isConnectedBFS(use) && isReachableFromStart(use)) {
             OK = true;
           }
         }
@@ -683,7 +692,7 @@ void Method1()
 }
 
 // 解答出力
-void Output(ofstream& ofs)
+void outputSolution(ofstream& ofs)
 {
   if (mode == 0) {
     cout << M << endl;
@@ -701,26 +710,26 @@ void Output(ofstream& ofs)
   }
 }
 
-ll Solve(int probNum)
+ll solveProblem(int probNum)
 {
   // 複数ケース回すときに内部状態を初期値に戻す
-  SetUp();
+  resetGlobalState();
 
   // 入力受け取り
-  Input(probNum);
+  readInput(probNum);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  openOutputFile(probNum, ofs);
 
   // 初期解生成
-  Initialize();
+  initializeSolution();
 
   // 貪欲1
-  Method1();
+  greedyPlacement();
 
   // 解答を出力
-  Output(ofs);
+  outputSolution(ofs);
 
   if (ofs.is_open()) {
     ofs.close();
@@ -728,7 +737,7 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = calculateScore();
   }
   return score;
 }
@@ -741,14 +750,14 @@ int main()
   mode = 1;
 
   if (mode == 0) {
-    Solve(0);
+    solveProblem(0);
   }
   else if (mode == 1) {
     ll sum = 0;
     srep(i, 0, 10)
     {
       for (int j = 0; j < (1); ++j) {
-        ll score = Solve(i);
+        ll score = solveProblem(i);
         sum += score;
         cout << "num = " << i << ", ";
         cout << "score = " << score << ", ";

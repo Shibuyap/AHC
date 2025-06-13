@@ -35,7 +35,8 @@
       "Bash(rm:*)",
       "Bash(./test_refactor.sh:*)",
       "Bash(cat:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(./AHC023_new)"
     ],
     "deny": []
   }
