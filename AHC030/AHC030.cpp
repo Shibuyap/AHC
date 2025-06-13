@@ -490,19 +490,7 @@ int m2_kakuteiValue2[MAX_N][MAX_N];
 int m2_aimaiValue[MAX_N][MAX_N];
 int m2_nums[MAX_N][MAX_N][MAX_M + 1];
 
-void Method2_Kakutei(ofstream& ofs)
-{
-  vector<P> ans;
-  rep(i, n)
-  {
-    rep(j, n)
-    {
-      if (m2_kakuteiValue1[i][j] >= 1 || m2_kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
-    }
-  }
-  bool isCorrect = QueryAns(ans, ofs);
-}
-
+// Method2のヘルパー関数：インデックスを指定して解答を出力
 bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
 {
   vector<P> ans;
@@ -517,8 +505,214 @@ bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
   return isCorrect;
 }
 
-void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, const vector<vector<int>>& kakuteiValue1 = {}, const vector<vector<int>>& kakuteiValue2 = {})
+// Method2のヘルパー関数：候補数のカウント
+int Method2_CountCandidates()
 {
+  int kouhoCount = 0;
+
+  // カウント配列を初期化
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      rep(k, m + 1)
+      {
+        m2_nums[i][j][k] = 0;
+      }
+    }
+  }
+
+  // 各候補パターンでの値をカウント
+  rep(i, nnnn)
+  {
+    if (!m2_ok[i]) continue;
+    kouhoCount++;
+    rep(j, n)
+    {
+      rep(k, n)
+      {
+        m2_nums[j][k][m2_kouho[i][j][k]]++;
+      }
+    }
+  }
+
+  return kouhoCount;
+}
+
+// Method2のヘルパー関数：候補パターンの列挙
+void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
+{
+  if (isTotyuu == 0 || isTotyuu == 2) {
+    // 2つのパターンの全組み合わせを列挙
+    rep(i0, n)
+    {
+      rep(j0, n)
+      {
+        rep(i1, n)
+        {
+          rep(j1, n)
+          {
+            int idx = i0 * nnn + j0 * nn + i1 * n + j1;
+
+            // パターン0の配置チェック
+            rep(k, d[mNum0])
+            {
+              int x = i0 + ii[mNum0][k];
+              int y = j0 + jj[mNum0][k];
+              if (IsNG(x, y)) {
+                m2_ok[idx] = false;
+                break;
+              }
+              m2_kouho[idx][x][y]++;
+            }
+
+            // パターン1の配置チェック
+            rep(k, d[mNum1])
+            {
+              int x = i1 + ii[mNum1][k];
+              int y = j1 + jj[mNum1][k];
+              if (IsNG(x, y)) {
+                m2_ok[idx] = false;
+                break;
+              }
+              m2_kouho[idx][x][y]++;
+            }
+          }
+        }
+      }
+    }
+  }
+  else if (isTotyuu == 1) {
+    // 1つのパターンのみ列挙
+    rep(i, nnnn)
+    {
+      m2_ok[i] = false;
+    }
+    rep(i0, n)
+    {
+      rep(j0, n)
+      {
+        int idx = i0 * n + j0;
+        m2_ok[idx] = true;
+        rep(k, d[mNum0])
+        {
+          int x = i0 + ii[mNum0][k];
+          int y = j0 + jj[mNum0][k];
+          if (IsNG(x, y)) {
+            m2_ok[idx] = false;
+            break;
+          }
+          m2_kouho[idx][x][y]++;
+        }
+      }
+    }
+  }
+}
+
+// Method2のヘルパー関数：クエリ位置の選択
+P Method2_SelectQueryPosition()
+{
+  P result = { -1, -1 };
+  bool findOne = false;
+
+  // 既に確定した1があるかチェック
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      if (m2_kakuteiValue1[i][j] >= 1) { findOne = true; }
+    }
+  }
+
+  if (findOne) {
+    // 最も候補が少ない位置を選択
+    int minMax = INF;
+    rep(i, n)
+    {
+      rep(j, n)
+      {
+        if (m2_kakuteiValue1[i][j] != -1) continue;
+        int ma = max(m2_nums[i][j][0], max(m2_nums[i][j][1], m2_nums[i][j][2]));
+        if (ma < minMax) {
+          minMax = ma;
+          result.first = i;
+          result.second = j;
+        }
+      }
+    }
+  }
+  else {
+    // 最も多くの候補がある位置を選択
+    int maxNums = 0;
+    rep(i, n)
+    {
+      rep(j, n)
+      {
+        int numsSum = 0;
+        srep(k, 1, m + 1) numsSum += m2_nums[i][j][k];
+        if (numsSum > maxNums && m2_kakuteiValue1[i][j] == -1) {
+          maxNums = numsSum;
+          result.first = i;
+          result.second = j;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+// Method2のヘルパー関数：単一候補の処理
+void Method2_HandleSingleCandidate(ofstream& ofs)
+{
+  int idx = -1;
+  rep(i, nnnn)
+  {
+    if (m2_ok[i]) {
+      idx = i;
+      break;
+    }
+  }
+  Method2_PrintAnsWithIndex(idx, ofs);
+}
+
+// Method2のヘルパー関数：クエリ実行と更新
+void Method2_QueryAndUpdate(ofstream& ofs, int& cnt)
+{
+  P pos = Method2_SelectQueryPosition();
+  int x = pos.first;
+  int y = pos.second;
+
+  int val = Query1(x, y, ofs);
+  if (m2_kakuteiValue2[x][y] >= 0) val -= m2_kakuteiValue2[x][y];
+  m2_kakuteiValue1[x][y] = val;
+  cnt += val;
+
+  // 候補を更新
+  rep(i, nnnn)
+  {
+    if (!m2_ok[i]) continue;
+    if (m2_kouho[i][x][y] != val) m2_ok[i] = false;
+  }
+}
+
+void Method2_Kakutei(ofstream& ofs)
+{
+  vector<P> ans;
+  rep(i, n)
+  {
+    rep(j, n)
+    {
+      if (m2_kakuteiValue1[i][j] >= 1 || m2_kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
+    }
+  }
+  bool isCorrect = QueryAns(ans, ofs);
+}
+
+// Method2のヘルパー関数：初期化処理
+void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, const vector<vector<int>>& kakuteiValue2, int& cnt, int& cnt2)
+{
+  // 候補配列の初期化
   rep(i, nnnn)
   {
     rep(j, n)
@@ -531,6 +725,7 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
     m2_ok[i] = true;
   }
 
+  // 確定値の初期化
   rep(i, n)
   {
     rep(j, n)
@@ -541,8 +736,9 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
     }
   }
 
-  int cnt = 0;
-  int cnt2 = 0;
+  // 途中からの場合は確定値をコピー
+  cnt = 0;
+  cnt2 = 0;
   if (isTotyuu != 0) {
     rep(i, n)
     {
@@ -555,68 +751,15 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
       }
     }
   }
+}
 
-  {
-    if (isTotyuu == 0 || isTotyuu == 2) {
-      rep(i0, n)
-      {
-        rep(j0, n)
-        {
-          rep(i1, n)
-          {
-            rep(j1, n)
-            {
-              int idx = i0 * nnn + j0 * nn + i1 * n + j1;
-              rep(k, d[mNum0])
-              {
-                int x = i0 + ii[mNum0][k];
-                int y = j0 + jj[mNum0][k];
-                if (IsNG(x, y)) {
-                  m2_ok[idx] = false;
-                  break;
-                }
-                m2_kouho[idx][x][y]++;
-              }
-              rep(k, d[mNum1])
-              {
-                int x = i1 + ii[mNum1][k];
-                int y = j1 + jj[mNum1][k];
-                if (IsNG(x, y)) {
-                  m2_ok[idx] = false;
-                  break;
-                }
-                m2_kouho[idx][x][y]++;
-              }
-            }
-          }
-        }
-      }
-    }
-    else if (isTotyuu == 1) {
-      rep(i, nnnn)
-      {
-        m2_ok[i] = false;
-      }
-      rep(i0, n)
-      {
-        rep(j0, n)
-        {
-          int idx = i0 * n + j0;
-          m2_ok[idx] = true;
-          rep(k, d[mNum0])
-          {
-            int x = i0 + ii[mNum0][k];
-            int y = j0 + jj[mNum0][k];
-            if (IsNG(x, y)) {
-              m2_ok[idx] = false;
-              break;
-            }
-            m2_kouho[idx][x][y]++;
-          }
-        }
-      }
-    }
-  }
+void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, const vector<vector<int>>& kakuteiValue1 = {}, const vector<vector<int>>& kakuteiValue2 = {})
+{
+  int cnt, cnt2;
+  Method2_Initialize(isTotyuu, kakuteiValue1, kakuteiValue2, cnt, cnt2);
+
+  // 候補パターンを列挙
+  Method2_EnumerateCandidates(isTotyuu, mNum0, mNum1);
 
   while (true) {
     if (cnt + cnt2 == sum) {
@@ -624,98 +767,15 @@ void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, cons
       break;
     }
     else {
-      int kouhoCount = 0;
-
-      rep(i, n)
-      {
-        rep(j, n)
-        {
-          rep(k, m + 1)
-          {
-            m2_nums[i][j][k] = 0;
-          }
-        }
-      }
-      rep(i, nnnn)
-      {
-        if (!m2_ok[i]) continue;
-        kouhoCount++;
-        rep(j, n)
-        {
-          rep(k, n)
-          {
-            m2_nums[j][k][m2_kouho[i][j][k]]++;
-          }
-        }
-      }
-
-      // cout << kouhoCount << endl;
+      // 候補数をカウント
+      int kouhoCount = Method2_CountCandidates();
 
       if (kouhoCount == 1) {
-        int idx = -1;
-        rep(i, nnnn)
-        {
-          if (m2_ok[i]) {
-            idx = i;
-            break;
-          }
-        }
-        Method2_PrintAnsWithIndex(idx, ofs);
+        Method2_HandleSingleCandidate(ofs);
         break;
       }
       else {
-        int x = -1, y = -1;
-        bool findOne = false;
-        rep(i, n)
-        {
-          rep(j, n)
-          {
-            if (m2_kakuteiValue1[i][j] >= 1) { findOne = true; }
-          }
-        }
-        if (findOne) {
-          int minMax = INF;
-          rep(i, n)
-          {
-            rep(j, n)
-            {
-              if (m2_kakuteiValue1[i][j] != -1) continue;
-              int ma = max(m2_nums[i][j][0], max(m2_nums[i][j][1], m2_nums[i][j][2]));
-              if (ma < minMax) {
-                minMax = ma;
-                x = i;
-                y = j;
-              }
-            }
-          }
-        }
-        else {
-          int maxNums = 0;
-          rep(i, n)
-          {
-            rep(j, n)
-            {
-              int numsSum = 0;
-              srep(k, 1, m + 1) numsSum += m2_nums[i][j][k];
-              if (numsSum > maxNums && m2_kakuteiValue1[i][j] == -1) {
-                maxNums = numsSum;
-                x = i;
-                y = j;
-              }
-            }
-          }
-        }
-
-        int val = Query1(x, y, ofs);
-        if (m2_kakuteiValue2[x][y] >= 0) val -= m2_kakuteiValue2[x][y];
-        m2_kakuteiValue1[x][y] = val;
-        cnt += val;
-
-        rep(i, nnnn)
-        {
-          if (!m2_ok[i]) continue;
-          if (m2_kouho[i][x][y] != val) m2_ok[i] = false;
-        }
+        Method2_QueryAndUpdate(ofs, cnt);
       }
     }
   }
