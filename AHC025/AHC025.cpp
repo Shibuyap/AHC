@@ -454,7 +454,6 @@ int selectGroupWithMinSize(int minSize)
   }
 }
 
-
 bool ErrorCheck()
 {
   rep(i, Q)
@@ -649,7 +648,6 @@ char Query(int& turn)
   }
   return C[turn - 1];
 }
-
 
 char QueryMapDirectly(const vector<int>& vl, const vector<int>& vr)
 {
@@ -3561,7 +3559,6 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   DummyQuery(countQ);
 }
 
-
 void Method12(int ikichi = N)
 {
   vector<int> items;
@@ -3819,7 +3816,6 @@ void Method806(int hiritu, int minDiff, int _m)
   DummyQuery(countQ);
 }
 
-
 void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30, int aketoku = 0)
 {
   int M = _m;
@@ -3908,8 +3904,6 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   }
   DummyQuery(countQ);
 }
-
-
 
 void Method246(int hiritu, int totyuu, int small1, int small2)
 {
@@ -4009,7 +4003,6 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
 
   DummyQuery(countQ);
 }
-
 
 void Method112(int ikichi = N, int totyuu = 999)
 {
