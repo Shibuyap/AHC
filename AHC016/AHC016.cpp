@@ -46,6 +46,12 @@ const int MAX_IEPS = 41;
 const int MAX_ATTEMPTS = 5000;
 const int MAX_KOUHO_LIMIT = 200;
 const int FILE_NUM_DIGITS = 4;
+const int ARRAY_SIZE = 1000;
+const int SPECIAL_MODE = 1000;
+const int INITIAL_DIFF = 1000;
+const int FLIP_ITERATIONS = 1000;
+const double TIME_LIMIT_MS = 360000.0;
+const double MISMATCH_PENALTY = 0.9;
 
 namespace /* 乱数ライブラリ */
 {
@@ -84,12 +90,12 @@ namespace
   std::array<std::array<std::array<int, 100>, 100>, 100> a;  // a[i][j][k]: i番目の符号化グラフの隣接行列
   std::array<std::array<int, 100>, 100> b;  // b[i][j]: 受信したノイズ付きグラフ
 
-  std::vector<int> numSingleArr(1000);
-  std::vector<std::array<int, 2>> numPairArr(1000);
+  std::vector<int> numSingleArr(ARRAY_SIZE);
+  std::vector<std::array<int, 2>> numPairArr(ARRAY_SIZE);
   int numPairArrOK;
 
-  std::vector<std::array<int, 3>> numThreeArr(1000);
-  std::vector<std::array<int, 4>> numFourArr(1000);
+  std::vector<std::array<int, 3>> numThreeArr(ARRAY_SIZE);
+  std::vector<std::array<int, 4>> numFourArr(ARRAY_SIZE);
 
   // ハイパラ調整用
   int hyperSolverNum;
@@ -156,7 +162,7 @@ namespace
       iEps = parseEpsilon(sEps);
       eps = (double)iEps / 100.0;
     }
-    else if (mode == 1000) {
+    else if (mode == SPECIAL_MODE) {
       string fileNameIfs = "./in/";
       fileNameIfs += numberToString(problemNum) + ".txt";
 
@@ -211,7 +217,7 @@ namespace
       }
       fflush(stdout);
     }
-    else if (mode == 1000) {
+    else if (mode == SPECIAL_MODE) {
       ofs1000Out << n << endl;
       ofs1000Out << "# n = " << n << endl;
       ofs1000Out << "# hyperSolverNum = " << hyperSolverNum << endl;
@@ -1082,10 +1088,10 @@ namespace
   }
 
   // 13表裏
-  std::vector<int> omoteArr(1000);
+  std::vector<int> omoteArr(ARRAY_SIZE);
   void InitNumArray18()
   {
-    for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
+    for (int i = 0; i < (ARRAY_SIZE); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -1147,7 +1153,7 @@ namespace
   // 10表裏
   void InitNumArray19()
   {
-    for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
+    for (int i = 0; i < (ARRAY_SIZE); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1279,7 +1285,7 @@ namespace
   // 1コア
   void InitNumArray21()
   {
-    for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
+    for (int i = 0; i < (ARRAY_SIZE); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1319,7 +1325,7 @@ namespace
   void InitNumArray(int mode)
   {
     numPairArrOK = 1;
-    int ra = hyperSolverNum % 1000 / 10;
+    int ra = hyperSolverNum % ARRAY_SIZE / 10;
 
     if (ra == 1) {
       InitNumArray1();
@@ -1410,7 +1416,7 @@ void initializeCountAndFlags(std::array<int, 100>& cnt, std::array<int, 100>& f,
 // 単一コアのベストマッチを見つける
 int findBestMatchingSingleCore(int res, const std::array<int, 100>& numArr)
 {
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < m; ++i) {
     int num = numArr[i];
@@ -1425,7 +1431,7 @@ int findBestMatchingSingleCore(int res, const std::array<int, 100>& numArr)
 // 2つのコアのベストマッチを見つける
 int findBestMatchingPairCores(int res1, int res2, const std::vector<std::array<int, 2>>& numPairArr)
 {
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < m; ++i) {
     int num1 = numPairArr[i][0];
@@ -1482,7 +1488,7 @@ void performBitsetOptimization(std::array<int, 100>& f, int& res1, int& res2)
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
-  int flipLoop = 1000;
+  int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 }
@@ -1588,7 +1594,7 @@ int Solver3()
     for (int i = 0; i < (2); ++i) vec[i] = nxt[i];
   }
   int res = min(vec[0].size(), vec[1].size());
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num = numArr[i];
@@ -1749,11 +1755,11 @@ int Solver7()
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
-  int flipLoop = 1000;
+  int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
@@ -1856,11 +1862,11 @@ int Solver9()
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
-  int flipLoop = 1000;
+  int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
@@ -1946,7 +1952,7 @@ int Solver10()
     }
   }
 
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
@@ -2275,11 +2281,11 @@ int Solver11()
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
-  int flipLoop = 1000;
+  int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   if (res2 > res1) swap(res1, res2);
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num1 = numPairArr[i][0];
@@ -2367,7 +2373,7 @@ int Solver12()
   bitset<100> bione(0);
   for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
-  int flipLoop = 1000;
+  int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   res3 = 0;
@@ -2382,7 +2388,7 @@ int Solver12()
   res1 = resv[2];
   res2 = resv[1];
   res3 = resv[0];
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num1 = numThreeArr[i][0];
@@ -2496,7 +2502,7 @@ int Solver13()
   bitset<100> bione(0);
   for (int i = 0; i < (n); ++i) { bione[i] = 1; }
 
-  int flipLoop = 1000;
+  int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   res3 = 0;
@@ -2515,7 +2521,7 @@ int Solver13()
   res2 = resv[2];
   res3 = resv[1];
   res4 = resv[0];
-  int diff = 1000;
+  int diff = INITIAL_DIFF;
   int argRes = 0;
   for (int i = 0; i < (m); ++i) {
     int num1 = numFourArr[i][0];
@@ -2577,11 +2583,11 @@ int Solver14()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
@@ -2644,11 +2650,11 @@ int Solver15()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
@@ -2739,11 +2745,11 @@ int Solver16()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
@@ -2841,11 +2847,11 @@ int Solver17()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
@@ -2994,11 +3000,11 @@ int Solver19()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != wataruoop % 2) continue;
@@ -3067,10 +3073,10 @@ int Solver20()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
@@ -3176,11 +3182,11 @@ int Solver21()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
@@ -3275,11 +3281,11 @@ int Solver22()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       int num1 = numPairArr[i][0];
@@ -3420,11 +3426,11 @@ int Solver23()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
@@ -3577,11 +3583,11 @@ int Solver24()
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
-    int flipLoop = 1000;
+    int flipLoop = FLIP_ITERATIONS;
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = 1000;
+    int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
       if (omoteArr[i] != tei % 2) continue;
@@ -3614,83 +3620,28 @@ int Solver24()
   return real_argRes;
 }
 
+// Solver関数ポインタ型の定義
+typedef int (*SolverFunction)();
+
+// Solver関数ポインタ配列
+const SolverFunction solverFunctions[] = {
+    nullptr,  // index 0 (not used)
+    Solver1, Solver2, Solver3, Solver4, Solver5,
+    Solver6, Solver7, Solver8, Solver9, Solver10,
+    Solver11, Solver12, Solver13, Solver14, Solver15,
+    Solver16, Solver17, Solver18, Solver19, Solver20,
+    Solver21, Solver22, Solver23, Solver24
+};
+
 // 受信したノイズ付きグラフから元のグラフ番号を推定
 int DecodeGraphIndex(int mode, int turn = 0)
 {
   int res = 0;
-  int num = num = hyperSolverNum % 10 + hyperSolverNum / 1000 * 10;
+  int num = hyperSolverNum % 10 + hyperSolverNum / ARRAY_SIZE * 10;
 
-  if (num == 1) {
-    res = Solver1();
-  }
-  else if (num == 2) {
-    res = Solver2();
-  }
-  else if (num == 3) {
-    res = Solver3();
-  }
-  else if (num == 4) {
-    res = Solver4();
-  }
-  else if (num == 5) {
-    res = Solver5();
-  }
-  else if (num == 6) {
-    res = Solver6();
-  }
-  else if (num == 7) {
-    res = Solver7();
-  }
-  else if (num == 8) {
-    res = Solver8();
-  }
-  else if (num == 9) {
-    res = Solver9();
-  }
-  else if (num == 10) {
-    res = Solver10();
-  }
-  else if (num == 11) {
-    res = Solver11();
-  }
-  else if (num == 12) {
-    res = Solver12();
-  }
-  else if (num == 13) {
-    res = Solver13();
-  }
-  else if (num == 14) {
-    res = Solver14();
-  }
-  else if (num == 15) {
-    res = Solver15();
-  }
-  else if (num == 16) {
-    res = Solver16();
-  }
-  else if (num == 17) {
-    res = Solver17();
-  }
-  else if (num == 18) {
-    res = Solver18();
-  }
-  else if (num == 19) {
-    res = Solver19();
-  }
-  else if (num == 20) {
-    res = Solver20();
-  }
-  else if (num == 21) {
-    res = Solver21();
-  }
-  else if (num == 22) {
-    res = Solver22();
-  }
-  else if (num == 23) {
-    res = Solver23();
-  }
-  else if (num == 24) {
-    res = Solver24();
+  // 範囲チェックとSolver関数の呼び出し
+  if (num >= 1 && num <= 24) {
+    res = solverFunctions[num]();
   }
 
   return res;
@@ -3704,7 +3655,7 @@ double Simulate(int mode)
     int ans = DecodeGraphIndex(mode, turn);
     answersFor1000Out[turn] = ans;
     int judge = judgeArr[turn];
-    if (ans != judge) res *= 0.9;
+    if (ans != judge) res *= MISMATCH_PENALTY;
 
     if (mode == 0) {
       cout << ans << endl;
@@ -3754,7 +3705,7 @@ void solve(int mode)
       if (loop % 10 == 1) {
         endTime = clock();
         double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-        if (nowTime > 360000.0) break;
+        if (nowTime > TIME_LIMIT_MS) break;
       }
 
       if (loop % 200 == 77) {
