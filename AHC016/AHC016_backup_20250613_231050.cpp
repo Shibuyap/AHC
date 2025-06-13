@@ -34,8 +34,8 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-const std::array<int, 4> dx = { -1, 1, 0, 0 };
-const std::array<int, 4> dy = { 0, 0, -1, 1 };
+const int dx[4] = { -1, 1, 0, 0 };
+const int dy[4] = { 0, 0, -1, 1 };
 
 // 定数定義
 const int MAX_N = 100;
@@ -74,22 +74,22 @@ namespace /* 乱数ライブラリ */
 namespace
 {
   // 共通変数
-  std::array<std::array<double, 105>, 105> com;
+  double com[105][105];
   int MODE = 0;
   const int TURN = 100;
   int m, iEps;
   double eps;
 
   int n;
-  std::array<std::array<std::array<int, 100>, 100>, 100> a;
-  std::array<std::array<int, 100>, 100> b;
+  int a[100][100][100];
+  int b[100][100];
 
-  std::vector<int> numSingleArr(1000);
-  std::vector<std::array<int, 2>> numPairArr(1000);
+  int numSingleArr[1000];
+  int numPairArr[1000][2];
   int numPairArrOK;
 
-  std::vector<std::array<int, 3>> numThreeArr(1000);
-  std::vector<std::array<int, 4>> numFourArr(1000);
+  int numThreeArr[1000][3];
+  int numFourArr[1000][4];
 
   // ハイパラ調整用
   int hyperSolverNum;
@@ -102,16 +102,16 @@ namespace
 // ハイパラ
 namespace
 {
-  std::array<int, 100> maxNumArray;
-  std::array<std::array<int, 100>, 11> real_real_maxNumArray;
-  std::array<int, 100> real_maxNumArray;
-  std::array<std::array<int, 41>, 101> hyperN;
-  std::array<std::array<double, 41>, 101> hyperMaxScore;
-  std::array<std::array<int, 41>, 101> hyperSolver;
-  std::array<std::array<int, 41>, 101> hyperMinDiffArr;
-  std::array<std::array<int, 41>, 101> hyperMaxRoundArr;
-  std::array<std::array<int, 41>, 101> hyperStep1Arr;
-  std::array<std::array<int, 41>, 101> hyperStep2Arr;
+  int maxNumArray[100];
+  int real_real_maxNumArray[11][100];
+  int real_maxNumArray[100];
+  int hyperN[101][41];
+  double hyperMaxScore[101][41];
+  int hyperSolver[101][41];
+  int hyperMinDiffArr[101][41];
+  int hyperMaxRoundArr[101][41];
+  int hyperStep1Arr[101][41];
+  int hyperStep2Arr[101][41];
 }  // namespace
 
 // 共通ユーティリティ関数
@@ -146,7 +146,7 @@ namespace
 // Input（m, eps, iEpsの設定）
 namespace
 {
-  std::array<int, 100> judgeArr;
+  int judgeArr[100];
   void Input(int mode, int problemNum = 0)
   {
     if (mode == 0) {
@@ -230,7 +230,7 @@ namespace
     }
   }
 
-  std::array<int, TURN> answersFor1000Out;
+  int answersFor1000Out[TURN];
   void OutputAnsToOfs1000Out()
   {
     for (int i = 0; i < (100); ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
@@ -238,7 +238,7 @@ namespace
 
   // ハイパーパラメータ配列を出力する共通関数
   template<typename T>
-  void OutputHyperArray(ofstream& ofs, const string& typeName, const string& arrayName, const std::array<std::array<T, 41>, 101>& arr)
+  void OutputHyperArray(ofstream& ofs, const string& typeName, const string& arrayName, T arr[101][41])
   {
     ofs << typeName << " " << arrayName << "[101][41] = {" << endl;
     for (int i = 0; i < (101); ++i) {
@@ -284,11 +284,9 @@ namespace
 // 前方宣言
 void setSymmetricValue(int i, int j, int k, int value);
 int calculateScore(std::array<int, 100>& f);
-template<size_t N>
-void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione);
+void initializeBitsets(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione);
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
-template<size_t N>
-void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
+void flipOptimization(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop);
 
 void RandmizeGraph(int x)
@@ -332,7 +330,7 @@ void InitB(int mode, int turn = 0)
 // numArray
 namespace
 {
-  std::array<int, 100> numArr;
+  int numArr[100];
 
   // 共通のグラフ初期化関数
   void SetGraphFromNumArray(int arraySize = 100)
@@ -1078,7 +1076,7 @@ namespace
   }
 
   // 13表裏
-  std::vector<int> omoteArr(1000);
+  int omoteArr[1000];
   void InitNumArray18()
   {
     for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
@@ -1389,9 +1387,9 @@ namespace
 
 int Solver1()
 {
-  std::array<vector<int>, 100> keep;
+  vector<int> keep[100];
 
-  std::array<int, 100> cnt = {};
+  int cnt[100] = {};
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
   }
@@ -1424,7 +1422,7 @@ int Solver1()
 
 int Solver2()
 {
-  std::array<int, 100> cnt = {};
+  int cnt[100] = {};
   std::array<int, 100> f = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
@@ -1467,8 +1465,8 @@ int Solver2()
 
 int Solver3()
 {
-  std::array<vector<int>, 2> vec;
-  std::array<int, 100> f = {};
+  vector<int> vec[2];
+  int f[100] = {};
   for (int i = 0; i < (n); ++i) {
     if (i == 0) {
       vec[0].push_back(i);
@@ -1487,9 +1485,9 @@ int Solver3()
   }
   for (int _ = 0; _ < (100); ++_) {
     if (vec[0].empty() || vec[1].empty()) break;
-    std::array<std::array<double, 2>, 100> cnt;
+    double cnt[100][2];
     for (int i = 0; i < (n); ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
-    std::array<vector<int>, 2> nxt;
+    vector<int> nxt[2];
     for (int i = 0; i < (n); ++i) {
       for (int j = 0; j < (n); ++j) {
         if (i == j) {
@@ -1531,7 +1529,7 @@ int Solver3()
 
 int Solver4()
 {
-  std::array<int, 100> cnt = {};
+  int cnt[100] = {};
   std::array<int, 100> f = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
@@ -1567,10 +1565,10 @@ int Solver4()
         vec.push_back(i);
       }
     }
-    std::array<int, 100> ff = {};
+    int ff[100] = {};
     double kijun = (eps * eps + (1.0 - eps) * (1.0 - eps)) / 2.0;
     for (int i = 0; i < (n); ++i) {
-      std::array<int, 2> tri = {};
+      int tri[2] = {};
       for (int j = 0; j < (res); ++j) {
         int jj = vec[j];
         if (jj == i) continue;
@@ -1606,7 +1604,7 @@ int Solver4()
 
 int Solver5()
 {
-  std::array<int, 100> cnt = {};
+  int cnt[100] = {};
   std::array<int, 100> f = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
@@ -1680,7 +1678,7 @@ int Solver5()
 
 int Solver6()
 {
-  std::array<int, 100> cnt = {};
+  int cnt[100] = {};
   std::array<int, 100> f = {};
   int ff[100] = {};
   int res = n;
@@ -1753,8 +1751,7 @@ int Solver6()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bif[3] = {}, bib[100] = {};
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
@@ -1778,7 +1775,7 @@ int Solver6()
 
 int Solver7()
 {
-  std::array<int, 100> cnt = {};
+  int cnt[100] = {};
   std::array<int, 100> f = {};
   int ff[100] = {};
   int res = n;
@@ -1851,8 +1848,7 @@ int Solver7()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bif[3] = {}, bib[100] = {};
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
@@ -1896,9 +1892,9 @@ int Solver9()
   }
 
   for (int _ = 0; _ < (10); ++_) {
-    std::array<int, 100> cnt = {};
+    int cnt[100] = {};
     std::array<int, 100> f = {};
-    std::array<int, 100> ff = {};
+    int ff[100] = {};
     int res = n;
 
     for (int i = 0; i < (n); ++i) {
@@ -2008,8 +2004,7 @@ int Solver9()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bif[3] = {}, bib[100] = {};
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
@@ -2043,9 +2038,9 @@ int Solver10()
   }
 
   for (int _ = 0; _ < (31); ++_) {
-    std::array<int, 100> cnt = {};
+    int cnt[100] = {};
     std::array<int, 100> f = {};
-    std::array<int, 100> ff = {};
+    int ff[100] = {};
     int res = n;
 
     for (int i = 0; i < (n); ++i) {
@@ -2242,11 +2237,10 @@ int calculateScore(std::array<int, 100>& f)
 }
 
 // ビットセット初期化の共通関数
-template<size_t N>
-void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione)
+void initializeBitsets(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione)
 {
   // bifの初期化
-  for (int i = 0; i < N; ++i) {
+  for (int i = 0; i < 3; ++i) {
     bif[i].reset();
   }
   for (int i = 0; i < (n); ++i) {
@@ -2295,8 +2289,7 @@ int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useR
 }
 
 // フリップ最適化の共通関数
-template<size_t N>
-void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
+void flipOptimization(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop)
 {
   for (int _ = 0; _ < (flipLoop); ++_) {
@@ -2386,8 +2379,7 @@ int Solver11()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bif[3] = {}, bib[100] = {};
   bitset<100> bione(0);
   initializeBitsets(f, bif, bib, bione);
 
@@ -2468,8 +2460,7 @@ int Solver12()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 4> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bif[4] = {}, bib[100] = {};
   for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
@@ -2597,8 +2588,7 @@ int Solver13()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 5> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bif[5] = {}, bib[100] = {};
   for (int i = 0; i < (n); ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
@@ -2688,8 +2678,7 @@ int Solver14()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -2755,8 +2744,7 @@ int Solver15()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -2850,8 +2838,7 @@ int Solver16()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -2952,8 +2939,7 @@ int Solver17()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -3105,8 +3091,7 @@ int Solver19()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -3178,8 +3163,7 @@ int Solver20()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -3312,8 +3296,7 @@ int Solver21()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -3436,8 +3419,7 @@ int Solver22()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -3581,8 +3563,7 @@ int Solver23()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
@@ -3738,8 +3719,7 @@ int Solver24()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
+    bitset<100> bif[3] = {}, bib[100] = {};
     bitset<100> bione(0);
     initializeBitsets(f, bif, bib, bione);
 
