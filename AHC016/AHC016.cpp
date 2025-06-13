@@ -3264,7 +3264,6 @@ int Solver21()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
-    ;
     for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (5); ++i) {
@@ -3388,7 +3387,6 @@ int Solver22()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;
-    ;
     for (int loop1 = 0; loop1 < (5000); ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (3); ++i) {
