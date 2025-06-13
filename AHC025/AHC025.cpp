@@ -276,13 +276,85 @@ void OpenOfs(int probNum, ofstream& ofs)
 
 // Forward declarations
 char Query(int& turn);
+void DummyQuery(int& countQ);
+void Move1(int& countQ, int cutLine = 999);
+void Swap1(int& countQ, int diffLine = 999);
 int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLeft, int initialRight, int& countQ);
 int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLeft, int initialRight, int& countQ);
+
+// ========== Additional Common Helper Functions ==========
+
+// Check if time limit is approaching
+bool isTimeLimitApproaching(double threshold = 0.0)
+{
+  return nowTime > TL + threshold;
+}
+
+// Check if time limit fraction is exceeded
+bool isTimeLimitFractionExceeded(double fraction)
+{
+  return nowTime > TL * fraction;
+}
+
+// Check if we're near query limit
+bool isNearQueryLimit(int countQ, int margin = 1)
+{
+  return countQ >= Q - margin;
+}
+
+// Random percentage selection
+int getRandomPercentage()
+{
+  return Rand() % 100;
+}
+
+// Initialize answer array with default pattern
+void initializeAnswerWithDefault()
+{
+  rep(i, N) { ans[i] = i % D; }
+}
+
+// Complete remaining queries with dummy
+void completeWithDummyQueries(int& countQ)
+{
+  DummyQuery(countQ);
+}
+
+// Adjust hiritu based on time
+int adjustHirituByTime(int baseHiritu, double timeFraction = 1.0 / 3.0)
+{
+  if (baseHiritu >= 100 && isTimeLimitFractionExceeded(timeFraction)) {
+    return 90;
+  }
+  return baseHiritu;
+}
+
+// Standard Move/Swap selection pattern
+void performStandardMoveSwap(int& countQ, int hiritu)
+{
+  if (isNearQueryLimit(countQ)) {
+    if (hiritu < 10) return;
+    return;
+  }
+
+  int qu = getRandomPercentage();
+  if (qu < hiritu) {
+    Move1(countQ);
+  }
+  else {
+    if (isNearQueryLimit(countQ)) {
+      return;
+    }
+    Swap1(countQ);
+  }
+}
+
+// ========== End of Additional Common Helper Functions ==========
 
 // Common refactored functions
 void initializeAnsArray()
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnswerWithDefault();
 }
 
 int countItemsInGroup(int groupId)
@@ -839,7 +911,7 @@ void Move1Base(int& countQ, int srcGroup, int dstGroup, int itemToMove, const st
 }
 
 // 1個移動
-void Move1(int& countQ, int cutLine = 999)
+void Move1(int& countQ, int cutLine)
 {
   int x = selectGroupWithMinSize(2);
   if (x == -1) return;
@@ -1041,7 +1113,7 @@ bool selectTwoGroupsWithMinSize(int& x, int& y, int minSize = 2)
 // 1個交換
 int arr8_2_L[110];
 int arr8_2_R[110];
-void Swap1(int& countQ, int diffLine = 999)
+void Swap1(int& countQ, int diffLine)
 {
   int x, y;
   if (!selectTwoGroupsWithMinSize(x, y)) return;
@@ -1447,24 +1519,15 @@ void Method8(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      Swap1(countQ);
-    }
-    if (nowTime > TL) {
+    performStandardMoveSwap(countQ, hiritu);
+
+    if (isTimeLimitApproaching()) {
       cerr << "Assert Method8" << endl;
       break;
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method208(int _kireme, int hiritu1, int hiritu2)
@@ -1482,20 +1545,10 @@ void Method208(int _kireme, int hiritu1, int hiritu2)
     else {
       hiritu = hiritu2;
     }
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      Swap1(countQ);
-    }
+    performStandardMoveSwap(countQ, hiritu);
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method8_Two(int hiritu = 60)
@@ -1504,7 +1557,7 @@ void Method8_Two(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       Move1_Two(countQ);
     }
@@ -1517,7 +1570,7 @@ void Method8_Two(int hiritu = 60)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method19(int hiritu = 60)
@@ -1526,7 +1579,7 @@ void Method19(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       Move1(countQ);
     }
@@ -1539,7 +1592,7 @@ void Method19(int hiritu = 60)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method18(int hiritu = 60)
@@ -1548,7 +1601,7 @@ void Method18(int hiritu = 60)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       Move1Minimum(countQ);
     }
@@ -1561,7 +1614,7 @@ void Method18(int hiritu = 60)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method13(int diffLine = 999)
@@ -1585,7 +1638,7 @@ void Method13(int diffLine = 999)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method14()
@@ -1615,7 +1668,7 @@ void Method14()
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method15(int hiritu = 60)
@@ -1643,7 +1696,7 @@ void Method15(int hiritu = 60)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method16(int hiritu = 60)
@@ -1683,7 +1736,7 @@ void Method16(int hiritu = 60)
   }
 
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       Move1(countQ);
     }
@@ -1696,7 +1749,7 @@ void Method16(int hiritu = 60)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method11()
@@ -1723,7 +1776,7 @@ void Method11()
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void MergeDfs(vector<int>& items, int& countQ, int left, int right,
@@ -2409,12 +2462,12 @@ bool runOptimizationWithRestarts(vector<int>& items, int& countQ, int hiritu, in
   int failedCount = 0;
 
   while (countQ < Q - D) {
-    if (checkTime && nowTime > TL + 0.1) {
+    if (checkTime && isTimeLimitApproaching(0.1)) {
       cerr << "TLE : Method226 " << "time = " << nowTime << endl;
       break;
     }
 
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     bool isChange = false;
 
     if (qu < hiritu) {
@@ -2424,7 +2477,7 @@ bool runOptimizationWithRestarts(vector<int>& items, int& countQ, int hiritu, in
       }
     }
     else {
-      if (countQ >= Q - D - 1) {
+      if (isNearQueryLimit(countQ, D + 1)) {
         if (hiritu < 10) {
           break;
         }
@@ -2549,7 +2602,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
 
     setCount++;
 
-    if (nowTime > TL) {
+    if (isTimeLimitApproaching()) {
       if (mode != 0) {
         cout << "Assert Method226 : N = " << N << ", Q = " << Q << ", setCount = " << setCount << endl;
       }
@@ -2567,7 +2620,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 // Common initialization for methods using merge sort
@@ -2626,7 +2679,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
 
     setCount++;
 
-    if (nowTime > TL) {
+    if (isTimeLimitApproaching()) {
       if (mode != 0) {
         cout << "Assert Method226 : N = " << N << ", Q = " << Q << ", setCount = " << setCount << ", time = " << nowTime << endl;
       }
@@ -2643,7 +2696,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method6(int hiritu = 100, int minDiff = 10)
@@ -2656,11 +2709,11 @@ void Method6(int hiritu = 100, int minDiff = 10)
 
   int failedCount = 0;
   while (countQ < Q) {
-    if (hiritu >= 100 && nowTime > TL / 3) {
-      hiritu = 90;
+    hiritu = adjustHirituByTime(hiritu);
+    if (hiritu == 90) {
       minDiff = 999;
     }
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       bool isChange = SwapNeighbor1(items, countQ);
       if (isChange) {
@@ -2668,7 +2721,7 @@ void Method6(int hiritu = 100, int minDiff = 10)
       }
     }
     else {
-      if (countQ >= Q - 1) {
+      if (isNearQueryLimit(countQ)) {
         if (hiritu < 10) {
           break;
         }
@@ -2682,7 +2735,7 @@ void Method6(int hiritu = 100, int minDiff = 10)
     }
     failedCount++;
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method706(int hiritu1, int minDiff, int hiritu2)
@@ -2728,7 +2781,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
     }
     failedCount++;
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 // Common initialization for block-based methods
@@ -2743,7 +2796,7 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
   }
   if (blocks.size() < D) {
     rep(i, N) { ans[i] = i % D; }
-    DummyQuery(countQ);
+    completeWithDummyQueries(countQ);
     return false;
   }
 
@@ -2833,7 +2886,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
       }
     }
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 // ========== Common Helper Functions for Method216/316/916/516 ==========
@@ -2850,7 +2903,7 @@ bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ)
   }
   if (blocks.size() < D) {
     rep(i, N) { ans[i] = i % D; }
-    DummyQuery(countQ);
+    completeWithDummyQueries(countQ);
     return false;  // Early exit
   }
   return true;
@@ -2864,7 +2917,7 @@ bool sortAndValidateBlocks(vector<vector<int>>& blocks, int destroySize, int& co
 
   if (destroySize >= M) {
     rep(i, N) { ans[i] = i % D; }
-    DummyQuery(countQ);
+    completeWithDummyQueries(countQ);
     return false;  // Early exit
   }
   return true;
@@ -2998,7 +3051,7 @@ void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2
       }
     }
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 // ========== End of Common Helper Functions ==========
@@ -3089,7 +3142,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     {
       ans[i] = i % D;
     }
-    DummyQuery(countQ);
+    completeWithDummyQueries(countQ);
     return;
   }
 
@@ -3156,7 +3209,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
     {
       ans[i] = i % D;
     }
-    DummyQuery(countQ);
+    completeWithDummyQueries(countQ);
     return;
   }
 
@@ -3277,7 +3330,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     {
       ans[i] = i % D;
     }
-    DummyQuery(countQ);
+    completeWithDummyQueries(countQ);
     return;
   }
 
@@ -3314,7 +3367,7 @@ void Method12(int ikichi = N)
     SwapNeighbor1(items, countQ);
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
@@ -3398,12 +3451,12 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
   }
 
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ);
     }
     else {
-      if (countQ >= Q - 1) {
+      if (isNearQueryLimit(countQ)) {
         if (hiritu < 10) {
           break;
         }
@@ -3413,7 +3466,7 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30, int aketoku = 0)
@@ -3466,12 +3519,12 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     if (loop > 100000) {
       break;
     }
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ, M);
     }
     else {
-      if (countQ >= Q - 1) {
+      if (isNearQueryLimit(countQ)) {
         if (hiritu < 10) {
           break;
         }
@@ -3480,7 +3533,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
       Swap2(items, countQ, minDiff, M);
     }
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method806(int hiritu, int minDiff, int _m)
@@ -3542,12 +3595,12 @@ void Method806(int hiritu, int minDiff, int _m)
     if (loop > 100000) {
       break;
     }
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ, M);
     }
     else {
-      if (countQ >= Q - 1) {
+      if (isNearQueryLimit(countQ)) {
         if (hiritu < 10) {
           break;
         }
@@ -3556,7 +3609,7 @@ void Method806(int hiritu, int minDiff, int _m)
       Swap2(items, countQ, minDiff, M);
     }
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30, int aketoku = 0)
@@ -3631,12 +3684,12 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     if (loop > 100000) {
       break;
     }
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ, M);
     }
     else {
-      if (countQ >= Q - 1) {
+      if (isNearQueryLimit(countQ)) {
         if (hiritu < 10) {
           break;
         }
@@ -3645,7 +3698,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
       Swap2(items, countQ, minDiff, M);
     }
   }
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method246(int hiritu, int totyuu, int small1, int small2)
@@ -3729,7 +3782,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
   }
 
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       int sma = small1;
       if (hiritu == 100) {
@@ -3744,7 +3797,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method112(int ikichi = N, int totyuu = 999)
@@ -3822,7 +3875,7 @@ void Method112(int ikichi = N, int totyuu = 999)
     SwapNeighbor1(items, countQ);
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method17(int ikichi, int hiritu)
@@ -3834,12 +3887,12 @@ void Method17(int ikichi, int hiritu)
   initializeWithMergeSort(items, groups, countQ, ikichi);
 
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = getRandomPercentage();
     if (qu < hiritu) {
       SwapNeighbor1(items, countQ);
     }
     else {
-      if (countQ >= Q - 1) {
+      if (isNearQueryLimit(countQ)) {
         if (hiritu < 10) {
           break;
         }
@@ -3849,7 +3902,7 @@ void Method17(int ikichi, int hiritu)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
@@ -3920,7 +3973,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
     }
   }
 
-  DummyQuery(countQ);
+  completeWithDummyQueries(countQ);
 }
 
 void PrintAns(ofstream& ofs)
