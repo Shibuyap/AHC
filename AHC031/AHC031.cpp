@@ -274,6 +274,49 @@ inline bool acceptByAnnealing(double diffScore, double startTemp, double endTemp
   return prob > Rand01();
 }
 
+// 隣接日の差分スコアを計算（CalcDiffScore2の後に定義）
+int calculateAdjacentDaysDiffScore(int day, int lineNum);
+
+// シャッフル試行回数の制限をチェック
+inline bool shouldBreakShuffle(int size, int iteration)
+{
+  if (size == 1 && iteration >= 1) return true;
+  if (size == 2 && iteration >= 2) return true;
+  if (size == 3 && iteration >= 6) return true;
+  return false;
+}
+
+// スコアを更新して最適解を保存（グローバル変数の後に定義）
+void updateScoreAndSaveBest(ll diffScore);
+
+// 列内の要素位置を再計算（グローバル変数の後に定義）
+void recalculateColumnPositions(int day, int column);
+
+// 最適な配置位置を見つける構造体
+struct PlacementResult
+{
+  int position;
+  int need;
+  int amari;
+  int over;
+  bool found;
+};
+
+// 要素に対して最適な配置位置を見つける（グローバル変数の後に定義）
+PlacementResult findBestPlacement(int day, int element, const std::array<int, MAX_LINECOUNT>& currentPos, int startLine, int endLine);
+
+// 要素が指定された幅に収まるかチェック（グローバル変数の後に定義）
+bool canFitInColumn(int day, int element, int width);
+
+// 要素を配置するのに必要な余白を計算（グローバル変数の後に定義）
+int calculateMargin(int day, int element, int width, int height);
+
+// 横線のカウントを計算（グローバル変数の後に定義）
+int calculateHorizontalLineCount(int day, int column);
+
+// 要素の交換による差分スコアを計算（グローバル変数の後に定義）
+int calculateSwapDiffScore(int day, int elem1, int elem2);
+
 const double TIME_LIMIT = 2.8;
 double TL = TIME_LIMIT;
 int mode;
@@ -1008,6 +1051,28 @@ void CoptToCurrent_M42()
   columnSchedule.copyFrom(real_columnSchedule);
 }
 
+// スコアを更新して最適解を保存の実装
+inline void updateScoreAndSaveBest(ll diffScore)
+{
+  ans.ansScore -= diffScore;
+  if (ans.ansScore < real_ans.ansScore) {
+    CopyToRealAns();
+    CopyToReal_M42();
+  }
+}
+
+// 列内の要素位置を再計算の実装
+inline void recalculateColumnPositions(int day, int column)
+{
+  columnSchedule.schedulesPosition[day][column][0] = 0;
+  for (int k = 0; k < columnSchedule.schedulesCount[day][column]; k++) {
+    int element = columnSchedule.schedules[day][column][k];
+    columnSchedule.schedulesPosition[day][column][k + 1] =
+      columnSchedule.schedulesPosition[day][column][k] + preCalcScheduleSizes[day][element][column];
+  }
+  columnSchedule.schedulesPosition[day][column][columnSchedule.schedulesCount[day][column]] = w;
+}
+
 int CalcDiffScore2(int day1, int day2, int lineNum)
 {
   int diffScore2 = 0;
@@ -1028,6 +1093,112 @@ int CalcDiffScore2(int day1, int day2, int lineNum)
     }
   }
   return diffScore2;
+}
+
+// 隣接日の差分スコアを計算の実装
+inline int calculateAdjacentDaysDiffScore(int day, int lineNum)
+{
+  int score = 0;
+  if (day > 0) {
+    score += CalcDiffScore2(day, day - 1, lineNum);
+  }
+  if (day < dayCount - 1) {
+    score += CalcDiffScore2(day, day + 1, lineNum);
+  }
+  return score;
+}
+
+// 要素が指定された幅に収まるかチェックの実装
+inline bool canFitInColumn(int day, int element, int width)
+{
+  return width * w >= elementSizes[day][element];
+}
+
+// 要素を配置するのに必要な余白を計算の実装
+inline int calculateMargin(int day, int element, int width, int height)
+{
+  return width - ((elementSizes[day][element] - 1) / height + 1);
+}
+
+// 横線のカウントを計算の実装
+inline int calculateHorizontalLineCount(int day, int column)
+{
+  if (day == 0 || day == dayCount - 1) {
+    return max(0, columnSchedule.schedulesCount[day][column] - 1);
+  }
+
+  int count = max(0, columnSchedule.schedulesCount[day - 1][column] - 1) +
+    max(0, columnSchedule.schedulesCount[day][column] - 1);
+
+  // 隣接日で同じ位置にある要素を除外
+  int ite1 = 1, ite2 = 1;
+  while (ite1 < columnSchedule.schedulesCount[day - 1][column] &&
+    ite2 < columnSchedule.schedulesCount[day][column]) {
+    if (columnSchedule.schedulesPosition[day - 1][column][ite1] ==
+      columnSchedule.schedulesPosition[day][column][ite2]) {
+      count -= 2;
+      ite1++;
+      ite2++;
+    }
+    else if (columnSchedule.schedulesPosition[day - 1][column][ite1] <
+      columnSchedule.schedulesPosition[day][column][ite2]) {
+      ite1++;
+    }
+    else {
+      ite2++;
+    }
+  }
+
+  return count;
+}
+
+// 要素の交換による差分スコアを計算の実装
+inline int calculateSwapDiffScore(int day, int elem1, int elem2)
+{
+  int line1 = columnSchedule.columnNum[day][elem1];
+  int line2 = columnSchedule.columnNum[day][elem2];
+
+  if (line1 == line2) return 0;
+
+  int idx1 = columnSchedule.findElementIndex(day, line1, elem1);
+  int idx2 = columnSchedule.findElementIndex(day, line2, elem2);
+
+  int height1 = columnSchedule.schedulesPosition[day][line1][idx1 + 1] -
+    columnSchedule.schedulesPosition[day][line1][idx1];
+  int height2 = columnSchedule.schedulesPosition[day][line2][idx2 + 1] -
+    columnSchedule.schedulesPosition[day][line2][idx2];
+
+  return (preCalcScheduleSizes[day][elem1][line1] - preCalcScheduleSizes[day][elem1][line2]) * widths[line1] +
+    (preCalcScheduleSizes[day][elem2][line2] - preCalcScheduleSizes[day][elem2][line1]) * widths[line2];
+}
+
+// 要素に対して最適な配置位置を見つけるの実装
+inline PlacementResult findBestPlacement(int day, int element, const std::array<int, MAX_LINECOUNT>& currentPos, int startLine, int endLine)
+{
+  PlacementResult result = { -1, 0, INT_INF, INT_INF, false };
+
+  for (int k = endLine - 1; k >= startLine; k--) {
+    int width = ans.ansLinePos[day][k + 1] - ans.ansLinePos[day][k];
+    if (!canFitInColumn(day, element, width)) break;
+
+    int need = calculateRequiredSize(elementSizes[day][element], width);
+    int over = 0;
+    int amari = need * width - elementSizes[day][element];
+
+    if (currentPos[k] + need > w) {
+      over = (currentPos[k] + need - w) * width;
+    }
+
+    if (over < result.over || (over == result.over && amari <= result.amari)) {
+      result.position = k;
+      result.need = need;
+      result.amari = amari;
+      result.over = over;
+      result.found = true;
+    }
+  }
+
+  return result;
 }
 
 int CD3_Members[MAX_N];
@@ -1816,15 +1987,7 @@ void Method4_3_1()
         if (raD == 0 || raD == dayCount - 1) { diffScore1 = (moveCount - 1) * (widths[nextLine] - widths[lineNum]); }
       }
 
-      int diffScore2 = 0;
-      if (raD > 0) {
-        diffScore2 += CalcDiffScore2(raD, raD - 1, lineNum);
-        diffScore2 += CalcDiffScore2(raD, raD - 1, nextLine);
-      }
-      if (raD < dayCount - 1) {
-        diffScore2 += CalcDiffScore2(raD, raD + 1, lineNum);
-        diffScore2 += CalcDiffScore2(raD, raD + 1, nextLine);
-      }
+      int diffScore2 = calculateAdjacentDaysDiffScore(raD, lineNum) + calculateAdjacentDaysDiffScore(raD, nextLine);
 
       // 10回シャッフルnextLine
       M43_neighborPosCount = 0;
@@ -1932,9 +2095,7 @@ void Method4_3_1()
       int diffScore4 = -INT_INF;
       rep(winter, 10)
       {
-        if (M43_kouhos.size() == 1 && winter >= 1) break;
-        if (M43_kouhos.size() == 2 && winter >= 2) break;
-        if (M43_kouhos.size() == 3 && winter >= 6) break;
+        if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
         int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, lineNum, margin);
         if (tmpDiffScore4 > diffScore4) {
           diffScore4 = tmpDiffScore4;
@@ -1982,12 +2143,7 @@ void Method4_3_1()
         }
         columnSchedule.schedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
-        ans.ansScore -= totalDiffScore;
-        if (ans.ansScore < real_ans.ansScore) {
-          // cout << ans.ansScore << ' ' << M43_nowTime << endl;
-          CopyToRealAns();
-          CopyToReal_M42();
-        }
+        updateScoreAndSaveBest(totalDiffScore);
       }
       else {
         ;
@@ -2096,15 +2252,7 @@ void Method4_3_2()
         if (raD == 0 || raD == dayCount - 1) { diffScore1 = (moveCount - 1) * (widths[nextLine] - widths[lineNum]); }
       }
 
-      int diffScore2 = 0;
-      if (raD > 0) {
-        diffScore2 += CalcDiffScore2(raD, raD - 1, lineNum);
-        diffScore2 += CalcDiffScore2(raD, raD - 1, nextLine);
-      }
-      if (raD < dayCount - 1) {
-        diffScore2 += CalcDiffScore2(raD, raD + 1, lineNum);
-        diffScore2 += CalcDiffScore2(raD, raD + 1, nextLine);
-      }
+      int diffScore2 = calculateAdjacentDaysDiffScore(raD, lineNum) + calculateAdjacentDaysDiffScore(raD, nextLine);
 
       // 10回シャッフルnextLine
       M43_nonKouhos.push_back(raN);
@@ -2195,9 +2343,7 @@ void Method4_3_2()
       int diffScore4 = -INT_INF;
       rep(winter, 10)
       {
-        if (M43_kouhos.size() == 1 && winter >= 1) break;
-        if (M43_kouhos.size() == 2 && winter >= 2) break;
-        if (M43_kouhos.size() == 3 && winter >= 6) break;
+        if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
         int tmpDiffScore4 = CalcDiffScore3_2(winter, M43_kouhos.size(), raD, lineNum, 0);
         if (tmpDiffScore4 > diffScore4) {
           diffScore4 = tmpDiffScore4;
@@ -2281,11 +2427,7 @@ void Method4_3_2()
           }
         }
 
-        ans.ansScore -= totalDiffScore;
-        if (ans.ansScore < real_ans.ansScore) {
-          CopyToRealAns();
-          CopyToReal_M42();
-        }
+        updateScoreAndSaveBest(totalDiffScore);
       }
       else {
         ;
@@ -2373,9 +2515,7 @@ void Method4_3_3()
   int diffScore3 = -1;
   rep(winter, 10)
   {
-    if (M43_kouhos.size() == 1 && winter >= 1) break;
-    if (M43_kouhos.size() == 2 && winter >= 2) break;
-    if (M43_kouhos.size() == 3 && winter >= 6) break;
+    if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
     int tmpDiffScore3 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, line2, margin);
     if (tmpDiffScore3 > diffScore3) {
       diffScore3 = tmpDiffScore3;
@@ -2423,9 +2563,7 @@ void Method4_3_3()
   int diffScore4 = -1;
   rep(winter, 10)
   {
-    if (M43_kouhos.size() == 1 && winter >= 1) break;
-    if (M43_kouhos.size() == 2 && winter >= 2) break;
-    if (M43_kouhos.size() == 3 && winter >= 6) break;
+    if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
     int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, line1, margin);
     if (tmpDiffScore4 > diffScore4) {
       diffScore4 = tmpDiffScore4;
@@ -2696,8 +2834,8 @@ void Method4_3_5()
       {
         rep(j, elementCount)
         {
-          preCalcScheduleSizes[i][j][lineNum] = (elementSizes[i][j] - 1) / widths[lineNum] + 1;
-          preCalcScheduleSizes[i][j][lineNum - 1] = (elementSizes[i][j] - 1) / widths[lineNum - 1] + 1;
+          preCalcScheduleSizes[i][j][lineNum] = calculateRequiredSize(elementSizes[i][j], widths[lineNum]);
+          preCalcScheduleSizes[i][j][lineNum - 1] = calculateRequiredSize(elementSizes[i][j], widths[lineNum - 1]);
         }
       }
     }
@@ -2708,8 +2846,8 @@ void Method4_3_5()
       {
         rep(j, elementCount)
         {
-          preCalcScheduleSizes[i][j][lineNum] = (elementSizes[i][j] - 1) / widths[lineNum] + 1;
-          preCalcScheduleSizes[i][j][lineNum + 1] = (elementSizes[i][j] - 1) / widths[lineNum + 1] + 1;
+          preCalcScheduleSizes[i][j][lineNum] = calculateRequiredSize(elementSizes[i][j], widths[lineNum]);
+          preCalcScheduleSizes[i][j][lineNum + 1] = calculateRequiredSize(elementSizes[i][j], widths[lineNum + 1]);
         }
       }
     }
@@ -2812,9 +2950,7 @@ void Method4_3_7()
   int diffScore4 = -1;
   rep(winter, 10)
   {
-    if (M43_kouhos.size() == 1 && winter >= 1) break;
-    if (M43_kouhos.size() == 2 && winter >= 2) break;
-    if (M43_kouhos.size() == 3 && winter >= 6) break;
+    if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
     int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, lineNum, margin);
     if (tmpDiffScore4 > diffScore4) {
       diffScore4 = tmpDiffScore4;
@@ -2869,29 +3005,9 @@ void Method4_3_8()
   {
     int j = M438_LineNumbers[jj];
     M438_yokoLineCount[j] = 0;
-    srep(i, 1, dayCount)
+    rep(i, dayCount)
     {
-      M438_yokoLineCount[j] += max(0, columnSchedule.schedulesCount[i - 1][j] - 1) + max(0, columnSchedule.schedulesCount[i][j] - 1);
-      // srep(k, 1, columnSchedule.schedulesCount[i - 1][j]) {
-      //  rep(l, columnSchedule.schedulesCount[i][j]) {
-      //    if (columnSchedule.schedulesPosition[i - 1][j][k] == columnSchedule.schedulesPosition[i][j][l]) { M438_yokoLineCount[j] -= 2; }
-      //  }
-      //}
-      int ite1 = 1;
-      int ite2 = 1;
-      while (ite1 < columnSchedule.schedulesCount[i - 1][j] && ite2 < columnSchedule.schedulesCount[i][j]) {
-        if (columnSchedule.schedulesPosition[i - 1][j][ite1] == columnSchedule.schedulesPosition[i][j][ite2]) {
-          M438_yokoLineCount[j] -= 2;
-          ite1++;
-          ite2++;
-        }
-        else if (columnSchedule.schedulesPosition[i - 1][j][ite1] < columnSchedule.schedulesPosition[i][j][ite2]) {
-          ite1++;
-        }
-        else {
-          ite2++;
-        }
-      }
+      M438_yokoLineCount[j] += calculateHorizontalLineCount(i, j);
     }
     if (M438_yokoLineCount[j] < minLineCount) {
       minLineCount = M438_yokoLineCount[j];
@@ -2932,7 +3048,7 @@ void Method4_3_8()
       }
       int newNum = columnSchedule.schedules[i][taisyouLineNum][j];
       // margin計算
-      margin = min(margin, widths[taisyouLineNum] - ((elementSizes[i][newNum] - 1) / height + 1));
+      margin = min(margin, calculateMargin(i, newNum, widths[taisyouLineNum], height));
     }
   }
 
@@ -2953,8 +3069,8 @@ void Method4_3_8()
   {
     rep(j, elementCount)
     {
-      preCalcScheduleSizes[i][j][taisyouLineNum] = (elementSizes[i][j] - 1) / widths[taisyouLineNum] + 1;
-      preCalcScheduleSizes[i][j][minLineNum] = (elementSizes[i][j] - 1) / widths[minLineNum] + 1;
+      preCalcScheduleSizes[i][j][taisyouLineNum] = calculateRequiredSize(elementSizes[i][j], widths[taisyouLineNum]);
+      preCalcScheduleSizes[i][j][minLineNum] = calculateRequiredSize(elementSizes[i][j], widths[minLineNum]);
     }
   }
 
@@ -3045,7 +3161,7 @@ void Method4_3(double timeLimit)
           preCalcScheduleSizes[i][j][k] = INVALID_SIZE;
         }
         else {
-          preCalcScheduleSizes[i][j][k] = (elementSizes[i][j] - 1) / width + 1;
+          preCalcScheduleSizes[i][j][k] = calculateRequiredSize(elementSizes[i][j], width);
         }
       }
     }
@@ -3207,8 +3323,8 @@ int Method3_Oshii()
         dsrep(k, M3_alreadyCount, ans.ansLineCount[i])
         {
           int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-          if (width * w < elementSizes[i][j]) break;
-          int need = (elementSizes[i][j] - 1) / width + 1;
+          if (!canFitInColumn(i, j, width)) break;
+          int need = calculateRequiredSize(elementSizes[i][j], width);
           int over = 0;
           int amari = need * width - elementSizes[i][j];
           if (now[k] + need > w) {
@@ -3270,7 +3386,7 @@ int Method3_Oshii()
           preCalcScheduleSizes[i][j][k] = INVALID_SIZE;
         }
         else {
-          preCalcScheduleSizes[i][j][k] = (elementSizes[i][j] - 1) / width + 1;
+          preCalcScheduleSizes[i][j][k] = calculateRequiredSize(elementSizes[i][j], width);
         }
       }
     }
@@ -3565,8 +3681,8 @@ void Method3_Oshii2()
         drep(k, ans.ansLineCount[i])
         {
           int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-          if (width * w < elementSizes[i][j]) break;
-          int need = (elementSizes[i][j] - 1) / width + 1;
+          if (!canFitInColumn(i, j, width)) break;
+          int need = calculateRequiredSize(elementSizes[i][j], width);
           int over = 0;
           int amari = need * width - elementSizes[i][j];
           if (now[k] + need > w) {
@@ -3641,8 +3757,8 @@ void Method3_Oshii2()
           drep(k, ans.ansLineCount[i])
           {
             int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-            if (width * w < elementSizes[i][j]) continue;
-            int need = (elementSizes[i][j] - 1) / width + 1;
+            if (!canFitInColumn(i, j, width)) continue;
+            int need = calculateRequiredSize(elementSizes[i][j], width);
             if (now[k] + need > w) continue;
             int amari = need * width - elementSizes[i][j];
             if (amari <= minAmari) {
@@ -3927,7 +4043,7 @@ int Method3_Normal(int loopCount)
       dsrep(k, startLine, ans.ansLineCount[i])
       {
         int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-        if (width * w < elementSizes[i][j]) break;
+        if (!canFitInColumn(i, j, width)) break;
         int need = (elementSizes[i][j] - 1) / width + 1;
         int over = 0;
         int amari = need * width - elementSizes[i][j];
@@ -4298,8 +4414,8 @@ void Method3_2(double timeLimit)
         drep(k, ans.ansBaseLineCount)
         {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
-          if (width * w < elementSizes[i][j]) break;
-          int need = (elementSizes[i][j] - 1) / width + 1;
+          if (!canFitInColumn(i, j, width)) break;
+          int need = calculateRequiredSize(elementSizes[i][j], width);
           if (now[k] + need > w) continue;
           int amari = need * width - elementSizes[i][j];
           if (amari <= minAmari) {
@@ -4484,7 +4600,7 @@ void Method7()
           }
           int newNum = columnSchedule.schedules[i][line1][j];
           // margin計算
-          margin = min(margin, widths[line1] - ((elementSizes[i][newNum] - 1) / height + 1));
+          margin = min(margin, calculateMargin(i, newNum, widths[line1], height));
         }
       }
 
@@ -4655,8 +4771,8 @@ void Method8(double timeLimit)
         dsrep(k, 0, ans.ansBaseLineCount)
         {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
-          if (width * w < elementSizes[i][j]) break;
-          int need = (elementSizes[i][j] - 1) / width + 1;
+          if (!canFitInColumn(i, j, width)) break;
+          int need = calculateRequiredSize(elementSizes[i][j], width);
           int amari = need * width - elementSizes[i][j];
           if (now[k] + need > w) { continue; }
           if (amari < minAmari) {
