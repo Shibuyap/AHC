@@ -2643,14 +2643,6 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
         DItems[ans[i]].push_back(i);
       }
     }
-    //rep(i, N) {
-    //  if (ans[i] == xg && i != x) {
-    //    l[countQ].push_back(i);
-    //  }
-    //  if (ans[i] == yg && i != y) {
-    //    r[countQ].push_back(i);
-    //  }
-    //}
     for (auto i : DItems[xg]) {
       if (i != x) {
         l[countQ].push_back(i);
@@ -2661,12 +2653,6 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
         r[countQ].push_back(i);
       }
     }
-
-    //if (l[countQ].empty() || r[countQ].empty()) {
-    //  l[countQ].clear();
-    //  r[countQ].clear();
-    //  return false;
-    //}
 
     char c = Query(countQ);
 
@@ -4452,7 +4438,6 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   if (blocks.size() < D) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    //cerr << "Assert Method316-1 : " << blockSize << ' ' << blocks.size() << ' ' << D << endl;
     return;
   }
 
@@ -4463,7 +4448,6 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   if (destroySize >= M) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    //cerr << "Assert Method316-2 : " << destroySize << ' ' << M << endl;
     return;
   }
 
@@ -4610,7 +4594,6 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   if (blocks.size() < D) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    //cerr << "Assert Method316-1 : " << blockSize << ' ' << blocks.size() << ' ' << D << endl;
     return;
   }
 
@@ -4621,7 +4604,6 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   if (destroySize >= M) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    //cerr << "Assert Method316-2 : " << destroySize << ' ' << M << endl;
     return;
   }
 
@@ -4823,7 +4805,6 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   if (blocks.size() < D) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    //cerr << "Assert Method316-1 : " << blockSize << ' ' << blocks.size() << ' ' << D << endl;
     return;
   }
 
@@ -4834,7 +4815,6 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   if (destroySize >= M) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
-    //cerr << "Assert Method316-2 : " << destroySize << ' ' << M << endl;
     return;
   }
 
@@ -6002,11 +5982,6 @@ int main()
   //      haiSet.insert(haipara[i][j][k]);
   //    }
   //  }
-  //}
-  //for (auto hai : haiSet) {
-  //  cout << hai << endl;
-  //}
-  //return 0;
 
   mode = 1;
 
@@ -6054,21 +6029,11 @@ int main()
 
       GeneratecaseFromNNDDQQ();
 
-      //cout << "loop = " << setw(5) << loop << ", ";
-      //cout << "N = " << setw(3) << N << ", ";
-      //cout << "D = " << setw(2) << D << ", ";
-      //cout << "Q = " << setw(4) << Q << ", ";
-      //cout << "Q / N = " << fixed << setprecision(2) << setw(5) << (double)Q / N << ", ";
-      //cout << "hai = " << setw(7) << hai << ",";
-      //cout << "hai2 = " << setw(19) << hai2 << ", ";
 
       ll score = Solve(2, hai2);
       endTime = clock();
       nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
 
-      //cout << "score = " << setw(7) << score << ", ";
-      //cout << "queryCount = " << setw(7) << queryCount << ", ";
-      //cout << "time = " << nowTime << endl;
 
       if (loop % 100 == 0) cout << "loop = " << loop << endl;
     }
@@ -6115,7 +6080,6 @@ int main()
         //      int miniBlockSize = (miniN + bSize - 1) / bSize;
         //      if (miniBlockSize < k + 2) {
         //        kouho.push_back(i * D4 + j * D2 + k);
-        //        //cout << i << ' ' << j << ' ' << k << ' ' << bSize << ' ' << hai2 << endl;
         //      }
         //    }
         //  }
@@ -6385,7 +6349,6 @@ int main()
       if (newHai == hai && newHai2 == hai2) {
         continue;
       }
-      //cout << newHai2 << endl;
       bool isWin = true;
       int winSum = 0;
       int loseSum = 0;
@@ -6403,7 +6366,6 @@ int main()
             GeneratecaseFromNNDDQQ();
             ll oldScore = Solve(hai, hai2);
             ll newScore = Solve(newHai, newHai2);
-            //cout << oldScore << ' ' << newScore << endl;
             if (newScore < oldScore) {
               win++;
             }
@@ -6439,7 +6401,6 @@ int main()
             GeneratecaseFromNNDDQQ();
             ll oldScore = Solve(hai, hai2);
             ll newScore = Solve(newHai, newHai2);
-            //cout << oldScore << ' ' << newScore << endl;
             if (newScore < oldScore) {
               win++;
             }
@@ -6464,8 +6425,6 @@ int main()
         }
       }
 
-      //cout << N << ' ' << Q << ' ' << D << ' ' << (double)Q / N << ' ';
-      //cout << newHai << ' ' << newHai2 << ' ' << winSum << "/" << loseSum << "/" << drawSum << endl;
 
       if (isWin) {
         if ((double)winSum / (winSum + loseSum) < 0.55) {
