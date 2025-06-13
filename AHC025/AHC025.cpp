@@ -2020,7 +2020,6 @@ int Move1_Specify(int& countQ, int groupId)
   return -1;
 }
 
-
 void MoveSmall1(const vector<int>& items, int& countQ, int smallLine)
 {
   int _N = min(smallLine, N);
@@ -2715,7 +2714,6 @@ bool SwapNeighborSmall1(const vector<int>& items, int& countQ, int smallLine)
   }
   return isChange;
 }
-
 
 void SwapNeighbor1Block(const vector<vector<int>>& blocks, int& countQ)
 {
@@ -3593,7 +3591,6 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   return isChange;
 }
 
-
 void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
 {
   int M = blocks.size();
@@ -4054,7 +4051,6 @@ void Method226(int hiritu = 100, int minDiff = 10)
   DummyQuery(countQ);
 }
 
-
 void Method6(int hiritu = 100, int minDiff = 10)
 {
   vector<int> items;
@@ -4181,7 +4177,6 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
   }
   DummyQuery(countQ);
 }
-
 
 void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
 {
@@ -4788,7 +4783,6 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   }
   DummyQuery(countQ);
 }
-
 
 void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroySize)
 {
@@ -5696,34 +5690,6 @@ ll Solve(int probNum, ll hai2 = D18)
 
   GeneratePseudoItems();
 
-  //if (4.0 < (double)Q / N) {
-  //  return 0;
-  //}
-  // if ((double)Q / N < 4.0 || 8.0 < (double)Q / N) {
-  //   return 0;
-  // }
-  // if ((double)Q / N < 8.0 || 16.0 < (double)Q / N) {
-  //   return 0;
-  // }
-  // if ((double)Q / N < 16.0) {
-  //   return 0;
-  // }
-
-  // これあるとTLEしない。
-  //if (haipara[NN][QQ][DD] >= 1000000) {
-  //  return 0;
-  //}
-
-  //{
-  //  int hai = haipara[NN][QQ][DD];
-  //  hai %= 1000000;
-  //  int mushi = 1;
-  //  if (90000 <= hai && hai <= 99999) {
-  //    mushi = 0;
-  //  }
-  //  if (mushi)return 0;
-  //}
-
   int hai = 8;
   if (mode < 1000000) {
     hai = haipara[NN][QQ][DD];
@@ -5733,10 +5699,6 @@ ll Solve(int probNum, ll hai2 = D18)
     hai = probNum;
   }
   hai %= 1000000;
-
-  //if (hai != 200316 && hai != 200216 && hai != 200236) {
-  //  return 0;
-  //}
 
   if (hai == 200208) {
     Method208(hai2 % D6 / D4, hai2 % D4 / D2, hai2 % D2);
@@ -5975,14 +5937,6 @@ void PrintHaipara(int loop)
 
 int main()
 {
-  //set<int> haiSet;
-  //rep(i, 14) {
-  //  rep(j, 40) {
-  //    rep(k, haipara[i][j].size()) {
-  //      haiSet.insert(haipara[i][j][k]);
-  //    }
-  //  }
-
   mode = 1;
 
   if (mode == 0) {
@@ -6043,10 +5997,6 @@ int main()
     int winCount = 0;
     queue<P> winQueue;
     while (true) {
-      // if (loop == 20) break;
-      // GenerateCase();
-      // CalcNNDDQQ();
-
       int hai = 0;
       int newHai = 0;
       ll hai2 = D18;
@@ -6069,30 +6019,6 @@ int main()
         newHai2 = haipara2[NNN][QQQ][DDD];
       }
       else {
-        //vector<int> kouho;
-        //rep(i, 14) {
-        //  rep(j, 40) {
-        //    rep(k, haipara[i][j].size()) {
-        //      if (haipara[i][j][k] != 200316) continue;
-        //      ll hai2 = haipara2[i][j][k];
-        //      int bSize = hai2 % D4 / D2;
-        //      int miniN = 5 * (i + 6);
-        //      int miniBlockSize = (miniN + bSize - 1) / bSize;
-        //      if (miniBlockSize < k + 2) {
-        //        kouho.push_back(i * D4 + j * D2 + k);
-        //      }
-        //    }
-        //  }
-        //}
-
-        //if (!kouho.empty()) {
-        //  GenerateNNDDQQ();
-        //}
-        //else {
-        //  int ijk = kouho[Rand() % kouho.size()];
-        //  GenerateNNDDQQ(ijk / D4, ijk % D4 / D2, ijk % D2);
-        //}
-
         GenerateNNDDQQ();
 
         hai = haipara[NN][QQ][DD];
@@ -6107,45 +6033,6 @@ int main()
         if (hai == 200916 && Rand() % 2 == 0) {
           newHai2 = hai2 + D10;
         }
-
-        //ll x = newHai2 % D4 / D2;
-        //ll y = newHai2 % D2;
-        //x += (int)(Rand() % 3) - 1;
-        //x = max(2LL, x);
-        //x = min(99LL, x);
-        //y += (int)(Rand() % 3) - 1;
-        //y = max(2LL, y);
-        //y = min(99LL, y);
-
-        //newHai2 = newHai2 / D4 * D4;
-        //newHai2 = newHai2 + x * D2 + y;
-
-        //newHai = hai;
-        //newHai2 = hai2;
-
-        //if (hai == 200216 || hai == 200236 || hai == 200316) {
-        //  if (Rand() % 2) {
-        //    newHai2 += (Rand() % 3 - 1) * D2;
-        //    if (newHai2 % D4 / D2 < 2) {
-        //      newHai2 += D2;
-        //    }
-        //  }
-        //  if (Rand() % 2) {
-        //    newHai2 += (Rand() % 3 - 1);
-        //    if (newHai2 % D2 < 1) {
-        //      newHai2 += 1LL;
-        //    }
-        //  }
-        //}
-        //else {
-        //  continue;
-        //}
-
-        //newHai = 200516;
-        //newHai2 = hai2;
-
-        //newHai = 1008000 + Rand() % 101;
-        //newHai2 = 0;
 
         if (false) {
           if (Rand() % 2 == 0) {
@@ -6165,187 +6052,9 @@ int main()
             }
           }
         }
-
-
-        //newHai = hai;
-
-        //if (hai == 200216 || hai == 200236 || hai == 200316) {
-        //  newHai2 = hai2;
-        //  if (Rand() % 2) {
-        //    newHai2 += (Rand() % 3 - 1) * D2;
-        //    if (newHai2 % D4 / D2 < 2) {
-        //      newHai2 += D2;
-        //    }
-        //  }
-        //  if (Rand() % 2) {
-        //    newHai2 += (Rand() % 3 - 1);
-        //    if (newHai2 % D2 < 1) {
-        //      newHai2 += 1LL;
-        //    }
-        //  }
-        //}
-        //else {
-        //  continue;
-        //}
-
-        //newHai = 200306;
-        //newHai2 = 99 * D6 + Rand() % D6;
-
-        //if (QQ >= 20) continue;
-
-        //int ra = Rand() % 100;
-        //if (ra < 60) {
-        //  newHai = 200366;
-        //  newHai2 = Rand() % D3 * D4 + Rand() % D4;
-        //}
-        //else if (ra < 80) {
-        //  newHai = 200266;
-        //  newHai2 = Rand() % D4;
-        //}
-        //else {
-        //  newHai = 200226;
-        //  newHai2 = Rand() % D4;
-        //}
-
-        //if (QQ <= 20) continue;
-
-        //newHai = 200316;
-        //newHai2 = 0;
-        //newHai2 += (ll)Rand() % 2 * 98 + 1;
-        //newHai2 *= 100;
-        //newHai2 += (ll)Rand() % 2 * 98 + 1;
-        //newHai2 *= 100;
-        //newHai2 += (ll)Rand() % 2 * 98 + 1;
-        //newHai2 *= 100;
-        //newHai2 += (ll)Rand() % 14 + 2;
-        //newHai2 *= 100;
-        //newHai2 += (ll)Rand() % 10 + 1;
-
-        //if (hai == 200216 || hai == 200236 || hai == 200316) {
-        //  newHai2 = hai2;
-        //  if (Rand() % 2) {
-        //    newHai2 += (Rand() % 3 - 1) * D2;
-        //    if (newHai2 % D4 / D2 < 2) {
-        //      newHai2 += D2;
-        //    }
-        //  }
-        //  if (Rand() % 2) {
-        //    newHai2 += (Rand() % 3 - 1);
-        //    if (newHai2 % D2 < 1) {
-        //      newHai2 += 1LL;
-        //    }
-        //  }
-        //}
-        //else {
-        //  continue;
-        //}
-
-        //newHai = 200306;
-        //newHai2 = 99 * D6 + Rand() % D6;
-
-        //newHai = 200266;
-        //newHai2 = Rand() % D4;
-        //if (hai != 1000610) {
-        //  continue;
-        //}
-
-        //newHai = 200227;
-        //newHai2 = 7010;
-        //if (hai != 1000610) {
-        //  continue;
-        //}
-
-        //newHai = 200256;
-        //newHai2 = Rand() % D6;
-
-        //if (hai != 200246 && hai != 200256 && hai / D4 != 109) {
-        //  continue;
-        //}
-
-        //newHai = 200236;
-        //newHai2 = Rand() % D6 * D4 + (Rand() % 35 + 2) * D2 + Rand() % 20;
-
-        //newHai = 200226;
-        //newHai2 = Rand() % D4;
-
-        // newHai = 1090000 + Rand() % 10000;
-        // if (Rand() % 2 == 0) {
-        //   newHai = 1070000 + Rand() % 10000;
-        // }
-
-        // newHai = 1100000 + Rand() % 10000;
-
-        // int ra = Rand() % 20;
-        // if (ra < 1) {
-        //   newHai = 1000006;
-        // }
-        // else if (ra < 2) {
-        //   newHai = 1000008;
-        // }
-        // else if (ra < 3) {
-        //   newHai = 1000009;
-        // }
-        // else if (ra < 4) {
-        //   newHai = 1000010;
-        // }
-        // else if (ra < 5) {
-        //   newHai = 1000011;
-        // }
-        // else if (ra < 6) {
-        //   newHai = 1000012;
-        // }
-        // else if (ra < 7) {
-        //   newHai = 1000013;
-        // }
-        // else if (ra < 8) {
-        //   newHai = 1001220;
-        // }
-        // else if (ra < 9) {
-        //   newHai = 1001003;
-        // }
-        // else if (ra < 10) {
-        //   newHai = 1000610;
-        // }
-        // else if (ra < 11) {
-        //   newHai = 1061003;
-        // }
-        // else if (ra < 12) {
-        //   newHai = 1008100;
-        // }
-        // else if (ra < 13) {
-        //   newHai = 1000014;
-        // }
-        // else if (ra < 14) {
-        //   newHai = 1000015;
-        // }
-        // else if (ra < 15) {
-        //   newHai = 1000016;
-        // }
-        // else if (ra < 16) {
-        //   newHai = 1070000 + Rand() % 10000;
-        // }
-        // else if (ra < 17) {
-        //   newHai = 1008000 + Rand() % 101;
-        // }
-        // else if (ra < 18) {
-        //   newHai = 1080000 + Rand() % 10000;
-        //   newHai -= newHai % 100;
-        // }
-        // else if (ra < 19) {
-        //   newHai = 1001200 + Rand() % 100;
-        // }
-        // else if (ra < 20) {
-        //   newHai = 1001900 + Rand() % 100;
-        // }
-        // else if (ra < 21) {
-        //   newHai = 1090000 + Rand() % 10000;
-        // }
       }
       GeneratecaseFromNNDDQQ();
 
-      // if (1000008 != hai) {
-      //   continue;
-      // }
       if (newHai == hai && newHai2 == hai2) {
         continue;
       }
