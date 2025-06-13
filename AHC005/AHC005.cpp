@@ -443,15 +443,16 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
   vector<int> keep_vec(ans.vertices.size());
 
   int loop = 0;
-  while (true) {
+  while (loop < 2000000) {
     loop++;
 
-    if (loop % 100 == 0) {
-      now_time = get_elapsed_time();
-      if (now_time > time_limit) break;
-    }
+    //if (loop % 100 == 0) {
+    //  now_time = get_elapsed_time();
+    //  if (now_time > time_limit) break;
+    //}
 
-    double progress_ratio = (now_time - start_time) / (time_limit - start_time);
+    //double progress_ratio = (now_time - start_time) / (time_limit - start_time);
+    double progress_ratio = (double)loop / 2000000;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
@@ -608,7 +609,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 5; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
