@@ -96,32 +96,32 @@ int mode;
 /////////////////////////////////////////////////////////////////////////////////
 // 構造体・比較関数
 
-struct Crop
+struct CropType
 {
   int id;
-  int s;
-  int d;
+  int plantingMonth;
+  int harvestMonth;
 };
 
-bool compD(const Crop& a, const Crop& b) { return a.d < b.d; }
-bool compS(const Crop& a, const Crop& b) { return a.s < b.s; }
+bool compareByHarvestMonth(const CropType& a, const CropType& b) { return a.harvestMonth < b.harvestMonth; }
+bool compareByPlantingMonth(const CropType& a, const CropType& b) { return a.plantingMonth < b.plantingMonth; }
 
 // グローバル変数を名前空間に整理
 namespace GlobalVars
 {
   // 入力
-  int SX;
-  int ho[GRID_SIZE][GRID_SIZE];
-  int ve[GRID_SIZE][GRID_SIZE];
-  int K;
-  int S[MAX_K], D[MAX_K];
-  int wall[GRID_SIZE][GRID_SIZE][4];
-  vector<Crop> SVec[T], DVec[T];
-  int Used[MAX_K];
+  int entranceX;
+  int horizontalCanals[GRID_SIZE][GRID_SIZE];
+  int verticalCanals[GRID_SIZE][GRID_SIZE];
+  int totalCropTypes;
+  int plantingMonth[MAX_K], harvestMonth[MAX_K];
+  int canalsAround[GRID_SIZE][GRID_SIZE][4];
+  vector<CropType> plantableCrops[T], harvestableCrops[T];
+  int isPlanted[MAX_K];
 
   // 出力
-  int M;
-  int ansK[MAX_K], ansX[MAX_K], ansY[MAX_K], ansS[MAX_K];
+  int totalPlantedCrops;
+  int plantedCropId[MAX_K], plantedX[MAX_K], plantedY[MAX_K], plantedMonth[MAX_K];
 
   // キュー
   int bfsQueue[QUEUE_SIZE][2];
@@ -199,13 +199,13 @@ namespace /* 関節点ライブラリ */
 // 複数ケース回すときに内部状態を初期値に戻す
 void resetGlobalState()
 {
-  M = 0;
+  totalPlantedCrops = 0;
   for (int i = 0; i < T; ++i) {
-    SVec[i].clear();
-    DVec[i].clear();
+    plantableCrops[i].clear();
+    harvestableCrops[i].clear();
   }
   for (int i = 0; i < MAX_K; ++i) {
-    Used[i] = 0;
+    isPlanted[i] = 0;
   }
 }
 
@@ -226,13 +226,13 @@ template<typename Stream>
 void readInputData(Stream& stream)
 {
   int TTT, HHH, WWW;
-  stream >> TTT >> HHH >> WWW >> SX;
+  stream >> TTT >> HHH >> WWW >> entranceX;
 
   for (int i = 0; i < H - 1; ++i) {
     string str;
     stream >> str;
     for (int j = 0; j < W; ++j) {
-      ho[i][j] = str[j] - '0';
+      horizontalCanals[i][j] = str[j] - '0';
     }
   }
 
@@ -240,13 +240,13 @@ void readInputData(Stream& stream)
     string str;
     stream >> str;
     for (int j = 0; j < W - 1; ++j) {
-      ve[i][j] = str[j] - '0';
+      verticalCanals[i][j] = str[j] - '0';
     }
   }
 
-  stream >> K;
-  for (int i = 0; i < K; ++i) {
-    stream >> S[i] >> D[i];
+  stream >> totalCropTypes;
+  for (int i = 0; i < totalCropTypes; ++i) {
+    stream >> plantingMonth[i] >> harvestMonth[i];
   }
 }
 
@@ -267,49 +267,41 @@ void readInput(int problemNum)
   for (int i = 0; i < H; ++i) {
     for (int j = 0; j < W; ++j) {
       for (int k = 0; k < 4; ++k) {
-        wall[i][j][k] = 0;
+        canalsAround[i][j][k] = 0;
       }
 
       // 上の壁
-      wall[i][j][0] = (i == 0) || (ho[i - 1][j] != 0);
+      canalsAround[i][j][0] = (i == 0) || (horizontalCanals[i - 1][j] != 0);
 
       // 左の壁
-      wall[i][j][1] = (j == 0) || (ve[i][j - 1] != 0);
+      canalsAround[i][j][1] = (j == 0) || (verticalCanals[i][j - 1] != 0);
 
       // 下の壁
-      wall[i][j][2] = (i == H - 1) || (ho[i][j] != 0);
+      canalsAround[i][j][2] = (i == H - 1) || (horizontalCanals[i][j] != 0);
 
       // 右の壁
-      wall[i][j][3] = (j == W - 1) || (ve[i][j] != 0);
+      canalsAround[i][j][3] = (j == W - 1) || (verticalCanals[i][j] != 0);
     }
   }
 
-  for (int i = 0; i < (K); ++i) {
-    S[i]--;
-    D[i]--;
-    Crop crop;
+  for (int i = 0; i < totalCropTypes; ++i) {
+    plantingMonth[i]--;
+    harvestMonth[i]--;
+    CropType crop;
     crop.id = i + 1;
-    crop.s = S[i];
-    crop.d = D[i];
+    crop.plantingMonth = plantingMonth[i];
+    crop.harvestMonth = harvestMonth[i];
     for (int l = 0; l < (1); ++l) {
-      if (S[i] - l < 0) { break; }
-      SVec[S[i] - l].push_back(crop);
+      if (plantingMonth[i] - l < 0) { break; }
+      plantableCrops[plantingMonth[i] - l].push_back(crop);
     }
-    DVec[D[i]].push_back(crop);
+    harvestableCrops[harvestMonth[i]].push_back(crop);
   }
 
   for (int i = 0; i < (T); ++i) {
-    sort(SVec[i].begin(), SVec[i].end(), compD);
-    sort(DVec[i].begin(), DVec[i].end(), compS);
+    sort(plantableCrops[i].begin(), plantableCrops[i].end(), compareByHarvestMonth);
+    sort(harvestableCrops[i].begin(), harvestableCrops[i].end(), compareByPlantingMonth);
   }
-
-  // for (int i = 0; i < (T); ++i) {
-  //   cout << i << " : ";
-  //   for (auto x : SVec[i]) {
-  //     cout << x.d << ' ';
-  //   }
-  //   cout << endl;
-  // }
 }
 
 // 出力ファイルストリームオープン
@@ -325,8 +317,8 @@ void openOutputFile(int probNum, ofstream& ofs)
 ll calculateScore()
 {
   ll sum = 0;
-  for (int i = 0; i < (M); ++i) {
-    sum += D[ansK[i] - 1] - S[ansK[i] - 1] + 1;
+  for (int i = 0; i < (totalPlantedCrops); ++i) {
+    sum += harvestMonth[plantedCropId[i] - 1] - plantingMonth[plantedCropId[i] - 1] + 1;
   }
   ll res = SCORE_BASE * sum / HWT;
   return res;
@@ -335,20 +327,20 @@ ll calculateScore()
 // 初期解生成
 void initializeSolution() {}
 
-bool isValidPlacement(const int x, const int y, const vector<vector<int>>& use)
+bool isValidPlotForCrop(const int x, const int y, const vector<vector<int>>& fieldStatus)
 {
-  if (x == SX && y == SY) {
+  if (x == entranceX && y == SY) {
     return false;
   }
   int blankCount = 0;
   for (int i = 0; i < (4); ++i) {
-    if (wall[x][y][i]) { continue; }
+    if (canalsAround[x][y][i]) { continue; }
     int nx = x + dx[i];
     int ny = y + dy[i];
-    if (use[nx][ny] == -1) {
+    if (fieldStatus[nx][ny] == -1) {
       blankCount++;
     }
-    else if (use[nx][ny] < use[x][y]) {
+    else if (fieldStatus[nx][ny] < fieldStatus[x][y]) {
       return false;
     }
   }
@@ -358,7 +350,7 @@ bool isValidPlacement(const int x, const int y, const vector<vector<int>>& use)
   return false;
 }
 
-bool isConnectedBFS(const vector<vector<int>>& use)
+bool isFieldAccessible(const vector<vector<int>>& fieldStatus)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
@@ -369,7 +361,7 @@ bool isConnectedBFS(const vector<vector<int>>& use)
   int cnt = 0;
   for (int i = 0; i < (H); ++i) {
     for (int j = 0; j < (W); ++j) {
-      if (use[i][j] == -1) {
+      if (fieldStatus[i][j] == -1) {
         cnt++;
       }
     }
@@ -377,11 +369,11 @@ bool isConnectedBFS(const vector<vector<int>>& use)
 
   int head = 0;
   int tail = 0;
-  if (use[SX][SY] == -1) {
-    bfsQueue[tail][0] = SX;
+  if (fieldStatus[entranceX][SY] == -1) {
+    bfsQueue[tail][0] = entranceX;
     bfsQueue[tail][1] = SY;
     tail++;
-    f[SX][SY] = 1;
+    f[entranceX][SY] = 1;
     cnt--;
   }
   while (head < tail) {
@@ -389,12 +381,12 @@ bool isConnectedBFS(const vector<vector<int>>& use)
     int y = bfsQueue[head][1];
     head++;
     for (int i = 0; i < (4); ++i) {
-      if (wall[x][y][i]) {
+      if (canalsAround[x][y][i]) {
         continue;
       }
       int nx = x + dx[i];
       int ny = y + dy[i];
-      if (f[nx][ny] == 0 && use[nx][ny] == -1) {
+      if (f[nx][ny] == 0 && fieldStatus[nx][ny] == -1) {
         f[nx][ny] = 1;
         cnt--;
         bfsQueue[tail][0] = nx;
@@ -409,7 +401,7 @@ bool isConnectedBFS(const vector<vector<int>>& use)
   return false;
 }
 
-bool isReachableFromStart(const vector<vector<int>>& use)
+bool canReachAllPlotsFromEntrance(const vector<vector<int>>& fieldStatus)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
@@ -422,10 +414,10 @@ bool isReachableFromStart(const vector<vector<int>>& use)
 
   int heads[DIJKSTRA_QUEUE_SIZE] = {};
   int tails[DIJKSTRA_QUEUE_SIZE] = {};
-  f[SX][SY] = use[SX][SY];
+  f[entranceX][SY] = fieldStatus[entranceX][SY];
   cnt++;
-  int hash = f[SX][SY] + 1;
-  dijkstraQueue[hash][tails[hash]][0] = SX;
+  int hash = f[entranceX][SY] + 1;
+  dijkstraQueue[hash][tails[hash]][0] = entranceX;
   dijkstraQueue[hash][tails[hash]][1] = SY;
   tails[hash]++;
 
@@ -436,13 +428,13 @@ bool isReachableFromStart(const vector<vector<int>>& use)
       int val = turn - 1;
       heads[turn]++;
       for (int i = 0; i < (4); ++i) {
-        if (wall[x][y][i]) {
+        if (canalsAround[x][y][i]) {
           continue;
         }
         int nx = x + dx[i];
         int ny = y + dy[i];
-        if (f[nx][ny] == INF && val <= use[nx][ny]) {
-          f[nx][ny] = use[nx][ny];
+        if (f[nx][ny] == INF && val <= fieldStatus[nx][ny]) {
+          f[nx][ny] = fieldStatus[nx][ny];
           cnt++;
           hash = f[nx][ny] + 1;
           dijkstraQueue[hash][tails[hash]][0] = nx;
@@ -459,7 +451,7 @@ bool isReachableFromStart(const vector<vector<int>>& use)
   return false;
 }
 
-double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<vector<int>>& use, const int walkCount)
+double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<vector<int>>& fieldStatus, const int walkCount)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
@@ -471,7 +463,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
 
   int heads[DIJKSTRA_QUEUE_SIZE] = {};
   int tails[DIJKSTRA_QUEUE_SIZE] = {};
-  f[sx][sy] = use[sx][sy];
+  f[sx][sy] = fieldStatus[sx][sy];
 
   int hash = f[sx][sy] + 1;
   dijkstraQueue[hash][tails[hash]][0] = sx;
@@ -488,15 +480,15 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
       int val = turn - 1;
       heads[turn]++;
       for (int i = 0; i < (4); ++i) {
-        if (wall[x][y][i]) {
+        if (canalsAround[x][y][i]) {
           continue;
         }
         int nx = x + dx[i];
         int ny = y + dy[i];
-        if (f[nx][ny] == INF && val <= use[nx][ny]) {
-          f[nx][ny] = use[nx][ny];
-          if (use[nx][ny] != -1) {
-            days.push_back(use[nx][ny]);
+        if (f[nx][ny] == INF && val <= fieldStatus[nx][ny]) {
+          f[nx][ny] = fieldStatus[nx][ny];
+          if (fieldStatus[nx][ny] != -1) {
+            days.push_back(fieldStatus[nx][ny]);
           }
           hash = f[nx][ny] + 1;
           dijkstraQueue[hash][tails[hash]][0] = nx;
@@ -525,22 +517,22 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
 }
 
 // 見えてる種類は多く、見えてる数は少なく
-double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use)
+double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& fieldStatus)
 {
   double score = 100;
-  use[sx][sy] = d;
+  fieldStatus[sx][sy] = d;
 
   for (int i = 0; i < (H); ++i) {
     for (int j = 0; j < (W); ++j) {
-      if (use[i][j] != -1) {
+      if (fieldStatus[i][j] != -1) {
         for (int k = 0; k < (4); ++k) {
-          if (wall[i][j][k]) { continue; }
-          if (use[i + dx[k]][j + dy[k]] != -1) {
-            if (use[i + dx[k]][j + dy[k]] == use[i][j]) {
+          if (canalsAround[i][j][k]) { continue; }
+          if (fieldStatus[i + dx[k]][j + dy[k]] != -1) {
+            if (fieldStatus[i + dx[k]][j + dy[k]] == fieldStatus[i][j]) {
               score += 1e5;
             }
 
-            if (abs(use[i + dx[k]][j + dy[k]] - use[i][j]) >= 1) {
+            if (abs(fieldStatus[i + dx[k]][j + dy[k]] - fieldStatus[i][j]) >= 1) {
               score -= 1e4;
             }
           }
@@ -548,29 +540,29 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use
       }
     }
   }
-  use[sx][sy] = -1;
+  fieldStatus[sx][sy] = -1;
   return score;
 }
 
 
-void greedyPlacement()
+void planCropPlacement()
 {
-  vector<vector<int>> use(20, vector<int>(20));
+  vector<vector<int>> fieldStatus(20, vector<int>(20));
   for (int i = 0; i < (H); ++i) {
     for (int j = 0; j < (W); ++j) {
-      use[i][j] = -1;
+      fieldStatus[i][j] = -1;
     }
   }
 
   for (int turn = 0; turn < (T); ++turn) {
     // 設置
-    drep(i, SVec[turn].size())
+    drep(i, plantableCrops[turn].size())
     {
-      Crop crop = SVec[turn][i];
-      if (Used[crop.id]) {
+      CropType crop = plantableCrops[turn][i];
+      if (isPlanted[crop.id]) {
         continue;
       }
-      int d = crop.d;
+      int d = crop.harvestMonth;
 
       // 関節点じゃない空白マスを列挙
       LowLinkGraph Graph;
@@ -579,7 +571,7 @@ void greedyPlacement()
       // 空のグラフ作成
       for (int i = 0; i < HW; ++i) {
         auto [x, y] = toCoord(i);
-        if (use[x][y] == -1) {
+        if (fieldStatus[x][y] == -1) {
           int num = mp.size();
           mp[num] = P(x, y);
           mpInv[P(x, y)] = num;
@@ -591,10 +583,10 @@ void greedyPlacement()
         int x = mp[num].first;
         int y = mp[num].second;
         for (int j = 0; j < (4); ++j) {
-          if (wall[x][y][j]) { continue; }
+          if (canalsAround[x][y][j]) { continue; }
           int nx = x + dx[j];
           int ny = y + dy[j];
-          if (use[nx][ny] == -1) {
+          if (fieldStatus[nx][ny] == -1) {
             LowLinkEdge e;
             e.to = mpInv[P(nx, ny)];
             Graph[num].push_back(e);
@@ -622,18 +614,18 @@ void greedyPlacement()
           walkCount[j][k] = INF;
         }
       }
-      walkCount[SX][SY] = 0;
+      walkCount[entranceX][SY] = 0;
       queue<P> que;
-      que.push(P(SX, SY));
+      que.push(P(entranceX, SY));
       while (que.size()) {
         int x = que.front().first;
         int y = que.front().second;
         que.pop();
         for (int j = 0; j < (4); ++j) {
-          if (wall[x][y][j]) { continue; }
+          if (canalsAround[x][y][j]) { continue; }
           int nx = x + dx[j];
           int ny = y + dy[j];
-          if (use[nx][ny] == -1 && walkCount[x][y] + 1 < walkCount[nx][ny]) {
+          if (fieldStatus[nx][ny] == -1 && walkCount[x][y] + 1 < walkCount[nx][ny]) {
             walkCount[nx][ny] = walkCount[x][y] + 1;
             que.push(P(nx, ny));
           }
@@ -645,32 +637,32 @@ void greedyPlacement()
       for (auto ap : blanks) {
         int x = ap.first;
         int y = ap.second;
-        if (use[x][y] != -1) {
+        if (fieldStatus[x][y] != -1) {
           assert(false);
         }
 
-        use[x][y] = d;
+        fieldStatus[x][y] = d;
         bool OK = false;
-        if (isValidPlacement(x, y, use)) {
+        if (isValidPlotForCrop(x, y, fieldStatus)) {
           OK = true;
         }
         if (!OK) {
-          if (isConnectedBFS(use) && isReachableFromStart(use)) {
+          if (isFieldAccessible(fieldStatus) && canReachAllPlotsFromEntrance(fieldStatus)) {
             OK = true;
           }
         }
         if (OK) {
           OKs.push_back(P(x, y));
         }
-        use[x][y] = -1;
+        fieldStatus[x][y] = -1;
       }
       if (!OKs.empty()) {
         double ma = 0;
         P best;
         best.first = -1;
         for (auto p : OKs) {
-          double tmpScore = Score_1_Dijkstra(p.first, p.second, d, use, walkCount[p.first][p.second]);
-          //double tmpScore = Score_2(p.first, p.second, d, use);
+          double tmpScore = Score_1_Dijkstra(p.first, p.second, d, fieldStatus, walkCount[p.first][p.second]);
+          //double tmpScore = Score_2(p.first, p.second, d, fieldStatus);
           if (ma < tmpScore) {
             ma = tmpScore;
             best = p;
@@ -679,13 +671,13 @@ void greedyPlacement()
         if (best.first != -1) {
           int x = best.first;
           int y = best.second;
-          use[x][y] = d;
-          ansK[M] = crop.id;
-          ansX[M] = x;
-          ansY[M] = y;
-          ansS[M] = turn;
-          Used[crop.id] = 1;
-          M++;
+          fieldStatus[x][y] = d;
+          plantedCropId[totalPlantedCrops] = crop.id;
+          plantedX[totalPlantedCrops] = x;
+          plantedY[totalPlantedCrops] = y;
+          plantedMonth[totalPlantedCrops] = turn;
+          isPlanted[crop.id] = 1;
+          totalPlantedCrops++;
         }
       }
     }
@@ -693,8 +685,8 @@ void greedyPlacement()
     // 収穫
     for (int i = 0; i < (H); ++i) {
       for (int j = 0; j < (W); ++j) {
-        if (use[i][j] == turn) {
-          use[i][j] = -1;
+        if (fieldStatus[i][j] == turn) {
+          fieldStatus[i][j] = -1;
         }
       }
     }
@@ -705,16 +697,16 @@ void greedyPlacement()
 void outputSolution(ofstream& ofs)
 {
   if (mode == 0) {
-    cout << M << endl;
-    for (int i = 0; i < (M); ++i) {
-      cout << ansK[i] << ' ' << ansX[i] << ' ' << ansY[i] << ' ' << ansS[i] + 1
+    cout << totalPlantedCrops << endl;
+    for (int i = 0; i < (totalPlantedCrops); ++i) {
+      cout << plantedCropId[i] << ' ' << plantedX[i] << ' ' << plantedY[i] << ' ' << plantedMonth[i] + 1
         << endl;
     }
   }
   else {
-    ofs << M << endl;
-    for (int i = 0; i < (M); ++i) {
-      ofs << ansK[i] << ' ' << ansX[i] << ' ' << ansY[i] << ' ' << ansS[i] + 1
+    ofs << totalPlantedCrops << endl;
+    for (int i = 0; i < (totalPlantedCrops); ++i) {
+      ofs << plantedCropId[i] << ' ' << plantedX[i] << ' ' << plantedY[i] << ' ' << plantedMonth[i] + 1
         << endl;
     }
   }
@@ -736,7 +728,7 @@ ll solveProblem(int probNum)
   initializeSolution();
 
   // 貪欲1
-  greedyPlacement();
+  planCropPlacement();
 
   // 解答を出力
   outputSolution(ofs);
