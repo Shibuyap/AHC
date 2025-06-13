@@ -5079,35 +5079,32 @@ ll Solve(int probNum)
 
 int main()
 {
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
   }
   else if (mode == 1) {
-    rep(_, 1)
+    vector<ll> scores;
+    ll sum = 0;
+    srep(i, 0, 10)
     {
-      vector<ll> scores;
-      ll sum = 0;
-      srep(i, 0, 5000)
+      // lineMaxLimit = i;
+      ll score = Solve(i);
+      sum += score;
+      // cout << "num = " << i << ", ";
+      // cout << "score = " << score << ", ";
+      // cout << "sum = " << sum << endl;
+      int maxASum = 0;
+      rep(j, n)
       {
-        // lineMaxLimit = i;
-        ll score = Solve(i);
-        sum += score;
-        // cout << "num = " << i << ", ";
-        // cout << "score = " << score << ", ";
-        // cout << "sum = " << sum << endl;
-        int maxASum = 0;
-        rep(j, n)
-        {
-          maxASum += maxA[j];
-        }
-        if (true || (isFind == 0 && ansScore > 1)) cout << i << ", " << d << ", " << n << ", " << 1 - ee << ", " << maxASum << ", " << isFind << ", " << ansBaseLineCount << ", " << score << ", " << sum << ' ' << GetNowTime() << endl;
-        scores.push_back(score);
+        maxASum += maxA[j];
       }
-      for (auto score : scores) {
-        cout << score << endl;
-      }
+      if (true || (isFind == 0 && ansScore > 1)) cout << i << ", " << d << ", " << n << ", " << 1 - ee << ", " << maxASum << ", " << isFind << ", " << ansBaseLineCount << ", " << score << ", " << sum << ' ' << GetNowTime() << endl;
+      scores.push_back(score);
+    }
+    for (auto score : scores) {
+      cout << score << endl;
     }
   }
 
