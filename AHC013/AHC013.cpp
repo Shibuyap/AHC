@@ -64,6 +64,25 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
+class GameState
+{
+public:
+  int maxScore;
+  int ope1, ope2;
+  vector<vector<int>> ans1, ans2;
+  array<array<int, 100>, 100> a;
+  vector<int> x, y;
+  vector<int> R, D;
+  int viewOrder = 0;
+  vector<vector<int>> moves;
+  vector<int> moveCnt;
+  array<array<int, 100>, 100> cellUse;
+  vector<vector<int>> udlr;
+  vector<int> parent;
+  vector<int> unionSize;
+  set<P> vp;
+};
+
 namespace /* 変数 */
 {
   // 入力用変数
@@ -86,20 +105,7 @@ namespace /* 変数 */
   vector<int> unionSize;
   set<P> vp;
 
-  int real_maxScore;
-  int real_ope1, real_ope2;
-  vector<vector<int>> real_ans1, real_ans2;
-  array<array<int, 100>, 100> real_a;
-  vector<int> real_x, real_y;
-  vector<int> real_R, real_D;
-  int real_viewOrder = 0;
-  vector<vector<int>> real_moves;
-  vector<int> real_moveCnt;
-  array<array<int, 100>, 100> real_cellUse;
-  vector<vector<int>> real_udlr;
-  vector<int> real_parent;
-  vector<int> real_unionSize;
-  set<P> real_vp;
+  GameState real_GameState;
 
   int seed_maxScore;
   int seed_ope1, seed_ope2;
@@ -433,17 +439,17 @@ void Init()
   moves.resize(maxComputers, vector<int>(maxOperations));
   udlr.resize(maxComputers, vector<int>(4));
 
-  real_x.resize(maxComputers);
-  real_y.resize(maxComputers);
-  real_R.resize(maxComputers);
-  real_D.resize(maxComputers);
-  real_parent.resize(maxComputers);
-  real_unionSize.resize(maxComputers);
-  real_moveCnt.resize(maxComputers);
-  real_ans1.resize(maxOperations, vector<int>(5));
-  real_ans2.resize(maxOperations, vector<int>(4));
-  real_moves.resize(maxComputers, vector<int>(maxOperations));
-  real_udlr.resize(maxComputers, vector<int>(4));
+  real_GameState.x.resize(maxComputers);
+  real_GameState.y.resize(maxComputers);
+  real_GameState.R.resize(maxComputers);
+  real_GameState.D.resize(maxComputers);
+  real_GameState.parent.resize(maxComputers);
+  real_GameState.unionSize.resize(maxComputers);
+  real_GameState.moveCnt.resize(maxComputers);
+  real_GameState.ans1.resize(maxOperations, vector<int>(5));
+  real_GameState.ans2.resize(maxOperations, vector<int>(4));
+  real_GameState.moves.resize(maxComputers, vector<int>(maxOperations));
+  real_GameState.udlr.resize(maxComputers, vector<int>(4));
 
   seed_x.resize(maxComputers);
   seed_y.resize(maxComputers);
@@ -754,10 +760,10 @@ void NormalClear()
 
 void RealClear()
 {
-  real_viewOrder = 0;
-  real_maxScore = 0;
-  real_ope1 = 0;
-  real_ope2 = 0;
+  real_GameState.viewOrder = 0;
+  real_GameState.maxScore = 0;
+  real_GameState.ope1 = 0;
+  real_GameState.ope2 = 0;
 }
 
 void SeedClear()
@@ -803,48 +809,48 @@ void AllClear_outer()
 
 void CopyToReal()
 {
-  real_viewOrder = viewOrder;
-  real_maxScore = maxScore;
-  real_ope1 = ope1;
-  real_ope2 = ope2;
+  real_GameState.viewOrder = viewOrder;
+  real_GameState.maxScore = maxScore;
+  real_GameState.ope1 = ope1;
+  real_GameState.ope2 = ope2;
   rep(i, ope1)
   {
-    rep(j, 5) { real_ans1[i][j] = ans1[i][j]; }
+    rep(j, 5) { real_GameState.ans1[i][j] = ans1[i][j]; }
   }
   rep(i, ope2)
   {
-    rep(j, 4) { real_ans2[i][j] = ans2[i][j]; }
+    rep(j, 4) { real_GameState.ans2[i][j] = ans2[i][j]; }
   }
   rep(i, n)
   {
-    rep(j, n) { real_a[i][j] = a[i][j]; }
+    rep(j, n) { real_GameState.a[i][j] = a[i][j]; }
   }
   rep(i, K100)
   {
-    real_x[i] = x[i];
-    real_y[i] = y[i];
-    real_R[i] = R[i];
-    real_D[i] = D[i];
+    real_GameState.x[i] = x[i];
+    real_GameState.y[i] = y[i];
+    real_GameState.R[i] = R[i];
+    real_GameState.D[i] = D[i];
   }
 
   rep(i, n)
   {
-    rep(j, n) { real_cellUse[i][j] = cellUse[i][j]; }
+    rep(j, n) { real_GameState.cellUse[i][j] = cellUse[i][j]; }
   }
 
   rep(i, K100)
   {
-    real_moveCnt[i] = moveCnt[i];
-    rep(j, moveCnt[i]) { real_moves[i][j] = moves[i][j]; }
-    rep(j, 4) { real_udlr[i][j] = udlr[i][j]; }
+    real_GameState.moveCnt[i] = moveCnt[i];
+    rep(j, moveCnt[i]) { real_GameState.moves[i][j] = moves[i][j]; }
+    rep(j, 4) { real_GameState.udlr[i][j] = udlr[i][j]; }
   }
 
   rep(i, K100)
   {
-    real_parent[i] = parent[i];
-    real_unionSize[i] = unionSize[i];
+    real_GameState.parent[i] = parent[i];
+    real_GameState.unionSize[i] = unionSize[i];
   }
-  real_vp = vp;
+  real_GameState.vp = vp;
 }
 
 void CopyToSeed()
@@ -941,48 +947,48 @@ void CopyToOuter()
 
 void RollBackFromReal()
 {
-  viewOrder = real_viewOrder;
-  maxScore = real_maxScore;
-  ope1 = real_ope1;
-  ope2 = real_ope2;
+  viewOrder = real_GameState.viewOrder;
+  maxScore = real_GameState.maxScore;
+  ope1 = real_GameState.ope1;
+  ope2 = real_GameState.ope2;
   rep(i, ope1)
   {
-    rep(j, 5) { ans1[i][j] = real_ans1[i][j]; }
+    rep(j, 5) { ans1[i][j] = real_GameState.ans1[i][j]; }
   }
   rep(i, ope2)
   {
-    rep(j, 4) { ans2[i][j] = real_ans2[i][j]; }
+    rep(j, 4) { ans2[i][j] = real_GameState.ans2[i][j]; }
   }
   rep(i, n)
   {
-    rep(j, n) { a[i][j] = real_a[i][j]; }
+    rep(j, n) { a[i][j] = real_GameState.a[i][j]; }
   }
   rep(i, K100)
   {
-    x[i] = real_x[i];
-    y[i] = real_y[i];
-    R[i] = real_R[i];
-    D[i] = real_D[i];
+    x[i] = real_GameState.x[i];
+    y[i] = real_GameState.y[i];
+    R[i] = real_GameState.R[i];
+    D[i] = real_GameState.D[i];
   }
 
   rep(i, n)
   {
-    rep(j, n) { cellUse[i][j] = real_cellUse[i][j]; }
+    rep(j, n) { cellUse[i][j] = real_GameState.cellUse[i][j]; }
   }
 
   rep(i, K100)
   {
-    moveCnt[i] = real_moveCnt[i];
-    rep(j, moveCnt[i]) { moves[i][j] = real_moves[i][j]; }
-    rep(j, 4) { udlr[i][j] = real_udlr[i][j]; }
+    moveCnt[i] = real_GameState.moveCnt[i];
+    rep(j, moveCnt[i]) { moves[i][j] = real_GameState.moves[i][j]; }
+    rep(j, 4) { udlr[i][j] = real_GameState.udlr[i][j]; }
   }
 
   rep(i, K100)
   {
-    parent[i] = real_parent[i];
-    unionSize[i] = real_unionSize[i];
+    parent[i] = real_GameState.parent[i];
+    unionSize[i] = real_GameState.unionSize[i];
   }
-  vp = real_vp;
+  vp = real_GameState.vp;
 }
 
 void RollBackFromSeed()
@@ -2289,7 +2295,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
     ans1[ope1][4] = ite;
     ope1++;
 
-    if (maxScore > real_maxScore) {
+    if (maxScore > real_GameState.maxScore) {
       if (MethodeMode == 5) {
         isDo = 5;
       }
@@ -2415,7 +2421,7 @@ void Method3(double start_temp, double end_temp, double now_progress)
     ans1[ope1][4] = ite2;
     ope1++;
 
-    if (maxScore > real_maxScore) {
+    if (maxScore > real_GameState.maxScore) {
       CopyToReal();
     }
   }
@@ -2497,7 +2503,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
     ans1[ope1][4] = ite;
     ope1++;
 
-    if (maxScore > real_maxScore) {
+    if (maxScore > real_GameState.maxScore) {
       CopyToReal();
     }
   }
@@ -2607,7 +2613,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
 
     ope1 -= 2;
 
-    if (maxScore > real_maxScore) {
+    if (maxScore > real_GameState.maxScore) {
       CopyToReal();
     }
   }
@@ -2690,7 +2696,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
       methodCount[7][0]++;
       methodSum[0]++;
 
-      if (maxScore > real_maxScore) {
+      if (maxScore > real_GameState.maxScore) {
         CopyToReal();
       }
 
@@ -2740,7 +2746,7 @@ int Solve(int mode, int problemNum = 0)
       if (now_progress > 1.0) break;
 
       // 現在のスコアが悪いときは元に戻す
-      if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
+      if (maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
         RollBackFromReal();
         rollbackCount++;
       }
@@ -2826,7 +2832,7 @@ int Solve(int mode, int problemNum = 0)
     if (now_progress > 1.0) break;
 
     // 現在のスコアが悪いときは元に戻す
-    if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
+    if (maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
       RollBackFromReal();
       rollbackCount++;
     }
