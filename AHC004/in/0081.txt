@@ -1,4 +1,4 @@
-﻿20 563
+20 563
 EDFHDF
 GDBGH
 BE
