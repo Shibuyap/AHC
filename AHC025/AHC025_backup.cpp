@@ -277,40 +277,11 @@ void OpenOfs(int probNum, ofstream& ofs)
 // Forward declarations
 char Query(int& turn);
 int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLeft, int initialRight, int& countQ);
-int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLeft, int initialRight, int& countQ);
 
 // Common refactored functions
 void initializeAnsArray()
 {
   rep(i, N) { ans[i] = i % D; }
-}
-
-int countItemsInGroup(int groupId)
-{
-  int cnt = 0;
-  rep(j, N)
-  {
-    if (ans[j] == groupId) {
-      cnt++;
-    }
-  }
-  return cnt;
-}
-
-void collectItemsFromGroup(int groupId, vector<int>& items)
-{
-  items.clear();
-  rep(j, N)
-  {
-    if (ans[j] == groupId) {
-      items.push_back(j);
-    }
-  }
-}
-
-void copyAnswersArray(int turn)
-{
-  rep(i, N) { answers[turn][i] = ans[i]; }
 }
 
 void initializeGroups(vector<int>& groups)
@@ -449,8 +420,14 @@ int selectGroupWithMinSize(int minSize)
     loop++;
     if (loop >= 100) return -1;
     x = Rand() % D;
-    int cnt = countItemsInGroup(x);
-    if (cnt >= minSize) return x;
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == x) {
+        cnt++;
+        if (cnt >= minSize) return x;
+      }
+    }
   }
 }
 
@@ -520,6 +497,245 @@ char PseudoItemsQueryGroup(vector<int> vl, vector<int> vr)
 }
 
 map<pair<vector<int>, vector<int>>, char> calledMap;
+
+// ====== Additional Refactored Helper Functions ======
+
+// Generic query loop with hiritu-based selection
+void queryLoopWithHiritu(int& countQ, int Q, int hiritu, 
+                        function<void()> primaryOp, 
+                        function<void()> alternativeOp)
+{
+  while (countQ < Q) {
+    int qu = Rand() % 100;
+    if (qu < hiritu) {
+      primaryOp();
+    } else {
+      if (Q - 1 <= countQ) {
+        if (hiritu < 10) break;
+        continue;
+      }
+      alternativeOp();
+    }
+  }
+}
+
+// Binary search with pseudo items for group positioning
+void binarySearchWithPseudoItems(int gId, const vector<int>& groups, int& countQ)
+{
+  int left = 0;
+  int right = D - 1;
+  while (left < right) {
+    int mid = (left + right) / 2;
+    rep(j, N) {
+      if (ans[j] == gId) {
+        l[countQ].push_back(j);
+      }
+      if (ans[j] == groups[mid]) {
+        r[countQ].push_back(j);
+      }
+    }
+    char c = PseudoItemsQuery(countQ);
+    l[countQ].clear();
+    r[countQ].clear();
+    if (c == '=') {
+      left = right = mid;
+    } else if (c == '>') {
+      right = mid;
+    } else {
+      left = mid + 1;
+    }
+  }
+  moveGroupToPosition(groups, D - 1, left);
+}
+
+// Create blocks and validate
+bool createAndValidateBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ)
+{
+  rep(i, N) {
+    if (i % blockSize == 0) {
+      blocks.push_back({});
+    }
+    blocks.back().push_back(i);
+  }
+  if (blocks.size() < D) {
+    rep(i, N) { ans[i] = i % D; }
+    DummyQuery(countQ);
+    return false;
+  }
+  return true;
+}
+
+// Destroy and insert blocks helper
+void destroyAndInsertBlocksHelper(vector<vector<int>>& blocks, int destroySize, int& countQ)
+{
+  int M = blocks.size();
+  
+  // Split large blocks
+  vector<vector<int>> tmp1, tmp2;
+  rep(i, M) {
+    if (i < M - destroySize) {
+      tmp2.push_back(blocks[i]);
+    } else {
+      rep(j, blocks[i].size()) { 
+        tmp1.push_back({ blocks[i][j] }); 
+      }
+    }
+  }
+
+  // Insert split items
+  blocks = tmp2;
+  for (auto tmp : tmp1) {
+    M = blocks.size();
+    int left = 0;
+    int right = M;
+    while (left < right) {
+      int mid = (left + right) / 2;
+      l[countQ] = tmp;
+      r[countQ] = blocks[mid];
+      char c = Query(countQ);
+      if (c == '=') {
+        left = right = mid;
+      } else if (c == '<') {
+        right = mid;
+      } else {
+        left = mid + 1;
+      }
+    }
+    blocks.insert(blocks.begin() + left, tmp);
+  }
+}
+
+// Query loop with timing control
+void queryLoopWithTiming(int& countQ, int Q, int timing, 
+                        function<void()> earlyPhaseOp,
+                        function<void()> latePhaseOp)
+{
+  int loopCount = 0;
+  while (countQ < Q) {
+    loopCount++;
+    bool isKouhan = false;
+    
+    if (countQ >= round((double)Q * timing / 100)) {
+      isKouhan = true;
+    }
+    if (loopCount > 1000) {
+      isKouhan = true;
+    }
+    
+    if (isKouhan) {
+      latePhaseOp();
+    } else {
+      earlyPhaseOp();
+    }
+  }
+}
+
+// Find tail of unassigned items
+int findUnassignedTail(const vector<int>& items)
+{
+  int tail = N;
+  while (tail > 0) {
+    if (ans[items[tail - 1]] != -1) {
+      tail--;
+    } else {
+      break;
+    }
+  }
+  return tail;
+}
+
+// Extract single items from blocks
+int extractSingleItems(const vector<vector<int>>& blocks, vector<int>& items)
+{
+  int used[110] = {};
+  for (auto block : blocks) {
+    if (block.size() == 1) {
+      items.push_back(block[0]);
+      used[block[0]] = 1;
+    }
+  }
+  int M2 = items.size();
+  rep(i, N) {
+    if (used[i] == 0) {
+      items.push_back(i);
+    }
+  }
+  return M2;
+}
+
+// Assign items to lightest group with binary search
+void assignToLightestGroup(const vector<int>& items, int start, int end, 
+                          vector<int>& groups, int& countQ)
+{
+  for (int i = end - 1; i >= start; i--) {
+    int id = items[i];
+    int gId = groups[D - 1];
+    ans[id] = gId;
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
+    moveGroupToPosition(groups, D - 1, left);
+  }
+}
+
+// Early return if block size is invalid
+bool earlyReturnIfInvalidBlocks(int M, int& countQ)
+{
+  if (M < 5) {
+    rep(i, N) { ans[i] = i % D; }
+    DummyQuery(countQ);
+    return true;
+  }
+  return false;
+}
+
+// Assign blocks to groups
+void assignBlocksToGroups(const vector<vector<int>>& blocks, int start, int count)
+{
+  int M = blocks.size();
+  rep(i, count) {
+    rep(j, blocks[M - 1 - i - start].size()) {
+      int id = blocks[M - 1 - i - start][j];
+      ans[id] = i;
+    }
+  }
+}
+
+// Query loop with hiritu selection for blocks
+void queryLoopForBlocks(int& countQ, int Q, int hiritu1, int hiritu2, int timing,
+                       const vector<int>& items, const vector<vector<int>>& blocks, int M2)
+{
+  queryLoopWithTiming(countQ, Q, timing,
+    [&]() { // Early phase
+      int hiritu = hiritu2;
+      if (hiritu >= 100 && nowTime > TL / 3) {
+        hiritu = 90;
+      }
+      int qu = Rand() % 100;
+      if (qu < hiritu) {
+        SwapNeighbor1Block(blocks, countQ);
+      } else {
+        if (countQ >= Q - 1) {
+          if (hiritu < 10) {
+            return;
+          }
+          return;
+        }
+        Swap2Block(blocks, countQ);
+      }
+    },
+    [&]() { // Late phase
+      int qu = Rand() % 100;
+      if (qu < hiritu1) {
+        Move1(countQ);
+      } else {
+        if (Q - 1 <= countQ) {
+          if (hiritu1 < 10) return;
+          return;
+        }
+        Swap1(countQ);
+      }
+    }
+  );
+}
 int queryCount = 0;
 char Query(int& turn)
 {
@@ -870,7 +1086,12 @@ int Move1_Specify(int& countQ, int groupId)
     y = Rand() % D;
   }
   vector<int> vx;
-  collectItemsFromGroup(x, vx);
+  rep(j, N)
+  {
+    if (ans[j] == x) {
+      vx.push_back(j);
+    }
+  }
   if (vx.size() <= 1) {
     return -1;
   }
@@ -952,7 +1173,12 @@ void Move1Minimum(int& countQ, int cutLine = 999)
   }
 
   vector<int> vv;
-  collectItemsFromGroup(x, vv);
+  rep(j, N)
+  {
+    if (ans[j] == x) {
+      vv.push_back(j);
+    }
+  }
   if (vv.empty()) return;
 
   int z = vv[Rand() % vv.size()];
@@ -978,7 +1204,14 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
     x = Rand() % D;
   }
   while (true) {
-    int cnt = countItemsInGroup(x);
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == x) {
+        cnt++;
+        if (cnt >= 2) break;
+      }
+    }
     if (cnt >= 2) {
       break;
     }
@@ -989,7 +1222,12 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
     y = Rand() % D;
   }
   vector<int> vv;
-  collectItemsFromGroup(x, vv);
+  rep(j, N)
+  {
+    if (ans[j] == x) {
+      vv.push_back(j);
+    }
+  }
   int z = vv[Rand() % vv.size()];
 
   if (cutLine < 100) {
@@ -1035,8 +1273,14 @@ bool selectTwoGroupsWithMinSize(int& x, int& y, int minSize = 2)
     y = Rand() % D;
     if (x == y) continue;
 
-    int cnt = countItemsInGroup(y);
-    if (cnt >= minSize) return true;
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == y) {
+        cnt++;
+        if (cnt >= minSize) return true;
+      }
+    }
   }
 }
 
@@ -1048,12 +1292,21 @@ void Swap1(int& countQ, int diffLine = 999)
   int x, y;
   if (!selectTwoGroupsWithMinSize(x, y)) return;
 
-  vector<int> vx, vy;
-  collectItemsFromGroup(x, vx);
-  collectItemsFromGroup(y, vy);
-
-  int lid = vx[Rand() % vx.size()];
-  int rid = vy[Rand() % vy.size()];
+  int szL = 0;
+  int szR = 0;
+  rep(j, N)
+  {
+    if (ans[j] == x) {
+      arr8_2_L[szL] = j;
+      szL++;
+    }
+    if (ans[j] == y) {
+      arr8_2_R[szR] = j;
+      szR++;
+    }
+  }
+  int lid = arr8_2_L[Rand() % szL];
+  int rid = arr8_2_R[Rand() % szR];
 
   if (diffLine < 100) {
     if (hikaku[lid][rid] == -1) {
@@ -1087,13 +1340,12 @@ void Swap1(int& countQ, int diffLine = 999)
     return;
   }
 
-  for (auto j : vx) {
-    if (j != lid) {
+  rep(j, N)
+  {
+    if (ans[j] == x && j != lid) {
       l[countQ].push_back(j);
     }
-  }
-  for (auto j : vy) {
-    if (j != rid) {
+    if (ans[j] == y && j != rid) {
       r[countQ].push_back(j);
     }
   }
@@ -1117,32 +1369,52 @@ int arrSwapHalf_L[110];
 int arrSwapHalf_R[110];
 void SwapHalf(int& countQ)
 {
-  int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
-
+  int x = Rand() % D;
+  while (true) {
+    x = Rand() % D;
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == x) {
+        cnt++;
+        if (cnt >= 2) break;
+      }
+    }
+    if (cnt >= 2) {
+      break;
+    }
+  }
   int y = Rand() % D;
   while (true) {
     y = Rand() % D;
     if (x == y) {
       continue;
     }
-    int cnt = countItemsInGroup(y);
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == y) {
+        cnt++;
+        if (cnt >= 2) break;
+      }
+    }
     if (cnt >= 2) {
       break;
     }
   }
 
-  vector<int> vx, vy;
-  collectItemsFromGroup(x, vx);
-  collectItemsFromGroup(y, vy);
-
-  int szL = vx.size();
-  int szR = vy.size();
-  for (int i = 0; i < szL; i++) {
-    arrSwapHalf_L[i] = vx[i];
-  }
-  for (int i = 0; i < szR; i++) {
-    arrSwapHalf_R[i] = vy[i];
+  int szL = 0;
+  int szR = 0;
+  rep(j, N)
+  {
+    if (ans[j] == x) {
+      arrSwapHalf_L[szL] = j;
+      szL++;
+    }
+    if (ans[j] == y) {
+      arrSwapHalf_R[szR] = j;
+      szR++;
+    }
   }
 
   std::shuffle(arrSwapHalf_L, arrSwapHalf_L + szL, engine_mt19937);
@@ -1180,24 +1452,49 @@ void SwapHalf(int& countQ)
 
 void Method11_1(int& countQ)
 {
-  int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
-
+  int x = Rand() % D;
+  while (true) {
+    x = Rand() % D;
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == x) {
+        cnt++;
+        if (cnt >= 2) break;
+      }
+    }
+    if (cnt >= 2) {
+      break;
+    }
+  }
   int y = Rand() % D;
   while (true) {
     y = Rand() % D;
     if (x == y) {
       continue;
     }
-    int cnt = countItemsInGroup(y);
+    int cnt = 0;
+    rep(j, N)
+    {
+      if (ans[j] == y) {
+        cnt++;
+        if (cnt >= 2) break;
+      }
+    }
     if (cnt >= 2) {
       break;
     }
   }
-
   vector<int> vl, vr;
-  collectItemsFromGroup(x, vl);
-  collectItemsFromGroup(y, vr);
+  rep(j, N)
+  {
+    if (ans[j] == x) {
+      vl.push_back(j);
+    }
+    if (ans[j] == y) {
+      vr.push_back(j);
+    }
+  }
   int lid = vl[Rand() % vl.size()];
   int rid = vr[Rand() % vr.size()];
   rep(i, 50)
@@ -1213,13 +1510,12 @@ void Method11_1(int& countQ)
     return;
   }
 
-  for (auto j : vl) {
-    if (j != lid) {
+  rep(j, N)
+  {
+    if (ans[j] == x && j != lid) {
       l[countQ].push_back(j);
     }
-  }
-  for (auto j : vr) {
-    if (j != rid) {
+    if (ans[j] == y && j != rid) {
       r[countQ].push_back(j);
     }
   }
@@ -1448,22 +1744,13 @@ void Method8(int hiritu = 60)
   initializeAnsArray();
 
   int countQ = 0;
-  while (countQ < Q) {
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      Swap1(countQ);
-    }
-    if (nowTime > TL) {
-      cerr << "Assert Method8" << endl;
-      break;
-    }
+  queryLoopWithHiritu(countQ, Q, hiritu,
+    [&]() { Move1(countQ); },
+    [&]() { Swap1(countQ); }
+  );
+
+  if (nowTime > TL) {
+    cerr << "Assert Method8" << endl;
   }
 
   DummyQuery(countQ);
@@ -1505,19 +1792,10 @@ void Method8_Two(int hiritu = 60)
   initializeAnsArray();
 
   int countQ = 0;
-  while (countQ < Q) {
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1_Two(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      Swap1(countQ);
-    }
-  }
+  queryLoopWithHiritu(countQ, Q, hiritu,
+    [&]() { Move1_Two(countQ); },
+    [&]() { Swap1(countQ); }
+  );
 
   DummyQuery(countQ);
 }
@@ -1527,19 +1805,10 @@ void Method19(int hiritu = 60)
   initializeAnsArray();
 
   int countQ = 0;
-  while (countQ < Q) {
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      SwapHalf(countQ);
-    }
-  }
+  queryLoopWithHiritu(countQ, Q, hiritu,
+    [&]() { Move1(countQ); },
+    [&]() { SwapHalf(countQ); }
+  );
 
   DummyQuery(countQ);
 }
@@ -1549,19 +1818,10 @@ void Method18(int hiritu = 60)
   initializeAnsArray();
 
   int countQ = 0;
-  while (countQ < Q) {
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1Minimum(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      Swap1(countQ);
-    }
-  }
+  queryLoopWithHiritu(countQ, Q, hiritu,
+    [&]() { Move1Minimum(countQ); },
+    [&]() { Swap1(countQ); }
+  );
 
   DummyQuery(countQ);
 }
@@ -1684,19 +1944,10 @@ void Method16(int hiritu = 60)
     }
   }
 
-  while (countQ < Q) {
-    int qu = Rand() % 100;
-    if (qu < hiritu) {
-      Move1(countQ);
-    }
-    else {
-      if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
-        continue;
-      }
-      Swap1(countQ);
-    }
-  }
+  queryLoopWithHiritu(countQ, Q, hiritu,
+    [&]() { Move1(countQ); },
+    [&]() { Swap1(countQ); }
+  );
 
   DummyQuery(countQ);
 }
@@ -2913,16 +3164,8 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 {
   int countQ = 0;
   vector<vector<int>> blocks;
-  rep(i, N)
-  {
-    if (i % blockSize == 0) {
-      blocks.push_back({});
-    }
-    blocks.back().push_back(i);
-  }
-  if (blocks.size() < D) {
-    rep(i, N) { ans[i] = i % D; }
-    DummyQuery(countQ);
+  
+  if (!createAndValidateBlocks(blocks, blockSize, countQ)) {
     return;
   }
 
@@ -2937,40 +3180,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   // 大きいのを分割
-  vector<vector<int>> tmp1, tmp2;
-  rep(i, M)
-  {
-    if (i < M - destroySize) {
-      tmp2.push_back(blocks[i]);
-    }
-    else {
-      rep(j, blocks[i].size()) { tmp1.push_back({ blocks[i][j] }); }
-    }
-  }
-
-  // 分割したアイテムを挿入
-  blocks = tmp2;
-  for (auto tmp : tmp1) {
-    M = blocks.size();
-    int left = 0;
-    int right = M;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      l[countQ] = tmp;
-      r[countQ] = blocks[mid];
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '<') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    blocks.insert(blocks.begin() + left, tmp);
-  }
+  destroyAndInsertBlocksHelper(blocks, destroySize, countQ);
 
   M = blocks.size();
   // 各グループに1個ずつ入れる
@@ -3053,18 +3263,9 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroySize)
 {
   int countQ = 0;
-
   vector<vector<int>> blocks;
-  rep(i, N)
-  {
-    if (i % blockSize == 0) {
-      blocks.push_back({});
-    }
-    blocks.back().push_back(i);
-  }
-  if (blocks.size() < D) {
-    rep(i, N) { ans[i] = i % D; }
-    DummyQuery(countQ);
+  
+  if (!createAndValidateBlocks(blocks, blockSize, countQ)) {
     return;
   }
 
@@ -3079,76 +3280,18 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   // 大きいのを分割
-  vector<vector<int>> tmp1, tmp2;
-  rep(i, M)
-  {
-    if (i < M - destroySize) {
-      tmp2.push_back(blocks[i]);
-    }
-    else {
-      rep(j, blocks[i].size()) { tmp1.push_back({ blocks[i][j] }); }
-    }
-  }
-
-  // 分割したアイテムを挿入
-  blocks = tmp2;
-  for (auto tmp : tmp1) {
-    M = blocks.size();
-    int left = 0;
-    int right = M;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      l[countQ] = tmp;
-      r[countQ] = blocks[mid];
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '<') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    blocks.insert(blocks.begin() + left, tmp);
-  }
+  destroyAndInsertBlocksHelper(blocks, destroySize, countQ);
 
   vector<int> items;
-  int used[110] = {};
-  for (auto block : blocks) {
-    if (block.size() == 1) {
-      items.push_back(block[0]);
-      used[block[0]] = 1;
-    }
-  }
-  int M2 = items.size();
-  rep(i, N)
-  {
-    if (used[i] == 0) {
-      items.push_back(i);
-    }
-  }
+  int M2 = extractSingleItems(blocks, items);
 
-  if (M2 < 5) {
-    rep(i, N)
-    {
-      ans[i] = i % D;
-    }
-    DummyQuery(countQ);
+  if (earlyReturnIfInvalidBlocks(M2, countQ)) {
     return;
   }
 
   M = blocks.size();
   // 各グループに1個ずつ入れる
-  rep(i, D)
-  {
-    rep(j, blocks[M - 1 - i].size())
-    {
-      int id = blocks[M - 1 - i][j];
-      ans[id] = i;
-    }
-  }
+  assignBlocksToGroups(blocks, 0, D);
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
   initializeGroups(groups);
@@ -3167,42 +3310,8 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
     moveGroupToPosition(groups, D - 1, left);
   }
 
-  int loopCount = 0;
-  while (countQ < Q) {
-    loopCount++;
-    int isKouhan = false;
-
-    if (countQ >= round((double)Q * timing / 100)) {
-      isKouhan = true;
-    }
-    if (loopCount > 1000) {
-      isKouhan = true;
-    }
-
-    if (isKouhan) {
-      SwapNeighbor1(items, countQ, M2);
-    }
-    else {
-      int hiritu = hiritu2;
-      if (hiritu >= 100 && nowTime > TL / 3) {
-        hiritu = 90;
-      }
-      int qu = Rand() % 100;
-      if (qu < hiritu) {
-        SwapNeighbor1Block(blocks, countQ);
-      }
-      else {
-        if (countQ >= Q - 1) {
-          if (hiritu < 10) {
-            break;
-          }
-          continue;
-        }
-
-        Swap2Block(blocks, countQ);
-      }
-    }
-  }
+  queryLoopForBlocks(countQ, Q, hiritu1, hiritu2, timing, items, blocks, M2);
+  
   DummyQuery(countQ);
 }
 
@@ -3940,56 +4049,15 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = PseudoItemsQuery(countQ);
-      l[countQ].clear();
-      r[countQ].clear();
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    moveGroupToPosition(groups, D - 1, left);
+    binarySearchWithPseudoItems(gId, groups, countQ);
   }
 
   // ここでグループを一度マージソートして正しい順序に並び替える
   MergeSort_Group(groups, countQ);
 
   // 一番軽いグループに入れていく
-  int tail = N;
-  while (tail > 0) {
-    if (ans[items[tail - 1]] != -1) {
-      tail--;
-    }
-    else {
-      break;
-    }
-  }
-  drep(i, tail)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  int tail = findUnassignedTail(items);
+  assignToLightestGroup(items, 0, tail, groups, countQ);
 
   while (countQ < Q) {
     int qu = Rand() % 100;
@@ -4040,47 +4108,14 @@ void Method112(int ikichi = N, int totyuu = 999)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = PseudoItemsQuery(countQ);
-      l[countQ].clear();
-      r[countQ].clear();
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    moveGroupToPosition(groups, D - 1, left);
+    binarySearchWithPseudoItems(gId, groups, countQ);
   }
 
   // ここでグループを一度マージソートして正しい順序に並び替える
   MergeSort_Group(groups, countQ);
 
   // 一番軽いグループに入れていく
-  drep(i, N - D)
-  {
-    int id = items[i];
-    int gId = groups[D - 1];
-    ans[id] = gId;
-    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
-    moveGroupToPosition(groups, D - 1, left);
-  }
+  assignToLightestGroup(items, 0, N - D, groups, countQ);
 
   while (countQ < Q) {
     SwapNeighbor1(items, countQ);
@@ -4135,33 +4170,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = PseudoItemsQuery(countQ);
-      l[countQ].clear();
-      r[countQ].clear();
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
-    moveGroupToPosition(groups, D - 1, left);
+    binarySearchWithPseudoItems(gId, groups, countQ);
   }
 
   if (isMethod9) {

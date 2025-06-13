@@ -1,0 +1,1 @@
+num = 99, N = 64, Q = 956, D = 2, queryCount = 5634, nowTime = 0.007656, haipara = 200226, score =    1651, sum =  54765501

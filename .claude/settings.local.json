@@ -19,6 +19,7 @@
       "Bash(awk:*)",
       "Bash(cp:*)",
       "Bash(git checkout:*)",
+      "Bash(diff:*)",
       "Bash(diff:*)"
     ],
     "deny": []
