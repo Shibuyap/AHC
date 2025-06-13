@@ -1390,6 +1390,102 @@ namespace
 
 }  // namespace
 
+// Solver共通関数群
+
+// cnt[]とf[]を初期化し、全頂点の次数をカウント
+void initializeCountAndFlags(std::array<int, 100>& cnt, std::array<int, 100>& f, int& res)
+{
+  cnt = {};
+  f = {};
+  res = n;
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      cnt[i] += b[i][j];
+    }
+    f[i] = 1;
+  }
+}
+
+// 単一コアのベストマッチを見つける
+int findBestMatchingSingleCore(int res, const std::array<int, 100>& numArr)
+{
+  int diff = 1000;
+  int argRes = 0;
+  for (int i = 0; i < m; ++i) {
+    int num = numArr[i];
+    if (abs(num - res) < diff) {
+      diff = abs(num - res);
+      argRes = i;
+    }
+  }
+  return argRes;
+}
+
+// 2つのコアのベストマッチを見つける
+int findBestMatchingPairCores(int res1, int res2, const std::vector<std::array<int, 2>>& numPairArr)
+{
+  int diff = 1000;
+  int argRes = 0;
+  for (int i = 0; i < m; ++i) {
+    int num1 = numPairArr[i][0];
+    int num2 = numPairArr[i][1];
+    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
+      diff = abs(num1 - res1) + abs(num2 - res2);
+      argRes = i;
+    }
+  }
+  return argRes;
+}
+
+// f[]で指定された頂点集合に対してcnt[]を再計算
+void recountForSubset(std::array<int, 100>& cnt, const std::array<int, 100>& f)
+{
+  cnt = {};
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      if (f[i] && f[j]) {
+        cnt[i] += b[i][j];
+      }
+    }
+  }
+}
+
+// 第2コアの探索（第1コアの補集合から）
+int performSecondCoreSearch(std::array<int, 100>& f, std::array<int, 100>& cnt,
+  std::array<int, 100>& ff, int res1)
+{
+  // 第1コアの補集合を第2コアの候補とする
+  int res = n - res1;
+  for (int i = 0; i < n; ++i) {
+    f[i] = 1 - f[i];
+    if (f[i] == 0) ff[i] = 1;
+  }
+
+  // 第2コア候補の次数を再計算
+  recountForSubset(cnt, f);
+
+  // 貪欲除去を実行
+  res = performGreedyElimination(f, cnt, res);
+
+  return res;
+}
+
+// ビットセット最適化を実行する共通関数
+template<size_t N>
+void performBitsetOptimization(std::array<int, 100>& f, int& res1, int& res2)
+{
+  int score = calculateScore(f);
+
+  std::array<bitset<100>, N> bif = {};
+  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bione(0);
+  initializeBitsets(f, bif, bib, bione);
+
+  int flipLoop = 1000;
+  if (MODE == 0) flipLoop = 10000;
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+}
+
 int Solver1()
 {
   std::array<vector<int>, 100> keep;
@@ -1427,27 +1523,17 @@ int Solver1()
 
 int Solver2()
 {
-  std::array<int, 100> cnt = {};
-  std::array<int, 100> f = {};
-  int res = n;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
-    f[i] = 1;
-  }
+  std::array<int, 100> cnt, f;
+  int res;
 
+  // 初期化
+  initializeCountAndFlags(cnt, f, res);
+
+  // 貪欲除去
   res = performGreedyElimination(f, cnt, res);
 
-  int diff = 1000;
-  int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
-    int num = numArr[i];
-    if (abs(num - res) < diff) {
-      diff = abs(num - res);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  // ベストマッチを見つける
+  return findBestMatchingSingleCore(res, numArr);
 }
 
 int Solver3()
@@ -1516,14 +1602,13 @@ int Solver3()
 
 int Solver4()
 {
-  std::array<int, 100> cnt = {};
-  std::array<int, 100> f = {};
-  int res = n;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
-    f[i] = 1;
-  }
+  std::array<int, 100> cnt, f;
+  int res;
 
+  // 初期化
+  initializeCountAndFlags(cnt, f, res);
+
+  // 貪欲除去
   res = performGreedyElimination(f, cnt, res);
 
   if (res >= 20) {
@@ -1558,117 +1643,65 @@ int Solver4()
     res = res2;
   }
 
-  int diff = 1000;
-  int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
-    int num = numArr[i];
-    if (abs(num - res) < diff) {
-      diff = abs(num - res);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  // ベストマッチを見つける
+  return findBestMatchingSingleCore(res, numArr);
 }
 
 int Solver5()
 {
-  std::array<int, 100> cnt = {};
-  std::array<int, 100> f = {};
-  int res = n;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
-    f[i] = 1;
-  }
+  std::array<int, 100> cnt, f, ff = {};
+  int res;
 
+  // 初期化
+  initializeCountAndFlags(cnt, f, res);
+
+  // 第1コアを見つける
   res = performGreedyElimination(f, cnt, res);
-
   int res1 = res;
-  res = n - res;
-  for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
-  for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) {
-      if (f[i] && f[j]) cnt[i] += b[i][j];
-    }
-  }
-  res = performGreedyElimination(f, cnt, res);
-  int res2 = res;
-  if (res2 <= hyperMaxRound) res2 = 0;
-  int diff = 1000;
-  int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
-    int num1 = numPairArr[i][0];
-    int num2 = numPairArr[i][1];
-    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-      diff = abs(num1 - res1) + abs(num2 - res2);
-      argRes = i;
-    }
-  }
 
-  return argRes;
+  // 第2コアを探索
+  int res2 = performSecondCoreSearch(f, cnt, ff, res1);
+
+  // hyperMaxRoundチェック
+  if (res2 <= hyperMaxRound) res2 = 0;
+
+  // ベストマッチを見つける
+  return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
 int Solver6()
 {
-  std::array<int, 100> cnt = {};
-  std::array<int, 100> f = {};
-  int ff[100] = {};
-  int res = n;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
-    f[i] = 1;
-  }
+  std::array<int, 100> cnt, f;
+  std::array<int, 100> ff = {};
+  int res;
 
+  // 初期化
+  initializeCountAndFlags(cnt, f, res);
+
+  // 第1コアを見つける
   res = performGreedyElimination(f, cnt, res);
-
   int res1 = res;
-  res = n - res;
-  for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] == 0) ff[i] = 1;
-  }
-  for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) {
-      if (f[i] && f[j]) cnt[i] += b[i][j];
-    }
-  }
-  res = performGreedyElimination(f, cnt, res);
-  int res2 = res;
+
+  // 第2コアを探索
+  int res2 = performSecondCoreSearch(f, cnt, ff, res1);
+
+  // hyperMaxRoundチェック
   if (res2 <= hyperMaxRound) {
     res2 = 0;
-    for (int i = 0; i < (n); ++i) f[i] = 0;
+    for (int i = 0; i < n; ++i) f[i] = 0;
   }
-  for (int i = 0; i < (n); ++i) {
+
+  // ffにマージ
+  for (int i = 0; i < n; ++i) {
     if (f[i]) ff[i] = 2;
   }
+  for (int i = 0; i < n; ++i) f[i] = ff[i];
 
-  for (int i = 0; i < (n); ++i) f[i] = ff[i];
+  // ビットセット最適化
+  performBitsetOptimization<3>(f, res1, res2);
 
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = 1000;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-
-  int diff = 1000;
-  int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
-    int num1 = numPairArr[i][0];
-    int num2 = numPairArr[i][1];
-    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-      diff = abs(num1 - res1) + abs(num2 - res2);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  // ベストマッチを見つける
+  return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
 int Solver7()
