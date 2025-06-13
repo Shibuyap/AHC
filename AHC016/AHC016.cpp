@@ -285,6 +285,7 @@ namespace
 void setSymmetricValue(int i, int j, int k, int value);
 int calculateScore(std::array<int, 100>& f);
 int performGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt, int initialRes);
+int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt, int initialRes);
 template<size_t N>
 void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione);
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
@@ -1798,32 +1799,7 @@ int Solver9()
       f[i] = 1;
     }
 
-    while (res > 1) {
-      int mi = 1000;
-      vector<int> arv;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
-          if (cnt[i] == mi) {
-            arv.push_back(i);
-          }
-          else {
-            arv.clear();
-            arv.push_back(i);
-          }
-          mi = cnt[i];
-        }
-      }
-      if (arv.empty()) break;
-      int arg = arv[Rand() % arv.size()];
-      for (int i = 0; i < (n); ++i) {
-        if (i == arg) continue;
-        if (f[i] && b[i][arg]) {
-          cnt[i]--;
-        }
-      }
-      res--;
-      f[arg] = 0;
-    }
+    res = performRandomizedGreedyElimination(f, cnt, res);
 
     int res1 = res;
     res = n - res;
@@ -1837,32 +1813,7 @@ int Solver9()
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
     }
-    while (res > 1) {
-      int mi = 1000;
-      vector<int> arv;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
-          if (cnt[i] == mi) {
-            arv.push_back(i);
-          }
-          else {
-            arv.clear();
-            arv.push_back(i);
-          }
-          mi = cnt[i];
-        }
-      }
-      if (arv.empty()) break;
-      int arg = arv[Rand() % arv.size()];
-      for (int i = 0; i < (n); ++i) {
-        if (i == arg) continue;
-        if (f[i] && b[i][arg]) {
-          cnt[i]--;
-        }
-      }
-      res--;
-      f[arg] = 0;
-    }
+    res = performRandomizedGreedyElimination(f, cnt, res);
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
@@ -1945,32 +1896,7 @@ int Solver10()
       f[i] = 1;
     }
 
-    while (res > 1) {
-      int mi = 1000;
-      vector<int> arv;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
-          if (cnt[i] == mi) {
-            arv.push_back(i);
-          }
-          else {
-            arv.clear();
-            arv.push_back(i);
-          }
-          mi = cnt[i];
-        }
-      }
-      if (arv.empty()) break;
-      int arg = arv[Rand() % arv.size()];
-      for (int i = 0; i < (n); ++i) {
-        if (i == arg) continue;
-        if (f[i] && b[i][arg]) {
-          cnt[i]--;
-        }
-      }
-      res--;
-      f[arg] = 0;
-    }
+    res = performRandomizedGreedyElimination(f, cnt, res);
 
     int res1 = res;
     res = n - res;
@@ -1984,32 +1910,7 @@ int Solver10()
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
     }
-    while (res > 1) {
-      int mi = 1000;
-      vector<int> arv;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
-          if (cnt[i] == mi) {
-            arv.push_back(i);
-          }
-          else {
-            arv.clear();
-            arv.push_back(i);
-          }
-          mi = cnt[i];
-        }
-      }
-      if (arv.empty()) break;
-      int arg = arv[Rand() % arv.size()];
-      for (int i = 0; i < (n); ++i) {
-        if (i == arg) continue;
-        if (f[i] && b[i][arg]) {
-          cnt[i]--;
-        }
-      }
-      res--;
-      f[arg] = 0;
-    }
+    res = performRandomizedGreedyElimination(f, cnt, res);
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
@@ -2166,6 +2067,50 @@ int performGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt,
     }
     if (arg == -1) break;
 
+    for (int i = 0; i < n; ++i) {
+      if (i == arg) continue;
+      if (f[i] && b[i][arg]) {
+        cnt[i]--;
+      }
+    }
+
+    res--;
+    f[arg] = 0;
+  }
+
+  return res;
+}
+
+// ランダム選択を含む貪欲除去アルゴリズムの共通関数
+// 同じ最小次数を持つ頂点からランダムに選択して除去
+int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt, int initialRes)
+{
+  int res = initialRes;
+
+  while (res > 1) {
+    int mi = 1000;
+    vector<int> arv;
+
+    // 最小次数の頂点を収集
+    for (int i = 0; i < n; ++i) {
+      if (f[i] && cnt[i] <= mi && cnt[i] < (res + 1) / 2) {
+        if (cnt[i] == mi) {
+          arv.push_back(i);
+        }
+        else {
+          arv.clear();
+          arv.push_back(i);
+        }
+        mi = cnt[i];
+      }
+    }
+
+    if (arv.empty()) break;
+
+    // ランダムに選択
+    int arg = arv[Rand() % arv.size()];
+
+    // 隣接頂点の次数を更新
     for (int i = 0; i < n; ++i) {
       if (i == arg) continue;
       if (f[i] && b[i][arg]) {
