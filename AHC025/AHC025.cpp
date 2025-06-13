@@ -112,6 +112,7 @@ vector<int> pseudoItems;
 
 // ローカルテスト用入力
 ll W[110];
+int karusa[110];
 
 // ハイパラ
 vector<int> haipara[14][40] = {
@@ -1450,6 +1451,52 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
+// Common refactored functions
+void initializeAnsArray()
+{
+  rep(i, N) { ans[i] = i % D; }
+}
+
+void initializeGroups(vector<int>& groups)
+{
+  rep(i, D) { groups.push_back(i); }
+}
+
+void initializeItems(vector<int>& items)
+{
+  rep(i, N) { items.push_back(i); }
+}
+
+void updateKarusaArray(const vector<int>& items)
+{
+  rep(i, N) { karusa[items[i]] = i; }
+}
+
+void populateAnsItems(vector<int> ansItems[])
+{
+  rep(i, N) { ansItems[ans[i]].push_back(i); }
+}
+
+void moveGroupToPosition(vector<int>& groups, int from, int to)
+{
+  while (from > to) {
+    swap(groups[from - 1], groups[from]);
+    from--;
+  }
+}
+
+template<typename T>
+char compareQuerySums(const vector<int>& left_items, const vector<int>& right_items, const T& values)
+{
+  ll sumL = 0, sumR = 0;
+  for (int j : left_items) sumL += values[j];
+  for (int j : right_items) sumR += values[j];
+
+  if (sumL < sumR) return '<';
+  else if (sumL == sumR) return '=';
+  else return '>';
+}
+
 bool ErrorCheck()
 {
   rep(i, Q)
@@ -1498,51 +1545,20 @@ ll CalcScore()
 
 char LocalQuery(int turn)
 {
-  ll sumL = 0, sumR = 0;
-  rep(j, l[turn].size()) { sumL += W[l[turn][j]]; }
-  rep(j, r[turn].size()) { sumR += W[r[turn][j]]; }
-  if (sumL < sumR) {
-    return '<';
-  }
-  else if (sumL == sumR) {
-    return '=';
-  }
-  else {
-    return '>';
-  }
+  return compareQuerySums(l[turn], r[turn], W);
 }
 
-int karusa[110];
 char PseudoItemsQuery(int turn)
 {
-  ll sumL = 0, sumR = 0;
-  rep(j, l[turn].size()) { sumL += pseudoItems[karusa[l[turn][j]]]; }
-  rep(j, r[turn].size()) { sumR += pseudoItems[karusa[r[turn][j]]]; }
-  if (sumL < sumR) {
-    return '<';
-  }
-  else if (sumL == sumR) {
-    return '=';
-  }
-  else {
-    return '>';
-  }
+  vector<int> left_vals, right_vals;
+  for (int j : l[turn]) left_vals.push_back(karusa[j]);
+  for (int j : r[turn]) right_vals.push_back(karusa[j]);
+  return compareQuerySums(left_vals, right_vals, pseudoItems);
 }
 
 char PseudoItemsQueryGroup(vector<int> vl, vector<int> vr)
 {
-  ll sumL = 0, sumR = 0;
-  rep(j, vl.size()) { sumL += pseudoItems[vl[j]]; }
-  rep(j, vr.size()) { sumR += pseudoItems[vr[j]]; }
-  if (sumL < sumR) {
-    return '<';
-  }
-  else if (sumL == sumR) {
-    return '=';
-  }
-  else {
-    return '>';
-  }
+  return compareQuerySums(vl, vr, pseudoItems);
 }
 
 map<pair<vector<int>, vector<int>>, char> calledMap;
@@ -2509,7 +2525,7 @@ void Method11_1(int& countQ)
 bool IsAllSearched_SwapNeighbor1(const vector<int>& items)
 {
   vector<int> ansItems[30];
-  rep(i, N) { ansItems[ans[i]].push_back(i); }
+  populateAnsItems(ansItems);
   vector<int> vl, vr;
   rep(num, N - 1)
   {
@@ -2738,7 +2754,7 @@ void SwapNeighbor1Block(const vector<vector<int>>& blocks, int& countQ)
 
 void Method8(int hiritu = 60)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ < Q) {
@@ -2764,7 +2780,7 @@ void Method8(int hiritu = 60)
 
 void Method208(int _kireme, int hiritu1, int hiritu2)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int kireme = round((double)Q * _kireme / 100);
   int hiritu = 100;
@@ -2795,7 +2811,7 @@ void Method208(int _kireme, int hiritu1, int hiritu2)
 
 void Method8_Two(int hiritu = 60)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ < Q) {
@@ -2817,7 +2833,7 @@ void Method8_Two(int hiritu = 60)
 
 void Method19(int hiritu = 60)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ < Q) {
@@ -2839,7 +2855,7 @@ void Method19(int hiritu = 60)
 
 void Method18(int hiritu = 60)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ < Q) {
@@ -2861,7 +2877,7 @@ void Method18(int hiritu = 60)
 
 void Method13(int diffLine = 999)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ < Q) {
@@ -2885,7 +2901,7 @@ void Method13(int diffLine = 999)
 
 void Method14()
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ < Q) {
@@ -2915,7 +2931,7 @@ void Method14()
 
 void Method15(int hiritu = 60)
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   int combo = -1;
@@ -2996,7 +3012,7 @@ void Method16(int hiritu = 60)
 
 void Method11()
 {
-  rep(i, N) { ans[i] = i % D; }
+  initializeAnsArray();
 
   int countQ = 0;
   while (countQ <= Q - 2) {
@@ -3231,7 +3247,7 @@ void MergeSort_Group(vector<int>& groups, int& countQ)
 bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
 {
   vector<int> ansItems[30];
-  rep(i, N) { ansItems[ans[i]].push_back(i); }
+  populateAnsItems(ansItems);
   vector<int> vl, vr;
 
   rep(num, N - 1)
@@ -3641,12 +3657,12 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     maxFailedCount = 10;
   }
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -3656,7 +3672,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, N - D)
@@ -3688,11 +3704,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int keepInitialAns[110];
@@ -3862,12 +3874,12 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
 void Method226(int hiritu = 100, int minDiff = 10)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -3877,7 +3889,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, N - D)
@@ -3909,11 +3921,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int keepInitialAns[110];
@@ -4077,12 +4085,12 @@ void Method226(int hiritu = 100, int minDiff = 10)
 void Method6(int hiritu = 100, int minDiff = 10)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -4092,7 +4100,7 @@ void Method6(int hiritu = 100, int minDiff = 10)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
   // 一番軽いグループに入れていく
   drep(i, N - D)
   {
@@ -4123,11 +4131,7 @@ void Method6(int hiritu = 100, int minDiff = 10)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int failedCount = 0;
@@ -4164,12 +4168,12 @@ void Method6(int hiritu = 100, int minDiff = 10)
 void Method706(int hiritu1, int minDiff, int hiritu2)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -4179,7 +4183,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
   // 一番軽いグループに入れていく
   drep(i, N - D)
   {
@@ -4210,11 +4214,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int failedCount = 0;
@@ -4289,7 +4289,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, M - D)
@@ -4325,11 +4325,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int loopCount = 0;
@@ -4457,7 +4453,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, M - D)
@@ -4493,11 +4489,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int loopCount = 0;
@@ -4653,7 +4645,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, M - D)
@@ -4689,11 +4681,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int loopCount = 0;
@@ -4879,11 +4867,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   // ここでグループを一度マージソートして正しい順序に並び替える
@@ -4932,11 +4916,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   int loopCount = 0;
@@ -5130,12 +5110,12 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 void Method12(int ikichi = N)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ, ikichi);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -5145,7 +5125,7 @@ void Method12(int ikichi = N)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, N - D)
@@ -5177,11 +5157,7 @@ void Method12(int ikichi = N)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   while (countQ < Q) {
@@ -5194,12 +5170,12 @@ void Method12(int ikichi = N)
 void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -5209,7 +5185,7 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 途中までpseudoItemsを用いて一番軽いグループに入れていく
   drep(i, N - D)
@@ -5246,11 +5222,7 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   // ここでグループを一度マージソートして正しい順序に並び替える
@@ -5295,11 +5267,7 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   while (countQ < Q) {
@@ -5327,7 +5295,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   M = min(M, N);
   M = max(M, 10);
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // 一部アイテムをマージソート(軽い順)
@@ -5343,7 +5311,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
   // ここでグループを一度マージソートして正しい順序に並び替える
   MergeSort_Group(groups, countQ);
   // 一番軽いグループに入れていく
@@ -5385,11 +5353,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
   int loop = 0;
   while (countQ < Q) {
@@ -5421,7 +5385,7 @@ void Method806(int hiritu, int minDiff, int _m)
   M = min(M, N);
   M = max(M, 10);
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // 1回だけ比べる
@@ -5446,7 +5410,7 @@ void Method806(int hiritu, int minDiff, int _m)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
   // ここでグループを一度マージソートして正しい順序に並び替える
   MergeSort_Group(groups, countQ);
   // 一番軽いグループに入れていく
@@ -5488,11 +5452,7 @@ void Method806(int hiritu, int minDiff, int _m)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
   int loop = 0;
   while (countQ < Q) {
@@ -5525,7 +5485,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   M = min(M, N);
   M = max(M, 10);
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // 一部アイテムをマージソート(軽い順)
@@ -5541,7 +5501,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
   // ここでグループを一度マージソートして正しい順序に並び替える
   MergeSort_Group(groups, countQ);
   // 一番軽いグループに入れていく
@@ -5632,11 +5592,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
   int loop = 0;
   while (countQ < Q) {
@@ -5667,12 +5623,12 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
 void Method246(int hiritu, int totyuu, int small1, int small2)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -5682,7 +5638,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 途中までpseudoItemsを用いて一番軽いグループに入れていく
   drep(i, N - D)
@@ -5719,11 +5675,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   // ここでグループを一度マージソートして正しい順序に並び替える
@@ -5768,11 +5720,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   while (countQ < Q) {
@@ -5798,12 +5746,12 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
 void Method112(int ikichi = N, int totyuu = 999)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ, ikichi);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -5813,7 +5761,7 @@ void Method112(int ikichi = N, int totyuu = 999)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 途中までpseudoItemsを用いて一番軽いグループに入れていく
   drep(i, N - D)
@@ -5850,11 +5798,7 @@ void Method112(int ikichi = N, int totyuu = 999)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   // ここでグループを一度マージソートして正しい順序に並び替える
@@ -5890,11 +5834,7 @@ void Method112(int ikichi = N, int totyuu = 999)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   while (countQ < Q) {
@@ -5907,12 +5847,12 @@ void Method112(int ikichi = N, int totyuu = 999)
 void Method17(int ikichi, int hiritu)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ, ikichi);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -5922,7 +5862,7 @@ void Method17(int ikichi, int hiritu)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // 一番軽いグループに入れていく
   drep(i, N - D)
@@ -5954,11 +5894,7 @@ void Method17(int ikichi, int hiritu)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   while (countQ < Q) {
@@ -5983,12 +5919,12 @@ void Method17(int ikichi, int hiritu)
 void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
 {
   vector<int> items;
-  rep(i, N) { items.push_back(i); }
+  initializeItems(items);
   int countQ = 0;
 
   // アイテムをマージソート(軽い順)
   MergeSort(items, countQ);
-  rep(i, N) { karusa[items[i]] = i; }
+  updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
   rep(i, D)
@@ -5998,7 +5934,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
   }
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
-  rep(i, D) { groups.push_back(i); }
+  initializeGroups(groups);
 
   // pseudoItemsを用いて一番軽いグループに入れていく
   drep(i, N - D)
@@ -6032,11 +5968,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
         left = mid + 1;
       }
     }
-    int now = D - 1;
-    while (left < now) {
-      swap(groups[now - 1], groups[now]);
-      now--;
-    }
+    moveGroupToPosition(groups, D - 1, left);
   }
 
   if (isMethod9) {
