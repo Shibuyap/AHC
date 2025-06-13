@@ -845,7 +845,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 0, 10)
     {
       ll score = solve_single_case(i);
       sum += score;
