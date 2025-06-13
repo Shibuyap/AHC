@@ -3,4 +3,7 @@
   <ItemGroup>
     <ClCompile Include="AHC025.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Haipara.h" />
+  </ItemGroup>
 </Project>
