@@ -450,12 +450,50 @@ ll CalcScore()
   return res;
 }
 
-int m2_kouho[MAX_NNNN][MAX_N][MAX_N];
-bool m2_ok[MAX_NNNN];
-int m2_kakuteiValue1[MAX_N][MAX_N];
-int m2_kakuteiValue2[MAX_N][MAX_N];
-int m2_aimaiValue[MAX_N][MAX_N];
-int m2_nums[MAX_N][MAX_N][MAX_M + 1];
+// Method2の状態を管理するクラス
+class Method2State {
+public:
+  int kouho[MAX_NNNN][MAX_N][MAX_N];
+  bool ok[MAX_NNNN];
+  int kakuteiValue1[MAX_N][MAX_N];
+  int kakuteiValue2[MAX_N][MAX_N];
+  int aimaiValue[MAX_N][MAX_N];
+  int nums[MAX_N][MAX_N][MAX_M + 1];
+  
+  // コンストラクタ
+  Method2State() {
+    // 初期化はresetメソッドで行う
+  }
+  
+  // 全てのデータをリセット
+  void reset() {
+    // nnnnとnが初期化されていることを前提とする
+    for (int i = 0; i < MAX_NNNN; ++i) {
+      ok[i] = true;
+      if (i < nnnn) {
+        for (int j = 0; j < n; ++j) {
+          for (int k = 0; k < n; ++k) {
+            kouho[i][j][k] = 0;
+          }
+        }
+      }
+    }
+    
+    for (int i = 0; i < MAX_N; ++i) {
+      for (int j = 0; j < MAX_N; ++j) {
+        kakuteiValue1[i][j] = -1;
+        kakuteiValue2[i][j] = -1;
+        aimaiValue[i][j] = -1;
+        for (int k = 0; k <= MAX_M; ++k) {
+          nums[i][j][k] = 0;
+        }
+      }
+    }
+  }
+};
+
+// グローバルインスタンス
+Method2State m2;
 
 // Method2のヘルパー関数：インデックスを指定して解答を出力
 bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
@@ -463,7 +501,7 @@ bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
   vector<P> ans;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      if (m2_kouho[idx][i][j] >= 1 || m2_kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
+      if (m2.kouho[idx][i][j] >= 1 || m2.kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
     }
   }
   bool isCorrect = QueryAns(ans, ofs);
@@ -479,18 +517,18 @@ int Method2_CountCandidates()
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < m + 1; ++k) {
-        m2_nums[i][j][k] = 0;
+        m2.nums[i][j][k] = 0;
       }
     }
   }
 
   // 各候補パターンでの値をカウント
   for (int i = 0; i < nnnn; ++i) {
-    if (!m2_ok[i]) continue;
+    if (!m2.ok[i]) continue;
     kouhoCount++;
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        m2_nums[j][k][m2_kouho[i][j][k]]++;
+        m2.nums[j][k][m2.kouho[i][j][k]]++;
       }
     }
   }
@@ -514,10 +552,10 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
               int x = i0 + ii[mNum0][k];
               int y = j0 + jj[mNum0][k];
               if (IsNG(x, y)) {
-                m2_ok[idx] = false;
+                m2.ok[idx] = false;
                 break;
               }
-              m2_kouho[idx][x][y]++;
+              m2.kouho[idx][x][y]++;
             }
 
             // パターン1の配置チェック
@@ -525,10 +563,10 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
               int x = i1 + ii[mNum1][k];
               int y = j1 + jj[mNum1][k];
               if (IsNG(x, y)) {
-                m2_ok[idx] = false;
+                m2.ok[idx] = false;
                 break;
               }
-              m2_kouho[idx][x][y]++;
+              m2.kouho[idx][x][y]++;
             }
           }
         }
@@ -538,20 +576,20 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
   else if (isTotyuu == 1) {
     // 1つのパターンのみ列挙
     for (int i = 0; i < nnnn; ++i) {
-      m2_ok[i] = false;
+      m2.ok[i] = false;
     }
     for (int i0 = 0; i0 < n; ++i0) {
       for (int j0 = 0; j0 < n; ++j0) {
         int idx = i0 * n + j0;
-        m2_ok[idx] = true;
+        m2.ok[idx] = true;
         for (int k = 0; k < d[mNum0]; ++k) {
           int x = i0 + ii[mNum0][k];
           int y = j0 + jj[mNum0][k];
           if (IsNG(x, y)) {
-            m2_ok[idx] = false;
+            m2.ok[idx] = false;
             break;
           }
-          m2_kouho[idx][x][y]++;
+          m2.kouho[idx][x][y]++;
         }
       }
     }
@@ -567,7 +605,7 @@ P Method2_SelectQueryPosition()
   // 既に確定した1があるかチェック
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      if (m2_kakuteiValue1[i][j] >= 1) { findOne = true; }
+      if (m2.kakuteiValue1[i][j] >= 1) { findOne = true; }
     }
   }
 
@@ -576,8 +614,8 @@ P Method2_SelectQueryPosition()
     int minMax = INF;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
-        if (m2_kakuteiValue1[i][j] != -1) continue;
-        int ma = max(m2_nums[i][j][0], max(m2_nums[i][j][1], m2_nums[i][j][2]));
+        if (m2.kakuteiValue1[i][j] != -1) continue;
+        int ma = max(m2.nums[i][j][0], max(m2.nums[i][j][1], m2.nums[i][j][2]));
         if (ma < minMax) {
           minMax = ma;
           result.first = i;
@@ -592,8 +630,8 @@ P Method2_SelectQueryPosition()
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
         int numsSum = 0;
-        for (int k = 1; k < m + 1; ++k) numsSum += m2_nums[i][j][k];
-        if (numsSum > maxNums && m2_kakuteiValue1[i][j] == -1) {
+        for (int k = 1; k < m + 1; ++k) numsSum += m2.nums[i][j][k];
+        if (numsSum > maxNums && m2.kakuteiValue1[i][j] == -1) {
           maxNums = numsSum;
           result.first = i;
           result.second = j;
@@ -610,7 +648,7 @@ void Method2_HandleSingleCandidate(ofstream& ofs)
 {
   int idx = -1;
   for (int i = 0; i < nnnn; ++i) {
-    if (m2_ok[i]) {
+    if (m2.ok[i]) {
       idx = i;
       break;
     }
@@ -626,14 +664,14 @@ void Method2_QueryAndUpdate(ofstream& ofs, int& cnt)
   int y = pos.second;
 
   int val = Query1(x, y, ofs);
-  if (m2_kakuteiValue2[x][y] >= 0) val -= m2_kakuteiValue2[x][y];
-  m2_kakuteiValue1[x][y] = val;
+  if (m2.kakuteiValue2[x][y] >= 0) val -= m2.kakuteiValue2[x][y];
+  m2.kakuteiValue1[x][y] = val;
   cnt += val;
 
   // 候補を更新
   for (int i = 0; i < nnnn; ++i) {
-    if (!m2_ok[i]) continue;
-    if (m2_kouho[i][x][y] != val) m2_ok[i] = false;
+    if (!m2.ok[i]) continue;
+    if (m2.kouho[i][x][y] != val) m2.ok[i] = false;
   }
 }
 
@@ -642,7 +680,7 @@ void Method2_Kakutei(ofstream& ofs)
   vector<P> ans;
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      if (m2_kakuteiValue1[i][j] >= 1 || m2_kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
+      if (m2.kakuteiValue1[i][j] >= 1 || m2.kakuteiValue2[i][j] >= 1) { ans.emplace_back(i, j); }
     }
   }
   bool isCorrect = QueryAns(ans, ofs);
@@ -651,24 +689,8 @@ void Method2_Kakutei(ofstream& ofs)
 // Method2のヘルパー関数：初期化処理
 void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, const vector<vector<int>>& kakuteiValue2, int& cnt, int& cnt2)
 {
-  // 候補配列の初期化
-  for (int i = 0; i < nnnn; ++i) {
-    for (int j = 0; j < n; ++j) {
-      for (int k = 0; k < n; ++k) {
-        m2_kouho[i][j][k] = 0;
-      }
-    }
-    m2_ok[i] = true;
-  }
-
-  // 確定値の初期化
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      m2_kakuteiValue1[i][j] = -1;
-      m2_kakuteiValue2[i][j] = -1;
-      m2_aimaiValue[i][j] = -1;
-    }
-  }
+  // 状態をリセット
+  m2.reset();
 
   // 途中からの場合は確定値をコピー
   cnt = 0;
@@ -676,10 +698,10 @@ void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, 
   if (isTotyuu != 0) {
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
-        m2_kakuteiValue1[i][j] = kakuteiValue1[i][j];
-        m2_kakuteiValue2[i][j] = kakuteiValue2[i][j];
-        if (m2_kakuteiValue1[i][j] >= 0) cnt += m2_kakuteiValue1[i][j];
-        if (m2_kakuteiValue2[i][j] >= 0) cnt2 += m2_kakuteiValue2[i][j];
+        m2.kakuteiValue1[i][j] = kakuteiValue1[i][j];
+        m2.kakuteiValue2[i][j] = kakuteiValue2[i][j];
+        if (m2.kakuteiValue1[i][j] >= 0) cnt += m2.kakuteiValue1[i][j];
+        if (m2.kakuteiValue2[i][j] >= 0) cnt2 += m2.kakuteiValue2[i][j];
       }
     }
   }
@@ -731,18 +753,18 @@ void Method2_2_Initialize()
   for (int i = 0; i < nnnn; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        m2_kouho[i][j][k] = 0;
+        m2.kouho[i][j][k] = 0;
       }
     }
-    m2_ok[i] = true;
+    m2.ok[i] = true;
   }
   for (int i0 = 0; i0 < n; ++i0) {
     for (int j0 = 0; j0 < n; ++j0) {
       for (int i1 = 0; i1 < n; ++i1) {
         for (int j1 = 0; j1 < n; ++j1) {
           int idx = i0 * nnn + j0 * nn + i1 * n + j1;
-          if (!CanHaiti(i0, j0, 0)) { m2_ok[idx] = false; }
-          if (!CanHaiti(i1, j1, 1)) { m2_ok[idx] = false; }
+          if (!CanHaiti(i0, j0, 0)) { m2.ok[idx] = false; }
+          if (!CanHaiti(i1, j1, 1)) { m2.ok[idx] = false; }
         }
       }
     }
@@ -752,16 +774,16 @@ void Method2_2_Initialize()
       for (int i1 = 0; i1 < n; ++i1) {
         for (int j1 = 0; j1 < n; ++j1) {
           int idx = i0 * nnn + j0 * nn + i1 * n + j1;
-          if (!m2_ok[idx]) continue;
+          if (!m2.ok[idx]) continue;
           for (int k = 0; k < d[0]; ++k) {
             int x = i0 + ii[0][k];
             int y = j0 + jj[0][k];
-            m2_kouho[idx][x][y]++;
+            m2.kouho[idx][x][y]++;
           }
           for (int k = 0; k < d[1]; ++k) {
             int x = i1 + ii[1][k];
             int y = j1 + jj[1][k];
-            m2_kouho[idx][x][y]++;
+            m2.kouho[idx][x][y]++;
           }
         }
       }
@@ -770,9 +792,9 @@ void Method2_2_Initialize()
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      m2_kakuteiValue1[i][j] = -1;
-      m2_kakuteiValue2[i][j] = -1;
-      m2_aimaiValue[i][j] = -1;
+      m2.kakuteiValue1[i][j] = -1;
+      m2.kakuteiValue2[i][j] = -1;
+      m2.aimaiValue[i][j] = -1;
     }
   }
 }
@@ -786,10 +808,10 @@ void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues)
     }
   }
   for (int i = 0; i < nnnn; ++i) {
-    if (!m2_ok[i]) continue;
+    if (!m2.ok[i]) continue;
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        valCount[j][k] += m2_kouho[i][j][k];
+        valCount[j][k] += m2.kouho[i][j][k];
       }
     }
   }
@@ -797,8 +819,8 @@ void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues)
     for (int j = 0; j < n; ++j) {
       if (valCount[i][j] == 0) {
         kakuteiValues.emplace_back(P(i, j), 0);
-        m2_kakuteiValue1[i][j] = 0;
-        m2_kakuteiValue2[i][j] = 0;
+        m2.kakuteiValue1[i][j] = 0;
+        m2.kakuteiValue2[i][j] = 0;
       }
     }
   }
@@ -810,18 +832,18 @@ int m2_2_kouhoCount;
 int Method2_2_ChallengeAns(ofstream& ofs)
 {
   for (int i = 0; i < nnnn; ++i) {
-    if (!m2_ok[i]) {
+    if (!m2.ok[i]) {
       m2_2_penalty[i] = INF;
     }
     else {
       m2_2_penalty[i] = 0;
       for (int j = 0; j < n; ++j) {
         for (int k = 0; k < n; ++k) {
-          if (m2_kakuteiValue1[j][k] != -1) {
-            if (m2_kouho[i][j][k] != m2_kakuteiValue1[j][k]) { m2_ok[i] = false; }
+          if (m2.kakuteiValue1[j][k] != -1) {
+            if (m2.kouho[i][j][k] != m2.kakuteiValue1[j][k]) { m2.ok[i] = false; }
           }
-          else if (m2_aimaiValue[j][k] != -1) {
-            if (m2_kouho[i][j][k] != m2_aimaiValue[j][k]) { m2_2_penalty[i] += 100.0; }
+          else if (m2.aimaiValue[j][k] != -1) {
+            if (m2.kouho[i][j][k] != m2.aimaiValue[j][k]) { m2_2_penalty[i] += 100.0; }
           }
         }
       }
@@ -831,7 +853,7 @@ int Method2_2_ChallengeAns(ofstream& ofs)
   pair<double, int> tmp;
   m2_2_kouhoCount = 0;
   for (int i = 0; i < nnnn; ++i) {
-    if (m2_ok[i]) {
+    if (m2.ok[i]) {
       tmp.first = m2_2_penalty[i];
       tmp.second = i;
       m2_2_penaltySortedArray[m2_2_kouhoCount] = tmp;
@@ -852,7 +874,7 @@ int Method2_2_ChallengeAns(ofstream& ofs)
         return 1;
       }
       else {
-        m2_ok[idx] = false;
+        m2.ok[idx] = false;
         return 2;
       }
     }
@@ -904,8 +926,8 @@ void Method2_2(int query2Size, ofstream& ofs)
           int idx = m2_2_penaltySortedArray[i].second;
           for (int j = 0; j < n; ++j) {
             for (int k = 0; k < n; ++k) {
-              if (m2_kakuteiValue1[j][k] != -1 || m2_aimaiValue[j][k] != -1) continue;
-              nums[j][k][m2_kouho[idx][j][k]]++;
+              if (m2.kakuteiValue1[j][k] != -1 || m2.aimaiValue[j][k] != -1) continue;
+              nums[j][k][m2.kouho[idx][j][k]]++;
             }
           }
         }
@@ -931,7 +953,7 @@ void Method2_2(int query2Size, ofstream& ofs)
           }
           points.emplace_back(x, y);
           int val = Query2(points, ofs) - valSum;
-          m2_aimaiValue[x][y] = val;
+          m2.aimaiValue[x][y] = val;
           continue;
         }
       }
@@ -951,8 +973,8 @@ void Method2_2(int query2Size, ofstream& ofs)
           int idx = m2_2_penaltySortedArray[i].second;
           for (int j = 0; j < n; ++j) {
             for (int k = 0; k < n; ++k) {
-              if (m2_kakuteiValue1[j][k] != -1) continue;
-              nums[j][k][m2_kouho[idx][j][k]]++;
+              if (m2.kakuteiValue1[j][k] != -1) continue;
+              nums[j][k][m2.kouho[idx][j][k]]++;
             }
           }
         }
@@ -972,7 +994,7 @@ void Method2_2(int query2Size, ofstream& ofs)
 
         if (x != -1) {
           int val = Query1(x, y, ofs);
-          m2_kakuteiValue1[x][y] = val;
+          m2.kakuteiValue1[x][y] = val;
         }
       }
     }
