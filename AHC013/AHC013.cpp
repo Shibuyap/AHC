@@ -37,8 +37,18 @@ typedef pair<int, int> P;
 #define MAX_N 200005
 #define INF 1001001001
 
+// Constants
+const int SERVERS_PER_TYPE = 100;
+const int ENCODING_MULTIPLIER = 1000;
+const int MAX_COMPUTERS = 500;
+const int MAX_OPERATIONS = 500;
+const int MAX_ITERATIONS = 10000;
+
+// Direction constants
+enum Direction { UP = 0, LEFT = 1, DOWN = 2, RIGHT = 3 };
 const array<int, 4> dx = { -1, 0, 1, 0 };
 const array<int, 4> dy = { 0, -1, 0, 1 };
+const array<char, 4> DIR_CHARS = { 'U', 'L', 'D', 'R' };
 
 namespace /* 乱数ライブラリ */
 {
@@ -64,6 +74,47 @@ namespace /* 乱数ライブラリ */
   }
 }  // namespace
 
+// Helper functions for server ID encoding/decoding
+inline int encodeServerId(int type, int index)
+{
+  return type * SERVERS_PER_TYPE + index;
+}
+
+inline int getServerType(int serverId)
+{
+  return serverId / SERVERS_PER_TYPE;
+}
+
+inline int getServerIndex(int serverId)
+{
+  return serverId % SERVERS_PER_TYPE;
+}
+
+// Helper function for bounds checking
+inline bool isInBounds(int x, int y, int n)
+{
+  return x >= 0 && x < n && y >= 0 && y < n;
+}
+
+// Helper function to check if two servers are same type
+inline bool areSameType(int server1, int server2)
+{
+  return server1 != -1 && server2 != -1 &&
+    getServerType(server1) == getServerType(server2);
+}
+
+// Helper function to convert char to Direction
+Direction charToDir(char c)
+{
+  switch (c) {
+  case 'U': return UP;
+  case 'D': return DOWN;
+  case 'L': return LEFT;
+  case 'R': return RIGHT;
+  }
+  return UP; // Default
+}
+
 class GameState
 {
 public:
@@ -84,6 +135,7 @@ public:
 
   // Member functions
   void clear();
+  void initialize(int maxComputers, int maxOperations);
   void copyTo(GameState& target) const;
   void copyFrom(const GameState& source);
   void updateSingleR(int i);  // Update R for a single computer
@@ -128,10 +180,7 @@ namespace /* 変数 */
 
 inline bool IsNG(int xx, int yy)
 {
-  if (xx < 0 || n <= xx || yy < 0 || n <= yy) {
-    return true;
-  }
-  return false;
+  return !isInBounds(xx, yy, n);
 }
 
 inline bool HasServer(int xx, int yy)
@@ -144,122 +193,45 @@ inline bool HasServer(int xx, int yy)
 
 inline int MakeAValue(int ite1, int ite2)
 {
-  int num = -1 * (ite1 * 1000 + ite2);
+  int num = -1 * (ite1 * ENCODING_MULTIPLIER + ite2);
   if (ite2 < ite1) {
-    num = -1 * (ite2 * 1000 + ite1);
+    num = -1 * (ite2 * ENCODING_MULTIPLIER + ite1);
   }
   return num;
 }
 
+// Helper function to find server in a direction
+int GetIteHelper(int xx, int yy, int deltaX, int deltaY, bool checkINF = false)
+{
+  xx += deltaX;
+  yy += deltaY;
+
+  while (isInBounds(xx, yy, n) && !HasServer(xx, yy)) {
+    if (checkINF && gameState.a[xx][yy] != INF) {
+      return -1;
+    }
+    xx += deltaX;
+    yy += deltaY;
+  }
+
+  if (!isInBounds(xx, yy, n)) {
+    return -1;
+  }
+
+  return gameState.a[xx][yy];
+}
+
 int GetIte(int xx, int yy, char cc)
 {
-  if (cc == 'U') {
-    xx--;
-    while (xx >= 0 && !HasServer(xx, yy)) {
-      xx--;
-    }
-    if (xx < 0) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  if (cc == 'D') {
-    xx++;
-    while (xx < n && !HasServer(xx, yy)) {
-      xx++;
-    }
-    if (xx >= n) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  if (cc == 'L') {
-    yy--;
-    while (yy >= 0 && !HasServer(xx, yy)) {
-      yy--;
-    }
-    if (yy < 0) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  if (cc == 'R') {
-    yy++;
-    while (yy < n && !HasServer(xx, yy)) {
-      yy++;
-    }
-    if (yy >= n) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  return -1;
+  Direction dir = charToDir(cc);
+  return GetIteHelper(xx, yy, dx[dir], dy[dir], false);
 }
 
 // サーバーまでたどり着けるか
 int GetIte2(int xx, int yy, char cc)
 {
-  if (cc == 'U') {
-    xx--;
-    while (xx >= 0 && !HasServer(xx, yy)) {
-      if (gameState.a[xx][yy] != INF) {
-        return -1;
-      }
-      xx--;
-    }
-    if (xx < 0) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  if (cc == 'D') {
-    xx++;
-    while (xx < n && !HasServer(xx, yy)) {
-      if (gameState.a[xx][yy] != INF) {
-        return -1;
-      }
-      xx++;
-    }
-    if (xx >= n) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  if (cc == 'L') {
-    yy--;
-    while (yy >= 0 && !HasServer(xx, yy)) {
-      if (gameState.a[xx][yy] != INF) {
-        return -1;
-      }
-      yy--;
-    }
-    if (yy < 0) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  if (cc == 'R') {
-    yy++;
-    while (yy < n && !HasServer(xx, yy)) {
-      if (gameState.a[xx][yy] != INF) {
-        return -1;
-      }
-      yy++;
-    }
-    if (yy >= n) {
-      return -1;
-    }
-    return gameState.a[xx][yy];
-  }
-
-  return -1;
+  Direction dir = charToDir(cc);
+  return GetIteHelper(xx, yy, dx[dir], dy[dir], true);
 }
 
 void MethodCountReset()
@@ -283,6 +255,21 @@ void GameState::clear()
   maxScore = 0;
   ope1 = 0;
   ope2 = 0;
+}
+
+void GameState::initialize(int maxComputers, int maxOperations)
+{
+  x.resize(maxComputers);
+  y.resize(maxComputers);
+  R.resize(maxComputers);
+  D.resize(maxComputers);
+  parent.resize(maxComputers);
+  unionSize.resize(maxComputers);
+  moveCnt.resize(maxComputers);
+  ans1.resize(maxOperations, vector<int>(5));
+  ans2.resize(maxOperations, vector<int>(4));
+  moves.resize(maxComputers, vector<int>(maxOperations));
+  udlr.resize(maxComputers, vector<int>(4));
 }
 
 void GameState::copyTo(GameState& target) const
@@ -483,66 +470,20 @@ void Init()
 {
   visitedCnt = 0;
 
-  // vectorの初期化
-  // 最大K=5なので、5*100=500が最大コンピュータ数
-  const int maxComputers = 500;
-  const int maxOperations = 500;
+  // Initialize GameState objects
+  gameState.initialize(MAX_COMPUTERS, MAX_OPERATIONS);
+  real_GameState.initialize(MAX_COMPUTERS, MAX_OPERATIONS);
+  seed_GameState.initialize(MAX_COMPUTERS, MAX_OPERATIONS);
+  outer_GameState.initialize(MAX_COMPUTERS, MAX_OPERATIONS);
 
-  gameState.x.resize(maxComputers);
-  gameState.y.resize(maxComputers);
-  gameState.R.resize(maxComputers);
-  gameState.D.resize(maxComputers);
-  gameState.parent.resize(maxComputers);
-  gameState.unionSize.resize(maxComputers);
-  gameState.moveCnt.resize(maxComputers);
-  visited.resize(maxComputers);
-  que.resize(maxComputers);
-  gameState.ans1.resize(maxOperations, vector<int>(5));
-  gameState.ans2.resize(maxOperations, vector<int>(4));
-  gameState.moves.resize(maxComputers, vector<int>(maxOperations));
-  gameState.udlr.resize(maxComputers, vector<int>(4));
-
-  real_GameState.x.resize(maxComputers);
-  real_GameState.y.resize(maxComputers);
-  real_GameState.R.resize(maxComputers);
-  real_GameState.D.resize(maxComputers);
-  real_GameState.parent.resize(maxComputers);
-  real_GameState.unionSize.resize(maxComputers);
-  real_GameState.moveCnt.resize(maxComputers);
-  real_GameState.ans1.resize(maxOperations, vector<int>(5));
-  real_GameState.ans2.resize(maxOperations, vector<int>(4));
-  real_GameState.moves.resize(maxComputers, vector<int>(maxOperations));
-  real_GameState.udlr.resize(maxComputers, vector<int>(4));
-
-  seed_GameState.x.resize(maxComputers);
-  seed_GameState.y.resize(maxComputers);
-  seed_GameState.R.resize(maxComputers);
-  seed_GameState.D.resize(maxComputers);
-  seed_GameState.parent.resize(maxComputers);
-  seed_GameState.unionSize.resize(maxComputers);
-  seed_GameState.moveCnt.resize(maxComputers);
-  seed_GameState.ans1.resize(maxOperations, vector<int>(5));
-  seed_GameState.ans2.resize(maxOperations, vector<int>(4));
-  seed_GameState.moves.resize(maxComputers, vector<int>(maxOperations));
-  seed_GameState.udlr.resize(maxComputers, vector<int>(4));
-
-  outer_GameState.x.resize(maxComputers);
-  outer_GameState.y.resize(maxComputers);
-  outer_GameState.R.resize(maxComputers);
-  outer_GameState.D.resize(maxComputers);
-  outer_GameState.parent.resize(maxComputers);
-  outer_GameState.unionSize.resize(maxComputers);
-  outer_GameState.moveCnt.resize(maxComputers);
-  outer_GameState.ans1.resize(maxOperations, vector<int>(5));
-  outer_GameState.ans2.resize(maxOperations, vector<int>(4));
-  outer_GameState.moves.resize(maxComputers, vector<int>(maxOperations));
-  outer_GameState.udlr.resize(maxComputers, vector<int>(4));
-
-  keep_vp.resize(10000, vector<int>(3));
-  keep_parent.resize(10000, vector<int>(2));
-  keep_udlr.resize(10000, vector<int>(3));
-  keepA.resize(10000, vector<int>(3));
-  vv.resize(maxComputers);
+  // Initialize global vectors
+  visited.resize(MAX_COMPUTERS);
+  que.resize(MAX_COMPUTERS);
+  keep_vp.resize(MAX_ITERATIONS, vector<int>(3));
+  keep_parent.resize(MAX_ITERATIONS, vector<int>(2));
+  keep_udlr.resize(MAX_ITERATIONS, vector<int>(3));
+  keepA.resize(MAX_ITERATIONS, vector<int>(3));
+  vv.resize(MAX_COMPUTERS);
 
   // a,x,y
   int cnt[5] = {};
@@ -552,9 +493,9 @@ void Init()
     {
       int val = s[i][j] - '0' - 1;
       if (val != -1) {
-        gameState.x[val * 100 + cnt[val]] = i;
-        gameState.y[val * 100 + cnt[val]] = j;
-        gameState.a[i][j] = val * 100 + cnt[val];
+        gameState.x[encodeServerId(val, cnt[val])] = i;
+        gameState.y[encodeServerId(val, cnt[val])] = j;
+        gameState.a[i][j] = encodeServerId(val, cnt[val]);
         cnt[val]++;
       }
       else {
@@ -592,7 +533,7 @@ void Init()
       if (gameState.R[i] == -1) {
         continue;
       }
-      if (i / 100 == gameState.R[i] / 100) {
+      if (getServerType(i) == gameState.R[i] / 100) {
         gameState.udlr[i][3] = gameState.R[i];
         gameState.udlr[gameState.R[i]][2] = i;
         int aVal = MakeAValue(i, gameState.R[i]);
@@ -605,7 +546,7 @@ void Init()
       if (gameState.D[i] == -1) {
         continue;
       }
-      if (i / 100 == gameState.D[i] / 100) {
+      if (getServerType(i) == gameState.D[i] / 100) {
         int ok = 1;
         srep(k, gameState.x[i] + 1, gameState.x[gameState.D[i]])
         {
@@ -630,7 +571,7 @@ void Init()
       if (gameState.D[i] == -1) {
         continue;
       }
-      if (i / 100 == gameState.D[i] / 100) {
+      if (getServerType(i) == gameState.D[i] / 100) {
         gameState.udlr[i][1] = gameState.D[i];
         gameState.udlr[gameState.D[i]][0] = i;
         int aVal = MakeAValue(i, gameState.D[i]);
@@ -643,7 +584,7 @@ void Init()
       if (gameState.R[i] == -1) {
         continue;
       }
-      if (i / 100 == gameState.R[i] / 100) {
+      if (getServerType(i) == gameState.R[i] / 100) {
         int ok = 1;
         srep(k, gameState.y[i] + 1, gameState.y[gameState.R[i]])
         {
@@ -1070,7 +1011,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 上と下が同じ色の場合
           int iteU = GetIte2(xx, yy, 'U');
           int iteD = GetIte2(xx, yy, 'D');
-          if (iteU != -1 && iteD != -1 && iteU / 100 == iteD / 100) {
+          if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
             // 繋ぐ
             Update_udlr(iteU, 1, iteD);
             Update_udlr(iteD, 0, iteU);
@@ -1092,14 +1033,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       // 先のマスの上下のつながり
       // 元々繋がっている
       if (na != INF && gameState.udlr[ite][3] == -1) {
-        int iteU = -na / 1000;
-        int iteD = -na % 1000;
+        int iteU = -na / ENCODING_MULTIPLIER;
+        int iteD = -na % ENCODING_MULTIPLIER;
         if (gameState.x[iteU] > gameState.x[iteD]) {
           swap(iteU, iteD);
         }
 
         // 同じ色
-        if (iteU / 100 == ite / 100) {
+        if (getServerType(iteU) == getServerType(ite)) {
           // 繋ぎなおす
           Update_udlr(iteU, 1, ite);
           Update_udlr(iteD, 0, ite);
@@ -1153,7 +1094,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       else {
         // 上と繋げられるかどうか
         int iteU = GetIte2(xx, ny, 'U');
-        if (iteU != -1 && iteU / 100 == ite / 100) {
+        if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(iteU, 1, ite);
           Update_udlr(ite, 0, iteU);
@@ -1172,7 +1113,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
         // 下と繋げられるかどうか
         int iteD = GetIte2(xx, ny, 'D');
-        if (iteD != -1 && iteD / 100 == ite / 100) {
+        if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(ite, 1, iteD);
           Update_udlr(iteD, 0, ite);
@@ -1311,7 +1252,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 上と下が同じ色の場合
           int iteU = GetIte2(xx, yy, 'U');
           int iteD = GetIte2(xx, yy, 'D');
-          if (iteU != -1 && iteD != -1 && iteU / 100 == iteD / 100) {
+          if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
             // 繋ぐ
             Update_udlr(iteU, 1, iteD);
             Update_udlr(iteD, 0, iteU);
@@ -1333,14 +1274,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       // 先のマスの上下のつながり
       // 元々繋がっている
       if (na != INF && gameState.udlr[ite][2] == -1) {
-        int iteU = -na / 1000;
-        int iteD = -na % 1000;
+        int iteU = -na / ENCODING_MULTIPLIER;
+        int iteD = -na % ENCODING_MULTIPLIER;
         if (gameState.x[iteU] > gameState.x[iteD]) {
           swap(iteU, iteD);
         }
 
         // 同じ色
-        if (iteU / 100 == ite / 100) {
+        if (getServerType(iteU) == getServerType(ite)) {
           // 繋ぎなおす
           Update_udlr(iteU, 1, ite);
           Update_udlr(iteD, 0, ite);
@@ -1394,7 +1335,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       else {
         // 上と繋げられるかどうか
         int iteU = GetIte2(xx, ny, 'U');
-        if (iteU != -1 && iteU / 100 == ite / 100) {
+        if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(iteU, 1, ite);
           Update_udlr(ite, 0, iteU);
@@ -1413,7 +1354,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
         // 下と繋げられるかどうか
         int iteD = GetIte2(xx, ny, 'D');
-        if (iteD != -1 && iteD / 100 == ite / 100) {
+        if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(ite, 1, iteD);
           Update_udlr(iteD, 0, ite);
@@ -1554,7 +1495,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 左と右が同じ色の場合
           int iteL = GetIte2(xx, yy, 'L');
           int iteR = GetIte2(xx, yy, 'R');
-          if (iteL != -1 && iteR != -1 && iteL / 100 == iteR / 100) {
+          if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
             // 繋ぐ
             Update_udlr(iteL, 3, iteR);
             Update_udlr(iteR, 2, iteL);
@@ -1576,14 +1517,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       // 先のマスの左右のつながり
       // 元々繋がっている
       if (na != INF && gameState.udlr[ite][1] == -1) {
-        int iteL = -na / 1000;
-        int iteR = -na % 1000;
+        int iteL = -na / ENCODING_MULTIPLIER;
+        int iteR = -na % ENCODING_MULTIPLIER;
         if (gameState.y[iteL] > gameState.y[iteR]) {
           swap(iteL, iteR);
         }
 
         // 同じ色
-        if (iteL / 100 == ite / 100) {
+        if (getServerType(iteL) == getServerType(ite)) {
           // 繋ぎなおす
           Update_udlr(iteL, 3, ite);
           Update_udlr(iteR, 2, ite);
@@ -1637,7 +1578,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       else {
         // 左と繋げられるかどうか
         int iteL = GetIte2(nx, yy, 'L');
-        if (iteL != -1 && iteL / 100 == ite / 100) {
+        if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(iteL, 3, ite);
           Update_udlr(ite, 2, iteL);
@@ -1656,7 +1597,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
         // 右と繋げられるかどうか
         int iteR = GetIte2(nx, yy, 'R');
-        if (iteR != -1 && iteR / 100 == ite / 100) {
+        if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(ite, 3, iteR);
           Update_udlr(iteR, 2, ite);
@@ -1795,7 +1736,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 左と右が同じ色の場合
           int iteL = GetIte2(xx, yy, 'L');
           int iteR = GetIte2(xx, yy, 'R');
-          if (iteL != -1 && iteR != -1 && iteL / 100 == iteR / 100) {
+          if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
             // 繋ぐ
             Update_udlr(iteL, 3, iteR);
             Update_udlr(iteR, 2, iteL);
@@ -1817,14 +1758,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       // 先のマスの左右のつながり
       // 元々繋がっている
       if (na != INF && gameState.udlr[ite][0] == -1) {
-        int iteL = -na / 1000;
-        int iteR = -na % 1000;
+        int iteL = -na / ENCODING_MULTIPLIER;
+        int iteR = -na % ENCODING_MULTIPLIER;
         if (gameState.y[iteL] > gameState.y[iteR]) {
           swap(iteL, iteR);
         }
 
         // 同じ色
-        if (iteL / 100 == ite / 100) {
+        if (getServerType(iteL) == getServerType(ite)) {
           // 繋ぎなおす
           Update_udlr(iteL, 3, ite);
           Update_udlr(iteR, 2, ite);
@@ -1878,7 +1819,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       else {
         // 左と繋げられるかどうか
         int iteL = GetIte2(nx, yy, 'L');
-        if (iteL != -1 && iteL / 100 == ite / 100) {
+        if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(iteL, 3, ite);
           Update_udlr(ite, 2, iteL);
@@ -1897,7 +1838,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
         // 右と繋げられるかどうか
         int iteR = GetIte2(nx, yy, 'R');
-        if (iteR != -1 && iteR / 100 == ite / 100) {
+        if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
           // 繋ぐ
           Update_udlr(ite, 3, iteR);
           Update_udlr(iteR, 2, ite);
@@ -1926,7 +1867,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (gameState.a[px][py] != INF) continue;
       int iteL = GetIte2(px, py, 'L');
       int iteR = GetIte2(px, py, 'R');
-      if (iteL != -1 && iteR != -1 && iteL / 100 == iteR / 100) {
+      if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
         Update_udlr(iteL, 3, iteR);
         Update_udlr(iteR, 2, iteL);
 
@@ -1951,7 +1892,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (gameState.a[px][py] != INF) continue;
       int iteU = GetIte2(px, py, 'U');
       int iteD = GetIte2(px, py, 'D');
-      if (iteU != -1 && iteD != -1 && iteU / 100 == iteD / 100) {
+      if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
         Update_udlr(iteU, 1, iteD);
         Update_udlr(iteD, 0, iteU);
 
@@ -2500,7 +2441,7 @@ int Solve(int mode, int problemNum = 0)
     int rollbackCount = 0;
     while (true) {
       loop++;
-      if (loop % 100 == 1) {
+      if (getServerIndex(loop) == 1) {
         end_time = clock();
         now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
         now_progress = now_time / TL;
@@ -2586,7 +2527,7 @@ int Solve(int mode, int problemNum = 0)
   int rollbackCount = 0;
   while (true) {
     loop++;
-    if (loop % 100 == 1) {
+    if (getServerIndex(loop) == 1) {
       end_time = clock();
       now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
       now_progress = now_time / TL;
