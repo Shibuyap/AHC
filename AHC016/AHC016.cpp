@@ -2501,12 +2501,6 @@ int Solver12()
     }
   }
 
-  // if (argRes != judgeNum) {
-  //   for (int i = 0; i < (n); ++i) cout << f[i];
-  //   cout << "   " << diff << endl;
-  //   cout << endl;
-  // }
-
   return argRes;
 }
 
@@ -2624,7 +2618,6 @@ int Solver13()
     if (f[i] == 4) res4++;
   }
   vector<int> resv;
-  // cout << res1 << ' ' << res2 << ' ' << res3 << endl;
   resv.push_back(res1);
   resv.push_back(res2);
   resv.push_back(res3);
@@ -2666,7 +2659,6 @@ int Solver14()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
-    ;
     findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
@@ -2740,7 +2732,6 @@ int Solver15()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
-    ;
     findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
@@ -2793,21 +2784,6 @@ int Solver15()
     }
 
     argMap[argRes]++;
-
-    // if (argRes != judgeNum) {
-    //   for (int i = 0; i < (n); ++i) cout << f[i];
-    //   cout << endl;
-    //   for (int i = 0; i < (n); ++i) {
-    //     if (i < numPairArr[judgeNum][0])
-    //       cout << 1;
-    //     else if (numPairArr[judgeNum][0] <= i &&
-    //              i <= numPairArr[judgeNum][0] + numPairArr[judgeNum][1])
-    //       cout << 2;
-    //     else
-    //       cout << 0;
-    //   }
-    //   cout << "   " << diff << endl;
-    // }
   }
 
   int maxCnt = 0;
@@ -2856,7 +2832,7 @@ int Solver16()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
-    if (kouho.size() < 4) continue;;
+    if (kouho.size() < 4) continue;
     findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
@@ -2964,7 +2940,7 @@ int Solver17()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
-    if (kouho.size() < 4) continue;;
+    if (kouho.size() < 4) continue;
     findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
@@ -3124,7 +3100,6 @@ int Solver19()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
-    ;
     findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
@@ -3224,7 +3199,7 @@ int Solver20()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
-    if (kouho.size() < 4) continue;;
+    if (kouho.size() < 4) continue;
     findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
