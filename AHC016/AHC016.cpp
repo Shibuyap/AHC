@@ -1,6 +1,7 @@
 ﻿#include "Hypers.h"
 
 #include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -282,10 +283,10 @@ namespace
 
 // 前方宣言
 void setSymmetricValue(int i, int j, int k, int value);
-int calculateScore(int f[]);
-void initializeBitsets(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione);
-int createAndExpandCore1(int f[], vector<int>& cores1, bool useReturn = true);
-void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
+int calculateScore(std::array<int, 100>& f);
+void initializeBitsets(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione);
+int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
+void flipOptimization(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop);
 
 void RandmizeGraph(int x)
@@ -1422,7 +1423,7 @@ int Solver1()
 int Solver2()
 {
   int cnt[100] = {};
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
@@ -1465,7 +1466,7 @@ int Solver2()
 int Solver3()
 {
   vector<int> vec[2];
-  int f[100];
+  int f[100] = {};
   for (int i = 0; i < (n); ++i) {
     if (i == 0) {
       vec[0].push_back(i);
@@ -1529,7 +1530,7 @@ int Solver3()
 int Solver4()
 {
   int cnt[100] = {};
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
@@ -1604,7 +1605,7 @@ int Solver4()
 int Solver5()
 {
   int cnt[100] = {};
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
@@ -1678,7 +1679,7 @@ int Solver5()
 int Solver6()
 {
   int cnt[100] = {};
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int ff[100] = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
@@ -1775,7 +1776,7 @@ int Solver6()
 int Solver7()
 {
   int cnt[100] = {};
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int ff[100] = {};
   int res = n;
   for (int i = 0; i < (n); ++i) {
@@ -1892,7 +1893,7 @@ int Solver9()
 
   for (int _ = 0; _ < (10); ++_) {
     int cnt[100] = {};
-    int f[100] = {};
+    std::array<int, 100> f = {};
     int ff[100] = {};
     int res = n;
 
@@ -1991,7 +1992,7 @@ int Solver9()
     }
   }
 
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
@@ -2038,7 +2039,7 @@ int Solver10()
 
   for (int _ = 0; _ < (31); ++_) {
     int cnt[100] = {};
-    int f[100] = {};
+    std::array<int, 100> f = {};
     int ff[100] = {};
     int res = n;
 
@@ -2137,7 +2138,7 @@ int Solver10()
     }
   }
 
-  int f[100] = {};
+  std::array<int, 100> f = {};
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
@@ -2162,7 +2163,7 @@ int Solver10()
 }
 
 // 4-クリークを見つける共通関数
-bool findClique4(const vector<int>& kouho, int f[], vector<int>& cores, int markValue)
+bool findClique4(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& cores, int markValue)
 {
   for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
     int core[4] = {};
@@ -2193,7 +2194,7 @@ bool findClique4(const vector<int>& kouho, int f[], vector<int>& cores, int mark
 }
 
 // コアを大きくしていく共通関数
-void expandCore(vector<int>& cores, int f[], int markValue)
+void expandCore(vector<int>& cores, std::array<int, 100>& f, int markValue)
 {
   while (true) {
     int sz = cores.size();
@@ -2217,7 +2218,7 @@ void expandCore(vector<int>& cores, int f[], int markValue)
 }
 
 // スコア計算の共通関数
-int calculateScore(int f[])
+int calculateScore(std::array<int, 100>& f)
 {
   int score = 0;
   for (int i = 0; i < n; ++i) {
@@ -2236,7 +2237,7 @@ int calculateScore(int f[])
 }
 
 // ビットセット初期化の共通関数
-void initializeBitsets(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione)
+void initializeBitsets(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione)
 {
   // bifの初期化
   for (int i = 0; i < 3; ++i) {
@@ -2264,7 +2265,7 @@ void initializeBitsets(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100
 
 // コア1を作成して拡張する共通関数
 // 戻り値: 成功時はcores1のサイズ、失敗時は-1（returnの場合）または0（continueの場合）
-int createAndExpandCore1(int f[], vector<int>& cores1, bool useReturn)
+int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn)
 {
   vector<int> kouho;
   for (int i = 0; i < (n); ++i) kouho.push_back(i);
@@ -2288,7 +2289,7 @@ int createAndExpandCore1(int f[], vector<int>& cores1, bool useReturn)
 }
 
 // フリップ最適化の共通関数
-void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
+void flipOptimization(std::array<int, 100>& f, bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop)
 {
   for (int _ = 0; _ < (flipLoop); ++_) {
@@ -2345,7 +2346,7 @@ void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>
 
 int Solver11()
 {
-  int f[100] = {};
+  std::array<int, 100> f = {};
 
   // コア1を作る
   vector<int> cores1;
@@ -2402,7 +2403,7 @@ int Solver11()
 
 int Solver12()
 {
-  int f[100] = {};
+  std::array<int, 100> f = {};
 
   // コア1を作る
   vector<int> cores1;
@@ -2506,7 +2507,7 @@ int Solver12()
 // 4コア
 int Solver13()
 {
-  int f[100] = {};
+  std::array<int, 100> f = {};
 
   // コア1を作る
   vector<int> cores1;
@@ -2645,7 +2646,7 @@ int Solver14()
   int real_minDiff = 1000;
 
   for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2711,7 +2712,7 @@ int Solver15()
   map<int, int> argMap;
 
   for (int wataruoop = 0; wataruoop < (5); ++wataruoop) {
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2805,7 +2806,7 @@ int Solver16()
     }
 
 
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -2906,7 +2907,7 @@ int Solver17()
     }
 
 
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3058,7 +3059,7 @@ int Solver19()
       }
     }
 
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3151,7 +3152,7 @@ int Solver20()
     }
 
 
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3208,7 +3209,7 @@ int Solver21()
   int real_minDiff = 1000;
 
   for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3331,7 +3332,7 @@ int Solver22()
   int real_minDiff = 1000;
 
   for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3475,7 +3476,7 @@ int Solver23()
     }
 
 
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
@@ -3631,7 +3632,7 @@ int Solver24()
     }
 
 
-    int f[100] = {};
+    std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
