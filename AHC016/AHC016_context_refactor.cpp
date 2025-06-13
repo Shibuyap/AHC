@@ -77,12 +77,12 @@ namespace
   std::array<std::array<double, 105>, 105> com;
   int MODE = 0;
   const int TURN = 100;
-  int m, iEps;  // m: 符号化するグラフの数(10-100), iEps: エラー率(整数%, 0-40)
-  double eps;    // eps: エラー率(0.00-0.40)
+  int m, iEps;
+  double eps;
 
-  int n;  // n: グラフの頂点数(4-100)
-  std::array<std::array<std::array<int, 100>, 100>, 100> a;  // a[i][j][k]: i番目の符号化グラフの隣接行列
-  std::array<std::array<int, 100>, 100> b;  // b[i][j]: 受信したノイズ付きグラフ
+  int n;
+  std::array<std::array<std::array<int, 100>, 100>, 100> a;
+  std::array<std::array<int, 100>, 100> b;
 
   std::vector<int> numSingleArr(1000);
   std::vector<std::array<int, 2>> numPairArr(1000);
@@ -291,8 +291,7 @@ template<size_t N>
 void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop);
 
-// グラフにノイズを適用（確率epsで各辺を反転）
-void ApplyNoiseToGraph(int x)
+void RandmizeGraph(int x)
 {
   for (int j = 0; j < (n); ++j) {
     for (int k = j + 1; k < n; ++k) {
@@ -306,8 +305,7 @@ void ApplyNoiseToGraph(int x)
 }
 
 int judgeNum;
-// ノイズ付きグラフを受信してb配列に格納
-void ReceiveNoisyGraph(int mode, int turn = 0)
+void InitB(int mode, int turn = 0)
 {
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) { b[i][j] = 0; }
@@ -327,7 +325,7 @@ void ReceiveNoisyGraph(int mode, int turn = 0)
   else {
     int judge = judgeArr[turn];
     judgeNum = judge;
-    ApplyNoiseToGraph(judge);
+    RandmizeGraph(judge);
   }
 }
 
@@ -336,7 +334,7 @@ namespace
 {
   std::array<int, 100> numArr;
 
-  // 共通のグラフ初期化関数（完全グラフのサイズで符号化）
+  // 共通のグラフ初期化関数
   void SetGraphFromNumArray(int arraySize = 100)
   {
     for (int i = 0; i < (m); ++i) {
@@ -349,7 +347,7 @@ namespace
     }
   }
 
-  // 条件付きグラフ初期化関数（2つのクリークで符号化）
+  // 条件付きグラフ初期化関数（2つの数値用）
   void SetGraphFromPairArray()
   {
     for (int i = 0; i < (m); ++i) {
@@ -374,7 +372,7 @@ namespace
     }
   }
 
-  // 条件付きグラフ初期化関数（3つのクリークで符号化）
+  // 条件付きグラフ初期化関数（3つの数値用）
   void SetGraphFromThreeArray()
   {
     for (int i = 0; i < (m); ++i) {
@@ -404,7 +402,7 @@ namespace
     }
   }
 
-  // 条件付きグラフ初期化関数（4つのクリークで符号化）
+  // 条件付きグラフ初期化関数（4つの数値用）
   void SetGraphFromFourArray()
   {
     for (int i = 0; i < (m); ++i) {
@@ -3782,8 +3780,7 @@ int Solver24()
   return real_argRes;
 }
 
-// 受信したノイズ付きグラフから元のグラフ番号を推定
-int DecodeGraphIndex(int mode, int turn = 0)
+int ComputeAnswer(int mode, int turn = 0)
 {
   int res = 0;
   int num = num = hyperSolverNum % 10 + hyperSolverNum / 1000 * 10;
@@ -3868,8 +3865,8 @@ double Simulate(int mode)
 {
   double res = 1e9 / n;
   for (int turn = 0; turn < (100); ++turn) {
-    ReceiveNoisyGraph(mode, turn);
-    int ans = DecodeGraphIndex(mode, turn);
+    InitB(mode, turn);
+    int ans = ComputeAnswer(mode, turn);
     answersFor1000Out[turn] = ans;
     int judge = judgeArr[turn];
     if (ans != judge) res *= 0.9;
