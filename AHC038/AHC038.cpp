@@ -53,7 +53,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 
@@ -431,8 +432,7 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
   heavyY /= 2.0 * (m - mCount);
 }
 
-class RotTip
-{
+class RotTip {
 private:
   int m_V;
 
@@ -483,8 +483,7 @@ public:
   }
 };
 
-class KeepAB
-{
+class KeepAB {
 public:
   int KeepA[MAX_V][3];
   int KeepB[MAX_V][3];
@@ -602,8 +601,7 @@ void RollBackFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vecto
   }
 }
 
-class MaxCandidate
-{
+class MaxCandidate {
 public:
   double maxActionScore;
   int finishTurn;
@@ -1960,30 +1958,30 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
     // 木作成
     switch (Method) {
-    case 42:
-      MakeTree1();
-      break;
-    case 52:
-      MakeTree2();
-      break;
-    case 62:
-      MakeTree6();
-      break;
-    case 72:
-      MakeTree4();
-      break;
-    case 82:
-      MakeTree5();
-      break;
-    case 53:
-      MakeTree22();
-      break;
-    case 63:
-      MakeTree32();
-      break;
-    case 73:
-      MakeTree42();
-      break;
+      case 42:
+        MakeTree1();
+        break;
+      case 52:
+        MakeTree2();
+        break;
+      case 62:
+        MakeTree6();
+        break;
+      case 72:
+        MakeTree4();
+        break;
+      case 82:
+        MakeTree5();
+        break;
+      case 53:
+        MakeTree22();
+        break;
+      case 63:
+        MakeTree32();
+        break;
+      case 73:
+        MakeTree42();
+        break;
     }
 
     // 初期位置作成
@@ -2264,7 +2262,7 @@ int main()
   }
   else if (mode <= 100) {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 1, 100)
     {
       ll score = Solve(i);
       sum += score;
