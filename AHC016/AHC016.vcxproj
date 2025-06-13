@@ -143,8 +143,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AHC016_new.cpp" />
     <ClCompile Include="AHC016.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Hypers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
