@@ -256,6 +256,10 @@ namespace
   }
 }  // namespace
 
+// 前方宣言
+void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
+  int& score, int& res1, int& res2, int flipLoop);
+
 void RandmizeGraph(int x)
 {
   for (int j = 0; j < (n); ++j) {
@@ -1786,56 +1790,7 @@ int Solver6()
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 3;
-    while (ra == f[x]) {
-      ra = Rand() % 3;
-    }
-    if (res2 = 0) {
-      ra = 1 - f[x];
-    }
-    int tmp = score;
-    int keep = f[x];
-
-    // tmpからxの点を引く
-    if (f[x] == 0) {
-      tmp -= n - bib[x].count();
-      tmp++;  // 自分の分
-    }
-    else {
-      tmp -= (bif[f[x]] & bib[x]).count();
-      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    bif[f[x]][x] = 0;
-    f[x] = ra;
-    bif[f[x]][x] = 1;
-    // tmpからraの点を足す
-    if (f[x] == 0) {
-      tmp += n - bib[x].count();
-      tmp--;  // 自分の分
-    }
-    else {
-      tmp += (bif[f[x]] & bib[x]).count();
-      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    if (tmp >= score) {
-      score = tmp;
-    }
-    else {
-      bif[f[x]][x] = 0;
-      f[x] = keep;
-      bif[f[x]][x] = 1;
-    }
-  }
-  res1 = 0;
-  res2 = 0;
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] == 1) res1++;
-    if (f[i] == 2) res2++;
-  }
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
   int diff = 1000;
   int argRes = 0;
@@ -1954,56 +1909,7 @@ int Solver7()
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 3;
-    while (ra == f[x]) {
-      ra = Rand() % 3;
-    }
-    if (res2 == 0) {
-      ra = 1 - f[x];
-    }
-    int tmp = score;
-    int keep = f[x];
-
-    // tmpからxの点を引く
-    if (f[x] == 0) {
-      tmp -= n - bib[x].count();
-      tmp++;  // 自分の分
-    }
-    else {
-      tmp -= (bif[f[x]] & bib[x]).count();
-      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    bif[f[x]][x] = 0;
-    f[x] = ra;
-    bif[f[x]][x] = 1;
-    // tmpからraの点を足す
-    if (f[x] == 0) {
-      tmp += n - bib[x].count();
-      tmp--;  // 自分の分
-    }
-    else {
-      tmp += (bif[f[x]] & bib[x]).count();
-      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    if (tmp >= score) {
-      score = tmp;
-    }
-    else {
-      bif[f[x]][x] = 0;
-      f[x] = keep;
-      bif[f[x]][x] = 1;
-    }
-  }
-  res1 = 0;
-  res2 = 0;
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] == 1) res1++;
-    if (f[i] == 2) res2++;
-  }
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
   int diff = 1000;
   int argRes = 0;
@@ -2181,56 +2087,7 @@ int Solver9()
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 3;
-    while (ra == f[x]) {
-      ra = Rand() % 3;
-    }
-    if (res2 == 0) {
-      ra = 1 - f[x];
-    }
-    int tmp = score;
-    int keep = f[x];
-
-    // tmpからxの点を引く
-    if (f[x] == 0) {
-      tmp -= n - bib[x].count();
-      tmp++;  // 自分の分
-    }
-    else {
-      tmp -= (bif[f[x]] & bib[x]).count();
-      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    bif[f[x]][x] = 0;
-    f[x] = ra;
-    bif[f[x]][x] = 1;
-    // tmpからraの点を足す
-    if (f[x] == 0) {
-      tmp += n - bib[x].count();
-      tmp--;  // 自分の分
-    }
-    else {
-      tmp += (bif[f[x]] & bib[x]).count();
-      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    if (tmp >= score) {
-      score = tmp;
-    }
-    else {
-      bif[f[x]][x] = 0;
-      f[x] = keep;
-      bif[f[x]][x] = 1;
-    }
-  }
-  res1 = 0;
-  res2 = 0;
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] == 1) res1++;
-    if (f[i] == 2) res2++;
-  }
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
   int diff = 1000;
   int argRes = 0;
@@ -2437,6 +2294,62 @@ void expandCore(vector<int>& cores, int f[], int markValue)
   }
 }
 
+// フリップ最適化の共通関数
+void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
+  int& score, int& res1, int& res2, int flipLoop)
+{
+  for (int _ = 0; _ < (flipLoop); ++_) {
+    int x = Rand() % n;
+    int ra = Rand() % 3;
+    while (ra == f[x]) {
+      ra = Rand() % 3;
+    }
+    if (res2 == 0) {
+      ra = 1 - f[x];
+    }
+    int tmp = score;
+    int keep = f[x];
+
+    // tmpからxの点を引く
+    if (f[x] == 0) {
+      tmp -= n - bib[x].count();
+      tmp++;  // 自分の分
+    }
+    else {
+      tmp -= (bif[f[x]] & bib[x]).count();
+      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
+    }
+
+    bif[f[x]][x] = 0;
+    f[x] = ra;
+    bif[f[x]][x] = 1;
+    // tmpからraの点を足す
+    if (f[x] == 0) {
+      tmp += n - bib[x].count();
+      tmp--;  // 自分の分
+    }
+    else {
+      tmp += (bif[f[x]] & bib[x]).count();
+      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
+    }
+
+    if (tmp >= score) {
+      score = tmp;
+    }
+    else {
+      bif[f[x]][x] = 0;
+      f[x] = keep;
+      bif[f[x]][x] = 1;
+    }
+  }
+  res1 = 0;
+  res2 = 0;
+  for (int i = 0; i < (n); ++i) {
+    if (f[i] == 1) res1++;
+    if (f[i] == 2) res2++;
+  }
+}
+
 int Solver11()
 {
   int f[110] = {};
@@ -2505,56 +2418,7 @@ int Solver11()
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 3;
-    while (ra == f[x]) {
-      ra = Rand() % 3;
-    }
-    if (res2 == 0) {
-      ra = 1 - f[x];
-    }
-    int tmp = score;
-    int keep = f[x];
-
-    // tmpからxの点を引く
-    if (f[x] == 0) {
-      tmp -= n - bib[x].count();
-      tmp++;  // 自分の分
-    }
-    else {
-      tmp -= (bif[f[x]] & bib[x]).count();
-      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    bif[f[x]][x] = 0;
-    f[x] = ra;
-    bif[f[x]][x] = 1;
-    // tmpからraの点を足す
-    if (f[x] == 0) {
-      tmp += n - bib[x].count();
-      tmp--;  // 自分の分
-    }
-    else {
-      tmp += (bif[f[x]] & bib[x]).count();
-      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    if (tmp >= score) {
-      score = tmp;
-    }
-    else {
-      bif[f[x]][x] = 0;
-      f[x] = keep;
-      bif[f[x]][x] = 1;
-    }
-  }
-  res1 = 0;
-  res2 = 0;
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] == 1) res1++;
-    if (f[i] == 2) res2++;
-  }
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   if (res2 > res1) swap(res1, res2);
   int diff = 1000;
   int argRes = 0;
@@ -2663,62 +2527,9 @@ int Solver12()
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 4;
-    while (ra == f[x]) {
-      ra = Rand() % 4;
-    }
-    if (res2 == 0) {
-      ra = 1 - f[x];
-    }
-    else if (res3 == 0) {
-      ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-    }
-    int tmp = score;
-    int keep = f[x];
-
-    // tmpからxの点を引く
-    if (f[x] == 0) {
-      tmp -= n - bib[x].count();
-      tmp++;  // 自分の分
-    }
-    else {
-      tmp -= (bif[f[x]] & bib[x]).count();
-      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    bif[f[x]][x] = 0;
-    f[x] = ra;
-    bif[f[x]][x] = 1;
-    // tmpからraの点を足す
-    if (f[x] == 0) {
-      tmp += n - bib[x].count();
-      tmp--;  // 自分の分
-    }
-    else {
-      tmp += (bif[f[x]] & bib[x]).count();
-      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    if (tmp >= score) {
-      score = tmp;
-    }
-    else {
-      bif[f[x]][x] = 0;
-      f[x] = keep;
-      bif[f[x]][x] = 1;
-    }
-  }
-  res1 = 0;
-  res2 = 0;
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   res3 = 0;
   for (int i = 0; i < (n); ++i) {
-    if (f[i] == 1) res1++;
-    if (f[i] == 2) res2++;
     if (f[i] == 3) res3++;
   }
   vector<int> resv;
@@ -2869,69 +2680,10 @@ int Solver13()
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
-  for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 5;
-    while (ra == f[x]) {
-      ra = Rand() % 5;
-    }
-    if (res2 == 0) {
-      ra = 1 - f[x];
-    }
-    else if (res3 == 0) {
-      ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-    }
-    else if (res4 == 0) {
-      ra = Rand() % 4;
-      while (ra == f[x]) {
-        ra = Rand() % 4;
-      }
-    }
-    int tmp = score;
-    int keep = f[x];
-
-    // tmpからxの点を引く
-    if (f[x] == 0) {
-      tmp -= n - bib[x].count();
-      tmp++;  // 自分の分
-    }
-    else {
-      tmp -= (bif[f[x]] & bib[x]).count();
-      tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    bif[f[x]][x] = 0;
-    f[x] = ra;
-    bif[f[x]][x] = 1;
-    // tmpからraの点を足す
-    if (f[x] == 0) {
-      tmp += n - bib[x].count();
-      tmp--;  // 自分の分
-    }
-    else {
-      tmp += (bif[f[x]] & bib[x]).count();
-      tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-    }
-
-    if (tmp >= score) {
-      score = tmp;
-    }
-    else {
-      bif[f[x]][x] = 0;
-      f[x] = keep;
-      bif[f[x]][x] = 1;
-    }
-  }
-  res1 = 0;
-  res2 = 0;
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   res3 = 0;
   res4 = 0;
   for (int i = 0; i < (n); ++i) {
-    if (f[i] == 1) res1++;
-    if (f[i] == 2) res2++;
     if (f[i] == 3) res3++;
     if (f[i] == 4) res4++;
   }
@@ -3039,56 +2791,7 @@ int Solver14()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -3184,56 +2887,7 @@ int Solver15()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -3371,56 +3025,7 @@ int Solver16()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -3550,56 +3155,7 @@ int Solver17()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -3781,56 +3337,7 @@ int Solver19()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -3899,6 +3406,7 @@ int Solver20()
     expandCore(cores1, f, 1);
 
     int res1 = cores1.size();
+    int res2 = 0;
 
     int score = 0;
     for (int i = 0; i < (n); ++i) {
@@ -3930,51 +3438,7 @@ int Solver20()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 2;
-      while (ra == f[x]) {
-        ra = Rand() % 2;
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     int diff = 1000;
     int argRes = 0;
     for (int i = 0; i < (m); ++i) {
@@ -4130,56 +3594,7 @@ int Solver21()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -4325,56 +3740,7 @@ int Solver22()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -4540,56 +3906,7 @@ int Solver23()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;
@@ -4767,56 +4084,7 @@ int Solver24()
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
-    for (int _ = 0; _ < (flipLoop); ++_) {
-      int x = Rand() % n;
-      int ra = Rand() % 3;
-      while (ra == f[x]) {
-        ra = Rand() % 3;
-      }
-      if (res2 == 0) {
-        ra = 1 - f[x];
-      }
-      int tmp = score;
-      int keep = f[x];
-
-      // tmpからxの点を引く
-      if (f[x] == 0) {
-        tmp -= n - bib[x].count();
-        tmp++;  // 自分の分
-      }
-      else {
-        tmp -= (bif[f[x]] & bib[x]).count();
-        tmp -= ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      bif[f[x]][x] = 0;
-      f[x] = ra;
-      bif[f[x]][x] = 1;
-      // tmpからraの点を足す
-      if (f[x] == 0) {
-        tmp += n - bib[x].count();
-        tmp--;  // 自分の分
-      }
-      else {
-        tmp += (bif[f[x]] & bib[x]).count();
-        tmp += ((bif[f[x]] ^ bione) & (bib[x] ^ bione)).count();
-      }
-
-      if (tmp >= score) {
-        score = tmp;
-      }
-      else {
-        bif[f[x]][x] = 0;
-        f[x] = keep;
-        bif[f[x]][x] = 1;
-      }
-    }
-    res1 = 0;
-    res2 = 0;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] == 1) res1++;
-      if (f[i] == 2) res2++;
-    }
+    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
     int diff = 1000;
     int argRes = 0;

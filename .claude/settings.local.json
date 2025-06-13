@@ -24,7 +24,12 @@
       "Bash(for i in {0000..0099})",
       "Bash(do echo \"Testing case $i\")",
       "Bash(done)",
-      "Bash(./test_comparison.sh:*)"
+      "Bash(./test_comparison.sh:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(for line in 1789 1957 2184 2444 2564 2722 2928 3098 3243 3430 3609 3840 3989 4189 4384 4599 4826)",
+      "Bash(do echo \"=== Line $line ===\")",
+      "Bash(done)",
+      "Bash(#!/bin/bash\n# Test just first 5 cases\ntotal_cases=0\nmatching_cases=0\n\necho \"Testing first 5 cases...\"\nfor i in 0000 0001 0002 0003 0004; do\n    input_file=\"in/${i}.txt\"\n    \n    # Run original\n    ./AHC025_original < \"$input_file\" > \"test_original_${i}.txt\" 2>&1\n    \n    # Run refactored\n    ./AHC025_refactored < \"$input_file\" > \"test_refactored_${i}.txt\" 2>&1\n    \n    # Extract scores\n    original_score=$(grep -E \"score\\s*=\\s*[0-9]+\" \"test_original_${i}.txt\" | tail -1 | sed -E 's/.*score\\s*=\\s*([0-9]+).*/\\1/')\n    refactored_score=$(grep -E \"score\\s*=\\s*[0-9]+\" \"test_refactored_${i}.txt\" | tail -1 | sed -E 's/.*score\\s*=\\s*([0-9]+).*/\\1/')\n    \n    total_cases=$((total_cases + 1))\n    \n    if [ \"$original_score\" = \"$refactored_score\" ]; then\n        matching_cases=$((matching_cases + 1))\n        echo \"Case $i: MATCH (score = $original_score)\"\n    else\n        echo \"Case $i: DIFF (original = $original_score, refactored = $refactored_score)\"\n    fi\ndone\n\necho \"Summary: $matching_cases/$total_cases matching\")"
     ],
     "deny": []
   }
