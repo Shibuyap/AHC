@@ -1905,8 +1905,8 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
       int tt = _t;
       int mCount2 = mCount;
 
-      //MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
-      MaxCandidate maxCand = Beam2(_t, x, y, nowRot, nowTip, a, b, 3, mCount);
+      MaxCandidate maxCand = Beam(_t, x, y, nowRot, nowTip, a, b, 0, mCount);
+      //MaxCandidate maxCand = Beam2(_t, x, y, nowRot, nowTip, a, b, 3, mCount);
 
       //FisherYates(order, 5);
 
