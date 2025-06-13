@@ -1530,6 +1530,35 @@ int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLef
   return left;
 }
 
+// Build query groups for comparison
+void buildQueryGroups(int& countQ, int x, int y, int excludeIndex = -1)
+{
+  rep(j, N)
+  {
+    if (ans[j] == x && j != excludeIndex) {
+      l[countQ].push_back(j);
+    }
+    if (ans[j] == y && (excludeIndex == -1 || j != excludeIndex)) {
+      r[countQ].push_back(j);
+    }
+  }
+}
+
+// Check if should skip based on cutline
+bool shouldSkipBasedOnCutline(int z, int cutLine)
+{
+  if (cutLine >= 100) return false;
+
+  int win = 0, lose = 0;
+  rep(j, N)
+  {
+    if (hikaku[z][j] == 1) win++;
+    else if (hikaku[z][j] == -1) lose++;
+  }
+  return (win + lose >= cutLine && win >= lose);
+}
+
+
 bool ErrorCheck()
 {
   rep(i, Q)
@@ -1938,32 +1967,11 @@ void Move1(int& countQ, int cutLine = 999)
   }
   int z = vx[Rand() % vx.size()];
 
-  if (cutLine < 100) {
-    int win = 0;
-    int lose = 0;
-    rep(j, N)
-    {
-      if (hikaku[z][j] == 1) {
-        win++;
-      }
-      else if (hikaku[z][j] == -1) {
-        lose++;
-      }
-    }
-    if (win + lose >= cutLine && win >= lose) {
-      return;
-    }
+  if (shouldSkipBasedOnCutline(z, cutLine)) {
+    return;
   }
 
-  rep(j, N)
-  {
-    if (ans[j] == x && j != z) {
-      l[countQ].push_back(j);
-    }
-    if (ans[j] == y) {
-      r[countQ].push_back(j);
-    }
-  }
+  buildQueryGroups(countQ, x, y, z);
 
   char c = Query(countQ);
   if (c == '>') {
@@ -1993,15 +2001,7 @@ int Move1_Specify(int& countQ, int groupId)
   }
   int z = vx[Rand() % vx.size()];
 
-  rep(j, N)
-  {
-    if (ans[j] == x && j != z) {
-      l[countQ].push_back(j);
-    }
-    if (ans[j] == y) {
-      r[countQ].push_back(j);
-    }
-  }
+  buildQueryGroups(countQ, x, y, z);
 
   char c = Query(countQ);
   if (c == '>') {
@@ -2024,15 +2024,7 @@ void MoveSmall1(const vector<int>&, int& countQ, int smallLine)
     y = Rand() % D;
   }
 
-  rep(j, N)
-  {
-    if (ans[j] == x && j != z) {
-      l[countQ].push_back(j);
-    }
-    if (ans[j] == y) {
-      r[countQ].push_back(j);
-    }
-  }
+  buildQueryGroups(countQ, x, y, z);
 
   char c = Query(countQ);
   if (c == '>') {
@@ -2083,32 +2075,11 @@ void Move1_Two(int& countQ, int cutLine = 999)
   }
   int z = vx[Rand() % vx.size()];
 
-  if (cutLine < 100) {
-    int win = 0;
-    int lose = 0;
-    rep(j, N)
-    {
-      if (hikaku[z][j] == 1) {
-        win++;
-      }
-      else if (hikaku[z][j] == -1) {
-        lose++;
-      }
-    }
-    if (win + lose >= cutLine && win >= lose) {
-      return;
-    }
+  if (shouldSkipBasedOnCutline(z, cutLine)) {
+    return;
   }
 
-  rep(j, N)
-  {
-    if (ans[j] == x && j != z) {
-      l[countQ].push_back(j);
-    }
-    if (ans[j] == y) {
-      r[countQ].push_back(j);
-    }
-  }
+  buildQueryGroups(countQ, x, y, z);
 
   char c = Query(countQ);
   if (c == '>') {
@@ -2155,32 +2126,11 @@ void Move1Minimum(int& countQ, int cutLine = 999)
     }
   }
 
-  if (cutLine < 100) {
-    int win = 0;
-    int lose = 0;
-    rep(j, N)
-    {
-      if (hikaku[z][j] == 1) {
-        win++;
-      }
-      else if (hikaku[z][j] == -1) {
-        lose++;
-      }
-    }
-    if (win + lose >= cutLine && win >= lose) {
-      return;
-    }
+  if (shouldSkipBasedOnCutline(z, cutLine)) {
+    return;
   }
 
-  rep(j, N)
-  {
-    if (ans[j] == x && j != z) {
-      l[countQ].push_back(j);
-    }
-    if (ans[j] == y) {
-      r[countQ].push_back(j);
-    }
-  }
+  buildQueryGroups(countQ, x, y, z);
 
   char c = Query(countQ);
   if (c == '>') {
@@ -2240,15 +2190,7 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
     }
   }
 
-  rep(j, N)
-  {
-    if (ans[j] == x && j != z) {
-      l[countQ].push_back(j);
-    }
-    if (ans[j] == y) {
-      r[countQ].push_back(j);
-    }
-  }
+  buildQueryGroups(countQ, x, y, z);
 
   char c = Query(countQ);
   if (c == '>') {
@@ -2630,10 +2572,7 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
       }
     }
     if (DItems[0].empty()) {
-      rep(i, N)
-      {
-        DItems[ans[i]].push_back(i);
-      }
+      populateAnsItems(DItems);
     }
     for (auto i : DItems[xg]) {
       if (i != x) {
@@ -2674,10 +2613,7 @@ bool SwapNeighborSmall1(const vector<int>& items, int& countQ, int smallLine)
       break;
     }
     if (DItems[0].empty()) {
-      rep(i, N)
-      {
-        DItems[ans[i]].push_back(i);
-      }
+      populateAnsItems(DItems);
     }
     for (auto i : DItems[xg]) {
       if (i != x) {

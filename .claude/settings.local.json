@@ -15,7 +15,8 @@
       "Bash(python:*)",
       "Bash(g++:*)",
       "Bash(./AHC025_test)",
-      "Bash(./AHC025_test2)"
+      "Bash(./AHC025_test2)",
+      "Bash(awk:*)"
     ],
     "deny": []
   }

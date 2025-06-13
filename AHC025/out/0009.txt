@@ -2188,22 +2188,58 @@
 2 2 15 47 11 22
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 5 2 28 35 36 4 8 9 15 33
+3 3 2 35 36 26 53 54
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 4 5 10 43 44 45 46 49
+2 2 28 13 50 6
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 31 45 46 49 0 12 27 52
+3 3 0 17 52 18 20 23
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 4 4 8 9 33 47 16 19 21 22
+2 2 27 12 32 30
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 4 31 44 49 4 8 15 33
+4 2 12 17 27 52 39 51
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 46 45 9 47
+3 3 24 25 40 2 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 7 42 28 13
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 0 12 27 52 4 9 15 33 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 11 16 19 2 28 35
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 22 21 13 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 0 17 27 52 4 8 9 15 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 11 19 21 22 7 25 40 42
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 2 13 28 35 11 16 19 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 1 14 41 48 18 20 23 32
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 1 14 37 48 20 23 30 32
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 4 0 17 27 8 9 15 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 12 52 33 4
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 0 12 17 52 18 20 23 30
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 3 1 37 41 18 30 32
@@ -2212,10 +2248,43 @@
 2 2 14 48 20 23
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 31 45 46 11 21 22
+5 4 8 9 15 33 47 18 20 30 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 49 44 16 19
+1 4 38 13 28 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 1 39 51 3
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 0 12 17 27 1 14 37 41
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 4 5 10 43 44 45 46 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 24 25 40 2 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 7 42 28 13
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 2 5 29 43 34 51
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 1 39 51 3
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 31 44 46 49 7 24 25 40
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 18 20 23 32 0 17 27 52
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 1 14 41 48 18 20 23 32
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 1 37 41 48 18 23 30 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 3 16 21 22 50 53 54
@@ -2224,49 +2293,43 @@
 2 2 11 19 6 26
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 4 8 9 15 33 47 18 20 30 32
+4 4 18 20 23 30 7 24 25 42
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 5 0 12 27 52 4 9 15 33 47
+4 4 31 45 46 49 0 12 27 52
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 4 8 9 15 33 47 18 20 30 32
+4 4 18 20 30 32 0 12 17 27
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 14 37 48 20 23 30 32
+3 4 5 10 29 12 17 27 52
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 18 23 30 32 6 26 50 53
+3 3 0 12 17 14 37 41
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 37 41 48 18 23 30 32
+2 2 52 27 48 1
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 31 45 46 11 21 22
+4 4 18 20 30 32 0 12 17 27
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 49 44 16 19
+5 4 4 8 15 33 47 2 13 28 35
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 11 16 19 22 1 37 41 48
+3 4 2 28 35 4 8 15 33
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 11 16 22 1 37 41
+2 2 13 36 47 9
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 21 19 14 48
+4 5 0 17 27 52 4 8 9 15 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 6 26 50 53 5 10 29
+4 4 11 19 21 22 7 25 40 42
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 6 26 53 54 34 39
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 14 37 41 6 50 53 54
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 37 41 48 18 23 30 32
+4 3 11 16 21 22 10 29 43
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 3 14 37 41 6 50 54
@@ -2275,73 +2338,205 @@
 2 2 48 1 26 53
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 4 31 44 49 4 8 15 33
+4 4 2 13 28 36 1 14 37 48
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 46 45 9 47
+4 4 7 24 40 42 31 44 45 49
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 18 20 30 0 12 17
+4 5 0 12 27 52 4 9 15 33 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 23 32 52 27
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 2 6 26 50 5 29
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 54 53 43 10
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 1 6 26 54 34
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 50 53 51 39
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 4 8 15 33 2 28 35
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 9 47 36 13
+5 4 4 8 9 15 33 31 44 46 49
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 4 4 11 16 19 22 1 37 41 48
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 4 5 10 29 12 17 27 52
+3 3 31 44 49 7 24 40
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 4 34 51 6 26 50 54
+2 2 45 46 42 25
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 3 6 26 50 53 5 10 29
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 4 10 29 43 31 45 46 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 7 24 40 42 31 44 45 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 44 45 46 49 2 13 28 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 2 24 25 42 10 43
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 40 7 29 5
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+5 4 8 9 15 33 47 18 20 30 32
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 18 20 23 24 25 42
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 32 30 40 7
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 1 37 41 48 18 23 30 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 5 1 4 8 9 15 47 38
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 4 31 44 49 4 8 15 33
+3 4 0 17 27 8 9 15 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 46 45 9 47
+2 2 12 52 33 4
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 3 5 10 12 17 52
+4 4 18 23 30 32 6 26 50 53
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 43 29 0 27
+4 3 7 24 25 42 5 10 43
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 4 4 9 15 33 47 24 25 40 42
+4 4 11 16 19 21 2 28 35 36
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 7 24 40 31 44 49
+4 4 18 23 30 32 6 26 50 53
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 25 42 46 45
+1 4 38 13 28 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 1 37 41 18 30 32
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 14 48 20 23
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 24 25 40 2 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 7 42 28 13
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 3 6 26 50 53 5 10 29
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 1 14 37 48 20 23 30 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 4 4 1 14 41 48 18 20 23 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 7 24 25 42 5 10 43
+3 4 10 29 43 31 45 46 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 24 25 40 42 2 13 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 4 0 12 27 9 15 33 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 17 52 8 4
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 2 28 35 36 4 8 9 15 33
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 0 17 27 52 4 8 9 15 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 2 12 17 27 52 39 51
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+1 3 39 1 41 48
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 51 34 37 14
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 0 17 52 18 20 23
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 27 12 32 30
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 3 4 8 15 33 31 44 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 47 9 45 46
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 11 19 21 22 7 25 40 42
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 6 50 53 54 11 16 21 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 4 20 30 32 8 9 33 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 18 23 15 4
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 18 23 30 32 6 26 50 53
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 3 11 16 21 22 10 29 43
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 20 23 30 32 4 8 9 33 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 3 6 26 50 53 5 10 29
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 24 25 40 42 2 13 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 18 20 23 32 0 17 27 52
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 11 19 21 22 7 25 40 42
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+5 4 4 8 9 15 33 31 44 46 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 50 53 54 16 21 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 26 6 19 11
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 3 4 8 15 33 31 44 49
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 47 9 45 46
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 44 45 46 49 2 13 28 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 18 23 30 6 26 50
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 20 32 54 53
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 31 44 45 49 4 8 15 33 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 6 50 53 54 11 16 21 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 2 13 28 36 1 14 37 48
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 3 13 28 36 44 45 46
@@ -2350,16 +2545,40 @@
 2 2 2 35 49 31
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 4 4 8 9 33 47 16 19 21 22
+3 2 5 29 43 34 51
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 5 31 44 45 49 4 8 15 33 47
+4 4 11 19 21 22 7 25 40 42
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 31 44 46 49 7 24 25 40
+4 4 31 45 46 49 0 12 27 52
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 6 26 53 54 34 39
+1 4 38 13 28 35 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 0 12 27 52 4 9 15 33 47
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 2 13 28 35 11 16 19 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 50 53 54 16 21 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 26 6 19 11
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+3 3 18 23 30 6 26 50
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+2 2 20 32 54 53
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 31 44 45 46 11 19 21 22
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 5 20 23 30 32 4 8 9 33 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 4 5 10 29 12 17 27 52
@@ -2371,205 +2590,37 @@
 2 2 35 2 41 37
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+5 4 4 9 15 33 47 24 25 40 42
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+5 4 8 9 15 33 47 18 20 30 32
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
+4 4 44 45 46 49 2 13 28 36
+#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
+# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 4 5 10 43 44 45 46 49
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 4 15 33 47 24 40 42
+4 2 12 17 27 52 39 51
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 8 9 7 25
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 2 28 35 11 16 19
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 36 13 21 22
+5 4 8 9 15 33 47 18 20 30 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 4 5 0 12 27 52 4 9 15 33 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-1 3 34 6 26 54
+4 3 6 26 50 53 5 10 29
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 39 51 53 50
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-1 4 38 13 28 35 36
+4 4 2 13 28 35 11 16 19 22
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 4 4 44 45 46 49 2 13 28 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 4 0 17 27 8 9 15 47
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 12 52 33 4
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 13 28 35 36 31 44 45 46
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 12 17 27 52 39 51
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 0 17 52 18 20 23
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 27 12 32 30
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 14 41 48 18 20 23 32
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 11 16 21 22 10 29 43
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 44 45 46 49 2 13 28 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 12 17 27 52 39 51
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 50 53 54 16 21 22
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 26 6 19 11
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 37 41 48 18 23 30 32
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 26 50 53 11 16 19
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 6 54 22 21
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 24 25 40 42 2 13 35 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 13 28 35 36 31 44 45 46
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 2 13 35 36 6 26 53 54
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 4 8 15 33 2 28 35
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 9 47 36 13
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 5 31 44 45 49 4 8 15 33 47
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 14 37 41 6 50 54
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 48 1 26 53
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 5 20 23 30 32 4 8 9 33 47
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 7 24 40 42 31 44 45 49
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 24 25 40 2 35 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 7 42 28 13
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 7 24 25 42 5 10 43
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 0 12 17 27 1 14 37 41
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 11 16 19 22 1 37 41 48
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 6 26 50 54 14 37 41 48
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 12 17 27 52 39 51
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 4 15 33 47 24 40 42
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 8 9 7 25
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-1 4 38 13 28 35 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 1 39 51 3
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 0 12 17 27 1 14 37 41
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 18 23 30 32 6 26 50 53
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 31 44 45 46 11 19 21 22
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 5 0 17 27 52 4 8 9 15 47
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 12 17 27 52 39 51
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 0 12 17 52 18 20 23 30
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 1 39 51 3
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 7 25 40 42 5 29 43
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 14 37 41 0 12 17
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 1 48 27 52
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 3 11 16 21 22 10 29 43
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 4 4 6 50 53 54 11 16 21 22
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 18 20 23 30 7 24 25 42
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 16 19 21 22 26 50 53 54
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 0 12 17 52 18 20 23 30
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 26 50 53 11 16 19
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 6 54 22 21
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 26 50 53 11 16 19
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 6 54 22 21
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 44 45 46 13 28 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 31 49 35 2
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
 3 4 31 44 49 4 8 15 33
@@ -2578,82 +2629,31 @@
 2 2 46 45 9 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 24 25 40 42 2 13 35 36
+2 1 39 51 3
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 2 25 40 42 29 43
+3 3 50 53 54 16 21 22
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 24 7 10 5
+2 2 26 6 19 11
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 1 14 41 48 18 20 23 32
+4 4 18 20 23 30 7 24 25 42
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 26 50 53 54 11 16 19 21
+4 5 31 44 45 49 4 8 15 33 47
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 11 16 19 21 2 28 35 36
+4 4 2 13 28 36 1 14 37 48
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 31 44 45 46 11 19 21 22
+4 4 1 37 41 48 18 23 30 32
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 14 37 41 48 0 12 17 52
+5 4 4 8 9 15 33 31 44 46 49
 #c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 2 6 26 53 54 34 39
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 6 50 53 54 11 16 21 22
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 6 26 50 54 14 37 41 48
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 11 16 19 22 1 37 41 48
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 11 16 19 21 2 28 35 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 0 12 17 52 18 20 23 30
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 4 8 9 15 33 47 18 20 30 32
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-5 1 4 8 9 15 47 38
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 6 50 54 14 37 41
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 53 26 1 48
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 1 37 41 18 30 32
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 14 48 20 23
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-3 3 14 37 41 0 12 17
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 1 48 27 52
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-4 4 44 45 46 49 2 13 28 36
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-1 3 39 1 41 48
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 2 51 34 37 14
-#c 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
-# SwapNeighbor1 Swap2 SwapNeighbor1 Swap2 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 SwapNeighbor1 
-2 4 34 51 6 26 50 54
+4 4 18 23 30 32 6 26 50 53
 2 6 8 0 10 3 4 11 10 10 3 7 2 8 6 10 7 2 5 7 5 7 7 5 11 11 4 2 8 3 5 9 5 10 1 8 8 6 0 1 11 6 11 3 9 9 9 10 6 9 4 1 2 4 4 
 # = > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > < > > > < > > > > > > > > > > > > > > > > 
 # < = > > > > < > > < > < > < < < > > < > < < < > > < > < > < > < < > < < < > < > < < < < > < < < > > > > > > < 
