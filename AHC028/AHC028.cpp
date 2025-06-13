@@ -271,191 +271,171 @@ ll calculateTotalScore()
   return score;
 }
 
-void buildInitialSolution()
+// タスクとパスの最適な組み合わせを選択
+struct TaskPathSelection
 {
-  std::random_device seed_gen;
-  std::mt19937   rng(seed_gen());
+  int task_id;
+  int path_id;
+  int delta;
+};
 
-  best_score = -1;
+// デルタ値を計算
+int calculateDelta(int task_id, int path_id, int pos, int cur_i, int cur_j)
+{
+  const Path& path = task_paths[task_id][path_id];
+  int dist_start = manhattanDistance(path.start_i, path.start_j, cur_i, cur_j);
 
-  rep(attempt_idx, GREEDY_ITERATIONS)
-  {
-    int   used[TASK_COUNT]{};
-    int   cur_i = start_i, cur_j = start_j;
+  int bonus3 = 0, bonus2 = 0;
+  if (pos > 0) {
+    bonus3 = score_when_share_last3(
+      task_paths[task_order[pos - 1]][path_index[pos - 1]],
+      path);
+    bonus2 = score_when_share_last2(
+      task_paths[task_order[pos - 1]][path_index[pos - 1]],
+      path);
+  }
 
-    std::vector<int> shuffled_tasks;
-    rep(t, TASK_COUNT) shuffled_tasks.push_back(t);
+  int delta;
+  if (bonus3 > 0) {
+    delta = dist_start - bonus3 + path.path_cost - min_path_cost[task_id];
+  }
+  else if (bonus2 > 0) {
+    delta = dist_start - bonus2 + path.path_cost - min_path_cost[task_id];
+  }
+  else {
+    int same_cell = (pos > 0 && dist_start == 0) ? 1 : 0;
+    delta = dist_start - same_cell + path.path_cost - min_path_cost[task_id];
+  }
 
-    rep(pos, TASK_COUNT)
-    {
-      int best_delta = INF;
-      int best_task = -1;
-      int best_path_id = -1;
+  return delta;
+}
 
-      std::shuffle(shuffled_tasks.begin(), shuffled_tasks.end(), rng);
+// 最適なタスクとパスを選択
+TaskPathSelection selectBestTaskPath(const vector<int>& shuffled_tasks, const int* used,
+  int pos, int cur_i, int cur_j)
+{
+  TaskPathSelection best = { -1, -1, INF };
 
-      rep(task_idx, TASK_COUNT)
-      {
-        int task_id = shuffled_tasks[task_idx];
-        if (used[task_id]) continue;
+  for (int task_id : shuffled_tasks) {
+    if (used[task_id]) continue;
 
-        rep(path_id, BOARD_SIZE)
-        {
-          if (task_paths[task_id].size() <= path_id) break;
+    for (int path_id = 0; path_id < min((int)task_paths[task_id].size(), BOARD_SIZE); ++path_id) {
+      int delta = calculateDelta(task_id, path_id, pos, cur_i, cur_j);
 
-          int dist_start = manhattanDistance(
-            task_paths[task_id][path_id].start_i,
-            task_paths[task_id][path_id].start_j,
-            cur_i, cur_j);
-
-          int bonus3 = 0, bonus2 = 0;
-          if (pos > 0) {
-            bonus3 = score_when_share_last3(
-              task_paths[task_order[pos - 1]][path_index[pos - 1]],
-              task_paths[task_id][path_id]);
-            bonus2 = score_when_share_last2(
-              task_paths[task_order[pos - 1]][path_index[pos - 1]],
-              task_paths[task_id][path_id]);
-          }
-
-          int delta;
-          if (bonus3 > 0) {
-            delta = dist_start - bonus3 + task_paths[task_id][path_id].path_cost - min_path_cost[task_id];
-          }
-          else if (bonus2 > 0) {
-            delta = dist_start - bonus2 + task_paths[task_id][path_id].path_cost - min_path_cost[task_id];
-          }
-          else {
-            int same_cell = (pos > 0 && dist_start == 0) ? 1 : 0;
-            delta = dist_start - same_cell + task_paths[task_id][path_id].path_cost - min_path_cost[task_id];
-          }
-
-          if (delta < best_delta || (delta == best_delta && Random::xorshift() % 2)) {
-            best_delta = delta;
-            best_task = task_id;
-            best_path_id = path_id;
-          }
-        }
-      }
-
-      task_order[pos] = best_task;
-      path_index[pos] = best_path_id;
-      used[best_task] = 1;
-      cur_i = task_paths[best_task][best_path_id].goal_i;
-      cur_j = task_paths[best_task][best_path_id].goal_j;
-    }
-
-    int score = calculateTotalScore();
-    if (score > best_score) {
-      best_score = score;
-      rep(i, TASK_COUNT)
-      {
-        best_task_order[i] = task_order[i];
-        best_path_index[i] = path_index[i];
+      if (delta < best.delta || (delta == best.delta && Random::xorshift() % 2)) {
+        best.task_id = task_id;
+        best.path_id = path_id;
+        best.delta = delta;
       }
     }
   }
 
-  auto restore_best = [&]() {
-    rep(i, TASK_COUNT)
-    {
-      task_order[i] = best_task_order[i];
-      path_index[i] = best_path_index[i];
-    }
-    };
-  restore_best();
+  return best;
+}
 
+// 貪欲法による解の構築
+void greedyConstruction(std::mt19937& rng, int start_pos, int end_pos, const int* initial_used = nullptr)
+{
+  int used[TASK_COUNT]{};
+  if (initial_used) {
+    for (int i = 0; i < TASK_COUNT; ++i) {
+      used[i] = initial_used[i];
+    }
+  }
+
+  int cur_i = start_i, cur_j = start_j;
+  if (start_pos > 0) {
+    const Path& prev_path = task_paths[task_order[start_pos - 1]][path_index[start_pos - 1]];
+    cur_i = prev_path.goal_i;
+    cur_j = prev_path.goal_j;
+  }
+
+  vector<int> shuffled_tasks;
+  for (int t = 0; t < TASK_COUNT; ++t) {
+    shuffled_tasks.push_back(t);
+  }
+
+  for (int pos = start_pos; pos < end_pos; ++pos) {
+    std::shuffle(shuffled_tasks.begin(), shuffled_tasks.end(), rng);
+
+    TaskPathSelection selection = selectBestTaskPath(shuffled_tasks, used, pos, cur_i, cur_j);
+
+    task_order[pos] = selection.task_id;
+    path_index[pos] = selection.path_id;
+    used[selection.task_id] = 1;
+
+    const Path& selected_path = task_paths[selection.task_id][selection.path_id];
+    cur_i = selected_path.goal_i;
+    cur_j = selected_path.goal_j;
+  }
+}
+
+// ベスト解を保存
+void saveBestSolution()
+{
+  for (int i = 0; i < TASK_COUNT; ++i) {
+    best_task_order[i] = task_order[i];
+    best_path_index[i] = path_index[i];
+  }
+}
+
+// ベスト解を復元
+void restoreBestSolution()
+{
+  for (int i = 0; i < TASK_COUNT; ++i) {
+    task_order[i] = best_task_order[i];
+    path_index[i] = best_path_index[i];
+  }
+}
+
+void buildInitialSolution()
+{
+  std::random_device seed_gen;
+  std::mt19937 rng(seed_gen());
+
+  best_score = -1;
+
+  // 初期解の構築（完全ランダム）
+  for (int attempt = 0; attempt < GREEDY_ITERATIONS; ++attempt) {
+    greedyConstruction(rng, 0, TASK_COUNT);
+
+    int score = calculateTotalScore();
+    if (score > best_score) {
+      best_score = score;
+      saveBestSolution();
+    }
+  }
+
+  restoreBestSolution();
+
+  // フェーズベースの改善
   const struct
   {
     int iterations;
     int prefix_len;
   } phases[] = {
-      { GREEDY_ITERATIONS , 150 },
-      {1000 , 180 },
-      {1000 , 190 }
+    {GREEDY_ITERATIONS, 150},
+    {1000, 180},
+    {1000, 190}
   };
 
   for (auto [iter_cnt, prefix_len] : phases) {
-    rep(attempt_idx, iter_cnt)
-    {
-      int   used[TASK_COUNT]{};
-      int   cur_i = start_i, cur_j = start_j;
-
-      std::vector<int> shuffled_tasks;
-      rep(t, TASK_COUNT) shuffled_tasks.push_back(t);
-
-      rep(pos, prefix_len) used[task_order[pos]] = 1;
-
-      srep(pos, prefix_len, TASK_COUNT)
-      {
-        int best_delta = INF;
-        int best_task = -1;
-        int best_path_id = -1;
-
-        std::shuffle(shuffled_tasks.begin(), shuffled_tasks.end(), rng);
-
-        rep(task_idx, TASK_COUNT)
-        {
-          int task_id = shuffled_tasks[task_idx];
-          if (used[task_id]) continue;
-
-          rep(path_id, BOARD_SIZE)
-          {
-            if (task_paths[task_id].size() <= path_id) break;
-
-            int dist_start = manhattanDistance(
-              task_paths[task_id][path_id].start_i,
-              task_paths[task_id][path_id].start_j,
-              cur_i, cur_j);
-
-            int bonus3 = 0, bonus2 = 0;
-            if (pos > 0) {
-              bonus3 = score_when_share_last3(
-                task_paths[task_order[pos - 1]][path_index[pos - 1]],
-                task_paths[task_id][path_id]);
-              bonus2 = score_when_share_last2(
-                task_paths[task_order[pos - 1]][path_index[pos - 1]],
-                task_paths[task_id][path_id]);
-            }
-
-            int delta;
-            if (bonus3 > 0) {
-              delta = dist_start - bonus3 + task_paths[task_id][path_id].path_cost - min_path_cost[task_id];
-            }
-            else if (bonus2 > 0) {
-              delta = dist_start - bonus2 + task_paths[task_id][path_id].path_cost - min_path_cost[task_id];
-            }
-            else {
-              int same_cell = (pos > 0 && dist_start == 0) ? 1 : 0;
-              delta = dist_start - same_cell + task_paths[task_id][path_id].path_cost - min_path_cost[task_id];
-            }
-
-            if (delta < best_delta || (delta == best_delta && Random::xorshift() % 2)) {
-              best_delta = delta;
-              best_task = task_id;
-              best_path_id = path_id;
-            }
-          }
-        }
-
-        task_order[pos] = best_task;
-        path_index[pos] = best_path_id;
-        used[best_task] = 1;
-        cur_i = task_paths[best_task][best_path_id].goal_i;
-        cur_j = task_paths[best_task][best_path_id].goal_j;
+    for (int attempt = 0; attempt < iter_cnt; ++attempt) {
+      // 既存の解の一部を保持して再構築
+      int used[TASK_COUNT]{};
+      for (int pos = 0; pos < prefix_len; ++pos) {
+        used[task_order[pos]] = 1;
       }
+
+      greedyConstruction(rng, prefix_len, TASK_COUNT, used);
 
       int score = calculateTotalScore();
       if (score > best_score) {
         best_score = score;
-        rep(i, TASK_COUNT)
-        {
-          best_task_order[i] = task_order[i];
-          best_path_index[i] = path_index[i];
-        }
+        saveBestSolution();
       }
     }
-    restore_best();
+    restoreBestSolution();
   }
 }
 
@@ -619,76 +599,47 @@ void twoSwap(double temperature)
   }
 }
 
+// パス変更時のコストを計算
+int calculatePathChangeScore(int task_idx, int path_id)
+{
+  int prev_idx = task_idx - 1;
+  int next_idx = task_idx + 1;
+
+  const Path& prev_path = task_paths[task_order[prev_idx]][path_index[prev_idx]];
+  const Path& curr_path = task_paths[task_order[task_idx]][path_id];
+  const Path& next_path = task_paths[task_order[next_idx]][path_index[next_idx]];
+
+  int dist1 = manhattanDistance(curr_path.start_i, curr_path.start_j, prev_path.goal_i, prev_path.goal_j);
+  int dist2 = manhattanDistance(curr_path.goal_i, curr_path.goal_j, next_path.start_i, next_path.start_j);
+
+  int same_count = (dist1 == 0) + (dist2 == 0);
+  return dist1 + dist2 - same_count + curr_path.path_cost;
+}
+
 void changePathId(double temperature)
 {
-  int x = Random::xorshift() % TASK_COUNT;
-  int y = Random::xorshift() % 10;
-  if (task_paths[task_order[x]].size() <= y) return;
-  if (x == 0 || x == TASK_COUNT - 1) return;
-  if (y == path_index[x]) return;
-  int x11 = x - 1;
-  int x12 = x + 1;
+  // ランダムにタスクと新しいパスを選択
+  int task_idx = Random::xorshift() % TASK_COUNT;
+  int new_path_id = Random::xorshift() % 10;
 
-  int beforeScore = 0;
-  int afterScore = 0;
-  {
-    int dist1 = manhattanDistance(task_paths[task_order[x]][path_index[x]].start_i, task_paths[task_order[x]][path_index[x]].start_j,
-      task_paths[task_order[x11]][path_index[x11]].goal_i, task_paths[task_order[x11]][path_index[x11]].goal_j);
-    int dist2 = manhattanDistance(task_paths[task_order[x]][path_index[x]].goal_i, task_paths[task_order[x]][path_index[x]].goal_j,
-      task_paths[task_order[x12]][path_index[x12]].start_i, task_paths[task_order[x12]][path_index[x12]].start_j);
-    int same = 0;
-    if (dist1 == 0) same++;
-    if (dist2 == 0) same++;
-    beforeScore = dist1 + dist2 - same + task_paths[task_order[x]][path_index[x]].path_cost;
-  }
-  {
-    int dist1 = manhattanDistance(task_paths[task_order[x]][y].start_i, task_paths[task_order[x]][y].start_j,
-      task_paths[task_order[x11]][path_index[x11]].goal_i, task_paths[task_order[x11]][path_index[x11]].goal_j);
-    int dist2 = manhattanDistance(task_paths[task_order[x]][y].goal_i, task_paths[task_order[x]][y].goal_j,
-      task_paths[task_order[x12]][path_index[x12]].start_i, task_paths[task_order[x12]][path_index[x12]].start_j);
-    int same = 0;
-    if (dist1 == 0) same++;
-    if (dist2 == 0) same++;
-    afterScore = dist1 + dist2 - same + task_paths[task_order[x]][y].path_cost;
-  }
+  // 無効な操作をスキップ
+  if (task_paths[task_order[task_idx]].size() <= new_path_id) return;
+  if (task_idx == 0 || task_idx == TASK_COUNT - 1) return;
+  if (new_path_id == path_index[task_idx]) return;
 
-  int diffScore = beforeScore - afterScore;
-  double prob = exp((double)diffScore / temperature);
-  if (diffScore >= 0) {
-    path_index[x] = y;
+  // 現在のコストを計算
+  int before_score = calculatePathChangeScore(task_idx, path_index[task_idx]);
+
+  // 新しいパスでのコストを計算
+  int after_score = calculatePathChangeScore(task_idx, new_path_id);
+
+  // 差分計算と受理判定
+  int diff_score = before_score - after_score;
+  if (diff_score >= 0) {
+    path_index[task_idx] = new_path_id;
   }
 }
 
-void simulatedAnnealing()
-{
-  int loop = 0;
-  double startTemperature = START_TEMPERATURE;
-  double endTemperature = END_TEMPERATURE;
-  double nowProgress = 0;
-  while (false) {
-    loop++;
-    if (loop % 100 == 0) {
-      double nowTime = Timer::getElapsedTime();
-      nowProgress = nowTime / TIME_LIMIT_SEC;
-      if (nowProgress > 1.0) break;
-    }
-
-    double temperature =
-      startTemperature + (endTemperature - startTemperature) * nowProgress;
-
-    int ra = Random::xorshift() % 100;
-    if (ra < SWAP_RATIO) {
-      twoSwap(temperature);
-    }
-    else {
-      changePathId(temperature);
-    }
-  }
-
-  if (mode != 0) {
-    cout << "loop = " << loop << endl;
-  }
-}
 
 ll solveSingleCase(int probNum)
 {
@@ -792,8 +743,6 @@ ll solveSingleCase(int probNum)
   }
 
   buildInitialSolution();
-
-  simulatedAnnealing();
 
   writeAnswer(ofs);
 
