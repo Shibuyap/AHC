@@ -1451,6 +1451,9 @@ void OpenOfs(int probNum, ofstream& ofs)
   }
 }
 
+// Forward declarations
+char Query(int& turn);
+
 // Common refactored functions
 void initializeAnsArray()
 {
@@ -1495,6 +1498,36 @@ char compareQuerySums(const vector<int>& left_items, const vector<int>& right_it
   if (sumL < sumR) return '<';
   else if (sumL == sumR) return '=';
   else return '>';
+}
+
+// Binary search to find position of gId in groups
+int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLeft, int initialRight, int& countQ)
+{
+  int left = initialLeft;
+  int right = initialRight;
+  while (left < right) {
+    int mid = (left + right) / 2;
+    rep(j, N)
+    {
+      if (ans[j] == gId) {
+        l[countQ].push_back(j);
+      }
+      else if (ans[j] == groups[mid]) {
+        r[countQ].push_back(j);
+      }
+    }
+    char c = Query(countQ);
+    if (c == '=') {
+      left = right = mid;
+    }
+    else if (c == '>') {
+      right = mid;
+    }
+    else {
+      left = mid + 1;
+    }
+  }
+  return left;
 }
 
 bool ErrorCheck()
@@ -3680,30 +3713,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -3897,30 +3907,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -4107,30 +4094,7 @@ void Method6(int hiritu = 100, int minDiff = 10)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -4190,30 +4154,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -4301,30 +4242,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
       ans[id] = gId;
     }
 
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -4465,30 +4383,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
       ans[id] = gId;
     }
 
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -4657,30 +4552,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
       ans[id] = gId;
     }
 
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -4892,30 +4764,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
       ans[id] = gId;
     }
 
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -5133,30 +4982,7 @@ void Method12(int ikichi = N)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -5243,30 +5069,7 @@ void Method106(int hiritu = 100, int minDiff = 10, int totyuu = 999)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -5329,30 +5132,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
   int loop = 0;
@@ -5428,30 +5208,7 @@ void Method806(int hiritu, int minDiff, int _m)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
   int loop = 0;
@@ -5535,63 +5292,13 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
             }
           }
           // 整列を更新
-          int left = 0;
-          int right = dstPos;
-          while (left < right) {
-            int mid = (left + right) / 2;
-            rep(j, N)
-            {
-              if (ans[j] == gId) {
-                l[countQ].push_back(j);
-              }
-              else if (ans[j] == groups[mid]) {
-                r[countQ].push_back(j);
-              }
-            }
-            char c = Query(countQ);
-            if (c == '=') {
-              left = right = mid;
-            }
-            else if (c == '>') {
-              right = mid;
-            }
-            else {
-              left = mid + 1;
-            }
-          }
-          int now = dstPos;
-          while (left < now) {
-            swap(groups[now - 1], groups[now]);
-            now--;
-          }
+          int left = binarySearchGroupPosition(gId, groups, 0, dstPos, countQ);
+          moveGroupToPosition(groups, dstPos, left);
         }
       }
     }
 
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
   int loop = 0;
@@ -5696,30 +5403,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -5810,30 +5494,7 @@ void Method112(int ikichi = N, int totyuu = 999)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
@@ -5870,30 +5531,7 @@ void Method17(int ikichi, int hiritu)
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
-    int left = 0;
-    int right = D - 1;
-    while (left < right) {
-      int mid = (left + right) / 2;
-      rep(j, N)
-      {
-        if (ans[j] == gId) {
-          l[countQ].push_back(j);
-        }
-        else if (ans[j] == groups[mid]) {
-          r[countQ].push_back(j);
-        }
-      }
-      char c = Query(countQ);
-      if (c == '=') {
-        left = right = mid;
-      }
-      else if (c == '>') {
-        right = mid;
-      }
-      else {
-        left = mid + 1;
-      }
-    }
+    int left = binarySearchGroupPosition(gId, groups, 0, D - 1, countQ);
     moveGroupToPosition(groups, D - 1, left);
   }
 
