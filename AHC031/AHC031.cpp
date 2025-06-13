@@ -37,6 +37,48 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+const int MAX_D = 55;
+const int MAX_N = 56;
+const int MAX_LINECOUNT = 60;
+
+class Solution
+{
+public:
+  int ans[MAX_D][MAX_N][4];
+  ll ansScore;
+  int ansLinePos[MAX_D][MAX_LINECOUNT];
+  int ansLineCount[MAX_D];
+  int ansBaseLineCount;
+
+  Solution()
+  {
+    clear();
+  }
+
+  void clear()
+  {
+    memset(ans, 0, sizeof(ans));
+    ansScore = 0;
+    memset(ansLinePos, 0, sizeof(ansLinePos));
+    memset(ansLineCount, 0, sizeof(ansLineCount));
+    ansBaseLineCount = 0;
+  }
+
+  void copyFrom(const Solution& other)
+  {
+    memcpy(ans, other.ans, sizeof(ans));
+    ansScore = other.ansScore;
+    memcpy(ansLinePos, other.ansLinePos, sizeof(ansLinePos));
+    memcpy(ansLineCount, other.ansLineCount, sizeof(ansLineCount));
+    ansBaseLineCount = other.ansBaseLineCount;
+  }
+
+  void copyTo(Solution& other) const
+  {
+    other.copyFrom(*this);
+  }
+};
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t Rand()
@@ -86,9 +128,7 @@ double GetNowTime()
   return nowTime;
 }
 
-const int MAX_D = 55;
-const int MAX_N = 56;
-const int MAX_LINECOUNT = 60;
+// Constants are already defined in Solution.hpp
 int lineMaxLimit = 100;
 
 const int w = 1000;
@@ -103,226 +143,158 @@ int mostVariableAsCount[MAX_D][w + 10];
 int mostVariableAsValue[MAX_D][w + 10][10];
 int mostVariableAs[MAX_D][w + 10][10][2];
 
-int ans[MAX_D][MAX_N][4];
-ll ansScore;
-int ansLinePos[MAX_D][MAX_LINECOUNT] = {};
-int ansLineCount[MAX_D];
-int ansBaseLineCount;
+Solution ans;
 
-int temp_ans[MAX_D][MAX_N][4];
-ll temp_ansScore;
-int temp_ansLinePos[MAX_D][MAX_LINECOUNT] = {};
-int temp_ansLineCount[MAX_D];
-int temp_ansBaseLineCount;
+Solution temp_ans;
 
-int real_ans[MAX_D][MAX_N][4];
-ll real_ansScore;
-int real_ansLinePos[MAX_D][MAX_LINECOUNT] = {};
-int real_ansLineCount[MAX_D];
-int real_ansBaseLineCount;
+Solution real_ans;
 
-int real_real_ans[MAX_D][MAX_N][4];
-ll real_real_ansScore;
-int real_real_ansLinePos[MAX_D][MAX_LINECOUNT] = {};
-int real_real_ansLineCount[MAX_D];
-int real_real_ansBaseLineCount;
+Solution real_real_ans;
 
 int keep31Count = 0;
 int keep31KeepSize = 2;
-int keep31_ans[10][MAX_D][MAX_N][4];
-ll keep31_ansScore[10];
-int keep31_ansLinePos[10][MAX_D][MAX_LINECOUNT] = {};
-int keep31_ansLineCount[10][MAX_D];
-int keep31_ansBaseLineCount[10];
+Solution keep31_ans[10];
 
 void CopyToRealRealAns()
 {
-  real_real_ansScore = real_ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        real_real_ans[i][j][k] = real_ans[i][j][k];
-      }
-    }
-  }
-  real_real_ansBaseLineCount = real_ansBaseLineCount;
-  rep(i, d)
-  {
-    real_real_ansLineCount[i] = real_ansLineCount[i];
-    rep(j, real_ansLineCount[i] + 1)
-    {
-      real_real_ansLinePos[i][j] = real_ansLinePos[i][j];
-    }
-  }
+  real_real_ans.copyFrom(real_ans);
 }
 
 void CopyToRealAns()
 {
-  real_ansScore = ansScore;
-  rep(i, d)
-  {
-    rep(j, n)
-    {
-      rep(k, 4)
-      {
-        real_ans[i][j][k] = ans[i][j][k];
-      }
-    }
-  }
-  real_ansBaseLineCount = ansBaseLineCount;
-  rep(i, d)
-  {
-    real_ansLineCount[i] = ansLineCount[i];
-    rep(j, ansLineCount[i] + 1)
-    {
-      real_ansLinePos[i][j] = ansLinePos[i][j];
-    }
-  }
+  real_ans.copyFrom(ans);
 }
 
 void CopyFromRealRealAns()
 {
-  real_ansScore = real_real_ansScore;
+  real_ans.copyFrom(real_real_ans);
+  real_ans.ansBaseLineCount = real_real_ans.ansBaseLineCount;
   rep(i, d)
   {
-    rep(j, n)
+    real_ans.ansLineCount[i] = real_real_ans.ansLineCount[i];
+    rep(j, real_ans.ansLineCount[i] + 1)
     {
-      rep(k, 4)
-      {
-        real_ans[i][j][k] = real_real_ans[i][j][k];
-      }
-    }
-  }
-  real_ansBaseLineCount = real_real_ansBaseLineCount;
-  rep(i, d)
-  {
-    real_ansLineCount[i] = real_real_ansLineCount[i];
-    rep(j, real_ansLineCount[i] + 1)
-    {
-      real_ansLinePos[i][j] = real_real_ansLinePos[i][j];
+      real_ans.ansLinePos[i][j] = real_real_ans.ansLinePos[i][j];
     }
   }
 }
 
 void CopyFromRealAns()
 {
-  ansScore = real_ansScore;
+  ans.ansScore = real_ans.ansScore;
   rep(i, d)
   {
     rep(j, n)
     {
       rep(k, 4)
       {
-        ans[i][j][k] = real_ans[i][j][k];
+        ans.ans[i][j][k] = real_ans.ans[i][j][k];
       }
     }
   }
-  ansBaseLineCount = real_ansBaseLineCount;
+  ans.ansBaseLineCount = real_ans.ansBaseLineCount;
   rep(i, d)
   {
-    ansLineCount[i] = real_ansLineCount[i];
-    rep(j, ansLineCount[i] + 1)
+    ans.ansLineCount[i] = real_ans.ansLineCount[i];
+    rep(j, ans.ansLineCount[i] + 1)
     {
-      ansLinePos[i][j] = real_ansLinePos[i][j];
+      ans.ansLinePos[i][j] = real_ans.ansLinePos[i][j];
     }
   }
 }
 
 void CopyToKeep31(int idx)
 {
-  keep31_ansScore[idx] = ansScore;
+  keep31_ans[idx].ansScore = ans.ansScore;
   rep(i, d)
   {
     rep(j, n)
     {
       rep(k, 4)
       {
-        keep31_ans[idx][i][j][k] = ans[i][j][k];
+        keep31_ans[idx].ans[i][j][k] = ans.ans[i][j][k];
       }
     }
   }
-  keep31_ansBaseLineCount[idx] = ansBaseLineCount;
+  keep31_ans[idx].ansBaseLineCount = ans.ansBaseLineCount;
   rep(i, d)
   {
-    keep31_ansLineCount[idx][i] = ansLineCount[i];
-    rep(j, ansLineCount[i] + 1)
+    keep31_ans[idx].ansLineCount[i] = ans.ansLineCount[i];
+    rep(j, ans.ansLineCount[i] + 1)
     {
-      keep31_ansLinePos[idx][i][j] = ansLinePos[i][j];
+      keep31_ans[idx].ansLinePos[i][j] = ans.ansLinePos[i][j];
     }
   }
 }
 
 void CopyFromKeep31(int idx)
 {
-  ansScore = keep31_ansScore[idx];
+  ans.ansScore = keep31_ans[idx].ansScore;
   rep(i, d)
   {
     rep(j, n)
     {
       rep(k, 4)
       {
-        ans[i][j][k] = keep31_ans[idx][i][j][k];
+        ans.ans[i][j][k] = keep31_ans[idx].ans[i][j][k];
       }
     }
   }
-  ansBaseLineCount = keep31_ansBaseLineCount[idx];
+  ans.ansBaseLineCount = keep31_ans[idx].ansBaseLineCount;
   rep(i, d)
   {
-    ansLineCount[i] = keep31_ansLineCount[idx][i];
-    rep(j, ansLineCount[i] + 1)
+    ans.ansLineCount[i] = keep31_ans[idx].ansLineCount[i];
+    rep(j, ans.ansLineCount[i] + 1)
     {
-      ansLinePos[i][j] = keep31_ansLinePos[idx][i][j];
+      ans.ansLinePos[i][j] = keep31_ans[idx].ansLinePos[i][j];
     }
   }
 }
 
 void CopyToTemp()
 {
-  temp_ansScore = ansScore;
+  temp_ans.ansScore = ans.ansScore;
   rep(i, d)
   {
     rep(j, n)
     {
       rep(k, 4)
       {
-        temp_ans[i][j][k] = ans[i][j][k];
+        temp_ans.ans[i][j][k] = ans.ans[i][j][k];
       }
     }
   }
-  temp_ansBaseLineCount = ansBaseLineCount;
+  temp_ans.ansBaseLineCount = ans.ansBaseLineCount;
   rep(i, d)
   {
-    temp_ansLineCount[i] = ansLineCount[i];
-    rep(j, ansLineCount[i] + 1)
+    temp_ans.ansLineCount[i] = ans.ansLineCount[i];
+    rep(j, ans.ansLineCount[i] + 1)
     {
-      temp_ansLinePos[i][j] = ansLinePos[i][j];
+      temp_ans.ansLinePos[i][j] = ans.ansLinePos[i][j];
     }
   }
 }
 
 void CopyFromTemp()
 {
-  ansScore = temp_ansScore;
+  ans.ansScore = temp_ans.ansScore;
   rep(i, d)
   {
     rep(j, n)
     {
       rep(k, 4)
       {
-        ans[i][j][k] = temp_ans[i][j][k];
+        ans.ans[i][j][k] = temp_ans.ans[i][j][k];
       }
     }
   }
-  ansBaseLineCount = temp_ansBaseLineCount;
+  ans.ansBaseLineCount = temp_ans.ansBaseLineCount;
   rep(i, d)
   {
-    ansLineCount[i] = temp_ansLineCount[i];
-    rep(j, ansLineCount[i] + 1)
+    ans.ansLineCount[i] = temp_ans.ansLineCount[i];
+    rep(j, ans.ansLineCount[i] + 1)
     {
-      ansLinePos[i][j] = temp_ansLinePos[i][j];
+      ans.ansLinePos[i][j] = temp_ans.ansLinePos[i][j];
     }
   }
 }
@@ -330,8 +302,8 @@ void CopyFromTemp()
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  ansScore = INF;
-  real_ansScore = INF;
+  ans.ansScore = INF;
+  real_ans.ansScore = INF;
 }
 
 void InitMostVariableAs()
@@ -514,7 +486,7 @@ void Output(ofstream& ofs)
       {
         rep(k, 4)
         {
-          cout << ans[i][j][k] << ' ';
+          cout << ans.ans[i][j][k] << ' ';
         }
         cout << endl;
       }
@@ -527,7 +499,7 @@ void Output(ofstream& ofs)
       {
         rep(k, 4)
         {
-          ofs << ans[i][j][k] << ' ';
+          ofs << ans.ans[i][j][k] << ' ';
         }
         ofs << endl;
       }
@@ -541,13 +513,13 @@ bool IsNGAns()
   {
     rep(j, n)
     {
-      if (ans[i][j][0] < 0) return true;
-      if (ans[i][j][1] < 0) return true;
-      if (ans[i][j][0] >= ans[i][j][2]) return true;
-      if (ans[i][j][1] >= ans[i][j][3]) return true;
-      if (ans[i][j][2] > w) return true;
-      if (ans[i][j][3] > w) return true;
-      if ((ans[i][j][2] - ans[i][j][0]) * (ans[i][j][3] - ans[i][j][1]) < a[i][j]) return true;
+      if (ans.ans[i][j][0] < 0) return true;
+      if (ans.ans[i][j][1] < 0) return true;
+      if (ans.ans[i][j][0] >= ans.ans[i][j][2]) return true;
+      if (ans.ans[i][j][1] >= ans.ans[i][j][3]) return true;
+      if (ans.ans[i][j][2] > w) return true;
+      if (ans.ans[i][j][3] > w) return true;
+      if ((ans.ans[i][j][2] - ans.ans[i][j][0]) * (ans.ans[i][j][3] - ans.ans[i][j][1]) < a[i][j]) return true;
     }
   }
   rep(i, d)
@@ -556,8 +528,8 @@ bool IsNGAns()
     {
       srep(k, j + 1, n)
       {
-        if (max(ans[i][j][0], ans[i][k][0]) < min(ans[i][j][2], ans[i][k][2])) {
-          if (max(ans[i][j][1], ans[i][k][1]) < min(ans[i][j][3], ans[i][k][3])) { return true; }
+        if (max(ans.ans[i][j][0], ans.ans[i][k][0]) < min(ans.ans[i][j][2], ans.ans[i][k][2])) {
+          if (max(ans.ans[i][j][1], ans.ans[i][k][1]) < min(ans.ans[i][j][3], ans.ans[i][k][3])) { return true; }
         }
       }
     }
@@ -573,10 +545,10 @@ ll CalcScore()
   {
     rep(j, n)
     {
-      int sx = ans[i][j][0];
-      int sy = ans[i][j][1];
-      int tx = ans[i][j][2];
-      int ty = ans[i][j][3];
+      int sx = ans.ans[i][j][0];
+      int sy = ans.ans[i][j][1];
+      int tx = ans.ans[i][j][2];
+      int ty = ans.ans[i][j][3];
       res += (ll)max(0, a[i][j] - (tx - sx) * (ty - sy)) * 100;
     }
   }
@@ -587,10 +559,10 @@ ll CalcScore()
       vector<P> now;
       rep(j, n)
       {
-        int sx = ans[i][j][0];
-        int sy = ans[i][j][1];
-        int tx = ans[i][j][2];
-        int ty = ans[i][j][3];
+        int sx = ans.ans[i][j][0];
+        int sy = ans.ans[i][j][1];
+        int tx = ans.ans[i][j][2];
+        int ty = ans.ans[i][j][3];
         if (sy != 0 && sy != w) {
           now.emplace_back(sy * w + sx, 1);
           now.emplace_back(sy * w + tx, -1);
@@ -646,10 +618,10 @@ ll CalcScore()
       vector<P> now;
       rep(j, n)
       {
-        int sx = ans[i][j][0];
-        int sy = ans[i][j][1];
-        int tx = ans[i][j][2];
-        int ty = ans[i][j][3];
+        int sx = ans.ans[i][j][0];
+        int sy = ans.ans[i][j][1];
+        int tx = ans.ans[i][j][2];
+        int ty = ans.ans[i][j][3];
         if (sx != 0 && sx != w) {
           now.emplace_back(sx * w + sy, 1);
           now.emplace_back(sx * w + ty, -1);
@@ -711,10 +683,10 @@ ll CalcScoreForMethod3()
   {
     rep(j, n)
     {
-      int sx = ans[i][j][0];
-      int sy = ans[i][j][1];
-      int tx = ans[i][j][2];
-      int ty = ans[i][j][3];
+      int sx = ans.ans[i][j][0];
+      int sy = ans.ans[i][j][1];
+      int tx = ans.ans[i][j][2];
+      int ty = ans.ans[i][j][3];
       res += (ll)max(0, a[i][j] - (tx - sx) * (ty - sy)) * 100;
     }
   }
@@ -723,9 +695,9 @@ ll CalcScoreForMethod3()
   {
     rep(i, d)
     {
-      rep(j, ansLineCount[i] + 1)
+      rep(j, ans.ansLineCount[i] + 1)
       {
-        if (j == 0 || j == ansLineCount[i]) {
+        if (j == 0 || j == ans.ansLineCount[i]) {
           CalcScoreForMethod3Used[j] = 1;
         }
         else {
@@ -734,15 +706,15 @@ ll CalcScoreForMethod3()
       }
       rep(j, n)
       {
-        rep(k, ansLineCount[i])
+        rep(k, ans.ansLineCount[i])
         {
-          if (ans[i][j][1] == ansLinePos[i][k]) {
+          if (ans.ans[i][j][1] == ans.ansLinePos[i][k]) {
             CalcScoreForMethod3Used[k] = 1;
             CalcScoreForMethod3Used[k + 1] = 1;
           }
         }
       }
-      rep(j, ansLineCount[i] + 1)
+      rep(j, ans.ansLineCount[i] + 1)
       {
         if (CalcScoreForMethod3Used[j] == 0) { res += w * 2; }
       }
@@ -757,10 +729,10 @@ ll CalcScoreForMethod3()
       int nowTail = 0;
       rep(j, n)
       {
-        int sx = ans[i][j][0];
-        int sy = ans[i][j][1];
-        int tx = ans[i][j][2];
-        int ty = ans[i][j][3];
+        int sx = ans.ans[i][j][0];
+        int sy = ans.ans[i][j][1];
+        int tx = ans.ans[i][j][2];
+        int ty = ans.ans[i][j][3];
         if (sx != 0 && sx != w) {
           CalcScoreForMethod3NowArr[nowTail] = (sx * w + sy) * 10 + 1;
           nowTail++;
@@ -831,15 +803,15 @@ void Initialize()
     {
       int need = (a[i][j] - 1) / w + 1;
       int newY = min(now + need, w - (n - 1 - j));
-      ans[i][j][0] = 0;
-      ans[i][j][1] = now;
-      ans[i][j][2] = w;
-      ans[i][j][3] = newY;
+      ans.ans[i][j][0] = 0;
+      ans.ans[i][j][1] = now;
+      ans.ans[i][j][2] = w;
+      ans.ans[i][j][3] = newY;
       now = newY;
     }
   }
 
-  ansScore = CalcScore();
+  ans.ansScore = CalcScore();
   CopyToRealAns();
 }
 
@@ -890,10 +862,10 @@ void Method1()
         ok = 0;
         break;
       }
-      ans[i][tmpansjj][0] = x;
-      ans[i][tmpansjj][1] = y;
-      ans[i][tmpansjj][2] = tmpans2;
-      ans[i][tmpansjj][3] = tmpans3;
+      ans.ans[i][tmpansjj][0] = x;
+      ans.ans[i][tmpansjj][1] = y;
+      ans.ans[i][tmpansjj][2] = tmpans2;
+      ans.ans[i][tmpansjj][3] = tmpans3;
       used[tmpansjj] = 1;
       x = newx;
       y = newy;
@@ -901,8 +873,8 @@ void Method1()
     if (ok == 0) { break; }
   }
   if (ok) {
-    ansScore = CalcScore();
-    if (ansScore < real_ansScore) { CopyToRealAns(); }
+    ans.ansScore = CalcScore();
+    if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
   }
 }
 
@@ -961,10 +933,10 @@ void MethodPerfect()
       }
       if (ok == 0) { break; }
       if (tmpansjj >= 0) {
-        ans[i][tmpansjj][0] = x;
-        ans[i][tmpansjj][1] = y;
-        ans[i][tmpansjj][2] = tmpans2;
-        ans[i][tmpansjj][3] = tmpans3;
+        ans.ans[i][tmpansjj][0] = x;
+        ans.ans[i][tmpansjj][1] = y;
+        ans.ans[i][tmpansjj][2] = tmpans2;
+        ans.ans[i][tmpansjj][3] = tmpans3;
         used[tmpansjj] = 1;
         x = newx;
         y = newy;
@@ -974,7 +946,7 @@ void MethodPerfect()
   }
 
   if (ok) {
-    ansScore = CalcScore();
+    ans.ansScore = CalcScore();
     CopyToRealAns();
   }
 }
@@ -1001,7 +973,7 @@ void CopyToReal_M42()
     {
       real_ansColumnNum[i][j] = ansColumnNum[i][j];
     }
-    rep(j, ansBaseLineCount)
+    rep(j, ans.ansBaseLineCount)
     {
       real_ansColumnSchedulesCount[i][j] = ansColumnSchedulesCount[i][j];
       rep(k, real_ansColumnSchedulesCount[i][j] + 1)
@@ -1022,7 +994,7 @@ void CoptToCurrent_M42()
     {
       ansColumnNum[i][j] = real_ansColumnNum[i][j];
     }
-    rep(j, ansBaseLineCount)
+    rep(j, ans.ansBaseLineCount)
     {
       ansColumnSchedulesCount[i][j] = real_ansColumnSchedulesCount[i][j];
       rep(k, ansColumnSchedulesCount[i][j] + 1)
@@ -1741,9 +1713,9 @@ void Method4_3_1()
     if (num != raN) { lineCapacity -= preCalcScheduleSizes[raD][num][lineNum]; }
   }
 
-  int nextLine = Rand() % ansLineCount[raD];
+  int nextLine = Rand() % ans.ansLineCount[raD];
   while (nextLine == lineNum) {
-    nextLine = Rand() % ansLineCount[raD];
+    nextLine = Rand() % ans.ansLineCount[raD];
   }
   int beforeCount = ansColumnSchedulesCount[raD][lineNum];
   int afterCount = ansColumnSchedulesCount[raD][nextLine];
@@ -1809,7 +1781,7 @@ void Method4_3_1()
     }
     if (needSpace <= lineCapacity && preCalcScheduleSizes[raD][raN][nextLine] <= nextLineCapacity + nextSpace) {
       // int widths2[MAX_LINECOUNT] = {};
-      // rep(k, ansBaseLineCount) {
+      // rep(k, ans.ansBaseLineCount) {
       //  widths2[k] = widths[k];
       //  widths[k] *= widths[k];
       //}
@@ -1987,7 +1959,7 @@ void Method4_3_1()
       // cout << temp << endl;
       const double prob = exp((double)totalDiffScore * 100 / temp);
 
-      // rep(k, ansBaseLineCount) {
+      // rep(k, ans.ansBaseLineCount) {
       //  widths[k] = widths2[k];
       //}
 
@@ -2013,9 +1985,9 @@ void Method4_3_1()
         }
         ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
-        ansScore -= totalDiffScore;
-        if (ansScore < real_ansScore) {
-          // cout << ansScore << ' ' << M43_nowTime << endl;
+        ans.ansScore -= totalDiffScore;
+        if (ans.ansScore < real_ans.ansScore) {
+          // cout << ans.ansScore << ' ' << M43_nowTime << endl;
           CopyToRealAns();
           CopyToReal_M42();
         }
@@ -2042,9 +2014,9 @@ void Method4_3_2()
     if (num != raN) { lineCapacity -= preCalcScheduleSizes[raD][num][lineNum]; }
   }
 
-  int nextLine = Rand() % ansLineCount[raD];
+  int nextLine = Rand() % ans.ansLineCount[raD];
   while (nextLine == lineNum) {
-    nextLine = Rand() % ansLineCount[raD];
+    nextLine = Rand() % ans.ansLineCount[raD];
   }
   int beforeCount = ansColumnSchedulesCount[raD][lineNum];
   int afterCount = ansColumnSchedulesCount[raD][nextLine];
@@ -2315,8 +2287,8 @@ void Method4_3_2()
           }
         }
 
-        ansScore -= totalDiffScore;
-        if (ansScore < real_ansScore) {
+        ans.ansScore -= totalDiffScore;
+        if (ans.ansScore < real_ans.ansScore) {
           CopyToRealAns();
           CopyToReal_M42();
         }
@@ -2334,10 +2306,10 @@ void Method4_3_2()
 void Method4_3_3()
 {
   int raD = Rand() % d;
-  int line1 = Rand() % ansLineCount[raD];
-  int line2 = Rand() % ansLineCount[raD];
+  int line1 = Rand() % ans.ansLineCount[raD];
+  int line2 = Rand() % ans.ansLineCount[raD];
   while (line2 == line1) {
-    line2 = Rand() % ansLineCount[raD];
+    line2 = Rand() % ans.ansLineCount[raD];
   }
   if (ansColumnSchedulesCount[raD][line1] == 0 || ansColumnSchedulesCount[raD][line2] == 0) return;
 
@@ -2491,8 +2463,8 @@ void Method4_3_3()
     }
     ansColumnSchedulesPosition[raD][line1][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
-    ansScore -= totalDiffScore;
-    if (ansScore < real_ansScore) {
+    ans.ansScore -= totalDiffScore;
+    if (ans.ansScore < real_ans.ansScore) {
       // cout << "XXXXXXXXXXXX" << endl;
       CopyToRealAns();
       CopyToReal_M42();
@@ -2504,7 +2476,7 @@ void Method4_3_3()
 void Method4_3_4_2()
 {
   int raD = Rand() % d;
-  int lineNum = Rand() % ansBaseLineCount;
+  int lineNum = Rand() % ans.ansBaseLineCount;
   if (ansColumnSchedulesCount[raD][lineNum] <= 1) return;
   int raIndex = Rand() % ansColumnSchedulesCount[raD][lineNum];
   int raDir = Rand() % 2;
@@ -2594,8 +2566,8 @@ void Method4_3_4_2()
         }
       }
     }
-    ansScore -= diffScore;
-    if (ansScore < real_ansScore) {
+    ans.ansScore -= diffScore;
+    if (ans.ansScore < real_ans.ansScore) {
       CopyToRealAns();
       CopyToReal_M42();
     }
@@ -2604,10 +2576,10 @@ void Method4_3_4_2()
 
 void Method4_3_5()
 {
-  int lineNum = Rand() % ansBaseLineCount;
+  int lineNum = Rand() % ans.ansBaseLineCount;
   int raDir = Rand() % 2;
   if (lineNum == 0) { raDir = 1; }
-  if (lineNum == ansBaseLineCount - 1) { raDir = 0; }
+  if (lineNum == ans.ansBaseLineCount - 1) { raDir = 0; }
   int margin = widths[lineNum] - 1;
   rep(i, d)
   {
@@ -2737,16 +2709,16 @@ void Method4_3_5()
         }
       }
     }
-    ansScore -= diffScore;
+    ans.ansScore -= diffScore;
     rep(i, d)
     {
-      ansLinePos[i][0] = 0;
-      rep(j, ansBaseLineCount)
+      ans.ansLinePos[i][0] = 0;
+      rep(j, ans.ansBaseLineCount)
       {
-        ansLinePos[i][j + 1] = ansLinePos[i][j] + widths[j];
+        ans.ansLinePos[i][j + 1] = ans.ansLinePos[i][j] + widths[j];
       }
     }
-    if (ansScore < real_ansScore) {
+    if (ans.ansScore < real_ans.ansScore) {
       CopyToRealAns();
       CopyToReal_M42();
     }
@@ -2867,8 +2839,8 @@ void Method4_3_7()
     }
     ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
-    ansScore -= totalDiffScore;
-    if (ansScore < real_ansScore) {
+    ans.ansScore -= totalDiffScore;
+    if (ans.ansScore < real_ans.ansScore) {
       CopyToRealAns();
       CopyToReal_M42();
     }
@@ -2883,8 +2855,8 @@ int M438_yokoLineCount[MAX_LINECOUNT];
 int M438_LineNumbers[MAX_LINECOUNT];
 void Method4_3_8()
 {
-  rep(j, ansBaseLineCount) M438_LineNumbers[j] = j;
-  FisherYates(M438_LineNumbers, ansBaseLineCount);
+  rep(j, ans.ansBaseLineCount) M438_LineNumbers[j] = j;
+  FisherYates(M438_LineNumbers, ans.ansBaseLineCount);
   int minLineNum = -1;
   int minLineCount = INT_INF;
   int taisyouLineNum = M438_LineNumbers[0];
@@ -2967,9 +2939,9 @@ void Method4_3_8()
   widths[minLineNum] += margin;
   rep(i, d)
   {
-    rep(j, ansBaseLineCount)
+    rep(j, ans.ansBaseLineCount)
     {
-      ansLinePos[i][j + 1] = ansLinePos[i][j] + widths[j];
+      ans.ansLinePos[i][j + 1] = ans.ansLinePos[i][j] + widths[j];
     }
   }
   rep(i, d)
@@ -2981,8 +2953,8 @@ void Method4_3_8()
     }
   }
 
-  ansScore -= diffScore;
-  if (ansScore < real_ansScore) {
+  ans.ansScore -= diffScore;
+  if (ans.ansScore < real_ans.ansScore) {
     CopyToRealAns();
     CopyToReal_M42();
   }
@@ -2996,7 +2968,7 @@ void Method4_3_9()
 {
   int raD = Rand() % d;
   int cnt = 0;
-  rep(j, ansBaseLineCount)
+  rep(j, ans.ansBaseLineCount)
   {
     rep(k, ansColumnSchedulesCount[raD][j])
     {
@@ -3008,7 +2980,7 @@ void Method4_3_9()
   }
   sort(M439Array, M439Array + cnt);
 
-  rep(j, ansBaseLineCount)
+  rep(j, ans.ansBaseLineCount)
   {
     rep(k, ansColumnSchedulesCount[raD][j])
     {
@@ -3047,9 +3019,9 @@ void Method4_3(double timeLimit)
     rep(j, n)
     {
       int ng = 1;
-      rep(k, ansLineCount[i])
+      rep(k, ans.ansLineCount[i])
       {
-        if (ans[i][j][1] == ansLinePos[i][k] && ans[i][j][3] == ansLinePos[i][k + 1]) {
+        if (ans.ans[i][j][1] == ans.ansLinePos[i][k] && ans.ans[i][j][3] == ans.ansLinePos[i][k + 1]) {
           ansColumnNum[i][j] = k;
           break;
         }
@@ -3061,9 +3033,9 @@ void Method4_3(double timeLimit)
   {
     rep(j, n)
     {
-      rep(k, ansLineCount[i])
+      rep(k, ans.ansLineCount[i])
       {
-        int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
+        int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
         if (width == 0) {
           preCalcScheduleSizes[i][j][k] = 1001001;
         }
@@ -3077,7 +3049,7 @@ void Method4_3(double timeLimit)
   // 初期解作成
   rep(i, d)
   {
-    rep(j, ansLineCount[i])
+    rep(j, ans.ansLineCount[i])
     {
       ansColumnSchedulesCount[i][j] = 0;
     }
@@ -3093,7 +3065,7 @@ void Method4_3(double timeLimit)
   }
   rep(i, d)
   {
-    rep(j, ansLineCount[i])
+    rep(j, ans.ansLineCount[i])
     {
       ansColumnSchedulesPosition[i][j][0] = 0;
       rep(k, ansColumnSchedulesCount[i][j])
@@ -3105,9 +3077,9 @@ void Method4_3(double timeLimit)
     }
   }
 
-  rep(j, ansBaseLineCount)
+  rep(j, ans.ansBaseLineCount)
   {
-    widths[j] = ansLinePos[0][j + 1] - ansLinePos[0][j];
+    widths[j] = ans.ansLinePos[0][j + 1] - ans.ansLinePos[0][j];
   }
 
   // realに格納
@@ -3165,27 +3137,27 @@ void Method4_3(double timeLimit)
   // ansScheduleLineNumからansを作成
   rep(i, d)
   {
-    rep(j, ansBaseLineCount)
+    rep(j, ans.ansBaseLineCount)
     {
       rep(k, ansColumnSchedulesCount[i][j])
       {
         int num = ansColumnSchedules[i][j][k];
-        ans[i][num][0] = ansColumnSchedulesPosition[i][j][k];
-        ans[i][num][2] = ansColumnSchedulesPosition[i][j][k + 1];
+        ans.ans[i][num][0] = ansColumnSchedulesPosition[i][j][k];
+        ans.ans[i][num][2] = ansColumnSchedulesPosition[i][j][k + 1];
         int posNum = ansColumnNum[i][num];
-        ans[i][num][1] = ansLinePos[i][posNum];
-        ans[i][num][3] = ansLinePos[i][posNum + 1];
+        ans.ans[i][num][1] = ans.ansLinePos[i][posNum];
+        ans.ans[i][num][3] = ans.ansLinePos[i][posNum + 1];
       }
     }
   }
 
-  // if (mode != 0) { cout << "M431Count = " << M431Count << ", loop = " << loopCount << ", ansScore = " << ansScore << endl; }
-  ansScore = CalcScore();
+  // if (mode != 0) { cout << "M431Count = " << M431Count << ", loop = " << loopCount << ", ans.ansScore = " << ans.ansScore << endl; }
+  ans.ansScore = CalcScore();
   CopyToRealAns();
 
   CopyFromRealAns();
   CoptToCurrent_M42();
-  // if (mode != 0) { cout << "loop = " << loopCount << ", ansScore = " << ansScore << endl; }
+  // if (mode != 0) { cout << "loop = " << loopCount << ", ans.ansScore = " << ans.ansScore << endl; }
 }
 
 int oshiiLineCount[MAX_D];
@@ -3200,13 +3172,13 @@ int Method3_Oshii()
   }
   // 作り直し
   {
-    ansBaseLineCount = oshiiLineCount[0];
+    ans.ansBaseLineCount = oshiiLineCount[0];
     rep(i, d)
     {
-      ansLineCount[i] = oshiiLineCount[i];
+      ans.ansLineCount[i] = oshiiLineCount[i];
       rep(j, oshiiLineCount[i] + 1)
       {
-        ansLinePos[i][j] = oshiiLinePos[i][j];
+        ans.ansLinePos[i][j] = oshiiLinePos[i][j];
       }
     }
 
@@ -3215,7 +3187,7 @@ int Method3_Oshii()
     drep(ii, d)
     {
       int i = daysDifficultySorted[ii];
-      rep(j, ansLineCount[i])
+      rep(j, ans.ansLineCount[i])
       {
         now[j] = 0;
       }
@@ -3227,9 +3199,9 @@ int Method3_Oshii()
         int minOver = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        dsrep(k, M3_alreadyCount, ansLineCount[i])
+        dsrep(k, M3_alreadyCount, ans.ansLineCount[i])
         {
-          int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
+          int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
           if (width * w < a[i][j]) break;
           int need = (a[i][j] - 1) / width + 1;
           int over = 0;
@@ -3252,10 +3224,10 @@ int Method3_Oshii()
           break;
         }
 
-        ans[i][j][0] = now[posNum];
-        ans[i][j][2] = now[posNum] + tmpNeed;
-        ans[i][j][1] = ansLinePos[i][posNum];
-        ans[i][j][3] = ansLinePos[i][posNum + 1];
+        ans.ans[i][j][0] = now[posNum];
+        ans.ans[i][j][2] = now[posNum] + tmpNeed;
+        ans.ans[i][j][1] = ans.ansLinePos[i][posNum];
+        ans.ans[i][j][3] = ans.ansLinePos[i][posNum + 1];
         now[posNum] += tmpNeed;
       }
       if (ng) { break; }
@@ -3272,9 +3244,9 @@ int Method3_Oshii()
   {
     rep(j, n)
     {
-      rep(k, ansLineCount[i])
+      rep(k, ans.ansLineCount[i])
       {
-        if (ans[i][j][1] == ansLinePos[i][k] && ans[i][j][3] == ansLinePos[i][k + 1]) {
+        if (ans.ans[i][j][1] == ans.ansLinePos[i][k] && ans.ans[i][j][3] == ans.ansLinePos[i][k + 1]) {
           ansColumnNum[i][j] = k;
           break;
         }
@@ -3286,9 +3258,9 @@ int Method3_Oshii()
   {
     rep(j, n)
     {
-      rep(k, ansLineCount[i])
+      rep(k, ans.ansLineCount[i])
       {
-        int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
+        int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
         if (width == 0) {
           preCalcScheduleSizes[i][j][k] = 1001001;
         }
@@ -3309,7 +3281,7 @@ int Method3_Oshii()
     int ok = 1;
     rep(j, n)
     {
-      if (ans[i][j][2] > w) {
+      if (ans.ans[i][j][2] > w) {
         ok = 0;
         break;
       }
@@ -3318,7 +3290,7 @@ int Method3_Oshii()
     int nowSum[MAX_LINECOUNT] = {};
     rep(j, n)
     {
-      nowSum[ansColumnNum[i][j]] = max(nowSum[ansColumnNum[i][j]], ans[i][j][2]);
+      nowSum[ansColumnNum[i][j]] = max(nowSum[ansColumnNum[i][j]], ans.ans[i][j][2]);
     }
     int ngCount = 0;
     rep(j, n)
@@ -3327,7 +3299,7 @@ int Method3_Oshii()
     }
 
     // 逆引き作成
-    rep(j, ansLineCount[i])
+    rep(j, ans.ansLineCount[i])
     {
       ansColumnSchedulesCount[i][j] = 0;
     }
@@ -3381,9 +3353,9 @@ int Method3_Oshii()
 
       int raN = Rand() % n;
       int lineNum = ansColumnNum[i][raN];
-      int nextLine = Rand() % ansBaseLineCount;
+      int nextLine = Rand() % ans.ansBaseLineCount;
       while (nextLine == lineNum) {
-        nextLine = Rand() % ansBaseLineCount;
+        nextLine = Rand() % ans.ansBaseLineCount;
       }
       kouhoCount = 0;
       if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][raN][nextLine] > w) continue;
@@ -3430,7 +3402,7 @@ int Method3_Oshii()
             }
 
             // 逆引き更新
-            rep(j, ansLineCount[i])
+            rep(j, ans.ansLineCount[i])
             {
               ansColumnSchedulesCount[i][j] = 0;
             }
@@ -3480,7 +3452,7 @@ int Method3_Oshii()
             }
 
             // 逆引き更新
-            rep(j, ansLineCount[i])
+            rep(j, ans.ansLineCount[i])
             {
               ansColumnSchedulesCount[i][j] = 0;
             }
@@ -3516,7 +3488,7 @@ int Method3_Oshii()
     int lastNum[MAX_LINECOUNT] = {};
     rep(i, d)
     {
-      rep(j, ansLineCount[i])
+      rep(j, ans.ansLineCount[i])
       {
         now[j] = 0;
         lastNum[j] = -1;
@@ -3525,22 +3497,22 @@ int Method3_Oshii()
       {
         int posNum = ansColumnNum[i][j];
         int need = preCalcScheduleSizes[i][j][posNum];
-        ans[i][j][0] = now[posNum];
-        ans[i][j][2] = now[posNum] + need;
-        ans[i][j][1] = ansLinePos[i][posNum];
-        ans[i][j][3] = ansLinePos[i][posNum + 1];
+        ans.ans[i][j][0] = now[posNum];
+        ans.ans[i][j][2] = now[posNum] + need;
+        ans.ans[i][j][1] = ans.ansLinePos[i][posNum];
+        ans.ans[i][j][3] = ans.ansLinePos[i][posNum + 1];
         now[posNum] += need;
         lastNum[posNum] = j;
       }
-      rep(j, ansLineCount[i])
+      rep(j, ans.ansLineCount[i])
       {
         if (lastNum[j] == -1) continue;
-        ans[i][lastNum[j]][2] = w;
+        ans.ans[i][lastNum[j]][2] = w;
       }
     }
-    ansScore = CalcScore();
+    ans.ansScore = CalcScore();
     int ret = 1;
-    if (ansScore < real_ansScore) {
+    if (ans.ansScore < real_ans.ansScore) {
       // cout << "Oshii" << endl;
       CopyToRealAns();
       ret = 2;
@@ -3559,13 +3531,13 @@ void Method3_Oshii2()
 
   // 作り直し
   {
-    ansBaseLineCount = oshiiLineCount[0];
+    ans.ansBaseLineCount = oshiiLineCount[0];
     rep(i, d)
     {
-      ansLineCount[i] = oshiiLineCount[i];
+      ans.ansLineCount[i] = oshiiLineCount[i];
       rep(j, oshiiLineCount[i] + 1)
       {
-        ansLinePos[i][j] = oshiiLinePos[i][j];
+        ans.ansLinePos[i][j] = oshiiLinePos[i][j];
       }
     }
 
@@ -3574,7 +3546,7 @@ void Method3_Oshii2()
     drep(ii, d)
     {
       int i = daysDifficultySorted[ii];
-      rep(j, ansLineCount[i])
+      rep(j, ans.ansLineCount[i])
       {
         now[j] = 0;
       }
@@ -3585,9 +3557,9 @@ void Method3_Oshii2()
         int minOver = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        drep(k, ansLineCount[i])
+        drep(k, ans.ansLineCount[i])
         {
-          int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
+          int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
           if (width * w < a[i][j]) break;
           int need = (a[i][j] - 1) / width + 1;
           int over = 0;
@@ -3610,10 +3582,10 @@ void Method3_Oshii2()
           break;
         }
 
-        ans[i][j][0] = now[posNum];
-        ans[i][j][2] = now[posNum] + tmpNeed;
-        ans[i][j][1] = ansLinePos[i][posNum];
-        ans[i][j][3] = ansLinePos[i][posNum + 1];
+        ans.ans[i][j][0] = now[posNum];
+        ans.ans[i][j][2] = now[posNum] + tmpNeed;
+        ans.ans[i][j][1] = ans.ansLinePos[i][posNum];
+        ans.ans[i][j][3] = ans.ansLinePos[i][posNum + 1];
         now[posNum] += tmpNeed;
       }
       if (ng) { break; }
@@ -3636,7 +3608,7 @@ void Method3_Oshii2()
       int ok = 1;
       rep(j, n)
       {
-        if (ans[i][j][2] > w) {
+        if (ans.ans[i][j][2] > w) {
           ok = 0;
           break;
         }
@@ -3644,12 +3616,12 @@ void Method3_Oshii2()
       if (ok) continue;
 
       ok = 0;
-      srep(newjeans, 1, ansLineCount[i])
+      srep(newjeans, 1, ans.ansLineCount[i])
       {
-        int keepPos = ansLinePos[i][newjeans];
-        ansLinePos[i][newjeans] = ansLinePos[i][newjeans + 1];
+        int keepPos = ans.ansLinePos[i][newjeans];
+        ans.ansLinePos[i][newjeans] = ans.ansLinePos[i][newjeans + 1];
 
-        rep(j, ansLineCount[i])
+        rep(j, ans.ansLineCount[i])
         {
           now[j] = 0;
           lastNum[j] = -1;
@@ -3661,9 +3633,9 @@ void Method3_Oshii2()
           int minAmari = INT_INF;
           int posNum = -1;
           int tmpNeed = 0;
-          drep(k, ansLineCount[i])
+          drep(k, ans.ansLineCount[i])
           {
-            int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
+            int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
             if (width * w < a[i][j]) continue;
             int need = (a[i][j] - 1) / width + 1;
             if (now[k] + need > w) continue;
@@ -3680,24 +3652,24 @@ void Method3_Oshii2()
             break;
           }
 
-          ans[i][j][0] = now[posNum];
-          ans[i][j][2] = now[posNum] + tmpNeed;
-          ans[i][j][1] = ansLinePos[i][posNum];
-          ans[i][j][3] = ansLinePos[i][posNum + 1];
+          ans.ans[i][j][0] = now[posNum];
+          ans.ans[i][j][2] = now[posNum] + tmpNeed;
+          ans.ans[i][j][1] = ans.ansLinePos[i][posNum];
+          ans.ans[i][j][3] = ans.ansLinePos[i][posNum + 1];
           now[posNum] += tmpNeed;
           lastNum[posNum] = j;
         }
         if (hanni == 1) {
-          rep(j, ansLineCount[i])
+          rep(j, ans.ansLineCount[i])
           {
             if (lastNum[j] == -1) continue;
-            ans[i][lastNum[j]][2] = w;
+            ans.ans[i][lastNum[j]][2] = w;
           }
           ok = 1;
           break;
         }
         else {
-          ansLinePos[i][newjeans] = keepPos;
+          ans.ansLinePos[i][newjeans] = keepPos;
         }
       }
       if (ok == 0) {
@@ -3714,8 +3686,8 @@ void Method3_Oshii2()
 
   // ansScheduleLineNumからansを作成
   {
-    ansScore = CalcScore();
-    if (ansScore < real_ansScore) {
+    ans.ansScore = CalcScore();
+    if (ans.ansScore < real_ans.ansScore) {
       // if (mode != 0) { cout << "OK" << endl; }
       CopyToRealAns();
     }
@@ -3730,25 +3702,25 @@ int oshiiMinNGCount = INT_INF;
 int Method3_Normal(int loopCount)
 {
   const int MIN_LINECOUNT = 2;
-  ansBaseLineCount = Rand() % n + MIN_LINECOUNT;
-  if (real_ansBaseLineCount >= MIN_LINECOUNT && Rand() % 2 == 0) {
-    ansBaseLineCount = real_ansBaseLineCount + 1;
+  ans.ansBaseLineCount = Rand() % n + MIN_LINECOUNT;
+  if (real_ans.ansBaseLineCount >= MIN_LINECOUNT && Rand() % 2 == 0) {
+    ans.ansBaseLineCount = real_ans.ansBaseLineCount + 1;
   }
-  else if (loopCount >= 100000 && real_ansBaseLineCount != -1) {
-    ansBaseLineCount = min(ansBaseLineCount, real_ansBaseLineCount + 1);
-    if (Rand() % 10 != 0) { ansBaseLineCount = max(ansBaseLineCount, real_ansBaseLineCount - 1); }
+  else if (loopCount >= 100000 && real_ans.ansBaseLineCount != -1) {
+    ans.ansBaseLineCount = min(ans.ansBaseLineCount, real_ans.ansBaseLineCount + 1);
+    if (Rand() % 10 != 0) { ans.ansBaseLineCount = max(ans.ansBaseLineCount, real_ans.ansBaseLineCount - 1); }
   }
-  if (loopCount >= 100000 && real_ansBaseLineCount == -1) { ansBaseLineCount = Rand() % 3 + MIN_LINECOUNT; }
+  if (loopCount >= 100000 && real_ans.ansBaseLineCount == -1) { ans.ansBaseLineCount = Rand() % 3 + MIN_LINECOUNT; }
 
-  if (ansBaseLineCount <= M3_alreadyCount) return 0;
-  // if (real_ansBaseLineCount != -1 && ansBaseLineCount < real_ansBaseLineCount) return 0;
+  if (ans.ansBaseLineCount <= M3_alreadyCount) return 0;
+  // if (real_ans.ansBaseLineCount != -1 && ans.ansBaseLineCount < real_ans.ansBaseLineCount) return 0;
 
-  if (ansBaseLineCount > lineMaxLimit) return 0;
+  if (ans.ansBaseLineCount > lineMaxLimit) return 0;
 
-  int startW = ansLinePos[0][M3_alreadyCount];
+  int startW = ans.ansLinePos[0][M3_alreadyCount];
   int nokoriW = w - startW;
   int startLine = M3_alreadyCount;
-  int nokoriLine = ansBaseLineCount - M3_alreadyCount;
+  int nokoriLine = ans.ansBaseLineCount - M3_alreadyCount;
 
   {
     int ra = Rand() % 100;
@@ -3758,16 +3730,16 @@ int Method3_Normal(int loopCount)
       int ok2 = 0;
       rep(_, 10)
       {
-        ansLinePos[0][ansBaseLineCount] = (startW + nokoriW - nokoriLine * hosyouWidth);
-        srep(i, startLine + 1, ansBaseLineCount)
+        ans.ansLinePos[0][ans.ansBaseLineCount] = (startW + nokoriW - nokoriLine * hosyouWidth);
+        srep(i, startLine + 1, ans.ansBaseLineCount)
         {
-          ansLinePos[0][i] = startW + Rand() % (nokoriW - nokoriLine * hosyouWidth);
+          ans.ansLinePos[0][i] = startW + Rand() % (nokoriW - nokoriLine * hosyouWidth);
         }
-        sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
+        sort(ans.ansLinePos[0] + startLine, ans.ansLinePos[0] + ans.ansBaseLineCount);
         int ok = 1;
-        rep(i, ansBaseLineCount)
+        rep(i, ans.ansBaseLineCount)
         {
-          if (ansLinePos[0][i] >= ansLinePos[0][i + 1]) {
+          if (ans.ansLinePos[0][i] >= ans.ansLinePos[0][i + 1]) {
             ok = 0;
             break;
           }
@@ -3778,35 +3750,35 @@ int Method3_Normal(int loopCount)
         }
       }
       if (ok2 == 0) return 0;
-      srep(i, startLine, ansBaseLineCount)
+      srep(i, startLine, ans.ansBaseLineCount)
       {
-        ansLinePos[0][i + 1] += hosyouWidth * (i + 1 - startLine);
+        ans.ansLinePos[0][i + 1] += hosyouWidth * (i + 1 - startLine);
       }
     }
     else if (ra < 35) {
       int ok2 = 0;
       rep(_, 10)
       {
-        ansLinePos[0][ansBaseLineCount] = w;
+        ans.ansLinePos[0][ans.ansBaseLineCount] = w;
         int maxNeed = (maxA[n - 1] - 1) / w + 1;
-        ansLinePos[0][ansBaseLineCount - 1] = w - maxNeed;
-        if (ansLinePos[0][ansBaseLineCount - 1] <= ansLinePos[0][startLine]) break;
+        ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
+        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) break;
         int ng = 0;
-        srep(i, startLine + 1, ansBaseLineCount - 1)
+        srep(i, startLine + 1, ans.ansBaseLineCount - 1)
         {
-          ansLinePos[0][i] = startW + (w - maxNeed - startW) * i / (ansBaseLineCount - 1 - startLine);
-          ansLinePos[0][i] += Rand() % 31 - 15;
-          if (ansLinePos[0][i] <= ansLinePos[0][i - 1]) {
+          ans.ansLinePos[0][i] = startW + (w - maxNeed - startW) * i / (ans.ansBaseLineCount - 1 - startLine);
+          ans.ansLinePos[0][i] += Rand() % 31 - 15;
+          if (ans.ansLinePos[0][i] <= ans.ansLinePos[0][i - 1]) {
             ng = 1;
             break;
           }
         }
         if (ng) continue;
-        sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
+        sort(ans.ansLinePos[0] + startLine, ans.ansLinePos[0] + ans.ansBaseLineCount);
         int ok = 1;
-        rep(i, ansBaseLineCount)
+        rep(i, ans.ansBaseLineCount)
         {
-          if (ansLinePos[0][i] == ansLinePos[0][i + 1]) {
+          if (ans.ansLinePos[0][i] == ans.ansLinePos[0][i + 1]) {
             ok = 0;
             break;
           }
@@ -3822,20 +3794,20 @@ int Method3_Normal(int loopCount)
       int ok2 = 0;
       rep(_, 10)
       {
-        ansLinePos[0][ansBaseLineCount] = w;
+        ans.ansLinePos[0][ans.ansBaseLineCount] = w;
         int maxNeed = (maxA[n - 1] - 1) / w + 1;
-        ansLinePos[0][ansBaseLineCount - 1] = w - maxNeed;
-        if (ansLinePos[0][ansBaseLineCount - 1] <= ansLinePos[0][startLine]) break;
+        ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
+        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) break;
         int ng = 0;
-        srep(i, startLine + 1, ansBaseLineCount - 1)
+        srep(i, startLine + 1, ans.ansBaseLineCount - 1)
         {
-          ansLinePos[0][i] = startW + Rand() % (nokoriW - maxNeed);
+          ans.ansLinePos[0][i] = startW + Rand() % (nokoriW - maxNeed);
         }
-        sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
+        sort(ans.ansLinePos[0] + startLine, ans.ansLinePos[0] + ans.ansBaseLineCount);
         int ok = 1;
-        rep(i, ansBaseLineCount)
+        rep(i, ans.ansBaseLineCount)
         {
-          if (ansLinePos[0][i] == ansLinePos[0][i + 1]) {
+          if (ans.ansLinePos[0][i] == ans.ansLinePos[0][i + 1]) {
             ok = 0;
             break;
           }
@@ -3851,16 +3823,16 @@ int Method3_Normal(int loopCount)
       int ok2 = 0;
       rep(_, 10)
       {
-        ansLinePos[0][ansBaseLineCount] = w;
-        srep(i, 1, ansBaseLineCount)
+        ans.ansLinePos[0][ans.ansBaseLineCount] = w;
+        srep(i, 1, ans.ansBaseLineCount)
         {
-          ansLinePos[0][i] = startW + Rand() % nokoriW;
+          ans.ansLinePos[0][i] = startW + Rand() % nokoriW;
         }
-        sort(ansLinePos[0] + startLine, ansLinePos[0] + ansBaseLineCount);
+        sort(ans.ansLinePos[0] + startLine, ans.ansLinePos[0] + ans.ansBaseLineCount);
         int ok = 1;
-        rep(i, ansBaseLineCount)
+        rep(i, ans.ansBaseLineCount)
         {
-          if (ansLinePos[0][i] >= ansLinePos[0][i + 1]) {
+          if (ans.ansLinePos[0][i] >= ans.ansLinePos[0][i + 1]) {
             ok = 0;
             break;
           }
@@ -3874,42 +3846,42 @@ int Method3_Normal(int loopCount)
     }
   }
 
-  rep(i, ansBaseLineCount)
+  rep(i, ans.ansBaseLineCount)
   {
-    if (ansLinePos[0][i] >= ansLinePos[0][i + 1]) { return 0; }
+    if (ans.ansLinePos[0][i] >= ans.ansLinePos[0][i + 1]) { return 0; }
   }
-  if (ansBaseLineCount < real_ansBaseLineCount - 1) { return 0; }
+  if (ans.ansBaseLineCount < real_ans.ansBaseLineCount - 1) { return 0; }
 
   {
     int widths[MAX_LINECOUNT] = {};
     rep(i, nokoriLine)
     {
-      widths[i] = ansLinePos[0][startLine + i + 1] - ansLinePos[0][startLine + i];
+      widths[i] = ans.ansLinePos[0][startLine + i + 1] - ans.ansLinePos[0][startLine + i];
     }
     sort(widths, widths + nokoriLine);
     if (widths[nokoriLine - 1] * w < maxA[n - 1]) { return 0; }
     rep(i, nokoriLine)
     {
-      ansLinePos[0][startLine + i + 1] = ansLinePos[0][startLine + i] + widths[i];
+      ans.ansLinePos[0][startLine + i + 1] = ans.ansLinePos[0][startLine + i] + widths[i];
     }
-    // if (ansBaseLineCount > 10) {
-    //  ansBaseLineCount++;
+    // if (ans.ansBaseLineCount > 10) {
+    //  ans.ansBaseLineCount++;
     //  int ra = Rand() % 5 + 1;
     //  rep(i, ra) {
-    //    ansLinePos[0][ansBaseLineCount - i] = ansLinePos[0][ansBaseLineCount - 1 - i];
+    //    ans.ansLinePos[0][ans.ansBaseLineCount - i] = ans.ansLinePos[0][ans.ansBaseLineCount - 1 - i];
     //  }
-    //  ansLinePos[0][ansBaseLineCount - ra] = (ansLinePos[0][ansBaseLineCount - (ra + 1)] + ansLinePos[0][ansBaseLineCount - (ra - 1)]) / 2;
+    //  ans.ansLinePos[0][ans.ansBaseLineCount - ra] = (ans.ansLinePos[0][ans.ansBaseLineCount - (ra + 1)] + ans.ansLinePos[0][ans.ansBaseLineCount - (ra - 1)]) / 2;
     //}
   }
   rep(i, d)
   {
-    ansLineCount[i] = ansBaseLineCount;
+    ans.ansLineCount[i] = ans.ansBaseLineCount;
   }
   srep(i, 1, d)
   {
-    rep(j, ansBaseLineCount + 1)
+    rep(j, ans.ansBaseLineCount + 1)
     {
-      ansLinePos[i][j] = ansLinePos[0][j];
+      ans.ansLinePos[i][j] = ans.ansLinePos[0][j];
     }
   }
 
@@ -3922,7 +3894,7 @@ int Method3_Normal(int loopCount)
   drep(ii, d)
   {
     int i = daysDifficultySorted[ii];
-    rep(j, ansLineCount[i])
+    rep(j, ans.ansLineCount[i])
     {
       now[j] = 0;
       lastNum[j] = -1;
@@ -3947,9 +3919,9 @@ int Method3_Normal(int loopCount)
       int minOver = INT_INF;
       int posNum = -1;
       int tmpNeed = 0;
-      dsrep(k, startLine, ansLineCount[i])
+      dsrep(k, startLine, ans.ansLineCount[i])
       {
-        int width = ansLinePos[i][k + 1] - ansLinePos[i][k];
+        int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
         if (width * w < a[i][j]) break;
         int need = (a[i][j] - 1) / width + 1;
         int over = 0;
@@ -3971,20 +3943,20 @@ int Method3_Normal(int loopCount)
         break;
       }
       if (minOver > 0) {
-        if (real_ansBaseLineCount != -1 && ansBaseLineCount <= real_ansBaseLineCount) {
+        if (real_ans.ansBaseLineCount != -1 && ans.ansBaseLineCount <= real_ans.ansBaseLineCount) {
           ng = 1;
           break;
         }
-        if (real_ansBaseLineCount == -1 && ansBaseLineCount < MIN_LINECOUNT) {
+        if (real_ans.ansBaseLineCount == -1 && ans.ansBaseLineCount < MIN_LINECOUNT) {
           ng = 1;
           break;
         }
       }
 
-      ans[i][j][0] = now[posNum];
-      ans[i][j][2] = now[posNum] + tmpNeed;
-      ans[i][j][1] = ansLinePos[i][posNum];
-      ans[i][j][3] = ansLinePos[i][posNum + 1];
+      ans.ans[i][j][0] = now[posNum];
+      ans.ans[i][j][2] = now[posNum] + tmpNeed;
+      ans.ans[i][j][1] = ans.ansLinePos[i][posNum];
+      ans.ans[i][j][3] = ans.ansLinePos[i][posNum + 1];
       now[posNum] += tmpNeed;
       lastNum[posNum] = j;
 
@@ -4009,10 +3981,10 @@ int Method3_Normal(int loopCount)
     }
     if (ng == 1) { break; }
 
-    srep(j, startLine, ansLineCount[i])
+    srep(j, startLine, ans.ansLineCount[i])
     {
       if (lastNum[j] == -1) continue;
-      ans[i][lastNum[j]][2] = w;
+      ans.ans[i][lastNum[j]][2] = w;
     }
 
     tmpOshiiMax = max(tmpOshiiMax, tmpOshiiSum);
@@ -4028,8 +4000,8 @@ int Method3_Normal(int loopCount)
 
   if (ng == 0) {
     int ret = 1;
-    ansScore = CalcScoreForMethod3();
-    if (ansScore < real_ansScore) {
+    ans.ansScore = CalcScoreForMethod3();
+    if (ans.ansScore < real_ans.ansScore) {
       ret = 2;
       CopyToRealAns();
       rep(i, d)
@@ -4046,10 +4018,10 @@ int Method3_Normal(int loopCount)
       if (tmpOshiiMax < oshiiMinMax) {
         rep(i, d)
         {
-          oshiiLineCount[i] = ansLineCount[i];
-          rep(j, ansLineCount[i] + 1)
+          oshiiLineCount[i] = ans.ansLineCount[i];
+          rep(j, ans.ansLineCount[i] + 1)
           {
-            oshiiLinePos[i][j] = ansLinePos[i][j];
+            oshiiLinePos[i][j] = ans.ansLinePos[i][j];
           }
         }
         oshiiMinMax = tmpOshiiMax;
@@ -4059,10 +4031,10 @@ int Method3_Normal(int loopCount)
       if (tmpOshiiNGMax < oshiiMinNGCount) {
         rep(i, d)
         {
-          oshiiLineCount[i] = ansLineCount[i];
-          rep(j, ansLineCount[i] + 1)
+          oshiiLineCount[i] = ans.ansLineCount[i];
+          rep(j, ans.ansLineCount[i] + 1)
           {
-            oshiiLinePos[i][j] = ansLinePos[i][j];
+            oshiiLinePos[i][j] = ans.ansLinePos[i][j];
           }
         }
         oshiiMinNGCount = tmpOshiiNGMax;
@@ -4077,16 +4049,16 @@ void Method3_1(double timeLimit)
 {
   keep31Count = 0;
   int loopCount = 0;
-  ansBaseLineCount = -1;
-  real_ansBaseLineCount = -1;
+  ans.ansBaseLineCount = -1;
+  real_ans.ansBaseLineCount = -1;
   rep(i, d)
   {
     rep(j, MAX_LINECOUNT)
     {
-      ansLinePos[i][j] = 0;
+      ans.ansLinePos[i][j] = 0;
     }
-    ansLineCount[i] = -1;
-    real_ansLineCount[i] = -1;
+    ans.ansLineCount[i] = -1;
+    real_ans.ansLineCount[i] = -1;
     oshiiLineCount[i] = -1;
   }
   oshiiMinMax = INT_INF;
@@ -4118,11 +4090,11 @@ void Method3_1(double timeLimit)
         }
       }
 
-      if (real_ansBaseLineCount == -1) {
+      if (real_ans.ansBaseLineCount == -1) {
         M3_alreadyCount = Rand() % 3;
       }
       else {
-        if (real_ansBaseLineCount <= 5) {
+        if (real_ans.ansBaseLineCount <= 5) {
           M3_alreadyCount = Rand() % 3;
         }
         else {
@@ -4135,7 +4107,7 @@ void Method3_1(double timeLimit)
       {
         int baseWidth = Rand() % 100 + 50;
         if (M3_alreadyCount >= 5) { baseWidth = Rand() % 100 + 20; }
-        if (blackpink > 0 && ansLinePos[0][blackpink - 1] + baseWidth + 20 > w) {
+        if (blackpink > 0 && ans.ansLinePos[0][blackpink - 1] + baseWidth + 20 > w) {
           M3_alreadyCount = 0;
           rep(i, d)
           {
@@ -4189,7 +4161,7 @@ void Method3_1(double timeLimit)
           break;
         }
 
-        ansLinePos[0][blackpink + 1] = ansLinePos[0][blackpink] + maxWidth;
+        ans.ansLinePos[0][blackpink + 1] = ans.ansLinePos[0][blackpink] + maxWidth;
         rep(i, d)
         {
           rep(k, mostVariableAsCount[i][maxWidth])
@@ -4201,14 +4173,14 @@ void Method3_1(double timeLimit)
               M3_alreadyUsed[i][j2] = 1;
 
               int need1 = (a[i][j1] - 1) / maxWidth + 1;
-              ans[i][j1][0] = 0;
-              ans[i][j1][2] = need1;
-              ans[i][j1][1] = ansLinePos[0][blackpink];
-              ans[i][j1][3] = ansLinePos[0][blackpink + 1];
-              ans[i][j2][0] = need1;
-              ans[i][j2][2] = w;
-              ans[i][j2][1] = ansLinePos[0][blackpink];
-              ans[i][j2][3] = ansLinePos[0][blackpink + 1];
+              ans.ans[i][j1][0] = 0;
+              ans.ans[i][j1][2] = need1;
+              ans.ans[i][j1][1] = ans.ansLinePos[0][blackpink];
+              ans.ans[i][j1][3] = ans.ansLinePos[0][blackpink + 1];
+              ans.ans[i][j2][0] = need1;
+              ans.ans[i][j2][2] = w;
+              ans.ans[i][j2][1] = ans.ansLinePos[0][blackpink];
+              ans.ans[i][j2][3] = ans.ansLinePos[0][blackpink + 1];
               break;
             }
           }
@@ -4244,14 +4216,14 @@ void Method3_1(double timeLimit)
     }
 
     if (isOK == 2) {
-      // cout << "aaa" << M3_alreadyCount << ' ' << real_ansBaseLineCount << endl;
+      // cout << "aaa" << M3_alreadyCount << ' ' << real_ans.ansBaseLineCount << endl;
       CopyToKeep31(keep31Count % keep31KeepSize);
       keep31Count++;
     }
   }
 
   CopyFromRealAns();
-  // if (mode != 0) { cout << "loop = " << loopCount << ", keep31Count = " << keep31Count << ", ansScore = " << ansScore << endl; }
+  // if (mode != 0) { cout << "loop = " << loopCount << ", keep31Count = " << keep31Count << ", ans.ansScore = " << ans.ansScore << endl; }
 }
 
 // 縦線をずらす
@@ -4261,9 +4233,9 @@ void Method3_2(double timeLimit)
   {
     rep(i, d - 1)
     {
-      rep(j, ansLineCount[i])
+      rep(j, ans.ansLineCount[i])
       {
-        if (ansLinePos[i][j] != ansLinePos[i + 1][j]) { return; }
+        if (ans.ansLinePos[i][j] != ans.ansLinePos[i + 1][j]) { return; }
       }
     }
   }
@@ -4279,26 +4251,26 @@ void Method3_2(double timeLimit)
       if (GetNowTime() > timeLimit) { break; }
     }
 
-    int ra = Rand() % (ansBaseLineCount - 1) + 1;
+    int ra = Rand() % (ans.ansBaseLineCount - 1) + 1;
     int ra2 = 0;
     while (ra2 == 0) {
       ra2 = Rand() % 11 - 5;
     }
-    ansLinePos[0][ra] += ra2;
-    if (ansLinePos[0][ra - 1] >= ansLinePos[0][ra] || ansLinePos[0][ra] >= ansLinePos[0][ra + 1]) {
-      ansLinePos[0][ra] -= ra2;
+    ans.ansLinePos[0][ra] += ra2;
+    if (ans.ansLinePos[0][ra - 1] >= ans.ansLinePos[0][ra] || ans.ansLinePos[0][ra] >= ans.ansLinePos[0][ra + 1]) {
+      ans.ansLinePos[0][ra] -= ra2;
       continue;
     }
-    if (ra >= 2 && ansLinePos[0][ra - 1] - ansLinePos[0][ra - 2] > ansLinePos[0][ra] - ansLinePos[0][ra - 1]) {
-      ansLinePos[0][ra] -= ra2;
+    if (ra >= 2 && ans.ansLinePos[0][ra - 1] - ans.ansLinePos[0][ra - 2] > ans.ansLinePos[0][ra] - ans.ansLinePos[0][ra - 1]) {
+      ans.ansLinePos[0][ra] -= ra2;
       continue;
     }
-    if (ansLinePos[0][ra] - ansLinePos[0][ra - 1] > ansLinePos[0][ra + 1] - ansLinePos[0][ra]) {
-      ansLinePos[0][ra] -= ra2;
+    if (ans.ansLinePos[0][ra] - ans.ansLinePos[0][ra - 1] > ans.ansLinePos[0][ra + 1] - ans.ansLinePos[0][ra]) {
+      ans.ansLinePos[0][ra] -= ra2;
       continue;
     }
-    if (ra <= ansBaseLineCount - 2 && ansLinePos[0][ra + 1] - ansLinePos[0][ra] > ansLinePos[0][ra + 2] - ansLinePos[0][ra + 1]) {
-      ansLinePos[0][ra] -= ra2;
+    if (ra <= ans.ansBaseLineCount - 2 && ans.ansLinePos[0][ra + 1] - ans.ansLinePos[0][ra] > ans.ansLinePos[0][ra + 2] - ans.ansLinePos[0][ra + 1]) {
+      ans.ansLinePos[0][ra] -= ra2;
       continue;
     }
 
@@ -4307,7 +4279,7 @@ void Method3_2(double timeLimit)
     int lastNum[MAX_LINECOUNT] = {};
     rep(i, d)
     {
-      rep(j, ansBaseLineCount)
+      rep(j, ans.ansBaseLineCount)
       {
         now[j] = 0;
         lastNum[j] = -1;
@@ -4318,9 +4290,9 @@ void Method3_2(double timeLimit)
         int minAmari = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        drep(k, ansBaseLineCount)
+        drep(k, ans.ansBaseLineCount)
         {
-          int width = ansLinePos[0][k + 1] - ansLinePos[0][k];
+          int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
           if (width * w < a[i][j]) break;
           int need = (a[i][j] - 1) / width + 1;
           if (now[k] + need > w) continue;
@@ -4337,30 +4309,30 @@ void Method3_2(double timeLimit)
           break;
         }
 
-        ans[i][j][0] = now[posNum];
-        ans[i][j][2] = now[posNum] + tmpNeed;
-        ans[i][j][1] = ansLinePos[0][posNum];
-        ans[i][j][3] = ansLinePos[0][posNum + 1];
+        ans.ans[i][j][0] = now[posNum];
+        ans.ans[i][j][2] = now[posNum] + tmpNeed;
+        ans.ans[i][j][1] = ans.ansLinePos[0][posNum];
+        ans.ans[i][j][3] = ans.ansLinePos[0][posNum + 1];
         now[posNum] += tmpNeed;
         lastNum[posNum] = j;
       }
       if (ng) { break; }
 
-      rep(j, ansBaseLineCount)
+      rep(j, ans.ansBaseLineCount)
       {
         if (lastNum[j] == -1) continue;
-        ans[i][lastNum[j]][2] = w;
+        ans.ans[i][lastNum[j]][2] = w;
       }
     }
 
     if (ng) {
-      ansLinePos[0][ra] -= ra2;
+      ans.ansLinePos[0][ra] -= ra2;
       continue;
     }
 
-    int beforeScore = ansScore;
-    ansScore = CalcScoreForMethod3();
-    int diffScore = beforeScore - ansScore;
+    int beforeScore = ans.ansScore;
+    ans.ansScore = CalcScoreForMethod3();
+    int diffScore = beforeScore - ans.ansScore;
 
     double temp = (start_temp + (end_temp - start_temp) * GetNowTime() / timeLimit);
     const double prob = exp((double)diffScore / temp);
@@ -4368,38 +4340,38 @@ void Method3_2(double timeLimit)
     if (prob > Rand01()) {
       srep(i, 1, d)
       {
-        ansLinePos[i][ra] = ansLinePos[0][ra];
+        ans.ansLinePos[i][ra] = ans.ansLinePos[0][ra];
       }
-      if (ansScore <= real_ansScore) { CopyToRealAns(); }
+      if (ans.ansScore <= real_ans.ansScore) { CopyToRealAns(); }
     }
     else {
-      ansScore = beforeScore;
-      ansLinePos[0][ra] -= ra2;
+      ans.ansScore = beforeScore;
+      ans.ansLinePos[0][ra] -= ra2;
     }
   }
 
   CopyFromRealAns();
 
   if (mode != 0) {
-    // cout << "loop = " << loopCount << ", ansScore = " << ansScore << endl;
+    // cout << "loop = " << loopCount << ", ans.ansScore = " << ans.ansScore << endl;
   }
 }
 
 void Method6_ColumnShuffle(double timeLimit)
 {
   int widths[MAX_LINECOUNT] = {};
-  rep(j, ansBaseLineCount)
+  rep(j, ans.ansBaseLineCount)
   {
-    widths[j] = ansLinePos[0][j + 1] - ansLinePos[0][j];
+    widths[j] = ans.ansLinePos[0][j + 1] - ans.ansLinePos[0][j];
   }
 
   rep(i, d)
   {
     rep(j, n)
     {
-      rep(k, ansBaseLineCount)
+      rep(k, ans.ansBaseLineCount)
       {
-        if (ans[i][j][1] == ansLinePos[i][k] && ans[i][j][3] == ansLinePos[i][k + 1]) {
+        if (ans.ans[i][j][1] == ans.ansLinePos[i][k] && ans.ans[i][j][3] == ans.ansLinePos[i][k + 1]) {
           ansColumnNum[i][j] = k;
           break;
         }
@@ -4408,16 +4380,16 @@ void Method6_ColumnShuffle(double timeLimit)
   }
 
   int v[MAX_LINECOUNT] = {};
-  rep(i, ansBaseLineCount)
+  rep(i, ans.ansBaseLineCount)
   {
     v[i] = i;
   }
   rep(ningning, 100)
   {
-    FisherYates(v, ansBaseLineCount);
+    FisherYates(v, ans.ansBaseLineCount);
     int nextLinePos[MAX_LINECOUNT] = {};
     int nextArgPos[MAX_LINECOUNT] = {};
-    rep(i, ansBaseLineCount)
+    rep(i, ans.ansBaseLineCount)
     {
       nextLinePos[i + 1] = nextLinePos[i] + widths[v[i]];
       nextArgPos[v[i]] = i;
@@ -4427,12 +4399,12 @@ void Method6_ColumnShuffle(double timeLimit)
       rep(j, n)
       {
         int nextLine = nextArgPos[ansColumnNum[i][j]];
-        ans[i][j][1] = nextLinePos[nextLine];
-        ans[i][j][3] = nextLinePos[nextLine + 1];
+        ans.ans[i][j][1] = nextLinePos[nextLine];
+        ans.ans[i][j][3] = nextLinePos[nextLine + 1];
       }
     }
-    ansScore = CalcScore();
-    if (ansScore < real_ansScore) { CopyToRealAns(); }
+    ans.ansScore = CalcScore();
+    if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
     if (ningning % 10 == 9 && GetNowTime() > timeLimit) break;
   }
   CopyFromRealAns();
@@ -4443,13 +4415,13 @@ void Method7()
   CopyFromRealAns();
   CoptToCurrent_M42();
 
-  rep(i, ansBaseLineCount)
+  rep(i, ans.ansBaseLineCount)
   {
-    widths[i] = ansLinePos[0][i + 1] - ansLinePos[0][i];
+    widths[i] = ans.ansLinePos[0][i + 1] - ans.ansLinePos[0][i];
   }
 
   int yokoLineCount[MAX_LINECOUNT] = {};
-  rep(j, ansBaseLineCount)
+  rep(j, ans.ansBaseLineCount)
   {
     srep(i, 1, d)
     {
@@ -4472,9 +4444,9 @@ void Method7()
     }
   }
 
-  rep(line1, ansBaseLineCount)
+  rep(line1, ans.ansBaseLineCount)
   {
-    rep(line2, ansBaseLineCount)
+    rep(line2, ans.ansBaseLineCount)
     {
       if (line1 == line2) { continue; }
       if (yokoLineCount[line1] <= yokoLineCount[line2]) continue;
@@ -4519,9 +4491,9 @@ void Method7()
       widths[line2] += margin;
       rep(i, d)
       {
-        rep(j, ansBaseLineCount)
+        rep(j, ans.ansBaseLineCount)
         {
-          ansLinePos[i][j + 1] = ansLinePos[i][j] + widths[j];
+          ans.ansLinePos[i][j + 1] = ans.ansLinePos[i][j] + widths[j];
         }
       }
       rep(i, d)
@@ -4533,11 +4505,11 @@ void Method7()
         }
       }
 
-      ansScore -= diffScore;
+      ans.ansScore -= diffScore;
     }
   }
 
-  if (ansScore < real_ansScore) {
+  if (ans.ansScore < real_ans.ansScore) {
     CopyToRealAns();
     CopyToReal_M42();
   }
@@ -4562,7 +4534,7 @@ void CopyM8ToAns()
     {
       rep(k, 4)
       {
-        ans[i][j][k] = M8ans[num][i][j][k];
+        ans.ans[i][j][k] = M8ans[num][i][j][k];
       }
     }
   }
@@ -4586,7 +4558,7 @@ void Method8(double timeLimit)
     {
       rep(k, 4)
       {
-        M8ans[NG_NUM][i][j][k] = ans[i][j][k];
+        M8ans[NG_NUM][i][j][k] = ans.ans[i][j][k];
       }
     }
   }
@@ -4602,20 +4574,20 @@ void Method8(double timeLimit)
     }
 
     // 縦線作成
-    ansBaseLineCount = Rand() % 5 + 2;
+    ans.ansBaseLineCount = Rand() % 5 + 2;
     int ok2 = 0;
     rep(_2, 10)
     {
-      ansLinePos[0][ansBaseLineCount] = w;
-      srep(i, 1, ansBaseLineCount)
+      ans.ansLinePos[0][ans.ansBaseLineCount] = w;
+      srep(i, 1, ans.ansBaseLineCount)
       {
-        ansLinePos[0][i] = Rand() % w;
+        ans.ansLinePos[0][i] = Rand() % w;
       }
-      sort(ansLinePos[0], ansLinePos[0] + ansBaseLineCount);
+      sort(ans.ansLinePos[0], ans.ansLinePos[0] + ans.ansBaseLineCount);
       int ok = 1;
-      rep(i, ansBaseLineCount)
+      rep(i, ans.ansBaseLineCount)
       {
-        if (ansLinePos[0][i] >= ansLinePos[0][i + 1]) {
+        if (ans.ansLinePos[0][i] >= ans.ansLinePos[0][i + 1]) {
           ok = 0;
           break;
         }
@@ -4629,21 +4601,21 @@ void Method8(double timeLimit)
 
     {
       int widths[MAX_LINECOUNT] = {};
-      rep(i, ansBaseLineCount)
+      rep(i, ans.ansBaseLineCount)
       {
-        widths[i] = ansLinePos[0][i + 1] - ansLinePos[0][i];
+        widths[i] = ans.ansLinePos[0][i + 1] - ans.ansLinePos[0][i];
       }
-      sort(widths, widths + ansBaseLineCount);
-      rep(i, ansBaseLineCount)
+      sort(widths, widths + ans.ansBaseLineCount);
+      rep(i, ans.ansBaseLineCount)
       {
-        ansLinePos[0][i + 1] = ansLinePos[0][i] + widths[i];
+        ans.ansLinePos[0][i + 1] = ans.ansLinePos[0][i] + widths[i];
       }
     }
 
-    M8ansLineCount[TMP_NUM] = ansBaseLineCount;
-    srep(i, 0, ansBaseLineCount + 1)
+    M8ansLineCount[TMP_NUM] = ans.ansBaseLineCount;
+    srep(i, 0, ans.ansBaseLineCount + 1)
     {
-      M8ansLinePos[TMP_NUM][i] = ansLinePos[0][i];
+      M8ansLinePos[TMP_NUM][i] = ans.ansLinePos[0][i];
     }
 
     int okCount = 0;
@@ -4653,7 +4625,7 @@ void Method8(double timeLimit)
     drep(ii, d)
     {
       int i = daysDifficultySorted[ii];
-      rep(j, ansBaseLineCount)
+      rep(j, ans.ansBaseLineCount)
       {
         now[j] = 0;
         lastNum[j] = -1;
@@ -4675,9 +4647,9 @@ void Method8(double timeLimit)
         int minAmari = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        dsrep(k, 0, ansBaseLineCount)
+        dsrep(k, 0, ans.ansBaseLineCount)
         {
-          int width = ansLinePos[0][k + 1] - ansLinePos[0][k];
+          int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
           if (width * w < a[i][j]) break;
           int need = (a[i][j] - 1) / width + 1;
           int amari = need * width - a[i][j];
@@ -4696,15 +4668,15 @@ void Method8(double timeLimit)
 
         M8ans[TMP_NUM][i][j][0] = now[posNum];
         M8ans[TMP_NUM][i][j][2] = now[posNum] + tmpNeed;
-        M8ans[TMP_NUM][i][j][1] = ansLinePos[0][posNum];
-        M8ans[TMP_NUM][i][j][3] = ansLinePos[0][posNum + 1];
+        M8ans[TMP_NUM][i][j][1] = ans.ansLinePos[0][posNum];
+        M8ans[TMP_NUM][i][j][3] = ans.ansLinePos[0][posNum + 1];
         now[posNum] += tmpNeed;
         lastNum[posNum] = j;
       }
       if (ok == 1) {
         okCount++;
         M8ansOK[TMP_NUM][i] = 1;
-        srep(j, 0, ansBaseLineCount)
+        srep(j, 0, ans.ansBaseLineCount)
         {
           if (lastNum[j] == -1) continue;
           M8ans[TMP_NUM][i][lastNum[j]][2] = w;
@@ -4716,8 +4688,8 @@ void Method8(double timeLimit)
     }
 
     if (okCount >= 2) {
-      M8ansLineCount[M8ansansCount] = ansBaseLineCount;
-      rep(i, ansBaseLineCount + 1)
+      M8ansLineCount[M8ansansCount] = ans.ansBaseLineCount;
+      rep(i, ans.ansBaseLineCount + 1)
       {
         M8ansLinePos[M8ansansCount][i] = M8ansLinePos[TMP_NUM][i];
       }
@@ -4746,8 +4718,8 @@ void Method8(double timeLimit)
   }
 
   CopyM8ToAns();
-  ansScore = CalcScore();
-  if (ansScore < real_ansScore) { CopyToRealAns(); }
+  ans.ansScore = CalcScore();
+  if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
   rep(i, d)
   {
     M8ansansCountEachDay[i] = 0;
@@ -4782,8 +4754,8 @@ void Method8(double timeLimit)
 
     if (loopCount % 12345 == 0) {
       CopyM8ToAns();
-      ansScore = CalcScore();
-      if (ansScore < real_ansScore) { CopyToRealAns(); }
+      ans.ansScore = CalcScore();
+      if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
     }
 
     int raD = Rand() % d;
@@ -4878,8 +4850,8 @@ void Method8(double timeLimit)
   }
 
   CopyM8ToAns();
-  ansScore = CalcScore();
-  if (ansScore < real_ansScore) { CopyToRealAns(); }
+  ans.ansScore = CalcScore();
+  if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
 
   // cout << loopCount << endl;
 }
@@ -4904,18 +4876,18 @@ void Method4(int setCount)
 
     CopyFromRealAns();
 
-    if (ansBaseLineCount == -1) {
+    if (ans.ansBaseLineCount == -1) {
       isFind = 0;
     }
     else {
       isFind = 1;
     }
 
-    if (ansScore == 1) { return; }
+    if (ans.ansScore == 1) { return; }
 
-    if (ansBaseLineCount == -1) {
+    if (ans.ansBaseLineCount == -1) {
       Method8(nowTime + (innerTL - nowTime) * 0.98);
-      if (real_ansScore < real_real_ansScore) { CopyToRealRealAns(); }
+      if (real_ans.ansScore < real_real_ans.ansScore) { CopyToRealRealAns(); }
     }
     else {
       Method3_2(nowTime + (innerTL - nowTime) * 0.6);
@@ -4931,7 +4903,7 @@ void Method4(int setCount)
       Method6_ColumnShuffle(nowTime + (innerTL - nowTime) * 1.0);
       // cout << GetNowTime() << endl;
 
-      if (real_ansScore < real_real_ansScore) { CopyToRealRealAns(); }
+      if (real_ans.ansScore < real_real_ans.ansScore) { CopyToRealRealAns(); }
     }
   }
 
@@ -4944,7 +4916,7 @@ void Method5()
   double TL31 = TL * 0.5;
   Method3_1(TL31);
 
-  if (ansBaseLineCount == -1) return;
+  if (ans.ansBaseLineCount == -1) return;
 
   CopyToRealRealAns();
 
@@ -4960,7 +4932,7 @@ void Method5()
     Method3_2(innerTL32);
     CopyFromRealAns();
     Method4_3(innerTL);
-    if (real_ansScore < real_real_ansScore) { CopyToRealRealAns(); }
+    if (real_ans.ansScore < real_real_ans.ansScore) { CopyToRealRealAns(); }
   }
 
   CopyFromRealRealAns();
@@ -4971,7 +4943,7 @@ void Method5()
 
   CopyFromRealAns();
   Method4_3(TL);
-  if (real_ansScore < real_real_ansScore) { CopyToRealRealAns(); }
+  if (real_ans.ansScore < real_real_ans.ansScore) { CopyToRealRealAns(); }
 
   CopyFromRealRealAns();
   CopyFromRealAns();
@@ -5046,7 +5018,7 @@ int main()
       {
         maxASum += maxA[j];
       }
-      if (true || (isFind == 0 && ansScore > 1)) cout << i << ", " << d << ", " << n << ", " << 1 - ee << ", " << maxASum << ", " << isFind << ", " << ansBaseLineCount << ", " << score << ", " << sum << ' ' << GetNowTime() << endl;
+      if (true || (isFind == 0 && ans.ansScore > 1)) cout << i << ", " << d << ", " << n << ", " << 1 - ee << ", " << maxASum << ", " << isFind << ", " << ans.ansBaseLineCount << ", " << score << ", " << sum << ' ' << GetNowTime() << endl;
       scores.push_back(score);
     }
     for (auto score : scores) {
