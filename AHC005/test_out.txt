@@ -1,0 +1,15 @@
+2000000
+Set 1: score = 254633, time = 1.53271
+case =  0, score = 254633, sum = 254633, time = 1.54919, 
+2000000
+Set 1: score = 248508, time = 1.91102
+case =  1, score = 248508, sum = 503141, time = 1.93168, 
+2000000
+Set 1: score = 244052, time = 1.33463
+case =  2, score = 244052, sum = 747193, time = 1.34971, 
+2000000
+Set 1: score = 236911, time = 2.21465
+case =  3, score = 236911, sum = 984104, time = 2.23944, 
+2000000
+Set 1: score = 235483, time = 5.84699
+case =  4, score = 235483, sum = 1219587, time = 5.91671, 

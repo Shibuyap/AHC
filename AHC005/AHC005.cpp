@@ -1,4 +1,5 @@
-﻿#include <chrono>
+﻿#include <algorithm>
+#include <chrono>
 #include <climits>
 #include <cstdint>
 #include <fstream>
@@ -15,9 +16,25 @@
 using namespace std;
 
 typedef long long int ll;
+using Point = pair<int, int>;
+using Path = vector<int>;
+
+// 定数
+namespace Constants
+{
+  constexpr double TIME_LIMIT = 2.9;
+  constexpr double START_TEMP = 1800.0;
+  constexpr double END_TEMP = 0.0;
+  constexpr int MAX_ITERATIONS = 2000000;
+  constexpr int NEIGHBOR_SWAP = 50;
+  constexpr int NEIGHBOR_REVERSE = 100;
+  constexpr int NEIGHBOR_INSERT = 300;
+  constexpr double SCORE_MULTIPLIER = 12345.6;
+  constexpr int WALL = -1;
+}
 
 // タイマー
-namespace
+namespace Timer
 {
   std::chrono::steady_clock::time_point start_time_clock;
 
@@ -34,9 +51,9 @@ namespace
 }
 
 // 乱数
-namespace
+namespace Random
 {
-  static uint32_t rand_xorshift()
+  uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -50,17 +67,17 @@ namespace
     return w;
   }
 
-  static double rand_01()
+  double rand_01()
   {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r)
+  double rand_range(double l, double r)
   {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r)
+  uint32_t rand_range(uint32_t l, uint32_t r)
   {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
@@ -69,9 +86,7 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
-      arr[i] = arr[j];
-      arr[j] = swa;
+      std::swap(arr[i], arr[j]);
     }
   }
 }
@@ -108,11 +123,11 @@ public:
   {
     for (int i = 0; i < n * n; i++) {
       int x = i / n, y = i % n;
-      if (grid[x][y] == -1) continue; // 壁は無視
-      if (x == 0 || grid[x - 1][y] == -1) {
+      if (grid[x][y] == Constants::WALL) continue; // 壁は無視
+      if (x == 0 || grid[x - 1][y] == Constants::WALL) {
         Vertex v;
         int cur_x = x;
-        while (cur_x < n && grid[cur_x][y] != -1) {
+        while (cur_x < n && grid[cur_x][y] != Constants::WALL) {
           v.indices.push_back(cur_x * n + y);
           cur_x++;
         }
@@ -120,10 +135,10 @@ public:
           vertices.push_back(v);
         }
       }
-      if (y == 0 || grid[x][y - 1] == -1) {
+      if (y == 0 || grid[x][y - 1] == Constants::WALL) {
         Vertex v;
         int cur_y = y;
-        while (cur_y < n && grid[x][cur_y] != -1) {
+        while (cur_y < n && grid[x][cur_y] != Constants::WALL) {
           v.indices.push_back(x * n + cur_y);
           cur_y++;
         }
@@ -139,7 +154,7 @@ public:
     dist_to_vertices.clear();
     dist_to_vertices.resize(n * n);
     for (int i = 0; i < n * n; i++) {
-      if (grid[i / n][i % n] == -1) continue; // 壁は無視
+      if (grid[i / n][i % n] == Constants::WALL) continue; // 壁は無視
       for (size_t j = 0; j < vertices.size(); j++) {
         const Vertex& v = vertices[j];
         int min_dist = INT_MAX;
@@ -164,13 +179,13 @@ public:
     graph.resize(n * n);
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        if (grid[i][j] == -1) continue; // 壁は無視
+        if (grid[i][j] == Constants::WALL) continue; // 壁は無視
         int idx = i * n + j;
         // 上下左右の隣接点を追加
-        if (i > 0 && grid[i - 1][j] != -1) graph[idx].push_back((i - 1) * n + j);
-        if (i < n - 1 && grid[i + 1][j] != -1) graph[idx].push_back((i + 1) * n + j);
-        if (j > 0 && grid[i][j - 1] != -1) graph[idx].push_back(i * n + (j - 1));
-        if (j < n - 1 && grid[i][j + 1] != -1) graph[idx].push_back(i * n + (j + 1));
+        if (i > 0 && grid[i - 1][j] != Constants::WALL) graph[idx].push_back((i - 1) * n + j);
+        if (i < n - 1 && grid[i + 1][j] != Constants::WALL) graph[idx].push_back((i + 1) * n + j);
+        if (j > 0 && grid[i][j - 1] != Constants::WALL) graph[idx].push_back(i * n + (j - 1));
+        if (j < n - 1 && grid[i][j + 1] != Constants::WALL) graph[idx].push_back(i * n + (j + 1));
       }
     }
   }
@@ -178,35 +193,17 @@ public:
   inline int get_cost(int idx) const
   {
     int i = idx / n, j = idx % n;
-    if (grid[i][j] == -1) return INT_MAX; // 壁は無視
+    if (grid[i][j] == Constants::WALL) return INT_MAX; // 壁は無視
     return grid[i][j]; // コストはグリッドの値
   }
 
   // 全点対最短経路を計算する
   void calc_dist()
   {
-    // n*n回ダイクストラ
     dist.resize(n * n, vector<int>(n * n, INT_MAX));
     for (int start = 0; start < n * n; start++) {
-      if (grid[start / n][start % n] == -1) continue; // 壁は無視
-      vector<int> d(n * n, INT_MAX);
-      d[start] = 0;
-      priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-      pq.push({ 0, start });
-      while (!pq.empty()) {
-        auto p = pq.top();
-        pq.pop();
-        int cost = p.first;
-        int u = p.second;
-        if (cost > d[u]) continue;
-        for (int v : graph[u]) {
-          if (d[v] > d[u] + get_cost(v)) {
-            d[v] = d[u] + get_cost(v);
-            pq.push({ d[v], v });
-          }
-        }
-      }
-      dist[start] = d;
+      if (grid[start / n][start % n] == Constants::WALL) continue;
+      dist[start] = dijkstra(start);
     }
   }
 
@@ -218,21 +215,38 @@ public:
     init_dist_to_vertices();
   }
 
-  vector<int> get_path(int start, int goal) const
+  // ダイクストラ法で最短経路を計算
+  vector<int> dijkstra(int start) const
   {
-    //cerr << "get_path: start = " << start << ", goal = " << goal << endl;
-
-    // 復元ダイクストラ
-    vector<int> prev(n * n, -1);
     vector<int> d(n * n, INT_MAX);
     d[start] = 0;
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     pq.push({ 0, start });
     while (!pq.empty()) {
-      auto p = pq.top();
+      auto [cost, u] = pq.top();
       pq.pop();
-      int cost = p.first;
-      int u = p.second;
+      if (cost > d[u]) continue;
+      for (int v : graph[u]) {
+        if (d[v] > d[u] + get_cost(v)) {
+          d[v] = d[u] + get_cost(v);
+          pq.push({ d[v], v });
+        }
+      }
+    }
+    return d;
+  }
+
+  // 経路復元付きダイクストラ
+  pair<vector<int>, vector<int>> dijkstra_with_path(int start) const
+  {
+    vector<int> d(n * n, INT_MAX);
+    vector<int> prev(n * n, -1);
+    d[start] = 0;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push({ 0, start });
+    while (!pq.empty()) {
+      auto [cost, u] = pq.top();
+      pq.pop();
       if (cost > d[u]) continue;
       for (int v : graph[u]) {
         if (d[v] > d[u] + get_cost(v)) {
@@ -242,15 +256,24 @@ public:
         }
       }
     }
+    return { d, prev };
+  }
 
-    // パスを復元
-    vector<int> path;
+  // パスを復元
+  Path restore_path(const vector<int>& prev, int goal) const
+  {
+    Path path;
     for (int v = goal; v != -1; v = prev[v]) {
       path.push_back(v);
     }
     reverse(path.begin(), path.end());
-
     return path;
+  }
+
+  Path get_path(int start, int goal) const
+  {
+    auto [d, prev] = dijkstra_with_path(start);
+    return restore_path(prev, goal);
   }
 };
 
@@ -326,7 +349,7 @@ Board input_data(int case_num)
       cin >> line;
       for (int j = 0; j < board.n; j++) {
         if (line[j] == '#') {
-          board.grid[i][j] = -1;
+          board.grid[i][j] = Constants::WALL;
         }
         else {
           board.grid[i][j] = line[j] - '0';
@@ -343,7 +366,7 @@ Board input_data(int case_num)
       ifs >> line;
       for (int j = 0; j < board.n; j++) {
         if (line[j] == '#') {
-          board.grid[i][j] = -1;
+          board.grid[i][j] = Constants::WALL;
         }
         else {
           board.grid[i][j] = line[j] - '0';
@@ -430,94 +453,126 @@ void build_initial_path(const Board& board, Answer& ans)
   ans.vertices.push_back(-1); // スタート位置の頂点は-1とする
 }
 
+// 近傍操作の情報を保持する構造体
+struct NeighborInfo
+{
+  int type;
+  int ra1, ra2;
+  int start_index;
+  int end_index;
+};
+
+// 2点入れ替え
+void apply_swap(Answer& ans, int ra1, int ra2)
+{
+  swap(ans.vertices[ra1], ans.vertices[ra2]);
+}
+
+// 区間反転
+void apply_reverse(Answer& ans, int ra1, int ra2)
+{
+  reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1);
+}
+
+// 1点挿入
+void apply_insert(Answer& ans, int ra1, int ra2)
+{
+  if (ra1 < ra2) {
+    for (int i = ra1; i < ra2; i++) {
+      swap(ans.vertices[i], ans.vertices[i + 1]);
+    }
+  }
+  else {
+    for (int i = ra1; i > ra2; i--) {
+      swap(ans.vertices[i], ans.vertices[i - 1]);
+    }
+  }
+}
+
+// 近傍操作を生成
+NeighborInfo generate_neighbor(Answer& ans)
+{
+  NeighborInfo info;
+  info.type = Random::rand_xorshift() % 300;
+
+  info.ra1 = Random::rand_xorshift() % (ans.points.size() - 2) + 1;
+  info.ra2 = Random::rand_xorshift() % (ans.points.size() - 2) + 1;
+  while (info.ra1 == info.ra2) {
+    info.ra2 = Random::rand_xorshift() % (ans.points.size() - 2) + 1;
+  }
+
+  if (info.type < Constants::NEIGHBOR_SWAP) {
+    if (info.ra1 > info.ra2) swap(info.ra1, info.ra2);
+    apply_swap(ans, info.ra1, info.ra2);
+    info.start_index = info.ra1 - 1;
+    info.end_index = info.ra2 + 1;
+  }
+  else if (info.type < Constants::NEIGHBOR_REVERSE) {
+    if (info.ra1 > info.ra2) swap(info.ra1, info.ra2);
+    apply_reverse(ans, info.ra1, info.ra2);
+    info.start_index = info.ra1 - 1;
+    info.end_index = info.ra2 + 1;
+  }
+  else if (info.type < Constants::NEIGHBOR_INSERT) {
+    apply_insert(ans, info.ra1, info.ra2);
+    info.start_index = min(info.ra1, info.ra2) - 1;
+    info.end_index = max(info.ra1, info.ra2) + 1;
+  }
+
+  return info;
+}
+
+// 近傍操作を元に戻す
+void revert_neighbor(Answer& ans, const NeighborInfo& info)
+{
+  if (info.type < Constants::NEIGHBOR_SWAP) {
+    apply_swap(ans, info.ra1, info.ra2);
+  }
+  else if (info.type < Constants::NEIGHBOR_REVERSE) {
+    apply_reverse(ans, info.ra1, info.ra2);
+  }
+  else if (info.type < Constants::NEIGHBOR_INSERT) {
+    if (info.ra1 < info.ra2) {
+      for (int i = info.ra2; i > info.ra1; i--) {
+        swap(ans.vertices[i], ans.vertices[i - 1]);
+      }
+    }
+    else {
+      for (int i = info.ra2; i < info.ra1; i++) {
+        swap(ans.vertices[i], ans.vertices[i + 1]);
+      }
+    }
+  }
+}
+
 void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 {
   ans.calc_score(board);
-  Answer best_ans = ans; // ベスト解を初期化
+  Answer best_ans = ans;
 
-  double start_time = get_elapsed_time();
-  double now_time = get_elapsed_time();
-  const double START_TEMP = 1800;
-  const double END_TEMP = 0.0;
-
-  vector<int> keep_vec(ans.vertices.size());
+  double start_time = Timer::get_elapsed_time();
+  const double START_TEMP = Constants::START_TEMP;
+  const double END_TEMP = Constants::END_TEMP;
 
   int loop = 0;
-  while (loop < 2000000) {
+  while (loop < Constants::MAX_ITERATIONS) {
     loop++;
 
-    //if (loop % 100 == 0) {
-    //  now_time = get_elapsed_time();
-    //  if (now_time > time_limit) break;
-    //}
-
-    //double progress_ratio = (now_time - start_time) / (time_limit - start_time);
-    double progress_ratio = (double)loop / 2000000;
+    double progress_ratio = (double)loop / Constants::MAX_ITERATIONS;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % 300;
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
-
-    int start_index = 0;
-    int end_index = 1001001;
-    if (ra_exec_mode < 50) {
-      // 2点の入れ替え
-      ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      while (ra1 == ra2) {
-        ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      }
-      if (ra1 > ra2) swap(ra1, ra2);
-      swap(ans.vertices[ra1], ans.vertices[ra2]); // 2点の入れ替え
-      start_index = ra1 - 1;
-      end_index = ra2 + 1;
-    }
-    else if (ra_exec_mode < 100) {
-      // 区間reverse
-      ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      while (ra1 == ra2) {
-        ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      }
-      if (ra1 > ra2) swap(ra1, ra2);
-
-      reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // 区間reverse
-      start_index = ra1 - 1;
-      end_index = ra2 + 1;
-    }
-    else if (ra_exec_mode < 300) {
-      // 1点抜き挿し
-      ra1 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      while (ra1 == ra2) {
-        ra2 = rand_xorshift() % (ans.points.size() - 2) + 1;
-      }
-      // ra1をra2の位置に移動
-      if (ra1 < ra2) {
-        for (int i = ra1; i < ra2; i++) {
-          swap(ans.vertices[i], ans.vertices[i + 1]); // 1点ずつ右にずらす
-        }
-      }
-      else {
-        for (int i = ra1; i > ra2; i--) {
-          swap(ans.vertices[i], ans.vertices[i - 1]); // 1点ずつ左にずらす
-        }
-      }
-      start_index = min(ra1, ra2) - 1;
-      end_index = max(ra1, ra2) + 1;
-    }
+    NeighborInfo neighbor_info = generate_neighbor(ans);
 
     // スコア計算
     double current_score = ans.score;
-    ans.recalc_points(board, start_index, end_index); // 点の再計算
+    ans.recalc_points(board, neighbor_info.start_index, neighbor_info.end_index);
     double tmp_score = ans.calc_score(board);
 
     // 焼きなましで採用判定
-    double diff_score = (tmp_score - current_score) * 12345.6;
+    double diff_score = (tmp_score - current_score) * Constants::SCORE_MULTIPLIER;
     double prob = exp(diff_score / temp);
-    if (prob > rand_01() || rand_xorshift() % 10000 == 0) {
+    if (prob > Random::rand_01() || Random::rand_xorshift() % 10000 == 0) {
       // 採用
       current_score = tmp_score;
 
@@ -528,33 +583,9 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < 50) {
-        // 近傍操作1 の巻き戻し
-        swap(ans.vertices[ra1], ans.vertices[ra2]); // 2点の入れ替えを元に戻す
-        ans.recalc_points(board); // 点の再計算
-        ans.score = current_score; // スコアを元に戻す
-      }
-      else if (ra_exec_mode < 100) {
-        // 近傍操作2 の巻き戻し
-        reverse(ans.vertices.begin() + ra1, ans.vertices.begin() + ra2 + 1); // 区間reverseを元に戻す
-        ans.recalc_points(board); // 点の再計算
-        ans.score = current_score; // スコアを元に戻す
-      }
-      else if (ra_exec_mode < 300) {
-        // 近傍操作3 の巻き戻し
-        if (ra1 < ra2) {
-          for (int i = ra2; i > ra1; i--) {
-            swap(ans.vertices[i], ans.vertices[i - 1]); // 1点ずつ左にずらす
-          }
-        }
-        else {
-          for (int i = ra2; i < ra1; i++) {
-            swap(ans.vertices[i], ans.vertices[i + 1]); // 1点ずつ右にずらす
-          }
-        }
-        ans.recalc_points(board, start_index, end_index); // 点の再計算
-        ans.score = current_score; // スコアを元に戻す
-      }
+      revert_neighbor(ans, neighbor_info);
+      ans.recalc_points(board, neighbor_info.start_index, neighbor_info.end_index);
+      ans.score = current_score;
     }
   }
 
@@ -562,14 +593,14 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
     cerr << loop << endl;
   }
 
-  ans = best_ans; // ベスト解を最終解に設定
+  ans = best_ans;
 }
 
 
 ll solve_case(int case_num)
 {
-  const double TIME_LIMIT = 2.9;
-  start_timer();
+  const double TIME_LIMIT = Constants::TIME_LIMIT;
+  Timer::start_timer();
 
   Board board = input_data(case_num);
 
@@ -579,12 +610,12 @@ ll solve_case(int case_num)
   Answer initial_ans = ans;
   Answer best_ans = ans;
   const int SET_COUNT = 1;
-  double start_time = get_elapsed_time();
+  double start_time = Timer::get_elapsed_time();
   for (int i = 0; i < SET_COUNT; i++) {
     double time_limit = start_time + (TIME_LIMIT - start_time) / SET_COUNT * (i + 1);
     ans = initial_ans;
     run_simulated_annealing(time_limit, board, ans);
-    cerr << "Set " << i + 1 << ": score = " << ans.score << ", time = " << get_elapsed_time() << endl;
+    cerr << "Set " << i + 1 << ": score = " << ans.score << ", time = " << Timer::get_elapsed_time() << endl;
     if (ans.score > best_ans.score) {
       best_ans = ans;
     }
@@ -619,7 +650,7 @@ int main()
         cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
           << "sum = " << setw(5) << sum_score << ", "
-          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << "time = " << setw(5) << Timer::get_elapsed_time() << ", "
           << endl;
       }
     }
