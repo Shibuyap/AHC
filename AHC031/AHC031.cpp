@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <array>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -128,6 +129,16 @@ namespace /* 乱数ライブラリ */
       data[j] = swa;
     }
   }
+
+  // std::array用のオーバーロード
+  template<size_t N>
+  void FisherYates(std::array<int, N>& data, int n)
+  {
+    for (int i = n - 1; i >= 0; i--) {
+      int j = Rand() % (i + 1);
+      std::swap(data[i], data[j]);
+    }
+  }
 }  // namespace
 
 const ll INF = 1001001001001001001LL;
@@ -151,10 +162,10 @@ int lineMaxLimit = 100;
 const int w = GRID_WIDTH;
 int d, n;
 double ee;
-int a[MAX_D][MAX_N];
-int maxA[MAX_N];
-int sumA[MAX_D];
-int daysDifficultySorted[MAX_D];
+std::array<std::array<int, MAX_N>, MAX_D> a;
+std::array<int, MAX_N> maxA;
+std::array<int, MAX_D> sumA;
+std::array<int, MAX_D> daysDifficultySorted;
 
 int mostVariableAsCount[MAX_D][w + 10];
 int mostVariableAsValue[MAX_D][w + 10][10];
@@ -170,7 +181,7 @@ Solution real_real_ans;
 
 int keep31Count = 0;
 int keep31KeepSize = 2;
-Solution keep31_ans[10];
+std::array<Solution, 10> keep31_ans;
 
 void CopyToRealRealAns()
 {
@@ -586,9 +597,9 @@ ll CalcScore()
   return res;
 }
 
-int CalcScoreForMethod3BeforeArr[1000];
-int CalcScoreForMethod3NowArr[1000];
-int CalcScoreForMethod3Used[1000];
+std::array<int, 1000> CalcScoreForMethod3BeforeArr;
+std::array<int, 1000> CalcScoreForMethod3NowArr;
+std::array<int, 1000> CalcScoreForMethod3Used;
 ll CalcScoreForMethod3()
 {
   ll res = 1;
@@ -660,7 +671,7 @@ ll CalcScoreForMethod3()
         }
       }
 
-      sort(CalcScoreForMethod3NowArr, CalcScoreForMethod3NowArr + nowTail);
+      sort(CalcScoreForMethod3NowArr.begin(), CalcScoreForMethod3NowArr.begin() + nowTail);
 
       if (i > 0) {
         int itr1 = 0, itr2 = 0;
@@ -735,7 +746,7 @@ void Method1()
   {
     int x = 0;
     int y = 0;
-    int used[MAX_N] = {};
+    std::array<int, MAX_N> used = {};
     rep(j, n)
     {
       int minAmari = INT_INF;
@@ -805,7 +816,7 @@ void MethodPerfect()
   {
     int x = 0;
     int y = 0;
-    int used[MAX_N] = {};
+    std::array<int, MAX_N> used = {};
     rep(j, n)
     {
       int minAmari = INT_INF;
@@ -865,7 +876,7 @@ void MethodPerfect()
 }
 
 int preCalcScheduleSizes[MAX_D][MAX_N][MAX_LINECOUNT];
-int widths[MAX_LINECOUNT] = {};
+std::array<int, MAX_LINECOUNT> widths = {};
 
 int ansColumnNum[MAX_D][MAX_N];
 int ansColumnSchedules[MAX_D][MAX_LINECOUNT][MAX_N];
@@ -944,7 +955,7 @@ int CalcDiffScore2(int day1, int day2, int lineNum)
 int CD3_Members[MAX_N];
 int CD3_TmpPosition[MAX_N];
 int CD3_NeighborPos[MAX_N * 2];
-int shuffleThree[6][3] = { {0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0} };
+constexpr std::array<std::array<int, 3>, 6> shuffleThree = { { {0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0} } };
 int CalcDiffScore3(int winter, int memberCount, int neighborPosCount, int day, int lineNum, int margin)
 {
   int diffScore3 = 0;
@@ -1594,10 +1605,8 @@ double M43_nowTime = 0;
 double M43_timeLimit = 0;
 int M43_karinas[32] = {};
 
-int M43_kouhos[MAX_N];
-int M43_kouhoCount = 0;
-int M43_nonKouhos[MAX_N];
-int M43_nonKouhoCount = 0;
+std::vector<int> M43_kouhos;
+std::vector<int> M43_nonKouhos;
 int M43_neighborPosCount = 0;
 
 int M43_tmpAnsNextLine[MAX_N];
@@ -1632,8 +1641,10 @@ void Method4_3_1()
   }
   int beforeCount = ansColumnSchedulesCount[raD][lineNum];
   int afterCount = ansColumnSchedulesCount[raD][nextLine];
-  M43_kouhoCount = 0;
-  M43_nonKouhoCount = 0;
+  M43_kouhos.clear();
+  M43_kouhos.reserve(MAX_CANDIDATES);
+  M43_nonKouhos.clear();
+  M43_nonKouhos.reserve(MAX_CANDIDATES);
   int nextLineCapacity = w;
   int maxNextLineCapacity = w;
   rep(k, ansColumnSchedulesCount[raD][nextLine])
@@ -1642,26 +1653,24 @@ void Method4_3_1()
     nextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
     if (preCalcScheduleSizes[raD][num][lineNum] > lineCapacity) {
       maxNextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
-      M43_nonKouhos[M43_nonKouhoCount] = num;
-      M43_nonKouhoCount++;
+      M43_nonKouhos.push_back(num);
     }
     else {
-      M43_kouhos[M43_kouhoCount] = num;
-      M43_kouhoCount++;
+      M43_kouhos.push_back(num);
     }
   }
 
-  if (M43_kouhoCount > MAX_CANDIDATES) return;
-  // if (M43_kouhoCount == 0 && afterCount > 0) return;
+  if (M43_kouhos.size() > MAX_CANDIDATES) return;
+  // if (M43_kouhos.size() == 0 && afterCount > 0) return;
   if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) return;
 
   int karinaCount = 0;
-  if (M43_kouhoCount == 0) {
+  if (M43_kouhos.size() == 0) {
     M43_karinas[karinaCount] = 0;
     karinaCount++;
   }
-  else if (M43_kouhoCount <= SMALL_DATA_THRESHOLD) {
-    rep(karina, (1 << M43_kouhoCount))
+  else if (M43_kouhos.size() <= SMALL_DATA_THRESHOLD) {
+    rep(karina, (1 << M43_kouhos.size()))
     {
       // if (karina == 0) continue;
       M43_karinas[karinaCount] = karina;
@@ -1671,8 +1680,8 @@ void Method4_3_1()
   else {
     rep(aespa, RANDOM_TRIAL_COUNT)
     {
-      // int karina               = Rand() % ((1 << M43_kouhoCount) - 1) + 1;
-      int karina = Rand() % ((1 << M43_kouhoCount));
+      // int karina               = Rand() % ((1 << M43_kouhos.size()) - 1) + 1;
+      int karina = Rand() % ((1 << M43_kouhos.size()));
       M43_karinas[karinaCount] = karina;
       karinaCount++;
     }
@@ -1683,7 +1692,7 @@ void Method4_3_1()
     int karina = M43_karinas[my];
     int nextSpace = 0;
     int needSpace = 0;
-    rep(jj, M43_kouhoCount)
+    rep(jj, M43_kouhos.size())
     {
       if (karina & (1 << jj)) {
         int j = M43_kouhos[jj];
@@ -1701,12 +1710,12 @@ void Method4_3_1()
 
       // スワップ可能
       int moveCount = 0;
-      rep(jj, M43_kouhoCount)
+      rep(jj, M43_kouhos.size())
       {
         if (karina & (1 << jj)) { moveCount++; }
       }
       int diffScore1 = 0;
-      if (M43_kouhoCount == 0 || karina == 0) {
+      if (M43_kouhos.size() == 0 || karina == 0) {
         if (beforeCount > 1) {
           if (raD == 0 || raD == d - 1) {
             diffScore1 += widths[lineNum];
@@ -1756,22 +1765,20 @@ void Method4_3_1()
         }
       }
       sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
-      M43_nonKouhos[M43_nonKouhoCount] = raN;
-      M43_nonKouhoCount++;
-      rep(jj, M43_kouhoCount)
+      M43_nonKouhos.push_back(raN);
+      rep(jj, M43_kouhos.size())
       {
         if ((karina & (1 << jj)) == 0) {
           int j = M43_kouhos[jj];
-          M43_nonKouhos[M43_nonKouhoCount] = j;
-          M43_nonKouhoCount++;
+          M43_nonKouhos.push_back(j);
         }
       }
-      rep(i, M43_nonKouhoCount)
+      rep(i, (int)M43_nonKouhos.size())
       {
         CD3_Members[i] = M43_nonKouhos[i];
       }
       int margin = w;
-      rep(i, M43_nonKouhoCount)
+      rep(i, (int)M43_nonKouhos.size())
       {
         int num = M43_nonKouhos[i];
         margin -= preCalcScheduleSizes[raD][num][nextLine];
@@ -1779,19 +1786,19 @@ void Method4_3_1()
       int diffScore3 = -INT_INF;
       rep(winter, 10)
       {
-        if (M43_nonKouhoCount == 1 && winter >= 1) break;
-        if (M43_nonKouhoCount == 2 && winter >= 2) break;
-        if (M43_nonKouhoCount == 3 && winter >= 6) break;
-        int tmpDiffScore3 = CalcDiffScore3(winter, M43_nonKouhoCount, M43_neighborPosCount, raD, nextLine, margin);
+        if (M43_nonKouhos.size() == 1 && winter >= 1) break;
+        if (M43_nonKouhos.size() == 2 && winter >= 2) break;
+        if (M43_nonKouhos.size() == 3 && winter >= 6) break;
+        int tmpDiffScore3 = CalcDiffScore3(winter, M43_nonKouhos.size(), M43_neighborPosCount, raD, nextLine, margin);
         if (tmpDiffScore3 > diffScore3) {
           diffScore3 = tmpDiffScore3;
-          rep(i, M43_nonKouhoCount)
+          rep(i, (int)M43_nonKouhos.size())
           {
             M43_tmpAnsNextLine[i] = CD3_Members[i];
             M43_tmpAnsNextLinePosition[i] = CD3_TmpPosition[i];
           }
-          M43_tmpAnsNextLinePosition[M43_nonKouhoCount] = CD3_TmpPosition[M43_nonKouhoCount];
-          M43_tmpAnsNextCount = M43_nonKouhoCount;
+          M43_tmpAnsNextLinePosition[M43_nonKouhos.size()] = CD3_TmpPosition[M43_nonKouhos.size()];
+          M43_tmpAnsNextCount = M43_nonKouhos.size();
         }
       }
 
@@ -1814,7 +1821,7 @@ void Method4_3_1()
       sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
       int tmpKouhos[MAX_N];
       int tmpKouhoCount = 0;
-      rep(jj, M43_kouhoCount)
+      rep(jj, M43_kouhos.size())
       {
         if (karina & (1 << jj)) {
           int j = M43_kouhos[jj];
@@ -1826,21 +1833,20 @@ void Method4_3_1()
       {
         M43_kouhos[j] = tmpKouhos[j];
       }
-      M43_kouhoCount = tmpKouhoCount;
+      M43_kouhos.resize(tmpKouhoCount);
       rep(k, ansColumnSchedulesCount[raD][lineNum])
       {
         int num = ansColumnSchedules[raD][lineNum][k];
         if (num != raN) {
-          M43_kouhos[M43_kouhoCount] = num;
-          M43_kouhoCount++;
+          M43_kouhos.push_back(num);
         }
       }
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         CD3_Members[i] = M43_kouhos[i];
       }
       margin = w;
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         int num = M43_kouhos[i];
         margin -= preCalcScheduleSizes[raD][num][lineNum];
@@ -1848,19 +1854,19 @@ void Method4_3_1()
       int diffScore4 = -INT_INF;
       rep(winter, 10)
       {
-        if (M43_kouhoCount == 1 && winter >= 1) break;
-        if (M43_kouhoCount == 2 && winter >= 2) break;
-        if (M43_kouhoCount == 3 && winter >= 6) break;
-        int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhoCount, M43_neighborPosCount, raD, lineNum, margin);
+        if (M43_kouhos.size() == 1 && winter >= 1) break;
+        if (M43_kouhos.size() == 2 && winter >= 2) break;
+        if (M43_kouhos.size() == 3 && winter >= 6) break;
+        int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, lineNum, margin);
         if (tmpDiffScore4 > diffScore4) {
           diffScore4 = tmpDiffScore4;
-          rep(i, M43_kouhoCount)
+          rep(i, (int)M43_kouhos.size())
           {
             M43_tmpAnsCurrentLine[i] = CD3_Members[i];
             M43_tmpAnsCurrentLinePosition[i] = CD3_TmpPosition[i];
           }
-          M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-          M43_tmpAnsCurrentCount = M43_kouhoCount;
+          M43_tmpAnsCurrentLinePosition[M43_kouhos.size()] = CD3_TmpPosition[M43_kouhos.size()];
+          M43_tmpAnsCurrentCount = M43_kouhos.size();
         }
       }
 
@@ -1933,8 +1939,10 @@ void Method4_3_2()
   }
   int beforeCount = ansColumnSchedulesCount[raD][lineNum];
   int afterCount = ansColumnSchedulesCount[raD][nextLine];
-  M43_kouhoCount = 0;
-  M43_nonKouhoCount = 0;
+  M43_kouhos.clear();
+  M43_kouhos.reserve(MAX_CANDIDATES);
+  M43_nonKouhos.clear();
+  M43_nonKouhos.reserve(MAX_CANDIDATES);
   int nextLineCapacity = w;
   int maxNextLineCapacity = w;
   rep(k, ansColumnSchedulesCount[raD][nextLine])
@@ -1943,27 +1951,25 @@ void Method4_3_2()
     nextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
     if (preCalcScheduleSizes[raD][num][lineNum] > lineCapacity) {
       maxNextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
-      M43_nonKouhos[M43_nonKouhoCount] = num;
-      M43_nonKouhoCount++;
+      M43_nonKouhos.push_back(num);
     }
     else {
-      M43_kouhos[M43_kouhoCount] = num;
-      M43_kouhoCount++;
+      M43_kouhos.push_back(num);
     }
   }
 
-  if (M43_kouhoCount > MAX_CANDIDATES) return;
+  if (M43_kouhos.size() > MAX_CANDIDATES) return;
   // if (kouhoCount == 0 && afterCount > 0) return;
-  if (M43_kouhoCount == 0) return;
+  if (M43_kouhos.size() == 0) return;
   if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) return;
 
   int karinaCount = 0;
-  if (M43_kouhoCount == 0) {
+  if (M43_kouhos.size() == 0) {
     M43_karinas[karinaCount] = 0;
     karinaCount++;
   }
-  else if (M43_kouhoCount <= SMALL_DATA_THRESHOLD) {
-    rep(karina, (1 << M43_kouhoCount))
+  else if (M43_kouhos.size() <= SMALL_DATA_THRESHOLD) {
+    rep(karina, (1 << M43_kouhos.size()))
     {
       if (karina == 0) continue;
       M43_karinas[karinaCount] = karina;
@@ -1973,7 +1979,7 @@ void Method4_3_2()
   else {
     rep(aespa, RANDOM_TRIAL_COUNT)
     {
-      int karina = Rand() % ((1 << M43_kouhoCount) - 1) + 1;
+      int karina = Rand() % ((1 << M43_kouhos.size()) - 1) + 1;
       M43_karinas[karinaCount] = karina;
       karinaCount++;
     }
@@ -1984,7 +1990,7 @@ void Method4_3_2()
     int karina = M43_karinas[my];
     int nextSpace = 0;
     int needSpace = 0;
-    rep(jj, M43_kouhoCount)
+    rep(jj, M43_kouhos.size())
     {
       if (karina & (1 << jj)) {
         int j = M43_kouhos[jj];
@@ -1996,12 +2002,12 @@ void Method4_3_2()
     if (needSpace <= lineCapacity && preCalcScheduleSizes[raD][raN][nextLine] <= nextLineCapacity + nextSpace) {
       // スワップ可能
       int moveCount = 0;
-      rep(jj, M43_kouhoCount)
+      rep(jj, M43_kouhos.size())
       {
         if (karina & (1 << jj)) { moveCount++; }
       }
       int diffScore1 = 0;
-      if (M43_kouhoCount == 0) {
+      if (M43_kouhos.size() == 0) {
         if (beforeCount > 1) {
           diffScore1 = widths[lineNum] * 2;
           if (raD == 0 || raD == d - 1) { diffScore1 = widths[lineNum]; }
@@ -2023,22 +2029,20 @@ void Method4_3_2()
       }
 
       // 10回シャッフルnextLine
-      M43_nonKouhos[M43_nonKouhoCount] = raN;
-      M43_nonKouhoCount++;
-      rep(jj, M43_kouhoCount)
+      M43_nonKouhos.push_back(raN);
+      rep(jj, M43_kouhos.size())
       {
         if ((karina & (1 << jj)) == 0) {
           int j = M43_kouhos[jj];
-          M43_nonKouhos[M43_nonKouhoCount] = j;
-          M43_nonKouhoCount++;
+          M43_nonKouhos.push_back(j);
         }
       }
-      rep(i, M43_nonKouhoCount)
+      rep(i, (int)M43_nonKouhos.size())
       {
         CD32_Members[i] = M43_nonKouhos[i];
       }
       int margin = w;
-      rep(i, M43_nonKouhoCount)
+      rep(i, (int)M43_nonKouhos.size())
       {
         int num = M43_nonKouhos[i];
         margin -= preCalcScheduleSizes[raD][num][nextLine];
@@ -2046,19 +2050,19 @@ void Method4_3_2()
       int diffScore3 = -INT_INF;
       rep(winter, 10)
       {
-        if (M43_nonKouhoCount == 1 && winter >= 1) break;
-        if (M43_nonKouhoCount == 2 && winter >= 2) break;
-        if (M43_nonKouhoCount == 3 && winter >= 6) break;
-        int tmpDiffScore3 = CalcDiffScore3_2(winter, M43_nonKouhoCount, raD, nextLine, 0);
+        if (M43_nonKouhos.size() == 1 && winter >= 1) break;
+        if (M43_nonKouhos.size() == 2 && winter >= 2) break;
+        if (M43_nonKouhos.size() == 3 && winter >= 6) break;
+        int tmpDiffScore3 = CalcDiffScore3_2(winter, M43_nonKouhos.size(), raD, nextLine, 0);
         if (tmpDiffScore3 > diffScore3) {
           diffScore3 = tmpDiffScore3;
-          rep(i, M43_nonKouhoCount)
+          rep(i, (int)M43_nonKouhos.size())
           {
             M43_tmpAnsNextLine[i] = CD32_Members[i];
             M43_tmpAnsNextLinePosition[i] = CD32_TmpPosition[i];
           }
-          M43_tmpAnsNextLinePosition[M43_nonKouhoCount] = CD32_TmpPosition[M43_nonKouhoCount];
-          M43_tmpAnsNextCount = M43_nonKouhoCount;
+          M43_tmpAnsNextLinePosition[M43_nonKouhos.size()] = CD32_TmpPosition[M43_nonKouhos.size()];
+          M43_tmpAnsNextCount = M43_nonKouhos.size();
         }
 
         if (raD > 0) {
@@ -2080,7 +2084,7 @@ void Method4_3_2()
       // 10回シャッフルlineNum
       int tmpKouhos[MAX_N];
       int tmpKouhoCount = 0;
-      rep(jj, M43_kouhoCount)
+      rep(jj, M43_kouhos.size())
       {
         if (karina & (1 << jj)) {
           int j = M43_kouhos[jj];
@@ -2092,21 +2096,20 @@ void Method4_3_2()
       {
         M43_kouhos[j] = tmpKouhos[j];
       }
-      M43_kouhoCount = tmpKouhoCount;
+      M43_kouhos.resize(tmpKouhoCount);
       rep(k, ansColumnSchedulesCount[raD][lineNum])
       {
         int num = ansColumnSchedules[raD][lineNum][k];
         if (num != raN) {
-          M43_kouhos[M43_kouhoCount] = num;
-          M43_kouhoCount++;
+          M43_kouhos.push_back(num);
         }
       }
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         CD32_Members[i] = M43_kouhos[i];
       }
       margin = w;
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         int num = M43_kouhos[i];
         margin -= preCalcScheduleSizes[raD][num][lineNum];
@@ -2114,19 +2117,19 @@ void Method4_3_2()
       int diffScore4 = -INT_INF;
       rep(winter, 10)
       {
-        if (M43_kouhoCount == 1 && winter >= 1) break;
-        if (M43_kouhoCount == 2 && winter >= 2) break;
-        if (M43_kouhoCount == 3 && winter >= 6) break;
-        int tmpDiffScore4 = CalcDiffScore3_2(winter, M43_kouhoCount, raD, lineNum, 0);
+        if (M43_kouhos.size() == 1 && winter >= 1) break;
+        if (M43_kouhos.size() == 2 && winter >= 2) break;
+        if (M43_kouhos.size() == 3 && winter >= 6) break;
+        int tmpDiffScore4 = CalcDiffScore3_2(winter, M43_kouhos.size(), raD, lineNum, 0);
         if (tmpDiffScore4 > diffScore4) {
           diffScore4 = tmpDiffScore4;
-          rep(i, M43_kouhoCount)
+          rep(i, (int)M43_kouhos.size())
           {
             M43_tmpAnsCurrentLine[i] = CD32_Members[i];
             M43_tmpAnsCurrentLinePosition[i] = CD32_TmpPosition[i];
           }
-          M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD32_TmpPosition[M43_kouhoCount];
-          M43_tmpAnsCurrentCount = M43_kouhoCount;
+          M43_tmpAnsCurrentLinePosition[M43_kouhos.size()] = CD32_TmpPosition[M43_kouhos.size()];
+          M43_tmpAnsCurrentCount = M43_kouhos.size();
 
           if (raD > 0) {
             beforeCount = ansColumnSchedulesCount[raD - 1][lineNum];
@@ -2276,9 +2279,14 @@ void Method4_3_3()
   }
   sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
 
-  M43_kouhoCount = ansColumnSchedulesCount[raD][line1];
+  M43_kouhos.clear();
+  M43_kouhos.reserve(ansColumnSchedulesCount[raD][line1]);
+  rep(k, ansColumnSchedulesCount[raD][line1])
+  {
+    M43_kouhos.push_back(ansColumnSchedules[raD][line1][k]);
+  }
   int margin = w;
-  rep(i, M43_kouhoCount)
+  rep(i, (int)M43_kouhos.size())
   {
     CD3_Members[i] = ansColumnSchedules[raD][line1][i];
     margin -= preCalcScheduleSizes[raD][CD3_Members[i]][line2];
@@ -2287,19 +2295,19 @@ void Method4_3_3()
   int diffScore3 = -1;
   rep(winter, 10)
   {
-    if (M43_kouhoCount == 1 && winter >= 1) break;
-    if (M43_kouhoCount == 2 && winter >= 2) break;
-    if (M43_kouhoCount == 3 && winter >= 6) break;
-    int tmpDiffScore3 = CalcDiffScore3(winter, M43_kouhoCount, M43_neighborPosCount, raD, line2, margin);
+    if (M43_kouhos.size() == 1 && winter >= 1) break;
+    if (M43_kouhos.size() == 2 && winter >= 2) break;
+    if (M43_kouhos.size() == 3 && winter >= 6) break;
+    int tmpDiffScore3 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, line2, margin);
     if (tmpDiffScore3 > diffScore3) {
       diffScore3 = tmpDiffScore3;
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         M43_tmpAnsNextLine[i] = CD3_Members[i];
         M43_tmpAnsNextLinePosition[i] = CD3_TmpPosition[i];
       }
-      M43_tmpAnsNextLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-      M43_tmpAnsNextCount = M43_kouhoCount;
+      M43_tmpAnsNextLinePosition[M43_kouhos.size()] = CD3_TmpPosition[M43_kouhos.size()];
+      M43_tmpAnsNextCount = M43_kouhos.size();
     }
   }
 
@@ -2321,9 +2329,14 @@ void Method4_3_3()
   }
   sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
 
-  M43_kouhoCount = ansColumnSchedulesCount[raD][line2];
+  M43_kouhos.clear();
+  M43_kouhos.reserve(ansColumnSchedulesCount[raD][line2]);
+  rep(k, ansColumnSchedulesCount[raD][line2])
+  {
+    M43_kouhos.push_back(ansColumnSchedules[raD][line2][k]);
+  }
   margin = w;
-  rep(i, M43_kouhoCount)
+  rep(i, (int)M43_kouhos.size())
   {
     CD3_Members[i] = ansColumnSchedules[raD][line2][i];
     margin -= preCalcScheduleSizes[raD][CD3_Members[i]][line1];
@@ -2332,19 +2345,19 @@ void Method4_3_3()
   int diffScore4 = -1;
   rep(winter, 10)
   {
-    if (M43_kouhoCount == 1 && winter >= 1) break;
-    if (M43_kouhoCount == 2 && winter >= 2) break;
-    if (M43_kouhoCount == 3 && winter >= 6) break;
-    int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhoCount, M43_neighborPosCount, raD, line1, margin);
+    if (M43_kouhos.size() == 1 && winter >= 1) break;
+    if (M43_kouhos.size() == 2 && winter >= 2) break;
+    if (M43_kouhos.size() == 3 && winter >= 6) break;
+    int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, line1, margin);
     if (tmpDiffScore4 > diffScore4) {
       diffScore4 = tmpDiffScore4;
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         M43_tmpAnsCurrentLine[i] = CD3_Members[i];
         M43_tmpAnsCurrentLinePosition[i] = CD3_TmpPosition[i];
       }
-      M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-      M43_tmpAnsCurrentCount = M43_kouhoCount;
+      M43_tmpAnsCurrentLinePosition[M43_kouhos.size()] = CD3_TmpPosition[M43_kouhos.size()];
+      M43_tmpAnsCurrentCount = M43_kouhos.size();
     }
   }
 
@@ -2709,9 +2722,14 @@ void Method4_3_7()
     }
   }
 
-  M43_kouhoCount = ansColumnSchedulesCount[raD][lineNum];
+  M43_kouhos.clear();
+  M43_kouhos.reserve(ansColumnSchedulesCount[raD][lineNum]);
+  rep(k, ansColumnSchedulesCount[raD][lineNum])
+  {
+    M43_kouhos.push_back(ansColumnSchedules[raD][lineNum][k]);
+  }
   int margin = w;
-  rep(i, M43_kouhoCount)
+  rep(i, (int)M43_kouhos.size())
   {
     CD3_Members[i] = ansColumnSchedules[raD][lineNum][i];
     margin -= preCalcScheduleSizes[raD][CD3_Members[i]][lineNum];
@@ -2720,19 +2738,19 @@ void Method4_3_7()
   int diffScore4 = -1;
   rep(winter, 10)
   {
-    if (M43_kouhoCount == 1 && winter >= 1) break;
-    if (M43_kouhoCount == 2 && winter >= 2) break;
-    if (M43_kouhoCount == 3 && winter >= 6) break;
-    int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhoCount, M43_neighborPosCount, raD, lineNum, margin);
+    if (M43_kouhos.size() == 1 && winter >= 1) break;
+    if (M43_kouhos.size() == 2 && winter >= 2) break;
+    if (M43_kouhos.size() == 3 && winter >= 6) break;
+    int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, lineNum, margin);
     if (tmpDiffScore4 > diffScore4) {
       diffScore4 = tmpDiffScore4;
-      rep(i, M43_kouhoCount)
+      rep(i, (int)M43_kouhos.size())
       {
         M43_tmpAnsCurrentLine[i] = CD3_Members[i];
         M43_tmpAnsCurrentLinePosition[i] = CD3_TmpPosition[i];
       }
-      M43_tmpAnsCurrentLinePosition[M43_kouhoCount] = CD3_TmpPosition[M43_kouhoCount];
-      M43_tmpAnsCurrentCount = M43_kouhoCount;
+      M43_tmpAnsCurrentLinePosition[M43_kouhos.size()] = CD3_TmpPosition[M43_kouhos.size()];
+      M43_tmpAnsCurrentCount = M43_kouhos.size();
     }
   }
 
@@ -3095,7 +3113,7 @@ int Method3_Oshii()
       }
     }
 
-    int now[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> now = {};
     int ng = 0;
     drep(ii, d)
     {
@@ -3397,8 +3415,8 @@ int Method3_Oshii()
 
   // ansScheduleLineNumからansを作成
   {
-    int now[MAX_LINECOUNT] = {};
-    int lastNum[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> now = {};
+    std::array<int, MAX_LINECOUNT> lastNum = {};
     rep(i, d)
     {
       rep(j, ans.ansLineCount[i])
@@ -3454,7 +3472,7 @@ void Method3_Oshii2()
       }
     }
 
-    int now[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> now = {};
     int ng = 0;
     drep(ii, d)
     {
@@ -3513,8 +3531,8 @@ void Method3_Oshii2()
   // 調整
   {
     int ng = 0;
-    int now[MAX_LINECOUNT] = {};
-    int lastNum[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> now = {};
+    std::array<int, MAX_LINECOUNT> lastNum = {};
     rep(ii, d)
     {
       int i = daysDifficultySorted[ii];
@@ -3766,12 +3784,12 @@ int Method3_Normal(int loopCount)
   if (ans.ansBaseLineCount < real_ans.ansBaseLineCount - 1) { return 0; }
 
   {
-    int widths[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> widths = {};
     rep(i, nokoriLine)
     {
       widths[i] = ans.ansLinePos[0][startLine + i + 1] - ans.ansLinePos[0][startLine + i];
     }
-    sort(widths, widths + nokoriLine);
+    sort(widths.begin(), widths.begin() + nokoriLine);
     if (widths[nokoriLine - 1] * w < maxA[n - 1]) { return 0; }
     rep(i, nokoriLine)
     {
@@ -3799,8 +3817,8 @@ int Method3_Normal(int loopCount)
   }
 
   int ng = 0;
-  int now[MAX_LINECOUNT] = {};
-  int lastNum[MAX_LINECOUNT] = {};
+  std::array<int, MAX_LINECOUNT> now = {};
+  std::array<int, MAX_LINECOUNT> lastNum = {};
   int tmpOshiiMax = 0;
   int tmpOshiiNGMax = 0;
   int numsOrder[MAX_N];
@@ -4188,8 +4206,8 @@ void Method3_2(double timeLimit)
     }
 
     int ng = 0;
-    int now[MAX_LINECOUNT] = {};
-    int lastNum[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> now = {};
+    std::array<int, MAX_LINECOUNT> lastNum = {};
     rep(i, d)
     {
       rep(j, ans.ansBaseLineCount)
@@ -4272,7 +4290,7 @@ void Method3_2(double timeLimit)
 
 void Method6_ColumnShuffle(double timeLimit)
 {
-  int widths[MAX_LINECOUNT] = {};
+  std::array<int, MAX_LINECOUNT> widths = {};
   rep(j, ans.ansBaseLineCount)
   {
     widths[j] = ans.ansLinePos[0][j + 1] - ans.ansLinePos[0][j];
@@ -4513,12 +4531,12 @@ void Method8(double timeLimit)
     if (ok2 == 0) continue;
 
     {
-      int widths[MAX_LINECOUNT] = {};
+      std::array<int, MAX_LINECOUNT> widths = {};
       rep(i, ans.ansBaseLineCount)
       {
         widths[i] = ans.ansLinePos[0][i + 1] - ans.ansLinePos[0][i];
       }
-      sort(widths, widths + ans.ansBaseLineCount);
+      sort(widths.begin(), widths.begin() + ans.ansBaseLineCount);
       rep(i, ans.ansBaseLineCount)
       {
         ans.ansLinePos[0][i + 1] = ans.ansLinePos[0][i] + widths[i];
@@ -4532,8 +4550,8 @@ void Method8(double timeLimit)
     }
 
     int okCount = 0;
-    int now[MAX_LINECOUNT] = {};
-    int lastNum[MAX_LINECOUNT] = {};
+    std::array<int, MAX_LINECOUNT> now = {};
+    std::array<int, MAX_LINECOUNT> lastNum = {};
     int numsOrder[MAX_N];
     drep(ii, d)
     {
