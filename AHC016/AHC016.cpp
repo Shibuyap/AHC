@@ -2382,15 +2382,9 @@ int Solver10()
   return argRes;
 }
 
-int Solver11()
+// 4-クリークを見つける共通関数
+bool findClique4(const vector<int>& kouho, int f[], vector<int>& cores, int markValue)
 {
-  int f[110] = {};
-
-  // コア1を作る
-  vector<int> cores1;
-  vector<int> kouho;
-  for (int i = 0; i < (n); ++i) kouho.push_back(i);
-  if (kouho.size() < 4) return 0;
   for (int loop1 = 0; loop1 < (5000); ++loop1) {
     int core[4] = {};
     for (int i = 0; i < (4); ++i) {
@@ -2410,13 +2404,25 @@ int Solver11()
     }
     if (mitu) {
       for (int i = 0; i < (4); ++i) {
-        f[core[i]] = 1;
-        cores1.push_back(core[i]);
+        f[core[i]] = markValue;
+        cores.push_back(core[i]);
       }
-      break;
+      return true;
     }
   }
-  if (cores1.size() == 0) return 0;
+  return false;
+}
+
+int Solver11()
+{
+  int f[110] = {};
+
+  // コア1を作る
+  vector<int> cores1;
+  vector<int> kouho;
+  for (int i = 0; i < (n); ++i) kouho.push_back(i);
+  if (kouho.size() < 4) return 0;
+  if (!findClique4(kouho, f, cores1, 1)) return 0;
 
   // コア1を大きくしていく
   while (true) {
@@ -2453,31 +2459,7 @@ int Solver11()
     kouho.push_back(i);
   }
   if (kouho.size() >= 4) {
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 2;
-          cores2.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores2, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
       while (true) {
@@ -2624,31 +2606,7 @@ int Solver12()
   vector<int> kouho;
   for (int i = 0; i < (n); ++i) kouho.push_back(i);
   if (kouho.size() < 4) return 0;
-  for (int loop1 = 0; loop1 < (5000); ++loop1) {
-    int core[4] = {};
-    for (int i = 0; i < (4); ++i) {
-      while (true) {
-        core[i] = kouho[Rand() % kouho.size()];
-        for (int j = 0; j < (i); ++j) {
-          if (core[j] == core[i]) core[i] = -1;
-        }
-        if (core[i] != -1) break;
-      }
-    }
-    int mitu = 1;
-    for (int i = 0; i < (4); ++i) {
-      for (int j = i + 1; j < 4; ++j) {
-        if (!b[core[i]][core[j]]) mitu = 0;
-      }
-    }
-    if (mitu) {
-      for (int i = 0; i < (4); ++i) {
-        f[core[i]] = 1;
-        cores1.push_back(core[i]);
-      }
-      break;
-    }
-  }
+  findClique4(kouho, f, cores1, 1);
   if (cores1.size() == 0) return 0;
 
   // コア1を大きくしていく
@@ -2686,31 +2644,7 @@ int Solver12()
     kouho.push_back(i);
   }
   if (kouho.size() >= 4) {
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 2;
-          cores2.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores2, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
       while (true) {
@@ -2750,31 +2684,7 @@ int Solver12()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 3;
-            cores3.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores3, 3);
       if (cores3.size() > 0) {
         // コア3を大きくしていく
         while (true) {
@@ -2932,31 +2842,7 @@ int Solver13()
   vector<int> kouho;
   for (int i = 0; i < (n); ++i) kouho.push_back(i);
   if (kouho.size() < 4) return 0;
-  for (int loop1 = 0; loop1 < (5000); ++loop1) {
-    int core[4] = {};
-    for (int i = 0; i < (4); ++i) {
-      while (true) {
-        core[i] = kouho[Rand() % kouho.size()];
-        for (int j = 0; j < (i); ++j) {
-          if (core[j] == core[i]) core[i] = -1;
-        }
-        if (core[i] != -1) break;
-      }
-    }
-    int mitu = 1;
-    for (int i = 0; i < (4); ++i) {
-      for (int j = i + 1; j < 4; ++j) {
-        if (!b[core[i]][core[j]]) mitu = 0;
-      }
-    }
-    if (mitu) {
-      for (int i = 0; i < (4); ++i) {
-        f[core[i]] = 1;
-        cores1.push_back(core[i]);
-      }
-      break;
-    }
-  }
+  findClique4(kouho, f, cores1, 1);
   if (cores1.size() == 0) return 0;
 
   // コア1を大きくしていく
@@ -2994,31 +2880,7 @@ int Solver13()
     kouho.push_back(i);
   }
   if (kouho.size() >= 4) {
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 2;
-          cores2.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores2, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
       while (true) {
@@ -3058,31 +2920,7 @@ int Solver13()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 3;
-            cores3.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores3, 3);
       if (cores3.size() > 0) {
         // コア3を大きくしていく
         while (true) {
@@ -3123,31 +2961,7 @@ int Solver13()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 4;
-            cores4.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores4, 4);
       if (cores4.size() > 0) {
         // コア4を大きくしていく
         while (true) {
@@ -3318,31 +3132,7 @@ int Solver14()
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -3380,31 +3170,7 @@ int Solver14()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         while (true) {
@@ -3547,31 +3313,7 @@ int Solver15()
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -3609,31 +3351,7 @@ int Solver15()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         while (true) {
@@ -3818,31 +3536,7 @@ int Solver16()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -3880,31 +3574,7 @@ int Solver16()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         while (true) {
@@ -4081,31 +3751,7 @@ int Solver17()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -4143,31 +3789,7 @@ int Solver17()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         while (true) {
@@ -4396,31 +4018,7 @@ int Solver19()
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
     ;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -4458,31 +4056,7 @@ int Solver19()
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
-        int core[4] = {};
-        for (int i = 0; i < (4); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (4); ++i) {
-          for (int j = i + 1; j < 4; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (4); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
+      findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         while (true) {
@@ -4651,31 +4225,7 @@ int Solver20()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (4); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
-      }
-      int mitu = 1;
-      for (int i = 0; i < (4); ++i) {
-        for (int j = i + 1; j < 4; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (4); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
+    findClique4(kouho, f, cores1, 1);
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
