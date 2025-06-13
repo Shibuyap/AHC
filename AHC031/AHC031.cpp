@@ -120,6 +120,58 @@ public:
   }
 };
 
+// 列スケジュール管理クラス
+class ColumnSchedule
+{
+public:
+  int columnNum[MAX_D][MAX_N];  // 各要素がどの列に属するか
+  int schedules[MAX_D][MAX_LINECOUNT][MAX_N];  // 各列に属する要素のリスト
+  int schedulesCount[MAX_D][MAX_LINECOUNT];  // 各列の要素数
+  int schedulesPosition[MAX_D][MAX_LINECOUNT][MAX_N];  // 各要素の位置
+
+  ColumnSchedule()
+  {
+    clear();
+  }
+
+  void clear()
+  {
+    memset(columnNum, 0, sizeof(columnNum));
+    memset(schedules, 0, sizeof(schedules));
+    memset(schedulesCount, 0, sizeof(schedulesCount));
+    memset(schedulesPosition, 0, sizeof(schedulesPosition));
+  }
+
+  void copyFrom(const ColumnSchedule& other)
+  {
+    memcpy(columnNum, other.columnNum, sizeof(columnNum));
+    memcpy(schedules, other.schedules, sizeof(schedules));
+    memcpy(schedulesCount, other.schedulesCount, sizeof(schedulesCount));
+    memcpy(schedulesPosition, other.schedulesPosition, sizeof(schedulesPosition));
+  }
+
+  // 要素を特定の列に追加
+  void addElementToColumn(int day, int column, int element, int position)
+  {
+    columnNum[day][element] = column;
+    int idx = schedulesCount[day][column];
+    schedules[day][column][idx] = element;
+    schedulesPosition[day][column][idx] = position;
+    schedulesCount[day][column]++;
+  }
+
+  // 要素のインデックスを検索
+  int findElementIndex(int day, int column, int element) const
+  {
+    for (int k = 0; k < schedulesCount[day][column]; k++) {
+      if (schedules[day][column][k] == element) {
+        return k;
+      }
+    }
+    return -1;
+  }
+};
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t Rand()
@@ -941,65 +993,28 @@ void MethodPerfect()
 int preCalcScheduleSizes[MAX_D][MAX_N][MAX_LINECOUNT];
 std::array<int, MAX_LINECOUNT> widths = {};
 
-int ansColumnNum[MAX_D][MAX_N];
-int ansColumnSchedules[MAX_D][MAX_LINECOUNT][MAX_N];
-int ansColumnSchedulesCount[MAX_D][MAX_LINECOUNT];
-int ansColumnSchedulesPosition[MAX_D][MAX_LINECOUNT][MAX_N];
-
-int real_ansColumnNum[MAX_D][MAX_N];
-int real_ansColumnSchedules[MAX_D][MAX_LINECOUNT][MAX_N];
-int real_ansColumnSchedulesCount[MAX_D][MAX_LINECOUNT];
-int real_ansColumnSchedulesPosition[MAX_D][MAX_LINECOUNT][MAX_N];
+ColumnSchedule columnSchedule;
+ColumnSchedule real_columnSchedule;
 
 // realに格納
 void CopyToReal_M42()
 {
-  rep(i, dayCount)
-  {
-    rep(j, elementCount)
-    {
-      real_ansColumnNum[i][j] = ansColumnNum[i][j];
-    }
-    rep(j, ans.ansBaseLineCount)
-    {
-      real_ansColumnSchedulesCount[i][j] = ansColumnSchedulesCount[i][j];
-      rep(k, real_ansColumnSchedulesCount[i][j] + 1)
-      {
-        real_ansColumnSchedules[i][j][k] = ansColumnSchedules[i][j][k];
-        real_ansColumnSchedulesPosition[i][j][k] = ansColumnSchedulesPosition[i][j][k];
-      }
-    }
-  }
+  real_columnSchedule.copyFrom(columnSchedule);
 }
 
 // realから戻す
 void CoptToCurrent_M42()
 {
-  rep(i, dayCount)
-  {
-    rep(j, elementCount)
-    {
-      ansColumnNum[i][j] = real_ansColumnNum[i][j];
-    }
-    rep(j, ans.ansBaseLineCount)
-    {
-      ansColumnSchedulesCount[i][j] = real_ansColumnSchedulesCount[i][j];
-      rep(k, ansColumnSchedulesCount[i][j] + 1)
-      {
-        ansColumnSchedules[i][j][k] = real_ansColumnSchedules[i][j][k];
-        ansColumnSchedulesPosition[i][j][k] = real_ansColumnSchedulesPosition[i][j][k];
-      }
-    }
-  }
+  columnSchedule.copyFrom(real_columnSchedule);
 }
 
 int CalcDiffScore2(int day1, int day2, int lineNum)
 {
   int diffScore2 = 0;
   int ite1 = 1, ite2 = 1;
-  while (ite1 < ansColumnSchedulesCount[day1][lineNum] && ite2 < ansColumnSchedulesCount[day2][lineNum]) {
-    int num1 = ansColumnSchedulesPosition[day1][lineNum][ite1];
-    int num2 = ansColumnSchedulesPosition[day2][lineNum][ite2];
+  while (ite1 < columnSchedule.schedulesCount[day1][lineNum] && ite2 < columnSchedule.schedulesCount[day2][lineNum]) {
+    int num1 = columnSchedule.schedulesPosition[day1][lineNum][ite1];
+    int num2 = columnSchedule.schedulesPosition[day2][lineNum][ite2];
     if (num1 == num2) {
       diffScore2 -= widths[lineNum] * 2;
       ite1++;
@@ -1098,18 +1113,18 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
 {
   int beforeCount = 0;
   if (day > 0) {
-    beforeCount = ansColumnSchedulesCount[day - 1][lineNum];
+    beforeCount = columnSchedule.schedulesCount[day - 1][lineNum];
     rep(k, beforeCount + 1)
     {
-      CD32_NeighborNewPos1[k] = ansColumnSchedulesPosition[day - 1][lineNum][k];
+      CD32_NeighborNewPos1[k] = columnSchedule.schedulesPosition[day - 1][lineNum][k];
     }
   }
   int afterCount = 0;
   if (day < dayCount - 1) {
-    afterCount = ansColumnSchedulesCount[day + 1][lineNum];
+    afterCount = columnSchedule.schedulesCount[day + 1][lineNum];
     rep(k, afterCount + 1)
     {
-      CD32_NeighborNewPos2[k] = ansColumnSchedulesPosition[day + 1][lineNum][k];
+      CD32_NeighborNewPos2[k] = columnSchedule.schedulesPosition[day + 1][lineNum][k];
     }
   }
 
@@ -1152,15 +1167,15 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
   while (ite1 < memberCount) {
     int num2 = 0, pos2 = 0, pos22 = 0;
     if (ite2 < beforeCount) {
-      num2 = ansColumnSchedules[day - 1][lineNum][ite2 - 1];
-      pos2 = ansColumnSchedulesPosition[day - 1][lineNum][ite2 - 1] + preCalcScheduleSizes[day - 1][num2][lineNum];
-      pos22 = ansColumnSchedulesPosition[day - 1][lineNum][ite2];
+      num2 = columnSchedule.schedules[day - 1][lineNum][ite2 - 1];
+      pos2 = columnSchedule.schedulesPosition[day - 1][lineNum][ite2 - 1] + preCalcScheduleSizes[day - 1][num2][lineNum];
+      pos22 = columnSchedule.schedulesPosition[day - 1][lineNum][ite2];
       pos2 = min(pos22, max(pos2, sum + 1));
       pos2 = pos22;
       if (1 < day) {
-        rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+        rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
         {
-          if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos22) {
+          if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
             pos2 = pos22;
             break;
           }
@@ -1169,15 +1184,15 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
     }
     int num3 = 0, pos3 = 0, pos32 = 0;
     if (ite3 < afterCount) {
-      num3 = ansColumnSchedules[day + 1][lineNum][ite3 - 1];
-      pos3 = ansColumnSchedulesPosition[day + 1][lineNum][ite3 - 1] + preCalcScheduleSizes[day + 1][num3][lineNum];
-      pos32 = ansColumnSchedulesPosition[day + 1][lineNum][ite3];
+      num3 = columnSchedule.schedules[day + 1][lineNum][ite3 - 1];
+      pos3 = columnSchedule.schedulesPosition[day + 1][lineNum][ite3 - 1] + preCalcScheduleSizes[day + 1][num3][lineNum];
+      pos32 = columnSchedule.schedulesPosition[day + 1][lineNum][ite3];
       pos3 = min(pos32, max(pos3, sum + 1));
       pos3 = pos32;
       if (day < elementCount - 2) {
-        rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+        rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
         {
-          if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos32) {
+          if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos32) {
             pos3 = pos32;
             break;
           }
@@ -1203,9 +1218,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         if (pos22 == pos32) {
           bool isConnect1 = false;
           if (1 < day) {
-            rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+            rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
             {
-              if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos22) {
+              if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
                 diffScore3 -= widths[lineNum] * 2;
                 isConnect1 = true;
                 break;
@@ -1214,9 +1229,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           }
           bool isConnect2 = false;
           if (day < elementCount - 2) {
-            rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+            rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
             {
-              if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos32) {
+              if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos32) {
                 diffScore3 -= widths[lineNum] * 2;
                 isConnect2 = true;
                 break;
@@ -1242,9 +1257,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
               // nPos = pos2
               CD32_NeighborNewPos1[ite2] = pos2;
               if (1 < day) {
-                rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+                rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
                 {
-                  if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos2) {
+                  if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos2) {
                     diffScore3 += widths[lineNum] * 2;
                     break;
                   }
@@ -1262,9 +1277,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
               // nPos = pos3
               CD32_NeighborNewPos2[ite3] = pos3;
               if (day < elementCount - 2) {
-                rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+                rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
                 {
-                  if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos3) {
+                  if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
                     diffScore3 += widths[lineNum] * 2;
                     break;
                   }
@@ -1283,9 +1298,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         else if (pos22 < pos32) {
           bool isConnect = false;
           if (1 < day) {
-            rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+            rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
             {
-              if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos22) {
+              if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
                 diffScore3 -= widths[lineNum] * 2;
                 isConnect = true;
                 break;
@@ -1306,9 +1321,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             // nPos = pos2
             CD32_NeighborNewPos1[ite2] = pos2;
             if (1 < day) {
-              rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+              rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
               {
-                if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos2) {
+                if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos2) {
                   diffScore3 += widths[lineNum] * 2;
                   break;
                 }
@@ -1326,9 +1341,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         else {
           bool isConnect = false;
           if (day < elementCount - 2) {
-            rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+            rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
             {
-              if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos32) {
+              if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos32) {
                 diffScore3 -= widths[lineNum] * 2;
                 isConnect = true;
                 break;
@@ -1349,9 +1364,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
             // nPos = pos3
             CD32_NeighborNewPos2[ite3] = pos3;
             if (day < elementCount - 2) {
-              rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+              rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
               {
-                if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos3) {
+                if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
                   diffScore3 += widths[lineNum] * 2;
                   break;
                 }
@@ -1380,9 +1395,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         }
         bool isConnect = false;
         if (1 < day) {
-          rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+          rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
           {
-            if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos22) {
+            if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
               diffScore3 -= widths[lineNum] * 2;
               isConnect = true;
               break;
@@ -1402,9 +1417,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           else {
             CD32_NeighborNewPos1[ite2] = pos2;
             if (1 < day) {
-              rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+              rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
               {
-                if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos2) {
+                if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos2) {
                   diffScore3 += widths[lineNum] * 2;
                   break;
                 }
@@ -1421,9 +1436,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         else {
           CD32_NeighborNewPos1[ite2] = pos2;
           if (1 < day) {
-            rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+            rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
             {
-              if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos2) {
+              if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos2) {
                 diffScore3 += widths[lineNum] * 2;
                 break;
               }
@@ -1451,9 +1466,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         }
         bool isConnect = false;
         if (day < elementCount - 2) {
-          rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+          rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
           {
-            if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos32) {
+            if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos32) {
               diffScore3 -= widths[lineNum] * 2;
               isConnect = true;
               break;
@@ -1473,9 +1488,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
           else {
             CD32_NeighborNewPos2[ite3] = pos3;
             if (day < elementCount - 2) {
-              rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+              rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
               {
-                if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos3) {
+                if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
                   diffScore3 += widths[lineNum] * 2;
                   break;
                 }
@@ -1492,9 +1507,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
         else {
           CD32_NeighborNewPos2[ite3] = pos3;
           if (day < elementCount - 2) {
-            rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+            rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
             {
-              if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos3) {
+              if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
                 diffScore3 += widths[lineNum] * 2;
                 break;
               }
@@ -1523,9 +1538,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       }
       bool isConnect = false;
       if (1 < day) {
-        rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+        rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
         {
-          if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos22) {
+          if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
             diffScore3 -= widths[lineNum] * 2;
             isConnect = true;
             break;
@@ -1544,9 +1559,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       else {
         CD32_NeighborNewPos1[ite2] = pos2;
         if (1 < day) {
-          rep(k, ansColumnSchedulesCount[day - 2][lineNum])
+          rep(k, columnSchedule.schedulesCount[day - 2][lineNum])
           {
-            if (ansColumnSchedulesPosition[day - 2][lineNum][k] == pos2) {
+            if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos2) {
               diffScore3 += widths[lineNum] * 2;
               break;
             }
@@ -1575,9 +1590,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
 
       bool isConnect = false;
       if (day < elementCount - 2) {
-        rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+        rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
         {
-          if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos32) {
+          if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos32) {
             diffScore3 -= widths[lineNum] * 2;
             isConnect = true;
             break;
@@ -1588,9 +1603,9 @@ int CalcDiffScore3_2(int winter, int memberCount, int day, int lineNum, int marg
       if (sum + tmpMargin < pos32 || !isConnect) {
         CD32_NeighborNewPos2[ite3] = pos3;
         if (day < elementCount - 2) {
-          rep(k, ansColumnSchedulesCount[day + 2][lineNum])
+          rep(k, columnSchedule.schedulesCount[day + 2][lineNum])
           {
-            if (ansColumnSchedulesPosition[day + 2][lineNum][k] == pos3) {
+            if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
               diffScore3 += widths[lineNum] * 2;
               break;
             }
@@ -1690,11 +1705,11 @@ void Method4_3_1()
 {
   int raD = Rand() % dayCount;
   int raN = Rand() % elementCount;
-  int lineNum = ansColumnNum[raD][raN];
+  int lineNum = columnSchedule.columnNum[raD][raN];
   int lineCapacity = w;
-  rep(k, ansColumnSchedulesCount[raD][lineNum])
+  rep(k, columnSchedule.schedulesCount[raD][lineNum])
   {
-    int num = ansColumnSchedules[raD][lineNum][k];
+    int num = columnSchedule.schedules[raD][lineNum][k];
     if (num != raN) { lineCapacity -= preCalcScheduleSizes[raD][num][lineNum]; }
   }
 
@@ -1702,17 +1717,17 @@ void Method4_3_1()
   while (nextLine == lineNum) {
     nextLine = Rand() % ans.ansLineCount[raD];
   }
-  int beforeCount = ansColumnSchedulesCount[raD][lineNum];
-  int afterCount = ansColumnSchedulesCount[raD][nextLine];
+  int beforeCount = columnSchedule.schedulesCount[raD][lineNum];
+  int afterCount = columnSchedule.schedulesCount[raD][nextLine];
   M43_kouhos.clear();
   M43_kouhos.reserve(MAX_CANDIDATES);
   M43_nonKouhos.clear();
   M43_nonKouhos.reserve(MAX_CANDIDATES);
   int nextLineCapacity = w;
   int maxNextLineCapacity = w;
-  rep(k, ansColumnSchedulesCount[raD][nextLine])
+  rep(k, columnSchedule.schedulesCount[raD][nextLine])
   {
-    int num = ansColumnSchedules[raD][nextLine][k];
+    int num = columnSchedule.schedules[raD][nextLine][k];
     nextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
     if (preCalcScheduleSizes[raD][num][lineNum] > lineCapacity) {
       maxNextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
@@ -1814,16 +1829,16 @@ void Method4_3_1()
       // 10回シャッフルnextLine
       M43_neighborPosCount = 0;
       if (raD > 0) {
-        srep(k, 1, ansColumnSchedulesCount[raD - 1][nextLine])
+        srep(k, 1, columnSchedule.schedulesCount[raD - 1][nextLine])
         {
-          CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD - 1][nextLine][k];
+          CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][nextLine][k];
           M43_neighborPosCount++;
         }
       }
       if (raD < dayCount - 1) {
-        srep(k, 1, ansColumnSchedulesCount[raD + 1][nextLine])
+        srep(k, 1, columnSchedule.schedulesCount[raD + 1][nextLine])
         {
-          CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD + 1][nextLine][k];
+          CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][nextLine][k];
           M43_neighborPosCount++;
         }
       }
@@ -1868,16 +1883,16 @@ void Method4_3_1()
       // 10回シャッフルlineNum
       M43_neighborPosCount = 0;
       if (raD > 0) {
-        srep(k, 1, ansColumnSchedulesCount[raD - 1][lineNum])
+        srep(k, 1, columnSchedule.schedulesCount[raD - 1][lineNum])
         {
-          CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD - 1][lineNum][k];
+          CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][lineNum][k];
           M43_neighborPosCount++;
         }
       }
       if (raD < dayCount - 1) {
-        srep(k, 1, ansColumnSchedulesCount[raD + 1][lineNum])
+        srep(k, 1, columnSchedule.schedulesCount[raD + 1][lineNum])
         {
-          CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD + 1][lineNum][k];
+          CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][lineNum][k];
           M43_neighborPosCount++;
         }
       }
@@ -1897,9 +1912,9 @@ void Method4_3_1()
         M43_kouhos[j] = tmpKouhos[j];
       }
       M43_kouhos.resize(tmpKouhoCount);
-      rep(k, ansColumnSchedulesCount[raD][lineNum])
+      rep(k, columnSchedule.schedulesCount[raD][lineNum])
       {
-        int num = ansColumnSchedules[raD][lineNum][k];
+        int num = columnSchedule.schedules[raD][lineNum][k];
         if (num != raN) {
           M43_kouhos.push_back(num);
         }
@@ -1947,25 +1962,25 @@ void Method4_3_1()
 
       if (prob > Rand01()) {
         M431Count++;
-        ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
+        columnSchedule.schedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
         rep(i, M43_tmpAnsNextCount)
         {
           int num = M43_tmpAnsNextLine[i];
-          ansColumnNum[raD][num] = nextLine;
-          ansColumnSchedules[raD][nextLine][i] = num;
-          ansColumnSchedulesPosition[raD][nextLine][i] = M43_tmpAnsNextLinePosition[i];
+          columnSchedule.columnNum[raD][num] = nextLine;
+          columnSchedule.schedules[raD][nextLine][i] = num;
+          columnSchedule.schedulesPosition[raD][nextLine][i] = M43_tmpAnsNextLinePosition[i];
         }
-        ansColumnSchedulesPosition[raD][nextLine][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
+        columnSchedule.schedulesPosition[raD][nextLine][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
 
-        ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
+        columnSchedule.schedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
         rep(i, M43_tmpAnsCurrentCount)
         {
           int num = M43_tmpAnsCurrentLine[i];
-          ansColumnNum[raD][num] = lineNum;
-          ansColumnSchedules[raD][lineNum][i] = num;
-          ansColumnSchedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
+          columnSchedule.columnNum[raD][num] = lineNum;
+          columnSchedule.schedules[raD][lineNum][i] = num;
+          columnSchedule.schedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
         }
-        ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
+        columnSchedule.schedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
         ans.ansScore -= totalDiffScore;
         if (ans.ansScore < real_ans.ansScore) {
@@ -1988,11 +2003,11 @@ void Method4_3_2()
 {
   int raD = Rand() % dayCount;
   int raN = Rand() % elementCount;
-  int lineNum = ansColumnNum[raD][raN];
+  int lineNum = columnSchedule.columnNum[raD][raN];
   int lineCapacity = w;
-  rep(k, ansColumnSchedulesCount[raD][lineNum])
+  rep(k, columnSchedule.schedulesCount[raD][lineNum])
   {
-    int num = ansColumnSchedules[raD][lineNum][k];
+    int num = columnSchedule.schedules[raD][lineNum][k];
     if (num != raN) { lineCapacity -= preCalcScheduleSizes[raD][num][lineNum]; }
   }
 
@@ -2000,17 +2015,17 @@ void Method4_3_2()
   while (nextLine == lineNum) {
     nextLine = Rand() % ans.ansLineCount[raD];
   }
-  int beforeCount = ansColumnSchedulesCount[raD][lineNum];
-  int afterCount = ansColumnSchedulesCount[raD][nextLine];
+  int beforeCount = columnSchedule.schedulesCount[raD][lineNum];
+  int afterCount = columnSchedule.schedulesCount[raD][nextLine];
   M43_kouhos.clear();
   M43_kouhos.reserve(MAX_CANDIDATES);
   M43_nonKouhos.clear();
   M43_nonKouhos.reserve(MAX_CANDIDATES);
   int nextLineCapacity = w;
   int maxNextLineCapacity = w;
-  rep(k, ansColumnSchedulesCount[raD][nextLine])
+  rep(k, columnSchedule.schedulesCount[raD][nextLine])
   {
-    int num = ansColumnSchedules[raD][nextLine][k];
+    int num = columnSchedule.schedules[raD][nextLine][k];
     nextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
     if (preCalcScheduleSizes[raD][num][lineNum] > lineCapacity) {
       maxNextLineCapacity -= preCalcScheduleSizes[raD][num][nextLine];
@@ -2129,14 +2144,14 @@ void Method4_3_2()
         }
 
         if (raD > 0) {
-          beforeCount = ansColumnSchedulesCount[raD - 1][nextLine];
+          beforeCount = columnSchedule.schedulesCount[raD - 1][nextLine];
           rep(k, beforeCount + 1)
           {
             M43_tmpAnsNextLineBeforePosition[k] = CD32_NeighborNewPos1[k];
           }
         }
         if (raD < dayCount - 1) {
-          int afterCount = ansColumnSchedulesCount[raD + 1][nextLine];
+          int afterCount = columnSchedule.schedulesCount[raD + 1][nextLine];
           rep(k, afterCount + 1)
           {
             M43_tmpAnsNextLineAfterPosition[k] = CD32_NeighborNewPos2[k];
@@ -2160,9 +2175,9 @@ void Method4_3_2()
         M43_kouhos[j] = tmpKouhos[j];
       }
       M43_kouhos.resize(tmpKouhoCount);
-      rep(k, ansColumnSchedulesCount[raD][lineNum])
+      rep(k, columnSchedule.schedulesCount[raD][lineNum])
       {
-        int num = ansColumnSchedules[raD][lineNum][k];
+        int num = columnSchedule.schedules[raD][lineNum][k];
         if (num != raN) {
           M43_kouhos.push_back(num);
         }
@@ -2195,14 +2210,14 @@ void Method4_3_2()
           M43_tmpAnsCurrentCount = M43_kouhos.size();
 
           if (raD > 0) {
-            beforeCount = ansColumnSchedulesCount[raD - 1][lineNum];
+            beforeCount = columnSchedule.schedulesCount[raD - 1][lineNum];
             rep(k, beforeCount + 1)
             {
               M43_tmpAnsCurrentLineBeforePosition[k] = CD32_NeighborNewPos1[k];
             }
           }
           if (raD < dayCount - 1) {
-            int afterCount = ansColumnSchedulesCount[raD + 1][lineNum];
+            int afterCount = columnSchedule.schedulesCount[raD + 1][lineNum];
             rep(k, afterCount + 1)
             {
               M43_tmpAnsCurrentLineAfterPosition[k] = CD32_NeighborNewPos2[k];
@@ -2217,52 +2232,52 @@ void Method4_3_2()
       const double prob = exp((double)totalDiffScore * ANNEALING_TEMP_COEFFICIENT / temp);
 
       if (prob > Rand01()) {
-        ansColumnSchedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
+        columnSchedule.schedulesCount[raD][nextLine] = M43_tmpAnsNextCount;
         rep(i, M43_tmpAnsNextCount)
         {
           int num = M43_tmpAnsNextLine[i];
-          ansColumnNum[raD][num] = nextLine;
-          ansColumnSchedules[raD][nextLine][i] = num;
-          ansColumnSchedulesPosition[raD][nextLine][i] = M43_tmpAnsNextLinePosition[i];
+          columnSchedule.columnNum[raD][num] = nextLine;
+          columnSchedule.schedules[raD][nextLine][i] = num;
+          columnSchedule.schedulesPosition[raD][nextLine][i] = M43_tmpAnsNextLinePosition[i];
         }
-        ansColumnSchedulesPosition[raD][nextLine][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
+        columnSchedule.schedulesPosition[raD][nextLine][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
 
-        ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
+        columnSchedule.schedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
         rep(i, M43_tmpAnsCurrentCount)
         {
           int num = M43_tmpAnsCurrentLine[i];
-          ansColumnNum[raD][num] = lineNum;
-          ansColumnSchedules[raD][lineNum][i] = num;
-          ansColumnSchedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
+          columnSchedule.columnNum[raD][num] = lineNum;
+          columnSchedule.schedules[raD][lineNum][i] = num;
+          columnSchedule.schedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
         }
-        ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
+        columnSchedule.schedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
         if (raD > 0) {
-          beforeCount = ansColumnSchedulesCount[raD - 1][lineNum];
+          beforeCount = columnSchedule.schedulesCount[raD - 1][lineNum];
           rep(k, beforeCount + 1)
           {
-            ansColumnSchedulesPosition[raD - 1][lineNum][k] = M43_tmpAnsCurrentLineBeforePosition[k];
+            columnSchedule.schedulesPosition[raD - 1][lineNum][k] = M43_tmpAnsCurrentLineBeforePosition[k];
           }
         }
         if (raD < dayCount - 1) {
-          int afterCount = ansColumnSchedulesCount[raD + 1][lineNum];
+          int afterCount = columnSchedule.schedulesCount[raD + 1][lineNum];
           rep(k, afterCount + 1)
           {
-            ansColumnSchedulesPosition[raD + 1][lineNum][k] = M43_tmpAnsCurrentLineAfterPosition[k];
+            columnSchedule.schedulesPosition[raD + 1][lineNum][k] = M43_tmpAnsCurrentLineAfterPosition[k];
           }
         }
         if (raD > 0) {
-          beforeCount = ansColumnSchedulesCount[raD - 1][nextLine];
+          beforeCount = columnSchedule.schedulesCount[raD - 1][nextLine];
           rep(k, beforeCount + 1)
           {
-            ansColumnSchedulesPosition[raD - 1][nextLine][k] = M43_tmpAnsNextLineBeforePosition[k];
+            columnSchedule.schedulesPosition[raD - 1][nextLine][k] = M43_tmpAnsNextLineBeforePosition[k];
           }
         }
         if (raD < dayCount - 1) {
-          int afterCount = ansColumnSchedulesCount[raD + 1][nextLine];
+          int afterCount = columnSchedule.schedulesCount[raD + 1][nextLine];
           rep(k, afterCount + 1)
           {
-            ansColumnSchedulesPosition[raD + 1][nextLine][k] = M43_tmpAnsNextLineAfterPosition[k];
+            columnSchedule.schedulesPosition[raD + 1][nextLine][k] = M43_tmpAnsNextLineAfterPosition[k];
           }
         }
 
@@ -2290,29 +2305,29 @@ void Method4_3_3()
   while (line2 == line1) {
     line2 = Rand() % ans.ansLineCount[raD];
   }
-  if (ansColumnSchedulesCount[raD][line1] == 0 || ansColumnSchedulesCount[raD][line2] == 0) return;
+  if (columnSchedule.schedulesCount[raD][line1] == 0 || columnSchedule.schedulesCount[raD][line2] == 0) return;
 
   {
     int line1NextSum = 0;
-    rep(k, ansColumnSchedulesCount[raD][line1])
+    rep(k, columnSchedule.schedulesCount[raD][line1])
     {
-      int num = ansColumnSchedules[raD][line1][k];
+      int num = columnSchedule.schedules[raD][line1][k];
       line1NextSum += preCalcScheduleSizes[raD][num][line2];
     }
     if (line1NextSum > w) return;
   }
   {
     int line2NextSum = 0;
-    rep(k, ansColumnSchedulesCount[raD][line2])
+    rep(k, columnSchedule.schedulesCount[raD][line2])
     {
-      int num = ansColumnSchedules[raD][line2][k];
+      int num = columnSchedule.schedules[raD][line2][k];
       line2NextSum += preCalcScheduleSizes[raD][num][line1];
     }
     if (line2NextSum > w) return;
   }
 
-  int diffScore1 = (ansColumnSchedulesCount[raD][line1] - ansColumnSchedulesCount[raD][line2]) * (widths[line1] - widths[line2]) * 2;
-  if (raD == 0 || raD == dayCount - 1) diffScore1 = (ansColumnSchedulesCount[raD][line1] - ansColumnSchedulesCount[raD][line2]) * (widths[line1] - widths[line2]);
+  int diffScore1 = (columnSchedule.schedulesCount[raD][line1] - columnSchedule.schedulesCount[raD][line2]) * (widths[line1] - widths[line2]) * 2;
+  if (raD == 0 || raD == dayCount - 1) diffScore1 = (columnSchedule.schedulesCount[raD][line1] - columnSchedule.schedulesCount[raD][line2]) * (widths[line1] - widths[line2]);
 
   int diffScore2 = 0;
   if (raD > 0) {
@@ -2327,31 +2342,31 @@ void Method4_3_3()
   // 10回シャッフルline2
   M43_neighborPosCount = 0;
   if (raD > 0) {
-    srep(k, 1, ansColumnSchedulesCount[raD - 1][line2])
+    srep(k, 1, columnSchedule.schedulesCount[raD - 1][line2])
     {
-      CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD - 1][line2][k];
+      CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][line2][k];
       M43_neighborPosCount++;
     }
   }
   if (raD < dayCount - 1) {
-    srep(k, 1, ansColumnSchedulesCount[raD + 1][line2])
+    srep(k, 1, columnSchedule.schedulesCount[raD + 1][line2])
     {
-      CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD + 1][line2][k];
+      CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][line2][k];
       M43_neighborPosCount++;
     }
   }
   sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
 
   M43_kouhos.clear();
-  M43_kouhos.reserve(ansColumnSchedulesCount[raD][line1]);
-  rep(k, ansColumnSchedulesCount[raD][line1])
+  M43_kouhos.reserve(columnSchedule.schedulesCount[raD][line1]);
+  rep(k, columnSchedule.schedulesCount[raD][line1])
   {
-    M43_kouhos.push_back(ansColumnSchedules[raD][line1][k]);
+    M43_kouhos.push_back(columnSchedule.schedules[raD][line1][k]);
   }
   int margin = w;
   rep(i, (int)M43_kouhos.size())
   {
-    CD3_Members[i] = ansColumnSchedules[raD][line1][i];
+    CD3_Members[i] = columnSchedule.schedules[raD][line1][i];
     margin -= preCalcScheduleSizes[raD][CD3_Members[i]][line2];
   }
 
@@ -2377,31 +2392,31 @@ void Method4_3_3()
   // 10回シャッフルline1
   M43_neighborPosCount = 0;
   if (raD > 0) {
-    srep(k, 1, ansColumnSchedulesCount[raD - 1][line1])
+    srep(k, 1, columnSchedule.schedulesCount[raD - 1][line1])
     {
-      CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD - 1][line1][k];
+      CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][line1][k];
       M43_neighborPosCount++;
     }
   }
   if (raD < dayCount - 1) {
-    srep(k, 1, ansColumnSchedulesCount[raD + 1][line1])
+    srep(k, 1, columnSchedule.schedulesCount[raD + 1][line1])
     {
-      CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD + 1][line1][k];
+      CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][line1][k];
       M43_neighborPosCount++;
     }
   }
   sort(CD3_NeighborPos, CD3_NeighborPos + M43_neighborPosCount);
 
   M43_kouhos.clear();
-  M43_kouhos.reserve(ansColumnSchedulesCount[raD][line2]);
-  rep(k, ansColumnSchedulesCount[raD][line2])
+  M43_kouhos.reserve(columnSchedule.schedulesCount[raD][line2]);
+  rep(k, columnSchedule.schedulesCount[raD][line2])
   {
-    M43_kouhos.push_back(ansColumnSchedules[raD][line2][k]);
+    M43_kouhos.push_back(columnSchedule.schedules[raD][line2][k]);
   }
   margin = w;
   rep(i, (int)M43_kouhos.size())
   {
-    CD3_Members[i] = ansColumnSchedules[raD][line2][i];
+    CD3_Members[i] = columnSchedule.schedules[raD][line2][i];
     margin -= preCalcScheduleSizes[raD][CD3_Members[i]][line1];
   }
 
@@ -2432,25 +2447,25 @@ void Method4_3_3()
   if (totalDiffScore >= 0) {
     // if (prob > Rand01()) {
     // cout << "OK";
-    ansColumnSchedulesCount[raD][line2] = M43_tmpAnsNextCount;
+    columnSchedule.schedulesCount[raD][line2] = M43_tmpAnsNextCount;
     rep(i, M43_tmpAnsNextCount)
     {
       int num = M43_tmpAnsNextLine[i];
-      ansColumnNum[raD][num] = line2;
-      ansColumnSchedules[raD][line2][i] = num;
-      ansColumnSchedulesPosition[raD][line2][i] = M43_tmpAnsNextLinePosition[i];
+      columnSchedule.columnNum[raD][num] = line2;
+      columnSchedule.schedules[raD][line2][i] = num;
+      columnSchedule.schedulesPosition[raD][line2][i] = M43_tmpAnsNextLinePosition[i];
     }
-    ansColumnSchedulesPosition[raD][line2][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
+    columnSchedule.schedulesPosition[raD][line2][M43_tmpAnsNextCount] = M43_tmpAnsNextLinePosition[M43_tmpAnsNextCount];
 
-    ansColumnSchedulesCount[raD][line1] = M43_tmpAnsCurrentCount;
+    columnSchedule.schedulesCount[raD][line1] = M43_tmpAnsCurrentCount;
     rep(i, M43_tmpAnsCurrentCount)
     {
       int num = M43_tmpAnsCurrentLine[i];
-      ansColumnNum[raD][num] = line1;
-      ansColumnSchedules[raD][line1][i] = num;
-      ansColumnSchedulesPosition[raD][line1][i] = M43_tmpAnsCurrentLinePosition[i];
+      columnSchedule.columnNum[raD][num] = line1;
+      columnSchedule.schedules[raD][line1][i] = num;
+      columnSchedule.schedulesPosition[raD][line1][i] = M43_tmpAnsCurrentLinePosition[i];
     }
-    ansColumnSchedulesPosition[raD][line1][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
+    columnSchedule.schedulesPosition[raD][line1][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
     ans.ansScore -= totalDiffScore;
     if (ans.ansScore < real_ans.ansScore) {
@@ -2466,13 +2481,13 @@ void Method4_3_4_2()
 {
   int raD = Rand() % dayCount;
   int lineNum = Rand() % ans.ansBaseLineCount;
-  if (ansColumnSchedulesCount[raD][lineNum] <= 1) return;
-  int raIndex = Rand() % ansColumnSchedulesCount[raD][lineNum];
+  if (columnSchedule.schedulesCount[raD][lineNum] <= 1) return;
+  int raIndex = Rand() % columnSchedule.schedulesCount[raD][lineNum];
   int raDir = Rand() % 2;
   if (raIndex == 0) { raDir = 1; }
-  if (raIndex == ansColumnSchedulesCount[raD][lineNum] - 1) { raDir = 0; }
-  int beforeLinePos = ansColumnSchedulesPosition[raD][lineNum][raIndex];
-  if (raDir == 1) { beforeLinePos = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1]; }
+  if (raIndex == columnSchedule.schedulesCount[raD][lineNum] - 1) { raDir = 0; }
+  int beforeLinePos = columnSchedule.schedulesPosition[raD][lineNum][raIndex];
+  if (raDir == 1) { beforeLinePos = columnSchedule.schedulesPosition[raD][lineNum][raIndex + 1]; }
 
   int margin = w;
   int startDay = raD;
@@ -2480,9 +2495,9 @@ void Method4_3_4_2()
   drep(i, raD + 1)
   {
     int lineIndex = -1;
-    srep(j, 1, ansColumnSchedulesCount[i][lineNum])
+    srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
     {
-      if (ansColumnSchedulesPosition[i][lineNum][j] == beforeLinePos) {
+      if (columnSchedule.schedulesPosition[i][lineNum][j] == beforeLinePos) {
         lineIndex = j;
         break;
       }
@@ -2490,21 +2505,21 @@ void Method4_3_4_2()
     if (lineIndex == -1) break;
     startDay = i;
     if (raDir == 0) {
-      int raN = ansColumnSchedules[i][lineNum][lineIndex];
-      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex + 1] - ansColumnSchedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
+      int raN = columnSchedule.schedules[i][lineNum][lineIndex];
+      margin = min(margin, (columnSchedule.schedulesPosition[i][lineNum][lineIndex + 1] - columnSchedule.schedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     else {
-      int raN = ansColumnSchedules[i][lineNum][lineIndex - 1];
-      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex] - ansColumnSchedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
+      int raN = columnSchedule.schedules[i][lineNum][lineIndex - 1];
+      margin = min(margin, (columnSchedule.schedulesPosition[i][lineNum][lineIndex] - columnSchedule.schedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     if (margin == 0) return;
   }
   srep(i, raD + 1, dayCount)
   {
     int lineIndex = -1;
-    srep(j, 1, ansColumnSchedulesCount[i][lineNum])
+    srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
     {
-      if (ansColumnSchedulesPosition[i][lineNum][j] == beforeLinePos) {
+      if (columnSchedule.schedulesPosition[i][lineNum][j] == beforeLinePos) {
         lineIndex = j;
         break;
       }
@@ -2512,12 +2527,12 @@ void Method4_3_4_2()
     if (lineIndex == -1) break;
     endDay = i;
     if (raDir == 0) {
-      int raN = ansColumnSchedules[i][lineNum][lineIndex];
-      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex + 1] - ansColumnSchedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
+      int raN = columnSchedule.schedules[i][lineNum][lineIndex];
+      margin = min(margin, (columnSchedule.schedulesPosition[i][lineNum][lineIndex + 1] - columnSchedule.schedulesPosition[i][lineNum][lineIndex]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     else {
-      int raN = ansColumnSchedules[i][lineNum][lineIndex - 1];
-      margin = min(margin, (ansColumnSchedulesPosition[i][lineNum][lineIndex] - ansColumnSchedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
+      int raN = columnSchedule.schedules[i][lineNum][lineIndex - 1];
+      margin = min(margin, (columnSchedule.schedulesPosition[i][lineNum][lineIndex] - columnSchedule.schedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
     if (margin == 0) return;
   }
@@ -2528,17 +2543,17 @@ void Method4_3_4_2()
 
   int diffScore = 0;
   if (startDay > 0) {
-    rep(k, ansColumnSchedulesCount[startDay - 1][lineNum])
+    rep(k, columnSchedule.schedulesCount[startDay - 1][lineNum])
     {
-      if (ansColumnSchedulesPosition[startDay - 1][lineNum][k] == beforeLinePos) diffScore -= widths[lineNum] * 2;
-      if (ansColumnSchedulesPosition[startDay - 1][lineNum][k] == afterLinePos) diffScore += widths[lineNum] * 2;
+      if (columnSchedule.schedulesPosition[startDay - 1][lineNum][k] == beforeLinePos) diffScore -= widths[lineNum] * 2;
+      if (columnSchedule.schedulesPosition[startDay - 1][lineNum][k] == afterLinePos) diffScore += widths[lineNum] * 2;
     }
   }
   if (endDay < dayCount - 1) {
-    rep(k, ansColumnSchedulesCount[endDay + 1][lineNum])
+    rep(k, columnSchedule.schedulesCount[endDay + 1][lineNum])
     {
-      if (ansColumnSchedulesPosition[endDay + 1][lineNum][k] == beforeLinePos) diffScore -= widths[lineNum] * 2;
-      if (ansColumnSchedulesPosition[endDay + 1][lineNum][k] == afterLinePos) diffScore += widths[lineNum] * 2;
+      if (columnSchedule.schedulesPosition[endDay + 1][lineNum][k] == beforeLinePos) diffScore -= widths[lineNum] * 2;
+      if (columnSchedule.schedulesPosition[endDay + 1][lineNum][k] == afterLinePos) diffScore += widths[lineNum] * 2;
     }
   }
 
@@ -2546,10 +2561,10 @@ void Method4_3_4_2()
     srep(i, startDay, endDay + 1)
     {
       int ok = 0;
-      srep(j, 1, ansColumnSchedulesCount[i][lineNum])
+      srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
       {
-        if (ansColumnSchedulesPosition[i][lineNum][j] == beforeLinePos) {
-          ansColumnSchedulesPosition[i][lineNum][j] = afterLinePos;
+        if (columnSchedule.schedulesPosition[i][lineNum][j] == beforeLinePos) {
+          columnSchedule.schedulesPosition[i][lineNum][j] = afterLinePos;
           ok = 1;
           break;
         }
@@ -2572,10 +2587,10 @@ void Method4_3_5()
   int margin = widths[lineNum] - 1;
   rep(i, dayCount)
   {
-    rep(k, ansColumnSchedulesCount[i][lineNum])
+    rep(k, columnSchedule.schedulesCount[i][lineNum])
     {
-      int num = ansColumnSchedules[i][lineNum][k];
-      int tmpMargin = widths[lineNum] - ((elementSizes[i][num] - 1) / (ansColumnSchedulesPosition[i][lineNum][k + 1] - ansColumnSchedulesPosition[i][lineNum][k]) + 1);
+      int num = columnSchedule.schedules[i][lineNum][k];
+      int tmpMargin = widths[lineNum] - ((elementSizes[i][num] - 1) / (columnSchedule.schedulesPosition[i][lineNum][k + 1] - columnSchedule.schedulesPosition[i][lineNum][k]) + 1);
       if (tmpMargin < margin) margin = tmpMargin;
     }
     if (margin <= 0) break;
@@ -2587,21 +2602,21 @@ void Method4_3_5()
   {
     int ite1 = 1;
     int ite2 = 1;
-    while (ite1 < ansColumnSchedulesCount[i - 1][lineNum] || ite2 < ansColumnSchedulesCount[i][lineNum]) {
-      if (ite1 == ansColumnSchedulesCount[i - 1][lineNum]) {
+    while (ite1 < columnSchedule.schedulesCount[i - 1][lineNum] || ite2 < columnSchedule.schedulesCount[i][lineNum]) {
+      if (ite1 == columnSchedule.schedulesCount[i - 1][lineNum]) {
         diffScore += moveAmount;
         ite2++;
       }
-      else if (ite2 == ansColumnSchedulesCount[i][lineNum]) {
+      else if (ite2 == columnSchedule.schedulesCount[i][lineNum]) {
         diffScore += moveAmount;
         ite1++;
       }
       else {
-        if (ansColumnSchedulesPosition[i - 1][lineNum][ite1] == ansColumnSchedulesPosition[i][lineNum][ite2]) {
+        if (columnSchedule.schedulesPosition[i - 1][lineNum][ite1] == columnSchedule.schedulesPosition[i][lineNum][ite2]) {
           ite1++;
           ite2++;
         }
-        else if (ansColumnSchedulesPosition[i - 1][lineNum][ite1] < ansColumnSchedulesPosition[i][lineNum][ite2]) {
+        else if (columnSchedule.schedulesPosition[i - 1][lineNum][ite1] < columnSchedule.schedulesPosition[i][lineNum][ite2]) {
           diffScore += moveAmount;
           ite1++;
         }
@@ -2614,21 +2629,21 @@ void Method4_3_5()
     if (raDir == 0) {
       ite1 = 1;
       ite2 = 1;
-      while (ite1 < ansColumnSchedulesCount[i - 1][lineNum - 1] || ite2 < ansColumnSchedulesCount[i][lineNum - 1]) {
-        if (ite1 == ansColumnSchedulesCount[i - 1][lineNum - 1]) {
+      while (ite1 < columnSchedule.schedulesCount[i - 1][lineNum - 1] || ite2 < columnSchedule.schedulesCount[i][lineNum - 1]) {
+        if (ite1 == columnSchedule.schedulesCount[i - 1][lineNum - 1]) {
           diffScore -= moveAmount;
           ite2++;
         }
-        else if (ite2 == ansColumnSchedulesCount[i][lineNum - 1]) {
+        else if (ite2 == columnSchedule.schedulesCount[i][lineNum - 1]) {
           diffScore -= moveAmount;
           ite1++;
         }
         else {
-          if (ansColumnSchedulesPosition[i - 1][lineNum - 1][ite1] == ansColumnSchedulesPosition[i][lineNum - 1][ite2]) {
+          if (columnSchedule.schedulesPosition[i - 1][lineNum - 1][ite1] == columnSchedule.schedulesPosition[i][lineNum - 1][ite2]) {
             ite1++;
             ite2++;
           }
-          else if (ansColumnSchedulesPosition[i - 1][lineNum - 1][ite1] < ansColumnSchedulesPosition[i][lineNum - 1][ite2]) {
+          else if (columnSchedule.schedulesPosition[i - 1][lineNum - 1][ite1] < columnSchedule.schedulesPosition[i][lineNum - 1][ite2]) {
             diffScore -= moveAmount;
             ite1++;
           }
@@ -2642,21 +2657,21 @@ void Method4_3_5()
     else {
       ite1 = 1;
       ite2 = 1;
-      while (ite1 < ansColumnSchedulesCount[i - 1][lineNum + 1] || ite2 < ansColumnSchedulesCount[i][lineNum + 1]) {
-        if (ite1 == ansColumnSchedulesCount[i - 1][lineNum + 1]) {
+      while (ite1 < columnSchedule.schedulesCount[i - 1][lineNum + 1] || ite2 < columnSchedule.schedulesCount[i][lineNum + 1]) {
+        if (ite1 == columnSchedule.schedulesCount[i - 1][lineNum + 1]) {
           diffScore -= moveAmount;
           ite2++;
         }
-        else if (ite2 == ansColumnSchedulesCount[i][lineNum + 1]) {
+        else if (ite2 == columnSchedule.schedulesCount[i][lineNum + 1]) {
           diffScore -= moveAmount;
           ite1++;
         }
         else {
-          if (ansColumnSchedulesPosition[i - 1][lineNum + 1][ite1] == ansColumnSchedulesPosition[i][lineNum + 1][ite2]) {
+          if (columnSchedule.schedulesPosition[i - 1][lineNum + 1][ite1] == columnSchedule.schedulesPosition[i][lineNum + 1][ite2]) {
             ite1++;
             ite2++;
           }
-          else if (ansColumnSchedulesPosition[i - 1][lineNum + 1][ite1] < ansColumnSchedulesPosition[i][lineNum + 1][ite2]) {
+          else if (columnSchedule.schedulesPosition[i - 1][lineNum + 1][ite1] < columnSchedule.schedulesPosition[i][lineNum + 1][ite2]) {
             diffScore -= moveAmount;
             ite1++;
           }
@@ -2719,38 +2734,34 @@ void Method4_3_6()
 {
   int raD = Rand() % dayCount;
   int raN = Rand() % elementCount;
-  int lineNum = ansColumnNum[raD][raN];
+  int lineNum = columnSchedule.columnNum[raD][raN];
   int lineIndex = 0;
   int raNSpace = 0;
-  rep(i, ansColumnSchedulesCount[raD][lineNum])
-  {
-    if (ansColumnSchedules[raD][lineNum][i] == raN) {
-      lineIndex = i;
-      raNSpace = (ansColumnSchedulesPosition[raD][lineNum][i + 1] - ansColumnSchedulesPosition[raD][lineNum][i]) * widths[lineNum];
-      break;
-    }
+  lineIndex = columnSchedule.findElementIndex(raD, lineNum, raN);
+  if (lineIndex != -1) {
+    raNSpace = (columnSchedule.schedulesPosition[raD][lineNum][lineIndex + 1] - columnSchedule.schedulesPosition[raD][lineNum][lineIndex]) * widths[lineNum];
   }
   int now = Rand() % elementCount;
   rep(jisoo, elementCount)
   {
     now = (now + 97) % elementCount;
     if (now == raN) continue;
-    int nextLine = ansColumnNum[raD][now];
+    int nextLine = columnSchedule.columnNum[raD][now];
     int nextLineIndex = 0;
     int nowSpace = 0;
-    rep(i, ansColumnSchedulesCount[raD][nextLine])
+    rep(i, columnSchedule.schedulesCount[raD][nextLine])
     {
-      if (ansColumnSchedules[raD][nextLine][i] == now) {
+      if (columnSchedule.schedules[raD][nextLine][i] == now) {
         nextLineIndex = i;
-        nowSpace = (ansColumnSchedulesPosition[raD][nextLine][i + 1] - ansColumnSchedulesPosition[raD][nextLine][i]) * widths[nextLine];
+        nowSpace = (columnSchedule.schedulesPosition[raD][nextLine][i + 1] - columnSchedule.schedulesPosition[raD][nextLine][i]) * widths[nextLine];
         break;
       }
     }
     if (elementSizes[raD][raN] <= nowSpace && elementSizes[raD][now] <= raNSpace) {
-      ansColumnNum[raD][raN] = nextLine;
-      ansColumnNum[raD][now] = lineNum;
-      ansColumnSchedules[raD][lineNum][lineIndex] = now;
-      ansColumnSchedules[raD][nextLine][nextLineIndex] = raN;
+      columnSchedule.columnNum[raD][raN] = nextLine;
+      columnSchedule.columnNum[raD][now] = lineNum;
+      columnSchedule.schedules[raD][lineNum][lineIndex] = now;
+      columnSchedule.schedules[raD][nextLine][nextLineIndex] = raN;
       break;
     }
   }
@@ -2761,9 +2772,9 @@ void Method4_3_7()
 {
   int raD = Rand() % dayCount;
   int raN = Rand() % elementCount;
-  int lineNum = ansColumnNum[raD][raN];
+  int lineNum = columnSchedule.columnNum[raD][raN];
   int lineCapacity = w;
-  if (ansColumnSchedulesCount[raD][lineNum] == 1) return;
+  if (columnSchedule.schedulesCount[raD][lineNum] == 1) return;
 
   int diffScore2 = 0;
   if (raD > 0) { diffScore2 += CalcDiffScore2(raD, raD - 1, lineNum); }
@@ -2771,30 +2782,30 @@ void Method4_3_7()
   // 10回シャッフルlineNum
   M43_neighborPosCount = 0;
   if (raD > 0) {
-    srep(k, 1, ansColumnSchedulesCount[raD - 1][lineNum])
+    srep(k, 1, columnSchedule.schedulesCount[raD - 1][lineNum])
     {
-      CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD - 1][lineNum][k];
+      CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][lineNum][k];
       M43_neighborPosCount++;
     }
   }
   if (raD < dayCount - 1) {
-    srep(k, 1, ansColumnSchedulesCount[raD + 1][lineNum])
+    srep(k, 1, columnSchedule.schedulesCount[raD + 1][lineNum])
     {
-      CD3_NeighborPos[M43_neighborPosCount] = ansColumnSchedulesPosition[raD + 1][lineNum][k];
+      CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][lineNum][k];
       M43_neighborPosCount++;
     }
   }
 
   M43_kouhos.clear();
-  M43_kouhos.reserve(ansColumnSchedulesCount[raD][lineNum]);
-  rep(k, ansColumnSchedulesCount[raD][lineNum])
+  M43_kouhos.reserve(columnSchedule.schedulesCount[raD][lineNum]);
+  rep(k, columnSchedule.schedulesCount[raD][lineNum])
   {
-    M43_kouhos.push_back(ansColumnSchedules[raD][lineNum][k]);
+    M43_kouhos.push_back(columnSchedule.schedules[raD][lineNum][k]);
   }
   int margin = w;
   rep(i, (int)M43_kouhos.size())
   {
-    CD3_Members[i] = ansColumnSchedules[raD][lineNum][i];
+    CD3_Members[i] = columnSchedule.schedules[raD][lineNum][i];
     margin -= preCalcScheduleSizes[raD][CD3_Members[i]][lineNum];
   }
 
@@ -2823,15 +2834,15 @@ void Method4_3_7()
   const double prob = exp((double)totalDiffScore * ANNEALING_TEMP_COEFFICIENT / temp);
 
   if (prob > Rand01()) {
-    ansColumnSchedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
+    columnSchedule.schedulesCount[raD][lineNum] = M43_tmpAnsCurrentCount;
     rep(i, M43_tmpAnsCurrentCount)
     {
       int num = M43_tmpAnsCurrentLine[i];
-      ansColumnNum[raD][num] = lineNum;
-      ansColumnSchedules[raD][lineNum][i] = num;
-      ansColumnSchedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
+      columnSchedule.columnNum[raD][num] = lineNum;
+      columnSchedule.schedules[raD][lineNum][i] = num;
+      columnSchedule.schedulesPosition[raD][lineNum][i] = M43_tmpAnsCurrentLinePosition[i];
     }
-    ansColumnSchedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
+    columnSchedule.schedulesPosition[raD][lineNum][M43_tmpAnsCurrentCount] = M43_tmpAnsCurrentLinePosition[M43_tmpAnsCurrentCount];
 
     ans.ansScore -= totalDiffScore;
     if (ans.ansScore < real_ans.ansScore) {
@@ -2860,21 +2871,21 @@ void Method4_3_8()
     M438_yokoLineCount[j] = 0;
     srep(i, 1, dayCount)
     {
-      M438_yokoLineCount[j] += max(0, ansColumnSchedulesCount[i - 1][j] - 1) + max(0, ansColumnSchedulesCount[i][j] - 1);
-      // srep(k, 1, ansColumnSchedulesCount[i - 1][j]) {
-      //  rep(l, ansColumnSchedulesCount[i][j]) {
-      //    if (ansColumnSchedulesPosition[i - 1][j][k] == ansColumnSchedulesPosition[i][j][l]) { M438_yokoLineCount[j] -= 2; }
+      M438_yokoLineCount[j] += max(0, columnSchedule.schedulesCount[i - 1][j] - 1) + max(0, columnSchedule.schedulesCount[i][j] - 1);
+      // srep(k, 1, columnSchedule.schedulesCount[i - 1][j]) {
+      //  rep(l, columnSchedule.schedulesCount[i][j]) {
+      //    if (columnSchedule.schedulesPosition[i - 1][j][k] == columnSchedule.schedulesPosition[i][j][l]) { M438_yokoLineCount[j] -= 2; }
       //  }
       //}
       int ite1 = 1;
       int ite2 = 1;
-      while (ite1 < ansColumnSchedulesCount[i - 1][j] && ite2 < ansColumnSchedulesCount[i][j]) {
-        if (ansColumnSchedulesPosition[i - 1][j][ite1] == ansColumnSchedulesPosition[i][j][ite2]) {
+      while (ite1 < columnSchedule.schedulesCount[i - 1][j] && ite2 < columnSchedule.schedulesCount[i][j]) {
+        if (columnSchedule.schedulesPosition[i - 1][j][ite1] == columnSchedule.schedulesPosition[i][j][ite2]) {
           M438_yokoLineCount[j] -= 2;
           ite1++;
           ite2++;
         }
-        else if (ansColumnSchedulesPosition[i - 1][j][ite1] < ansColumnSchedulesPosition[i][j][ite2]) {
+        else if (columnSchedule.schedulesPosition[i - 1][j][ite1] < columnSchedule.schedulesPosition[i][j][ite2]) {
           ite1++;
         }
         else {
@@ -2895,31 +2906,31 @@ void Method4_3_8()
   int margin = widths[taisyouLineNum] - 1;
   rep(i, dayCount)
   {
-    rep(j, ansColumnSchedulesCount[i][taisyouLineNum])
+    rep(j, columnSchedule.schedulesCount[i][taisyouLineNum])
     {
-      int num = ansColumnSchedules[i][taisyouLineNum][j];
-      int height = ansColumnSchedulesPosition[i][taisyouLineNum][j + 1] - ansColumnSchedulesPosition[i][taisyouLineNum][j];
+      int num = columnSchedule.schedules[i][taisyouLineNum][j];
+      int height = columnSchedule.schedulesPosition[i][taisyouLineNum][j + 1] - columnSchedule.schedulesPosition[i][taisyouLineNum][j];
       rep(k, elementCount)
       {
         if (k == num) break;
-        if (ansColumnNum[i][k] == taisyouLineNum) continue;
+        if (columnSchedule.columnNum[i][k] == taisyouLineNum) continue;
         if (preCalcScheduleSizes[i][k][taisyouLineNum] <= height) {
-          int nextLine = ansColumnNum[i][k];
+          int nextLine = columnSchedule.columnNum[i][k];
           int nextLineIndex = -1;
-          rep(l, ansColumnSchedulesCount[i][nextLine])
+          rep(l, columnSchedule.schedulesCount[i][nextLine])
           {
-            if (ansColumnSchedules[i][nextLine][l] == k) {
+            if (columnSchedule.schedules[i][nextLine][l] == k) {
               nextLineIndex = l;
               break;
             }
           }
-          if (preCalcScheduleSizes[i][num][nextLine] > ansColumnSchedulesPosition[i][nextLine][nextLineIndex + 1] - ansColumnSchedulesPosition[i][nextLine][nextLineIndex]) continue;
-          swap(ansColumnSchedules[i][taisyouLineNum][j], ansColumnSchedules[i][nextLine][nextLineIndex]);
-          swap(ansColumnNum[i][num], ansColumnNum[i][k]);
+          if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) continue;
+          swap(columnSchedule.schedules[i][taisyouLineNum][j], columnSchedule.schedules[i][nextLine][nextLineIndex]);
+          swap(columnSchedule.columnNum[i][num], columnSchedule.columnNum[i][k]);
           break;
         }
       }
-      int newNum = ansColumnSchedules[i][taisyouLineNum][j];
+      int newNum = columnSchedule.schedules[i][taisyouLineNum][j];
       // margin計算
       margin = min(margin, widths[taisyouLineNum] - ((elementSizes[i][newNum] - 1) / height + 1));
     }
@@ -2964,11 +2975,11 @@ void Method4_3_9()
   int cnt = 0;
   rep(j, ans.ansBaseLineCount)
   {
-    rep(k, ansColumnSchedulesCount[raD][j])
+    rep(k, columnSchedule.schedulesCount[raD][j])
     {
       M439LineNum[cnt] = j;
       M439LineIndex[cnt] = k;
-      M439Array[cnt] = widths[j] * (ansColumnSchedulesPosition[raD][j][k + 1] - ansColumnSchedulesPosition[raD][j][k]) * 100 + cnt;
+      M439Array[cnt] = widths[j] * (columnSchedule.schedulesPosition[raD][j][k + 1] - columnSchedule.schedulesPosition[raD][j][k]) * 100 + cnt;
       cnt++;
     }
   }
@@ -2976,9 +2987,9 @@ void Method4_3_9()
 
   rep(j, ans.ansBaseLineCount)
   {
-    rep(k, ansColumnSchedulesCount[raD][j])
+    rep(k, columnSchedule.schedulesCount[raD][j])
     {
-      ansColumnSchedules[raD][j][k] = -1;
+      columnSchedule.schedules[raD][j][k] = -1;
     }
   }
 
@@ -2990,8 +3001,8 @@ void Method4_3_9()
         int posNum = M439Array[ite] % 100;
         int lineNum = M439LineNum[posNum];
         int lineIndex = M439LineIndex[posNum];
-        ansColumnNum[raD][j] = lineNum;
-        ansColumnSchedules[raD][lineNum][lineIndex] = j;
+        columnSchedule.columnNum[raD][j] = lineNum;
+        columnSchedule.schedules[raD][lineNum][lineIndex] = j;
         ite++;
         break;
       }
@@ -3016,7 +3027,7 @@ void Method4_3(double timeLimit)
       rep(k, ans.ansLineCount[i])
       {
         if (ans.ans[i][j][1] == ans.ansLinePos[i][k] && ans.ans[i][j][3] == ans.ansLinePos[i][k + 1]) {
-          ansColumnNum[i][j] = k;
+          columnSchedule.columnNum[i][j] = k;
           break;
         }
       }
@@ -3045,28 +3056,28 @@ void Method4_3(double timeLimit)
   {
     rep(j, ans.ansLineCount[i])
     {
-      ansColumnSchedulesCount[i][j] = 0;
+      columnSchedule.schedulesCount[i][j] = 0;
     }
   }
   rep(i, dayCount)
   {
     drep(j, elementCount)
     {
-      int lineNum = ansColumnNum[i][j];
-      ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
-      ansColumnSchedulesCount[i][lineNum]++;
+      int lineNum = columnSchedule.columnNum[i][j];
+      columnSchedule.schedules[i][lineNum][columnSchedule.schedulesCount[i][lineNum]] = j;
+      columnSchedule.schedulesCount[i][lineNum]++;
     }
   }
   rep(i, dayCount)
   {
     rep(j, ans.ansLineCount[i])
     {
-      ansColumnSchedulesPosition[i][j][0] = 0;
-      rep(k, ansColumnSchedulesCount[i][j])
+      columnSchedule.schedulesPosition[i][j][0] = 0;
+      rep(k, columnSchedule.schedulesCount[i][j])
       {
-        int num = ansColumnSchedules[i][j][k];
-        ansColumnSchedulesPosition[i][j][k + 1] = ansColumnSchedulesPosition[i][j][k] + preCalcScheduleSizes[i][num][j];
-        if (k == ansColumnSchedulesCount[i][j] - 1) { ansColumnSchedulesPosition[i][j][k + 1] = w; }
+        int num = columnSchedule.schedules[i][j][k];
+        columnSchedule.schedulesPosition[i][j][k + 1] = columnSchedule.schedulesPosition[i][j][k] + preCalcScheduleSizes[i][num][j];
+        if (k == columnSchedule.schedulesCount[i][j] - 1) { columnSchedule.schedulesPosition[i][j][k + 1] = w; }
       }
     }
   }
@@ -3133,12 +3144,12 @@ void Method4_3(double timeLimit)
   {
     rep(j, ans.ansBaseLineCount)
     {
-      rep(k, ansColumnSchedulesCount[i][j])
+      rep(k, columnSchedule.schedulesCount[i][j])
       {
-        int num = ansColumnSchedules[i][j][k];
-        ans.ans[i][num][0] = ansColumnSchedulesPosition[i][j][k];
-        ans.ans[i][num][2] = ansColumnSchedulesPosition[i][j][k + 1];
-        int posNum = ansColumnNum[i][num];
+        int num = columnSchedule.schedules[i][j][k];
+        ans.ans[i][num][0] = columnSchedule.schedulesPosition[i][j][k];
+        ans.ans[i][num][2] = columnSchedule.schedulesPosition[i][j][k + 1];
+        int posNum = columnSchedule.columnNum[i][num];
         ans.ans[i][num][1] = ans.ansLinePos[i][posNum];
         ans.ans[i][num][3] = ans.ansLinePos[i][posNum + 1];
       }
@@ -3241,7 +3252,7 @@ int Method3_Oshii()
       rep(k, ans.ansLineCount[i])
       {
         if (ans.ans[i][j][1] == ans.ansLinePos[i][k] && ans.ans[i][j][3] == ans.ansLinePos[i][k + 1]) {
-          ansColumnNum[i][j] = k;
+          columnSchedule.columnNum[i][j] = k;
           break;
         }
       }
@@ -3284,7 +3295,7 @@ int Method3_Oshii()
     int nowSum[MAX_LINECOUNT] = {};
     rep(j, elementCount)
     {
-      nowSum[ansColumnNum[i][j]] = max(nowSum[ansColumnNum[i][j]], ans.ans[i][j][2]);
+      nowSum[columnSchedule.columnNum[i][j]] = max(nowSum[columnSchedule.columnNum[i][j]], ans.ans[i][j][2]);
     }
     int ngCount = 0;
     rep(j, elementCount)
@@ -3295,23 +3306,23 @@ int Method3_Oshii()
     // 逆引き作成
     rep(j, ans.ansLineCount[i])
     {
-      ansColumnSchedulesCount[i][j] = 0;
+      columnSchedule.schedulesCount[i][j] = 0;
     }
     rep(j, elementCount)
     {
-      int lineNum = ansColumnNum[i][j];
-      ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
-      ansColumnSchedulesCount[i][lineNum]++;
+      int lineNum = columnSchedule.columnNum[i][j];
+      columnSchedule.schedules[i][lineNum][columnSchedule.schedulesCount[i][lineNum]] = j;
+      columnSchedule.schedulesCount[i][lineNum]++;
     }
 
     rep(leSserafim, 10000)
     {
       // if (Rand() % 5 != 0) {
       //  int raN1     = Rand() % elementCount;
-      //  int lineNum1 = ansColumnNum[i][raN1];
+      //  int lineNum1 = columnSchedule.columnNum[i][raN1];
       //  int raN2     = Rand() % elementCount;
       //  if (raN1 == raN2) continue;
-      //  int lineNum2 = ansColumnNum[i][raN2];
+      //  int lineNum2 = columnSchedule.columnNum[i][raN2];
       //  if (lineNum1 == lineNum2) continue;
       //  int diffOver = max(0, nowSum[lineNum1] - w) + max(0, nowSum[lineNum2] - w);
       //  diffOver -= max(0, nowSum[lineNum1] - preCalcScheduleSizes[i][raN1][lineNum1] + preCalcScheduleSizes[i][raN2][lineNum1] - w) + max(0, nowSum[lineNum2] - preCalcScheduleSizes[i][raN2][lineNum2] + preCalcScheduleSizes[i][raN1][lineNum2] - w);
@@ -3323,19 +3334,19 @@ int Method3_Oshii()
       //    nowSum[lineNum2] = nowSum[lineNum2] - preCalcScheduleSizes[i][raN2][lineNum2] + preCalcScheduleSizes[i][raN1][lineNum2];
       //    if (nowSum[lineNum1] > w) ngCount++;
       //    if (nowSum[lineNum2] > w) ngCount++;
-      //    ansColumnNum[i][raN1] = lineNum2;
-      //    ansColumnNum[i][raN2] = lineNum1;
+      //    columnSchedule.columnNum[i][raN1] = lineNum2;
+      //    columnSchedule.columnNum[i][raN2] = lineNum1;
 
       //    // 逆引き更新
-      //    rep(k, ansColumnSchedulesCount[i][lineNum1]) {
-      //      if (ansColumnSchedules[i][lineNum1][k] == raN1) {
-      //        ansColumnSchedules[i][lineNum1][k] = raN2;
+      //    rep(k, columnSchedule.schedulesCount[i][lineNum1]) {
+      //      if (columnSchedule.schedules[i][lineNum1][k] == raN1) {
+      //        columnSchedule.schedules[i][lineNum1][k] = raN2;
       //        break;
       //      }
       //    }
-      //    rep(k, ansColumnSchedulesCount[i][lineNum2]) {
-      //      if (ansColumnSchedules[i][lineNum2][k] == raN2) {
-      //        ansColumnSchedules[i][lineNum2][k] = raN1;
+      //    rep(k, columnSchedule.schedulesCount[i][lineNum2]) {
+      //      if (columnSchedule.schedules[i][lineNum2][k] == raN2) {
+      //        columnSchedule.schedules[i][lineNum2][k] = raN1;
       //        break;
       //      }
       //    }
@@ -3346,17 +3357,17 @@ int Method3_Oshii()
       //}
 
       int raN = Rand() % elementCount;
-      int lineNum = ansColumnNum[i][raN];
+      int lineNum = columnSchedule.columnNum[i][raN];
       int nextLine = Rand() % ans.ansBaseLineCount;
       while (nextLine == lineNum) {
         nextLine = Rand() % ans.ansBaseLineCount;
       }
       kouhoCount = 0;
       if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][raN][nextLine] > w) continue;
-      rep(j, ansColumnSchedulesCount[i][nextLine])
+      rep(j, columnSchedule.schedulesCount[i][nextLine])
       {
-        if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][ansColumnSchedules[i][nextLine][j]][lineNum] > w) continue;
-        kouhos[kouhoCount] = ansColumnSchedules[i][nextLine][j];
+        if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][columnSchedule.schedules[i][nextLine][j]][lineNum] > w) continue;
+        kouhos[kouhoCount] = columnSchedule.schedules[i][nextLine][j];
         kouhoCount++;
       }
 
@@ -3386,25 +3397,25 @@ int Method3_Oshii()
             nowSum[nextLine] = nowSum[nextLine] - nextSpace + preCalcScheduleSizes[i][raN][nextLine];
             if (nowSum[lineNum] > w) ngCount++;
             if (nowSum[nextLine] > w) ngCount++;
-            ansColumnNum[i][raN] = nextLine;
+            columnSchedule.columnNum[i][raN] = nextLine;
             rep(jj, kouhoCount)
             {
               if (chaewon & (1 << jj)) {
                 int j = kouhos[jj];
-                ansColumnNum[i][j] = lineNum;
+                columnSchedule.columnNum[i][j] = lineNum;
               }
             }
 
             // 逆引き更新
             rep(j, ans.ansLineCount[i])
             {
-              ansColumnSchedulesCount[i][j] = 0;
+              columnSchedule.schedulesCount[i][j] = 0;
             }
             rep(j, elementCount)
             {
-              int lineNum = ansColumnNum[i][j];
-              ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
-              ansColumnSchedulesCount[i][lineNum]++;
+              int lineNum = columnSchedule.columnNum[i][j];
+              columnSchedule.schedules[i][lineNum][columnSchedule.schedulesCount[i][lineNum]] = j;
+              columnSchedule.schedulesCount[i][lineNum]++;
             }
 
             break;
@@ -3436,25 +3447,25 @@ int Method3_Oshii()
             nowSum[nextLine] = nowSum[nextLine] - nextSpace + preCalcScheduleSizes[i][raN][nextLine];
             if (nowSum[lineNum] > w) ngCount++;
             if (nowSum[nextLine] > w) ngCount++;
-            ansColumnNum[i][raN] = nextLine;
+            columnSchedule.columnNum[i][raN] = nextLine;
             rep(jj, kouhoCount)
             {
               if (chaewon & (1 << jj)) {
                 int j = kouhos[jj];
-                ansColumnNum[i][j] = lineNum;
+                columnSchedule.columnNum[i][j] = lineNum;
               }
             }
 
             // 逆引き更新
             rep(j, ans.ansLineCount[i])
             {
-              ansColumnSchedulesCount[i][j] = 0;
+              columnSchedule.schedulesCount[i][j] = 0;
             }
             rep(j, elementCount)
             {
-              int lineNum = ansColumnNum[i][j];
-              ansColumnSchedules[i][lineNum][ansColumnSchedulesCount[i][lineNum]] = j;
-              ansColumnSchedulesCount[i][lineNum]++;
+              int lineNum = columnSchedule.columnNum[i][j];
+              columnSchedule.schedules[i][lineNum][columnSchedule.schedulesCount[i][lineNum]] = j;
+              columnSchedule.schedulesCount[i][lineNum]++;
             }
 
             break;
@@ -3489,7 +3500,7 @@ int Method3_Oshii()
       }
       drep(j, elementCount)
       {
-        int posNum = ansColumnNum[i][j];
+        int posNum = columnSchedule.columnNum[i][j];
         int need = preCalcScheduleSizes[i][j][posNum];
         ans.ans[i][j][0] = now[posNum];
         ans.ans[i][j][2] = now[posNum] + need;
@@ -4366,7 +4377,7 @@ void Method6_ColumnShuffle(double timeLimit)
       rep(k, ans.ansBaseLineCount)
       {
         if (ans.ans[i][j][1] == ans.ansLinePos[i][k] && ans.ans[i][j][3] == ans.ansLinePos[i][k + 1]) {
-          ansColumnNum[i][j] = k;
+          columnSchedule.columnNum[i][j] = k;
           break;
         }
       }
@@ -4392,7 +4403,7 @@ void Method6_ColumnShuffle(double timeLimit)
     {
       rep(j, elementCount)
       {
-        int nextLine = nextArgPos[ansColumnNum[i][j]];
+        int nextLine = nextArgPos[columnSchedule.columnNum[i][j]];
         ans.ans[i][j][1] = nextLinePos[nextLine];
         ans.ans[i][j][3] = nextLinePos[nextLine + 1];
       }
@@ -4419,16 +4430,16 @@ void Method7()
   {
     srep(i, 1, dayCount)
     {
-      yokoLineCount[j] += max(0, ansColumnSchedulesCount[i - 1][j] - 1) + max(0, ansColumnSchedulesCount[i][j] - 1);
+      yokoLineCount[j] += max(0, columnSchedule.schedulesCount[i - 1][j] - 1) + max(0, columnSchedule.schedulesCount[i][j] - 1);
       int ite1 = 1;
       int ite2 = 1;
-      while (ite1 < ansColumnSchedulesCount[i - 1][j] && ite2 < ansColumnSchedulesCount[i][j]) {
-        if (ansColumnSchedulesPosition[i - 1][j][ite1] == ansColumnSchedulesPosition[i][j][ite2]) {
+      while (ite1 < columnSchedule.schedulesCount[i - 1][j] && ite2 < columnSchedule.schedulesCount[i][j]) {
+        if (columnSchedule.schedulesPosition[i - 1][j][ite1] == columnSchedule.schedulesPosition[i][j][ite2]) {
           yokoLineCount[j] -= 2;
           ite1++;
           ite2++;
         }
-        else if (ansColumnSchedulesPosition[i - 1][j][ite1] < ansColumnSchedulesPosition[i][j][ite2]) {
+        else if (columnSchedule.schedulesPosition[i - 1][j][ite1] < columnSchedule.schedulesPosition[i][j][ite2]) {
           ite1++;
         }
         else {
@@ -4447,31 +4458,31 @@ void Method7()
       int margin = widths[line1] - 1;
       rep(i, dayCount)
       {
-        rep(j, ansColumnSchedulesCount[i][line1])
+        rep(j, columnSchedule.schedulesCount[i][line1])
         {
-          int num = ansColumnSchedules[i][line1][j];
-          int height = ansColumnSchedulesPosition[i][line1][j + 1] - ansColumnSchedulesPosition[i][line1][j];
+          int num = columnSchedule.schedules[i][line1][j];
+          int height = columnSchedule.schedulesPosition[i][line1][j + 1] - columnSchedule.schedulesPosition[i][line1][j];
           rep(k, elementCount)
           {
             if (k == num) break;
-            if (ansColumnNum[i][k] == line1) continue;
+            if (columnSchedule.columnNum[i][k] == line1) continue;
             if (preCalcScheduleSizes[i][k][line1] <= height) {
-              int nextLine = ansColumnNum[i][k];
+              int nextLine = columnSchedule.columnNum[i][k];
               int nextLineIndex = -1;
-              rep(l, ansColumnSchedulesCount[i][nextLine])
+              rep(l, columnSchedule.schedulesCount[i][nextLine])
               {
-                if (ansColumnSchedules[i][nextLine][l] == k) {
+                if (columnSchedule.schedules[i][nextLine][l] == k) {
                   nextLineIndex = l;
                   break;
                 }
               }
-              if (preCalcScheduleSizes[i][num][nextLine] > ansColumnSchedulesPosition[i][nextLine][nextLineIndex + 1] - ansColumnSchedulesPosition[i][nextLine][nextLineIndex]) continue;
-              swap(ansColumnSchedules[i][line1][j], ansColumnSchedules[i][nextLine][nextLineIndex]);
-              swap(ansColumnNum[i][num], ansColumnNum[i][k]);
+              if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) continue;
+              swap(columnSchedule.schedules[i][line1][j], columnSchedule.schedules[i][nextLine][nextLineIndex]);
+              swap(columnSchedule.columnNum[i][num], columnSchedule.columnNum[i][k]);
               break;
             }
           }
-          int newNum = ansColumnSchedules[i][line1][j];
+          int newNum = columnSchedule.schedules[i][line1][j];
           // margin計算
           margin = min(margin, widths[line1] - ((elementSizes[i][newNum] - 1) / height + 1));
         }
