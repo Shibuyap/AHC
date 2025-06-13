@@ -2233,7 +2233,19 @@ void expandCore(vector<int>& cores, int f[], int markValue)
 // スコア計算の共通関数
 int calculateScore(int f[])
 {
-  int score = calculateScore(f);
+  int score = 0;
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 1; j < n; ++j) {
+      if (f[i] == 0 && f[j] == 0) {
+        score += 1 - b[i][j];
+      }
+      else {
+        if ((f[i] == f[j]) == (b[i][j])) {
+          score++;
+        }
+      }
+    }
+  }
   return score;
 }
 
