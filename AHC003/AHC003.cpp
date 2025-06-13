@@ -30,7 +30,8 @@ const int INF = 1001001001;
 
 namespace /* 乱数 */
 {
-  static uint32_t Rand() {
+  static uint32_t Rand()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -43,14 +44,16 @@ namespace /* 乱数 */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }
 
 namespace /* グリッド用 */
 {
-  inline int ManhattanDistance(int x1, int y1, int x2, int y2) {
+  inline int ManhattanDistance(int x1, int y1, int x2, int y2)
+  {
     return std::abs(x1 - x2) + std::abs(y1 - y2);
   }
 
@@ -112,7 +115,8 @@ namespace /* 行、列、切れ目の構造 */
   vector<int> PathIDVectorUD[n][n], PathIDVectorLR[n][n];
 }
 
-void ClearGlobalVariables() {
+void ClearGlobalVariables()
+{
   scoreSumGlobal = 0;
   for (int i = 0; i < 2; ++i)for (int j = 0; j < n + 1; ++j)for (int k = 0; k < n + 1; ++k) dReal[i][j][k] = 0;
   for (int i = 0; i < Q; ++i) {
@@ -137,12 +141,14 @@ void ClearGlobalVariables() {
   }
 }
 
-bool IsNgNxNy(int nx, int ny) {
+bool IsNgNxNy(int nx, int ny)
+{
   if (nx < 0 || n <= nx || ny < 0 || n <= ny) return 1;
   return 0;
 }
 
-int CalcScore(const int sx, const int sy, const string& ans, const double aValue, const double eValue, int k) {
+int CalcScore(const int sx, const int sy, const string& ans, const double aValue, const double eValue, int k)
+{
   int x = sx, y = sy;
   int res = 0;
   for (int i = 0; i < ans.size(); ++i) {
@@ -170,7 +176,8 @@ int CalcScore(const int sx, const int sy, const string& ans, const double aValue
 double dp[n][n];
 int nxt[n][n];
 
-void Dijkstra(int sx, int sy, int gx, int gy) {
+void Dijkstra(int sx, int sy, int gx, int gy)
+{
   for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) dp[i][j] = INF;
   dp[sx][sy] = 0;
   priority_queue<PDP, vector<PDP>, greater<PDP>> que;
@@ -219,7 +226,8 @@ void Dijkstra(int sx, int sy, int gx, int gy) {
   }
 }
 
-void Dijkstra2(int sx, int sy, int gx, int gy) {
+void Dijkstra2(int sx, int sy, int gx, int gy)
+{
   for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) dp[i][j] = INF;
   dp[sx][sy] = 0;
   priority_queue<PDP, vector<PDP>, greater<PDP>> que;
@@ -282,7 +290,8 @@ void Dijkstra2(int sx, int sy, int gx, int gy) {
   横辺(i,j-1)->(i,j)はd[1][i][j];
 */
 
-int Solve(string iunputFileNum) {
+int Solve(string iunputFileNum)
+{
   // 時間計測
   clock_t start, end;
   start = clock();
@@ -409,13 +418,15 @@ int Solve(string iunputFileNum) {
     }
     sx = keepSx; sy = keepSy;
     for (int j = 0; j < n; ++j) {
-      srep(i, 1, n) {
+      srep(i, 1, n)
+      {
         VerticalSum[turn][i][j] = VerticalSum[turn][i - 1][j] + tatePath[i][j];
       }
       if (VerticalSum[turn][n - 1][j]) TurnUD[j].push_back(turn);
     }
     for (int i = 0; i < n; ++i) {
-      srep(j, 1, n) {
+      srep(j, 1, n)
+      {
         HorizontalSum[turn][i][j] = HorizontalSum[turn][i][j - 1] + yokoPath[i][j];
       }
       if (HorizontalSum[turn][i][n - 1]) TurnLR[i].push_back(turn);
@@ -718,7 +729,8 @@ int Solve(string iunputFileNum) {
             maxDiff += (abs(amari[i]) - std::abs(DistResponce[turnID] - DistEstimate[turnID])) * (40000.0 / DistResponce[turnID]);
           }
           double keepMaxDiff = maxDiff;
-          srep(kugiri, 3, 27) {
+          srep(kugiri, 3, 27)
+          {
             for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
               double rA = Rand() % 8001 + 1000;
 
@@ -810,7 +822,8 @@ int Solve(string iunputFileNum) {
             maxDiff += (abs(amari[i]) - std::abs(DistResponce[turnID] - DistEstimate[turnID])) * (40000.0 / DistResponce[turnID]);
           }
           double keepMaxDiff = maxDiff;
-          srep(kugiri, 3, 27) {
+          srep(kugiri, 3, 27)
+          {
             for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
               double rA = Rand() % 8001 + 1000;
               double countSum = 0;
@@ -1013,14 +1026,15 @@ int Solve(string iunputFileNum) {
 }
 
 
-int main() {
+int main()
+{
   clock_t start, end;
   start = clock();
 
   srand((unsigned)time(NULL));
   while (rand() % 128) Rand();
 
-  int mode = 0;
+  int mode = 1;
 
   if (mode == 0) { // 提出用
     Solve("noinput");
@@ -1028,7 +1042,8 @@ int main() {
   else if (mode == 1) { // サンプル0‾99でチェック
     vector<P> ranking;
     ll allScore = 0;
-    srep(i, 0, 100) {
+    srep(i, 0, 100)
+    {
       string inputFileNum;
       inputFileNum += (char)((i % 10000) / 1000 + '0');
       inputFileNum += (char)((i % 1000) / 100 + '0');
