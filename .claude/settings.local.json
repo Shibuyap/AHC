@@ -33,7 +33,8 @@
       "Bash(# Check if test output files exist\nls test_original_*.txt test_refactored_*.txt 2>/dev/null | wc -l)",
       "Bash(# Compare scores for the first 5 test cases\nfor i in 0000 0001 0002 0003 0004; do\n    if [ -f \"test_original_${i}.txt\" ] && [ -f \"test_refactored_${i}.txt\" ]; then\n        orig=$(grep -E \"score\\s*=\\s*[0-9]+\" \"test_original_${i}.txt\" | tail -1 | sed -E 's/.*score\\s*=\\s*([0-9]+).*/\\1/')\n        refact=$(grep -E \"score\\s*=\\s*[0-9]+\" \"test_refactored_${i}.txt\" | tail -1 | sed -E 's/.*score\\s*=\\s*([0-9]+).*/\\1/')\n        echo \"Case $i: original=$orig, refactored=$refact\"\n    fi\ndone)",
       "Bash(rm:*)",
-      "Bash(./test_refactor.sh:*)"
+      "Bash(./test_refactor.sh:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

@@ -75,9 +75,6 @@ namespace /* 乱数ライブラリ */
 const ll INF = 1001001001001001001;
 const int INT_INF = 1001001001;
 
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
-
 double TL = 2.8;
 int mode;
 clock_t startTime, endTime;
@@ -2497,57 +2494,6 @@ void Method4_3_3()
     ansScore -= totalDiffScore;
     if (ansScore < real_ansScore) {
       // cout << "XXXXXXXXXXXX" << endl;
-      CopyToRealAns();
-      CopyToReal_M42();
-    }
-  }
-}
-
-// 横線を移動
-void Method4_3_4()
-{
-  int raD = Rand() % d;
-  int lineNum = Rand() % ansBaseLineCount;
-  if (ansColumnSchedulesCount[raD][lineNum] <= 1) return;
-  int raIndex = Rand() % ansColumnSchedulesCount[raD][lineNum];
-  int raDir = Rand() % 2;
-  if (raIndex == 0) { raDir = 1; }
-  if (raIndex == ansColumnSchedulesCount[raD][lineNum] - 1) { raDir = 0; }
-  int raN = ansColumnSchedules[raD][lineNum][raIndex];
-  int margin = (ansColumnSchedulesPosition[raD][lineNum][raIndex + 1] - ansColumnSchedulesPosition[raD][lineNum][raIndex]) - preCalcScheduleSizes[raD][raN][lineNum];
-  if (margin == 0) return;
-  int moveAmount = Rand() % margin + 1;
-  int beforePos = ansColumnSchedulesPosition[raD][lineNum][raIndex];
-  int afterPos = ansColumnSchedulesPosition[raD][lineNum][raIndex] + moveAmount;
-  if (raDir == 1) {
-    beforePos = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1];
-    afterPos = ansColumnSchedulesPosition[raD][lineNum][raIndex + 1] - moveAmount;
-  }
-  int diffScore = 0;
-  if (raD > 0) {
-    rep(k, ansColumnSchedulesCount[raD - 1][lineNum])
-    {
-      if (ansColumnSchedulesPosition[raD - 1][lineNum][k] == beforePos) diffScore -= widths[lineNum] * 2;
-      if (ansColumnSchedulesPosition[raD - 1][lineNum][k] == afterPos) diffScore += widths[lineNum] * 2;
-    }
-  }
-  if (raD < d - 1) {
-    rep(k, ansColumnSchedulesCount[raD + 1][lineNum])
-    {
-      if (ansColumnSchedulesPosition[raD + 1][lineNum][k] == beforePos) diffScore -= widths[lineNum] * 2;
-      if (ansColumnSchedulesPosition[raD + 1][lineNum][k] == afterPos) diffScore += widths[lineNum] * 2;
-    }
-  }
-
-  if (diffScore >= 0) {
-    if (raDir == 0) {
-      ansColumnSchedulesPosition[raD][lineNum][raIndex] = afterPos;
-    }
-    else {
-      ansColumnSchedulesPosition[raD][lineNum][raIndex + 1] = afterPos;
-    }
-    ansScore -= diffScore;
-    if (ansScore < real_ansScore) {
       CopyToRealAns();
       CopyToReal_M42();
     }
