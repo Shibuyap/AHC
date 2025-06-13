@@ -34,7 +34,6 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-// �^�C�}�[
 namespace Timer
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -51,7 +50,7 @@ namespace Timer
   }
 }
 
-namespace /* �������C�u���� */
+namespace
 {
   namespace Random
   {
@@ -73,9 +72,8 @@ namespace /* �������C�u���� */
       return (xorshift() + 0.5) * (1.0 / UINT_MAX);
     }
   }
-}  // namespace
+}
 
-// 定数
 namespace Constants
 {
   constexpr int COLOR_COUNT = 26;
@@ -99,7 +97,6 @@ const int dy[4] = { 0, -1, 0, 1 };
 using namespace Constants;
 int mode;
 
-// パス情報を表す構造体
 struct Path
 {
   int start_i;
@@ -112,7 +109,6 @@ struct Path
   bool operator<(const Path& right) const { return path_cost < right.path_cost; }
 };
 
-// グローバル変数を名前空間に整理
 namespace GlobalData
 {
   // 入力データ
@@ -144,14 +140,12 @@ inline int manhattanDistance(int i1, int j1, int i2, int j2)
   return abs(i1 - i2) + abs(j1 - j2);
 }
 
-// �����P�[�X�񂷂Ƃ��ɓ����Ԃ�����l�ɖ߂�
 void resetGlobalState()
 {
   rep(i, COLOR_COUNT) { cells_by_color[i].clear(); }
   rep(i, TASK_COUNT) { task_paths[i].clear(); }
 }
 
-// ���͎󂯎��
 void readInput(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -166,7 +160,6 @@ void readInput(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // �W�����͂���
   int _n, _m;
   if (!ifs.is_open()) {
     cin >> _n >> _m;
@@ -174,7 +167,6 @@ void readInput(int problemNum)
     rep(i, BOARD_SIZE) cin >> board_chars[i];
     rep(i, TASK_COUNT) cin >> task_strings[i];
   }
-  // �t�@�C�����͂���
   else {
     ifs >> _n >> _m;
     ifs >> start_i >> start_j;
@@ -210,7 +202,6 @@ void readInput(int problemNum)
   }
 }
 
-// �o�̓t�@�C���X�g���[���I�[�v��
 void openOutputFile(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -249,7 +240,6 @@ int score_when_share_last2(const Path& x, const Path& y)
   return 0;
 }
 
-// �X�R�A�v�Z
 ll calculateTotalScore()
 {
   int score = MAX_SCORE - TASK_COUNT * TASK_PENALTY;
@@ -281,7 +271,6 @@ ll calculateTotalScore()
   return score;
 }
 
-// �����𐶐�
 void buildInitialSolution()
 {
   std::random_device seed_gen;
@@ -289,10 +278,9 @@ void buildInitialSolution()
 
   best_score = -1;
 
-  /* ---------- 1 st  pass (�S�^�X�N�Ώ�) ---------- */
   rep(attempt_idx, GREEDY_ITERATIONS)
   {
-    int   used[TASK_COUNT]{};          // ���łɑI�΂ꂽ�^�X�N
+    int   used[TASK_COUNT]{};
     int   cur_i = start_i, cur_j = start_j;
 
     std::vector<int> shuffled_tasks;
@@ -368,7 +356,6 @@ void buildInitialSolution()
     }
   }
 
-  /* ---- �ȍ~�Aprefix ��Œ肵�Ȃ��� 3 �i�K�ŉ��� ---- */
   auto restore_best = [&]() {
     rep(i, TASK_COUNT)
     {
@@ -397,7 +384,6 @@ void buildInitialSolution()
       std::vector<int> shuffled_tasks;
       rep(t, TASK_COUNT) shuffled_tasks.push_back(t);
 
-      /* prefix �͑O�̃x�X�g����̂܂܌Œ� */
       rep(pos, prefix_len) used[task_order[pos]] = 1;
 
       srep(pos, prefix_len, TASK_COUNT)
@@ -473,7 +459,6 @@ void buildInitialSolution()
   }
 }
 
-// �𓚏o��
 void writeAnswer(ofstream& ofs)
 {
   final_cells.clear();
@@ -508,14 +493,11 @@ void writeAnswer(ofstream& ofs)
   }
 }
 
-// �C���f�b�N�X 2 �_�����ւ���ߖT����
 void twoSwap(double temperature)
 {
-  /* --- �X���b�v�ΏۃC���f�b�N�X�𖳍�ׂɌ��� --- */
   int idx_a = Random::xorshift() % TASK_COUNT;
   int idx_b = Random::xorshift() % TASK_COUNT;
   if (idx_a > idx_b) std::swap(idx_a, idx_b);
-  if (idx_b - idx_a <= 1) return;                 // �A���v�f�͖���
 
   int prev_a = idx_a - 1;
   int next_a = idx_a + 1;
@@ -525,9 +507,8 @@ void twoSwap(double temperature)
   int cost_before = 0;
   int cost_after = 0;
 
-  /* ---------- �P�[�X�@: �ǂ����[�v�f�ł͂Ȃ� ---------- */
   if (idx_a != 0 && idx_b != TASK_COUNT - 1) {
-    { // ����O�R�X�g
+    {
       int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
@@ -547,7 +528,7 @@ void twoSwap(double temperature)
       int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0) + (d4 == 0);
       cost_before = d1 + d2 + d3 + d4 - same_cnt;
     }
-    { // �����R�X�g
+    {
       int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
@@ -568,9 +549,8 @@ void twoSwap(double temperature)
       cost_after = d1 + d2 + d3 + d4 - same_cnt;
     }
   }
-  /* ---------- �P�[�X�A: idx_a ���擪 ---------- */
   else if (idx_a == 0 && idx_b != TASK_COUNT - 1) {
-    { // ����O
+    {
       int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         start_i, start_j);
@@ -589,7 +569,7 @@ void twoSwap(double temperature)
       int same_cnt = (d2 == 0) + (d3 == 0) + (d4 == 0);
       cost_before = d1 + d2 + d3 + d4 - same_cnt;
     }
-    { // �����
+    {
       int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
@@ -609,9 +589,8 @@ void twoSwap(double temperature)
       cost_after = d1 + d2 + d3 + d4 - same_cnt;
     }
   }
-  /* ---------- �P�[�X�B: idx_b ������ ---------- */
   else if (idx_a != 0 && idx_b == TASK_COUNT - 1) {
-    { // ����O
+    {
       int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
@@ -627,7 +606,7 @@ void twoSwap(double temperature)
       int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0);
       cost_before = d1 + d2 + d3 - same_cnt;
     }
-    { // �����
+    {
       int d1 = manhattanDistance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
@@ -651,15 +630,12 @@ void twoSwap(double temperature)
   int    delta_cost = cost_before - cost_after;
   double accept_prob = std::exp(static_cast<double>(delta_cost) / temperature);
 
-  // �Ă��Ȃ܂��F���P or ����P�ł�m���Ŏ�
-  // if (Random::rand01() < accept_prob)
   if (delta_cost >= 0) {
     std::swap(task_order[idx_a], task_order[idx_b]);
     std::swap(path_index[idx_a], path_index[idx_b]);
   }
 }
 
-// ID�ύX
 void changePathId(double temperature)
 {
   int x = Random::xorshift() % TASK_COUNT;
@@ -695,7 +671,6 @@ void changePathId(double temperature)
 
   int diffScore = beforeScore - afterScore;
   double prob = exp((double)diffScore / temperature);
-  //if (prob > Random::rand01()) {
   if (diffScore >= 0) {
     path_index[x] = y;
   }
@@ -720,7 +695,6 @@ void simulatedAnnealing()
 
     int ra = Random::xorshift() % 100;
     if (ra < SWAP_RATIO) {
-      // 2�_�X���b�v
       twoSwap(temperature);
     }
     else {
@@ -737,17 +711,13 @@ ll solveSingleCase(int probNum)
 {
   Timer::start();
 
-  // �����P�[�X�񂷂Ƃ��ɓ����Ԃ�����l�ɖ߂�
   resetGlobalState();
 
-  // ���͎󂯎��
   readInput(probNum);
 
-  // �o�̓t�@�C���X�g���[���I�[�v��
   ofstream ofs;
   openOutputFile(probNum, ofs);
 
-  // dp
   {
     int dp[PATH_LENGTH][DP_SIZE][DP_SIZE];
     int dp2[PATH_LENGTH][DP_SIZE][DP_SIZE];
@@ -838,12 +808,10 @@ ll solveSingleCase(int probNum)
     }
   }
 
-  // �����𐶐�
   buildInitialSolution();
 
   simulatedAnnealing();
 
-  // �𓚂�o��
   writeAnswer(ofs);
 
   if (ofs.is_open()) {
