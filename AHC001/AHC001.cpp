@@ -25,7 +25,8 @@ typedef pair<int, int> P;
 
 #define MAX_N 205
 
-static uint32_t Rand() {
+static uint32_t Rand()
+{
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -38,7 +39,8 @@ static uint32_t Rand() {
 }
 
 // 0以上1未満の小数をとる乱数
-static double Rand01() {
+static double Rand01()
+{
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
@@ -84,11 +86,13 @@ Rect rects[MAX_N];
 int area_sizes[MAX_N];
 Rect best_rects[MAX_N];
 
-inline void calc_area(int idx) {
+inline void calc_area(int idx)
+{
   area_sizes[idx] = (rects[idx].p2.x - rects[idx].p1.x) * (rects[idx].p2.y - rects[idx].p1.y);
 }
 
-inline void nyuuryokuInit(int fileNum) {
+inline void nyuuryokuInit(int fileNum)
+{
   // 入力
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << fileNum << ".txt";
@@ -103,7 +107,8 @@ inline void nyuuryokuInit(int fileNum) {
   }
 }
 
-inline void FileKakikomi(int fileNum) {
+inline void FileKakikomi(int fileNum)
+{
   string fileName = to_string(fileNum);
   fileName += "_out.txt";
   const char* cstr = fileName.c_str();
@@ -114,7 +119,8 @@ inline void FileKakikomi(int fileNum) {
   ofs.close();
 }
 
-inline void FileKakikomiERROR(int fileNum) {
+inline void FileKakikomiERROR(int fileNum)
+{
   string fileName = to_string(fileNum);
   fileName += "_out_ERROR.txt";
   const char* cstr = fileName.c_str();
@@ -130,7 +136,8 @@ int real_maxScore = -1;
 
 double p[MAX_N];
 double pSum;
-inline int calc(int ite) {
+inline int calc(int ite)
+{
   if (ite == -1) {
     double sum = 0;
     for (int i = 0; i < (n); ++i) {
@@ -156,7 +163,8 @@ inline int calc(int ite) {
   }
 }
 
-inline int kasanarihantei(int i, int j) {
+inline int kasanarihantei(int i, int j)
+{
   int cnt = 0;
   if (rects[i].p1.x <= rects[j].p1.x && rects[j].p1.x < rects[i].p2.x) cnt++;
   else if (rects[j].p1.x <= rects[i].p1.x && rects[i].p1.x < rects[j].p2.x) cnt++;
@@ -167,7 +175,8 @@ inline int kasanarihantei(int i, int j) {
 
 int sort_x[MAX_N], sort_y[MAX_N];
 int arg_sort_x[MAX_N], arg_sort_y[MAX_N];
-inline void sortInit() {
+inline void sortInit()
+{
   vector<P> v;
   for (int i = 0; i < (n); ++i) {
     v.emplace_back(P(target_points[i].x, i));
@@ -193,7 +202,8 @@ inline void sortInit() {
 // 面積は1以上か
 // (x[i]+0.5,y[i]+0.5)を含んでいるか
 // 重なりがないか
-inline int isOK2(int ite) {
+inline int isOK2(int ite)
+{
   if (ite == -1) {
     for (int i = 0; i < (n); ++i) {
       if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
@@ -232,7 +242,8 @@ inline int isOK2(int ite) {
   return 1;
 }
 
-inline int isOK(int ite) {
+inline int isOK(int ite)
+{
   if (ite == -1) {
     for (int i = 0; i < (n); ++i) {
       if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
@@ -286,7 +297,8 @@ inline int isOK(int ite) {
   return 1;
 }
 
-inline void init_rect(Rect& rect, Point& point) {
+inline void init_rect(Rect& rect, Point& point)
+{
   rect.p1.x = point.x;
   rect.p1.y = point.y;
   rect.p2.x = point.x + 1;
@@ -294,7 +306,8 @@ inline void init_rect(Rect& rect, Point& point) {
 }
 
 Rect vExtend;
-inline void hukuramashi(int ite) {
+inline void hukuramashi(int ite)
+{
   init_rect(vExtend, target_points[ite]);
 
   int flagTateYoko = Rand() % 2;
@@ -524,14 +537,16 @@ inline void hukuramashi(int ite) {
   }
 }
 
-inline void store_best() {
+inline void store_best()
+{
   real_maxScore = maxScore;
   for (int i = 0; i < (n); ++i) {
     best_rects[i] = rects[i];
   }
 }
 
-inline void Extend(int ite, double temp) {
+inline void Extend(int ite, double temp)
+{
   Rect keep = rects[ite];
 
   hukuramashi(ite);
@@ -562,7 +577,8 @@ int real_real_maxScore = -1;
 int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
 int ui_tei_maxScore = -1;
 
-inline void Tubusu(int tubusu) {
+inline void Tubusu(int tubusu)
+{
   // tubusu個つぶす
   for (int i = 0; i < (tubusu); ++i) {
     int ite = Rand() % n;
@@ -575,7 +591,8 @@ inline void Tubusu(int tubusu) {
   }
 }
 
-inline void TubusuWorst(int tubusu_worst) {
+inline void TubusuWorst(int tubusu_worst)
+{
   vector<pair<double, int>> v;
   for (int i = 0; i < (n); ++i) {
     v.emplace_back(pair<double, int>(p[i], i));
@@ -592,7 +609,8 @@ inline void TubusuWorst(int tubusu_worst) {
   }
 }
 
-inline void AnaWoAkeru(int hole = 100) {
+inline void AnaWoAkeru(int hole = 100)
+{
   int ite = Rand() % n;
   vector<int> keep;
   keep.emplace_back(ite);
@@ -616,7 +634,8 @@ inline void AnaWoAkeru(int hole = 100) {
 }
 
 Rect vExtendKing;
-inline void hukuramashiKing(int ite) {
+inline void hukuramashiKing(int ite)
+{
   vExtendKing.p1.x = max(0, (int)(target_points[ite].x - Rand() % 1000));
   vExtendKing.p1.y = max(0, (int)(target_points[ite].y - Rand() % 1000));
   vExtendKing.p2.x = min(10000, (int)(target_points[ite].x + 1 + Rand() % 1000));
@@ -832,7 +851,8 @@ inline void hukuramashiKing(int ite) {
 
 }
 
-inline void ExtendKing(int ite) {
+inline void ExtendKing(int ite)
+{
   hukuramashiKing(ite);
   rects[ite] = vExtendKing;
 
@@ -849,7 +869,8 @@ inline void ExtendKing(int ite) {
   }
 }
 
-inline void oneChange(int ite, double temp) {
+inline void oneChange(int ite, double temp)
+{
   int diff = 0;
   while (diff == 0) diff = Rand() % 101 - 50;
   int abcd = Rand() % 4;
@@ -889,7 +910,8 @@ inline void oneChange(int ite, double temp) {
   }
 }
 
-inline void fourChange(int ite, double temp) {
+inline void fourChange(int ite, double temp)
+{
   int diffA = Rand() % 101 - 50;
   int diffB = Rand() % 101 - 50;
   int diffC = Rand() % 101 - 50;
@@ -930,7 +952,8 @@ inline void fourChange(int ite, double temp) {
   }
 }
 
-inline void Slide(int ite, double temp) {
+inline void Slide(int ite, double temp)
+{
   int diff = 0;
   while (diff == 0) diff = Rand() % 101 - 50;
   int ab = Rand() % 2;
@@ -982,7 +1005,8 @@ inline void Slide(int ite, double temp) {
   }
 }
 
-inline void aspectChange(int ite, double temp) {
+inline void aspectChange(int ite, double temp)
+{
   int yokoRatio = Rand() % 9 + 1; // 1 ~ 9;
   int tateRatio = 10 - yokoRatio;
 
@@ -1034,7 +1058,8 @@ inline void aspectChange(int ite, double temp) {
   }
 }
 
-inline int selfNg(int ite) {
+inline int selfNg(int ite)
+{
   if (rects[ite].p1.x < 0 || 10000 < rects[ite].p1.x) return 1;
   if (rects[ite].p1.y < 0 || 10000 < rects[ite].p1.y) return 1;
   if (rects[ite].p2.x < 0 || 10000 < rects[ite].p2.x) return 1;
@@ -1046,7 +1071,8 @@ inline int selfNg(int ite) {
   return 0;
 }
 
-inline int dokasuOK(int ite, int abcd) {
+inline int dokasuOK(int ite, int abcd)
+{
   for (int i = 0; i < (n); ++i) {
     if (i == ite) continue;
     if (kasanarihantei(i, ite)) {
@@ -1063,7 +1089,8 @@ inline int dokasuOK(int ite, int abcd) {
 
 int arrKasanari[MAX_N];
 int kasanariCount;
-inline void kasanaritati(int ite, int abcd) {
+inline void kasanaritati(int ite, int abcd)
+{
   kasanariCount = 0;
   if (abcd == 0) {
     int argX = arg_sort_x[ite];
@@ -1168,7 +1195,8 @@ inline void kasanaritati(int ite, int abcd) {
 }
 
 int keepvA[MAX_N], keepvB[MAX_N], keepvC[MAX_N], keepvD[MAX_N];
-inline void zurasi2(int ite, double temp) {
+inline void zurasi2(int ite, double temp)
+{
   int diff = 0;
   while (diff == 0) diff = Rand() % 50 + 1;
   int abcd = Rand() % 4;
@@ -1261,7 +1289,8 @@ inline void zurasi2(int ite, double temp) {
   }
 }
 
-inline void shokiInit() {
+inline void shokiInit()
+{
   for (int i = 0; i < (n); ++i) {
     init_rect(rects[i], target_points[i]);
   }
@@ -1279,7 +1308,8 @@ int a2[100][MAX_N], b2[100][MAX_N], c2[100][MAX_N], d2[100][MAX_N];
 int a4[100][MAX_N], b4[100][MAX_N], c4[100][MAX_N], d4[100][MAX_N];
 int maxScore4[100] = {};
 
-inline void Ui_Tei() {
+inline void Ui_Tei()
+{
   clock_t start, end;
   for (int ui_tei = 0; ui_tei < (5); ++ui_tei) {
 
@@ -1438,7 +1468,8 @@ inline void Ui_Tei() {
   }
 }
 
-int solve(int teisyutu, int fileNum) {
+int solve(int teisyutu, int fileNum)
+{
   auto startClock = system_clock::now();
   clock_t start, end;
   clock_t real_start = clock();
@@ -1683,14 +1714,16 @@ int solve(int teisyutu, int fileNum) {
   return maxScore;
 }
 
-inline void clear_rect(Rect& r) {
+inline void clear_rect(Rect& r)
+{
   r.p1.x = 0;
   r.p1.y = 0;
   r.p2.x = 0;
   r.p2.y = 0;
 }
 
-inline void AllClear() {
+inline void AllClear()
+{
   n = 0;
   maxScore = -1;
   real_maxScore = -1;
@@ -1713,7 +1746,8 @@ inline void AllClear() {
   }
 }
 
-int main() {
+int main()
+{
   int teisyutu = 0;
 
   if (teisyutu) {
