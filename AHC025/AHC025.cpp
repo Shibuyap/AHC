@@ -73,7 +73,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
@@ -6267,52 +6268,52 @@ ll Solve(int probNum, ll hai2 = D18)
   }
   else {
     switch (hai) {
-    case 6:
-      Method6();
-      break;
-    case 610:
-      Method6(70, 10);
-      break;
-    case 61003:
-      Method6(50, 3);
-      break;
-    case 8:
-      Method8();
-      break;
-    case 9:
-      Method10(70, 10, true);
-      break;
-    case 10:
-      Method10();
-      break;
-    case 1003:
-      Method10(50, 3);
-      break;
-    case 11:
-      Method11();
-      break;
-    case 12:
-      Method12();
-      break;
-    case 13:
-      Method13();
-      break;
-    case 14:
-      Method14();
-      break;
-    case 15:
-      Method15();
-      break;
-    case 16:
-      Method16();
-      break;
-    case 1220:
-      Method12(20);
-      break;
-    default:
-      cerr << "NG hai : " << hai << endl;
-      Method8();
-      break;
+      case 6:
+        Method6();
+        break;
+      case 610:
+        Method6(70, 10);
+        break;
+      case 61003:
+        Method6(50, 3);
+        break;
+      case 8:
+        Method8();
+        break;
+      case 9:
+        Method10(70, 10, true);
+        break;
+      case 10:
+        Method10();
+        break;
+      case 1003:
+        Method10(50, 3);
+        break;
+      case 11:
+        Method11();
+        break;
+      case 12:
+        Method12();
+        break;
+      case 13:
+        Method13();
+        break;
+      case 14:
+        Method14();
+        break;
+      case 15:
+        Method15();
+        break;
+      case 16:
+        Method16();
+        break;
+      case 1220:
+        Method12(20);
+        break;
+      default:
+        cerr << "NG hai : " << hai << endl;
+        Method8();
+        break;
     }
   }
 

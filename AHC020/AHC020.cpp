@@ -17,14 +17,17 @@ typedef pair<int, int> P;
 int run_mode;
 
 // タイマー
-namespace {
+namespace
+{
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
@@ -32,7 +35,8 @@ namespace {
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t rand_u32() {
+  static uint32_t rand_u32()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -46,19 +50,22 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  static double rand_unit() {
+  static double rand_unit()
+  {
     return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
 const ll INF = 1001001001001001001;
 
-struct Point {
+struct Point
+{
   ll x;
   ll y;
 };
 
-struct Edge {
+struct Edge
+{
   int u;
   int v;
   ll cost;
@@ -94,8 +101,10 @@ int power_cap[MAX_N] = {};
 int best_power_cap[MAX_N] = {};
 
 // Union-Find
-namespace {
-  void init(vector<int>& par, vector<int>& rank, int n) {
+namespace
+{
+  void init(vector<int>& par, vector<int>& rank, int n)
+  {
     for (int i = 0; i < n; i++) {
       par[i] = i;
       rank[i] = 0;
@@ -103,7 +112,8 @@ namespace {
   }
 
   // 木の根を求める
-  int find(vector<int>& par, int x) {
+  int find(vector<int>& par, int x)
+  {
     if (par[x] == x) {
       return x;
     }
@@ -113,7 +123,8 @@ namespace {
   }
 
   // xとyの属する集合を併合
-  void unite(vector<int>& par, vector<int>& rank, int x, int y) {
+  void unite(vector<int>& par, vector<int>& rank, int x, int y)
+  {
     x = find(par, x);
     y = find(par, y);
     if (x == y) return;
@@ -128,19 +139,22 @@ namespace {
   }
 
   // xとyが同じ集合に属するか否か
-  bool same(vector<int>& par, int x, int y) {
+  bool same(vector<int>& par, int x, int y)
+  {
     return find(par, x) == find(par, y);
   }
 }  // namespace
 
-bool comp(const Edge& e1, const Edge& e2) {
+bool comp(const Edge& e1, const Edge& e2)
+{
   return e1.cost < e2.cost;
 }
 
 int mst_node_req[MAX_N];
 int mst_edge_use[MAX_K];
 /*----------  Kruskal core  ----------*/
-long long kruskal(int vertex_cnt) {
+long long kruskal(int vertex_cnt)
+{
   int need_cnt = 0;
   for (int v_idx = 0; v_idx < vertex_cnt; ++v_idx) {
     need_cnt += mst_node_req[v_idx];
@@ -177,12 +191,14 @@ long long kruskal(int vertex_cnt) {
   return mst_cost;
 }
 
-ll outer_kruskal() {
+ll outer_kruskal()
+{
   return kruskal(n);
 }
 
 /*----------  LNS-style toggle search  ----------*/
-ll outer_kruskal_lns() {
+ll outer_kruskal_lns()
+{
   start_timer();
 
   for (int v_idx = 0; v_idx < n; ++v_idx) {
@@ -222,7 +238,8 @@ ll outer_kruskal_lns() {
   return best_cost;
 }
 
-bool check_coverage() {
+bool check_coverage()
+{
   for (int res_idx = 0; res_idx < k; ++res_idx) {
     bool is_covered = false;
     int near_sz = res_near_nodes[res_idx].size();
@@ -240,7 +257,8 @@ bool check_coverage() {
   return true;
 }
 
-bool check_coverage_node(int target_node) {
+bool check_coverage_node(int target_node)
+{
   for (auto near_pair : node_near_res[target_node]) {
     int res_idx = near_pair.second;
     bool is_covered = false;
@@ -260,7 +278,8 @@ bool check_coverage_node(int target_node) {
 }
 
 ll keepW;
-ll calc_score(bool isALL = true) {
+ll calc_score(bool isALL = true)
+{
   if (!check_coverage()) {
     return -1;
   }
@@ -287,7 +306,8 @@ ll calc_score(bool isALL = true) {
   return point;
 }
 
-ll calc_score_partial(int nn, bool isALL = true) {
+ll calc_score_partial(int nn, bool isALL = true)
+{
   if (!check_coverage_node(nn)) {
     return -1;
   }
@@ -313,11 +333,13 @@ ll calc_score_partial(int nn, bool isALL = true) {
   return point;
 }
 
-ll sq_dist(ll x1, ll y1, ll x2, ll y2) {
+ll sq_dist(ll x1, ll y1, ll x2, ll y2)
+{
   return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
 
-ll min_radius_le_5000(ll x1, ll y1, ll x2, ll y2) {
+ll min_radius_le_5000(ll x1, ll y1, ll x2, ll y2)
+{
   if (sq_dist(x1, y1, x2, y2) > 25000000) {
     return INF;
   }
@@ -337,7 +359,8 @@ ll min_radius_le_5000(ll x1, ll y1, ll x2, ll y2) {
   return ok;
 }
 
-void init_state() {
+void init_state()
+{
   for (int i = 0; i < n; ++i) {
     power_rad[i] = 0;
   }
@@ -350,7 +373,8 @@ void init_state() {
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
-void read_input(int problemNum) {
+void read_input(int problemNum)
+{
   string fileNameIfs = "./in/";
   string strNum;
   for (int i = 0; i < 4; ++i) {
@@ -450,7 +474,8 @@ void read_input(int problemNum) {
 }
 
 // 解答出力
-void write_output(int mode, int problemNum) {
+void write_output(int mode, int problemNum)
+{
   if (mode == 0) {
     for (int i = 0; i < n; ++i) {
       cout << power_rad[i] << ' ';
@@ -487,7 +512,8 @@ void write_output(int mode, int problemNum) {
   }
 }
 
-void snapshot_best() {
+void snapshot_best()
+{
   best_score = best_score_cur;
   for (int i = 0; i < n; ++i) {
     best_power_rad[i] = power_rad[i];
@@ -504,7 +530,8 @@ void snapshot_best() {
 }
 
 // ランダムに1つ拡大縮小する
-void sa_single_power_perturb(double temperature) {
+void sa_single_power_perturb(double temperature)
+{
   int num = rand_u32() % n;
   int pre = power_rad[num];
 
@@ -529,7 +556,8 @@ void sa_single_power_perturb(double temperature) {
   }
 }
 
-void solve_layered_sa() {
+void solve_layered_sa()
+{
   /*--- 初期 MST & 半径決定 ---*/
   outer_kruskal();
   for (int edge_idx = 0; edge_idx < m; ++edge_idx) {
@@ -693,7 +721,8 @@ void solve_layered_sa() {
   }
 }
 
-double solve_case(int mode, int problemNum = 0) {
+double solve_case(int mode, int problemNum = 0)
+{
   start_timer();
 
   solve_layered_sa();
@@ -706,7 +735,8 @@ double solve_case(int mode, int problemNum = 0) {
   return calc_score();
 }
 
-double run_with_io(int mode, int problemNum = 0) {
+double run_with_io(int mode, int problemNum = 0)
+{
   read_input(problemNum);
 
   double score = solve_case(mode, problemNum);
@@ -716,7 +746,8 @@ double run_with_io(int mode, int problemNum = 0) {
   return score;
 }
 
-int main() {
+int main()
+{
   run_mode = 2;
 
   // 提出用

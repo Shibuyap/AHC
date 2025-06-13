@@ -161,8 +161,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++)
-    {
+    for (int i = 0; i < 15; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {

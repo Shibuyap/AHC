@@ -723,32 +723,33 @@ ll CalcScoreForMethod3()
   }
 
   // 縦線
-  {rep(i, d)
   {
-    rep(j, ansLineCount[i] + 1)
+    rep(i, d)
     {
-      if (j == 0 || j == ansLineCount[i]) {
-        CalcScoreForMethod3Used[j] = 1;
-      }
-      else {
-        CalcScoreForMethod3Used[j] = 0;
-      }
-    }
-    rep(j, n)
-    {
-      rep(k, ansLineCount[i])
+      rep(j, ansLineCount[i] + 1)
       {
-        if (ans[i][j][1] == ansLinePos[i][k]) {
-          CalcScoreForMethod3Used[k] = 1;
-          CalcScoreForMethod3Used[k + 1] = 1;
+        if (j == 0 || j == ansLineCount[i]) {
+          CalcScoreForMethod3Used[j] = 1;
+        }
+        else {
+          CalcScoreForMethod3Used[j] = 0;
         }
       }
+      rep(j, n)
+      {
+        rep(k, ansLineCount[i])
+        {
+          if (ans[i][j][1] == ansLinePos[i][k]) {
+            CalcScoreForMethod3Used[k] = 1;
+            CalcScoreForMethod3Used[k + 1] = 1;
+          }
+        }
+      }
+      rep(j, ansLineCount[i] + 1)
+      {
+        if (CalcScoreForMethod3Used[j] == 0) { res += w * 2; }
+      }
     }
-    rep(j, ansLineCount[i] + 1)
-    {
-      if (CalcScoreForMethod3Used[j] == 0) { res += w * 2; }
-    }
-  }
   }
 
   // 横線

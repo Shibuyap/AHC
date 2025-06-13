@@ -40,11 +40,13 @@ namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
@@ -53,7 +55,8 @@ namespace
 // 乱数
 namespace
 {
-  static uint32_t rand_xorshift() {
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -66,19 +69,23 @@ namespace
     return w;
   }
 
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -99,33 +106,40 @@ private:
 
 public:
   // コンストラクタ
-  Queue2D() : head(0), tail(0) {
+  Queue2D() : head(0), tail(0)
+  {
   }
 
-  void clear_queue() {
+  void clear_queue()
+  {
     head = 0;
     tail = 0;
   }
 
-  int front_x() const {
+  int front_x() const
+  {
     return arr[head][0];
   }
 
-  int front_y() const {
+  int front_y() const
+  {
     return arr[head][1];
   }
 
-  void push(int x, int y) {
+  void push(int x, int y)
+  {
     arr[tail][0] = x;
     arr[tail][1] = y;
     tail++;
   }
 
-  void pop() {
+  void pop()
+  {
     head++;
   }
 
-  int size() const {
+  int size() const
+  {
     return tail - head;
   }
 };
@@ -154,7 +168,8 @@ public:
   int add_flags[m][4];
   int add_flags_2[n + 2][n + 2][m][4];
 
-  void initialize_state() {
+  void initialize_state()
+  {
     current_score = 0;
     ans_count = 0;
     for (int i = 0; i < (m); ++i) {
@@ -173,7 +188,8 @@ public:
     }
   }
 
-  void Copy(const Answer& src) {
+  void Copy(const Answer& src)
+  {
     current_score = src.current_score;
     ans_count = src.ans_count;
     for (int i = 0; i < (ans_count); ++i) {
@@ -208,12 +224,14 @@ public:
   int rock_col[n + 2][n + 2];
   int rock_col_count[n + 2];
 
-  bool is_out_of_range(int x, int y) const {
+  bool is_out_of_range(int x, int y) const
+  {
     if (board[x][y] < 0) return true;
     return false;
   }
 
-  void init_board() {
+  void init_board()
+  {
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
         if (i == 0 || i == n + 1 || j == 0 || j == n + 1) {
@@ -233,7 +251,8 @@ public:
     }
   }
 
-  bool attempt_skate(int dir, int x, int y, int& nx, int& ny) const {
+  bool attempt_skate(int dir, int x, int y, int& nx, int& ny) const
+  {
     nx = x;
     ny = y;
     if (dir == 0) {
@@ -278,7 +297,8 @@ public:
     return true;
   }
 
-  bool attempt_move(int dir, int x, int y, int& nx, int& ny) const {
+  bool attempt_move(int dir, int x, int y, int& nx, int& ny) const
+  {
     nx = x;
     ny = y;
     if (!is_out_of_range(nx + DX[dir], ny + DY[dir])) {
@@ -290,7 +310,8 @@ public:
   }
 };
 
-static Board input_data(int case_num) {
+static Board input_data(int case_num)
+{
   Board board;
 
   std::ostringstream oss;
@@ -320,12 +341,14 @@ static Board input_data(int case_num) {
   return board;
 }
 
-static int calculate_score(const Answer& answer) {
+static int calculate_score(const Answer& answer)
+{
   int res = m + 2 * n * m - answer.ans_count;
   return res;
 }
 
-static void output_data(int case_num, const Answer& answer) {
+static void output_data(int case_num, const Answer& answer)
+{
   if (exec_mode == 0) {
     // 標準出力
     for (int i = 0; i < (answer.ans_count); ++i) {
@@ -363,7 +386,8 @@ private:
   int dp[n + 2][n + 2];
   int dp2[n + 2][n + 2][4];
 
-  void move_one(Board& board, Answer& answer, int dir, int& x, int& y) {
+  void move_one(Board& board, Answer& answer, int dir, int& x, int& y)
+  {
     int nx = x;
     int ny = y;
     if (!board.attempt_move(dir, x, y, nx, ny)) {
@@ -376,7 +400,8 @@ private:
     answer.ans_count++;
   }
 
-  void skate_one(Board& board, Answer& answer, int dir, int& x, int& y) {
+  void skate_one(Board& board, Answer& answer, int dir, int& x, int& y)
+  {
     int nx = x;
     int ny = y;
     if (!board.attempt_skate(dir, x, y, nx, ny)) {
@@ -389,7 +414,8 @@ private:
     answer.ans_count++;
   }
 
-  void add_one(Board& board, Answer& answer, int dir, int x, int y, bool isSim = false) {
+  void add_one(Board& board, Answer& answer, int dir, int x, int y, bool isSim = false)
+  {
     int nx = x + DX[dir];
     int ny = y + DY[dir];
     if (board.board[nx][ny] != 0) {
@@ -407,7 +433,8 @@ private:
     }
   }
 
-  vector<P> bfs(Board& board, int sx, int sy, int gx, int gy) {
+  vector<P> bfs(Board& board, int sx, int sy, int gx, int gy)
+  {
     for (int i = 0; i < (n + 2); ++i) {
       for (int j = 0; j < (n + 2); ++j) {
         dp[i][j] = INT_INF;
@@ -465,7 +492,8 @@ private:
     return vp;
   }
 
-  int create_ans(Answer& answer, Board& board) {
+  int create_ans(Answer& answer, Board& board)
+  {
     answer.ans_count = 0;
     int x = board.X[0];
     int y = board.Y[0];
@@ -499,7 +527,8 @@ private:
     return calculate_score(answer);
   }
 
-  void eliminate_unused_rock(Board& board, Answer& answer) {
+  void eliminate_unused_rock(Board& board, Answer& answer)
+  {
     board.init_board();
     create_ans(answer, board);
 
@@ -534,14 +563,16 @@ private:
     }
   }
 
-  Answer build_initial_solution_2(Board& board) {
+  Answer build_initial_solution_2(Board& board)
+  {
     Answer answer;
     answer.initialize_state();
     create_ans(answer, board);
     return answer;
   }
 
-  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int& mm, int turn, int& lastRockX, int& lastRockY, int& lastRockDir, int& lastRockMM) {
+  void simulate_best(Board& board, Answer& answer, const Answer& best_answer, int& x, int& y, int& mm, int turn, int& lastRockX, int& lastRockY, int& lastRockDir, int& lastRockMM)
+  {
     x = board.X[0];
     y = board.Y[0];
     mm = 0;
@@ -594,7 +625,8 @@ private:
   };
 
   // Pick an operation type from thresholds
-  inline OpType pick_op(uint32_t rnd, const int th[3]) {
+  inline OpType pick_op(uint32_t rnd, const int th[3])
+  {
     return (rnd < th[0]) ? OpType::OP1
       : (rnd < th[1]) ? OpType::OP2
       : OpType::OP3;
@@ -605,56 +637,59 @@ private:
   //------------------------------------------------------------------------------
 
   // Return false when OP3 aborts (ra2 == -1)
-  bool apply_op(OperationCtx& ctx, Answer& ans, const Answer& best, Board& board, uint32_t(*rnd)()) {
+  bool apply_op(OperationCtx& ctx, Answer& ans, const Answer& best, Board& board, uint32_t(*rnd)())
+  {
     switch (ctx.type) {
-    case OpType::OP1:
-    {
-      ctx.a1 = rnd() % (m - 1);
-      ctx.a2 = rnd() % 4;
-      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
-      return true;
-    }
-    case OpType::OP2:
-    {
-      ctx.a1 = rnd() % (best.ans_count - 1);
-      ctx.a2 = rnd() % 4;
-      int _1, _2, _3, _4;
-      simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a5, ctx.a1, _1, _2, _3, _4);
-      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
-      return true;
-    }
-    case OpType::OP3:
-    {
-      ctx.a1 = rnd() % (best.ans_count - 1);
-      int _1, _2, _3;
-      simulate_best(board, ans, best, _1, _2, _3, ctx.a1, ctx.a2, ctx.a3, ctx.a4, ctx.a5);
-      if (ctx.a2 == -1) return false;              // abort – same as original
-      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
-      return true;
-    }
+      case OpType::OP1:
+      {
+        ctx.a1 = rnd() % (m - 1);
+        ctx.a2 = rnd() % 4;
+        ans.add_flags[ctx.a1][ctx.a2] ^= 1;
+        return true;
+      }
+      case OpType::OP2:
+      {
+        ctx.a1 = rnd() % (best.ans_count - 1);
+        ctx.a2 = rnd() % 4;
+        int _1, _2, _3, _4;
+        simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a5, ctx.a1, _1, _2, _3, _4);
+        ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+        return true;
+      }
+      case OpType::OP3:
+      {
+        ctx.a1 = rnd() % (best.ans_count - 1);
+        int _1, _2, _3;
+        simulate_best(board, ans, best, _1, _2, _3, ctx.a1, ctx.a2, ctx.a3, ctx.a4, ctx.a5);
+        if (ctx.a2 == -1) return false;              // abort – same as original
+        ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+        return true;
+      }
     }
     return false; // never reached
   }
 
   // Rollback – mirror image of apply_op()
-  void rollback_op(const OperationCtx& ctx, Answer& ans) {
+  void rollback_op(const OperationCtx& ctx, Answer& ans)
+  {
     switch (ctx.type) {
-    case OpType::OP1:
-      ans.add_flags[ctx.a1][ctx.a2] ^= 1;
-      break;
-    case OpType::OP2:
-      ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
-      break;
-    case OpType::OP3:
-      ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
-      break;
+      case OpType::OP1:
+        ans.add_flags[ctx.a1][ctx.a2] ^= 1;
+        break;
+      case OpType::OP2:
+        ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+        break;
+      case OpType::OP3:
+        ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+        break;
     }
   }
 
   //==============================================================================
   //  Main function – behaviour‑preserving refactor
   //==============================================================================
-  void run_simulated_annealing(Board& board, Answer& answer, const AnnealingParams& param) {
+  void run_simulated_annealing(Board& board, Answer& answer, const AnnealingParams& param)
+  {
     Answer best = answer;               // working best solution
 
     const double START_TEMP = param.start_temperature[0];
@@ -705,7 +740,8 @@ private:
   }
 
 public:
-  Answer Solve(Board& board, const AnnealingParams& annealingParams) {
+  Answer Solve(Board& board, const AnnealingParams& annealingParams)
+  {
     Answer answer = build_initial_solution_2(board);
     answer.current_score = calculate_score(answer);
 
@@ -716,7 +752,8 @@ public:
   }
 };
 
-static ll solve_case(const int case_num, const AnnealingParams& annealingParams) {
+static ll solve_case(const int case_num, const AnnealingParams& annealingParams)
+{
   start_timer();
 
   Board board = input_data(case_num);
@@ -732,7 +769,8 @@ static ll solve_case(const int case_num, const AnnealingParams& annealingParams)
   return score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 2;
 
   AnnealingParams annealingParams;

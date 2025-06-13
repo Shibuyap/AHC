@@ -433,7 +433,8 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
   heavyY /= 2.0 * (m - mCount);
 }
 
-class RotTip {
+class RotTip
+{
 private:
   int m_V;
 
@@ -484,7 +485,8 @@ public:
   }
 };
 
-class KeepAB {
+class KeepAB
+{
 public:
   int KeepA[MAX_V][3];
   int KeepB[MAX_V][3];
@@ -602,7 +604,8 @@ void RollBackFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vecto
   SetArrayToOneWithCount(b, bRow, bColumn, maxAB.KeepB, maxAB.KeepBCount);
 }
 
-class MaxCandidate {
+class MaxCandidate
+{
 public:
   double maxActionScore;
   int finishTurn;

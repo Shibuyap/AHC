@@ -38,10 +38,12 @@ typedef long long int ll;
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock; return elapsed.count();
   }
 }
@@ -49,37 +51,45 @@ namespace
 // 乱数
 namespace
 {
-  static uint32_t rand_xorshift() {
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789, y = 362436069, z = 521288629, w = 88675123;
     uint32_t t = x ^ (x << 11);
     x = y; y = z; z = w;
     w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
     return w;
   }
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1);
   }
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1); swap(arr[i], arr[j]);
     }
   }
 }
 
-struct Point {
+struct Point
+{
   int x, y;
 };
 
-enum class FishType : uint8_t {
+enum class FishType : uint8_t
+{
   MACKEREL = 0, SARDINE = 1
 };
-struct Fish {
+struct Fish
+{
   Point p; FishType type;
 };
 
@@ -98,13 +108,15 @@ class Field
 {
   const vector<Fish>& fish;
 public:
-  explicit Field(const vector<Fish>& f) : fish(f) {
+  explicit Field(const vector<Fish>& f) : fish(f)
+  {
   }
 
   /**
    * @brief [x1,x2]×[y1,y2] に含まれる (サバ,イワシ) を数える
    */
-  pair<int, int> countRect(int x1, int y1, int x2, int y2) const {
+  pair<int, int> countRect(int x1, int y1, int x2, int y2) const
+  {
     int a = 0, b = 0;
     for (const auto& f : fish) {
       if (f.p.x >= x1 && f.p.x <= x2 && f.p.y >= y1 && f.p.y <= y2) {
@@ -114,7 +126,8 @@ public:
     return { a, b };
   }
 
-  vector<Point> getMackerelCoords() const {
+  vector<Point> getMackerelCoords() const
+  {
     vector<Point> res;
     res.reserve(fish.size() / 2);
     for (const auto& f : fish) {
@@ -136,16 +149,19 @@ class Solver
   vector<Point> bestPoly;
   ll bestScore = -1e18;
 public:
-  explicit Solver(const Field& f) : fld(f) {
+  explicit Solver(const Field& f) : fld(f)
+  {
   }
 
   /** sc = max(0, a - b + 1) */
-  static ll score(int a, int b) {
+  static ll score(int a, int b)
+  {
     return max(0, a - b + 1);
   }
 
   /** 初期長方形を作成 */
-  void buildInitial() {
+  void buildInitial()
+  {
     auto mac = fld.getMackerelCoords();
     if (mac.empty()) {
       bestPoly = { {0,0},{0,1},{1,1},{1,0} };
@@ -173,7 +189,8 @@ public:
   /**
    * @return 得られたポリゴン
    */
-  vector<Point> solve(double timelimit_sec) {
+  vector<Point> solve(double timelimit_sec)
+  {
     buildInitial();
 
     // --- Greedy 1‑step edge shrink to try to remove sardines without losing mackerel
@@ -235,7 +252,8 @@ int exec_mode;
  * @brief 標準入力 or ファイルから問題入力を読み込む。
  * @details 読み込んだ結果はグローバル変数 fishes に格納。
  */
-void input_data(int case_num) {
+void input_data(int case_num)
+{
   fishes.clear();
 
   // どこから読むか決定
@@ -263,7 +281,8 @@ void input_data(int case_num) {
  * @brief ポリゴンを (標準 or ファイル) に出力。
  * @details polygon が空の場合はダミーの 1×1 正方形を出力。
  */
-void output_data(int case_num) {
+void output_data(int case_num)
+{
   if (polygon.empty()) {
     // TODO: アルゴリズム実装後は消去。暫定ダミーポリゴン
     polygon = { {0,0},{0,1},{1,1},{1,0} };
@@ -287,7 +306,8 @@ void output_data(int case_num) {
 // スコア計算（オフラインデバッグ用）
 // ※ 本番では呼ばれないので未実装のままでも OK
 // ─────────────────────────────────────────────
-ll calculate_score() {
+ll calculate_score()
+{
   // TODO: 必要なら実装。ここでは 0 を返す。
   return 0;
 }
@@ -295,7 +315,8 @@ ll calculate_score() {
 // ─────────────────────────────────────────────
 // 1 ケース解くラッパ関数
 // ─────────────────────────────────────────────
-ll solve_case(int case_num) {
+ll solve_case(int case_num)
+{
   start_timer();
   polygon.clear();
 
@@ -315,7 +336,8 @@ ll solve_case(int case_num) {
 // ─────────────────────────────────────────────
 // main – テンプレートに合わせて main_new → main に変更
 // ─────────────────────────────────────────────
-int main() {
+int main()
+{
   exec_mode = 2; // 0 / 1 / 2 を状況に応じて変更
 
   if (exec_mode == 0) {

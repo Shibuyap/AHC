@@ -75,7 +75,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
@@ -118,7 +119,8 @@ void update_best_moves()
     best_move_cnt = move_cnt;
     rep(i, move_cnt)
     {
-      rep(j, 4) {
+      rep(j, 4)
+      {
         best_moves[i][j] = moves[i][j];
       }
     }
@@ -131,7 +133,8 @@ void update_global_best_moves()
     global_best_move_cnt = best_move_cnt;
     rep(i, best_move_cnt)
     {
-      rep(j, 4) {
+      rep(j, 4)
+      {
         global_best_moves[i][j] = best_moves[i][j];
       }
     }
@@ -143,7 +146,8 @@ void save_current_best()
   saved_move_cnt = best_move_cnt;
   rep(i, best_move_cnt)
   {
-    rep(j, 4) {
+    rep(j, 4)
+    {
       saved_moves[i][j] = best_moves[i][j];
     }
   }
@@ -154,7 +158,8 @@ void restore_best()
   move_cnt = best_move_cnt;
   rep(i, move_cnt)
   {
-    rep(j, 4) {
+    rep(j, 4)
+    {
       moves[i][j] = best_moves[i][j];
     }
   }
@@ -165,13 +170,15 @@ void restore_global_best()
   best_move_cnt = global_best_move_cnt;
   rep(i, best_move_cnt)
   {
-    rep(j, 4) {
+    rep(j, 4)
+    {
       best_moves[i][j] = global_best_moves[i][j];
     }
   }
 }
 
-inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff, bool with_tie = false) {
+inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff, bool with_tie = false)
+{
   if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff || (board[x - 1][y - 1] - board[x][y] == diff && with_tie)) {
     diff = board[x - 1][y - 1] - board[x][y];
     nx = x - 1;
@@ -184,7 +191,8 @@ inline void search_parent(const int x, const int y, int& nx, int& ny, int& diff,
   }
 }
 
-inline void search_parent_2(const int x, const int y, int& nx, int& ny, int& diff1, int& diff2) {
+inline void search_parent_2(const int x, const int y, int& nx, int& ny, int& diff1, int& diff2)
+{
   if (y != 0 && board[x - 1][y - 1] - board[x][y] > diff1) {
     diff1 = board[x - 1][y - 1] - board[x][y];
     nx = x - 1;
@@ -197,7 +205,8 @@ inline void search_parent_2(const int x, const int y, int& nx, int& ny, int& dif
   }
 }
 
-inline void swap_ball(int x1, int y1, int x2, int y2) {
+inline void swap_ball(int x1, int y1, int x2, int y2)
+{
   int ball1 = board[x1][y1];
   int ball2 = board[x2][y2];
   std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
@@ -215,7 +224,8 @@ inline void push_move(int& loop, int x, int y, int nx, int ny)
   ++loop;
 }
 
-inline bool one_move(int& x, int& y, int& loop) {
+inline bool one_move(int& x, int& y, int& loop)
+{
   int diff = 0;
   int nx = -1;
   int ny = -1;
@@ -229,7 +239,8 @@ inline bool one_move(int& x, int& y, int& loop) {
   return true;
 }
 
-inline void some_operation(int& loop) {
+inline void some_operation(int& loop)
+{
   rep(ball, BALL_COUNT)
   {
     int x = -1, y = -1;
@@ -279,7 +290,8 @@ void greedy_swap_max_delta_with_tie(bool with_tie)
     if (diff == 0) {
       break;
     }
-    rep(j, 4) {
+    rep(j, 4)
+    {
       moves[loop][j] = tmp[j];
     }
     swap(board[tmp[0]][tmp[1]], board[tmp[2]][tmp[3]]);
@@ -415,7 +427,8 @@ void adaptive_prefix_greedy(double time_limit)
   }
 }
 
-inline int apply_prefix(int len) {
+inline int apply_prefix(int len)
+{
   int loop = 0;
   for (int i = 0; i < len; ++i) {
     push_move(loop, best_moves[i][0], best_moves[i][1], best_moves[i][2], best_moves[i][3]);
@@ -430,7 +443,8 @@ void prefix_lock_local_search(double time_limit)
   best_move_cnt = saved_move_cnt;
   rep(i, best_move_cnt)
   {
-    rep(j, 4) {
+    rep(j, 4)
+    {
       best_moves[i][j] = saved_moves[i][j];
     }
   }
@@ -516,7 +530,8 @@ void prefix_lock_local_search(double time_limit)
   update_global_best_moves();
 }
 
-bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe) {
+bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe)
+{
   int diff1 = 0;
   int diff2 = 0;
   int nx = -1;
@@ -558,7 +573,8 @@ bool random_local_search_v1_inner(int& loop, int& x, int& y, const int ball, con
   return true;
 }
 
-bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe) {
+bool random_local_search_v2_inner(int& loop, int& x, int& y, const int ball, const int ra, int& randomOpe)
+{
   int nx = -1;
   int ny = -1;
 
@@ -694,7 +710,8 @@ void write_output(int mode, int problemNum)
     cout << move_cnt << endl;
     rep(i, move_cnt)
     {
-      rep(j, 4) {
+      rep(j, 4)
+      {
         cout << moves[i][j] << ' ';
       }
       cout << endl;
@@ -718,7 +735,8 @@ void write_output(int mode, int problemNum)
     ofs << move_cnt << endl;
     rep(i, move_cnt)
     {
-      rep(j, 4) {
+      rep(j, 4)
+      {
         ofs << moves[i][j] << ' ';
       }
       ofs << endl;
@@ -745,7 +763,8 @@ int solve_single_problem(int mode, int probNum)
 
   save_current_best();
 
-  rep(_, 50) {
+  rep(_, 50)
+  {
     prefix_lock_local_search(0.01);
   }
 
@@ -792,7 +811,8 @@ int main_old()
   }
   else {
     int sum = 0;
-    rep(_, 1) {
+    rep(_, 1)
+    {
       sum += solve_single_problem(1, _);
     }
     cout << sum << endl;

@@ -182,14 +182,16 @@ public:
     piece2.base = baseIndex;
   }
 
-  RectanglePiece& Get(int index) {
+  RectanglePiece& Get(int index)
+  {
     if (index == 0) {
       return piece1;
     }
     return piece2;
   }
 
-  int GetBaseNum() {
+  int GetBaseNum()
+  {
     if (count() == 1) {
       return piece1.num;
     }
@@ -912,10 +914,13 @@ int c_need[MAX_N];
 int c_width[MAX_N];
 int c_sum[MAX_N + 10];
 int c_count[MAX_N + 10];
-bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight) {
+bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
+{
 
-  rep(i, layout.sz) {
-    rep(j, layout.shelves[i].sz) {
+  rep(i, layout.sz)
+  {
+    rep(j, layout.shelves[i].sz)
+    {
       if (layout.shelves[i].blocks[j].count() == 1) {
         int num = layout.shelves[i].blocks[j].piece1.num;
         c_i[num] = i;
@@ -941,12 +946,14 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight) {
     }
   }
 
-  rep(i, layout.sz + 2) {
+  rep(i, layout.sz + 2)
+  {
     c_sum[i] = 0;
     c_count[i] = 0;
   }
 
-  rep(i, n) {
+  rep(i, n)
+  {
     int ii = c_i[i];
     int jj = c_j[i];
     int kk = c_k[i];
@@ -992,10 +999,12 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight) {
 
   maxWidth = 0;
   sumHeight = 0;
-  rep(i, layout.sz) {
+  rep(i, layout.sz)
+  {
     maxWidth = max(maxWidth, c_sum[i]);
     int maxHeight = 0;
-    rep(j, layout.shelves[i].sz) {
+    rep(j, layout.shelves[i].sz)
+    {
       maxHeight = max(maxHeight, layout.shelves[i].blocks[j].height());
     }
     sumHeight += maxHeight;
@@ -1004,10 +1013,13 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight) {
   return true;
 }
 
-bool SortLayout(Layout& layout) {
-  rep(i, layout.sz) {
+bool SortLayout(Layout& layout)
+{
+  rep(i, layout.sz)
+  {
     sort(layout.shelves[i].blocks, layout.shelves[i].blocks + layout.shelves[i].sz);
-    rep(j, layout.shelves[i].sz) {
+    rep(j, layout.shelves[i].sz)
+    {
       if (j == 0) {
         layout.shelves[i].blocks[j].SetBase(-1);
       }
@@ -1084,8 +1096,10 @@ void RefineAndPrintSolutions(ofstream& ofs)
       int sz = 0;
       int ng = 1;
       if (raMode == 0) {
-        rep(i, keep.sz) {
-          rep(j, keep.shelves[i].sz) {
+        rep(i, keep.sz)
+        {
+          rep(j, keep.shelves[i].sz)
+          {
             int num = keep.shelves[i].blocks[j].piece1.num;
             if (num == raNum1) {
               if (i == 0) {
@@ -1110,8 +1124,10 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
       else if (raMode == 1) {
-        rep(i, keep.sz) {
-          rep(j, keep.shelves[i].sz) {
+        rep(i, keep.sz)
+        {
+          rep(j, keep.shelves[i].sz)
+          {
             int num = keep.shelves[i].blocks[j].piece1.num;
             if (sz <= i) {
               tmp.shelves[i].clear();
@@ -1132,8 +1148,10 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
       else if (raMode == 2) {
-        rep(i, keep.sz) {
-          rep(j, keep.shelves[i].sz) {
+        rep(i, keep.sz)
+        {
+          rep(j, keep.shelves[i].sz)
+          {
             if (sz <= i) {
               tmp.shelves[i].clear();
             }
@@ -1151,8 +1169,10 @@ void RefineAndPrintSolutions(ofstream& ofs)
       else if (raMode == 3) {
         int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1;
 
-        rep(i, keep.sz) {
-          rep(j, keep.shelves[i].sz) {
+        rep(i, keep.sz)
+        {
+          rep(j, keep.shelves[i].sz)
+          {
             if (sz <= i) {
               tmp.shelves[i].clear();
             }

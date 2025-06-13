@@ -135,7 +135,8 @@ static uint32_t Rand()
 }
 
 
-static double Rand01() {
+static double Rand01()
+{
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
@@ -1108,7 +1109,8 @@ void Method1(Hypers hypers)
 }
 
 // 貪欲
-void Method2() {
+void Method2()
+{
   ClearBoard();
 
   // 2点決める

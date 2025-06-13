@@ -38,11 +38,13 @@ namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
@@ -51,7 +53,8 @@ namespace
 // 乱数
 namespace
 {
-  static uint32_t rand_xorshift() {
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -64,19 +67,23 @@ namespace
     return w;
   }
 
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -99,10 +106,12 @@ public:
   int a_sum;
   vector<vector<int>> x, y;
 
-  Board() : n(0), x(20000), y(20000) {
+  Board() : n(0), x(20000), y(20000)
+  {
   }
 
-  void init() {
+  void init()
+  {
     for (int i = 0; i < 20000; i++) {
       sort(x[i].begin(), x[i].end());
       sort(y[i].begin(), y[i].end());
@@ -126,7 +135,8 @@ public:
   vector<vector<int>> counts;
   int b[14];
 
-  void initialize(int v_num, int h_num) {
+  void initialize(int v_num, int h_num)
+  {
     xs.clear();
     xs.push_back(MIN);
     for (int i = 1; i < v_num + 1; i++) {
@@ -142,7 +152,8 @@ public:
     ys.push_back(MAX);
   }
 
-  void calc_counts(const Board& board) {
+  void calc_counts(const Board& board)
+  {
     for (int i = 0; i < 14; i++) {
       b[i] = 0;
     }
@@ -174,7 +185,8 @@ public:
     }
   }
 
-  void update_xs(const Board& board, int num, int diff) {
+  void update_xs(const Board& board, int num, int diff)
+  {
     if (diff < 0) {
       for (int i = xs[num] + diff; i < xs[num]; ++i) {
         for (auto y : board.x[i]) {
@@ -261,7 +273,8 @@ public:
     xs[num] += diff;
   }
 
-  void update_ys(const Board& board, int num, int diff) {
+  void update_ys(const Board& board, int num, int diff)
+  {
     if (diff < 0) {
       for (int i = ys[num] + diff; i < ys[num]; ++i) {
         for (auto x : board.y[i]) {
@@ -347,7 +360,8 @@ public:
   }
 };
 
-Board input_data(int case_num) {
+Board input_data(int case_num)
+{
   Board board;
 
   std::ostringstream oss;
@@ -395,7 +409,8 @@ Board input_data(int case_num) {
   return board;
 }
 
-int calculate_score(const Board& board, const Answer& answer) {
+int calculate_score(const Board& board, const Answer& answer)
+{
   int ok_cnt = 0;
   for (int i = 1; i <= 10; i++) {
     ok_cnt += min(answer.b[i], board.a[i]);
@@ -414,7 +429,8 @@ int calculate_score(const Board& board, const Answer& answer) {
   return res;
 }
 
-void output_data(int case_num, const Answer& answer) {
+void output_data(int case_num, const Answer& answer)
+{
   if (exec_mode == 0) {
     // 標準出力
     cout << answer.xs.size() + answer.ys.size() - 4 << endl;
@@ -445,7 +461,8 @@ void output_data(int case_num, const Answer& answer) {
   }
 }
 
-Answer build_one_solution(const Board& board) {
+Answer build_one_solution(const Board& board)
+{
   Answer answer;
   int sum = rand_xorshift() % 61 + 40;
   int v_num = rand_xorshift() % (sum - 1) + 1;
@@ -455,7 +472,8 @@ Answer build_one_solution(const Board& board) {
   return answer;
 }
 
-Answer build_one_solution_2(const Board& board) {
+Answer build_one_solution_2(const Board& board)
+{
   double best_pieces = board.a_sum * 4 / 3.141592;
 
   Answer answer;
@@ -484,7 +502,8 @@ struct AnnealingParams
   double score_scale;
 };
 
-void annealing(const Board& board, Answer& answer, const AnnealingParams& params, double time_limit, bool print) {
+void annealing(const Board& board, Answer& answer, const AnnealingParams& params, double time_limit, bool print)
+{
   Answer best_answer = answer;
   answer.calc_counts(board);
   int best_score = calculate_score(board, answer);
@@ -569,7 +588,8 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
   answer = best_answer;
 }
 
-Answer build_initial_solution(const Board& board, double time_limit) {
+Answer build_initial_solution(const Board& board, double time_limit)
+{
   Answer best_answer;
   int best_score = -1;
 
@@ -589,7 +609,8 @@ Answer build_initial_solution(const Board& board, double time_limit) {
   return best_answer;
 }
 
-Answer build_initial_solution_2(const Board& board, double time_limit) {
+Answer build_initial_solution_2(const Board& board, double time_limit)
+{
   Answer best_answer;
   int best_score = -1;
 
@@ -616,7 +637,8 @@ Answer build_initial_solution_2(const Board& board, double time_limit) {
 }
 
 const int VEC_SIZE = 2;
-vector<Answer> build_initial_solution_3(const Board& board, double time_limit) {
+vector<Answer> build_initial_solution_3(const Board& board, double time_limit)
+{
   vector<Answer> best_answers(VEC_SIZE);
   int best_scores[VEC_SIZE];
   for (int i = 0; i < VEC_SIZE; i++) {
@@ -652,7 +674,8 @@ vector<Answer> build_initial_solution_3(const Board& board, double time_limit) {
   return best_answers;
 }
 
-ll solve_case(int case_num) {
+ll solve_case(int case_num)
+{
   start_timer();
 
   Board board = input_data(case_num);
@@ -696,7 +719,8 @@ ll solve_case(int case_num) {
   return score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 2;
 
   if (exec_mode == 0) {

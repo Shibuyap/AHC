@@ -23,7 +23,8 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-class UnionFind {
+class UnionFind
+{
 public:
   const int MAX_UF = 1000006;
 
@@ -32,14 +33,16 @@ public:
   vector<int> Rank;     // 木の深さ
 
   // 初期化
-  void Initialize() {
+  void Initialize()
+  {
     for (int i = 0; i < N; i++) {
       Par[i] = i;
       Rank[i] = 0;
     }
   }
 
-  UnionFind(int n) {
+  UnionFind(int n)
+  {
     N = n;
     Par.resize(N);
     Rank.resize(N);
@@ -47,12 +50,14 @@ public:
     Initialize();
   }
 
-  UnionFind() {
+  UnionFind()
+  {
     UnionFind(MAX_UF);
   }
 
   // 木の根を求める
-  int Find(int x) {
+  int Find(int x)
+  {
     if (Par[x] == x) {
       return x;
     }
@@ -62,7 +67,8 @@ public:
   }
 
   // xとyの属する集合を併合
-  void Unite(int x, int y) {
+  void Unite(int x, int y)
+  {
     x = Find(x);
     y = Find(y);
     if (x == y) return;
@@ -77,12 +83,14 @@ public:
   }
 
   // xとyが同じ集合に属するか否か
-  bool IsSame(int x, int y) {
+  bool IsSame(int x, int y)
+  {
     return Find(x) == Find(y);
   }
 };
 
-static uint32_t Rand() {
+static uint32_t Rand()
+{
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -96,15 +104,18 @@ static uint32_t Rand() {
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double Rand01() {
+static double Rand01()
+{
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-static double RandRange(double l, double r) {
+static double RandRange(double l, double r)
+{
   return l + (r - l) * Rand01();
 }
 
-void FisherYates(int* data, int n) {
+void FisherYates(int* data, int n)
+{
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
     int swa = data[i];
@@ -129,11 +140,13 @@ int mode;
 
 std::chrono::steady_clock::time_point startTimeClock;
 
-void ResetTime() {
+void ResetTime()
+{
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-double GetNowTime() {
+double GetNowTime()
+{
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
@@ -150,16 +163,19 @@ int distances[m];
 vector<vector<P>> randomDistances;
 
 // 複数ケース回すときに内部状態を初期値に戻す
-void SetUp() {
+void SetUp()
+{
   randomDistances.clear();
 }
 
-int GetDistance(int i, int j) {
+int GetDistance(int i, int j)
+{
   return round(sqrt((x[i] - x[j]) * (x[i] - x[j]) + (y[i] - y[j]) * (y[i] - y[j])));
 }
 
 // 入力ファイルストリームオープン
-void OpenIfs(int problemNum, ifstream& ifs) {
+void OpenIfs(int problemNum, ifstream& ifs)
+{
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
@@ -168,7 +184,8 @@ void OpenIfs(int problemNum, ifstream& ifs) {
 }
 
 // 入力受け取り
-void Input(int problemNum, ifstream& ifs) {
+void Input(int problemNum, ifstream& ifs)
+{
   if (!ifs.is_open()) {
     // 標準入力
     for (int i = 0; i < n; ++i) cin >> x[i] >> y[i];
@@ -186,7 +203,8 @@ void Input(int problemNum, ifstream& ifs) {
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs) {
+void OpenOfs(int probNum, ofstream& ofs)
+{
   if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
@@ -195,13 +213,15 @@ void OpenOfs(int probNum, ofstream& ofs) {
 }
 
 // スコア計算
-ll CalcScore() {
+ll CalcScore()
+{
   ll res = 0;
   return res;
 }
 
 // 解答出力
-void Output(ofstream& ofs) {
+void Output(ofstream& ofs)
+{
   if (mode == 0) {
     // 標準出力
   }
@@ -210,7 +230,8 @@ void Output(ofstream& ofs) {
   }
 }
 
-void Prepare() {
+void Prepare()
+{
   for (int _ = 0; _ < repeat; ++_) {
     vector<P> tmpVec(m);
     for (int i = 0; i < m; ++i) {
@@ -221,7 +242,8 @@ void Prepare() {
   }
 }
 
-int Kruskal(UnionFind uf, int start, int caseNumber) {
+int Kruskal(UnionFind uf, int start, int caseNumber)
+{
   // ここの時点ではu[start]とv[start]は繋がっていない
 
   for (auto p : randomDistances[caseNumber]) {
@@ -239,7 +261,8 @@ int Kruskal(UnionFind uf, int start, int caseNumber) {
   return -1;
 }
 
-bool MonteCarlo(UnionFind uf, int start) {
+bool MonteCarlo(UnionFind uf, int start)
+{
   // ここに来た時点でu[start]とv[start]は繋がっていない
 
   int sum_costs = 0;
@@ -254,7 +277,8 @@ bool MonteCarlo(UnionFind uf, int start) {
 }
 
 // ナイーブな解法
-void Method1(ifstream& ifs, ofstream& ofs) {
+void Method1(ifstream& ifs, ofstream& ofs)
+{
   Prepare();
 
   UnionFind uf(n);
@@ -287,7 +311,8 @@ void Method1(ifstream& ifs, ofstream& ofs) {
   }
 }
 
-ll Solve(int probNum) {
+ll Solve(int probNum)
+{
   ResetTime();
 
   SetUp();
@@ -325,7 +350,8 @@ ll Solve(int probNum) {
 
 */
 /////////////////////////////////////////////////////////////////////////
-int main() {
+int main()
+{
   srand((unsigned)time(NULL));
   while (rand() % 100) {
     Rand();
@@ -338,7 +364,8 @@ int main() {
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100) {
+    srep(i, 0, 100)
+    {
       ll score = Solve(i);
       sum += score;
       if (mode == 1) {

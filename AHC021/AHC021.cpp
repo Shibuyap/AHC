@@ -34,22 +34,27 @@ using namespace std;
 typedef long long int ll;
 
 // タイマー
-namespace {
+namespace
+{
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
 }
 
 // 乱数
-namespace {
-  static uint32_t rand_xorshift() {
+namespace
+{
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -62,19 +67,23 @@ namespace {
     return w;
   }
 
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -97,22 +106,26 @@ constexpr int BOARD_SIZE = 30;
 constexpr int MAX_LOOP = 10000;
 constexpr int BALL_COUNT = BOARD_SIZE * (BOARD_SIZE + 1) / 2; // ＝BALL_COUNT
 
-class State {
+class State
+{
 public:
   int board[BOARD_SIZE][BOARD_SIZE];
   int ball_pos[1000][2];
   int move_cnt;
   int moves[MAX_LOOP][4];
 
-  State() {
+  State()
+  {
     move_cnt = 0;
   }
 
-  int get_score() {
+  int get_score()
+  {
     return 100000 - 5 * move_cnt;
   }
 
-  inline void swap_ball(int x1, int y1, int x2, int y2) {
+  inline void swap_ball(int x1, int y1, int x2, int y2)
+  {
     int ball1 = board[x1][y1];
     int ball2 = board[x2][y2];
     std::swap(ball_pos[ball1][0], ball_pos[ball2][0]);
@@ -120,7 +133,8 @@ public:
     std::swap(board[x1][y1], board[x2][y2]);
   }
 
-  inline void push_move(int x1, int y1, int x2, int y2) {
+  inline void push_move(int x1, int y1, int x2, int y2)
+  {
     moves[move_cnt][0] = x1;
     moves[move_cnt][1] = y1;
     moves[move_cnt][2] = x2;
@@ -129,17 +143,20 @@ public:
     ++move_cnt;
   }
 
-  inline int get_diff(int x1, int y1, int x2, int y2) {
+  inline int get_diff(int x1, int y1, int x2, int y2)
+  {
     return board[x1][y1] - board[x2][y2];
   }
 };
 
-bool is_out_of_range(int x, int y) {
+bool is_out_of_range(int x, int y)
+{
   //if (x < 0 || n <= x || y < 0 || n <= y) return true;
   return false;
 }
 
-State input_data(int case_num) {
+State input_data(int case_num)
+{
   State state;
 
   std::ostringstream oss;
@@ -166,7 +183,8 @@ State input_data(int case_num) {
   return state;
 }
 
-void output_data(int case_num, const State& state) {
+void output_data(int case_num, const State& state)
+{
   if (exec_mode == 0) {
     // 標準出力
     cout << state.move_cnt << endl;
@@ -197,7 +215,8 @@ void output_data(int case_num, const State& state) {
   }
 }
 
-State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie) {
+State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie)
+{
   State state = initial_state;
 
   while (true) {
@@ -232,7 +251,8 @@ State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie) 
   return state;
 }
 
-ll solve_case(int case_num) {
+ll solve_case(int case_num)
+{
   start_timer();
 
   State initial_state = input_data(case_num);
@@ -254,7 +274,8 @@ ll solve_case(int case_num) {
   return score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 2;
 
   if (exec_mode == 0) {

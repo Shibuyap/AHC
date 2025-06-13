@@ -34,7 +34,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-// ƒ^ƒCƒ}[
+// ï¿½^ï¿½Cï¿½}ï¿½[
 namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
@@ -51,7 +51,7 @@ namespace
   }
 }
 
-namespace /* —”ƒ‰ƒCƒuƒ‰ƒŠ */
+namespace /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ */
 {
   static uint32_t rand_uint32()
   {
@@ -122,14 +122,14 @@ inline int manhattan_distance(int i1, int j1, int i2, int j2)
   return abs(i1 - i2) + abs(j1 - j2);
 }
 
-// •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+// ï¿½ï¿½ï¿½ï¿½ï¿½Pï¿½[ï¿½Xï¿½ñ‚·‚Æ‚ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½É–ß‚ï¿½
 void reset_global_state()
 {
   rep(i, COLOR_COUNT) { cells_by_color[i].clear(); }
   rep(i, TASK_COUNT) { task_paths[i].clear(); }
 }
 
-// “ü—Íó‚¯æ‚è
+// ï¿½ï¿½ï¿½Íó‚¯ï¿½ï¿½
 void read_input(int problemNum)
 {
   string fileNameIfs = "./in/";
@@ -144,7 +144,7 @@ void read_input(int problemNum)
 
   ifstream ifs(fileNameIfs);
 
-  // •W€“ü—Í‚·‚é
+  // ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½
   int _n, _m;
   if (!ifs.is_open()) {
     cin >> _n >> _m;
@@ -152,7 +152,7 @@ void read_input(int problemNum)
     rep(i, BOARD_SIZE) cin >> board_chars[i];
     rep(i, TASK_COUNT) cin >> task_strings[i];
   }
-  // ƒtƒ@ƒCƒ‹“ü—Í‚·‚é
+  // ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½
   else {
     ifs >> _n >> _m;
     ifs >> start_i >> start_j;
@@ -188,7 +188,7 @@ void read_input(int problemNum)
   }
 }
 
-// o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+// ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Iï¿½[ï¿½vï¿½ï¿½
 void open_output_file(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
@@ -227,7 +227,7 @@ int score_when_share_last2(const Path& x, const Path& y)
   return 0;
 }
 
-// ƒXƒRƒAŒvZ
+// ï¿½Xï¿½Rï¿½Aï¿½vï¿½Z
 ll calc_total_score()
 {
   int score = 10000 - TASK_COUNT * 5;
@@ -259,7 +259,7 @@ ll calc_total_score()
   return score;
 }
 
-// ‰Šú‰ğ¶¬
+// ï¿½ï¿½ï¿½ï¿½ï¿½ğ¶ï¿½
 void build_initial_solution()
 {
   std::random_device seed_gen;
@@ -267,10 +267,10 @@ void build_initial_solution()
 
   best_score = -1;
 
-  /* ---------- 1 st  pass (‘Sƒ^ƒXƒN‘ÎÛ) ---------- */
+  /* ---------- 1 st  pass (ï¿½Sï¿½^ï¿½Xï¿½Nï¿½Îï¿½) ---------- */
   rep(attempt_idx, 400)
   {
-    int   used[TASK_COUNT]{};          // ‚·‚Å‚É‘I‚Î‚ê‚½ƒ^ƒXƒN
+    int   used[TASK_COUNT]{};          // ï¿½ï¿½ï¿½Å‚É‘Iï¿½Î‚ê‚½ï¿½^ï¿½Xï¿½N
     int   cur_i = start_i, cur_j = start_j;
 
     std::vector<int> shuffled_tasks;
@@ -346,7 +346,7 @@ void build_initial_solution()
     }
   }
 
-  /* ---- ˆÈ~Aprefix ‚ğŒÅ’è‚µ‚È‚ª‚ç 3 ’iŠK‚Å‰ü—Ç ---- */
+  /* ---- ï¿½È~ï¿½Aprefix ï¿½ï¿½Å’è‚µï¿½È‚ï¿½ï¿½ï¿½ 3 ï¿½iï¿½Kï¿½Å‰ï¿½ï¿½ï¿½ ---- */
   auto restore_best = [&]() {
     rep(i, TASK_COUNT)
     {
@@ -375,7 +375,7 @@ void build_initial_solution()
       std::vector<int> shuffled_tasks;
       rep(t, TASK_COUNT) shuffled_tasks.push_back(t);
 
-      /* prefix ‚Í‘O‚ÌƒxƒXƒg‚ğ‚»‚Ì‚Ü‚ÜŒÅ’è */
+      /* prefix ï¿½Í‘Oï¿½Ìƒxï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½Ì‚Ü‚ÜŒÅ’ï¿½ */
       rep(pos, prefix_len) used[task_order[pos]] = 1;
 
       srep(pos, prefix_len, TASK_COUNT)
@@ -451,7 +451,7 @@ void build_initial_solution()
   }
 }
 
-// ‰ğ“šo—Í
+// ï¿½ğ“šoï¿½ï¿½
 void write_answer(ofstream& ofs)
 {
   final_cells.clear();
@@ -486,14 +486,14 @@ void write_answer(ofstream& ofs)
   }
 }
 
-// ƒCƒ“ƒfƒbƒNƒX 2 “_‚ğ“ü‚ê‘Ö‚¦‚é‹ß–T‘€ì
+// ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X 2 ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Ö‚ï¿½ï¿½ï¿½ß–Tï¿½ï¿½ï¿½ï¿½
 void two_swap(double temperature)
 {
-  /* --- ƒXƒƒbƒv‘ÎÛƒCƒ“ƒfƒbƒNƒX‚ğ–³ìˆ×‚ÉŒˆ’è --- */
+  /* --- ï¿½Xï¿½ï¿½ï¿½bï¿½vï¿½ÎÛƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ğ–³ï¿½×‚ÉŒï¿½ï¿½ï¿½ --- */
   int idx_a = rand_uint32() % TASK_COUNT;
   int idx_b = rand_uint32() % TASK_COUNT;
   if (idx_a > idx_b) std::swap(idx_a, idx_b);
-  if (idx_b - idx_a <= 1) return;                 // ˜A‘±—v‘f‚Í–³‹
+  if (idx_b - idx_a <= 1) return;                 // ï¿½Aï¿½ï¿½ï¿½vï¿½fï¿½Í–ï¿½ï¿½ï¿½
 
   int prev_a = idx_a - 1;
   int next_a = idx_a + 1;
@@ -503,9 +503,9 @@ void two_swap(double temperature)
   int cost_before = 0;
   int cost_after = 0;
 
-  /* ---------- ƒP[ƒX‡@: ‚Ç‚¿‚ç‚à’[—v‘f‚Å‚Í‚È‚¢ ---------- */
+  /* ---------- ï¿½Pï¿½[ï¿½Xï¿½@: ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½[ï¿½vï¿½fï¿½Å‚Í‚È‚ï¿½ ---------- */
   if (idx_a != 0 && idx_b != TASK_COUNT - 1) {
-    { // ŒğŠ·‘OƒRƒXƒg
+    { // ï¿½ï¿½ï¿½ï¿½Oï¿½Rï¿½Xï¿½g
       int d1 = manhattan_distance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
@@ -525,7 +525,7 @@ void two_swap(double temperature)
       int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0) + (d4 == 0);
       cost_before = d1 + d2 + d3 + d4 - same_cnt;
     }
-    { // ŒğŠ·ŒãƒRƒXƒg
+    { // ï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½Xï¿½g
       int d1 = manhattan_distance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
@@ -546,9 +546,9 @@ void two_swap(double temperature)
       cost_after = d1 + d2 + d3 + d4 - same_cnt;
     }
   }
-  /* ---------- ƒP[ƒX‡A: idx_a ‚ªæ“ª ---------- */
+  /* ---------- ï¿½Pï¿½[ï¿½Xï¿½A: idx_a ï¿½ï¿½ï¿½æ“ª ---------- */
   else if (idx_a == 0 && idx_b != TASK_COUNT - 1) {
-    { // ŒğŠ·‘O
+    { // ï¿½ï¿½ï¿½ï¿½O
       int d1 = manhattan_distance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         start_i, start_j);
@@ -567,7 +567,7 @@ void two_swap(double temperature)
       int same_cnt = (d2 == 0) + (d3 == 0) + (d4 == 0);
       cost_before = d1 + d2 + d3 + d4 - same_cnt;
     }
-    { // ŒğŠ·Œã
+    { // ï¿½ï¿½ï¿½ï¿½ï¿½
       int d1 = manhattan_distance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
@@ -587,9 +587,9 @@ void two_swap(double temperature)
       cost_after = d1 + d2 + d3 + d4 - same_cnt;
     }
   }
-  /* ---------- ƒP[ƒX‡B: idx_b ‚ª––”ö ---------- */
+  /* ---------- ï¿½Pï¿½[ï¿½Xï¿½B: idx_b ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---------- */
   else if (idx_a != 0 && idx_b == TASK_COUNT - 1) {
-    { // ŒğŠ·‘O
+    { // ï¿½ï¿½ï¿½ï¿½O
       int d1 = manhattan_distance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_a]][path_index[prev_a]].goal_i,
@@ -605,7 +605,7 @@ void two_swap(double temperature)
       int same_cnt = (d1 == 0) + (d2 == 0) + (d3 == 0);
       cost_before = d1 + d2 + d3 - same_cnt;
     }
-    { // ŒğŠ·Œã
+    { // ï¿½ï¿½ï¿½ï¿½ï¿½
       int d1 = manhattan_distance(task_paths[task_order[idx_a]][path_index[idx_a]].start_i,
         task_paths[task_order[idx_a]][path_index[idx_a]].start_j,
         task_paths[task_order[prev_b]][path_index[prev_b]].goal_i,
@@ -629,7 +629,7 @@ void two_swap(double temperature)
   int    delta_cost = cost_before - cost_after;
   double accept_prob = std::exp(static_cast<double>(delta_cost) / temperature);
 
-  // Ä‚«‚È‚Ü‚µF‰ü‘P or ”ñ‰ü‘P‚Å‚àŠm—¦‚Åó—
+  // ï¿½Ä‚ï¿½ï¿½È‚Ü‚ï¿½ï¿½Fï¿½ï¿½ï¿½P or ï¿½ï¿½ï¿½ï¿½Pï¿½Å‚ï¿½mï¿½ï¿½ï¿½Åï¿½
   // if (rand_01() < accept_prob)
   if (delta_cost >= 0) {
     std::swap(task_order[idx_a], task_order[idx_b]);
@@ -637,7 +637,7 @@ void two_swap(double temperature)
   }
 }
 
-// ID•ÏX
+// IDï¿½ÏX
 void change_path_id(double temperature)
 {
   int x = rand_uint32() % TASK_COUNT;
@@ -698,7 +698,7 @@ void simulated_annealing()
 
     int ra = rand_uint32() % 100;
     if (ra < 50) {
-      // 2“_ƒXƒƒbƒv
+      // 2ï¿½_ï¿½Xï¿½ï¿½ï¿½bï¿½v
       two_swap(temperature);
     }
     else {
@@ -715,13 +715,13 @@ ll solve_single_case(int probNum)
 {
   start_timer();
 
-  // •¡”ƒP[ƒX‰ñ‚·‚Æ‚«‚É“à•”ó‘Ô‚ğ‰Šú’l‚É–ß‚·
+  // ï¿½ï¿½ï¿½ï¿½ï¿½Pï¿½[ï¿½Xï¿½ñ‚·‚Æ‚ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½Ô‚ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½É–ß‚ï¿½
   reset_global_state();
 
-  // “ü—Íó‚¯æ‚è
+  // ï¿½ï¿½ï¿½Íó‚¯ï¿½ï¿½
   read_input(probNum);
 
-  // o—Íƒtƒ@ƒCƒ‹ƒXƒgƒŠ[ƒ€ƒI[ƒvƒ“
+  // ï¿½oï¿½Íƒtï¿½@ï¿½Cï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Iï¿½[ï¿½vï¿½ï¿½
   ofstream ofs;
   open_output_file(probNum, ofs);
 
@@ -816,12 +816,12 @@ ll solve_single_case(int probNum)
     }
   }
 
-  // ‰Šú‰ğ¶¬
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ğ¶ï¿½
   build_initial_solution();
 
   simulated_annealing();
 
-  // ‰ğ“š‚ğo—Í
+  // ï¿½ğ“š‚ï¿½oï¿½ï¿½
   write_answer(ofs);
 
   if (ofs.is_open()) {

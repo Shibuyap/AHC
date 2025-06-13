@@ -68,12 +68,14 @@ char cc[4] = {'U','L','D','R'};
 
 double realTL = 4.8;
 
-struct Point {
+struct Point
+{
   int x;
   int y;
 };
 
-struct Rect {
+struct Rect
+{
   Point p1;
   Point p2;
 };

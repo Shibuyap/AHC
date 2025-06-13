@@ -76,7 +76,8 @@ void write_output(int run_mode, int problem_num);
 //------------------------------------------------------------------------------
 // グローバル変数
 //------------------------------------------------------------------------------
-namespace {
+namespace
+{
   //=== 入力関連 (旧: 変数) ===//
   int dimension;             // 旧: D
   bool f_matrix[2][20][20];  // 旧: F
@@ -104,8 +105,10 @@ namespace {
 //------------------------------------------------------------------------------
 
 // 旧: GetDir
-int get_direction(int num) {
-  rep(i, 6) {
+int get_direction(int num)
+{
+  rep(i, 6)
+  {
     if (num & (1 << i)) return i;
   }
   return -1;
@@ -114,7 +117,8 @@ int get_direction(int num) {
 //------------------------------------------------------------------------------
 // (2) 乱数ライブラリ
 //------------------------------------------------------------------------------
-static uint32_t rand_uint32() {
+static uint32_t rand_uint32()
+{
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -128,45 +132,56 @@ static uint32_t rand_uint32() {
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double rand_double_01() {
+static double rand_double_01()
+{
   return (rand_uint32() + 0.5) * (1.0 / UINT_MAX);
 }
 
 //------------------------------------------------------------------------------
 // (3) 変数の初期化リセット系 関数
 //------------------------------------------------------------------------------
-void normal_clear() {
+void normal_clear()
+{
   min_score = INF_LL;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     answer_grid[i][j][k][l] = -1;
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     block_count[i][j] = 0;
   }
 }
 
-void real_clear() {
+void real_clear()
+{
   real_min_score = INF_LL;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     real_answer_grid[i][j][k][l] = -1;
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     real_block_count[i][j] = 0;
   }
 }
 
-void seed_clear() {
+void seed_clear()
+{
   seed_min_score = INF_LL;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     seed_answer_grid[i][j][k][l] = -1;
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     seed_block_count[i][j] = 0;
   }
 }
 
 // ローカルで複数ケース試すための全て消す関数 (旧: AllClear_MultiCase)
-void clear_all_multicase() {
+void clear_all_multicase()
+{
   normal_clear();
   real_clear();
   seed_clear();
@@ -175,18 +190,25 @@ void clear_all_multicase() {
 //------------------------------------------------------------------------------
 // (4) 初期状態作成 (旧: Init)
 //------------------------------------------------------------------------------
-void init_state() {
+void init_state()
+{
   // block_countの初期化
-  rep(i, 2) {
-    rep(j, 100) {
+  rep(i, 2)
+  {
+    rep(j, 100)
+    {
       block_count[i][j] = 0;
     }
   }
   // answer_grid の初期化 (FやRがtrueなら最初からブロックID=0)
-  rep(i, 2) {
-    rep(x, dimension) {
-      rep(y, dimension) {
-        rep(z, dimension) {
+  rep(i, 2)
+  {
+    rep(x, dimension)
+    {
+      rep(y, dimension)
+      {
+        rep(z, dimension)
+        {
           if (f_matrix[i][z][x] && r_matrix[i][z][y]) {
             answer_grid[i][x][y][z] = 0;
             block_count[i][1]++;
@@ -203,11 +225,13 @@ void init_state() {
 //------------------------------------------------------------------------------
 // (5) 入力受け取り (旧: Input)
 //------------------------------------------------------------------------------
-void read_input(int problem_num) {
+void read_input(int problem_num)
+{
   string file_name_ifs = "./in/";
   {
     string str_num;
-    rep(i, 4) {
+    rep(i, 4)
+    {
       str_num += char((problem_num % 10) + '0');
       problem_num /= 10;
     }
@@ -220,18 +244,23 @@ void read_input(int problem_num) {
   if (!ifs.is_open()) {
     // 標準入力
     cin >> dimension;
-    rep(i, 2) {
-      rep(j, dimension) {
+    rep(i, 2)
+    {
+      rep(j, dimension)
+      {
         string s;
         cin >> s;
-        rep(k, dimension) {
+        rep(k, dimension)
+        {
           f_matrix[i][j][k] = (s[k] - '0');
         }
       }
-      rep(j, dimension) {
+      rep(j, dimension)
+      {
         string s;
         cin >> s;
-        rep(k, dimension) {
+        rep(k, dimension)
+        {
           r_matrix[i][j][k] = (s[k] - '0');
         }
       }
@@ -240,18 +269,23 @@ void read_input(int problem_num) {
   else {
     // ファイル入力
     ifs >> dimension;
-    rep(i, 2) {
-      rep(j, dimension) {
+    rep(i, 2)
+    {
+      rep(j, dimension)
+      {
         string s;
         ifs >> s;
-        rep(k, dimension) {
+        rep(k, dimension)
+        {
           f_matrix[i][j][k] = (s[k] - '0');
         }
       }
-      rep(j, dimension) {
+      rep(j, dimension)
+      {
         string s;
         ifs >> s;
-        rep(k, dimension) {
+        rep(k, dimension)
+        {
           r_matrix[i][j][k] = (s[k] - '0');
         }
       }
@@ -265,21 +299,27 @@ void read_input(int problem_num) {
 //------------------------------------------------------------------------------
 // (6) 解答出力 (旧: Output)
 //------------------------------------------------------------------------------
-void write_output(int run_mode, int problem_num) {
+void write_output(int run_mode, int problem_num)
+{
   int ans_n[100] = {};
   int ans_sum[100] = {};
   // 大きい方を取って合計するロジック
-  rep(j, 100) {
+  rep(j, 100)
+  {
     ans_n[j] = max(block_count[0][j], block_count[1][j]);
     ans_sum[j] = ans_n[j];
     if (j > 0) ans_sum[j] += ans_sum[j - 1];
   }
 
   int ans_print[2][15][15][15];
-  rep(i, 2) {
-    rep(j, dimension) {
-      rep(k, dimension) {
-        rep(l, dimension) {
+  rep(i, 2)
+  {
+    rep(j, dimension)
+    {
+      rep(k, dimension)
+      {
+        rep(l, dimension)
+        {
           ans_print[i][j][k][l] = 0;
         }
       }
@@ -287,14 +327,19 @@ void write_output(int run_mode, int problem_num) {
   }
 
   // 各ブロックのID割り振り
-  rep(i, 2) {
+  rep(i, 2)
+  {
     int count_sum[100] = {};
-    srep(j, 1, 100) {
+    srep(j, 1, 100)
+    {
       count_sum[j] = ans_sum[j - 1];
     }
-    rep(j, dimension) {
-      rep(k, dimension) {
-        rep(l, dimension) {
+    rep(j, dimension)
+    {
+      rep(k, dimension)
+      {
+        rep(l, dimension)
+        {
           if (ans_print[i][j][k][l] != 0) continue;
           if (answer_grid[i][j][k][l] == -1) {
             ans_print[i][j][k][l] = 0;
@@ -321,10 +366,14 @@ void write_output(int run_mode, int problem_num) {
   if (run_mode == 0) {
     // 標準出力
     cout << ans_sum[99] << endl;
-    rep(i, 2) {
-      rep(j, dimension) {
-        rep(k, dimension) {
-          rep(l, dimension) {
+    rep(i, 2)
+    {
+      rep(j, dimension)
+      {
+        rep(k, dimension)
+        {
+          rep(l, dimension)
+          {
             cout << ans_print[i][j][k][l] << ' ';
           }
         }
@@ -337,7 +386,8 @@ void write_output(int run_mode, int problem_num) {
     string file_name_ofs = "./out/";
     {
       string str_num;
-      rep(i, 4) {
+      rep(i, 4)
+      {
         str_num += char((problem_num % 10) + '0');
         problem_num /= 10;
       }
@@ -348,10 +398,14 @@ void write_output(int run_mode, int problem_num) {
     ofstream ofs(file_name_ofs);
 
     ofs << ans_sum[99] << endl;
-    rep(i, 2) {
-      rep(j, dimension) {
-        rep(k, dimension) {
-          rep(l, dimension) {
+    rep(i, 2)
+    {
+      rep(j, dimension)
+      {
+        rep(k, dimension)
+        {
+          rep(l, dimension)
+          {
             ofs << ans_print[i][j][k][l] << ' ';
           }
         }
@@ -365,42 +419,54 @@ void write_output(int run_mode, int problem_num) {
 //------------------------------------------------------------------------------
 // (7) ロールバック用 関数
 //------------------------------------------------------------------------------
-void copy_to_real() {
+void copy_to_real()
+{
   real_min_score = min_score;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     real_answer_grid[i][j][k][l] = answer_grid[i][j][k][l];
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     real_block_count[i][j] = block_count[i][j];
   }
 }
 
-void copy_to_seed() {
+void copy_to_seed()
+{
   seed_min_score = min_score;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     seed_answer_grid[i][j][k][l] = answer_grid[i][j][k][l];
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     seed_block_count[i][j] = block_count[i][j];
   }
 }
 
-void roll_back_from_real() {
+void roll_back_from_real()
+{
   min_score = real_min_score;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     answer_grid[i][j][k][l] = real_answer_grid[i][j][k][l];
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     block_count[i][j] = real_block_count[i][j];
   }
 }
 
-void roll_back_from_seed() {
+void roll_back_from_seed()
+{
   min_score = seed_min_score;
-  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension) {
+  rep(i, 2) rep(j, dimension) rep(k, dimension) rep(l, dimension)
+  {
     answer_grid[i][j][k][l] = seed_answer_grid[i][j][k][l];
   }
-  rep(i, 2) rep(j, 100) {
+  rep(i, 2) rep(j, 100)
+  {
     block_count[i][j] = seed_block_count[i][j];
   }
 }
@@ -408,11 +474,13 @@ void roll_back_from_seed() {
 //------------------------------------------------------------------------------
 // (8) スコア計算 (旧: CalcScore)
 //------------------------------------------------------------------------------
-double calc_score() {
+double calc_score()
+{
   double resd = 0;
   double ma, mi;
   // srep(j, 1, 3)  => j=1,2
-  srep(j, 1, 3) {
+  srep(j, 1, 3)
+  {
     if (block_count[0][j] >= block_count[1][j]) {
       ma = block_count[0][j];
       mi = block_count[1][j];
@@ -431,11 +499,13 @@ double calc_score() {
 //------------------------------------------------------------------------------
 // (9) ブロック消去の可否判定 (旧: CanDelete)
 //------------------------------------------------------------------------------
-bool can_delete_block(int i, int x, int y, int z) {
+bool can_delete_block(int i, int x, int y, int z)
+{
   // 条件: F[i][z][x] が true の場合
   if (f_matrix[i][z][x]) {
     bool ok = false;
-    rep(k, dimension) {
+    rep(k, dimension)
+    {
       if (k == y) continue;
       if (answer_grid[i][x][k][z] != -1) {
         ok = true;
@@ -447,7 +517,8 @@ bool can_delete_block(int i, int x, int y, int z) {
   // 条件: R[i][z][y] が true の場合
   if (r_matrix[i][z][y]) {
     bool ok = false;
-    rep(j, dimension) {
+    rep(j, dimension)
+    {
       if (j == x) continue;
       if (answer_grid[i][j][y][z] != -1) {
         ok = true;
@@ -462,7 +533,8 @@ bool can_delete_block(int i, int x, int y, int z) {
 //------------------------------------------------------------------------------
 // (10) 座標チェック (旧: IsNG)
 //------------------------------------------------------------------------------
-bool is_invalid_coord(int x, int y, int z) {
+bool is_invalid_coord(int x, int y, int z)
+{
   if (x < 0 || x >= dimension) return true;
   if (y < 0 || y >= dimension) return true;
   if (z < 0 || z >= dimension) return true;
@@ -472,7 +544,8 @@ bool is_invalid_coord(int x, int y, int z) {
 //------------------------------------------------------------------------------
 // (11) メソッド群 (焼きなまし操作) - 旧: Method1/2/3/4
 //------------------------------------------------------------------------------
-void method_1(double temperature) {
+void method_1(double temperature)
+{
   int i = rand_uint32() % 2;
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
@@ -503,7 +576,8 @@ void method_1(double temperature) {
   }
 }
 
-void method_2(double temperature) {
+void method_2(double temperature)
+{
   int i = rand_uint32() % 2;
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
@@ -533,7 +607,8 @@ void method_2(double temperature) {
   }
 }
 
-void method_3(double temperature) {
+void method_3(double temperature)
+{
   int i = rand_uint32() % 2;
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
@@ -573,7 +648,8 @@ void method_3(double temperature) {
   }
 }
 
-void method_4(double temperature) {
+void method_4(double temperature)
+{
   int i = rand_uint32() % 2;
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
@@ -614,7 +690,8 @@ void method_4(double temperature) {
 //------------------------------------------------------------------------------
 // (12) メインの焼きなまし処理 (旧: Solve)
 //------------------------------------------------------------------------------
-double solve_problem(int run_mode, int problem_num) {
+double solve_problem(int run_mode, int problem_num)
+{
   clock_t start_time, end_time;
   start_time = clock();
   end_time = clock();
@@ -629,7 +706,8 @@ double solve_problem(int run_mode, int problem_num) {
 
   //--- シード作成用 (初段階) ---
   int seed_count = 100;
-  rep(tei, seed_count) {
+  rep(tei, seed_count)
+  {
     start_time = clock();
     // 初期化し直す
     init_state();
@@ -742,7 +820,8 @@ double solve_problem(int run_mode, int problem_num) {
     cout << "min_score = " << min_score << endl;
     cout << "loop_count = " << loop_count
       << ", rollback_count = " << rollback_count << endl;
-    srep(i, 1, 5) {
+    srep(i, 1, 5)
+    {
       cout << "method_" << i << " = "
         << method_count[i][0] << " / " << method_count[i][1] << endl;
     }
@@ -755,7 +834,8 @@ double solve_problem(int run_mode, int problem_num) {
 //------------------------------------------------------------------------------
 // (13) solve_outer (旧: SolveOuter)
 //------------------------------------------------------------------------------
-double solve_outer(int run_mode, int problem_num) {
+double solve_outer(int run_mode, int problem_num)
+{
   // 入力受け取り
   read_input(problem_num);
 
@@ -771,7 +851,8 @@ double solve_outer(int run_mode, int problem_num) {
 //------------------------------------------------------------------------------
 // (14) main
 //------------------------------------------------------------------------------
-int main() {
+int main()
+{
   // 乱数調整
   srand((unsigned)time(NULL));
   while (rand() % 100) {
@@ -788,7 +869,8 @@ int main() {
   }
   else if (mode == 2) {
     double score_sum = 0;
-    rep(i, 100) {
+    rep(i, 100)
+    {
       score_sum += solve_outer(mode, i);
       clear_all_multicase();
     }

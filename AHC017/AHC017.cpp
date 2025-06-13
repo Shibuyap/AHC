@@ -54,7 +54,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
@@ -893,7 +894,7 @@ int Solve(int mode, int problemNum)
   // 過去のスコアをインプット
   if (mode != 0) {
     InputAns(problemNum);
-}
+  }
 #endif
 
 #if 0
@@ -931,7 +932,7 @@ int Solve(int mode, int problemNum)
     }
     else {
       InnerMethod2();
-  }
+    }
 #endif
     FINISH_COUNT = nowProgress * 100 + 50;
     double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;

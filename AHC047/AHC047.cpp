@@ -45,11 +45,13 @@ namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
@@ -58,7 +60,8 @@ namespace
 // 乱数
 namespace
 {
-  static uint32_t rand_xorshift() {
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -71,19 +74,23 @@ namespace
     return w;
   }
 
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -112,29 +119,37 @@ int current_score;
 int best_a[m][m];
 int best_score;
 
-void store_best_score() {
+void store_best_score()
+{
   best_score = current_score;
-  rep(i, m) {
-    rep(j, m) {
+  rep(i, m)
+  {
+    rep(j, m)
+    {
       best_a[i][j] = a[i][j];
     }
   }
 }
 
-void restore_best_score() {
+void restore_best_score()
+{
   current_score = best_score;
-  rep(i, m) {
-    rep(j, m) {
+  rep(i, m)
+  {
+    rep(j, m)
+    {
       a[i][j] = best_a[i][j];
     }
   }
 }
 
-void initialize_state() {
+void initialize_state()
+{
   current_score = 0;
 }
 
-void input_data(int case_num) {
+void input_data(int case_num)
+{
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -143,7 +158,8 @@ void input_data(int case_num) {
     // 標準入力
     int _n, _m, _L;
     cin >> _n >> _m >> _L;
-    rep(i, n) {
+    rep(i, n)
+    {
       cin >> s[i];
       cin >> p[i];
     }
@@ -152,15 +168,18 @@ void input_data(int case_num) {
     // ファイル入力
     int _n, _m, _L;
     ifs >> _n >> _m >> _L;
-    rep(i, n) {
+    rep(i, n)
+    {
       ifs >> s[i];
       ifs >> p[i];
     }
   }
 
-  rep(i, n) {
+  rep(i, n)
+  {
     vector<int> v;
-    rep(j, s[i].size()) {
+    rep(j, s[i].size())
+    {
       if (s[i][j] == ' ') continue;
       v.push_back(s[i][j] - 'a');
     }
@@ -168,17 +187,20 @@ void input_data(int case_num) {
   }
 
   vector<pair<int, vector<int>>> tmp;
-  rep(i, n) {
+  rep(i, n)
+  {
     tmp.push_back(make_pair(p[i], sv[i]));
   }
   sort(tmp.begin(), tmp.end());
-  rep(i, n) {
+  rep(i, n)
+  {
     p[i] = tmp[i].first;
     sv[i] = tmp[i].second;
   }
 }
 
-void open_ofs(int case_num, ofstream& ofs) {
+void open_ofs(int case_num, ofstream& ofs)
+{
   if (exec_mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
@@ -187,7 +209,8 @@ void open_ofs(int case_num, ofstream& ofs) {
 }
 
 // a[][] を 0〜100 の整数として持っている前提
-inline void build_transition(double P[12][12]) {
+inline void build_transition(double P[12][12])
+{
   constexpr double kInv = 1.0 / 100.0;
   for (int i = 0; i < 12; ++i)
     for (int j = 0; j < 12; ++j)
@@ -196,7 +219,8 @@ inline void build_transition(double P[12][12]) {
 
 inline void stationary_dist(const double P[12][12],
   double pi[12],          // ←出力 (正規化済み)
-  int max_iter = 20) {
+  int max_iter = 20)
+{
   // 初期ベクトルは一様で十分
   double v[12], nv[12];
   for (int i = 0; i < 12; ++i) v[i] = 1.0 / 12.0;
@@ -218,13 +242,15 @@ inline void stationary_dist(const double P[12][12],
 }
 
 // 旧コード互換：visited[i] = π_i × 1e6
-inline void build_visited(int visited[12], const double pi[12]) {
+inline void build_visited(int visited[12], const double pi[12])
+{
   constexpr double SCALE = 1'000'000.0;   // 旧コードと同じスケール
   for (int i = 0; i < 12; ++i)
     visited[i] = static_cast<int>(pi[i] * SCALE + 0.5);
 }
 
-inline long double prob_one_or_more(long double k) {
+inline long double prob_one_or_more(long double k)
+{
   constexpr long double ONE_MILLION = 1'000'000.0L;
   if (k <= 0.0L)                  return 0.0L;   // 起こらない
   if (k >= ONE_MILLION - 1)       return 1.0L;   // ほぼ確実に起こる
@@ -235,7 +261,8 @@ inline long double prob_one_or_more(long double k) {
   return 1.0L - expl(ln_term);
 }
 
-int evaluate_score(bool all = false) {
+int evaluate_score(bool all = false)
+{
   double P[12][12];
   double pi[12];
   int    visited[12];
@@ -246,11 +273,13 @@ int evaluate_score(bool all = false) {
 
   double res = 0;
 
-  rep(i, n) {
+  rep(i, n)
+  {
     double dp[2] = {};
     double dp2[2] = {};
 
-    rep(j, sv[i].size()) {
+    rep(j, sv[i].size())
+    {
       int num = sv[i][j];
       if (j == 0) {
         dp[0] = visited[num];
@@ -280,12 +309,15 @@ int evaluate_score(bool all = false) {
   return round(res);
 }
 
-void output_data(ofstream& ofs) {
+void output_data(ofstream& ofs)
+{
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, m) {
+    rep(i, m)
+    {
       cout << (char)('a' + c[i]);
-      rep(j, m) {
+      rep(j, m)
+      {
         cout << ' ' << a[i][j];
       }
       cout << endl;
@@ -293,9 +325,11 @@ void output_data(ofstream& ofs) {
   }
   else {
     // ファイル出力
-    rep(i, m) {
+    rep(i, m)
+    {
       ofs << (char)('a' + c[i]);
-      rep(j, m) {
+      rep(j, m)
+      {
         ofs << ' ' << a[i][j];
       }
       ofs << endl;
@@ -303,24 +337,29 @@ void output_data(ofstream& ofs) {
   }
 }
 
-vector<int> normalize_to_100(const vector<double>& v) {
+vector<int> normalize_to_100(const vector<double>& v)
+{
   double sum = 0;
-  rep(i, 12) {
+  rep(i, 12)
+  {
     sum += v[i];
   }
   vector<int> res(12);
   if (sum < 0.1) {
-    rep(i, 100) {
+    rep(i, 100)
+    {
       res[i % 12]++;
     }
     return res;
   }
 
-  rep(i, 12) {
+  rep(i, 12)
+  {
     res[i] = round(v[i] / sum * 100.0);
   }
   int sum2 = 0;
-  rep(i, 12) {
+  rep(i, 12)
+  {
     sum2 += res[i];
   }
   if (sum2 > 100) {
@@ -344,7 +383,8 @@ vector<int> normalize_to_100(const vector<double>& v) {
   return res;
 }
 
-void build_seed_solution(double time_limit) {
+void build_seed_solution(double time_limit)
+{
   int max_a[m][m];
   int max_score = -1;
 
@@ -352,11 +392,13 @@ void build_seed_solution(double time_limit) {
   int vv[20];
 
   vector<double> cnt_sum[12];
-  rep(i, 12) {
+  rep(i, 12)
+  {
     cnt_sum[i] = vector<double>(12);
   }
 
-  rep(i, m) {
+  rep(i, m)
+  {
     c[i] = i % 6;
   }
 
@@ -367,15 +409,18 @@ void build_seed_solution(double time_limit) {
     }
     iter++;
 
-    rep(i, m) {
-      rep(j, m) {
+    rep(i, m)
+    {
+      rep(j, m)
+      {
         a[i][j] = 0;
       }
     }
 
     int ra = rand_xorshift() % 10 + 2;
     int sz = 0;
-    rep(i, ra) {
+    rep(i, ra)
+    {
       int lll = n - 1 - i;
       if (rand_xorshift() % 100 < 90) {
         ras[sz] = lll;
@@ -383,24 +428,30 @@ void build_seed_solution(double time_limit) {
       }
     }
 
-    rep(l, sz) {
+    rep(l, sz)
+    {
       int lll = ras[l];
-      rep(i, sv[lll].size()) {
+      rep(i, sv[lll].size())
+      {
         vv[i] = sv[lll][i] + rand_xorshift() % 2 * 6;
       }
-      rep(i, sv[lll].size() - 1) {
+      rep(i, sv[lll].size() - 1)
+      {
         int x = vv[i];
         int y = vv[i + 1];
         cnt_sum[x][y] += p[lll];
       }
     }
 
-    rep(i, 12) {
+    rep(i, 12)
+    {
       auto v = normalize_to_100(cnt_sum[i]);
-      rep(j, 12) {
+      rep(j, 12)
+      {
         a[i][j] = v[j];
       }
-      rep(j, 12) {
+      rep(j, 12)
+      {
         cnt_sum[i][j] = 0;
       }
     }
@@ -408,8 +459,10 @@ void build_seed_solution(double time_limit) {
     int score = evaluate_score();
     if (score > max_score) {
       max_score = score;
-      rep(i, m) {
-        rep(j, m) {
+      rep(i, m)
+      {
+        rep(j, m)
+        {
           max_a[i][j] = a[i][j];
         }
       }
@@ -418,8 +471,10 @@ void build_seed_solution(double time_limit) {
 
   cerr << iter << ' ' << max_score << ' ' << get_elapsed_time() << endl;
 
-  rep(i, m) {
-    rep(j, m) {
+  rep(i, m)
+  {
+    rep(j, m)
+    {
       a[i][j] = max_a[i][j];
     }
   }
@@ -433,7 +488,8 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-void run_simulated_annealing(AnnealingParams params, int siki, double time_limit) {
+void run_simulated_annealing(AnnealingParams params, int siki, double time_limit)
+{
   current_score = evaluate_score();
   store_best_score();
 
@@ -517,7 +573,8 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
     else if (ra_exec_mode < params.operation_thresholds[3]) {
       // 近傍操作2
       ra1 = rand_xorshift() % 6;
-      rep(j, 12) {
+      rep(j, 12)
+      {
         swap(a[ra1][j], a[ra1 + 6][j]);
       }
     }
@@ -555,7 +612,8 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
       }
       else if (ra_exec_mode < params.operation_thresholds[3]) {
         // 近傍操作2 の巻き戻し
-        rep(j, 12) {
+        rep(j, 12)
+        {
           swap(a[ra1][j], a[ra1 + 6][j]);
         }
       }
@@ -567,7 +625,8 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
   restore_best_score();
 }
 
-ll solve_case(int case_num, AnnealingParams annealingParams) {
+ll solve_case(int case_num, AnnealingParams annealingParams)
+{
   start_timer();
 
   initialize_state();
@@ -599,7 +658,8 @@ ll solve_case(int case_num, AnnealingParams annealingParams) {
   return score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 2;
 
   AnnealingParams annealingParams;
@@ -631,7 +691,8 @@ int main() {
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    srep(i, 0, 15) {
+    srep(i, 0, 15)
+    {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {

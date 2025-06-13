@@ -490,7 +490,8 @@ namespace /* ユーティリティ */
 }
 
 // 櫛状に柵を作る解法
-class SolveVer1 {
+class SolveVer1
+{
 public:
   void Solve()
   {
@@ -691,7 +692,8 @@ public:
   }
 };
 
-class SolveVer2 {
+class SolveVer2
+{
 public:
   vector<vector<int>> sample;
   vector<P> route[11];
@@ -752,7 +754,8 @@ public:
 };
 
 // 犬を捕まえる
-class SolveVer3 {
+class SolveVer3
+{
 public:
   void Solve2(int startTurn)
   {
@@ -1069,7 +1072,8 @@ public:
 };
 
 // SolveVer3を改良
-class SolveVer4 {
+class SolveVer4
+{
 public:
   void Solve2(int startTurn)
   {
@@ -1439,7 +1443,8 @@ public:
 };
 
 // SolveVer4と向きを逆に
-class SolveVer5 {
+class SolveVer5
+{
 public:
   void Solve2(int startTurn)
   {

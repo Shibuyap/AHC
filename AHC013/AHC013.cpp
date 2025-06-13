@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <algorithm>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -15,22 +16,21 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <iostream>
+#include <iterator>
 #include <list>
 #include <map>
 #include <numeric>
+#include <numeric>
 #include <queue>
+#include <random>
 #include <set>
 #include <sstream>
 #include <stack>
 #include <string>
 #include <utility>
 #include <vector>
-#include <algorithm>
-#include <iostream>
 #include <vector>
-#include <numeric>
-#include <iterator>
-#include <random>
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -60,7 +60,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace

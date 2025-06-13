@@ -54,7 +54,8 @@ static uint32_t Rand()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double Rand01() {
+static double Rand01()
+{
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
@@ -441,7 +442,8 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 {
   int vCount = _nums.size();
   auto nums = _nums;
-  rep(i, m) {
+  rep(i, m)
+  {
     if (sort_g[i] == 1) {
       nums.push_back(ans_nums[i][0]);
     }
@@ -497,7 +499,8 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
   newNums.clear();
 
   vector<P> es;
-  rep(i, res.size()) {
+  rep(i, res.size())
+  {
     if (UF_Find(idxs[i].first) == root) {
       es.push_back(res[i]);
     }
@@ -523,7 +526,8 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
   priority_queue<pair<int, P>, vector<pair<int, P>>, greater<pair<int, P>>> pque;
   pair<int, P> pp;
-  rep(i, free_use_graph_count[rootNum]) {
+  rep(i, free_use_graph_count[rootNum])
+  {
     int y = free_use_graph[rootNum][i];
     pp.first = Distance(rootNum, y);
     pp.second.first = rootNum;
@@ -546,7 +550,8 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
     int par = pp.second.first;
     int x = pp.second.second;
-    rep(i, free_use_graph_count[x]) {
+    rep(i, free_use_graph_count[x])
+    {
       int y = free_use_graph[x][i];
       if (y == par)continue;
       pp.first = Distance(x, y);

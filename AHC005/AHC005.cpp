@@ -17,22 +17,27 @@ using namespace std;
 typedef long long int ll;
 
 // タイマー
-namespace {
+namespace
+{
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
 }
 
 // 乱数
-namespace {
-  static uint32_t rand_xorshift() {
+namespace
+{
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -45,19 +50,23 @@ namespace {
     return w;
   }
 
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -70,18 +79,21 @@ namespace {
 int exec_mode;
 
 // 辺を頂点とみなす
-class Vertex {
+class Vertex
+{
 public:
   vector<int> indices;
 };
 
-class DistToVertex {
+class DistToVertex
+{
 public:
   int distance;
   int point_index;
 };
 
-class Board {
+class Board
+{
 public:
   int n;
   int si, sj;
@@ -92,7 +104,8 @@ public:
   vector<Vertex> vertices;
   vector<vector<DistToVertex>> dist_to_vertices; // 各頂点への距離と対応する点のインデックス
 
-  void init_vertices() {
+  void init_vertices()
+  {
     for (int i = 0; i < n * n; i++) {
       int x = i / n, y = i % n;
       if (grid[x][y] == -1) continue; // 壁は無視
@@ -121,7 +134,8 @@ public:
     }
   }
 
-  void init_dist_to_vertices() {
+  void init_dist_to_vertices()
+  {
     dist_to_vertices.clear();
     dist_to_vertices.resize(n * n);
     for (int i = 0; i < n * n; i++) {
@@ -144,7 +158,8 @@ public:
     }
   }
 
-  void init_graph() {
+  void init_graph()
+  {
     // グラフの初期化
     graph.resize(n * n);
     for (int i = 0; i < n; i++) {
@@ -160,14 +175,16 @@ public:
     }
   }
 
-  inline int get_cost(int idx) const {
+  inline int get_cost(int idx) const
+  {
     int i = idx / n, j = idx % n;
     if (grid[i][j] == -1) return INT_MAX; // 壁は無視
     return grid[i][j]; // コストはグリッドの値
   }
 
   // 全点対最短経路を計算する
-  void calc_dist() {
+  void calc_dist()
+  {
     // n*n回ダイクストラ
     dist.resize(n * n, vector<int>(n * n, INT_MAX));
     for (int start = 0; start < n * n; start++) {
@@ -193,14 +210,16 @@ public:
     }
   }
 
-  void init() {
+  void init()
+  {
     init_vertices();
     init_graph();
     calc_dist();
     init_dist_to_vertices();
   }
 
-  vector<int> get_path(int start, int goal) const {
+  vector<int> get_path(int start, int goal) const
+  {
     //cerr << "get_path: start = " << start << ", goal = " << goal << endl;
 
     // 復元ダイクストラ
@@ -235,19 +254,22 @@ public:
   }
 };
 
-class Answer {
+class Answer
+{
 public:
   vector<int> vertices;
   vector<int> points;
   int score;
   Answer() : score(0) {}
-  void clear() {
+  void clear()
+  {
     points.clear();
     vertices.clear();
     score = 0;
   }
 
-  int recalc_points(const Board& board, int start_index = 0, int end_index = 1001001) {
+  int recalc_points(const Board& board, int start_index = 0, int end_index = 1001001)
+  {
     if (points.size() > vertices.size()) {
       points.clear();
     }
@@ -271,7 +293,8 @@ public:
     return 0;
   }
 
-  int calc_score(const Board& board) {
+  int calc_score(const Board& board)
+  {
     int cost = 0;
     for (size_t i = 0; i < points.size() - 1; i++) {
       int start = points[i];
@@ -286,7 +309,8 @@ public:
   }
 };
 
-Board input_data(int case_num) {
+Board input_data(int case_num)
+{
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -333,7 +357,8 @@ Board input_data(int case_num) {
   return board;
 }
 
-void output_data(int case_num, const Board& board, const Answer& ans) {
+void output_data(int case_num, const Board& board, const Answer& ans)
+{
   //cerr << "output_data: case_num = " << case_num << endl;
   vector<int> path;
   path.push_back(ans.points[0]);
@@ -387,7 +412,8 @@ void output_data(int case_num, const Board& board, const Answer& ans) {
   }
 }
 
-void build_initial_path(const Board& board, Answer& ans) {
+void build_initial_path(const Board& board, Answer& ans)
+{
   ans.clear();
   ans.vertices.clear();
   ans.points.push_back(board.si * board.n + board.sj); // スタート位置を追加
@@ -404,7 +430,8 @@ void build_initial_path(const Board& board, Answer& ans) {
   ans.vertices.push_back(-1); // スタート位置の頂点は-1とする
 }
 
-void run_simulated_annealing(double time_limit, const Board& board, Answer& ans) {
+void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
+{
   ans.calc_score(board);
   Answer best_ans = ans; // ベスト解を初期化
 
@@ -538,7 +565,8 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 }
 
 
-ll solve_case(int case_num) {
+ll solve_case(int case_num)
+{
   const double TIME_LIMIT = 2.9;
   start_timer();
 
@@ -571,7 +599,8 @@ ll solve_case(int case_num) {
   return score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 2;
 
   if (exec_mode == 0) {

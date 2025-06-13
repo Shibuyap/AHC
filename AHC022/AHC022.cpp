@@ -141,7 +141,8 @@ public:
   double value_4;
   int value_5;
 
-  HyperParameters() {
+  HyperParameters()
+  {
     value_1 = 0;
     value_2 = 0;
     value_3 = 0;
@@ -149,7 +150,8 @@ public:
     value_5 = 0;
   }
 
-  HyperParameters(int v1, int v2, int v3, double v4, int v5) {
+  HyperParameters(int v1, int v2, int v3, double v4, int v5)
+  {
     value_1 = v1;
     value_2 = v2;
     value_3 = v3;
@@ -157,7 +159,8 @@ public:
     value_5 = v5;
   }
 
-  bool operator==(const HyperParameters& other) const {
+  bool operator==(const HyperParameters& other) const
+  {
     return value_1 == other.value_1 && value_2 == other.value_2 && value_3 == other.value_3 &&
       value_4 == other.value_4 && value_5 == other.value_5;
   }
@@ -168,12 +171,14 @@ struct HyperKeys
   int s_key;
   int l_key;
 
-  HyperKeys(int s, int l) {
+  HyperKeys(int s, int l)
+  {
     l_key = l;
     s_key = s;
   }
 
-  bool operator<(const HyperKeys& other) const {
+  bool operator<(const HyperKeys& other) const
+  {
     if (s_key != other.s_key) {
       return s_key < other.s_key;
     }
@@ -351,7 +356,8 @@ public:
   int top_y;
   int top_x;
 
-  Layout(int l) {
+  Layout(int l)
+  {
     L = l;
     p.resize(l, vector<int>(l, 0));
     cost = 0;
@@ -359,7 +365,8 @@ public:
     top_x = L / 2;
   }
 
-  void calc_cost() {
+  void calc_cost()
+  {
     cost = 0;
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
@@ -369,7 +376,8 @@ public:
     }
   }
 
-  void layout_2() {
+  void layout_2()
+  {
     int minimum_sum = INT_INF;
     int minimum_x = -1;
     int minimum_y = -1;
@@ -419,19 +427,22 @@ public:
   vector<int> A;
   vector<int> f;
 
-  void init(int n) {
+  void init(int n)
+  {
     query_count = 0;
     cost = 0;
     A.resize(n, 0);
     f.resize(MAX_Q, 0);
   }
 
-  void reset() {
+  void reset()
+  {
     query_count = 0;
     cost = 0;
   }
 
-  int query(int i, int y, int x, const Layout& layout) {
+  int query(int i, int y, int x, const Layout& layout)
+  {
     if (query_count >= MAX_Q) {
       return -1;
     }
@@ -452,7 +463,8 @@ public:
   vector<vector<double>> prob;
   vector<double> tmp_prob;
 
-  Estimation(int n) {
+  Estimation(int n)
+  {
     E.resize(n, 0);
     prob.resize(n, vector<double>(n, 0.0));
     for (int i = 0; i < n; i++) {
@@ -463,11 +475,13 @@ public:
     tmp_prob.resize(n, 0.0);
   }
 
-  double calc_ruiseki(double num) {
+  double calc_ruiseki(double num)
+  {
     return 1.0 / 2.0 * (1.0 + erf(num / sqrt(2.0 * S * S)));
   }
 
-  double calc_kakuritsu(int kitai, int output) {
+  double calc_kakuritsu(int kitai, int output)
+  {
     double res = 0.0;
     int diff = output - kitai;
     if (output == 0) {
@@ -482,7 +496,8 @@ public:
     return res;
   }
 
-  void update_prob(int index_in, int y, int x, int m, const Layout& layout, int dir) {
+  void update_prob(int index_in, int y, int x, int m, const Layout& layout, int dir)
+  {
     y = (y + L) % L;
     x = (x + L) % L;
     for (int i = 0; i < N; i++) {
@@ -502,7 +517,7 @@ public:
       }
     }
 
-    for(int times = 0; times < 1; times++) {
+    for (int times = 0; times < 1; times++) {
       // 行方向に正規化
       for (int i = 0; i < N; i++) {
         normalize_matrix(prob, 0, i);
@@ -520,7 +535,8 @@ public:
     }
   }
 
-  double get_minimum_prob() {
+  double get_minimum_prob()
+  {
     double res = 1.0;
     for (int i = 0; i < N; i++) {
       double max_prob = 0.0;
@@ -532,7 +548,8 @@ public:
     return res;
   }
 
-  void calculate_estimation() {
+  void calculate_estimation()
+  {
     for (int i = 0; i < N; i++) {
       double max_prob = 0.0;
       int max_index = -1;
@@ -722,7 +739,8 @@ int query(ofstream& ofs, int i, int y, int x, const Layout& layout)
   return m;
 }
 
-void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation) {
+void estimate_1(ofstream& ofs, const Layout& layout, Estimation& estimation)
+{
   double threshold = hyper_parameters[HyperKeys(S, L / 10)].value_4;
   int max_tate_length = hyper_parameters[HyperKeys(S, L / 10)].value_5;
   int iter = 0;
@@ -871,8 +889,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 150; i++)
-    {
+    for (int i = 0; i < 150; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
@@ -890,8 +907,7 @@ int main()
   else if (exec_mode == 3) {
     int iter = 0;
     queue<pair<HyperKeys, HyperParameters>> que;
-    while (true)
-    {
+    while (true) {
       iter++;
       // 100回戦わせて70勝以上したらハイパーパラメータを更新する
       int s = rand_range(1, 30);

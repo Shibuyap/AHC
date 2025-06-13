@@ -34,22 +34,27 @@ using namespace std;
 typedef long long int ll;
 
 // タイマー
-namespace {
+namespace
+{
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
 }
 
 // 乱数
-namespace {
-  static uint32_t rand_xorshift() {
+namespace
+{
+  static uint32_t rand_xorshift()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -62,19 +67,23 @@ namespace {
     return w;
   }
 
-  static double rand_01() {
+  static double rand_01()
+  {
     return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 
-  static double rand_range(double l, double r) {
+  static double rand_range(double l, double r)
+  {
     return l + (r - l) * rand_01();
   }
 
-  static uint32_t rand_range(uint32_t l, uint32_t r) {
+  static uint32_t rand_range(uint32_t l, uint32_t r)
+  {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n) {
+  void shuffle_array(int* arr, int n)
+  {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
       int swa = arr[i];
@@ -95,7 +104,8 @@ constexpr int DOWN = 2;  // 下
 constexpr int RIGHT = 3; // 右
 
 // 2次元キューのクラス
-class Queue2D {
+class Queue2D
+{
 private:
   static const int MAX_SIZE = 10000;
   int arr[MAX_SIZE][2];
@@ -106,30 +116,36 @@ public:
   // コンストラクタ
   Queue2D() : head(0), tail(0) {}
 
-  void clear_queue() {
+  void clear_queue()
+  {
     head = 0;
     tail = 0;
   }
 
-  int front_x() const {
+  int front_x() const
+  {
     return arr[head][0];
   }
 
-  int front_y() const {
+  int front_y() const
+  {
     return arr[head][1];
   }
 
-  void push(int x, int y) {
+  void push(int x, int y)
+  {
     arr[tail][0] = x;
     arr[tail][1] = y;
     tail++;
   }
 
-  void pop() {
+  void pop()
+  {
     head++;
   }
 
-  int size() const {
+  int size() const
+  {
     return tail - head;
   }
 };
@@ -138,7 +154,8 @@ Queue2D queue2d;
 int exec_mode;
 
 // 誤差を計算
-inline double calc_error(const vector<double>& col1, const vector<double>& col2) {
+inline double calc_error(const vector<double>& col1, const vector<double>& col2)
+{
   return sqrt(
     (col1[0] - col2[0]) * (col1[0] - col2[0])
     + (col1[1] - col2[1]) * (col1[1] - col2[1])
@@ -149,14 +166,16 @@ inline double calc_error(const vector<double>& col1, const vector<double>& col2)
 const int N = 20;
 const int H = 1000;
 
-class Input {
+class Input
+{
 public:
   int n, k, h, t, d;
   vector<vector<double>> owns;
   vector<vector<double>> targets;
 };
 
-class Board {
+class Board
+{
 public:
   int n;
   vector<vector<int>> v; // 垂直の壁
@@ -166,7 +185,8 @@ public:
   vector<vector<double>> volumes; // セルが含まれるウェルの絵具の量
   vector<vector<vector<double>>> colors; // セルが含まれるウェルの色(CMY)
 
-  bool is_ng(int x, int y, int dir) {
+  bool is_ng(int x, int y, int dir)
+  {
     int nx = x + DX[dir];
     int ny = y + DY[dir];
     if (nx < 0 || nx >= n || ny < 0 || ny >= n) {
@@ -186,7 +206,8 @@ public:
     }
   }
 
-  void calc_counts() {
+  void calc_counts()
+  {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         counts[i][j] = 0;
@@ -228,7 +249,8 @@ public:
     }
   }
 
-  Board(int _n) : n(_n) {
+  Board(int _n) : n(_n)
+  {
     v.resize(n);
     for (int i = 0; i < n; i++) {
       v[i].resize(n - 1, 0);
@@ -259,7 +281,8 @@ public:
     calc_mixed_color_vec.resize(3, 0.0); // RGB
   }
 
-  int get_wall(int x, int y, int d) {
+  int get_wall(int x, int y, int d)
+  {
     if (d == 0) { // 上
       return h[x - 1][y];
     }
@@ -274,7 +297,8 @@ public:
     }
   }
 
-  void toggle_wall(int x, int y, int d) {
+  void toggle_wall(int x, int y, int d)
+  {
     if (d == 0) { // 上
       h[x - 1][y] = 1 - h[x - 1][y];
     }
@@ -289,7 +313,8 @@ public:
     }
   }
 
-  vector<pair<int, int>> get_well_cells(int x, int y) {
+  vector<pair<int, int>> get_well_cells(int x, int y)
+  {
     vector<pair<int, int>> vec;
     queue2d.clear_queue();
     queue2d.push(x, y);
@@ -319,12 +344,14 @@ public:
     return vec;
   }
 
-  void calc_one_well_count(int x, int y) {
+  void calc_one_well_count(int x, int y)
+  {
     get_well_cells(x, y);
   }
 
   vector<double> calc_mixed_color_vec;
-  inline vector<double> calc_mixed_color(const vector<double>& col1, const vector<double>& col2, double vol1, double vol2) {
+  inline vector<double> calc_mixed_color(const vector<double>& col1, const vector<double>& col2, double vol1, double vol2)
+  {
     double total_volume = vol1 + vol2;
     for (int i = 0; i < 3; i++) {
       if (total_volume < EPS) {
@@ -337,7 +364,8 @@ public:
     return calc_mixed_color_vec;
   }
 
-  void add_turn_1(int x, int y, const vector<double>& col) {
+  void add_turn_1(int x, int y, const vector<double>& col)
+  {
     // 実際に加えることのできる量
     double w = min(1.0, counts[x][y] - volumes[x][y]);
     double after_vol = volumes[x][y] + w;
@@ -355,7 +383,8 @@ public:
     }
   }
 
-  void add_turn_2(int x, int y) {
+  void add_turn_2(int x, int y)
+  {
     auto cells = get_well_cells(x, y);
     for (const auto& cell : cells) {
       int cx = cell.first;
@@ -364,11 +393,13 @@ public:
     }
   }
 
-  void add_turn_3(int x, int y) {
+  void add_turn_3(int x, int y)
+  {
     add_turn_2(x, y);
   }
 
-  void add_turn_4(int x, int y, int d) {
+  void add_turn_4(int x, int y, int d)
+  {
     int nx = x + DX[d];
     int ny = y + DY[d];
 
@@ -421,7 +452,8 @@ public:
   }
 };
 
-class Answer {
+class Answer
+{
 public:
   Board initial_board;
   Board board;
@@ -431,7 +463,8 @@ public:
   bool is_over;
   vector<vector<int>> turns;
 
-  Answer(int _n, int _max_t) : max_t(_max_t), initial_board(_n), board(_n) {
+  Answer(int _n, int _max_t) : max_t(_max_t), initial_board(_n), board(_n)
+  {
     t = 0;
     is_over = false;
     for (int i = 0; i < max_t; i++) {
@@ -439,17 +472,20 @@ public:
     }
   }
 
-  void clear() {
+  void clear()
+  {
     t = 0;
     board = initial_board;
   }
 
-  void sim_turn_1(int x, int y, int k, const Input& input) {
+  void sim_turn_1(int x, int y, int k, const Input& input)
+  {
     board.add_turn_1(x, y, input.owns[k]);
   }
 
   // 絵具をウェルに追加する
-  void add_turn_1(int x, int y, int k, const Input& input) {
+  void add_turn_1(int x, int y, int k, const Input& input)
+  {
     if (t >= max_t) {
       if (exec_mode != 778) {
         cerr << "Error: add_turn_1 called after max_t reached." << endl;
@@ -468,16 +504,19 @@ public:
     sim_turn_1(x, y, k, input);
   }
 
-  bool can_turn_2(int x, int y) {
+  bool can_turn_2(int x, int y)
+  {
     return board.volumes[x][y] >= 1.0 - 1e-6;
   }
 
-  void sim_turn_2(int x, int y) {
+  void sim_turn_2(int x, int y)
+  {
     board.add_turn_2(x, y);
   }
 
   // 絵具を画伯に渡す
-  void add_turn_2(int x, int y) {
+  void add_turn_2(int x, int y)
+  {
     if (!can_turn_2(x, y)) {
       if (exec_mode != 778) {
         cerr << "Error: add_turn_2 called when not enough paint is available." << endl;
@@ -503,12 +542,14 @@ public:
     sim_turn_2(x, y);
   }
 
-  void sim_turn_3(int x, int y) {
+  void sim_turn_3(int x, int y)
+  {
     board.add_turn_3(x, y);
   }
 
   // 絵具を破棄する
-  void add_turn_3(int x, int y) {
+  void add_turn_3(int x, int y)
+  {
     if (t >= max_t) {
       cerr << "Error: add_turn_3 called after max_t reached." << endl;
       is_over = true;
@@ -524,12 +565,14 @@ public:
     sim_turn_3(x, y);
   }
 
-  void sim_turn_4(int x, int y, int d) {
+  void sim_turn_4(int x, int y, int d)
+  {
     board.add_turn_4(x, y, d);
   }
 
   // 仕切りを出し入れする
-  void add_turn_4(int x, int y, int d) {
+  void add_turn_4(int x, int y, int d)
+  {
     if (t >= max_t) {
       if (exec_mode != 778) {
         cerr << "Error: add_turn_4 called after max_t reached." << endl;
@@ -552,7 +595,8 @@ public:
   }
 };
 
-Input input_data(int case_num) {
+Input input_data(int case_num)
+{
   Input input;
 
   std::ostringstream oss;
@@ -599,7 +643,8 @@ Input input_data(int case_num) {
   return input;
 }
 
-void output_data(int case_num, const Answer& answer) {
+void output_data(int case_num, const Answer& answer)
+{
   if (exec_mode == 0) {
     // 標準出力
     for (int i = 0; i < answer.initial_board.n; i++) {
@@ -668,7 +713,8 @@ void output_data(int case_num, const Answer& answer) {
   }
 }
 
-struct Score {
+struct Score
+{
   int score;
   int d_score;
   int e_scrore;
@@ -679,7 +725,8 @@ struct Score {
   Score() : score(0), d_score(0), e_scrore(0), max_e_score(0.0) {}
 };
 
-Score calculate_score(Answer& ans, const Input& input) {
+Score calculate_score(Answer& ans, const Input& input)
+{
   Score score;
   score.e_score_list.resize(input.h, 0.0);
 
@@ -743,7 +790,8 @@ Score calculate_score(Answer& ans, const Input& input) {
   return score;
 }
 
-void initialize_board_axb(Answer& answer, int a, int b) {
+void initialize_board_axb(Answer& answer, int a, int b)
+{
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
       if (j % a == a - 1) {
@@ -769,7 +817,8 @@ void initialize_board_axb(Answer& answer, int a, int b) {
   answer.board = answer.initial_board;
 }
 
-void initialize_board_solver_5(Answer& answer) {
+void initialize_board_solver_5(Answer& answer)
+{
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
       if (j == 0) {
@@ -795,7 +844,8 @@ void initialize_board_solver_5(Answer& answer) {
   answer.board = answer.initial_board;
 }
 
-void initialize_board_solver_6(Answer& answer) {
+void initialize_board_solver_6(Answer& answer)
+{
   for (int i = 0; i < answer.initial_board.n; i++) {
     for (int j = 0; j < answer.initial_board.n - 1; j++) {
       if (j == answer.initial_board.n - 3) {
@@ -821,17 +871,20 @@ void initialize_board_solver_6(Answer& answer) {
   answer.board = answer.initial_board;
 }
 
-class Solver_1 {
+class Solver_1
+{
 public:
   Answer answer;
   const Input& input;
   Score score;
 
-  Solver_1(Answer ans, const Input& in) : answer(ans), input(in) {
+  Solver_1(Answer ans, const Input& in) : answer(ans), input(in)
+  {
     score.score = INF;
   }
 
-  void solve() {
+  void solve()
+  {
     initialize_board_axb(answer, 1, 1);
 
     answer.clear();
@@ -847,7 +900,8 @@ public:
   }
 };
 
-ll nCr(ll n, ll r) {
+ll nCr(ll n, ll r)
+{
   if (r < 0 || r > n) return 0;
   r = min(r, n - r);
   ll res = 1;
@@ -857,7 +911,8 @@ ll nCr(ll n, ll r) {
   return res;
 }
 
-vector<vector<int>> create_candidates(int max_num, int max_count) {
+vector<vector<int>> create_candidates(int max_num, int max_count)
+{
   vector<vector<int>> res;
   vector<int> cur;
 
@@ -879,7 +934,8 @@ vector<vector<int>> create_candidates(int max_num, int max_count) {
   return res;
 }
 
-vector<pair<vector<double>, vector<int>>> create_candidate_pairs(int max_num, int max_count, const Input& input) {
+vector<pair<vector<double>, vector<int>>> create_candidate_pairs(int max_num, int max_count, const Input& input)
+{
   vector<pair<vector<double>, vector<int>>> res;
   vector<int> cur;
   // 深さ優先で非減少列を生成
@@ -910,11 +966,13 @@ vector<pair<vector<double>, vector<int>>> create_candidate_pairs(int max_num, in
   return res;
 }
 
-inline double calc_one_cost(int vol, const vector<double>& col1, const vector<double>& col2, int d) {
+inline double calc_one_cost(int vol, const vector<double>& col1, const vector<double>& col2, int d)
+{
   return vol * d + calc_error(col1, col2) * 1e4;
 }
 
-class Solver_2 {
+class Solver_2
+{
 public:
   double time_limit;
   const Input& input;
@@ -924,13 +982,15 @@ public:
   Answer best_answer;
   Score best_score;
 
-  Solver_2(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+  Solver_2(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans)
+  {
     score.score = INF;
     best_score.score = INF;
     time_limit = tl;
   }
 
-  void solve() {
+  void solve()
+  {
     initialize_board_axb(answer, 20, 20);
 
     vector<pair<vector<double>, vector<int>>> candidates;
@@ -1038,7 +1098,8 @@ public:
 };
 
 // 仕切り固定(T小向け)
-class Solver_3 {
+class Solver_3
+{
 public:
   double time_limit;
   const Input& input;
@@ -1049,13 +1110,15 @@ public:
   Score best_score;
   int best_num = 0;
 
-  Solver_3(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+  Solver_3(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans)
+  {
     score.score = INF;
     best_score.score = INF;
     time_limit = tl;
   }
 
-  void solve() {
+  void solve()
+  {
     vector<pair<vector<double>, vector<int>>> candidates[6];
     for (int num = 1; num <= 5; num++) {
       candidates[num] = create_candidate_pairs(input.k, num, input);
@@ -1191,7 +1254,8 @@ public:
   }
 };
 
-class Solver_4 {
+class Solver_4
+{
 public:
   double time_limit;
   const Input& input;
@@ -1204,13 +1268,15 @@ public:
 
   static const int MAX_NUM = 5;
 
-  Solver_4(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+  Solver_4(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans)
+  {
     score.score = INF;
     best_score.score = INF;
     time_limit = tl;
   }
 
-  void solve() {
+  void solve()
+  {
     vector<pair<vector<double>, vector<int>>> candidates[MAX_NUM + 1];
     for (int num = 1; num <= MAX_NUM; num++) {
       candidates[num] = create_candidate_pairs(input.k, num, input);
@@ -1397,9 +1463,11 @@ public:
   }
 };
 
-class Solver_5 {
+class Solver_5
+{
 public:
-  class Solver5State {
+  class Solver5State
+  {
   public:
     vector<int> vertical_lines;
     int change_vertical_lines_count = 0;
@@ -1409,7 +1477,8 @@ public:
 
     Solver5State(int n) : vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {}
 
-    inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
+    inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d)
+    {
       if (mixed_volume < 1.0 || 3.0 < mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
         score = 1e9 + abs(1.1 - mixed_volume) + change_vertical_lines_count_limit * 100;
       }
@@ -1419,7 +1488,8 @@ public:
       return score;
     }
 
-    inline double calc_eval_2(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
+    inline double calc_eval_2(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d)
+    {
       if (mixed_volume < 1.0 || 1.2 < mixed_volume) {
         score = 1e9 + calc_error(mixed_colors, target_color) * 1e4 + abs(mixed_volume - 1.0) * min(input_d, 400) * 100000;
       }
@@ -1430,7 +1500,8 @@ public:
     }
   };
 
-  class Solver5Params {
+  class Solver5Params
+  {
   public:
     double minimum_volume = 20 + EPS;
     int reset_vertical_line_num = 5;
@@ -1457,7 +1528,8 @@ public:
   Score best_score;
   int best_num = 0;
 
-  Solver_5(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+  Solver_5(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans)
+  {
     score.score = INF;
     best_score.score = INF;
     time_limit = tl;
@@ -1465,7 +1537,8 @@ public:
 
   int change_vertical_lines_count_limit = 999;
 
-  inline void move_diff(const Solver5State& state, Solver5State& next_state, int idx1, int diff1, double diff_vol) {
+  inline void move_diff(const Solver5State& state, Solver5State& next_state, int idx1, int diff1, double diff_vol)
+  {
     next_state.mixed_colors = answer.board.calc_mixed_color(next_state.mixed_colors, answer.board.colors[idx1][input.n - 1], next_state.mixed_volume, diff_vol);
     next_state.mixed_volume += diff_vol;
     if (next_state.vertical_lines[idx1] == state.vertical_lines[idx1]) {
@@ -1477,7 +1550,8 @@ public:
     }
   }
 
-  void solve_inner(int i, const Solver5Params& params, const Solver5State& state, Solver5State& next_state, int& count1, int& count2, int mode, vector<int>& used_indices, const vector<vector<int>>& each_colors, const vector<int>& each_row_colors) {
+  void solve_inner(int i, const Solver5Params& params, const Solver5State& state, Solver5State& next_state, int& count1, int& count2, int mode, vector<int>& used_indices, const vector<vector<int>>& each_colors, const vector<int>& each_row_colors)
+  {
     int thresholds[10];
     int max_threshold = 0;
     int loop_count = 0;
@@ -1621,7 +1695,8 @@ public:
     }
   }
 
-  vector<int> calc_used_indices(const Solver5State& state, const Solver5State& next_state) {
+  vector<int> calc_used_indices(const Solver5State& state, const Solver5State& next_state)
+  {
     vector<int> used_indices;
     for (int j = 0; j < input.n; j++) {
       if (next_state.vertical_lines[j] != state.vertical_lines[j]) {
@@ -1631,7 +1706,8 @@ public:
     return used_indices;
   }
 
-  void solve(const Solver5Params& params) {
+  void solve(const Solver5Params& params)
+  {
 
     initialize_board_solver_5(answer);
 
@@ -1864,9 +1940,11 @@ public:
   }
 };
 
-class Solver_6 {
+class Solver_6
+{
 public:
-  class Solver6Params {
+  class Solver6Params
+  {
   public:
     double minimum_volume = 20 + EPS;
     int reset_vertical_line_num = 5;
@@ -1886,7 +1964,8 @@ public:
     int main_break_last_update_iter = 999; // 50
   };
 
-  class Solver6State {
+  class Solver6State
+  {
   public:
     int n;
     vector<int> vertical_lines;
@@ -1901,13 +1980,15 @@ public:
     vector<int> row_op_indices;
     vector<int> row_op_add_colors;
 
-    Solver6State(int n) : n(n), vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12) {
+    Solver6State(int n) : n(n), vertical_lines(n, 0), change_vertical_lines_count(0), mixed_volume(0.0), mixed_colors(3, 0.0), score(1e12)
+    {
       row_op_indices.resize(n);
       row_op_add_colors.resize(n);
       row_color_indices.resize(n);
     }
 
-    inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d) {
+    inline double calc_eval(const vector<double>& target_color, int change_vertical_lines_count_limit, int input_d)
+    {
       double new_mixed_volume = mixed_volume - one_block_mixed_volume * mixed_block_count;
       if (new_mixed_volume < 1.0 || 3.0 < new_mixed_volume || change_vertical_lines_count > change_vertical_lines_count_limit) {
         score = 1e9 + abs(1.1 - new_mixed_volume) + change_vertical_lines_count_limit * 100;
@@ -1921,7 +2002,8 @@ public:
       return score;
     }
 
-    inline void reset_each_row_each_operation_indices() {
+    inline void reset_each_row_each_operation_indices()
+    {
       for (int i = 0; i < n; i++) {
         row_op_indices[i] = 0;
         row_op_add_colors[i] = -1;
@@ -1929,7 +2011,8 @@ public:
     }
   };
 
-  class S6SAConfig {
+  class S6SAConfig
+  {
   public:
     int n;
     vector<int> used_indices;
@@ -1940,7 +2023,8 @@ public:
     vector<vector<vector<double>>> row_op_colors;
     vector<vector<vector<vector<double>>>> row_op_colors_add;
 
-    S6SAConfig(int n) : n(n) {
+    S6SAConfig(int n) : n(n)
+    {
       row_op_volumes.resize(n);
       row_op_volumes_add.resize(n);
       row_op_can_add_indices.clear();
@@ -1948,7 +2032,8 @@ public:
       row_op_colors_add.resize(n);
     }
 
-    inline void calc_used_indices(const Solver6State& state) {
+    inline void calc_used_indices(const Solver6State& state)
+    {
       used_indices.clear();
       for (int i = 0; i < n; i++) {
         if (state.row_op_indices[i] != 0) {
@@ -1967,7 +2052,8 @@ public:
   Score best_score;
   int best_num = 0;
 
-  Solver_6(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans) {
+  Solver_6(Answer ans, const Input& in, double tl) : input(in), answer(ans), best_answer(ans)
+  {
     score.score = INF;
     best_score.score = INF;
     time_limit = tl;
@@ -1975,7 +2061,8 @@ public:
 
   int change_vertical_lines_count_limit = 999;
 
-  inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol, S6SAConfig& saState, const vector<double>& diff_col) {
+  inline void move_diff(const Solver6State& state, Solver6State& next_state, int idx1, int diff1, double diff_vol, S6SAConfig& saState, const vector<double>& diff_col)
+  {
     double before_volume = next_state.mixed_volume - next_state.mixed_block_count * next_state.one_block_mixed_volume;
     if (next_state.row_op_indices[idx1] == 0) {
       next_state.change_vertical_lines_count++;
@@ -2009,7 +2096,8 @@ public:
 
   }
 
-  void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int mode, S6SAConfig& saState) {
+  void solve_inner(int i, const Solver6Params& params, const Solver6State& state, Solver6State& next_state, int mode, S6SAConfig& saState)
+  {
     int thresholds[10];
     int max_threshold = 0;
     int loop_count = 0;
@@ -2212,7 +2300,8 @@ public:
     }
   }
 
-  void solve(const Solver6Params& params) {
+  void solve(const Solver6Params& params)
+  {
     initialize_board_solver_6(answer);
 
     Solver6State state(input.n);
@@ -2493,7 +2582,8 @@ public:
   }
 };
 
-ll solve_case(int case_num) {
+ll solve_case(int case_num)
+{
   const double TIME_LIMIT = 2.8;
   start_timer();
 
@@ -2649,7 +2739,8 @@ ll solve_case(int case_num) {
   return score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 777;
 
   if (exec_mode == 0) {

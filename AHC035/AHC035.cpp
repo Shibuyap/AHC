@@ -174,7 +174,8 @@ void read_input(int problemNum)
         {
           string s;
           ifs >> s;
-          rep(l, ITEM_KIND) {
+          rep(l, ITEM_KIND)
+          {
             horizontal_edge_block[i][j][k][l] = s[l] - '0';
           }
         }
@@ -185,7 +186,8 @@ void read_input(int problemNum)
         {
           string s;
           ifs >> s;
-          rep(l, ITEM_KIND) {
+          rep(l, ITEM_KIND)
+          {
             vertical_edge_block[i][j][k][l] = s[l] - '0';
           }
         }
@@ -193,12 +195,14 @@ void read_input(int problemNum)
     }
   }
 
-  rep(j, ITEM_KIND) {
+  rep(j, ITEM_KIND)
+  {
     item_value_max[j] = 0;
   }
   rep(i, EDGE_COUNT)
   {
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       item_value_max[j] = max(item_value_max[j], item_value[i][j]);
     }
   }
@@ -226,7 +230,8 @@ void open_output_file(int probNum, ofstream& ofs)
 ll calc_final_score()
 {
   ll sumX = 0;
-  rep(j, ITEM_KIND) {
+  rep(j, ITEM_KIND)
+  {
     sumX += item_value_max[j];
   }
 
@@ -234,7 +239,8 @@ ll calc_final_score()
   rep(i, EDGE_COUNT)
   {
     int tmp = 0;
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       tmp += item_value[i][j];
     }
     ma = max(ma, tmp);
@@ -283,17 +289,20 @@ void precompute_values()
   vector<P> v[ITEM_KIND];
   rep(i, EDGE_COUNT)
   {
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       v[j].push_back(P(item_value[i][j], i));
     }
   }
-  rep(i, ITEM_KIND) {
+  rep(i, ITEM_KIND)
+  {
     sort(v[i].begin(), v[i].end(), greater<P>());
   }
   int val[EDGE_COUNT][ITEM_KIND];
   rep(i, EDGE_COUNT)
   {
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       val[v[j][i].second][j] = i;
     }
   }
@@ -301,7 +310,8 @@ void precompute_values()
   int ma[ITEM_KIND] = {};
   rep(i, EDGE_COUNT)
   {
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       ma[j] = max(ma[j], item_value[i][j]);
     }
   }
@@ -322,13 +332,15 @@ void sort_by_total_value()
   rep(i, EDGE_COUNT)
   {
     int sum = 0;
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       sum += item_value[i][j];
     }
     vp.push_back(P(sum, i));
   }
   sort(vp.begin(), vp.end(), greater<P>());
-  rep(i, vp.size()) {
+  rep(i, vp.size())
+  {
     sorted_order[i] = vp[i].second;
   }
 }
@@ -349,7 +361,8 @@ void init_spiral_order()
   vector<pair<int, P>> vp;
   rep(i, 6)
   {
-    rep(j, 6) {
+    rep(j, 6)
+    {
       vp.push_back(make_pair(SPIRAL_RANK[i][j], P(i, j)));
     }
   }
@@ -371,7 +384,8 @@ ll local_neighbor_score(int x, int y)
       continue;
     }
     int nd = placement[nx][ny];
-    rep(j, ITEM_KIND) {
+    rep(j, ITEM_KIND)
+    {
       res += 10 * item_value[id][j] + 2 * abs(item_value[id][j] - item_value[nd][j]);
     }
   }

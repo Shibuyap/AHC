@@ -36,7 +36,8 @@ const int dy[4] = { 0, 0, -1, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand() {
+  static uint32_t Rand()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -51,12 +52,14 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
-namespace {
+namespace
+{
   // 共通変数
   double com[105][105];
   int MODE = 0;
@@ -84,7 +87,8 @@ namespace {
 }  // namespace
 
 // ハイパラ
-namespace {
+namespace
+{
   int maxNumArray[100] = {
       50, 53, 49, 52, 48, 75, 47, 61, 46, 57, 81, 90, 77, 69, 43, 58, 42,
       59, 41, 82, 40, 54, 39, 76, 55, 63, 37, 64, 65, 33, 86, 66, 34, 67,
@@ -896,9 +900,11 @@ namespace {
 }  // namespace
 
 // Input（m, eps, iEpsの設定）
-namespace {
+namespace
+{
   int judgeArr[100];
-  void Input(int mode, int problemNum = 0) {
+  void Input(int mode, int problemNum = 0)
+  {
     if (mode == 0) {
       cin >> m;
       string sEps;
@@ -944,9 +950,11 @@ namespace {
 }  // namespace
 
 // Output
-namespace {
+namespace
+{
   ofstream ofs1000Out;
-  void OpenOfs1000Out(int problemNum) {
+  void OpenOfs1000Out(int problemNum)
+  {
     string fileNameOfs = "./out/";
     string strNum;
     for (int i = 0; i < (4); ++i) {
@@ -961,7 +969,8 @@ namespace {
 
   void CloseOfs1000Out() { ofs1000Out.close(); }
 
-  void OutputArrayAsString(int mode) {
+  void OutputArrayAsString(int mode)
+  {
     if (mode == 0) {
       cout << n << endl;
       for (int i = 0; i < (m); ++i) {
@@ -993,11 +1002,13 @@ namespace {
   }
 
   int answersFor1000Out[TURN];
-  void OutputAnsToOfs1000Out() {
+  void OutputAnsToOfs1000Out()
+  {
     for (int i = 0; i < (100); ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
   }
 
-  void OutputHaipara() {
+  void OutputHaipara()
+  {
     for (int i = 0; i < (101); ++i) {
       for (int j = 0; j < (41); ++j) {
         if (hyperSolver[i][j] / 10 == 10 || hyperSolver[i][j] / 10 == 12) {
@@ -1136,7 +1147,8 @@ namespace {
   }
 }  // namespace
 
-void RandmizeGraph(int x) {
+void RandmizeGraph(int x)
+{
   for (int j = 0; j < (n); ++j) {
     for (int k = j + 1; k < n; ++k) {
       b[j][k] = a[x][j][k];
@@ -1149,7 +1161,8 @@ void RandmizeGraph(int x) {
 }
 
 int judgeNum;
-void InitB(int mode, int turn = 0) {
+void InitB(int mode, int turn = 0)
+{
   for (int i = 0; i < (n); ++i) {
     for (int j = 0; j < (n); ++j) { b[i][j] = 0; }
   }
@@ -1173,9 +1186,11 @@ void InitB(int mode, int turn = 0) {
 }
 
 // numArray
-namespace {
+namespace
+{
   int numArr[100];
-  void InitNumArray1() {
+  void InitNumArray1()
+  {
     if (n % 2 == 0) {
       int cnt = 0;
       for (int i = (n / 2) - 1; i >= 0; --i) {
@@ -1214,7 +1229,8 @@ namespace {
     }
   }
 
-  void InitNumArray2() {
+  void InitNumArray2()
+  {
     for (int i = 0; i < (100); ++i) { numArr[i] = maxNumArray[i]; }
 
     for (int i = 0; i < (m); ++i) {
@@ -1234,7 +1250,8 @@ namespace {
     }
   }
 
-  void InitNumArray3() {
+  void InitNumArray3()
+  {
     for (int i = 0; i < (100); ++i) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
 
     for (int i = 0; i < (m); ++i) {
@@ -1254,7 +1271,8 @@ namespace {
     }
   }
 
-  void InitNumArray4() {
+  void InitNumArray4()
+  {
     for (int i = 0; i < (100); ++i) numArr[i] = 0;
     for (int i = 0; i < (20); ++i) { numArr[i] = (i + 1) * 5; }
     for (int i = 0; i < (m); ++i) {
@@ -1274,7 +1292,8 @@ namespace {
     }
   }
 
-  void InitNumArray5() {
+  void InitNumArray5()
+  {
     if (n % 2 == 0) {
       int cnt = 0;
       for (int i = (n / 2) - 1; i >= 0; --i) {
@@ -1329,7 +1348,8 @@ namespace {
     }
   }
 
-  void InitNumArray6() {
+  void InitNumArray6()
+  {
     if (n % 2 == 0) {
       int cnt = 0;
       for (int j = 0; j < (3); ++j) {
@@ -1374,7 +1394,8 @@ namespace {
     }
   }
 
-  void InitNumArray7() {
+  void InitNumArray7()
+  {
     if (n % 2 == 0) {
       int cnt = 0;
       for (int i = (n / 2) - 1; i >= 0; --i) {
@@ -1421,7 +1442,8 @@ namespace {
     }
   }
 
-  void InitNumArray8() {
+  void InitNumArray8()
+  {
     int cnt = 0;
     for (int i = (n)-1; i >= 0; --i) {
       numArr[cnt] = i + 1;
@@ -1445,7 +1467,8 @@ namespace {
     }
   }
 
-  void InitNumArray9() {
+  void InitNumArray9()
+  {
     int cnt = 0;
     for (int j = 1; j < 3; ++j) {
       for (int i = (n)-1; i >= 0; --i) {
@@ -1472,7 +1495,8 @@ namespace {
     }
   }
 
-  void InitNumArray10() {
+  void InitNumArray10()
+  {
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1512,7 +1536,8 @@ namespace {
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray11() {
+  void InitNumArray11()
+  {
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1552,7 +1577,8 @@ namespace {
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray12() {
+  void InitNumArray12()
+  {
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -1596,7 +1622,8 @@ namespace {
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray13() {
+  void InitNumArray13()
+  {
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -1640,7 +1667,8 @@ namespace {
     if (cnt < m) numPairArrOK = 0;
   }
 
-  void InitNumArray14() {
+  void InitNumArray14()
+  {
     for (int i = 0; i < (m); ++i) {
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -1659,7 +1687,8 @@ namespace {
     }
   }
 
-  void InitNumArray15() {
+  void InitNumArray15()
+  {
     numPairArrOK = 0;
     int minn = 4;
     int cnt = 0;
@@ -1788,7 +1817,8 @@ namespace {
     }
   }
 
-  void InitNumArray16() {
+  void InitNumArray16()
+  {
     numPairArrOK = 0;
     int minn = 4;
     int cnt = 0;
@@ -1918,7 +1948,8 @@ namespace {
   }
 
   // 4コア
-  void InitNumArray17() {
+  void InitNumArray17()
+  {
     numPairArrOK = 0;
     int minn = 4;
     int cnt = 0;
@@ -2101,7 +2132,8 @@ namespace {
 
   // 13表裏
   int omoteArr[1000];
-  void InitNumArray18() {
+  void InitNumArray18()
+  {
     for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
@@ -2162,7 +2194,8 @@ namespace {
   }
 
   // 10表裏
-  void InitNumArray19() {
+  void InitNumArray19()
+  {
     for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
@@ -2221,7 +2254,8 @@ namespace {
   // 0.0用
   vector<vector<P>> zeroPairs;
   vector<int> dfsvec;
-  void dfs(int sum, int x) {
+  void dfs(int sum, int x)
+  {
     if (dfsvec.size()) {
 
       if (dfsvec.size() == 1) {
@@ -2254,7 +2288,8 @@ namespace {
       }
     }
   }
-  void InitNumArray20() {
+  void InitNumArray20()
+  {
     zeroPairs.clear();
     numPairArrOK = 0;
     dfs(0, 1);
@@ -2291,7 +2326,8 @@ namespace {
   }
 
   // 1コア
-  void InitNumArray21() {
+  void InitNumArray21()
+  {
     for (int i = 0; i < (1000); ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
@@ -2329,7 +2365,8 @@ namespace {
   }
 
 
-  void InitNumArray(int mode) {
+  void InitNumArray(int mode)
+  {
     numPairArrOK = 1;
     int ra = hyperSolverNum % 1000 / 10;
 
@@ -2403,7 +2440,8 @@ namespace {
 
 }  // namespace
 
-int Solver1() {
+int Solver1()
+{
   vector<int> keep[110];
 
   int cnt[100] = {};
@@ -2437,7 +2475,8 @@ int Solver1() {
   return res;
 }
 
-int Solver2() {
+int Solver2()
+{
   int cnt[100] = {};
   int f[100] = {};
   int res = n;
@@ -2479,7 +2518,8 @@ int Solver2() {
   return argRes;
 }
 
-int Solver3() {
+int Solver3()
+{
   vector<int> vec[2];
   int f[100];
   for (int i = 0; i < (n); ++i) {
@@ -2543,7 +2583,8 @@ int Solver3() {
   return argRes;
 }
 
-int Solver4() {
+int Solver4()
+{
   int cnt[100] = {};
   int f[100] = {};
   int res = n;
@@ -2617,7 +2658,8 @@ int Solver4() {
   return argRes;
 }
 
-int Solver5() {
+int Solver5()
+{
   int cnt[100] = {};
   int f[100] = {};
   int res = n;
@@ -2690,7 +2732,8 @@ int Solver5() {
   return argRes;
 }
 
-int Solver6() {
+int Solver6()
+{
   int cnt[100] = {};
   int f[100] = {};
   int ff[100] = {};
@@ -2857,7 +2900,8 @@ int Solver6() {
   return argRes;
 }
 
-int Solver7() {
+int Solver7()
+{
   int cnt[100] = {};
   int f[100] = {};
   int ff[100] = {};
@@ -3024,7 +3068,8 @@ int Solver7() {
   return argRes;
 }
 
-int Solver8() {
+int Solver8()
+{
   int cnt = 0;
   for (int i = 0; i < (n); ++i) {
     for (int j = i + 1; j < n; ++j) { cnt += b[i][j]; }
@@ -3033,7 +3078,8 @@ int Solver8() {
   return cnt;
 }
 
-int Solver9() {
+int Solver9()
+{
   map<P, int> mp;
   int fff[10][100];
   P kp[10];
@@ -3249,7 +3295,8 @@ int Solver9() {
   return argRes;
 }
 
-int Solver10() {
+int Solver10()
+{
   map<P, int> mp;
   int fff[31][100];
   P kp[31];
@@ -3384,7 +3431,8 @@ int Solver10() {
   return argRes;
 }
 
-int Solver11() {
+int Solver11()
+{
   int f[110] = {};
 
   // コア1を作る
@@ -3616,7 +3664,8 @@ int Solver11() {
   return argRes;
 }
 
-int Solver12() {
+int Solver12()
+{
   int f[110] = {};
 
   // コア1を作る
@@ -3923,7 +3972,8 @@ int Solver12() {
 }
 
 // 4コア
-int Solver13() {
+int Solver13()
+{
   int f[110] = {};
 
   // コア1を作る
@@ -4303,7 +4353,8 @@ int Solver13() {
   return argRes;
 }
 
-int Solver14() {
+int Solver14()
+{
   int real_argRes = 0;
   int real_minDiff = 1000;
 
@@ -4532,7 +4583,8 @@ int Solver14() {
   return real_argRes;
 }
 
-int Solver15() {
+int Solver15()
+{
   map<int, int> argMap;
 
   for (int wataruoop = 0; wataruoop < (5); ++wataruoop) {
@@ -4781,7 +4833,8 @@ int Solver15() {
 }
 
 // 11表裏
-int Solver16() {
+int Solver16()
+{
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
@@ -5043,7 +5096,8 @@ int Solver16() {
 }
 
 // 11表裏5セット
-int Solver17() {
+int Solver17()
+{
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
@@ -5305,7 +5359,8 @@ int Solver17() {
 }
 
 // 0.0用
-int Solver18() {
+int Solver18()
+{
   int visit[110] = {};
   int bb[110][110];
   for (int i = 0; i < (n); ++i) {
@@ -5355,7 +5410,8 @@ int Solver18() {
 }
 
 // 14表裏
-int Solver19() {
+int Solver19()
+{
   int real_argRes[2] = {};
   int real_minDiff[2] = { 1000,1000 };
   int keepB[100][100];
@@ -5610,7 +5666,8 @@ int Solver19() {
 }
 
 // 21表裏5セット
-int Solver20() {
+int Solver20()
+{
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
@@ -5801,7 +5858,8 @@ int Solver20() {
 }
 
 // 14亜種
-int Solver21() {
+int Solver21()
+{
   int real_argRes = 0;
   int real_minDiff = 1000;
 
@@ -6031,7 +6089,8 @@ int Solver21() {
 }
 
 // 14亜種
-int Solver22() {
+int Solver22()
+{
   int real_argRes = 0;
   int real_minDiff = 1000;
 
@@ -6261,7 +6320,8 @@ int Solver22() {
 }
 
 // 16亜種
-int Solver23() {
+int Solver23()
+{
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
@@ -6523,7 +6583,8 @@ int Solver23() {
 }
 
 // 16亜種
-int Solver24() {
+int Solver24()
+{
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
@@ -6784,7 +6845,8 @@ int Solver24() {
   return real_argRes;
 }
 
-int ComputeAnswer(int mode, int turn = 0) {
+int ComputeAnswer(int mode, int turn = 0)
+{
   int res = 0;
   int num = num = hyperSolverNum % 10 + hyperSolverNum / 1000 * 10;
 
@@ -6864,7 +6926,8 @@ int ComputeAnswer(int mode, int turn = 0) {
   return res;
 }
 
-double Simulate(int mode) {
+double Simulate(int mode)
+{
   double res = 1e9 / n;
   for (int turn = 0; turn < (100); ++turn) {
     InitB(mode, turn);
@@ -6881,7 +6944,8 @@ double Simulate(int mode) {
   return res;
 }
 
-void solve(int mode) {
+void solve(int mode)
+{
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
@@ -6907,7 +6971,8 @@ void solve(int mode) {
   // ハイパラ調整
   if (mode == 100) {
     int loop = 0;
-    struct winner {
+    struct winner
+    {
       int winM = -1;
       int winEps = -1;
       int winLife = 0;
@@ -6969,10 +7034,10 @@ void solve(int mode) {
           ofsScore << score / hyperMaxScore[m][iEps] << ' ' << fixed
             << setprecision(6) << score << ' ' << hyperMaxScore[m][iEps]
             << endl;
-          // cout << _ << ' ' << score << endl;
-          // if (_ < 100)
-          //   ofsScore << setw(4) << setfill('0') << _ << " : " << score <<
-          //   endl;
+            // cout << _ << ' ' << score << endl;
+            // if (_ < 100)
+            //   ofsScore << setw(4) << setfill('0') << _ << " : " << score <<
+            //   endl;
         }
         changeOfs << hi << endl;
         changeOfs << "sumScore = " << sumScore << endl;
@@ -7278,9 +7343,9 @@ void solve(int mode) {
       ofsScore << score / hyperMaxScore[m][iEps] << ' ' << fixed
         << setprecision(6) << score << ' ' << hyperMaxScore[m][iEps]
         << endl;
-      // cout << _ << ' ' << score << endl;
-      // if (_ < 100)
-      //   ofsScore << setw(4) << setfill('0') << _ << " : " << score << endl;
+        // cout << _ << ' ' << score << endl;
+        // if (_ < 100)
+        //   ofsScore << setw(4) << setfill('0') << _ << " : " << score << endl;
     }
     cout << hi << endl;
     cout << "sumScore = " << sumScore << endl;
@@ -7379,7 +7444,8 @@ void solve(int mode) {
 #endif
 }
 
-int main() {
+int main()
+{
   for (int i = 0; i < (105); ++i) {
     for (int j = 0; j < (105); ++j) {
       com[i][j] = 0;

@@ -39,7 +39,8 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t Rand() {
+static uint32_t Rand()
+{
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
   static uint32_t z = 521288629;
@@ -53,21 +54,25 @@ static uint32_t Rand() {
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double Rand01() {
+static double Rand01()
+{
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-static double RandRange(double l, double r) {
+static double RandRange(double l, double r)
+{
   return l + (r - l) * Rand01();
 }
 
 // [l, r]
-static uint32_t RandRange(uint32_t l, uint32_t r) {
+static uint32_t RandRange(uint32_t l, uint32_t r)
+{
   return l + Rand() % (r - l + 1);
 }
 
 
-void FisherYates(int* data, int n) {
+void FisherYates(int* data, int n)
+{
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
     int swa = data[i];
@@ -92,17 +97,20 @@ int mode;
 
 std::chrono::steady_clock::time_point startTimeClock;
 
-void ResetTime() {
+void ResetTime()
+{
   startTimeClock = std::chrono::steady_clock::now();
 }
 
-double GetNowTime() {
+double GetNowTime()
+{
   std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
   return elapsed.count();
 }
 
 // 二次元座標を表す構造体
-struct Point {
+struct Point
+{
 public:
   int x;
   int y;
@@ -126,27 +134,34 @@ int f[510][510];
 int best_f[510][510];
 
 // 現在の解答を最良の解答として保存する関数（未使用）
-void CopyToBest(int blockSize) {
+void CopyToBest(int blockSize)
+{
   best_ansScore = ansScore;
-  rep(i, blockSize + 2) {
-    rep(j, blockSize + 2) {
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
       best_f[i][j] = f[i][j];
     }
   }
 }
 
 // 最良の解答を現在の解答として設定する関数（未使用）
-void CopyToAns(int blockSize) {
+void CopyToAns(int blockSize)
+{
   ansScore = best_ansScore;
-  rep(i, blockSize + 2) {
-    rep(j, blockSize + 2) {
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
       f[i][j] = best_f[i][j];
     }
   }
 }
 
 // 複数のケースを処理する際に、内部状態を初期化する関数
-void SetUp() {
+void SetUp()
+{
   ansScore = 0;   // スコアの初期化
   rep(i, 510)rep(j, 510)best_f[i][j] = 0;
 
@@ -156,7 +171,8 @@ void SetUp() {
 }
 
 // 入力を受け取る関数
-void Input(int problemNum) {
+void Input(int problemNum)
+{
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";  // 入力ファイルのパスを作成
   ifstream ifs(oss.str());  // ファイルストリームを開く
@@ -181,7 +197,8 @@ void Input(int problemNum) {
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs) {
+void OpenOfs(int probNum, ofstream& ofs)
+{
   if (mode != 0) {
     // モードが0以外の場合、出力ファイルを作成
     std::ostringstream oss;
@@ -191,13 +208,15 @@ void OpenOfs(int probNum, ofstream& ofs) {
 }
 
 // スコアを計算する関数
-ll CalcScore() {
+ll CalcScore()
+{
   ll res = ansScore + 1;  // 問題文の得点計算式に基づく（max(0, a - b + 1)）
   return res;             // スコアを返す
 }
 
 // 解答を出力する関数
-void Output(ofstream& ofs) {
+void Output(ofstream& ofs)
+{
   if (mode == 0) {
     // 標準出力に出力
     cout << ans.size() << endl;  // ポリゴンの頂点数を出力
@@ -211,10 +230,12 @@ void Output(ofstream& ofs) {
 }
 
 // ポリゴンの辺の総和が制約を満たしているか確認する関数
-bool IsLengthOK(vector<Point> vp) {
+bool IsLengthOK(vector<Point> vp)
+{
   int len = 0;
   // 各辺の長さを計算
-  rep(i, vp.size() - 1) {
+  rep(i, vp.size() - 1)
+  {
     len += abs(vp[i + 1].x - vp[i].x);  // x座標の差の絶対値を加算
     len += abs(vp[i + 1].y - vp[i].y);  // y座標の差の絶対値を加算
   }
@@ -228,17 +249,20 @@ bool IsLengthOK(vector<Point> vp) {
 }
 
 // 座標がグリッドの範囲外かを確認する関数
-bool IsNG(int x, int y, int blockSize) {
+bool IsNG(int x, int y, int blockSize)
+{
   if (x < 0 || blockSize <= x || y < 0 || blockSize <= y) return true;  // 範囲外ならtrue
   return false;  // 範囲内ならfalse
 }
 
 int block[510][510];  // 各グリッドセルのスコアを格納する配列
-void InitBlock(const int blockSize) {
+void InitBlock(const int blockSize)
+{
   rep(i, blockSize) rep(j, blockSize) block[i][j] = 0;  // 初期化
 
   // サバとイワシの位置から、各セルのスコアを計算
-  rep(i, n) {
+  rep(i, n)
+  {
     {
       // サバの座標をセルに割り当て、スコアを加算
       int xx = saba[i].x / (100000 / blockSize);
@@ -262,7 +286,8 @@ void InitBlock(const int blockSize) {
 }
 
 int haba[510][510];  // 幅優先探索用の配列
-void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, const int blockSize, int& loop2, double timeLimit) {
+void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, const int blockSize, int& loop2, double timeLimit)
+{
   queue<P> que;  // 幅優先探索のためのキュー
 
   double nowTime = GetNowTime();  // 現在の経過時間
@@ -281,7 +306,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     int ray = Rand() % blockSize;  // ランダムなセルのyインデックス
 
     int ng = 1;  // 変更が可能かどうかのフラグ
-    rep(i, 4) {
+    rep(i, 4)
+    {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
       if (IsNG(nx, ny, blockSize)) continue;  // 範囲外は無視
@@ -311,8 +337,10 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       rep(i, blockSize + 2) rep(j, blockSize + 2) haba[i][j] = 0;  // 初期化
       int now = 1;
       upd = 1;
-      srep(i, 1, blockSize + 1) {
-        srep(j, 1, blockSize + 1) {
+      srep(i, 1, blockSize + 1)
+      {
+        srep(j, 1, blockSize + 1)
+        {
           if (haba[i][j] != 0) continue;  // 既に探索済みならスキップ
           if (now == 3) {
             upd = 0;  // 連結成分が2つを超える場合は更新不可
@@ -325,7 +353,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
             int x = que.front().first;
             int y = que.front().second;
             que.pop();
-            rep(k, 4) {
+            rep(k, 4)
+            {
               int nx = x + dx[k];
               int ny = y + dy[k];
               if (IsNG(nx - 1, ny - 1, blockSize)) continue;
@@ -351,8 +380,10 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       int sx = -1, sy = -1;
       int befx = -1, befy = -1;
       // 境界の始点を探す
-      srep(i, 1, blockSize + 1) {
-        srep(j, 1, blockSize + 1) {
+      srep(i, 1, blockSize + 1)
+      {
+        srep(j, 1, blockSize + 1)
+        {
           if (f[i][j] == 1 && f[i][j - 1] == 0) {
             sx = i;
             sy = j;
@@ -422,8 +453,10 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
           assert(false);  // 次の点が見つからない場合はエラー
           for (auto p : vp) cout << p.first << ' ' << p.second << endl;
           cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
-          srep(i, 1, blockSize + 1) {
-            srep(j, 1, blockSize + 1) {
+          srep(i, 1, blockSize + 1)
+          {
+            srep(j, 1, blockSize + 1)
+            {
               cout << f[i][j];
             }
             cout << endl;
@@ -469,7 +502,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
 
 // 解法のメイン部分を実装する関数
 int ff[510][510];
-void Method3() {
+void Method3()
+{
   const int blockSize = 20;  // グリッドの分割数（20×20のグリッド）
 
   InitBlock(blockSize);
@@ -492,8 +526,10 @@ void Method3() {
     if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
 
     int cnt = 0;  // 選択した領域のスコア
-    srep(i, x1, x2 + 1) {
-      srep(j, y1, y2 + 1) {
+    srep(i, x1, x2 + 1)
+    {
+      srep(j, y1, y2 + 1)
+      {
         cnt += block[i][j];  // 選択したセルのスコアを合計
       }
     }
@@ -516,15 +552,19 @@ void Method3() {
   }
 
 
-  rep(i, blockSize + 2) {
-    rep(j, blockSize + 2) {
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
       f[i][j] = 0;  // 初期化
     }
   }
 
   // 最良の矩形領域をf配列に設定
-  srep(i, xx1, xx2 + 1) {
-    srep(j, yy1, yy2 + 1) {
+  srep(i, xx1, xx2 + 1)
+  {
+    srep(j, yy1, yy2 + 1)
+    {
       f[i + 1][j + 1] = 1;  // 選択した領域を1とする
     }
   }
@@ -536,18 +576,24 @@ void Method3() {
 
   int loop3 = 0;
   int blockSize40 = 40;
-  rep(i, blockSize + 2) {
-    rep(j, blockSize + 2) {
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
       ff[i][j] = f[i][j];
     }
   }
-  rep(i, blockSize40 + 2) {
-    rep(j, blockSize40 + 2) {
+  rep(i, blockSize40 + 2)
+  {
+    rep(j, blockSize40 + 2)
+    {
       f[i][j] = 0;
     }
   }
-  rep(i, blockSize + 2) {
-    rep(j, blockSize + 2) {
+  rep(i, blockSize + 2)
+  {
+    rep(j, blockSize + 2)
+    {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;
         f[i * 2 - 1][j * 2] = 1;
@@ -563,18 +609,24 @@ void Method3() {
 
   int loop4 = 0;
   int blockSize80 = 80;
-  rep(i, blockSize40 + 2) {
-    rep(j, blockSize40 + 2) {
+  rep(i, blockSize40 + 2)
+  {
+    rep(j, blockSize40 + 2)
+    {
       ff[i][j] = f[i][j];
     }
   }
-  rep(i, blockSize80 + 2) {
-    rep(j, blockSize80 + 2) {
+  rep(i, blockSize80 + 2)
+  {
+    rep(j, blockSize80 + 2)
+    {
       f[i][j] = 0;
     }
   }
-  rep(i, blockSize40 + 2) {
-    rep(j, blockSize40 + 2) {
+  rep(i, blockSize40 + 2)
+  {
+    rep(j, blockSize40 + 2)
+    {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;
         f[i * 2 - 1][j * 2] = 1;
@@ -596,8 +648,10 @@ void Method3() {
     cout << "loop3 = " << loop3 << ", ";
     cout << "loop4 = " << loop4 << ", ";
     cout << endl;
-    srep(i, 1, blockSize80 + 1) {
-      srep(j, 1, blockSize80 + 1) {
+    srep(i, 1, blockSize80 + 1)
+    {
+      srep(j, 1, blockSize80 + 1)
+      {
         cout << f[i][j];
       }
       cout << endl;
@@ -606,7 +660,8 @@ void Method3() {
 }
 
 // 問題を解く関数
-ll Solve(int problem_num) {
+ll Solve(int problem_num)
+{
   ResetTime();  // 時間計測のリセット
 
   SetUp();  // 内部状態の初期化
@@ -637,7 +692,8 @@ ll Solve(int problem_num) {
 
 */
 /////////////////////////////////////////////////////////////////////////
-int main_old() {
+int main_old()
+{
   mode = 2;
 
   if (mode == 0) {
@@ -645,7 +701,8 @@ int main_old() {
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100) {
+    srep(i, 0, 100)
+    {
       ll score = Solve(i);  // 問題番号iを解く
       sum += score;         // スコアの合計を更新
       if (mode == 1) {

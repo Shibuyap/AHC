@@ -506,7 +506,7 @@ int run_solver(int case_num)
   Board board;
   board.init();
 
-  monte_carlo(board, input);  
+  monte_carlo(board, input);
 
   int score = 0;
   if (exec_mode != 0) {

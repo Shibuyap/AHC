@@ -120,7 +120,8 @@ vector<Point> da, db, dc;
 int a_flag[MAX_N];
 int b_flag[MAX_N];
 
-void reset_flag() {
+void reset_flag()
+{
   for (int i = 0; i < A; ++i) a_flag[i] = 0;
   for (int i = 0; i < B; ++i) b_flag[i] = 0;
 }
@@ -319,7 +320,8 @@ double calculate_score()
 
 
 
-double simulate_score() {
+double simulate_score()
+{
   reset_flag();
 
   moves_a_count = 0;
@@ -399,7 +401,8 @@ double simulate_score() {
   return score;
 }
 
-double calculate_score_one_point(int idx) {
+double calculate_score_one_point(int idx)
+{
   double res = 0;
   for (int i = idx; i < idx + 2; ++i) {
     double d = 0;
@@ -452,7 +455,8 @@ void output_data(ofstream& ofs)
   }
 }
 
-void init_box() {
+void init_box()
+{
   for (int i = 0; i < A; ++i) {
     box_a[i][0] = a[i];
     box_a[i][1] = a[i];
@@ -596,7 +600,8 @@ void init_box() {
   }
 }
 
-void merge_gomi() {
+void merge_gomi()
+{
   ua.clear();
   da.clear();
   for (int i = 0; i < A; ++i) {
@@ -821,7 +826,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
       if (now_time > tl) break;
     }
 
-    if(rand_xorshift() % 321212 == 0) {
+    if (rand_xorshift() % 321212 == 0) {
       restore_best_score();
       continue;
     }
@@ -987,8 +992,8 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
         }
 
         for (int j = 0; j < 3; ++j) {
-          swap(moves_a[ra2*3+j][0], moves_a[ra3*3+j][0]);
-          swap(moves_a[ra2*3+j][1], moves_a[ra3*3+j][1]);
+          swap(moves_a[ra2 * 3 + j][0], moves_a[ra3 * 3 + j][0]);
+          swap(moves_a[ra2 * 3 + j][1], moves_a[ra3 * 3 + j][1]);
         }
         tmp_score = calculate_score();
       }
@@ -1454,8 +1459,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; ++i)
-    {
+    for (int i = 0; i < 15; ++i) {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
@@ -1483,8 +1487,7 @@ int main()
       new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
-      for (int i = 0; i < 15; ++i)
-      {
+      for (int i = 0; i < 15; ++i) {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 

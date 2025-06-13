@@ -36,11 +36,13 @@ namespace
 {
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
@@ -61,7 +63,8 @@ const char DIR_CHAR[4] = { 'U', 'L', 'D', 'R' };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t rand32() {
+  static uint32_t rand32()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -76,7 +79,8 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double rand_unit() {
+  static double rand_unit()
+  {
     return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
@@ -111,7 +115,8 @@ namespace /* Union Find*/
   int cntUF[MAX_N];   // 属する頂点の個数(親のみ正しい)
 
   // n要素で初期化
-  void UFinit(const int nn) {
+  void UFinit(const int nn)
+  {
     for (int i = 0; i < nn; i++) {
       parUF[i] = i;
       rankUF[i] = 0;
@@ -124,7 +129,8 @@ namespace /* Union Find*/
   }
 
   // 木の根を求める
-  int findUF(int x) {
+  int findUF(int x)
+  {
     if (parUF[x] == x) {
       return x;
     }
@@ -134,7 +140,8 @@ namespace /* Union Find*/
   }
 
   // xとyの属する集合を併合
-  void uniteUF(int x, int y) {
+  void uniteUF(int x, int y)
+  {
     x = findUF(x);
     y = findUF(y);
     if (x == y) return;
@@ -151,14 +158,16 @@ namespace /* Union Find*/
   } /* Union Find*/
 
   // xとyが同じ集合に属するか否か
-  bool sameUF(int x, int y) {
+  bool sameUF(int x, int y)
+  {
     return findUF(x) == findUF(y);
   }
 }  // namespace
 
 // スコア計算
 int boardForCalc[10][10];
-int calc_score(const vector<int>& ope) {
+int calc_score(const vector<int>& ope)
+{
   UFinit(board_size * board_size);
 
   int x = startX, y = startY;
@@ -213,7 +222,8 @@ int calc_score(const vector<int>& ope) {
   return res;
 }
 
-void read_input(int problemNum) {
+void read_input(int problemNum)
+{
   std::ostringstream sout;
   sout << std::setfill('0') << std::setw(4) << problemNum;
   std::string numStr = sout.str();
@@ -265,14 +275,16 @@ void read_input(int problemNum) {
   }
 }
 
-bool in_bounds(int x, int y) {
+bool in_bounds(int x, int y)
+{
   if (x < 0 || board_size <= x || y < 0 || board_size <= y) {
     return false;
   }
   return true;
 }
 
-bool route_in_bounds(const vector<int>& ope) {
+bool route_in_bounds(const vector<int>& ope)
+{
   int x = startX;
   int y = startY;
   for (int i = 0; i < ope.size(); ++i) {
@@ -286,7 +298,8 @@ bool route_in_bounds(const vector<int>& ope) {
 }
 
 // kから後ろを全リセット
-void shuffle_suffix(double temp) {
+void shuffle_suffix(double temp)
+{
   int ite = rand32() % turn_limit;
 
   int x = startX;
@@ -330,7 +343,8 @@ void shuffle_suffix(double temp) {
 }
 
 // kとkの直後をスワップ
-void swap_adjacent(double temp) {
+void swap_adjacent(double temp)
+{
   int ite = rand32() % (turn_limit - 1);
 
   swap(route[ite], route[ite + 1]);
@@ -362,7 +376,8 @@ void swap_adjacent(double temp) {
 namespace
 {
   int dfsBoard[10][10];
-  bool CheckAllDfs(const vector<vector<int>>& vec) {
+  bool CheckAllDfs(const vector<vector<int>>& vec)
+  {
     UFinit(board_size * board_size);
     // 横の繋がり
     for (int i = 0; i < board_size; ++i) {
@@ -392,7 +407,8 @@ namespace
 // 木を焼きなましで見つける
 int aniBoard[10][10];
 int bestMaxAniBoard[10][10];
-int calc_anneal_score() {
+int calc_anneal_score()
+{
   UFinit(board_size * board_size);
   // 横の繋がり
   for (int i = 0; i < board_size; ++i) {
@@ -425,7 +441,8 @@ int calc_anneal_score() {
   return MaxSize;
 }
 
-bool anneal_find_tree(bool isReset = false) {
+bool anneal_find_tree(bool isReset = false)
+{
   clock_t startAniTime, endAniTime;
   const double AniTL = 0.1;
   startAniTime = clock();
@@ -523,7 +540,8 @@ bool anneal_find_tree(bool isReset = false) {
 
 int piece_number[10][10];
 // 作成した盤面の転倒数をチェックする
-bool is_even_inversion() {
+bool is_even_inversion()
+{
   int tmp_board[10][10];
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
@@ -577,7 +595,8 @@ bool is_even_inversion() {
 // 作成した木からピースの種類ごとの番号を決定する
 vector<int> kindNumbers[16];
 vector<P> origin_positions[16];
-void init_kind_indices() {
+void init_kind_indices()
+{
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
       kindNumbers[dfsBoard[i][j]].push_back(i * board_size + j);
@@ -586,7 +605,8 @@ void init_kind_indices() {
   }
 }
 
-void reset_state() {
+void reset_state()
+{
   route.clear();
   best_route.clear();
   for (int i = 0; i < 16; ++i) {
@@ -596,7 +616,8 @@ void reset_state() {
 }
 
 // ピースに番号を振る
-void init_piece_numbers() {
+void init_piece_numbers()
+{
   int ite[16] = {};
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
@@ -631,7 +652,8 @@ void init_piece_numbers() {
   }
 }
 
-pair<P, P> shuffle_same_kind_piece() {
+pair<P, P> shuffle_same_kind_piece()
+{
   int ite = rand32() % 16;
   while (origin_positions[ite].size() <= 1) {
     ite = rand32() % 16;
@@ -653,14 +675,16 @@ pair<P, P> shuffle_same_kind_piece() {
 }
 
 // 木を作成する手順を1つ作成する
-void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& route_tmp) {
+void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<int>& route_tmp)
+{
   route_tmp.push_back(nd);
   swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
   x += DX[nd];
   y += DY[nd];
 }
 
-void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs, int mode = 0) {
+void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs, int mode = 0)
+{
   int dp[10][10];
   int dir[10][10];
   if (mode == 0) {
@@ -752,7 +776,8 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
 
 // 3×2マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
-void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+{
   while (y != yy + 1) {
     ansDfs.push_back(3);
     swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
@@ -770,7 +795,8 @@ void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmp
 
 // 2×3マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
-void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+{
   while (x != board_size - 1) {
     apply_move(x, y, 2, tmpBoard, ansDfs);
   }
@@ -784,7 +810,8 @@ void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& t
   }
 }
 
-void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+{
   // カーソル移動
   int dp[10][10];
   int dir[10][10];
@@ -856,7 +883,8 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
   }
 }
 
-void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs) {
+void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+{
   // カーソル移動
   int dp[10][10];
   int dir[10][10];
@@ -931,7 +959,8 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
   }
 }
 
-vector<int> build_route() {
+vector<int> build_route()
+{
   vector<vector<int>> tmpBoard(10, vector<int>(10));
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
@@ -1194,7 +1223,8 @@ vector<int> build_route() {
 }
 
 int exec_mode = 0; // 0: 標準出力, 1: ファイル出力
-void output_data(int case_num) {
+void output_data(int case_num)
+{
   if (exec_mode == 0) {
     // 標準出力
     for (int i = 0; i < route.size(); ++i) {
@@ -1215,7 +1245,8 @@ void output_data(int case_num) {
   }
 }
 
-int solve_case(int mode, int problemNum = 0) {
+int solve_case(int mode, int problemNum = 0)
+{
   start_timer();
 
   // 入力部
@@ -1345,7 +1376,8 @@ int solve_case(int mode, int problemNum = 0) {
   return 0;
 }
 
-int main() {
+int main()
+{
   exec_mode = 10;
 
   if (exec_mode == 0) {

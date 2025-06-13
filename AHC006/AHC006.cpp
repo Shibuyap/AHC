@@ -21,14 +21,17 @@ typedef long long int ll;
 #define MAX_N 200005
 
 // タイマー
-namespace {
+namespace
+{
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer() {
+  void start_timer()
+  {
     start_time_clock = std::chrono::steady_clock::now();
   }
 
-  double get_elapsed_time() {
+  double get_elapsed_time()
+  {
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
@@ -36,7 +39,8 @@ namespace {
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand() {
+  static uint32_t Rand()
+  {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
     static uint32_t z = 521288629;
@@ -51,28 +55,33 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01() {
+  static double Rand01()
+  {
     return (Rand() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
 int exec_mode = 0;
 
-struct Point {
+struct Point
+{
   int x;
   int y;
 
-  Point() {
+  Point()
+  {
 
   }
 
-  Point(int _x, int _y) {
+  Point(int _x, int _y)
+  {
     x = _x;
     y = _y;
   }
 };
 
-inline int manhattan(const Point& a, const Point& b) {
+inline int manhattan(const Point& a, const Point& b)
+{
   return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
@@ -84,7 +93,8 @@ const int m = 51;
 vector<Point> start_points(INIT_N), goal_points(INIT_N);
 vector<int> orig_indices;
 
-inline bool is_inside_rect(int ite, int L, int R, int U, int D) {
+inline bool is_inside_rect(int ite, int L, int R, int U, int D)
+{
   if (start_points[ite].x < L || R < start_points[ite].x) return false;
   if (start_points[ite].y < U || D < start_points[ite].y) return false;
   if (goal_points[ite].x < L || R < goal_points[ite].x) return false;
@@ -92,7 +102,8 @@ inline bool is_inside_rect(int ite, int L, int R, int U, int D) {
   return true;
 }
 
-class Answer {
+class Answer
+{
 public:
   int score;
   int length;
@@ -104,14 +115,16 @@ public:
   vector<int> partner_idx;
 
   Answer()
-    : score(0), length(0) {
+    : score(0), length(0)
+  {
     sel_pair_idx.resize(m * 2);
     reduced_pair_idx.resize(m * 2);
     is_used.resize(INIT_N);
     partner_idx.resize(INIT_N * 2);
   }
 
-  void clear() {
+  void clear()
+  {
     score = 0;
     length = 0;
     path.clear();
@@ -121,21 +134,25 @@ public:
     fill(partner_idx.begin(), partner_idx.end(), INIT_N);
   }
 
-  int calc_score() {
+  int calc_score()
+  {
     score = round(100000000.0 / (1000.0 + length));
     return score;
   }
 
-  int compute_path_time() {
+  int compute_path_time()
+  {
     length = 0;
-    srep(i, 1, path.size()) {
+    srep(i, 1, path.size())
+    {
       length += manhattan(path[i], path[i - 1]);
     }
     return length;
   }
 };
 
-void input_data(int case_num) {
+void input_data(int case_num)
+{
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
@@ -154,7 +171,8 @@ void input_data(int case_num) {
   }
 }
 
-void output_data(const Answer& answer, int case_num) {
+void output_data(const Answer& answer, int case_num)
+{
   if (exec_mode == 0) {
     // 標準出力
     cout << 50;
@@ -195,7 +213,8 @@ void output_data(const Answer& answer, int case_num) {
   }
 }
 
-void reset_param() {
+void reset_param()
+{
   n = INIT_N;
 
   start_points.resize(INIT_N);
@@ -203,7 +222,8 @@ void reset_param() {
   orig_indices.clear();
 }
 
-void filter_input_points(double time_limit) {
+void filter_input_points(double time_limit)
+{
   // --- 収集済みの最良データを保持 ---
   vector<Point> best_start_points, best_goal_points;
   int         best_metric = 1'001'001;   // 今のところ最小の「矩形スコア」
@@ -256,7 +276,8 @@ void filter_input_points(double time_limit) {
   }
 }
 
-void build_initial_path(Answer& answer) {
+void build_initial_path(Answer& answer)
+{
   answer.clear();
   answer.path.push_back(Point(400, 400));
   for (int i = 0; i < m; ++i) {
@@ -272,7 +293,8 @@ void build_initial_path(Answer& answer) {
   answer.calc_score();
 }
 
-void sa_point_swap(Answer& answer, double time_limit) {
+void sa_point_swap(Answer& answer, double time_limit)
+{
   Answer best_answer = answer;
 
   // 山登り解、焼きなまし解
@@ -347,7 +369,8 @@ void sa_point_swap(Answer& answer, double time_limit) {
   cerr << "Point Swap iteration: " << loop << endl;
 }
 
-void sa_two_opt_path(Answer& answer, double time_limit) {
+void sa_two_opt_path(Answer& answer, double time_limit)
+{
   Answer best_answer = answer;
 
   double start_time = get_elapsed_time();
@@ -447,7 +470,8 @@ void sa_two_opt_path(Answer& answer, double time_limit) {
   }
 }
 
-void sa_path_pruning(Answer& answer, double time_limit) {
+void sa_path_pruning(Answer& answer, double time_limit)
+{
   const int INF = 1001001001;
   int mi = INF;
   answer.reduced_pair_idx = answer.sel_pair_idx;
@@ -525,7 +549,8 @@ void sa_path_pruning(Answer& answer, double time_limit) {
   cerr << "Path Pruning iteration: " << loop << endl;
 }
 
-int solve_case(int case_num) {
+int solve_case(int case_num)
+{
   start_timer();
 
   reset_param();
@@ -552,13 +577,15 @@ int solve_case(int case_num) {
   return answer.score;
 }
 
-int main() {
+int main()
+{
   exec_mode = 1;
   if (exec_mode == 0) {
     solve_case(0);
   }
   else if (exec_mode == 1) {
-    srep(i, 0, 10) {
+    srep(i, 0, 10)
+    {
       solve_case(i);
     }
   }
