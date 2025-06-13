@@ -159,7 +159,7 @@ namespace /* 関節点ライブラリ */
       low.assign(G.size(), 0);
       int k = 0;
       for (int i = 0; i < (int)G.size(); i++) {
-        if (!used[i]) k = dfs(i, k, -1);
+        if (!used[i]) { k = dfs(i, k, -1); }
       }
       sort(aps.begin(), aps.end());          // 必要ならソートする
       sort(bridges.begin(), bridges.end());  // 必要ならソートする
@@ -178,17 +178,19 @@ namespace /* 関節点ライブラリ */
           count++;
           k = dfs(e.to, k, id);
           low[id] = min(low[id], low[e.to]);
-          if (par != -1 && ord[id] <= low[e.to])
+          if (par != -1 && ord[id] <= low[e.to]) {
             is_aps = true;  // 条件2を満たすので関節点
-          if (ord[id] < low[e.to])
+          }
+          if (ord[id] < low[e.to]) {
             bridges.emplace_back(min(id, e.to), max(id, e.to));
+          }
         }
         else if (e.to != par) {  // eが後退辺の時
           low[id] = min(low[id], ord[e.to]);
         }
       }
-      if (par == -1 && count >= 2) is_aps = true;  // 条件1を満たすので関節点
-      if (is_aps) aps.push_back(id);
+      if (par == -1 && count >= 2) { is_aps = true; }  // 条件1を満たすので関節点
+      if (is_aps) { aps.push_back(id); }
       return k;
     }
   };
@@ -290,7 +292,7 @@ void readInput(int problemNum)
     crop.s = S[i];
     crop.d = D[i];
     for (int l = 0; l < (1); ++l) {
-      if (S[i] - l < 0)break;
+      if (S[i] - l < 0) { break; }
       SVec[S[i] - l].push_back(crop);
     }
     DVec[D[i]].push_back(crop);
@@ -323,7 +325,9 @@ void openOutputFile(int probNum, ofstream& ofs)
 ll calculateScore()
 {
   ll sum = 0;
-  for (int i = 0; i < (M); ++i) { sum += D[ansK[i] - 1] - S[ansK[i] - 1] + 1; }
+  for (int i = 0; i < (M); ++i) {
+    sum += D[ansK[i] - 1] - S[ansK[i] - 1] + 1;
+  }
   ll res = SCORE_BASE * sum / HWT;
   return res;
 }
@@ -338,7 +342,7 @@ bool isValidPlacement(const int x, const int y, const vector<vector<int>>& use)
   }
   int blankCount = 0;
   for (int i = 0; i < (4); ++i) {
-    if (wall[x][y][i]) continue;
+    if (wall[x][y][i]) { continue; }
     int nx = x + dx[i];
     int ny = y + dy[i];
     if (use[nx][ny] == -1) {
@@ -358,7 +362,9 @@ bool isConnectedBFS(const vector<vector<int>>& use)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) { f[i][j] = 0; }
+    for (int j = 0; j < (W); ++j) {
+      f[i][j] = 0;
+    }
   }
   int cnt = 0;
   for (int i = 0; i < (H); ++i) {
@@ -407,7 +413,9 @@ bool isReachableFromStart(const vector<vector<int>>& use)
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) { f[i][j] = INF; }
+    for (int j = 0; j < (W); ++j) {
+      f[i][j] = INF;
+    }
   }
 
   int cnt = 0;
@@ -455,7 +463,9 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
 {
   int f[H][W];
   for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) { f[i][j] = INF; }
+    for (int j = 0; j < (W); ++j) {
+      f[i][j] = INF;
+    }
   }
 
 
@@ -524,7 +534,7 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& use
     for (int j = 0; j < (W); ++j) {
       if (use[i][j] != -1) {
         for (int k = 0; k < (4); ++k) {
-          if (wall[i][j][k])continue;
+          if (wall[i][j][k]) { continue; }
           if (use[i + dx[k]][j + dy[k]] != -1) {
             if (use[i + dx[k]][j + dy[k]] == use[i][j]) {
               score += 1e5;
@@ -581,7 +591,7 @@ void greedyPlacement()
         int x = mp[num].first;
         int y = mp[num].second;
         for (int j = 0; j < (4); ++j) {
-          if (wall[x][y][j]) continue;
+          if (wall[x][y][j]) { continue; }
           int nx = x + dx[j];
           int ny = y + dy[j];
           if (use[nx][ny] == -1) {
@@ -620,7 +630,7 @@ void greedyPlacement()
         int y = que.front().second;
         que.pop();
         for (int j = 0; j < (4); ++j) {
-          if (wall[x][y][j])continue;
+          if (wall[x][y][j]) { continue; }
           int nx = x + dx[j];
           int ny = y + dy[j];
           if (use[nx][ny] == -1 && walkCount[x][y] + 1 < walkCount[nx][ny]) {
