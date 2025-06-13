@@ -257,6 +257,8 @@ namespace
 }  // namespace
 
 // 前方宣言
+int calculateScore(int f[]);
+void initializeBitsets(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione);
 void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop);
 
@@ -1760,33 +1762,11 @@ int Solver6()
 
   for (int i = 0; i < (n); ++i) f[i] = ff[i];
 
-  int score = 0;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (f[i] == 0 && f[j] == 0) {
-        score += 1 - b[i][j];
-      }
-      else {
-        if ((f[i] == f[j]) == (b[i][j])) {
-          score++;
-        }
-      }
-    }
-  }
+  int score = calculateScore(f);
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] > 0) {
-      bif[f[i]][i] = 1;
-    }
-  }
-
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-  }
-
   bitset<100> bione(0);
-  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+  initializeBitsets(f, bif, bib, bione);
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
@@ -1879,33 +1859,11 @@ int Solver7()
 
   for (int i = 0; i < (n); ++i) f[i] = ff[i];
 
-  int score = 0;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (f[i] == 0 && f[j] == 0) {
-        score += 1 - b[i][j];
-      }
-      else {
-        if ((f[i] == f[j]) == (b[i][j])) {
-          score++;
-        }
-      }
-    }
-  }
+  int score = calculateScore(f);
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] > 0) {
-      bif[f[i]][i] = 1;
-    }
-  }
-
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-  }
-
   bitset<100> bione(0);
-  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+  initializeBitsets(f, bif, bib, bione);
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
@@ -2057,33 +2015,11 @@ int Solver9()
     }
   }
 
-  int score = 0;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (f[i] == 0 && f[j] == 0) {
-        score += 1 - b[i][j];
-      }
-      else {
-        if ((f[i] == f[j]) == (b[i][j])) {
-          score++;
-        }
-      }
-    }
-  }
+  int score = calculateScore(f);
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] > 0) {
-      bif[f[i]][i] = 1;
-    }
-  }
-
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-  }
-
   bitset<100> bione(0);
-  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+  initializeBitsets(f, bif, bib, bione);
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
@@ -2294,6 +2230,40 @@ void expandCore(vector<int>& cores, int f[], int markValue)
   }
 }
 
+// スコア計算の共通関数
+int calculateScore(int f[])
+{
+  int score = calculateScore(f);
+  return score;
+}
+
+// ビットセット初期化の共通関数
+void initializeBitsets(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione)
+{
+  // bifの初期化
+  for (int i = 0; i < 3; ++i) {
+    bif[i].reset();
+  }
+  for (int i = 0; i < (n); ++i) {
+    if (f[i] > 0) {
+      bif[f[i]][i] = 1;
+    }
+  }
+
+  // bibの初期化
+  for (int i = 0; i < (n); ++i) {
+    for (int j = 0; j < (n); ++j) {
+      bib[i][j] = b[i][j];
+    }
+  }
+
+  // bioneの初期化
+  bione.reset();
+  for (int i = 0; i < (n); ++i) {
+    bione[i] = 1;
+  }
+}
+
 // フリップ最適化の共通関数
 void flipOptimization(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop)
@@ -2388,33 +2358,11 @@ int Solver11()
   int res1 = cores1.size();
   int res2 = cores2.size();
 
-  int score = 0;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (f[i] == 0 && f[j] == 0) {
-        score += 1 - b[i][j];
-      }
-      else {
-        if ((f[i] == f[j]) == (b[i][j])) {
-          score++;
-        }
-      }
-    }
-  }
+  int score = calculateScore(f);
 
   bitset<100> bif[3] = {}, bib[100] = {};
-  for (int i = 0; i < (n); ++i) {
-    if (f[i] > 0) {
-      bif[f[i]][i] = 1;
-    }
-  }
-
-  for (int i = 0; i < (n); ++i) {
-    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-  }
-
   bitset<100> bione(0);
-  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+  initializeBitsets(f, bif, bib, bione);
 
   int flipLoop = 1000;
   if (MODE == 0) flipLoop = 10000;
@@ -2497,19 +2445,7 @@ int Solver12()
   int res2 = cores2.size();
   int res3 = cores3.size();
 
-  int score = 0;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (f[i] == 0 && f[j] == 0) {
-        score += 1 - b[i][j];
-      }
-      else {
-        if ((f[i] == f[j]) == (b[i][j])) {
-          score++;
-        }
-      }
-    }
-  }
+  int score = calculateScore(f);
 
   bitset<100> bif[4] = {}, bib[100] = {};
   for (int i = 0; i < (n); ++i) {
@@ -2650,19 +2586,7 @@ int Solver13()
   int res3 = cores3.size();
   int res4 = cores4.size();
 
-  int score = 0;
-  for (int i = 0; i < (n); ++i) {
-    for (int j = i + 1; j < n; ++j) {
-      if (f[i] == 0 && f[j] == 0) {
-        score += 1 - b[i][j];
-      }
-      else {
-        if ((f[i] == f[j]) == (b[i][j])) {
-          score++;
-        }
-      }
-    }
-  }
+  int score = calculateScore(f);
 
   bitset<100> bif[5] = {}, bib[100] = {};
   for (int i = 0; i < (n); ++i) {
@@ -2761,33 +2685,11 @@ int Solver14()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -2857,33 +2759,11 @@ int Solver15()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -2995,33 +2875,11 @@ int Solver16()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -3125,33 +2983,11 @@ int Solver17()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -3307,33 +3143,11 @@ int Solver19()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -3408,33 +3222,11 @@ int Solver20()
     int res1 = cores1.size();
     int res2 = 0;
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -3564,33 +3356,11 @@ int Solver21()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -3710,33 +3480,11 @@ int Solver22()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -3876,33 +3624,11 @@ int Solver23()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
@@ -4054,33 +3780,11 @@ int Solver24()
     int res1 = cores1.size();
     int res2 = cores2.size();
 
-    int score = 0;
-    for (int i = 0; i < (n); ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == 0 && f[j] == 0) {
-          score += 1 - b[i][j];
-        }
-        else {
-          if ((f[i] == f[j]) == (b[i][j])) {
-            score++;
-          }
-        }
-      }
-    }
+    int score = calculateScore(f);
 
     bitset<100> bif[3] = {}, bib[100] = {};
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] > 0) {
-        bif[f[i]][i] = 1;
-      }
-    }
-
-    for (int i = 0; i < (n); ++i) {
-      for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
-    }
-
     bitset<100> bione(0);
-    for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+    initializeBitsets(f, bif, bib, bione);
 
     int flipLoop = 1000;
     if (MODE == 0) flipLoop = 10000;
