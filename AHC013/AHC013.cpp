@@ -2281,6 +2281,7 @@ void Method1(double start_temp, double end_temp, double now_progress)
   InnerMethod(start_temp, end_temp, now_progress, ite, dir);
 }
 
+
 // 空白を2マス動かす
 void Method3(double start_temp, double end_temp, double now_progress)
 {
