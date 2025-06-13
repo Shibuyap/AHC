@@ -16,11 +16,9 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <iostream>
 #include <iterator>
 #include <list>
 #include <map>
-#include <numeric>
 #include <numeric>
 #include <queue>
 #include <random>
@@ -732,21 +730,6 @@ void AllClear_outer()
   MethodCountReset();
 }
 
-/*
-int maxScore;
-int ope1, ope2;
-int ans1[1000][5], ans2[1000][4];
-int a[100][100];
-int x[500], y[500];
-int R[500], D[500];
-int viewOrder = 0;
-int moves[510][510];
-int moveCnt[510];
-int cellUse[100][100];
-int udlr[500][4];
-int parent[500];
-set<P> vp;
-*/
 void CopyToReal()
 {
   real_viewOrder = viewOrder;
@@ -1024,21 +1007,6 @@ void RollBackFromOuter()
 }
 
 // コンピュータをランダムに1マス移動
-/*
-int maxScore;
-int ope1, ope2;
-int ans1[1000][5], ans2[1000][4];
-int a[100][100];
-int x[500], y[500];
-int R[500], D[500];
-int viewOrder = 0;
-int moves[510][510];
-int moveCnt[510];
-int cellUse[100][100];
-int udlr[500][4];
-int parent[500];
-set<P> vp;
-*/
 int keepA[10000][3];
 int acnt;
 void PushACnt(int xx, int yy)
@@ -2266,22 +2234,6 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
     }
   }
   else {
-    /*
-int maxScore;
-int ope1, ope2;
-int ans1[1000][5], ans2[1000][4];
-int a[100][100];
-int x[500], y[500];
-int R[500], D[500];
-int viewOrder = 0;
-int moves[510][510];
-int moveCnt[510];
-int cellUse[100][100];
-int udlr[500][4];
-int parent[500];
-int unionSize[500];
-set<P> vp;
-    */
     // 元に戻す
     x[ite] = xx;
     y[ite] = yy;
@@ -2655,12 +2607,18 @@ void Method7(double start_temp, double end_temp, double now_progress)
     if (it1 != -1) {
       srep(i, it2, ope1 - 1)
       {
-        rep(j, 5) { ans1[i][j] = ans1[i + 1][j]; }
+        rep(j, 5)
+        {
+          ans1[i][j] = ans1[i + 1][j];
+        }
       }
       ope1--;
       srep(i, it1, ope1 - 1)
       {
-        rep(j, 5) { ans1[i][j] = ans1[i + 1][j]; }
+        rep(j, 5)
+        {
+          ans1[i][j] = ans1[i + 1][j];
+        }
       }
       ope1--;
 
@@ -2674,8 +2632,6 @@ void Method7(double start_temp, double end_temp, double now_progress)
 
     }
   }
-
-
 }
 
 int Solve(int mode, int problemNum = 0)
@@ -2727,14 +2683,6 @@ int Solve(int mode, int problemNum = 0)
 
       int me = 1;
 
-      // if (K100 * 4 >= n * n * 3 && Rand() % 5 == 0) {
-      //   me = 3;
-      // }
-
-      // if (now_progress > 0.66 && Rand() % 5 == 0) {
-      //   me = 4;
-      // }
-
       if (Rand() % 2 == 0) {
         me = 5;
       }
@@ -2782,7 +2730,6 @@ int Solve(int mode, int problemNum = 0)
     }
 
     // スコアが良ければシードを更新
-    // cout << "seedScore = " << maxScore << endl;
     RollBackFromReal();
     if (maxScore > seed_maxScore) {
       CopyToSeed();
@@ -2815,21 +2762,12 @@ int Solve(int mode, int problemNum = 0)
     if (now_progress > 1.0) break;
 
     // 現在のスコアが悪いときは元に戻す
-    // if (maxScore * 1.1 < real_maxScore || loop % 94687 == 37) {
     if (maxScore * 1.2 < real_maxScore || Rand() % 123456 == 0) {
       RollBackFromReal();
       rollbackCount++;
     }
 
     int me = 1;
-
-    // if (K100 * 4 >= n * n * 3 && Rand() % 5 == 0) {
-    //   me = 3;
-    // }
-
-    // if (now_progress > 0.66 && Rand() % 5 == 0) {
-    //   me = 4;
-    // }
 
     if (Rand() % 2 == 0) {
       me = 5;
@@ -2889,32 +2827,27 @@ int Solve(int mode, int problemNum = 0)
 
   RollBackFromReal();
 
-  //  Method6(1,0,1.0);
-
   int cal = CalcScore(K100 - ope1, true);
 
-  if (mode != 0) {
-    cout << "problemNum = " << problemNum << ", N = " << n << ", K = " << K
-      << endl;
-    cout << "start_temp = " << start_temp << ", viewOrder = " << viewOrder
-      << endl;
-    cout << "maxScore = " << maxScore << ", ope1 = " << ope1
-      << ", ope2 = " << ope2 << endl;
-    cout << "cal = " << cal << endl;
-    cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
+  if (true) {
+    cerr << "problemNum = " << problemNum << ", N = " << n << ", K = " << K << endl;
+    cerr << "start_temp = " << start_temp << ", viewOrder = " << viewOrder << endl;
+    cerr << "maxScore = " << maxScore << ", ope1 = " << ope1 << ", ope2 = " << ope2 << endl;
+    cerr << "cal = " << cal << endl;
+    cerr << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
     srep(i, 1, 8)
     {
-      cout << "Method" << i << " = " << methodCount[i][0] << " / "
+      cerr << "Method" << i << " = " << methodCount[i][0] << " / "
         << methodCount[i][1] << endl;
     }
-    cout << "MethodSum = " << methodSum[0] << " / " << methodSum[1] << endl;
-    cout << endl;
+    cerr << "MethodSum = " << methodSum[0] << " / " << methodSum[1] << endl;
+    cerr << endl;
   }
 
   return maxScore;
 }
 
-int SolveOuter(int mode, int problemNum = 0)
+int SolveOuter(int mode, int problemNum = 1)
 {
   // 入力部
   Input(problemNum);
@@ -2948,7 +2881,7 @@ int main()
   }
   else if (mode == 2) {
     int sum = 0;
-    rep(i, 10)
+    srep(i, 1, 10)
     {
       sum += SolveOuter(mode, i);
       AllClear_outer();
@@ -2959,15 +2892,6 @@ int main()
     int problemNum = 0;
     cin >> problemNum;
     SolveOuter(mode, problemNum);
-  }
-  else if (mode = 4) {
-    int sum = 0;
-    rep(i, 10)
-    {
-      sum += SolveOuter(mode, 7);
-      AllClear_outer();
-    }
-    cout << "sum = " << sum << endl;
   }
 
   return 0;
