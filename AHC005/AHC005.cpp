@@ -29,7 +29,7 @@ namespace Constants
   constexpr int NEIGHBOR_SWAP = 50;
   constexpr int NEIGHBOR_REVERSE = 100;
   constexpr int NEIGHBOR_INSERT = 300;
-  constexpr double SCORE_MULTIPLIER = 12345.6;
+  constexpr double SCORE_MULTIPLIER = 12345.6;  // 焼きなましの温度計算用スケーリング係数（経験的に良い値）
   constexpr int WALL = -1;
 }
 
