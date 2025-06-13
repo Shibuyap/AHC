@@ -2339,6 +2339,151 @@ bool IsAllCandidateSearched_Method6(const vector<int>& items, int minDiff)
   return true;
 }
 
+// ========== Common Helper Functions for Method226/266 ==========
+
+// Calculate max_D (heaviest group)
+int calculateMaxD(int& countQ)
+{
+  int tmp_max_D = 0;
+  srep(i, 1, D)
+  {
+    rep(j, N)
+    {
+      if (ans[j] == tmp_max_D) {
+        l[countQ].push_back(j);
+      }
+      if (ans[j] == i) {
+        r[countQ].push_back(j);
+      }
+    }
+    char c = Query(countQ);
+    if (c == '<') {
+      tmp_max_D = i;
+    }
+  }
+  return tmp_max_D;
+}
+
+// Compare with provisional best and update if better
+void compareAndUpdateBest(int tmp_max_D, int& real_max_D, int real_ans[], int& countQ)
+{
+  int cntBoth[110] = {};
+  rep(j, N)
+  {
+    if (ans[j] == tmp_max_D) {
+      cntBoth[j]++;
+    }
+  }
+  rep(j, N)
+  {
+    if (real_ans[j] == real_max_D) {
+      cntBoth[j]++;
+    }
+  }
+  rep(j, N)
+  {
+    if (ans[j] == tmp_max_D && cntBoth[j] == 1) {
+      l[countQ].push_back(j);
+    }
+  }
+  rep(j, N)
+  {
+    if (real_ans[j] == real_max_D && cntBoth[j] == 1) {
+      r[countQ].push_back(j);
+    }
+  }
+  char c2 = Query(countQ);
+  if (c2 == '<') {
+    real_max_D = tmp_max_D;
+    rep(j, N)
+    {
+      real_ans[j] = ans[j];
+    }
+  }
+}
+
+// Common optimization loop for Method226/266
+bool runOptimizationWithRestarts(vector<int>& items, int& countQ, int hiritu, int minDiff,
+  int maxFailedCount, bool checkTime = true)
+{
+  int failedCount = 0;
+
+  while (countQ < Q - D) {
+    if (checkTime && nowTime > TL + 0.1) {
+      cerr << "TLE : Method226 " << "time = " << nowTime << endl;
+      break;
+    }
+
+    int qu = Rand() % 100;
+    bool isChange = false;
+
+    if (qu < hiritu) {
+      isChange = SwapNeighbor1(items, countQ);
+      if (isChange) {
+        failedCount = 0;
+      }
+    }
+    else {
+      if (countQ >= Q - D - 1) {
+        if (hiritu < 10) {
+          break;
+        }
+        continue;
+      }
+      isChange = Swap2(items, countQ, minDiff);
+      if (isChange) {
+        failedCount = 0;
+      }
+    }
+
+    failedCount++;
+    if (failedCount > maxFailedCount) {
+      break;
+    }
+  }
+
+  return true;
+}
+
+// Save current state to real_ans
+void saveCurrentState(int real_ans[])
+{
+  rep(i, N)
+  {
+    real_ans[i] = ans[i];
+  }
+}
+
+// Restore state from keepInitialAns
+void restoreInitialState(int keepInitialAns[])
+{
+  rep(i, N)
+  {
+    ans[i] = keepInitialAns[i];
+  }
+}
+
+// Random swap for Method266
+void randomSwap(vector<int>& items, int kosuu, int saidai)
+{
+  vector<int> ningning;
+  saidai = min(saidai, N - 1);
+  saidai = max(saidai, 1);
+  rep(i, saidai)
+  {
+    ningning.push_back(i);
+  }
+  std::shuffle(ningning.begin(), ningning.end(), engine_mt19937);
+  kosuu = min(kosuu, saidai);
+  kosuu = max(kosuu, 1);
+  rep(i, kosuu)
+  {
+    swap(ans[items[i]], ans[items[i + 1]]);
+  }
+}
+
+// ========== End of Common Helper Functions for Method226/266 ==========
+
 void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCount = 1000)
 {
   if (maxFailedCount < 10) {
@@ -2380,60 +2525,13 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
 
   int setCount = 0;
   while (countQ <= Q - D) {
-    int failedCount = 0;
-
-    while (countQ < Q - D) {
-      int qu = Rand() % 100;
-      if (qu < hiritu) {
-        bool isChange = SwapNeighbor1(items, countQ);
-        if (isChange) {
-          failedCount = 0;
-        }
-      }
-      else {
-        if (countQ >= Q - D - 1) {
-          if (hiritu < 10) {
-            break;
-          }
-          continue;
-        }
-
-        bool isChange = Swap2(items, countQ, minDiff);
-        if (isChange) {
-          failedCount = 0;
-        }
-      }
-      failedCount++;
-      if (failedCount > maxFailedCount) {
-        break;
-      }
-    }
+    // Run optimization
+    runOptimizationWithRestarts(items, countQ, hiritu, minDiff, maxFailedCount, false);
 
     if (setCount == 0) {
-      rep(i, N)
-      {
-        real_ans[i] = ans[i];
-      }
+      saveCurrentState(real_ans);
       if (countQ <= Q - D) {
-        // max_D計算
-        int tmp_max_D = 0;
-        srep(i, 1, D)
-        {
-          rep(j, N)
-          {
-            if (ans[j] == tmp_max_D) {
-              l[countQ].push_back(j);
-            }
-            if (ans[j] == i) {
-              r[countQ].push_back(j);
-            }
-          }
-          char c = Query(countQ);
-          if (c == '<') {
-            tmp_max_D = i;
-          }
-        }
-        real_max_D = tmp_max_D;
+        real_max_D = calculateMaxD(countQ);
       }
       else {
         break;
@@ -2441,59 +2539,8 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     }
     else {
       if (countQ <= Q - D) {
-        // max_D計算
-        int tmp_max_D = 0;
-        srep(i, 1, D)
-        {
-          rep(j, N)
-          {
-            if (ans[j] == tmp_max_D) {
-              l[countQ].push_back(j);
-            }
-            if (ans[j] == i) {
-              r[countQ].push_back(j);
-            }
-          }
-          char c = Query(countQ);
-          if (c == '<') {
-            tmp_max_D = i;
-          }
-        }
-
-        // 暫定1位と比較
-        int cntBoth[110] = {};
-        rep(j, N)
-        {
-          if (ans[j] == tmp_max_D) {
-            cntBoth[j]++;
-          }
-        }
-        rep(j, N)
-        {
-          if (real_ans[j] == real_max_D) {
-            cntBoth[j]++;
-          }
-        }
-        rep(j, N)
-        {
-          if (ans[j] == tmp_max_D && cntBoth[j] == 1) {
-            l[countQ].push_back(j);
-          }
-        }
-        rep(j, N)
-        {
-          if (real_ans[j] == real_max_D && cntBoth[j] == 1) {
-            r[countQ].push_back(j);
-          }
-        }
-        char c2 = Query(countQ);
-        if (c2 == '<') {
-          real_max_D = tmp_max_D;
-          rep(j, N)
-          {
-            real_ans[j] = ans[j];
-          }
-        }
+        int tmp_max_D = calculateMaxD(countQ);
+        compareAndUpdateBest(tmp_max_D, real_max_D, real_ans, countQ);
       }
       else {
         break;
@@ -2510,20 +2557,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
     }
 
     // ランダムにいくつかスワップ
-    vector<int> ningning;
-    saidai = min(saidai, N - 1);
-    saidai = max(saidai, 1);
-    rep(i, saidai)
-    {
-      ningning.push_back(i);
-    }
-    std::shuffle(ningning.begin(), ningning.end(), engine_mt19937);
-    kosuu = min(kosuu, saidai);
-    kosuu = max(kosuu, 1);
-    rep(i, kosuu)
-    {
-      swap(ans[items[i]], ans[items[i + 1]]);
-    }
+    randomSwap(items, kosuu, saidai);
   }
 
   if (setCount > 0) {
@@ -2568,64 +2602,13 @@ void Method226(int hiritu = 100, int minDiff = 10)
 
   int setCount = 0;
   while (countQ <= Q - D) {
-    int failedCount = 0;
-
-    while (countQ < Q - D) {
-      if (nowTime > TL + 0.1) {
-        cerr << "TLE : Method226 " << "time = " << nowTime << ", setCount = " << setCount << endl;
-        break;
-      }
-      int qu = Rand() % 100;
-      if (qu < hiritu) {
-        bool isChange = SwapNeighbor1(items, countQ);
-        if (isChange) {
-          failedCount = 0;
-        }
-      }
-      else {
-        if (countQ >= Q - D - 1) {
-          if (hiritu < 10) {
-            break;
-          }
-          continue;
-        }
-
-        bool isChange = Swap2(items, countQ, minDiff);
-        if (isChange) {
-          failedCount = 0;
-        }
-      }
-      failedCount++;
-      if (failedCount > 1000) {
-        break;
-      }
-    }
+    // Run optimization with time check
+    runOptimizationWithRestarts(items, countQ, hiritu, minDiff, 1000, true);
 
     if (setCount == 0) {
-      rep(i, N)
-      {
-        real_ans[i] = ans[i];
-      }
+      saveCurrentState(real_ans);
       if (countQ <= Q - D) {
-        // max_D計算
-        int tmp_max_D = 0;
-        srep(i, 1, D)
-        {
-          rep(j, N)
-          {
-            if (ans[j] == tmp_max_D) {
-              l[countQ].push_back(j);
-            }
-            if (ans[j] == i) {
-              r[countQ].push_back(j);
-            }
-          }
-          char c = Query(countQ);
-          if (c == '<') {
-            tmp_max_D = i;
-          }
-        }
-        real_max_D = tmp_max_D;
+        real_max_D = calculateMaxD(countQ);
       }
       else {
         break;
@@ -2633,59 +2616,8 @@ void Method226(int hiritu = 100, int minDiff = 10)
     }
     else {
       if (countQ <= Q - D) {
-        // max_D計算
-        int tmp_max_D = 0;
-        srep(i, 1, D)
-        {
-          rep(j, N)
-          {
-            if (ans[j] == tmp_max_D) {
-              l[countQ].push_back(j);
-            }
-            if (ans[j] == i) {
-              r[countQ].push_back(j);
-            }
-          }
-          char c = Query(countQ);
-          if (c == '<') {
-            tmp_max_D = i;
-          }
-        }
-
-        // 暫定1位と比較
-        int cntBoth[110] = {};
-        rep(j, N)
-        {
-          if (ans[j] == tmp_max_D) {
-            cntBoth[j]++;
-          }
-        }
-        rep(j, N)
-        {
-          if (real_ans[j] == real_max_D) {
-            cntBoth[j]++;
-          }
-        }
-        rep(j, N)
-        {
-          if (ans[j] == tmp_max_D && cntBoth[j] == 1) {
-            l[countQ].push_back(j);
-          }
-        }
-        rep(j, N)
-        {
-          if (real_ans[j] == real_max_D && cntBoth[j] == 1) {
-            r[countQ].push_back(j);
-          }
-        }
-        char c2 = Query(countQ);
-        if (c2 == '<') {
-          real_max_D = tmp_max_D;
-          rep(j, N)
-          {
-            real_ans[j] = ans[j];
-          }
-        }
+        int tmp_max_D = calculateMaxD(countQ);
+        compareAndUpdateBest(tmp_max_D, real_max_D, real_ans, countQ);
       }
       else {
         break;
@@ -2701,10 +2633,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
       break;
     }
 
-    rep(i, N)
-    {
-      ans[i] = keepInitialAns[i];
-    }
+    restoreInitialState(keepInitialAns);
   }
 
   if (setCount > 0) {
@@ -2910,8 +2839,10 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
 // ========== Common Helper Functions for Method216/316/916/516 ==========
 
 // Initialize blocks from items
-bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ) {
-  rep(i, N) {
+bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ)
+{
+  rep(i, N)
+  {
     if (i % blockSize == 0) {
       blocks.push_back({});
     }
@@ -2926,10 +2857,11 @@ bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ) {
 }
 
 // Sort blocks and handle edge cases
-bool sortAndValidateBlocks(vector<vector<int>>& blocks, int destroySize, int& countQ) {
+bool sortAndValidateBlocks(vector<vector<int>>& blocks, int destroySize, int& countQ)
+{
   int M = blocks.size();
   MergeSortBlock(blocks, countQ);
-  
+
   if (destroySize >= M) {
     rep(i, N) { ans[i] = i % D; }
     DummyQuery(countQ);
@@ -2939,23 +2871,28 @@ bool sortAndValidateBlocks(vector<vector<int>>& blocks, int destroySize, int& co
 }
 
 // Split large blocks into individual items
-void splitLargeBlocks(vector<vector<int>>& blocks, int destroySize, 
-                     vector<vector<int>>& tmp1, vector<vector<int>>& tmp2) {
+void splitLargeBlocks(vector<vector<int>>& blocks, int destroySize,
+  vector<vector<int>>& tmp1, vector<vector<int>>& tmp2)
+{
   int M = blocks.size();
-  rep(i, M) {
+  rep(i, M)
+  {
     if (i < M - destroySize) {
       tmp2.push_back(blocks[i]);
-    } else {
-      rep(j, blocks[i].size()) { 
-        tmp1.push_back({ blocks[i][j] }); 
+    }
+    else {
+      rep(j, blocks[i].size())
+      {
+        tmp1.push_back({ blocks[i][j] });
       }
     }
   }
 }
 
 // Insert split items back into blocks using binary search
-void insertSplitItems(vector<vector<int>>& blocks, const vector<vector<int>>& tmp1, 
-                     const vector<vector<int>>& tmp2, int& countQ) {
+void insertSplitItems(vector<vector<int>>& blocks, const vector<vector<int>>& tmp1,
+  const vector<vector<int>>& tmp2, int& countQ)
+{
   blocks = tmp2;
   for (auto tmp : tmp1) {
     int M = blocks.size();
@@ -2968,9 +2905,11 @@ void insertSplitItems(vector<vector<int>>& blocks, const vector<vector<int>>& tm
       char c = Query(countQ);
       if (c == '=') {
         left = right = mid;
-      } else if (c == '<') {
+      }
+      else if (c == '<') {
         right = mid;
-      } else {
+      }
+      else {
         left = mid + 1;
       }
     }
@@ -2979,7 +2918,8 @@ void insertSplitItems(vector<vector<int>>& blocks, const vector<vector<int>>& tm
 }
 
 // Create items array from single-item blocks
-int createItemsArray(const vector<vector<int>>& blocks, vector<int>& items) {
+int createItemsArray(const vector<vector<int>>& blocks, vector<int>& items)
+{
   int used[110] = {};
   for (auto block : blocks) {
     if (block.size() == 1) {
@@ -2988,7 +2928,8 @@ int createItemsArray(const vector<vector<int>>& blocks, vector<int>& items) {
     }
   }
   int M2 = items.size();
-  rep(i, N) {
+  rep(i, N)
+  {
     if (used[i] == 0) {
       items.push_back(i);
     }
@@ -2997,7 +2938,8 @@ int createItemsArray(const vector<vector<int>>& blocks, vector<int>& items) {
 }
 
 // Check if should switch to later phase optimization
-bool shouldSwitchToLaterPhase(int countQ, int loopCount, int timing) {
+bool shouldSwitchToLaterPhase(int countQ, int loopCount, int timing)
+{
   if (countQ >= round((double)Q * timing / 100)) {
     return true;
   }
@@ -3009,30 +2951,34 @@ bool shouldSwitchToLaterPhase(int countQ, int loopCount, int timing) {
 
 // Main optimization loop handler
 void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2,
-                        int& countQ, int hiritu1, int hiritu2, int timing,
-                        bool useMethod216Style) {
+  int& countQ, int hiritu1, int hiritu2, int timing,
+  bool useMethod216Style)
+{
   int loopCount = 0;
   while (countQ < Q) {
     loopCount++;
     bool isKouhan = shouldSwitchToLaterPhase(countQ, loopCount, timing);
-    
+
     if (isKouhan) {
       if (useMethod216Style) {
         int qu = Rand() % 100;
         int hiritu = hiritu1;
         if (qu < hiritu) {
           Move1(countQ);
-        } else {
+        }
+        else {
           if (Q - 1 <= countQ) {
             if (hiritu < 10) break;
             continue;
           }
           Swap1(countQ);
         }
-      } else {
+      }
+      else {
         SwapNeighbor1(items, countQ, M2);
       }
-    } else {
+    }
+    else {
       int hiritu = hiritu2;
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
@@ -3040,7 +2986,8 @@ void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2
       int qu = Rand() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
-      } else {
+      }
+      else {
         if (countQ >= Q - 1) {
           if (hiritu < 10) {
             break;
@@ -3060,7 +3007,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 {
   int countQ = 0;
   vector<vector<int>> blocks;
-  
+
   // Initialize blocks
   if (!initializeBlocks(blocks, blockSize, countQ)) {
     return;
@@ -3115,7 +3062,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 {
   int countQ = 0;
   vector<vector<int>> blocks;
-  
+
   // Initialize blocks
   if (!initializeBlocks(blocks, blockSize, countQ)) {
     return;
@@ -3138,7 +3085,8 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    rep(i, N) {
+    rep(i, N)
+    {
       ans[i] = i % D;
     }
     DummyQuery(countQ);
@@ -3181,7 +3129,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
 {
   int countQ = 0;
   vector<vector<int>> blocks;
-  
+
   // Initialize blocks
   if (!initializeBlocks(blocks, blockSize, countQ)) {
     return;
@@ -3204,7 +3152,8 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    rep(i, N) {
+    rep(i, N)
+    {
       ans[i] = i % D;
     }
     DummyQuery(countQ);
@@ -3301,7 +3250,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 {
   int countQ = 0;
   vector<vector<int>> blocks;
-  
+
   // Initialize blocks
   if (!initializeBlocks(blocks, blockSize, countQ)) {
     return;
@@ -3324,7 +3273,8 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    rep(i, N) {
+    rep(i, N)
+    {
       ans[i] = i % D;
     }
     DummyQuery(countQ);
