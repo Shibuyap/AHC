@@ -28,7 +28,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <vector>
+#include <array>
 #define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
@@ -37,8 +37,8 @@ typedef pair<int, int> P;
 #define MAX_N 200005
 #define INF 1001001001
 
-const int dx[4] = { -1, 0, 1, 0 };
-const int dy[4] = { 0, -1, 0, 1 };
+const array<int, 4> dx = { -1, 0, 1, 0 };
+const array<int, 4> dy = { 0, -1, 0, 1 };
 
 namespace /* 乱数ライブラリ */
 {
@@ -68,67 +68,67 @@ namespace /* 変数 */
 {
   // 入力用変数
   int n, K;
-  string s[100];
+  array<string, 100> s;
 
   // 解答用変数
   int maxScore;
   int ope1, ope2;
-  int ans1[10000][5], ans2[10000][4];
-  int a[100][100];
-  int x[10000], y[10000];
-  int R[10000], D[10000];
+  vector<vector<int>> ans1, ans2;
+  array<array<int, 100>, 100> a;
+  vector<int> x, y;
+  vector<int> R, D;
   int viewOrder = 0;
-  int moves[10000][510];
-  int moveCnt[10000];
-  int cellUse[100][100];
-  int udlr[10000][4];
-  int parent[10000];
-  int unionSize[10000];
+  vector<vector<int>> moves;
+  vector<int> moveCnt;
+  array<array<int, 100>, 100> cellUse;
+  vector<vector<int>> udlr;
+  vector<int> parent;
+  vector<int> unionSize;
   set<P> vp;
 
   int real_maxScore;
   int real_ope1, real_ope2;
-  int real_ans1[10000][5], real_ans2[10000][4];
-  int real_a[100][100];
-  int real_x[10000], real_y[10000];
-  int real_R[10000], real_D[10000];
+  vector<vector<int>> real_ans1, real_ans2;
+  array<array<int, 100>, 100> real_a;
+  vector<int> real_x, real_y;
+  vector<int> real_R, real_D;
   int real_viewOrder = 0;
-  int real_moves[10000][510];
-  int real_moveCnt[10000];
-  int real_cellUse[100][100];
-  int real_udlr[10000][4];
-  int real_parent[10000];
-  int real_unionSize[10000];
+  vector<vector<int>> real_moves;
+  vector<int> real_moveCnt;
+  array<array<int, 100>, 100> real_cellUse;
+  vector<vector<int>> real_udlr;
+  vector<int> real_parent;
+  vector<int> real_unionSize;
   set<P> real_vp;
 
   int seed_maxScore;
   int seed_ope1, seed_ope2;
-  int seed_ans1[10000][5], seed_ans2[10000][4];
-  int seed_a[100][100];
-  int seed_x[10000], seed_y[10000];
-  int seed_R[10000], seed_D[10000];
+  vector<vector<int>> seed_ans1, seed_ans2;
+  array<array<int, 100>, 100> seed_a;
+  vector<int> seed_x, seed_y;
+  vector<int> seed_R, seed_D;
   int seed_viewOrder = 0;
-  int seed_moves[10000][510];
-  int seed_moveCnt[10000];
-  int seed_cellUse[100][100];
-  int seed_udlr[10000][4];
-  int seed_parent[10000];
-  int seed_unionSize[10000];
+  vector<vector<int>> seed_moves;
+  vector<int> seed_moveCnt;
+  array<array<int, 100>, 100> seed_cellUse;
+  vector<vector<int>> seed_udlr;
+  vector<int> seed_parent;
+  vector<int> seed_unionSize;
   set<P> seed_vp;
 
   int outer_maxScore;
   int outer_ope1, outer_ope2;
-  int outer_ans1[10000][5], outer_ans2[10000][4];
-  int outer_a[100][100];
-  int outer_x[10000], outer_y[10000];
-  int outer_R[10000], outer_D[10000];
+  vector<vector<int>> outer_ans1, outer_ans2;
+  array<array<int, 100>, 100> outer_a;
+  vector<int> outer_x, outer_y;
+  vector<int> outer_R, outer_D;
   int outer_viewOrder = 0;
-  int outer_moves[10000][510];
-  int outer_moveCnt[10000];
-  int outer_cellUse[100][100];
-  int outer_udlr[10000][4];
-  int outer_parent[10000];
-  int outer_unionSize[10000];
+  vector<vector<int>> outer_moves;
+  vector<int> outer_moveCnt;
+  array<array<int, 100>, 100> outer_cellUse;
+  vector<vector<int>> outer_udlr;
+  vector<int> outer_parent;
+  vector<int> outer_unionSize;
   set<P> outer_vp;
 
   // その他
@@ -136,9 +136,19 @@ namespace /* 変数 */
   int methodCount[20][2];
   int methodSum[2];
   int outer_Split = 1;
-  int visited[10000];
+  vector<int> visited;
   int visitedCnt;
-  int que[10000];
+  vector<int> que;
+
+  vector<vector<int>> keep_vp;
+  int vpcnt;
+  vector<vector<int>> keep_parent;
+  int parentcnt;
+  vector<vector<int>> keep_udlr;
+  int udlrcnt;
+  vector<vector<int>> keepA;
+  int acnt;
+  vector<vector<int>> vv;
 
 }  // namespace
 
@@ -404,6 +414,67 @@ void Init()
 {
   visitedCnt = 0;
 
+  // vectorの初期化
+  // 最大K=5なので、5*100=500が最大コンピュータ数
+  const int maxComputers = 500;
+  const int maxOperations = 500;
+
+  x.resize(maxComputers);
+  y.resize(maxComputers);
+  R.resize(maxComputers);
+  D.resize(maxComputers);
+  parent.resize(maxComputers);
+  unionSize.resize(maxComputers);
+  moveCnt.resize(maxComputers);
+  visited.resize(maxComputers);
+  que.resize(maxComputers);
+  ans1.resize(maxOperations, vector<int>(5));
+  ans2.resize(maxOperations, vector<int>(4));
+  moves.resize(maxComputers, vector<int>(maxOperations));
+  udlr.resize(maxComputers, vector<int>(4));
+
+  real_x.resize(maxComputers);
+  real_y.resize(maxComputers);
+  real_R.resize(maxComputers);
+  real_D.resize(maxComputers);
+  real_parent.resize(maxComputers);
+  real_unionSize.resize(maxComputers);
+  real_moveCnt.resize(maxComputers);
+  real_ans1.resize(maxOperations, vector<int>(5));
+  real_ans2.resize(maxOperations, vector<int>(4));
+  real_moves.resize(maxComputers, vector<int>(maxOperations));
+  real_udlr.resize(maxComputers, vector<int>(4));
+
+  seed_x.resize(maxComputers);
+  seed_y.resize(maxComputers);
+  seed_R.resize(maxComputers);
+  seed_D.resize(maxComputers);
+  seed_parent.resize(maxComputers);
+  seed_unionSize.resize(maxComputers);
+  seed_moveCnt.resize(maxComputers);
+  seed_ans1.resize(maxOperations, vector<int>(5));
+  seed_ans2.resize(maxOperations, vector<int>(4));
+  seed_moves.resize(maxComputers, vector<int>(maxOperations));
+  seed_udlr.resize(maxComputers, vector<int>(4));
+
+  outer_x.resize(maxComputers);
+  outer_y.resize(maxComputers);
+  outer_R.resize(maxComputers);
+  outer_D.resize(maxComputers);
+  outer_parent.resize(maxComputers);
+  outer_unionSize.resize(maxComputers);
+  outer_moveCnt.resize(maxComputers);
+  outer_ans1.resize(maxOperations, vector<int>(5));
+  outer_ans2.resize(maxOperations, vector<int>(4));
+  outer_moves.resize(maxComputers, vector<int>(maxOperations));
+  outer_udlr.resize(maxComputers, vector<int>(4));
+
+  keep_vp.resize(10000, vector<int>(3));
+  keep_parent.resize(10000, vector<int>(2));
+  keep_udlr.resize(10000, vector<int>(3));
+  keepA.resize(10000, vector<int>(3));
+  vv.resize(maxComputers);
+
   // a,x,y
   int cnt[5] = {};
   rep(i, n)
@@ -525,7 +596,7 @@ void Init()
   ope1 = 0;
   ope2 = 0;
   maxScore = 0;
-  rep(i, K * 500) { moveCnt[i] = 0; }
+  rep(i, K * 100) { moveCnt[i] = 0; }
 
   // parent, vp
   vp.clear();
@@ -1007,8 +1078,6 @@ void RollBackFromOuter()
 }
 
 // コンピュータをランダムに1マス移動
-int keepA[10000][3];
-int acnt;
 void PushACnt(int xx, int yy)
 {
   keepA[acnt][0] = xx;
@@ -1022,8 +1091,6 @@ void BackA()
   acnt = 0;
 }
 
-int keep_udlr[10000][3];
-int udlrcnt;
 void Push_udlr(int ite, int dir)
 {
   keep_udlr[udlrcnt][0] = ite;
@@ -1042,8 +1109,6 @@ void Back_udlr()
   udlrcnt = 0;
 }
 
-int keep_parent[10000][2];
-int parentcnt;
 void PushParent(int ite)
 {
   keep_parent[parentcnt][0] = ite;
@@ -1056,8 +1121,6 @@ void BackParent()
   parentcnt = 0;
 }
 
-int keep_vp[10000][3];
-int vpcnt;
 void PushVp(int val, int ite, int pushpop)
 {
   keep_vp[vpcnt][0] = val;
@@ -2551,7 +2614,6 @@ void Method6(double start_temp, double end_temp, double now_progress)
 }
 
 // スワップしてるだけの2つの移動を削除
-vector<int> vv[510];
 void Method7(double start_temp, double end_temp, double now_progress)
 {
   methodCount[7][1]++;

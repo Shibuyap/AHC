@@ -36,7 +36,11 @@
       "Bash(./test_refactor.sh:*)",
       "Bash(cat:*)",
       "Bash(ls:*)",
-      "Bash(./AHC023_new)"
+      "Bash(./AHC023_new)",
+      "WebFetch(domain:atcoder.jp)",
+      "WebFetch(domain:atcoder.jp)",
+      "WebFetch(domain:atcoder.jp)",
+      "Bash(./AHC023 2 >& 1)"
     ],
     "deny": []
   }
