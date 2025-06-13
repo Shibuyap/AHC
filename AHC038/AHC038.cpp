@@ -356,6 +356,7 @@ bool IsValidAnswer()
       }
     }
   }
+  return true;
 }
 
 // 解答出力
@@ -539,66 +540,66 @@ public:
   }
 };
 
+// 配列の要素を復元して行・列のカウントを更新する共通処理
+void RestoreArrayWithCount(vector<vector<int>>& arr, int row[], int column[],
+  const int keep[][3], int count)
+{
+  rep(i, count)
+  {
+    arr[keep[i][0]][keep[i][1]] = keep[i][2];
+    row[keep[i][0]]++;
+    column[keep[i][1]]++;
+  }
+}
+
 void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vector<int>>& b)
 {
-  rep(i, keepAB.KeepACount)
+  RestoreArrayWithCount(a, aRow, aColumn, keepAB.KeepA, keepAB.KeepACount);
+  RestoreArrayWithCount(b, bRow, bColumn, keepAB.KeepB, keepAB.KeepBCount);
+}
+
+// 配列の要素をクリアして行・列のカウントを更新する共通処理
+void ClearArrayWithCount(vector<vector<int>>& arr, int row[], int column[],
+  const int keep[][3], int count)
+{
+  rep(i, count)
   {
-    a[keepAB.KeepA[i][0]][keepAB.KeepA[i][1]] = keepAB.KeepA[i][2];
-    aRow[keepAB.KeepA[i][0]]++;
-    aColumn[keepAB.KeepA[i][1]]++;
-  }
-  rep(i, keepAB.KeepBCount)
-  {
-    b[keepAB.KeepB[i][0]][keepAB.KeepB[i][1]] = keepAB.KeepB[i][2];
-    bRow[keepAB.KeepB[i][0]]++;
-    bColumn[keepAB.KeepB[i][1]]++;
+    if (arr[keep[i][0]][keep[i][1]] == 0) {
+      assert(false);
+    }
+    arr[keep[i][0]][keep[i][1]] = 0;
+    row[keep[i][0]]--;
+    column[keep[i][1]]--;
   }
 }
 
 void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
 {
   mCount += maxAB.KeepBCount;
-  rep(i, maxAB.KeepACount)
+  ClearArrayWithCount(a, aRow, aColumn, maxAB.KeepA, maxAB.KeepACount);
+  ClearArrayWithCount(b, bRow, bColumn, maxAB.KeepB, maxAB.KeepBCount);
+}
+
+// 配列の要素を1に設定して行・列のカウントを更新する共通処理
+void SetArrayToOneWithCount(vector<vector<int>>& arr, int row[], int column[],
+  const int keep[][3], int count)
+{
+  rep(i, count)
   {
-    if (a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] == 0) {
+    if (arr[keep[i][0]][keep[i][1]] == 1) {
       assert(false);
     }
-    a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] = 0;
-    aRow[maxAB.KeepA[i][0]]--;
-    aColumn[maxAB.KeepA[i][1]]--;
-  }
-  rep(i, maxAB.KeepBCount)
-  {
-    if (b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] == 0) {
-      assert(false);
-    }
-    b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 0;
-    bRow[maxAB.KeepB[i][0]]--;
-    bColumn[maxAB.KeepB[i][1]]--;
+    arr[keep[i][0]][keep[i][1]] = 1;
+    row[keep[i][0]]++;
+    column[keep[i][1]]++;
   }
 }
 
 void RollBackFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
 {
   mCount -= maxAB.KeepBCount;
-  rep(i, maxAB.KeepACount)
-  {
-    if (a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] == 1) {
-      assert(false);
-    }
-    a[maxAB.KeepA[i][0]][maxAB.KeepA[i][1]] = 1;
-    aRow[maxAB.KeepA[i][0]]++;
-    aColumn[maxAB.KeepA[i][1]]++;
-  }
-  rep(i, maxAB.KeepBCount)
-  {
-    if (b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] == 1) {
-      assert(false);
-    }
-    b[maxAB.KeepB[i][0]][maxAB.KeepB[i][1]] = 1;
-    bRow[maxAB.KeepB[i][0]]++;
-    bColumn[maxAB.KeepB[i][1]]++;
-  }
+  SetArrayToOneWithCount(a, aRow, aColumn, maxAB.KeepA, maxAB.KeepACount);
+  SetArrayToOneWithCount(b, bRow, bColumn, maxAB.KeepB, maxAB.KeepBCount);
 }
 
 class MaxCandidate {
@@ -618,6 +619,29 @@ public:
     maxDir = -1;
   }
 };
+
+// 周囲のセルをチェックしてスコアを計算する共通処理
+void CalculatePositionBonus(double& actionScore, int nrx, int nry,
+  const vector<vector<int>>& arr)
+{
+  rep(k, 4)
+  {
+    srep(l, 1, 2)
+    {
+      int nkrx = nrx + dx[k] * l;
+      int nkry = nry + dy[k] * l;
+      if (IsNG(nkrx, nkry)) {
+        actionScore += POSITION_RATIO;
+      }
+      else if (arr[nkrx][nkry] == 0) {
+        actionScore += POSITION_RATIO;
+      }
+      else {
+        break;
+      }
+    }
+  }
+}
 
 bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
   vector<vector<int>>& a, vector<vector<int>>& b,
@@ -641,23 +665,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       actionScore += abs(heavyY - nry);
       //actionScore += 10 * (20 - le[i]);
 
-      rep(k, 4)
-      {
-        srep(l, 1, 2)
-        {
-          int nkrx = nrx + dx[k] * l;
-          int nkry = nry + dy[k] * l;
-          if (IsNG(nkrx, nkry)) {
-            actionScore += POSITION_RATIO;
-          }
-          else if (a[nkrx][nkry] == 0) {
-            actionScore += POSITION_RATIO;
-          }
-          else {
-            break;
-          }
-        }
-      }
+      CalculatePositionBonus(actionScore, nrx, nry, a);
 
       //srep(l, 1, 10)
       //{
@@ -700,23 +708,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       actionScore += abs(heavyY - nry);
       //actionScore += 10 * (20 - le[i]);
 
-      rep(k, 4)
-      {
-        srep(l, 1, 2)
-        {
-          int nkrx = nrx + dx[k] * l;
-          int nkry = nry + dy[k] * l;
-          if (IsNG(nkrx, nkry)) {
-            actionScore += POSITION_RATIO;
-          }
-          else if (b[nkrx][nkry] == 0) {
-            actionScore += POSITION_RATIO;
-          }
-          else {
-            break;
-          }
-        }
-      }
+      CalculatePositionBonus(actionScore, nrx, nry, b);
 
       //if (bRow[nrx] == 0)actionScore += POSITION_RATIO * 100;
       //if (bColumn[nry] == 0)actionScore += POSITION_RATIO * 100;
@@ -753,155 +745,79 @@ int MakeLength(int ra)
   return length;
 }
 
-void MakeTree1()
+// 木構造のパレント設定共通処理
+void SetTreeParents(int* parentRules, int ruleCount)
 {
-  int ra = Rand() % 100;
-  V = v;
+  for (int i = 1; i < V && i <= ruleCount; i++) {
+    pa[i] = parentRules[i - 1];
+  }
+  for (int i = ruleCount + 1; i < V; i++) {
+    pa[i] = parentRules[ruleCount - 1];
+  }
+}
+
+// 木構造の長さ設定共通処理
+void SetTreeLengths(int ra, int startIdx, int baseOffset, int range)
+{
   srep(i, 1, V)
   {
-    if (i == 1) {
-      pa[i] = 0;
-    }
-    else {
-      pa[i] = 1;
-    }
     le[i] = MakeLength(ra);
   }
 
   if (Rand() % 2) {
-    int st = Rand() % 2 + 1;
-    srep(i, 2, V)le[i] = i - 2 + st;
+    int st = Rand() % range + 1;
+    srep(i, startIdx, V)le[i] = i - startIdx + st;
   }
+}
+
+void MakeTree1()
+{
+  int ra = Rand() % 100;
+  V = v;
+
+  int parentRules[] = { 0, 1 };
+  SetTreeParents(parentRules, 2);
+  SetTreeLengths(ra, 2, 2, 2);
 }
 
 void MakeTree2()
 {
   int ra = Rand() % 100;
   V = v;
-  srep(i, 1, V)
-  {
-    if (i == 1) {
-      pa[i] = 0;
-    }
-    else if (i == 2) {
-      pa[i] = 1;
-    }
-    else {
-      pa[i] = 2;
-    }
-    le[i] = MakeLength(ra);
-  }
 
-  if (Rand() % 2) {
-    int st = Rand() % 3 + 1;
-    srep(i, 3, V)le[i] = i - 3 + st;
-    //if (le[V - 1] < n - 1 && V >= 5 && Rand() % 2 == 0) {
-    //  int st2 = Rand() % (V - 4) + 4;
-    //  srep(i, st2, V)le[i]++;
-    //}
-  }
+  int parentRules[] = { 0, 1, 2 };
+  SetTreeParents(parentRules, 3);
+  SetTreeLengths(ra, 3, 3, 3);
 }
 
 void MakeTree6()
 {
   int ra = Rand() % 100;
   V = v;
-  srep(i, 1, V)
-  {
-    if (i == 1) {
-      pa[i] = 0;
-    }
-    else if (i == 2) {
-      pa[i] = 1;
-    }
-    else if (i == 3) {
-      pa[i] = 2;
-    }
-    else {
-      pa[i] = 3;
-    }
-    le[i] = MakeLength(ra);
-  }
 
-  if (Rand() % 2) {
-    int st = Rand() % 4 + 1;
-    srep(i, 4, V)le[i] = i - 4 + st;
-    //if (le[V - 1] < n - 1 && V >= 6 && Rand() % 2 == 0) {
-    //  int st2 = Rand() % (V - 5) + 5;
-    //  srep(i, st2, V)le[i]++;
-    //}
-  }
+  int parentRules[] = { 0, 1, 2, 3 };
+  SetTreeParents(parentRules, 4);
+  SetTreeLengths(ra, 4, 4, 4);
 }
 
 void MakeTree4()
 {
   int ra = Rand() % 100;
   V = v;
-  srep(i, 1, V)
-  {
-    if (i == 1) {
-      pa[i] = 0;
-    }
-    else if (i == 2) {
-      pa[i] = 1;
-    }
-    else if (i == 3) {
-      pa[i] = 2;
-    }
-    else if (i == 4) {
-      pa[i] = 3;
-    }
-    else {
-      pa[i] = 4;
-    }
-    le[i] = MakeLength(ra);
-  }
 
-  if (Rand() % 2) {
-    int st = Rand() % 5 + 1;
-    srep(i, 5, V)le[i] = i - 5 + st;
-    //if (le[V - 1] < n - 1 && V >= 7 && Rand() % 2 == 0) {
-    //  int st2 = Rand() % (V - 6) + 6;
-    //  srep(i, st2, V)le[i]++;
-    //}
-  }
+  int parentRules[] = { 0, 1, 2, 3, 4 };
+  SetTreeParents(parentRules, 5);
+  SetTreeLengths(ra, 5, 5, 5);
 }
 
 void MakeTree5()
 {
   int ra = Rand() % 100;
   V = v;
-  srep(i, 1, V)
-  {
-    if (i == 1) {
-      pa[i] = 0;
-    }
-    else if (i == 2) {
-      pa[i] = 1;
-    }
-    else if (i == 3) {
-      pa[i] = 2;
-    }
-    else if (i == 4) {
-      pa[i] = 3;
-    }
-    else if (i == 5) {
-      pa[i] = 4;
-    }
-    else {
-      pa[i] = 5;
-    }
-    le[i] = MakeLength(ra);
-  }
 
-  if (Rand() % 2) {
-    int st = Rand() % 5 + 1;
-    srep(i, 6, V)le[i] = i - 6 + st;
-    //if (le[V - 1] < n - 1 && V >= 8 && Rand() % 2 == 0) {
-    //  int st2 = Rand() % (V - 7) + 7;
-    //  srep(i, st2, V)le[i]++;
-    //}
-  }
+  int parentRules[] = { 0, 1, 2, 3, 4, 5 };
+  SetTreeParents(parentRules, 6);
+  SetTreeLengths(ra, 6, 6, 5);
 }
 
 void MakeTree22()
@@ -1048,6 +964,10 @@ int CalcMarginCount(const int leafCount, const RotTip& maxRT)
   }
   return marginCount;
 }
+
+// CallDecideBestの前方宣言
+void CallDecideBest(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b);
 
 int doMarginCount = 0;
 int doOneSetCount = 0;
@@ -1721,35 +1641,7 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
     maxCand[i].maxRT.Initialize(nowRot, nowTip);
   }
 
-  if (Method == 42) {
-    DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else if (Method == 52) {
-    DecideBest52(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else  if (Method == 62) {
-    DecideBest62(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else  if (Method == 72) {
-    DecideBest72(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else  if (Method == 82) {
-    DecideBest82(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else  if (Method == 53) {
-    DecideBest53(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else  if (Method == 63) {
-    DecideBest63(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else  if (Method == 73) {
-    DecideBest73(x, y, nowRot, nowTip, maxCand, a, b);
-  }
-  else {
-    if (mode != 0) {
-      cout << "NG" << endl;
-    }
-  }
+  CallDecideBest(x, y, nowRot, nowTip, maxCand, a, b);
 
   if (mCount + maxCand[0].maxAB.KeepBCount == m) {
     maxCand[0].finishTurn = 0;
@@ -1797,11 +1689,10 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   return maxCand[bestIndex];
 }
 
-void Beam2_Internal(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& nowTip,
-  vector<vector<int>>& a, vector<vector<int>>& b, const int beamDepth, int& mCount, const int beamWidth, vector<MaxCandidate>& maxCand)
+// DecideBest関数を呼び出す共通処理
+void CallDecideBest(const int x, const int y, const vector<int>& nowRot, const vector<int>& nowTip,
+  vector<MaxCandidate>& maxCand, vector<vector<int>>& a, vector<vector<int>>& b)
 {
-  FisherYates(order, 5);
-
   if (Method == 42) {
     DecideBest42(x, y, nowRot, nowTip, maxCand, a, b);
   }
@@ -1831,6 +1722,13 @@ void Beam2_Internal(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& n
       cout << "NG" << endl;
     }
   }
+}
+
+void Beam2_Internal(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& nowTip,
+  vector<vector<int>>& a, vector<vector<int>>& b, const int beamDepth, int& mCount, const int beamWidth, vector<MaxCandidate>& maxCand)
+{
+  FisherYates(order, 5);
+  CallDecideBest(x, y, nowRot, nowTip, maxCand, a, b);
 }
 
 MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& nowTip,
@@ -1905,6 +1803,39 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
   return maxCand[0];
 }
 
+// メソッド選択の共通処理
+int SelectMethod(int v)
+{
+  if (v < 7) {
+    int ra = Rand() % 100;
+    if (ra < 20) return 42;
+    else if (ra < 60) return 52;
+    else return 62;
+  }
+  else {
+    int ra = Rand() % 100;
+    if (ra < 40) return 52;
+    else if (ra < 60) return 62;
+    else if (ra < 80) return 72;
+    else return 82;
+  }
+}
+
+// メソッドに基づいて木を作成する共通処理
+void CreateTreeByMethod(int method)
+{
+  switch (method) {
+    case 42: MakeTree1(); break;
+    case 52: MakeTree2(); break;
+    case 62: MakeTree6(); break;
+    case 72: MakeTree4(); break;
+    case 82: MakeTree5(); break;
+    case 53: MakeTree22(); break;
+    case 63: MakeTree32(); break;
+    case 73: MakeTree42(); break;
+  }
+}
+
 void Method100(double timeLimit, int probNum, ofstream& ofs)
 {
   ResetTime();
@@ -1916,33 +1847,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     if (time > timeLimit)break;
 
     // メソッド決定
-    if (v < 7) {
-      int ra = Rand() % 100;
-      if (ra < 20) {
-        Method = 42;
-      }
-      else if (ra < 60) {
-        Method = 52;
-      }
-      else {
-        Method = 62;
-      }
-    }
-    else {
-      int ra = Rand() % 100;
-      if (ra < 40) {
-        Method = 52;
-      }
-      else if (ra < 60) {
-        Method = 62;
-      }
-      else if (ra < 80) {
-        Method = 72;
-      }
-      else {
-        Method = 82;
-      }
-    }
+    Method = SelectMethod(v);
 
 
     //if (v >= 8) {
@@ -1957,32 +1862,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     loop[Method]++;
 
     // 木作成
-    switch (Method) {
-      case 42:
-        MakeTree1();
-        break;
-      case 52:
-        MakeTree2();
-        break;
-      case 62:
-        MakeTree6();
-        break;
-      case 72:
-        MakeTree4();
-        break;
-      case 82:
-        MakeTree5();
-        break;
-      case 53:
-        MakeTree22();
-        break;
-      case 63:
-        MakeTree32();
-        break;
-      case 73:
-        MakeTree42();
-        break;
-    }
+    CreateTreeByMethod(Method);
 
     // 初期位置作成
     sx = Rand() % n;
@@ -2262,7 +2142,7 @@ int main()
   }
   else if (mode <= 100) {
     ll sum = 0;
-    srep(i, 1, 100)
+    srep(i, 0, 100)
     {
       ll score = Solve(i);
       sum += score;
