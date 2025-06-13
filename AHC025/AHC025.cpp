@@ -1725,13 +1725,6 @@ char Query(int& turn)
   return C[turn - 1];
 }
 
-bool IsAlreadyQuery(const vector<int>& vl, const vector<int>& vr)
-{
-  if (calledMap.find(make_pair(vl, vr)) != calledMap.end()) {
-    return true;
-  }
-  return false;
-}
 
 char QueryMapDirectly(const vector<int>& vl, const vector<int>& vr)
 {
@@ -2020,7 +2013,7 @@ int Move1_Specify(int& countQ, int groupId)
   return -1;
 }
 
-void MoveSmall1(const vector<int>& items, int& countQ, int smallLine)
+void MoveSmall1(const vector<int>&, int& countQ, int smallLine)
 {
   int _N = min(smallLine, N);
   _N = max(1, _N);
