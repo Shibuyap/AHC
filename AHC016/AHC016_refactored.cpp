@@ -3269,35 +3269,11 @@ int Solver21()
       kouho.push_back(i);
     }
     if (kouho.size() >= 5) {
-      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
-        int core[5] = {};
-        for (int i = 0; i < (5); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (5); ++i) {
-          for (int j = i + 1; j < 5; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (5); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
-      if (cores2.size() > 0) {
+      if (findClique(kouho, f, cores2, 5, 2)) {
+
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
-      }
+            }
     }
 
     int res1 = cores1.size();
@@ -3368,35 +3344,11 @@ int Solver22()
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
-      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
-        int core[5] = {};
-        for (int i = 0; i < (3); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (3); ++i) {
-          for (int j = i + 1; j < 3; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (3); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
-      if (cores2.size() > 0) {
+      if (findClique(kouho, f, cores2, 5, 2)) {
+
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
-      }
+            }
     }
 
     int res1 = cores1.size();
@@ -3469,31 +3421,8 @@ int Solver23()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;
-    for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
-      int core[4] = {};
-      for (int i = 0; i < (3); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
+    if (findClique(kouho, f, cores1, 4, 1)) {
       }
-      int mitu = 1;
-      for (int i = 0; i < (3); ++i) {
-        for (int j = i + 1; j < 3; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (3); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -3513,35 +3442,11 @@ int Solver23()
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
-      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
-        int core[3] = {};
-        for (int i = 0; i < (3); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (3); ++i) {
-          for (int j = i + 1; j < 3; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (3); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
-      if (cores2.size() > 0) {
+      if (findClique(kouho, f, cores2, 3, 2)) {
+
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
-      }
+            }
     }
 
     int res1 = cores1.size();
@@ -3626,31 +3531,8 @@ int Solver24()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 5) continue;
-    for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
-      int core[5] = {};
-      for (int i = 0; i < (5); ++i) {
-        while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
-          for (int j = 0; j < (i); ++j) {
-            if (core[j] == core[i]) core[i] = -1;
-          }
-          if (core[i] != -1) break;
-        }
+    if (findClique(kouho, f, cores1, 5, 1)) {
       }
-      int mitu = 1;
-      for (int i = 0; i < (5); ++i) {
-        for (int j = i + 1; j < 5; ++j) {
-          if (!b[core[i]][core[j]]) mitu = 0;
-        }
-      }
-      if (mitu) {
-        for (int i = 0; i < (5); ++i) {
-          f[core[i]] = 1;
-          cores1.push_back(core[i]);
-        }
-        break;
-      }
-    }
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
@@ -3670,35 +3552,11 @@ int Solver24()
       kouho.push_back(i);
     }
     if (kouho.size() >= 5) {
-      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
-        int core[5] = {};
-        for (int i = 0; i < (5); ++i) {
-          while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
-            for (int j = 0; j < (i); ++j) {
-              if (core[j] == core[i]) core[i] = -1;
-            }
-            if (core[i] != -1) break;
-          }
-        }
-        int mitu = 1;
-        for (int i = 0; i < (5); ++i) {
-          for (int j = i + 1; j < 5; ++j) {
-            if (!b[core[i]][core[j]]) mitu = 0;
-          }
-        }
-        if (mitu) {
-          for (int i = 0; i < (5); ++i) {
-            f[core[i]] = 2;
-            cores2.push_back(core[i]);
-          }
-          break;
-        }
-      }
-      if (cores2.size() > 0) {
+      if (findClique(kouho, f, cores2, 5, 2)) {
+
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
-      }
+            }
     }
 
     int res1 = cores1.size();
