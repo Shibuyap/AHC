@@ -36,6 +36,16 @@ typedef pair<int, int> P;
 const int dx[4] = { -1, 1, 0, 0 };
 const int dy[4] = { 0, 0, -1, 1 };
 
+// 定数定義
+const int MAX_N = 100;
+const int MAX_M = 101;
+const int MIN_M = 10;
+const int MAX_TURN = 100;
+const int MAX_IEPS = 41;
+const int MAX_ATTEMPTS = 5000;
+const int MAX_KOUHO_LIMIT = 200;
+const int FILE_NUM_DIGITS = 4;
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t Rand()
@@ -103,6 +113,35 @@ namespace
   int hyperStep2Arr[101][41];
 }  // namespace
 
+// 共通ユーティリティ関数
+namespace
+{
+  // 数値をゼロ埋めした文字列に変換
+  string numberToString(int num, int digits = FILE_NUM_DIGITS)
+  {
+    string result;
+    for (int i = 0; i < digits; ++i) {
+      result += (char)(num % 10 + '0');
+      num /= 10;
+    }
+    reverse(result.begin(), result.end());
+    return result;
+  }
+
+  // イプシロン文字列をパース
+  int parseEpsilon(const string& sEps)
+  {
+    return (sEps[2] - '0') * 10 + (sEps[3] - '0');
+  }
+
+  // 対称的な値を設定（a[i][j][k]とa[i][k][j]に同じ値を設定）
+  void setSymmetricValue(int i, int j, int k, int value)
+  {
+    a[i][j][k] = value;
+    a[i][k][j] = value;
+  }
+}
+
 // Input（m, eps, iEpsの設定）
 namespace
 {
@@ -113,25 +152,19 @@ namespace
       cin >> m;
       string sEps;
       cin >> sEps;
-      iEps = (sEps[2] - '0') * 10 + (sEps[3] - '0');
+      iEps = parseEpsilon(sEps);
       eps = (double)iEps / 100.0;
     }
     else if (mode == 1000) {
       string fileNameIfs = "./in/";
-      string strNum;
-      for (int i = 0; i < (4); ++i) {
-        strNum += (char)(problemNum % 10 + '0');
-        problemNum /= 10;
-      }
-      reverse(strNum.begin(), strNum.end());
-      fileNameIfs += strNum + ".txt";
+      fileNameIfs += numberToString(problemNum) + ".txt";
 
       ifstream ifs(fileNameIfs);
 
       ifs >> m;
       string sEps;
       ifs >> sEps;
-      iEps = (sEps[2] - '0') * 10 + (sEps[3] - '0');
+      iEps = parseEpsilon(sEps);
       eps = (double)iEps / 100.0;
 
       for (int i = 0; i < (100); ++i) ifs >> judgeArr[i];
@@ -160,14 +193,7 @@ namespace
   void OpenOfs1000Out(int problemNum)
   {
     string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < (4); ++i) {
-      strNum += (char)(problemNum % 10 + '0');
-      problemNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
+    fileNameOfs += numberToString(problemNum) + ".txt";
     ofs1000Out.open(fileNameOfs);
   }
 
@@ -257,6 +283,7 @@ namespace
 }  // namespace
 
 // 前方宣言
+void setSymmetricValue(int i, int j, int k, int value);
 int calculateScore(int f[]);
 void initializeBitsets(int f[], bitset<100> bif[], bitset<100> bib[], bitset<100>& bione);
 int createAndExpandCore1(int f[], vector<int>& cores1, bool useReturn = true);
@@ -313,14 +340,7 @@ namespace
       int num = numArr[i];
       for (int j = 0; j < (n); ++j) {
         for (int k = j + 1; k < n; ++k) {
-          if (k < num) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else {
-            a[i][j][k] = 0;
-            a[i][k][j] = 0;
-          }
+          setSymmetricValue(i, j, k, (k < num) ? 1 : 0);
         }
       }
     }
@@ -625,7 +645,7 @@ namespace
         cnt++;
         j -= hyperStep1;
       }
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     SetGraphFromPairArray();
@@ -647,7 +667,7 @@ namespace
         cnt++;
         j -= hyperStep2;
       }
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     SetGraphFromPairArray();
@@ -673,7 +693,7 @@ namespace
         numPairArr[cnt][1] = 0;
         cnt++;
       }
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     SetGraphFromPairArray();
@@ -699,7 +719,7 @@ namespace
         numPairArr[cnt][1] = 0;
         cnt++;
       }
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     SetGraphFromPairArray();
@@ -1120,7 +1140,7 @@ namespace
         omoteArr[cnt] = 1;
         cnt++;
       }
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     for (int i = 0; i < (m); ++i) {
@@ -1178,7 +1198,7 @@ namespace
         cnt++;
         j -= hyperStep1;
       }
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     for (int i = 0; i < (m); ++i) {
@@ -1296,7 +1316,7 @@ namespace
       numSingleArr[cnt] = i;
       omoteArr[cnt] = 1;
       cnt++;
-      if (cnt > 200) break;
+      if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
     for (int i = 0; i < (m); ++i) {
@@ -2179,7 +2199,7 @@ int Solver10()
 // 4-クリークを見つける共通関数
 bool findClique4(const vector<int>& kouho, int f[], vector<int>& cores, int markValue)
 {
-  for (int loop1 = 0; loop1 < (5000); ++loop1) {
+  for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
     int core[4] = {};
     for (int i = 0; i < (4); ++i) {
       while (true) {
@@ -3231,7 +3251,7 @@ int Solver21()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 4) continue;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
+    for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (5); ++i) {
         while (true) {
@@ -3275,7 +3295,7 @@ int Solver21()
       kouho.push_back(i);
     }
     if (kouho.size() >= 5) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
+      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
         for (int i = 0; i < (5); ++i) {
           while (true) {
@@ -3354,7 +3374,7 @@ int Solver22()
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
+    for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (3); ++i) {
         while (true) {
@@ -3398,7 +3418,7 @@ int Solver22()
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
+      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
         for (int i = 0; i < (3); ++i) {
           while (true) {
@@ -3497,8 +3517,8 @@ int Solver23()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
-    if (kouho.size() < 3) continue;;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
+    if (kouho.size() < 3) continue;
+    for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[4] = {};
       for (int i = 0; i < (3); ++i) {
         while (true) {
@@ -3542,7 +3562,7 @@ int Solver23()
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
+      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[3] = {};
         for (int i = 0; i < (3); ++i) {
           while (true) {
@@ -3653,8 +3673,8 @@ int Solver24()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < (n); ++i) kouho.push_back(i);
-    if (kouho.size() < 5) continue;;
-    for (int loop1 = 0; loop1 < (5000); ++loop1) {
+    if (kouho.size() < 5) continue;
+    for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (5); ++i) {
         while (true) {
@@ -3698,7 +3718,7 @@ int Solver24()
       kouho.push_back(i);
     }
     if (kouho.size() >= 5) {
-      for (int loop1 = 0; loop1 < (5000); ++loop1) {
+      for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
         for (int i = 0; i < (5); ++i) {
           while (true) {

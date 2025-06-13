@@ -4304,11 +4304,9 @@ int main()
 
       GeneratecaseFromNNDDQQ();
 
-
       Solve(2, hai2);
       endTime = clock();
       nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-
 
       if (loop % 100 == 0) cout << "loop = " << loop << endl;
     }
