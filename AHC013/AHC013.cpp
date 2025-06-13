@@ -73,62 +73,62 @@ namespace /* 変数 */
   // 解答用変数
   int maxScore;
   int ope1, ope2;
-  int ans1[1000][5], ans2[1000][4];
+  int ans1[10000][5], ans2[10000][4];
   int a[100][100];
-  int x[500], y[500];
-  int R[500], D[500];
+  int x[10000], y[10000];
+  int R[10000], D[10000];
   int viewOrder = 0;
-  int moves[510][510];
-  int moveCnt[510];
+  int moves[10000][510];
+  int moveCnt[10000];
   int cellUse[100][100];
-  int udlr[500][4];
-  int parent[500];
-  int unionSize[500];
+  int udlr[10000][4];
+  int parent[10000];
+  int unionSize[10000];
   set<P> vp;
 
   int real_maxScore;
   int real_ope1, real_ope2;
-  int real_ans1[1000][5], real_ans2[1000][4];
+  int real_ans1[10000][5], real_ans2[10000][4];
   int real_a[100][100];
-  int real_x[500], real_y[500];
-  int real_R[500], real_D[500];
+  int real_x[10000], real_y[10000];
+  int real_R[10000], real_D[10000];
   int real_viewOrder = 0;
-  int real_moves[510][510];
-  int real_moveCnt[510];
+  int real_moves[10000][510];
+  int real_moveCnt[10000];
   int real_cellUse[100][100];
-  int real_udlr[500][4];
-  int real_parent[500];
-  int real_unionSize[500];
+  int real_udlr[10000][4];
+  int real_parent[10000];
+  int real_unionSize[10000];
   set<P> real_vp;
 
   int seed_maxScore;
   int seed_ope1, seed_ope2;
-  int seed_ans1[1000][5], seed_ans2[1000][4];
+  int seed_ans1[10000][5], seed_ans2[10000][4];
   int seed_a[100][100];
-  int seed_x[500], seed_y[500];
-  int seed_R[500], seed_D[500];
+  int seed_x[10000], seed_y[10000];
+  int seed_R[10000], seed_D[10000];
   int seed_viewOrder = 0;
-  int seed_moves[510][510];
-  int seed_moveCnt[510];
+  int seed_moves[10000][510];
+  int seed_moveCnt[10000];
   int seed_cellUse[100][100];
-  int seed_udlr[500][4];
-  int seed_parent[500];
-  int seed_unionSize[500];
+  int seed_udlr[10000][4];
+  int seed_parent[10000];
+  int seed_unionSize[10000];
   set<P> seed_vp;
 
   int outer_maxScore;
   int outer_ope1, outer_ope2;
-  int outer_ans1[1000][5], outer_ans2[1000][4];
+  int outer_ans1[10000][5], outer_ans2[10000][4];
   int outer_a[100][100];
-  int outer_x[500], outer_y[500];
-  int outer_R[500], outer_D[500];
+  int outer_x[10000], outer_y[10000];
+  int outer_R[10000], outer_D[10000];
   int outer_viewOrder = 0;
-  int outer_moves[510][510];
-  int outer_moveCnt[510];
+  int outer_moves[10000][510];
+  int outer_moveCnt[10000];
   int outer_cellUse[100][100];
-  int outer_udlr[500][4];
-  int outer_parent[500];
-  int outer_unionSize[500];
+  int outer_udlr[10000][4];
+  int outer_parent[10000];
+  int outer_unionSize[10000];
   set<P> outer_vp;
 
   // その他
@@ -136,9 +136,9 @@ namespace /* 変数 */
   int methodCount[20][2];
   int methodSum[2];
   int outer_Split = 1;
-  int visited[510];
+  int visited[10000];
   int visitedCnt;
-  int que[1000];
+  int que[10000];
 
 }  // namespace
 
@@ -2456,6 +2456,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
 // 移動をランダムに1つ削除
 void Method5(double start_temp, double end_temp, double now_progress)
 {
+  if (ope1 == 0) return;
   int ite = Rand() % ope1;
 
   // NGチェック
@@ -2848,7 +2849,7 @@ int Solve(int mode, int problemNum = 0)
   return maxScore;
 }
 
-int SolveOuter(int mode, int problemNum = 1)
+int SolveOuter(int mode, int problemNum)
 {
   // 入力部
   Input(problemNum);
@@ -2872,17 +2873,17 @@ int SolveOuter(int mode, int problemNum = 1)
 
 int main()
 {
-  int mode = 0;
+  int mode = 2;
 
   if (mode == 0) {
-    SolveOuter(mode);
+    SolveOuter(mode, 0);
   }
   else if (mode == 1) {
     SolveOuter(mode, 1);
   }
   else if (mode == 2) {
     int sum = 0;
-    srep(i, 1, 10)
+    srep(i, 0, 10)
     {
       sum += SolveOuter(mode, i);
       AllClear_outer();
