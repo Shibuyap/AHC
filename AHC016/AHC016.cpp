@@ -2579,21 +2579,6 @@ int Solver11()
     }
   }
 
-  // if (argRes != judgeNum) {
-  //   for (int i = 0; i < (n); ++i) cout << f[i];
-  //   cout << endl;
-  //   for (int i = 0; i < (n); ++i) {
-  //     if (i < numPairArr[judgeNum][0])
-  //       cout << 1;
-  //     else if (numPairArr[judgeNum][0] <= i &&
-  //              i <= numPairArr[judgeNum][0] + numPairArr[judgeNum][1])
-  //       cout << 2;
-  //     else
-  //       cout << 0;
-  //   }
-  //   cout << "   " << diff << endl;
-  // }
-
   return argRes;
 }
 
