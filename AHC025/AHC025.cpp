@@ -6425,11 +6425,6 @@ void PrintHaipara(int loop)
 
 int main()
 {
-  srand((unsigned)time(NULL));
-  while (rand() % 100) {
-    Rand();
-  }
-
   //set<int> haiSet;
   //rep(i, 14) {
   //  rep(j, 40) {
