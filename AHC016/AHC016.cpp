@@ -2413,6 +2413,30 @@ bool findClique4(const vector<int>& kouho, int f[], vector<int>& cores, int mark
   return false;
 }
 
+// コアを大きくしていく共通関数
+void expandCore(vector<int>& cores, int f[], int markValue)
+{
+  while (true) {
+    int sz = cores.size();
+    int arg = -1;
+    int ma = -1;
+    for (int i = 0; i < (n); ++i) {
+      if (f[i] != 0) continue;
+      int cnt = 0;
+      for (int j = 0; j < (sz); ++j) {
+        if (b[i][cores[j]]) cnt++;
+      }
+      if (ma < cnt && cnt >= (sz + 2) / 2) {
+        ma = cnt;
+        arg = i;
+      }
+    }
+    if (arg == -1) break;
+    f[arg] = markValue;
+    cores.push_back(arg);
+  }
+}
+
 int Solver11()
 {
   int f[110] = {};
@@ -2425,25 +2449,7 @@ int Solver11()
   if (!findClique4(kouho, f, cores1, 1)) return 0;
 
   // コア1を大きくしていく
-  while (true) {
-    int sz = cores1.size();
-    int arg = -1;
-    int ma = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] != 0) continue;
-      int cnt = 0;
-      for (int j = 0; j < (sz); ++j) {
-        if (b[i][cores1[j]]) cnt++;
-      }
-      if (ma < cnt && cnt >= (sz + 2) / 2) {
-        ma = cnt;
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    f[arg] = 1;
-    cores1.push_back(arg);
-  }
+  expandCore(cores1, f, 1);
 
   // コア2を作る
   vector<int> cores2;
@@ -2462,25 +2468,7 @@ int Solver11()
     findClique4(kouho, f, cores2, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
-      while (true) {
-        int sz = cores2.size();
-        int arg = -1;
-        int ma = -1;
-        for (int i = 0; i < (n); ++i) {
-          if (f[i] != 0) continue;
-          int cnt = 0;
-          for (int j = 0; j < (sz); ++j) {
-            if (b[i][cores2[j]]) cnt++;
-          }
-          if (ma < cnt && cnt >= (sz + 2) / 2) {
-            ma = cnt;
-            arg = i;
-          }
-        }
-        if (arg == -1) break;
-        f[arg] = 2;
-        cores2.push_back(arg);
-      }
+      expandCore(cores2, f, 2);
     }
   }
 
@@ -2595,25 +2583,7 @@ int Solver12()
   if (cores1.size() == 0) return 0;
 
   // コア1を大きくしていく
-  while (true) {
-    int sz = cores1.size();
-    int arg = -1;
-    int ma = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] != 0) continue;
-      int cnt = 0;
-      for (int j = 0; j < (sz); ++j) {
-        if (b[i][cores1[j]]) cnt++;
-      }
-      if (ma < cnt && cnt >= (sz + 2) / 2) {
-        ma = cnt;
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    f[arg] = 1;
-    cores1.push_back(arg);
-  }
+  expandCore(cores1, f, 1);
 
   // コア2を作る
   vector<int> cores2;
@@ -2632,25 +2602,7 @@ int Solver12()
     findClique4(kouho, f, cores2, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
-      while (true) {
-        int sz = cores2.size();
-        int arg = -1;
-        int ma = -1;
-        for (int i = 0; i < (n); ++i) {
-          if (f[i] != 0) continue;
-          int cnt = 0;
-          for (int j = 0; j < (sz); ++j) {
-            if (b[i][cores2[j]]) cnt++;
-          }
-          if (ma < cnt && cnt >= (sz + 2) / 2) {
-            ma = cnt;
-            arg = i;
-          }
-        }
-        if (arg == -1) break;
-        f[arg] = 2;
-        cores2.push_back(arg);
-      }
+      expandCore(cores2, f, 2);
     }
   }
 
@@ -2672,25 +2624,7 @@ int Solver12()
       findClique4(kouho, f, cores3, 3);
       if (cores3.size() > 0) {
         // コア3を大きくしていく
-        while (true) {
-          int sz = cores3.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores3[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 3;
-          cores3.push_back(arg);
-        }
+        expandCore(cores3, f, 3);
       }
     }
   }
@@ -2831,25 +2765,7 @@ int Solver13()
   if (cores1.size() == 0) return 0;
 
   // コア1を大きくしていく
-  while (true) {
-    int sz = cores1.size();
-    int arg = -1;
-    int ma = -1;
-    for (int i = 0; i < (n); ++i) {
-      if (f[i] != 0) continue;
-      int cnt = 0;
-      for (int j = 0; j < (sz); ++j) {
-        if (b[i][cores1[j]]) cnt++;
-      }
-      if (ma < cnt && cnt >= (sz + 2) / 2) {
-        ma = cnt;
-        arg = i;
-      }
-    }
-    if (arg == -1) break;
-    f[arg] = 1;
-    cores1.push_back(arg);
-  }
+  expandCore(cores1, f, 1);
 
   // コア2を作る
   vector<int> cores2;
@@ -2868,25 +2784,7 @@ int Solver13()
     findClique4(kouho, f, cores2, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
-      while (true) {
-        int sz = cores2.size();
-        int arg = -1;
-        int ma = -1;
-        for (int i = 0; i < (n); ++i) {
-          if (f[i] != 0) continue;
-          int cnt = 0;
-          for (int j = 0; j < (sz); ++j) {
-            if (b[i][cores2[j]]) cnt++;
-          }
-          if (ma < cnt && cnt >= (sz + 2) / 2) {
-            ma = cnt;
-            arg = i;
-          }
-        }
-        if (arg == -1) break;
-        f[arg] = 2;
-        cores2.push_back(arg);
-      }
+      expandCore(cores2, f, 2);
     }
   }
 
@@ -2908,25 +2806,7 @@ int Solver13()
       findClique4(kouho, f, cores3, 3);
       if (cores3.size() > 0) {
         // コア3を大きくしていく
-        while (true) {
-          int sz = cores3.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores3[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 3;
-          cores3.push_back(arg);
-        }
+        expandCore(cores3, f, 3);
       }
     }
   }
@@ -2949,25 +2829,7 @@ int Solver13()
       findClique4(kouho, f, cores4, 4);
       if (cores4.size() > 0) {
         // コア4を大きくしていく
-        while (true) {
-          int sz = cores4.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores4[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 4;
-          cores4.push_back(arg);
-        }
+        expandCore(cores4, f, 4);
       }
     }
   }
@@ -3121,25 +2983,7 @@ int Solver14()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -3158,25 +3002,7 @@ int Solver14()
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -3302,25 +3128,7 @@ int Solver15()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -3339,25 +3147,7 @@ int Solver15()
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -3525,25 +3315,7 @@ int Solver16()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -3562,25 +3334,7 @@ int Solver16()
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -3740,25 +3494,7 @@ int Solver17()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -3777,25 +3513,7 @@ int Solver17()
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -4007,25 +3725,7 @@ int Solver19()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -4044,25 +3744,7 @@ int Solver19()
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -4214,25 +3896,7 @@ int Solver20()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     int res1 = cores1.size();
 
@@ -4386,25 +4050,7 @@ int Solver21()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -4447,25 +4093,7 @@ int Solver21()
       }
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -4617,25 +4245,7 @@ int Solver22()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -4678,25 +4288,7 @@ int Solver22()
       }
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -4868,25 +4460,7 @@ int Solver23()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -4929,25 +4503,7 @@ int Solver23()
       }
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
@@ -5131,25 +4687,7 @@ int Solver24()
     if (cores1.size() == 0) continue;
 
     // コア1を大きくしていく
-    while (true) {
-      int sz = cores1.size();
-      int arg = -1;
-      int ma = -1;
-      for (int i = 0; i < (n); ++i) {
-        if (f[i] != 0) continue;
-        int cnt = 0;
-        for (int j = 0; j < (sz); ++j) {
-          if (b[i][cores1[j]]) cnt++;
-        }
-        if (ma < cnt && cnt >= (sz + 2) / 2) {
-          ma = cnt;
-          arg = i;
-        }
-      }
-      if (arg == -1) break;
-      f[arg] = 1;
-      cores1.push_back(arg);
-    }
+    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
@@ -5192,25 +4730,7 @@ int Solver24()
       }
       if (cores2.size() > 0) {
         // コア2を大きくしていく
-        while (true) {
-          int sz = cores2.size();
-          int arg = -1;
-          int ma = -1;
-          for (int i = 0; i < (n); ++i) {
-            if (f[i] != 0) continue;
-            int cnt = 0;
-            for (int j = 0; j < (sz); ++j) {
-              if (b[i][cores2[j]]) cnt++;
-            }
-            if (ma < cnt && cnt >= (sz + 2) / 2) {
-              ma = cnt;
-              arg = i;
-            }
-          }
-          if (arg == -1) break;
-          f[arg] = 2;
-          cores2.push_back(arg);
-        }
+        expandCore(cores2, f, 2);
       }
     }
 
