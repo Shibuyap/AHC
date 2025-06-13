@@ -16,7 +16,10 @@
       "Bash(g++:*)",
       "Bash(./AHC025_test)",
       "Bash(./AHC025_test2)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(cp:*)",
+      "Bash(git checkout:*)",
+      "Bash(diff:*)"
     ],
     "deny": []
   }

@@ -211,15 +211,21 @@ namespace
     for (int i = 0; i < (100); ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
   }
 
-  // ハイパーパラメータ配列を出力する共通関数
-  template<typename T>
-  void OutputHyperArray(ofstream& ofs, const string& typeName, const string& arrayName, T arr[101][41])
+  void OutputHaipara()
   {
-    ofs << typeName << " " << arrayName << "[101][41] = {" << endl;
+    for (int i = 0; i < (101); ++i) {
+      for (int j = 0; j < (41); ++j) {
+        if (hyperSolver[i][j] / 10 == 10 || hyperSolver[i][j] / 10 == 12) {
+          hyperStep2Arr[i][j] = hyperStep1Arr[i][j];
+        }
+      }
+    }
+    ofstream ofs("Haipara.txt");
+    ofs << "int hyperN[101][41] = {" << endl;
     for (int i = 0; i < (101); ++i) {
       ofs << "{";
       for (int j = 0; j < (41); ++j) {
-        ofs << arr[i][j];
+        ofs << hyperN[i][j];
         if (j == 40)
           ofs << "}";
         else
@@ -233,25 +239,114 @@ namespace
       }
     }
     ofs << endl;
-  }
-
-  void OutputHaipara()
-  {
+    ofs << "double hyperMaxScore[101][41] = {" << endl;
     for (int i = 0; i < (101); ++i) {
+      ofs << "{";
       for (int j = 0; j < (41); ++j) {
-        if (hyperSolver[i][j] / 10 == 10 || hyperSolver[i][j] / 10 == 12) {
-          hyperStep2Arr[i][j] = hyperStep1Arr[i][j];
-        }
+        ofs << hyperMaxScore[i][j];
+        if (j == 40)
+          ofs << "}";
+        else
+          ofs << ",";
+      }
+      if (i == 100) {
+        ofs << "};" << endl;
+      }
+      else {
+        ofs << ',' << endl;
       }
     }
-    ofstream ofs("Haipara.txt");
-    OutputHyperArray(ofs, "int", "hyperN", hyperN);
-    OutputHyperArray(ofs, "double", "hyperMaxScore", hyperMaxScore);
-    OutputHyperArray(ofs, "int", "hyperSolver", hyperSolver);
-    OutputHyperArray(ofs, "int", "hyperMinDiffArr", hyperMinDiffArr);
-    OutputHyperArray(ofs, "int", "hyperMaxRoundArr", hyperMaxRoundArr);
-    OutputHyperArray(ofs, "int", "hyperStep1Arr", hyperStep1Arr);
-    OutputHyperArray(ofs, "int", "hyperStep2Arr", hyperStep2Arr);
+    ofs << endl;
+    ofs << "int hyperSolver[101][41] = {" << endl;
+    for (int i = 0; i < (101); ++i) {
+      ofs << "{";
+      for (int j = 0; j < (41); ++j) {
+        ofs << hyperSolver[i][j];
+        if (j == 40)
+          ofs << "}";
+        else
+          ofs << ",";
+      }
+      if (i == 100) {
+        ofs << "};" << endl;
+      }
+      else {
+        ofs << ',' << endl;
+      }
+    }
+    ofs << endl;
+    ofs << "int hyperMinDiffArr[101][41] = {" << endl;
+    for (int i = 0; i < (101); ++i) {
+      ofs << "{";
+      for (int j = 0; j < (41); ++j) {
+        ofs << hyperMinDiffArr[i][j];
+        if (j == 40)
+          ofs << "}";
+        else
+          ofs << ",";
+      }
+      if (i == 100) {
+        ofs << "};" << endl;
+      }
+      else {
+        ofs << ',' << endl;
+      }
+    }
+    ofs << endl;
+    ofs << "int hyperMaxRoundArr[101][41] = {" << endl;
+    for (int i = 0; i < (101); ++i) {
+      ofs << "{";
+      for (int j = 0; j < (41); ++j) {
+        ofs << hyperMaxRoundArr[i][j];
+        if (j == 40)
+          ofs << "}";
+        else
+          ofs << ",";
+      }
+      if (i == 100) {
+        ofs << "};" << endl;
+      }
+      else {
+        ofs << ',' << endl;
+      }
+    }
+    ofs << endl;
+    ofs << "int hyperStep1Arr[101][41] = {" << endl;
+    for (int i = 0; i < (101); ++i) {
+      ofs << "{";
+      for (int j = 0; j < (41); ++j) {
+        ofs << hyperStep1Arr[i][j];
+        if (j == 40)
+          ofs << "}";
+        else
+          ofs << ",";
+      }
+      if (i == 100) {
+        ofs << "};" << endl;
+      }
+      else {
+        ofs << ',' << endl;
+      }
+    }
+    ofs << endl;
+    ofs << "int hyperStep2Arr[101][41] = {" << endl;
+    for (int i = 0; i < (101); ++i) {
+      ofs << "{";
+      for (int j = 0; j < (41); ++j) {
+        ofs << hyperStep2Arr[i][j];
+        if (j == 40)
+          ofs << "}";
+        else
+          ofs << ",";
+      }
+      if (i == 100) {
+        ofs << "};" << endl;
+      }
+      else {
+        ofs << ',' << endl;
+      }
+    }
+    ofs << endl;
     ofs.close();
   }
 }  // namespace
@@ -298,117 +393,6 @@ void InitB(int mode, int turn = 0)
 namespace
 {
   int numArr[100];
-
-  // 共通のグラフ初期化関数
-  void SetGraphFromNumArray(int arraySize = 100)
-  {
-    for (int i = 0; i < (m); ++i) {
-      int num = numArr[i];
-      for (int j = 0; j < (n); ++j) {
-        for (int k = j + 1; k < n; ++k) {
-          if (k < num) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else {
-            a[i][j][k] = 0;
-            a[i][k][j] = 0;
-          }
-        }
-      }
-    }
-  }
-
-  // 条件付きグラフ初期化関数（2つの数値用）
-  void SetGraphFromPairArray()
-  {
-    for (int i = 0; i < (m); ++i) {
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      for (int j = 0; j < (n); ++j) {
-        for (int k = j + 1; k < n; ++k) {
-          if (k < num1) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else if (num1 <= j && k < num1 + num2) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else {
-            a[i][j][k] = 0;
-            a[i][k][j] = 0;
-          }
-        }
-      }
-    }
-  }
-
-  // 条件付きグラフ初期化関数（3つの数値用）
-  void SetGraphFromThreeArray()
-  {
-    for (int i = 0; i < (m); ++i) {
-      int num1 = numThreeArr[i][0];
-      int num2 = numThreeArr[i][1];
-      int num3 = numThreeArr[i][2];
-      for (int j = 0; j < (n); ++j) {
-        for (int k = j + 1; k < n; ++k) {
-          if (k < num1) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else if (num1 <= j && k < num1 + num2) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else if (num1 + num2 <= j && k < num1 + num2 + num3) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else {
-            a[i][j][k] = 0;
-            a[i][k][j] = 0;
-          }
-        }
-      }
-    }
-  }
-
-  // 条件付きグラフ初期化関数（4つの数値用）
-  void SetGraphFromFourArray()
-  {
-    for (int i = 0; i < (m); ++i) {
-      int num1 = numFourArr[i][0];
-      int num2 = numFourArr[i][1];
-      int num3 = numFourArr[i][2];
-      int num4 = numFourArr[i][3];
-      for (int j = 0; j < (n); ++j) {
-        for (int k = j + 1; k < n; ++k) {
-          if (k < num1) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else if (num1 <= j && k < num1 + num2) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else if (num1 + num2 <= j && k < num1 + num2 + num3) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else if (num1 + num2 + num3 <= j && k < num1 + num2 + num3 + num4) {
-            a[i][j][k] = 1;
-            a[i][k][j] = 1;
-          }
-          else {
-            a[i][j][k] = 0;
-            a[i][k][j] = 0;
-          }
-        }
-      }
-    }
-  }
-
   void InitNumArray1()
   {
     if (n % 2 == 0) {
@@ -432,28 +416,84 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray2()
   {
     for (int i = 0; i < (100); ++i) { numArr[i] = maxNumArray[i]; }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray3()
   {
     for (int i = 0; i < (100); ++i) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray4()
   {
     for (int i = 0; i < (100); ++i) numArr[i] = 0;
     for (int i = 0; i < (20); ++i) { numArr[i] = (i + 1) * 5; }
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray5()
@@ -495,7 +535,21 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray6()
@@ -527,7 +581,21 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray7()
@@ -586,7 +654,21 @@ namespace
       cnt++;
     }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray9()
@@ -600,7 +682,21 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    for (int i = 0; i < (m); ++i) {
+      int num = numArr[i];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray10()
@@ -621,7 +717,26 @@ namespace
       if (cnt > 200) break;
     }
 
-    SetGraphFromPairArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numPairArr[i][0];
+      int num2 = numPairArr[i][1];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -643,7 +758,26 @@ namespace
       if (cnt > 200) break;
     }
 
-    SetGraphFromPairArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numPairArr[i][0];
+      int num2 = numPairArr[i][1];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -669,7 +803,26 @@ namespace
       if (cnt > 200) break;
     }
 
-    SetGraphFromPairArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numPairArr[i][0];
+      int num2 = numPairArr[i][1];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -695,7 +848,26 @@ namespace
       if (cnt > 200) break;
     }
 
-    SetGraphFromPairArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numPairArr[i][0];
+      int num2 = numPairArr[i][1];
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -821,7 +993,32 @@ namespace
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
     }
 
-    SetGraphFromThreeArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numThreeArr[i][0];
+      int num2 = numThreeArr[i][1];
+      int num3 = numThreeArr[i][2];
+      // cout << "a" << num1 << ' ' << num2 << ' ' << num3 << ' ' << endl;
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 + num2 <= j && k < num1 + num2 + num3) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   void InitNumArray16()
@@ -926,7 +1123,32 @@ namespace
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
     }
 
-    SetGraphFromThreeArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numThreeArr[i][0];
+      int num2 = numThreeArr[i][1];
+      int num3 = numThreeArr[i][2];
+      // cout << "a" << num1 << ' ' << num2 << ' ' << num3 << ' ' << endl;
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 + num2 <= j && k < num1 + num2 + num3) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   // 4コア
@@ -1078,7 +1300,38 @@ namespace
       swap(numFourArr[i][3], numFourArr[cnt - 1 - i][3]);
     }
 
-    SetGraphFromFourArray();
+    for (int i = 0; i < (m); ++i) {
+      int num1 = numFourArr[i][0];
+      int num2 = numFourArr[i][1];
+      int num3 = numFourArr[i][2];
+      int num4 = numFourArr[i][3];
+      // cout << "a" << num1 << ' ' << num2 << ' ' << num3  << ' ' << num4 <<
+      // endl;
+      for (int j = 0; j < (n); ++j) {
+        for (int k = j + 1; k < n; ++k) {
+          if (k < num1) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 <= j && k < num1 + num2) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 + num2 <= j && k < num1 + num2 + num3) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else if (num1 + num2 + num3 <= j && k < num1 + num2 + num3 + num4) {
+            a[i][j][k] = 1;
+            a[i][k][j] = 1;
+          }
+          else {
+            a[i][j][k] = 0;
+            a[i][k][j] = 0;
+          }
+        }
+      }
+    }
   }
 
   // 13表裏
