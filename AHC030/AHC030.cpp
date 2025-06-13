@@ -1896,7 +1896,7 @@ void Battle()
 
 int main()
 {
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
@@ -1904,7 +1904,7 @@ int main()
   else if (mode == 1) {
     ll sum = 0;
     ll onesEmptySum = 0;
-    srep(i, 0, 100)
+    srep(i, 0, 10)
     {
       onesEmptyCount = 0;
       ll score = Solve(i);
