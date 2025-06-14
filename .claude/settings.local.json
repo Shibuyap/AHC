@@ -42,7 +42,11 @@
       "WebFetch(domain:atcoder.jp)",
       "Bash(./AHC023 2 >& 1)",
       "Bash(./AHC028_new)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(./AHC030)",
+      "Bash(timeout:*)",
+      "Bash(gdb:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
