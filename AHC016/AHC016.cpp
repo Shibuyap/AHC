@@ -320,14 +320,14 @@ int judgeNum;
 // ノイズ付きグラフを受信してb配列に格納
 void ReceiveNoisyGraph(int mode, int turn = 0)
 {
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { b[i][j] = 0; }
   }
   if (mode == 0) {
     string s;
     cin >> s;
     int ite = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         b[i][j] = s[ite] - '0';
         b[j][i] = b[i][j];
@@ -1501,7 +1501,7 @@ int Solver1()
   std::array<vector<int>, 100> keep;
 
   std::array<int, 100> cnt = {};
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
   }
 
@@ -1550,7 +1550,7 @@ int Solver3()
 {
   std::array<vector<int>, 2> vec;
   std::array<int, 100> f = {};
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (i == 0) {
       vec[0].push_back(i);
       f[i] = 0;
@@ -1569,9 +1569,9 @@ int Solver3()
   for (int _ = 0; _ < (100); ++_) {
     if (vec[0].empty() || vec[1].empty()) break;
     std::array<std::array<double, 2>, 100> cnt;
-    for (int i = 0; i < (n); ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
+    for (int i = 0; i < n; ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
     std::array<vector<int>, 2> nxt;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         if (i == j) {
           cnt[i][0]++;
@@ -1624,14 +1624,14 @@ int Solver4()
   if (res >= 20) {
     int res2 = 0;
     vector<int> vec;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i]) {
         vec.push_back(i);
       }
     }
     std::array<int, 100> ff = {};
     double kijun = (eps * eps + (1.0 - eps) * (1.0 - eps)) / 2.0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       std::array<int, 2> tri = {};
       for (int j = 0; j < (res); ++j) {
         int jj = vec[j];
@@ -1720,7 +1720,7 @@ int Solver7()
   std::array<int, 100> f = {};
   int ff[100] = {};
   int res = n;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
     f[i] = 1;
   }
@@ -1729,12 +1729,12 @@ int Solver7()
 
   int res1 = res;
   res = n - res;
-  for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) { f[i] = 1 - f[i]; }
+  for (int i = 0; i < n; ++i) {
     if (f[i] == 0) ff[i] = 1;
   }
-  for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) { cnt[i] = 0; }
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
@@ -1743,13 +1743,13 @@ int Solver7()
   int res2 = res;
   if (res2 <= hyperMaxRound) {
     res2 = 0;
-    for (int i = 0; i < (n); ++i) f[i] = 0;
+    for (int i = 0; i < n; ++i) f[i] = 0;
   }
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i]) ff[i] = 2;
   }
 
-  for (int i = 0; i < (n); ++i) f[i] = ff[i];
+  for (int i = 0; i < n; ++i) f[i] = ff[i];
 
   int score = calculateScore(f);
 
@@ -1779,7 +1779,7 @@ int Solver7()
 int Solver8()
 {
   int cnt = 0;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = i + 1; j < n; ++j) { cnt += b[i][j]; }
   }
   cnt = min(cnt, m - 1);
@@ -1793,7 +1793,7 @@ int Solver9()
   P kp[10];
 
   int kcnt[100] = {};
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { kcnt[i] += b[i][j]; }
   }
 
@@ -1803,7 +1803,7 @@ int Solver9()
     std::array<int, 100> ff = {};
     int res = n;
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       cnt[i] = kcnt[i];
       f[i] = 1;
     }
@@ -1812,12 +1812,12 @@ int Solver9()
 
     int res1 = res;
     res = n - res;
-    for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) { f[i] = 1 - f[i]; }
+    for (int i = 0; i < n; ++i) {
       if (f[i] == 0) ff[i] = 1;
     }
-    for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) { cnt[i] = 0; }
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
@@ -1826,15 +1826,15 @@ int Solver9()
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
-      for (int i = 0; i < (n); ++i) f[i] = 0;
+      for (int i = 0; i < n; ++i) f[i] = 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i]) ff[i] = 2;
     }
 
-    for (int i = 0; i < (n); ++i) f[i] = ff[i];
+    for (int i = 0; i < n; ++i) f[i] = ff[i];
 
-    for (int i = 0; i < (n); ++i) { fff[_][i] = f[i]; }
+    for (int i = 0; i < n; ++i) { fff[_][i] = f[i]; }
     mp[P(res1, res2)]++;
     kp[_] = P(res1, res2);
   }
@@ -1890,7 +1890,7 @@ int Solver10()
   P kp[31];
 
   int kcnt[100] = {};
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { kcnt[i] += b[i][j]; }
   }
 
@@ -1900,7 +1900,7 @@ int Solver10()
     std::array<int, 100> ff = {};
     int res = n;
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       cnt[i] = kcnt[i];
       f[i] = 1;
     }
@@ -1909,12 +1909,12 @@ int Solver10()
 
     int res1 = res;
     res = n - res;
-    for (int i = 0; i < (n); ++i) { f[i] = 1 - f[i]; }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) { f[i] = 1 - f[i]; }
+    for (int i = 0; i < n; ++i) {
       if (f[i] == 0) ff[i] = 1;
     }
-    for (int i = 0; i < (n); ++i) { cnt[i] = 0; }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) { cnt[i] = 0; }
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
@@ -1923,15 +1923,15 @@ int Solver10()
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
-      for (int i = 0; i < (n); ++i) f[i] = 0;
+      for (int i = 0; i < n; ++i) f[i] = 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i]) ff[i] = 2;
     }
 
-    for (int i = 0; i < (n); ++i) f[i] = ff[i];
+    for (int i = 0; i < n; ++i) f[i] = ff[i];
 
-    for (int i = 0; i < (n); ++i) { fff[_][i] = f[i]; }
+    for (int i = 0; i < n; ++i) { fff[_][i] = f[i]; }
     mp[P(res1, res2)]++;
     kp[_] = P(res1, res2);
   }
@@ -2023,7 +2023,7 @@ void expandCore(vector<int>& cores, std::array<int, 100>& f, int markValue)
     int sz = cores.size();
     int arg = -1;
     int ma = -1;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (sz); ++j) {
@@ -2138,7 +2138,7 @@ int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 
 void collectCandidates(vector<int>& kouho, const std::array<int, 100>& f, int minConnectivity)
 {
   kouho.clear();
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] != 0) continue;
     int cnt = 0;
     for (int j = 0; j < (n); ++j) {
@@ -2177,14 +2177,14 @@ void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif,
   for (int i = 0; i < N; ++i) {
     bif[i].reset();
   }
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
   // bibの初期化
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       bib[i][j] = b[i][j];
     }
@@ -2192,7 +2192,7 @@ void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif,
 
   // bioneの初期化
   bione.reset();
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     bione[i] = 1;
   }
 }
@@ -2202,7 +2202,7 @@ void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif,
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn)
 {
   vector<int> kouho;
-  for (int i = 0; i < (n); ++i) kouho.push_back(i);
+  for (int i = 0; i < n; ++i) kouho.push_back(i);
 
   if (kouho.size() < 4) {
     return useReturn ? -1 : 0;
@@ -2273,7 +2273,7 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
   }
   res1 = 0;
   res2 = 0;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] == 1) res1++;
     if (f[i] == 2) res2++;
   }
@@ -2368,24 +2368,24 @@ int Solver12()
 
   std::array<bitset<100>, 4> bif = {};
   std::array<bitset<100>, 100> bib = {};
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+  for (int i = 0; i < n; ++i) { bione[i] = 1; }
 
   int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   res3 = 0;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] == 3) res3++;
   }
   sortResultsDescending(res1, res2, res3);
@@ -2460,25 +2460,25 @@ int Solver13()
 
   std::array<bitset<100>, 5> bif = {};
   std::array<bitset<100>, 100> bib = {};
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] > 0) {
       bif[f[i]][i] = 1;
     }
   }
 
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
   }
 
   bitset<100> bione(0);
-  for (int i = 0; i < (n); ++i) { bione[i] = 1; }
+  for (int i = 0; i < n; ++i) { bione[i] = 1; }
 
   int flipLoop = FLIP_ITERATIONS;
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   res3 = 0;
   res4 = 0;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (f[i] == 3) res3++;
     if (f[i] == 4) res4++;
   }
@@ -2517,7 +2517,7 @@ int Solver14()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -2584,7 +2584,7 @@ int Solver15()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -2648,20 +2648,20 @@ int Solver16()
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
@@ -2679,7 +2679,7 @@ int Solver16()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -2725,7 +2725,7 @@ int Solver16()
 
     // スコア計算
     int tmpScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
@@ -2750,20 +2750,20 @@ int Solver17()
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (10); ++tei) {
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
@@ -2781,7 +2781,7 @@ int Solver17()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -2827,7 +2827,7 @@ int Solver17()
 
     // スコア計算
     int tmpScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
@@ -2851,14 +2851,14 @@ int Solver18()
 {
   int visit[100] = {};
   int bb[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       bb[i][j] = b[i][j];
     }
   }
 
   vector<P> vp;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (visit[i]) {
       continue;
     }
@@ -2903,7 +2903,7 @@ int Solver19()
   int real_argRes[2] = {};
   int real_minDiff[2] = { 1000,1000 };
   int keepB[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
@@ -2911,13 +2911,13 @@ int Solver19()
 
 
   for (int wataruoop = 0; wataruoop < (10); ++wataruoop) {
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (wataruoop % 2 == 1) {
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
@@ -2934,7 +2934,7 @@ int Solver19()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -2997,20 +2997,20 @@ int Solver20()
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
@@ -3051,7 +3051,7 @@ int Solver20()
 
     // スコア計算
     int tmpScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
@@ -3082,7 +3082,7 @@ int Solver21()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) kouho.push_back(i);
+    for (int i = 0; i < n; ++i) kouho.push_back(i);
     if (kouho.size() < 5) continue;
     if (!findClique(kouho, f, cores1, 5, 1)) continue;
 
@@ -3171,7 +3171,7 @@ int Solver22()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) kouho.push_back(i);
+    for (int i = 0; i < n; ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;
     if (!findClique(kouho, f, cores1, 3, 1)) continue;
 
@@ -3181,7 +3181,7 @@ int Solver22()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -3264,20 +3264,20 @@ int Solver23()
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
@@ -3291,7 +3291,7 @@ int Solver23()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) kouho.push_back(i);
+    for (int i = 0; i < n; ++i) kouho.push_back(i);
     if (kouho.size() < 3) continue;
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[4] = {};
@@ -3326,7 +3326,7 @@ int Solver23()
     // コア2を作る
     vector<int> cores2;
     kouho.clear();
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
       for (int j = 0; j < (n); ++j) {
@@ -3396,7 +3396,7 @@ int Solver23()
 
     // スコア計算
     int tmpScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;
@@ -3421,20 +3421,20 @@ int Solver24()
   int real_argRes = 0;
   int real_score = 0;
   int keepB[100][100];
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < (n); ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < (n); ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         for (int j = 0; j < (n); ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
@@ -3448,7 +3448,7 @@ int Solver24()
     // コア1を作る
     vector<int> cores1;
     vector<int> kouho;
-    for (int i = 0; i < (n); ++i) kouho.push_back(i);
+    for (int i = 0; i < n; ++i) kouho.push_back(i);
     if (kouho.size() < 5) continue;
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
@@ -3543,7 +3543,7 @@ int Solver24()
 
     // スコア計算
     int tmpScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (f[i] == f[j] && f[i] != 0) {
           if (b[i][j]) tmpScore++;

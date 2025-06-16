@@ -90,11 +90,11 @@ inline void nyuuryokuInit(int fileNum)
   ifstream ifs(oss.str());
   if (!ifs.is_open()) { // 標準入力する
     cin >> n;
-    for (int i = 0; i < (n); ++i) cin >> target_points[i].x >> target_points[i].y >> target_sizes[i];
+    for (int i = 0; i < n; ++i) cin >> target_points[i].x >> target_points[i].y >> target_sizes[i];
   }
   else { // ファイル入力する
     ifs >> n;
-    for (int i = 0; i < (n); ++i) ifs >> target_points[i].x >> target_points[i].y >> target_sizes[i];
+    for (int i = 0; i < n; ++i) ifs >> target_points[i].x >> target_points[i].y >> target_sizes[i];
   }
 }
 
@@ -104,7 +104,7 @@ inline void FileKakikomi(int fileNum)
   fileName += "_out.txt";
   const char* cstr = fileName.c_str();
   ofstream ofs(cstr);
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     ofs << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
   }
   ofs.close();
@@ -116,7 +116,7 @@ inline void FileKakikomiERROR(int fileNum)
   fileName += "_out_ERROR.txt";
   const char* cstr = fileName.c_str();
   ofstream ofs(cstr);
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     ofs << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
   }
   ofs.close();
@@ -131,7 +131,7 @@ inline int calc(int ite)
 {
   if (ite == -1) {
     double sum = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       calc_area(i);
       p[i] = 1.0 - (1.0 - (double)min(target_sizes[i], area_sizes[i]) / (double)max(target_sizes[i], area_sizes[i])) * (1.0 - (double)min(target_sizes[i], area_sizes[i]) / (double)max(target_sizes[i], area_sizes[i]));
       sum += p[i];
@@ -169,21 +169,21 @@ int arg_sort_x[MAX_N], arg_sort_y[MAX_N];
 inline void sortInit()
 {
   vector<P> v;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     v.emplace_back(P(target_points[i].x, i));
   }
   sort(v.begin(), v.end());
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     sort_x[i] = v[i].second;
     arg_sort_x[v[i].second] = i;
   }
 
   v.clear();
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     v.emplace_back(P(target_points[i].y, i));
   }
   sort(v.begin(), v.end());
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     sort_y[i] = v[i].second;
     arg_sort_y[v[i].second] = i;
   }
@@ -196,21 +196,21 @@ inline void sortInit()
 inline int isOK2(int ite)
 {
   if (ite == -1) {
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
       if (rects[i].p1.y < 0 || 10000 < rects[i].p1.y) return 0;
       if (rects[i].p2.x < 0 || 10000 < rects[i].p2.x) return 0;
       if (rects[i].p2.y < 0 || 10000 < rects[i].p2.y) return 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (rects[i].p2.x <= rects[i].p1.x) return 0;
       if (rects[i].p2.y <= rects[i].p1.y) return 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (target_points[i].x < rects[i].p1.x || rects[i].p2.x <= target_points[i].x) return 0;
       if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (kasanarihantei(i, j)) return 0;
       }
@@ -225,7 +225,7 @@ inline int isOK2(int ite)
     if (rects[ite].p2.y <= rects[ite].p1.y) return 0;
     if (target_points[ite].x < rects[ite].p1.x || rects[ite].p2.x <= target_points[ite].x) return 0;
     if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (i == ite) continue;
       if (kasanarihantei(i, ite)) return 0;
     }
@@ -236,21 +236,21 @@ inline int isOK2(int ite)
 inline int isOK(int ite)
 {
   if (ite == -1) {
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
       if (rects[i].p1.y < 0 || 10000 < rects[i].p1.y) return 0;
       if (rects[i].p2.x < 0 || 10000 < rects[i].p2.x) return 0;
       if (rects[i].p2.y < 0 || 10000 < rects[i].p2.y) return 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (rects[i].p2.x <= rects[i].p1.x) return 0;
       if (rects[i].p2.y <= rects[i].p1.y) return 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       if (target_points[i].x < rects[i].p1.x || rects[i].p2.x <= target_points[i].x) return 0;
       if (target_points[i].y < rects[i].p1.y || rects[i].p2.y <= target_points[i].y) return 0;
     }
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
         if (kasanarihantei(i, j)) return 0;
       }
@@ -531,7 +531,7 @@ inline void hukuramashi(int ite)
 inline void store_best()
 {
   real_maxScore = maxScore;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     best_rects[i] = rects[i];
   }
 }
@@ -547,7 +547,7 @@ inline void Extend(int ite, double temp)
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-  //if (tmpScore >= maxScore) {
+
   if (prob > Rand01()) {
     modeCount[4]++;
     maxScore = tmpScore;
@@ -585,7 +585,7 @@ inline void Tubusu(int tubusu)
 inline void TubusuWorst(int tubusu_worst)
 {
   vector<pair<double, int>> v;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     v.emplace_back(pair<double, int>(p[i], i));
   }
   sort(v.begin(), v.end());
@@ -609,7 +609,7 @@ inline void AnaWoAkeru(int hole = 100)
   rects[ite].p1.y -= hole;
   rects[ite].p2.x += hole;
   rects[ite].p2.y += hole;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (i == ite) continue;
     if (kasanarihantei(i, ite)) keep.emplace_back(i);
   }
@@ -765,8 +765,6 @@ inline void hukuramashiKing(int ite)
     }
   }
 
-
-
   int shuf[4] = {};
   int shuffleSeed = Rand() % 24;
   for (int j = 0; j < (4); ++j) shuf[j] = shuffles[shuffleSeed][j];
@@ -847,7 +845,7 @@ inline void ExtendKing(int ite)
   hukuramashiKing(ite);
   rects[ite] = vExtendKing;
 
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (i == ite) continue;
     if (kasanarihantei(i, ite)) {
       init_rect(rects[i], target_points[i]);
@@ -1064,7 +1062,7 @@ inline int selfNg(int ite)
 
 inline int dokasuOK(int ite, int abcd)
 {
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     if (i == ite) continue;
     if (kasanarihantei(i, ite)) {
       if (abcd == 0) rects[i].p2.x = rects[ite].p1.x;
@@ -1282,7 +1280,7 @@ inline void zurasi2(int ite, double temp)
 
 inline void shokiInit()
 {
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     init_rect(rects[i], target_points[i]);
   }
 
@@ -1306,7 +1304,7 @@ inline void Ui_Tei()
 
     // 初期解
     // 左上(x,y)、右下(x+1,y+1)
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       init_rect(rects[i], target_points[i]);
     }
 
@@ -1357,14 +1355,14 @@ inline void Ui_Tei()
 
       // 焼きなまし戻す
       maxScore = real_maxScore;
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         rects[i] = best_rects[i];
       }
       calc(-1);
 
       if (maxScore > real_real_maxScore) {
         real_real_maxScore = maxScore;
-        for (int i = 0; i < (n); ++i) {
+        for (int i = 0; i < n; ++i) {
           best_best_rects[i] = rects[i];
         }
       }
@@ -1373,7 +1371,7 @@ inline void Ui_Tei()
     // real_real_maxScore戻す
     maxScore = real_real_maxScore;
     real_real_maxScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       rects[i] = best_best_rects[i];
     }
     calc(-1);
@@ -1382,7 +1380,7 @@ inline void Ui_Tei()
     maxScore = calc(-1);
     real_maxScore = maxScore;
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       best_rects[i] = rects[i];
     }
 
@@ -1432,14 +1430,14 @@ inline void Ui_Tei()
 
     // 焼きなまし戻す
     maxScore = real_maxScore;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       rects[i] = best_rects[i];
     }
     calc(-1);
 
     if (maxScore > ui_tei_maxScore) {
       ui_tei_maxScore = maxScore;
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         ui_tei_a[i] = rects[i].p1.x;
         ui_tei_b[i] = rects[i].p1.y;
         ui_tei_c[i] = rects[i].p2.x;
@@ -1452,7 +1450,7 @@ inline void Ui_Tei()
   maxScore = 0;
   real_maxScore = 0;
   real_real_maxScore = 0;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     init_rect(rects[i], target_points[i]);
     best_rects[i] = rects[i];
     best_best_rects[i] = rects[i];
@@ -1476,7 +1474,7 @@ int solve(int teisyutu, int fileNum)
 
     // ui_tei_maxScore戻す
     maxScore = ui_tei_maxScore;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       rects[i].p1.x = ui_tei_a[i];
       rects[i].p1.y = ui_tei_b[i];
       rects[i].p2.x = ui_tei_c[i];
@@ -1488,7 +1486,7 @@ int solve(int teisyutu, int fileNum)
     maxScore = calc(-1);
     real_maxScore = maxScore;
 
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       best_rects[i] = rects[i];
     }
 
@@ -1513,7 +1511,7 @@ int solve(int teisyutu, int fileNum)
       int TT = 1;
       for (int asai = 0; asai < (TT); ++asai) {
         int kiyoshi = asai % oya;
-        for (int i = 0; i < (n); ++i) {
+        for (int i = 0; i < n; ++i) {
           rects[i].p1.x = a2[kiyoshi][i];
           rects[i].p1.y = b2[kiyoshi][i];
           rects[i].p2.x = c2[kiyoshi][i];
@@ -1524,7 +1522,7 @@ int solve(int teisyutu, int fileNum)
         maxScore = calc(-1);
         real_maxScore = maxScore;
 
-        for (int i = 0; i < (n); ++i) {
+        for (int i = 0; i < n; ++i) {
           best_rects[i] = rects[i];
         }
 
@@ -1591,20 +1589,20 @@ int solve(int teisyutu, int fileNum)
 
         // 焼きなまし戻す
         maxScore = real_maxScore;
-        for (int i = 0; i < (n); ++i) {
+        for (int i = 0; i < n; ++i) {
           rects[i] = best_rects[i];
         }
         calc(-1);
         if (maxScore > real_real_maxScore) {
           real_real_maxScore = maxScore;
-          for (int i = 0; i < (n); ++i) {
+          for (int i = 0; i < n; ++i) {
             best_best_rects[i] = rects[i];
           }
         }
 
         // ビームサーチの次の種にする
         maxScore4[asai] = maxScore;
-        for (int i = 0; i < (n); ++i) {
+        for (int i = 0; i < n; ++i) {
           a4[asai][i] = rects[i].p1.x;
           b4[asai][i] = rects[i].p1.y;
           c4[asai][i] = rects[i].p2.x;
@@ -1641,7 +1639,7 @@ int solve(int teisyutu, int fileNum)
 
     // real_real_maxScore戻す
     maxScore = real_real_maxScore;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       rects[i] = best_best_rects[i];
     }
     calc(-1);
@@ -1659,7 +1657,7 @@ int solve(int teisyutu, int fileNum)
     // real_real_real入れる
     if (maxScore > real_real_real_maxScore && maxScore < 1000000007) {
       real_real_real_maxScore = maxScore;
-      for (int i = 0; i < (n); ++i) {
+      for (int i = 0; i < n; ++i) {
         best_best_best_rects[i] = rects[i];
       }
     }
@@ -1669,7 +1667,7 @@ int solve(int teisyutu, int fileNum)
     maxScore = 0;
     real_maxScore = 0;
     real_real_maxScore = 0;
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       init_rect(rects[i], target_points[i]);
       best_rects[i] = rects[i];
       best_best_rects[i] = rects[i];
@@ -1679,14 +1677,14 @@ int solve(int teisyutu, int fileNum)
 
   // real_real_real_maxScore戻す
   maxScore = real_real_real_maxScore;
-  for (int i = 0; i < (n); ++i) {
+  for (int i = 0; i < n; ++i) {
     rects[i] = best_best_best_rects[i];
   }
   calc(-1);
 
   // 最終出力
   if (teisyutu) {
-    for (int i = 0; i < (n); ++i) {
+    for (int i = 0; i < n; ++i) {
       cout << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
     }
   }
@@ -1765,7 +1763,6 @@ int main()
       string fileName = "haipara_hoge.txt";
       const char* cstr = fileName.c_str();
       ofstream ofs(cstr);
-
 
       vector<int> arrHaiparaOya = { 1,2,4,8 };
       int m = arrHaiparaOya.size();
