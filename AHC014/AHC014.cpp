@@ -1083,6 +1083,8 @@ int Solve(int mode, int problemNum = 0)
       }
     }  // while文ここまで（シード作成）
 
+    cerr << "seed loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
+
     // スコアが良ければシードを更新
     RollBackFromReal();
     if (current_state.maxScore > seed_state.maxScore) {
@@ -1144,6 +1146,8 @@ int Solve(int mode, int problemNum = 0)
       Method2(temperature);
     }
   }  // while文ここまで（メインループ）
+
+  cerr << "main loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
 
   // 一番スコアの良い解
   RollBackFromReal();
