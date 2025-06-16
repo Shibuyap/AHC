@@ -90,30 +90,6 @@ namespace /* 変数 */
   State current_state;
   State seed_state;
   State best_state;
-  
-  // References to current_state
-  double& maxScore = current_state.maxScore;
-  int& ansSize = current_state.ansSize;
-  int (&ans)[ANS_SIZE][4][2] = current_state.ans;
-  int (&ansDelete)[ANS_SIZE] = current_state.ansDelete;
-  int& ansDeleteCount = current_state.ansDeleteCount;
-  int (&f)[64][64] = current_state.f;
-  int (&line)[64][64][8] = current_state.line;
-  int (&use)[64][64] = current_state.use;
-  int (&cntH)[64] = current_state.cntH;
-  int (&cntW)[64] = current_state.cntW;
-  
-  // References to seed_state
-  double& seed_maxScore = seed_state.maxScore;
-  int& seed_ansSize = seed_state.ansSize;
-  int (&seed_ans)[ANS_SIZE][4][2] = seed_state.ans;
-  int (&seed_ansDelete)[ANS_SIZE] = seed_state.ansDelete;
-  int& seed_ansDeleteCount = seed_state.ansDeleteCount;
-  int (&seed_f)[64][64] = seed_state.f;
-  int (&seed_line)[64][64][8] = seed_state.line;
-  int (&seed_use)[64][64] = seed_state.use;
-  int (&seed_cntH)[64] = seed_state.cntH;
-  int (&seed_cntW)[64] = seed_state.cntW;
 
   // その他
   int methodCount[20][2];
@@ -145,7 +121,7 @@ double CalcScore()
   {
     rep(j, N)
     {
-      if (f[i][j]) {
+      if (current_state.f[i][j]) {
         sum += W[i][j];
       }
     }
@@ -158,20 +134,20 @@ double CalcScore()
 
 void NormalClear()
 {
-  maxScore = 0;
-  ansSize = 0;
-  ansDeleteCount = 0;
-  rep(i, ANS_SIZE) ansDelete[i] = 0;
+  current_state.maxScore = 0;
+  current_state.ansSize = 0;
+  current_state.ansDeleteCount = 0;
+  rep(i, ANS_SIZE) current_state.ansDelete[i] = 0;
   rep(i, 64) rep(j, 64)
   {
-    f[i][j] = false;
-    rep(k, 8) line[i][j][k] = 0;
-    use[i][j] = 0;
+    current_state.f[i][j] = false;
+    rep(k, 8) current_state.line[i][j][k] = 0;
+    current_state.use[i][j] = 0;
   }
   rep(i, 64)
   {
-    cntH[i] = 0;
-    cntW[i] = 0;
+    current_state.cntH[i] = 0;
+    current_state.cntW[i] = 0;
   }
 }
 
@@ -196,42 +172,42 @@ void RealClear()
 
 void SeedClear()
 {
-  seed_maxScore = 0;
-  seed_ansSize = 0;
-  seed_ansDeleteCount = 0;
-  rep(i, ANS_SIZE) seed_ansDelete[i] = 0;
+  seed_state.maxScore = 0;
+  seed_state.ansSize = 0;
+  seed_state.ansDeleteCount = 0;
+  rep(i, ANS_SIZE) seed_state.ansDelete[i] = 0;
   rep(i, 64) rep(j, 64)
   {
-    seed_f[i][j] = false;
-    rep(k, 8) seed_line[i][j][k] = 0;
-    seed_use[i][j] = 0;
+    seed_state.f[i][j] = false;
+    rep(k, 8) seed_state.line[i][j][k] = 0;
+    seed_state.use[i][j] = 0;
   }
   rep(i, 64)
   {
-    seed_cntH[i] = 0;
-    seed_cntW[i] = 0;
+    seed_state.cntH[i] = 0;
+    seed_state.cntW[i] = 0;
   }
 }
 
 void RefleshAns()
 {
   int tmpCount = 0;
-  rep(i, ansSize)
+  rep(i, current_state.ansSize)
   {
-    if (ansDelete[i]) {
+    if (current_state.ansDelete[i]) {
       tmpCount++;
-      ansDelete[i] = 0;
+      current_state.ansDelete[i] = 0;
     }
     else {
-      rep(j, 4) rep(k, 2) ans[i - tmpCount][j][k] = ans[i][j][k];
+      rep(j, 4) rep(k, 2) current_state.ans[i - tmpCount][j][k] = current_state.ans[i][j][k];
     }
   }
-  if (tmpCount != ansDeleteCount) {
+  if (tmpCount != current_state.ansDeleteCount) {
     cerr << "error" << endl;
-    cerr << tmpCount << ' ' << ansDeleteCount << endl;
+    cerr << tmpCount << ' ' << current_state.ansDeleteCount << endl;
   }
-  ansSize -= tmpCount;
-  ansDeleteCount = 0;
+  current_state.ansSize -= tmpCount;
+  current_state.ansDeleteCount = 0;
 }
 
 // ローカルで複数ケース試すための全て消す関数
@@ -249,10 +225,10 @@ void Init()
   NormalClear();
   rep(i, M)
   {
-    f[X[i]][Y[i]] = true;
-    use[X[i]][Y[i]] = 100;
-    cntH[Y[i]]++;
-    cntW[X[i]]++;
+    current_state.f[X[i]][Y[i]] = true;
+    current_state.use[X[i]][Y[i]] = 100;
+    current_state.cntH[Y[i]]++;
+    current_state.cntW[X[i]]++;
   }
 }
 
@@ -292,11 +268,11 @@ void Input(int problemNum)
 void Output(int mode, int problemNum)
 {
   if (mode == 0) {
-    cout << ansSize - ansDeleteCount << endl;
-    rep(i, ansSize)
+    cout << current_state.ansSize - current_state.ansDeleteCount << endl;
+    rep(i, current_state.ansSize)
     {
-      if (ansDelete[i]) continue;
-      rep(j, 4) rep(k, 2) { cout << ans[i][j][k] << ' '; }
+      if (current_state.ansDelete[i]) continue;
+      rep(j, 4) rep(k, 2) { cout << current_state.ans[i][j][k] << ' '; }
       cout << endl;
     }
   }
@@ -315,11 +291,11 @@ void Output(int mode, int problemNum)
 
     ofstream ofs(fileNameOfs);
 
-    ofs << ansSize - ansDeleteCount << endl;
-    rep(i, ansSize)
+    ofs << current_state.ansSize - current_state.ansDeleteCount << endl;
+    rep(i, current_state.ansSize)
     {
-      if (ansDelete[i]) continue;
-      rep(j, 4) rep(k, 2) { ofs << ans[i][j][k] << ' '; }
+      if (current_state.ansDelete[i]) continue;
+      rep(j, 4) rep(k, 2) { ofs << current_state.ans[i][j][k] << ' '; }
       ofs << endl;
     }
 
@@ -329,94 +305,22 @@ void Output(int mode, int problemNum)
 
 void CopyToReal()
 {
-  best_state.maxScore = maxScore;
-  best_state.ansSize = ansSize;
-  best_state.ansDeleteCount = ansDeleteCount;
-  rep(i, ansSize)
-  {
-    rep(j, 4) rep(k, 2) { best_state.ans[i][j][k] = ans[i][j][k]; }
-    best_state.ansDelete[i] = ansDelete[i];
-  }
-  rep(i, N) rep(j, N)
-  {
-    best_state.f[i][j] = f[i][j];
-    rep(k, 8) best_state.line[i][j][k] = line[i][j][k];
-    best_state.use[i][j] = use[i][j];
-  }
-  rep(i, 64)
-  {
-    best_state.cntH[i] = cntH[i];
-    best_state.cntW[i] = cntW[i];
-  }
+  best_state = current_state;
 }
 
 void CopyToSeed()
 {
-  seed_maxScore = maxScore;
-  seed_ansSize = ansSize;
-  seed_ansDeleteCount = ansDeleteCount;
-  rep(i, ansSize)
-  {
-    rep(j, 4) rep(k, 2) { seed_ans[i][j][k] = ans[i][j][k]; }
-    seed_ansDelete[i] = ansDelete[i];
-  }
-  rep(i, N) rep(j, N)
-  {
-    seed_f[i][j] = f[i][j];
-    rep(k, 8) seed_line[i][j][k] = line[i][j][k];
-    seed_use[i][j] = use[i][j];
-  }
-  rep(i, 64)
-  {
-    seed_cntH[i] = cntH[i];
-    seed_cntW[i] = cntW[i];
-  }
+  seed_state = current_state;
 }
 
 void RollBackFromReal()
 {
-  maxScore = best_state.maxScore;
-  ansSize = best_state.ansSize;
-  ansDeleteCount = best_state.ansDeleteCount;
-  rep(i, ansSize)
-  {
-    rep(j, 4) rep(k, 2) { ans[i][j][k] = best_state.ans[i][j][k]; }
-    ansDelete[i] = best_state.ansDelete[i];
-  }
-  rep(i, N) rep(j, N)
-  {
-    f[i][j] = best_state.f[i][j];
-    rep(k, 8) line[i][j][k] = best_state.line[i][j][k];
-    use[i][j] = best_state.use[i][j];
-  }
-  rep(i, 64)
-  {
-    cntH[i] = best_state.cntH[i];
-    cntW[i] = best_state.cntW[i];
-  }
+  current_state = best_state;
 }
 
 void RollBackFromSeed()
 {
-  maxScore = seed_maxScore;
-  ansSize = seed_ansSize;
-  ansDeleteCount = seed_ansDeleteCount;
-  rep(i, ansSize)
-  {
-    rep(j, 4) rep(k, 2) { ans[i][j][k] = seed_ans[i][j][k]; }
-    ansDelete[i] = seed_ansDelete[i];
-  }
-  rep(i, N) rep(j, N)
-  {
-    f[i][j] = seed_f[i][j];
-    rep(k, 8) line[i][j][k] = seed_line[i][j][k];
-    use[i][j] = seed_use[i][j];
-  }
-  rep(i, 64)
-  {
-    cntH[i] = seed_cntH[i];
-    cntW[i] = seed_cntW[i];
-  }
+  current_state = seed_state;
 }
 
 /*
@@ -440,8 +344,8 @@ inline int FindNeighborPoint(int x, int y, int z)
   if (z == 0) {
     drep(i, x)
     {
-      if (f[i][y]) {
-        if (line[i][y][2]) return -2;
+      if (current_state.f[i][y]) {
+        if (current_state.line[i][y][2]) return -2;
         return x - i;
       }
     }
@@ -452,8 +356,8 @@ inline int FindNeighborPoint(int x, int y, int z)
   if (z == 1) {
     drep(j, y)
     {
-      if (f[x][j]) {
-        if (line[x][j][3]) return -2;
+      if (current_state.f[x][j]) {
+        if (current_state.line[x][j][3]) return -2;
         return y - j;
       }
     }
@@ -464,8 +368,8 @@ inline int FindNeighborPoint(int x, int y, int z)
   if (z == 2) {
     srep(i, x + 1, N)
     {
-      if (f[i][y]) {
-        if (line[i][y][0]) return -2;
+      if (current_state.f[i][y]) {
+        if (current_state.line[i][y][0]) return -2;
         return i - x;
       }
     }
@@ -476,8 +380,8 @@ inline int FindNeighborPoint(int x, int y, int z)
   if (z == 3) {
     srep(j, y + 1, N)
     {
-      if (f[x][j]) {
-        if (line[x][j][1]) return -2;
+      if (current_state.f[x][j]) {
+        if (current_state.line[x][j][1]) return -2;
         return j - y;
       }
     }
@@ -489,8 +393,8 @@ inline int FindNeighborPoint(int x, int y, int z)
     int ma = min(x, y);
     srep(i, 1, ma + 1)
     {
-      if (f[x - i][y - i]) {
-        if (line[x - i][y - i][6]) return -2;
+      if (current_state.f[x - i][y - i]) {
+        if (current_state.line[x - i][y - i][6]) return -2;
         return i;
       }
     }
@@ -502,8 +406,8 @@ inline int FindNeighborPoint(int x, int y, int z)
     int ma = min(N - 1 - x, y);
     srep(i, 1, ma + 1)
     {
-      if (f[x + i][y - i]) {
-        if (line[x + i][y - i][7]) return -2;
+      if (current_state.f[x + i][y - i]) {
+        if (current_state.line[x + i][y - i][7]) return -2;
         return i;
       }
     }
@@ -515,8 +419,8 @@ inline int FindNeighborPoint(int x, int y, int z)
     int ma = min(N - 1 - x, N - 1 - y);
     srep(i, 1, ma + 1)
     {
-      if (f[x + i][y + i]) {
-        if (line[x + i][y + i][4]) return -2;
+      if (current_state.f[x + i][y + i]) {
+        if (current_state.line[x + i][y + i][4]) return -2;
         return i;
       }
     }
@@ -528,8 +432,8 @@ inline int FindNeighborPoint(int x, int y, int z)
     int ma = min(x, N - 1 - y);
     srep(i, 1, ma + 1)
     {
-      if (f[x - i][y + i]) {
-        if (line[x - i][y + i][5]) return -2;
+      if (current_state.f[x - i][y + i]) {
+        if (current_state.line[x - i][y + i][5]) return -2;
         return i;
       }
     }
@@ -554,14 +458,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][3] || line[xx][yy][2]) return false;
+    if (current_state.line[xx][yy][3] || current_state.line[xx][yy][2]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(j, yy + 1, y) if (f[xx][j]) return false;
-    srep(i, xx + 1, x) if (f[i][yy]) return false;
+    srep(j, yy + 1, y) if (current_state.f[xx][j]) return false;
+    srep(i, xx + 1, x) if (current_state.f[i][yy]) return false;
 
     return true;
   }
@@ -575,14 +479,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][0] || line[xx][yy][3]) return false;
+    if (current_state.line[xx][yy][0] || current_state.line[xx][yy][3]) return false;
 
     // 間に邪魔な頂点がないか
-    dsrep(i, xx - 1, x) if (f[i][yy]) return false;
-    srep(j, yy + 1, y) if (f[xx][j]) return false;
+    dsrep(i, xx - 1, x) if (current_state.f[i][yy]) return false;
+    srep(j, yy + 1, y) if (current_state.f[xx][j]) return false;
 
     return true;
   }
@@ -596,14 +500,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][1] || line[xx][yy][0]) return false;
+    if (current_state.line[xx][yy][1] || current_state.line[xx][yy][0]) return false;
 
     // 間に邪魔な頂点がないか
-    dsrep(j, yy - 1, y) if (f[xx][j]) return false;
-    dsrep(i, xx - 1, x) if (f[i][yy]) return false;
+    dsrep(j, yy - 1, y) if (current_state.f[xx][j]) return false;
+    dsrep(i, xx - 1, x) if (current_state.f[i][yy]) return false;
 
     return true;
   }
@@ -617,14 +521,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][2] || line[xx][yy][1]) return false;
+    if (current_state.line[xx][yy][2] || current_state.line[xx][yy][1]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, xx + 1, x) if (f[i][yy]) return false;
-    dsrep(j, yy - 1, y) if (f[xx][j]) return false;
+    srep(i, xx + 1, x) if (current_state.f[i][yy]) return false;
+    dsrep(j, yy - 1, y) if (current_state.f[xx][j]) return false;
 
     return true;
   }
@@ -638,14 +542,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][7] || line[xx][yy][6]) return false;
+    if (current_state.line[xx][yy][7] || current_state.line[xx][yy][6]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (f[xx - i][yy + i]) return false;
-    srep(i, 1, diff1) if (f[xx + i][yy + i]) return false;
+    srep(i, 1, diff2) if (current_state.f[xx - i][yy + i]) return false;
+    srep(i, 1, diff1) if (current_state.f[xx + i][yy + i]) return false;
 
     return true;
   }
@@ -659,14 +563,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][4] || line[xx][yy][7]) return false;
+    if (current_state.line[xx][yy][4] || current_state.line[xx][yy][7]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (f[xx - i][yy - i]) return false;
-    srep(i, 1, diff1) if (f[xx - i][yy + i]) return false;
+    srep(i, 1, diff2) if (current_state.f[xx - i][yy - i]) return false;
+    srep(i, 1, diff1) if (current_state.f[xx - i][yy + i]) return false;
 
     return true;
   }
@@ -680,14 +584,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][5] || line[xx][yy][4]) return false;
+    if (current_state.line[xx][yy][5] || current_state.line[xx][yy][4]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (f[xx + i][yy - i]) return false;
-    srep(i, 1, diff1) if (f[xx - i][yy - i]) return false;
+    srep(i, 1, diff2) if (current_state.f[xx + i][yy - i]) return false;
+    srep(i, 1, diff1) if (current_state.f[xx - i][yy - i]) return false;
 
     return true;
   }
@@ -701,14 +605,14 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (IsNGXY(xx, yy)) return false;
 
     // そこに点が存在しているか
-    if (!f[xx][yy]) return false;
+    if (!current_state.f[xx][yy]) return false;
 
     // 辺が既に存在していないか
-    if (line[xx][yy][6] || line[xx][yy][5]) return false;
+    if (current_state.line[xx][yy][6] || current_state.line[xx][yy][5]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (f[xx + i][yy + i]) return false;
-    srep(i, 1, diff1) if (f[xx + i][yy - i]) return false;
+    srep(i, 1, diff2) if (current_state.f[xx + i][yy + i]) return false;
+    srep(i, 1, diff1) if (current_state.f[xx + i][yy - i]) return false;
 
     return true;
   }
@@ -729,27 +633,27 @@ void Method1(double temperature)
   int x = Rand() % N;
   int y = Rand() % N;
 
-  if (f[x][y]) return;
+  if (current_state.f[x][y]) return;
 
   methodCount[1][1]++;
 
   int u = -1;
-  if (cntH[y] != 0) {
+  if (current_state.cntH[y] != 0) {
     u = FindNeighborPoint(x, y, 0);
     if (u == -2) return;
   }
   int l = -1;
-  if (cntW[x] != 0) {
+  if (current_state.cntW[x] != 0) {
     l = FindNeighborPoint(x, y, 1);
     if (l == -2) return;
   }
   int d = -1;
-  if (cntH[y] != 0) {
+  if (current_state.cntH[y] != 0) {
     d = FindNeighborPoint(x, y, 2);
     if (d == -2) return;
   }
   int r = -1;
-  if (cntW[x] != 0) {
+  if (current_state.cntW[x] != 0) {
     r = FindNeighborPoint(x, y, 3);
     if (r == -2) return;
   }
@@ -862,108 +766,108 @@ void Method1(double temperature)
   if (prob > Rand01()) {
     methodCount[1][0]++;
 
-    maxScore += diffScore;
+    current_state.maxScore += diffScore;
 
-    ans[ansSize][0][0] = x;
-    ans[ansSize][0][1] = y;
-    ans[ansSize][1][0] = x1;
-    ans[ansSize][1][1] = y1;
-    ans[ansSize][2][0] = xx;
-    ans[ansSize][2][1] = yy;
-    ans[ansSize][3][0] = x3;
-    ans[ansSize][3][1] = y3;
-    ansDelete[ansSize] = 0;
-    ansSize++;
-    f[x][y] = 1;
-    cntW[x]++;
-    cntH[y]++;
-    use[x][y]++;
-    use[x1][y1]++;
-    use[xx][yy]++;
-    use[x3][y3]++;
+    current_state.ans[current_state.ansSize][0][0] = x;
+    current_state.ans[current_state.ansSize][0][1] = y;
+    current_state.ans[current_state.ansSize][1][0] = x1;
+    current_state.ans[current_state.ansSize][1][1] = y1;
+    current_state.ans[current_state.ansSize][2][0] = xx;
+    current_state.ans[current_state.ansSize][2][1] = yy;
+    current_state.ans[current_state.ansSize][3][0] = x3;
+    current_state.ans[current_state.ansSize][3][1] = y3;
+    current_state.ansDelete[current_state.ansSize] = 0;
+    current_state.ansSize++;
+    current_state.f[x][y] = 1;
+    current_state.cntW[x]++;
+    current_state.cntH[y]++;
+    current_state.use[x][y]++;
+    current_state.use[x1][y1]++;
+    current_state.use[xx][yy]++;
+    current_state.use[x3][y3]++;
 
     if (RectDir == 0) {
-      line[x][y][0] = true;
-      line[x][y][1] = true;
-      line[x1][y1][1] = true;
-      line[x1][y1][2] = true;
-      line[xx][yy][2] = true;
-      line[xx][yy][3] = true;
-      line[x3][y3][3] = true;
-      line[x3][y3][0] = true;
+      current_state.line[x][y][0] = true;
+      current_state.line[x][y][1] = true;
+      current_state.line[x1][y1][1] = true;
+      current_state.line[x1][y1][2] = true;
+      current_state.line[xx][yy][2] = true;
+      current_state.line[xx][yy][3] = true;
+      current_state.line[x3][y3][3] = true;
+      current_state.line[x3][y3][0] = true;
     }
     else if (RectDir == 1) {
-      line[x][y][1] = true;
-      line[x][y][2] = true;
-      line[x1][y1][2] = true;
-      line[x1][y1][3] = true;
-      line[xx][yy][3] = true;
-      line[xx][yy][0] = true;
-      line[x3][y3][0] = true;
-      line[x3][y3][1] = true;
+      current_state.line[x][y][1] = true;
+      current_state.line[x][y][2] = true;
+      current_state.line[x1][y1][2] = true;
+      current_state.line[x1][y1][3] = true;
+      current_state.line[xx][yy][3] = true;
+      current_state.line[xx][yy][0] = true;
+      current_state.line[x3][y3][0] = true;
+      current_state.line[x3][y3][1] = true;
     }
     else if (RectDir == 2) {
-      line[x][y][2] = true;
-      line[x][y][3] = true;
-      line[x1][y1][3] = true;
-      line[x1][y1][0] = true;
-      line[xx][yy][0] = true;
-      line[xx][yy][1] = true;
-      line[x3][y3][1] = true;
-      line[x3][y3][2] = true;
+      current_state.line[x][y][2] = true;
+      current_state.line[x][y][3] = true;
+      current_state.line[x1][y1][3] = true;
+      current_state.line[x1][y1][0] = true;
+      current_state.line[xx][yy][0] = true;
+      current_state.line[xx][yy][1] = true;
+      current_state.line[x3][y3][1] = true;
+      current_state.line[x3][y3][2] = true;
     }
     else if (RectDir == 3) {
-      line[x][y][3] = true;
-      line[x][y][0] = true;
-      line[x1][y1][0] = true;
-      line[x1][y1][1] = true;
-      line[xx][yy][1] = true;
-      line[xx][yy][2] = true;
-      line[x3][y3][2] = true;
-      line[x3][y3][3] = true;
+      current_state.line[x][y][3] = true;
+      current_state.line[x][y][0] = true;
+      current_state.line[x1][y1][0] = true;
+      current_state.line[x1][y1][1] = true;
+      current_state.line[xx][yy][1] = true;
+      current_state.line[xx][yy][2] = true;
+      current_state.line[x3][y3][2] = true;
+      current_state.line[x3][y3][3] = true;
     }
     else if (RectDir == 4) {
-      line[x][y][4] = true;
-      line[x][y][5] = true;
-      line[x1][y1][5] = true;
-      line[x1][y1][6] = true;
-      line[xx][yy][6] = true;
-      line[xx][yy][7] = true;
-      line[x3][y3][7] = true;
-      line[x3][y3][4] = true;
+      current_state.line[x][y][4] = true;
+      current_state.line[x][y][5] = true;
+      current_state.line[x1][y1][5] = true;
+      current_state.line[x1][y1][6] = true;
+      current_state.line[xx][yy][6] = true;
+      current_state.line[xx][yy][7] = true;
+      current_state.line[x3][y3][7] = true;
+      current_state.line[x3][y3][4] = true;
     }
     else if (RectDir == 5) {
-      line[x][y][5] = true;
-      line[x][y][6] = true;
-      line[x1][y1][6] = true;
-      line[x1][y1][7] = true;
-      line[xx][yy][7] = true;
-      line[xx][yy][4] = true;
-      line[x3][y3][4] = true;
-      line[x3][y3][5] = true;
+      current_state.line[x][y][5] = true;
+      current_state.line[x][y][6] = true;
+      current_state.line[x1][y1][6] = true;
+      current_state.line[x1][y1][7] = true;
+      current_state.line[xx][yy][7] = true;
+      current_state.line[xx][yy][4] = true;
+      current_state.line[x3][y3][4] = true;
+      current_state.line[x3][y3][5] = true;
     }
     else if (RectDir == 6) {
-      line[x][y][6] = true;
-      line[x][y][7] = true;
-      line[x1][y1][7] = true;
-      line[x1][y1][4] = true;
-      line[xx][yy][4] = true;
-      line[xx][yy][5] = true;
-      line[x3][y3][5] = true;
-      line[x3][y3][6] = true;
+      current_state.line[x][y][6] = true;
+      current_state.line[x][y][7] = true;
+      current_state.line[x1][y1][7] = true;
+      current_state.line[x1][y1][4] = true;
+      current_state.line[xx][yy][4] = true;
+      current_state.line[xx][yy][5] = true;
+      current_state.line[x3][y3][5] = true;
+      current_state.line[x3][y3][6] = true;
     }
     else if (RectDir == 7) {
-      line[x][y][7] = true;
-      line[x][y][4] = true;
-      line[x1][y1][4] = true;
-      line[x1][y1][5] = true;
-      line[xx][yy][5] = true;
-      line[xx][yy][6] = true;
-      line[x3][y3][6] = true;
-      line[x3][y3][7] = true;
+      current_state.line[x][y][7] = true;
+      current_state.line[x][y][4] = true;
+      current_state.line[x1][y1][4] = true;
+      current_state.line[x1][y1][5] = true;
+      current_state.line[xx][yy][5] = true;
+      current_state.line[xx][yy][6] = true;
+      current_state.line[x3][y3][6] = true;
+      current_state.line[x3][y3][7] = true;
     }
 
-    if (maxScore > best_state.maxScore) {
+    if (current_state.maxScore > best_state.maxScore) {
       // RefleshAns();
       CopyToReal();
     }
@@ -989,18 +893,18 @@ inline int GetDir(int x1, int y1, int x2, int y2)
 // ランダムに1点選びほかに影響ないなら削除
 void Method2(double temperature)
 {
-  if (ansSize == 0) return;
-  int ite = Rand() % ansSize;
-  if (ansDelete[ite]) return;
-  if (use[ans[ite][0][0]][ans[ite][0][1]] > 1) return;
+  if (current_state.ansSize == 0) return;
+  int ite = Rand() % current_state.ansSize;
+  if (current_state.ansDelete[ite]) return;
+  if (current_state.use[current_state.ans[ite][0][0]][current_state.ans[ite][0][1]] > 1) return;
 
   methodCount[2][1]++;
 
   int x[4], y[4];
   rep(i, 4)
   {
-    x[i] = ans[ite][i][0];
-    y[i] = ans[ite][i][1];
+    x[i] = current_state.ans[ite][i][0];
+    y[i] = current_state.ans[ite][i][1];
   }
 
   double diffScore = -1000000.0 * N * N / M * W[x[0]][y[0]] / S;
@@ -1009,97 +913,97 @@ void Method2(double temperature)
   if (prob > Rand01()) {
     methodCount[2][0]++;
 
-    maxScore += diffScore;
+    current_state.maxScore += diffScore;
 
-    f[x[0]][y[0]] = 0;
-    cntW[x[0]]--;
-    cntH[y[0]]--;
-    rep(i, 4) use[x[i]][y[i]]--;
+    current_state.f[x[0]][y[0]] = 0;
+    current_state.cntW[x[0]]--;
+    current_state.cntH[y[0]]--;
+    rep(i, 4) current_state.use[x[i]][y[i]]--;
 
     int RectDir = GetDir(x[0], y[0], x[1], y[1]);
     if (RectDir == 0) {
-      line[x[0]][y[0]][0] = false;
-      line[x[0]][y[0]][1] = false;
-      line[x[1]][y[1]][1] = false;
-      line[x[1]][y[1]][2] = false;
-      line[x[2]][y[2]][2] = false;
-      line[x[2]][y[2]][3] = false;
-      line[x[3]][y[3]][3] = false;
-      line[x[3]][y[3]][0] = false;
+      current_state.line[x[0]][y[0]][0] = false;
+      current_state.line[x[0]][y[0]][1] = false;
+      current_state.line[x[1]][y[1]][1] = false;
+      current_state.line[x[1]][y[1]][2] = false;
+      current_state.line[x[2]][y[2]][2] = false;
+      current_state.line[x[2]][y[2]][3] = false;
+      current_state.line[x[3]][y[3]][3] = false;
+      current_state.line[x[3]][y[3]][0] = false;
     }
     else if (RectDir == 1) {
-      line[x[0]][y[0]][1] = false;
-      line[x[0]][y[0]][2] = false;
-      line[x[1]][y[1]][2] = false;
-      line[x[1]][y[1]][3] = false;
-      line[x[2]][y[2]][3] = false;
-      line[x[2]][y[2]][0] = false;
-      line[x[3]][y[3]][0] = false;
-      line[x[3]][y[3]][1] = false;
+      current_state.line[x[0]][y[0]][1] = false;
+      current_state.line[x[0]][y[0]][2] = false;
+      current_state.line[x[1]][y[1]][2] = false;
+      current_state.line[x[1]][y[1]][3] = false;
+      current_state.line[x[2]][y[2]][3] = false;
+      current_state.line[x[2]][y[2]][0] = false;
+      current_state.line[x[3]][y[3]][0] = false;
+      current_state.line[x[3]][y[3]][1] = false;
     }
     else if (RectDir == 2) {
-      line[x[0]][y[0]][2] = false;
-      line[x[0]][y[0]][3] = false;
-      line[x[1]][y[1]][3] = false;
-      line[x[1]][y[1]][0] = false;
-      line[x[2]][y[2]][0] = false;
-      line[x[2]][y[2]][1] = false;
-      line[x[3]][y[3]][1] = false;
-      line[x[3]][y[3]][2] = false;
+      current_state.line[x[0]][y[0]][2] = false;
+      current_state.line[x[0]][y[0]][3] = false;
+      current_state.line[x[1]][y[1]][3] = false;
+      current_state.line[x[1]][y[1]][0] = false;
+      current_state.line[x[2]][y[2]][0] = false;
+      current_state.line[x[2]][y[2]][1] = false;
+      current_state.line[x[3]][y[3]][1] = false;
+      current_state.line[x[3]][y[3]][2] = false;
     }
     else if (RectDir == 3) {
-      line[x[0]][y[0]][3] = false;
-      line[x[0]][y[0]][0] = false;
-      line[x[1]][y[1]][0] = false;
-      line[x[1]][y[1]][1] = false;
-      line[x[2]][y[2]][1] = false;
-      line[x[2]][y[2]][2] = false;
-      line[x[3]][y[3]][2] = false;
-      line[x[3]][y[3]][3] = false;
+      current_state.line[x[0]][y[0]][3] = false;
+      current_state.line[x[0]][y[0]][0] = false;
+      current_state.line[x[1]][y[1]][0] = false;
+      current_state.line[x[1]][y[1]][1] = false;
+      current_state.line[x[2]][y[2]][1] = false;
+      current_state.line[x[2]][y[2]][2] = false;
+      current_state.line[x[3]][y[3]][2] = false;
+      current_state.line[x[3]][y[3]][3] = false;
     }
     else if (RectDir == 4) {
-      line[x[0]][y[0]][4] = false;
-      line[x[0]][y[0]][5] = false;
-      line[x[1]][y[1]][5] = false;
-      line[x[1]][y[1]][6] = false;
-      line[x[2]][y[2]][6] = false;
-      line[x[2]][y[2]][7] = false;
-      line[x[3]][y[3]][7] = false;
-      line[x[3]][y[3]][4] = false;
+      current_state.line[x[0]][y[0]][4] = false;
+      current_state.line[x[0]][y[0]][5] = false;
+      current_state.line[x[1]][y[1]][5] = false;
+      current_state.line[x[1]][y[1]][6] = false;
+      current_state.line[x[2]][y[2]][6] = false;
+      current_state.line[x[2]][y[2]][7] = false;
+      current_state.line[x[3]][y[3]][7] = false;
+      current_state.line[x[3]][y[3]][4] = false;
     }
     else if (RectDir == 5) {
-      line[x[0]][y[0]][5] = false;
-      line[x[0]][y[0]][6] = false;
-      line[x[1]][y[1]][6] = false;
-      line[x[1]][y[1]][7] = false;
-      line[x[2]][y[2]][7] = false;
-      line[x[2]][y[2]][4] = false;
-      line[x[3]][y[3]][4] = false;
-      line[x[3]][y[3]][5] = false;
+      current_state.line[x[0]][y[0]][5] = false;
+      current_state.line[x[0]][y[0]][6] = false;
+      current_state.line[x[1]][y[1]][6] = false;
+      current_state.line[x[1]][y[1]][7] = false;
+      current_state.line[x[2]][y[2]][7] = false;
+      current_state.line[x[2]][y[2]][4] = false;
+      current_state.line[x[3]][y[3]][4] = false;
+      current_state.line[x[3]][y[3]][5] = false;
     }
     else if (RectDir == 6) {
-      line[x[0]][y[0]][6] = false;
-      line[x[0]][y[0]][7] = false;
-      line[x[1]][y[1]][7] = false;
-      line[x[1]][y[1]][4] = false;
-      line[x[2]][y[2]][4] = false;
-      line[x[2]][y[2]][5] = false;
-      line[x[3]][y[3]][5] = false;
-      line[x[3]][y[3]][6] = false;
+      current_state.line[x[0]][y[0]][6] = false;
+      current_state.line[x[0]][y[0]][7] = false;
+      current_state.line[x[1]][y[1]][7] = false;
+      current_state.line[x[1]][y[1]][4] = false;
+      current_state.line[x[2]][y[2]][4] = false;
+      current_state.line[x[2]][y[2]][5] = false;
+      current_state.line[x[3]][y[3]][5] = false;
+      current_state.line[x[3]][y[3]][6] = false;
     }
     else if (RectDir == 7) {
-      line[x[0]][y[0]][7] = false;
-      line[x[0]][y[0]][4] = false;
-      line[x[1]][y[1]][4] = false;
-      line[x[1]][y[1]][5] = false;
-      line[x[2]][y[2]][5] = false;
-      line[x[2]][y[2]][6] = false;
-      line[x[3]][y[3]][6] = false;
-      line[x[3]][y[3]][7] = false;
+      current_state.line[x[0]][y[0]][7] = false;
+      current_state.line[x[0]][y[0]][4] = false;
+      current_state.line[x[1]][y[1]][4] = false;
+      current_state.line[x[1]][y[1]][5] = false;
+      current_state.line[x[2]][y[2]][5] = false;
+      current_state.line[x[2]][y[2]][6] = false;
+      current_state.line[x[3]][y[3]][6] = false;
+      current_state.line[x[3]][y[3]][7] = false;
     }
 
-    ansDelete[ite] = 1;
-    ansDeleteCount++;
+    current_state.ansDelete[ite] = 1;
+    current_state.ansDeleteCount++;
   }
   else {
     // 元に戻す
@@ -1116,7 +1020,7 @@ int Solve(int mode, int problemNum = 0)
   Init();
 
   // 愚直解作成
-  maxScore = CalcScore();
+  current_state.maxScore = CalcScore();
   CopyToReal();
   CopyToSeed();
 
@@ -1128,7 +1032,7 @@ int Solve(int mode, int problemNum = 0)
 
     // 初期状態に戻す
     Init();
-    maxScore = CalcScore();
+    current_state.maxScore = CalcScore();
 
     // 焼きなまし
     endTime = clock();
@@ -1150,12 +1054,12 @@ int Solve(int mode, int problemNum = 0)
       if (nowProgress > 1.0) break;
 
       // 現在のスコアが悪いときは元に戻す
-      if (maxScore * 1.2 < best_state.maxScore) {
+      if (current_state.maxScore * 1.2 < best_state.maxScore) {
         RollBackFromReal();
         rollbackCount++;
       }
 
-      if (ansDeleteCount >= 10000) {
+      if (current_state.ansDeleteCount >= 10000) {
         RefleshAns();
       }
 
@@ -1181,7 +1085,7 @@ int Solve(int mode, int problemNum = 0)
 
     // スコアが良ければシードを更新
     RollBackFromReal();
-    if (maxScore > seed_maxScore) {
+    if (current_state.maxScore > seed_state.maxScore) {
       CopyToSeed();
     }
 
@@ -1212,12 +1116,12 @@ int Solve(int mode, int problemNum = 0)
     if (nowProgress > 1.0) break;
 
     // 現在のスコアが悪いときは元に戻す
-    if (maxScore * 1.2 < best_state.maxScore) {
+    if (current_state.maxScore * 1.2 < best_state.maxScore) {
       RollBackFromReal();
       rollbackCount++;
     }
 
-    if (ansDeleteCount >= 10000) {
+    if (current_state.ansDeleteCount >= 10000) {
       RefleshAns();
     }
 
@@ -1251,9 +1155,9 @@ int Solve(int mode, int problemNum = 0)
   // デバッグログ
   if (mode != 0) {
     cout << "problemNum = " << problemNum << ", N = " << N << endl;
-    cout << "ansSize = " << ansSize << ", ansDeleteCount = " << ansDeleteCount
+    cout << "ansSize = " << current_state.ansSize << ", ansDeleteCount = " << current_state.ansDeleteCount
       << endl;
-    cout << "maxScore = " << maxScore << endl;
+    cout << "maxScore = " << current_state.maxScore << endl;
     cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
     srep(i, 1, 5)
     {
@@ -1264,7 +1168,7 @@ int Solve(int mode, int problemNum = 0)
   }
 
   cerr << loop << endl;
-  return maxScore;
+  return current_state.maxScore;
 }
 
 int SolveOuter(int mode, int problemNum = 0)

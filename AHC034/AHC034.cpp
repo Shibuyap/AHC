@@ -221,6 +221,55 @@ bool IsOK(int x)
   return true;
 }
 
+bool IsValidCell(int x, int y, int a[n][n])
+{
+  return x >= 0 && x < n && y >= 0 && y < n && a[x][y] == 0;
+}
+
+bool ShouldSkipCell(int idx, int d, bool checkForward)
+{
+  int xx = route[idx].first;
+  int yy = route[idx].second;
+  
+  if (h[xx][yy] < 0 && d > 0) {
+    return false;
+  }
+  
+  if (spot[xx][yy].size() > 0) {
+    for (auto am : spot[xx][yy]) {
+      if ((checkForward && am.idx > idx) || (!checkForward && am.idx < idx)) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+int FindNextValidCellForward(int startIdx, int d)
+{
+  int nidx = startIdx;
+  while (nidx < route.size() - 1) {
+    if (!ShouldSkipCell(nidx, d, true)) {
+      break;
+    }
+    nidx++;
+  }
+  return nidx;
+}
+
+int FindNextValidCellBackward(int startIdx, int d)
+{
+  int nidx = startIdx;
+  while (nidx >= 0) {
+    if (!ShouldSkipCell(nidx, d, false)) {
+      break;
+    }
+    nidx--;
+  }
+  return nidx;
+}
+
 // 初期解生成
 void Initialize()
 {
@@ -397,6 +446,26 @@ void Right()
   ansSize++;
 }
 
+void MoveTo(int& currentX, int& currentY, int targetX, int targetY)
+{
+  while (targetX > currentX) {
+    Down();
+    currentX++;
+  }
+  while (targetX < currentX) {
+    Up();
+    currentX--;
+  }
+  while (targetY > currentY) {
+    Right();
+    currentY++;
+  }
+  while (targetY < currentY) {
+    Left();
+    currentY--;
+  }
+}
+
 vector<P> route;
 void InitRoute1()
 {
@@ -426,16 +495,9 @@ void InitRoute2()
   }
 }
 
-void InitRoute3()
+void GenerateSpiralRoute(int& x, int& y, int a[n][n], int spiralDepth)
 {
-  route.clear();
-  int ra = Rand() % 9 + 1;
-  int a[n][n];
-  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) a[i][j] = 0;
-  int x = 0, y = 0;
-  a[x][y] = 1;
-  route.emplace_back(x, y);
-  for (int i = 0; i < ra; ++i)
+  for (int i = 0; i < spiralDepth; ++i)
   {
     while (y < n - 1 - i) {
       y++;
@@ -458,6 +520,19 @@ void InitRoute3()
       a[x][y] = 1;
     }
   }
+}
+
+void InitRoute3()
+{
+  route.clear();
+  int ra = Rand() % 9 + 1;
+  int a[n][n];
+  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) a[i][j] = 0;
+  int x = 0, y = 0;
+  a[x][y] = 1;
+  route.emplace_back(x, y);
+  
+  GenerateSpiralRoute(x, y, a, ra);
 
   int dir = 1;
   while (true) {
@@ -509,29 +584,8 @@ void InitRoute4()
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  for (int i = 0; i < ra; ++i)
-  {
-    while (y < n - 1 - i) {
-      y++;
-      route.emplace_back(x, y);
-      a[x][y] = 1;
-    }
-    while (x < n - 1 - i) {
-      x++;
-      route.emplace_back(x, y);
-      a[x][y] = 1;
-    }
-    while (y > i) {
-      y--;
-      route.emplace_back(x, y);
-      a[x][y] = 1;
-    }
-    while (x > i + 1) {
-      x--;
-      route.emplace_back(x, y);
-      a[x][y] = 1;
-    }
-  }
+  
+  GenerateSpiralRoute(x, y, a, ra);
 
   int dir = 1;
   if (a[x][y + 1] == 0) {
@@ -658,39 +712,17 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
       while (d > 0) {
         int nidx = iii + 1;
         while (nidx <= route.size() - 1) {
-          int skip = 1;
-          int ii = nidx;
-          int xx = route[ii].first;
-          int yy = route[ii].second;
+          int xx = route[nidx].first;
+          int yy = route[nidx].second;
           if (h[xx][yy] < 0 && d > 0) {
-            skip = 0;
-          }
-          if (skip) {
-            nidx++;
-          }
-          else {
             break;
           }
+          nidx++;
         }
 
         int nx = route[nidx].first;
         int ny = route[nidx].second;
-        while (nx > x) {
-          Down();
-          x++;
-        };
-        while (nx < x) {
-          Up();
-          x--;
-        }
-        while (ny > y) {
-          Right();
-          y++;
-        }
-        while (ny < y) {
-          Left();
-          y--;
-        }
+        MoveTo(x, y, nx, ny);
 
         if (h[x][y] < 0 && d > 0) {
           if (d >= abs(h[x][y])) {
@@ -704,48 +736,11 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     }
 
     if (i < route.size() - 1) {
-      int nidx = i + 1;
-      while (nidx < route.size() - 1) {
-        int skip = 1;
-        int ii = nidx;
-        int xx = route[ii].first;
-        int yy = route[ii].second;
-        if (spot[xx][yy].size() > 0) {
-          for (auto am : spot[xx][yy]) {
-            if (am.idx > ii) {
-              skip = 0;
-            }
-          }
-        }
-        if (h[xx][yy] < 0 && d > 0) {
-          skip = 0;
-        }
-        if (skip) {
-          nidx++;
-        }
-        else {
-          break;
-        }
-      }
+      int nidx = FindNextValidCellForward(i + 1, d);
 
       int nx = route[nidx].first;
       int ny = route[nidx].second;
-      while (nx > x) {
-        Down();
-        x++;
-      };
-      while (nx < x) {
-        Up();
-        x--;
-      }
-      while (ny > y) {
-        Right();
-        y++;
-      }
-      while (ny < y) {
-        Left();
-        y--;
-      }
+      MoveTo(x, y, nx, ny);
 
       i = nidx - 1;
     }
@@ -776,39 +771,17 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
       while (d > 0) {
         int nidx = iii - 1;
         while (nidx >= 0) {
-          int skip = 1;
-          int ii = nidx;
-          int xx = route[ii].first;
-          int yy = route[ii].second;
+          int xx = route[nidx].first;
+          int yy = route[nidx].second;
           if (h[xx][yy] < 0 && d > 0) {
-            skip = 0;
-          }
-          if (skip) {
-            nidx--;
-          }
-          else {
             break;
           }
+          nidx--;
         }
 
         int nx = route[nidx].first;
         int ny = route[nidx].second;
-        while (nx > x) {
-          Down();
-          x++;
-        };
-        while (nx < x) {
-          Up();
-          x--;
-        }
-        while (ny > y) {
-          Right();
-          y++;
-        }
-        while (ny < y) {
-          Left();
-          y--;
-        }
+        MoveTo(x, y, nx, ny);
 
         if (h[x][y] < 0 && d > 0) {
           if (d >= abs(h[x][y])) {
@@ -838,48 +811,11 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     }
 
     if (i > 0) {
-      int nidx = i - 1;
-      while (nidx > 0) {
-        int skip = 1;
-        int ii = nidx;
-        int xx = route[ii].first;
-        int yy = route[ii].second;
-        if (spot[xx][yy].size() > 0) {
-          for (auto am : spot[xx][yy]) {
-            if (am.idx < ii) {
-              skip = 0;
-            }
-          }
-        }
-        if (h[xx][yy] < 0 && d > 0) {
-          skip = 0;
-        }
-        if (skip) {
-          nidx--;
-        }
-        else {
-          break;
-        }
-      }
+      int nidx = FindNextValidCellBackward(i - 1, d);
 
       int nx = route[nidx].first;
       int ny = route[nidx].second;
-      while (nx > x) {
-        Down();
-        x++;
-      };
-      while (nx < x) {
-        Up();
-        x--;
-      }
-      while (ny > y) {
-        Right();
-        y++;
-      }
-      while (ny < y) {
-        Left();
-        y--;
-      }
+      MoveTo(x, y, nx, ny);
 
       i = nidx + 1;
     }

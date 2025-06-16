@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -222,9 +220,9 @@ int money = 0;
 void ClearBoard()
 {
   turn = 0;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       board[i][j] = -1;
     }
@@ -265,7 +263,7 @@ bool IsNG(int x, int y)
 int GetRailNum(int x1, int y1, int x2, int y2, int x3, int y3)
 {
   int dir1 = 0, dir2 = 0;
-  rep(i, 4)
+  for (int i = 0; i < 4; ++i)
   {
     int nx = x2 + dx[i];
     int ny = y2 + dy[i];
@@ -301,9 +299,9 @@ int GetRailNum(int x1, int y1, int x2, int y2, int x3, int y3)
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       a[i][j].clear();
       b[i][j].clear();
@@ -318,7 +316,7 @@ void SetUp()
   ans.order.clear();
   ans.score = 0;
   ans.stationCount = 0;
-  rep(i, T)
+  for (int i = 0; i < T; ++i)
   {
     ans.turns[i].num = -1;
   }
@@ -343,7 +341,7 @@ void Input(int problemNum)
     sy.resize(m);
     tx.resize(m);
     ty.resize(m);
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
       cin >> sx[i] >> sy[i] >> tx[i] >> ty[i];
     }
@@ -356,13 +354,13 @@ void Input(int problemNum)
     sy.resize(m);
     tx.resize(m);
     ty.resize(m);
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
       ifs >> sx[i] >> sy[i] >> tx[i] >> ty[i];
     }
   }
 
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     a[sx[i]][sy[i]].push_back(i);
     b[tx[i]][ty[i]].push_back(i);
@@ -391,7 +389,7 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
-    rep(i, T)
+    for (int i = 0; i < T; ++i)
     {
       if (ans.turns[i].num == -1) {
         cout << ans.turns[i].num << endl;
@@ -403,7 +401,7 @@ void Output(ofstream& ofs)
   }
   else {
     // ファイル出力
-    rep(i, T)
+    for (int i = 0; i < T; ++i)
     {
       ofs << "# " << ans.comment[i] << endl;
       if (ans.turns[i].num == -1) {
@@ -438,7 +436,7 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
   int bx = ekiMap.Stations[index][0];
   int by = ekiMap.Stations[index][1];
 
-  rep(i, 13)
+  for (int i = 0; i < 13; ++i)
   {
     int nx = bx + ex[i];
     int ny = by + ey[i];
@@ -447,14 +445,12 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
       ekiMap.ACount[num]--;
       if (ekiMap.ACount[num] == 0 && ekiMap.BCount[num] > 0) {
         ekiMap.Count -= abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
-        //ekiMap.Count--;
       }
     }
     for (auto num : b[nx][ny]) {
       ekiMap.BCount[num]--;
       if (ekiMap.BCount[num] == 0 && ekiMap.ACount[num] > 0) {
         ekiMap.Count -= abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
-        //ekiMap.Count--;
       }
     }
   }
@@ -462,7 +458,7 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
   ekiMap.Stations[index][0] = x;
   ekiMap.Stations[index][1] = y;
 
-  rep(i, 13)
+  for (int i = 0; i < 13; ++i)
   {
     int nx = x + ex[i];
     int ny = y + ey[i];
@@ -470,14 +466,12 @@ int MoveOneStation(EkiMap& ekiMap, int index, int x, int y)
     for (auto num : a[nx][ny]) {
       ekiMap.ACount[num]++;
       if (ekiMap.ACount[num] == 1 && ekiMap.BCount[num] > 0) {
-        //ekiMap.Count++;
         ekiMap.Count += abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
       }
     }
     for (auto num : b[nx][ny]) {
       ekiMap.BCount[num]++;
       if (ekiMap.BCount[num] == 1 && ekiMap.ACount[num] > 0) {
-        //ekiMap.Count++;
         ekiMap.Count += abs(sx[num] - tx[num]) + abs(sy[num] - ty[num]);
       }
     }
@@ -506,7 +500,7 @@ Edge ParentEdge[MAX_STATION];
 
 void MakeRootG(int root)
 {
-  rep(i, MAX_STATION)
+  for (int i = 0; i < MAX_STATION; ++i)
   {
     RootG[i].clear();
     Parent[i] = -1;
@@ -789,16 +783,14 @@ void Method1(Hypers hypers)
   EkiMap best_ekiMap(stationCount);
 
   // 初期解
-  rep(i, ekiMap.StationCount)
+  for (int i = 0; i < ekiMap.StationCount; ++i)
   {
-    //int x = Rand() % (n - 2) + 1;
-    //int y = Rand() % (n - 2) + 1;
     int x = Rand() % n;
     int y = Rand() % n;
     ekiMap.Stations[i][0] = x;
     ekiMap.Stations[i][1] = y;
 
-    rep(j, 13)
+    for (int j = 0; j < 13; ++j)
     {
       int nx = x + ex[j];
       int ny = y + ey[j];
@@ -833,8 +825,7 @@ void Method1(Hypers hypers)
       loop++;
 
       int raIndex = Rand() % ekiMap.StationCount;
-      //int rax = Rand() % (n - 2) + 1;
-      //int ray = Rand() % (n - 2) + 1;
+
       int rax = Rand() % n;
       int ray = Rand() % n;
 
@@ -869,16 +860,16 @@ void Method1(Hypers hypers)
   vector<int> people;
   numsA.resize(ekiMap.StationCount);
   numsB.resize(ekiMap.StationCount);
-  rep(i, ekiMap.StationCount)
+  for (int i = 0; i < ekiMap.StationCount; ++i)
   {
     numsA[i].clear();
     numsB[i].clear();
   }
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     if (ekiMap.ACount[i] > 0 && ekiMap.BCount[i] > 0) {
       people.push_back(i);
-      rep(j, ekiMap.StationCount)
+      for (int j = 0; j < ekiMap.StationCount; ++j)
       {
         int x = ekiMap.Stations[j][0];
         int y = ekiMap.Stations[j][1];
@@ -893,13 +884,13 @@ void Method1(Hypers hypers)
   }
 
   // クラスカル法
-  rep(i, MAX_STATION)
+  for (int i = 0; i < MAX_STATION; ++i)
   {
     G[i].clear();
   }
   UnionFind uf(ekiMap.StationCount);
   vector<Edge> es;
-  rep(i, ekiMap.StationCount)
+  for (int i = 0; i < ekiMap.StationCount; ++i)
   {
     srep(j, i + 1, ekiMap.StationCount)
     {
@@ -913,14 +904,14 @@ void Method1(Hypers hypers)
   sort(es.begin(), es.end());
 
   int fff[n][n];
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       fff[i][j] = 0;
     }
   }
-  rep(i, ekiMap.StationCount)
+  for (int i = 0; i < ekiMap.StationCount; ++i)
   {
     fff[ekiMap.Stations[i][0]][ekiMap.Stations[i][1]] = 2;
   }
@@ -935,9 +926,9 @@ void Method1(Hypers hypers)
       // BFSで線路つなぐ
       int f[n][n];
       int f2[n][n];
-      rep(i, n)
+      for (int i = 0; i < n; ++i)
       {
-        rep(j, n)
+        for (int j = 0; j < n; ++j)
         {
           f[i][j] = INF;
           f2[i][j] = -1;
@@ -952,7 +943,7 @@ void Method1(Hypers hypers)
         que.pop();
         if (fff[x][y] == 2 && (x != ssx || y != ssy)) {
           int ok = 0;
-          rep(i, ekiMap.StationCount)
+          for (int i = 0; i < ekiMap.StationCount; ++i)
           {
             int xx = ekiMap.Stations[i][0];
             int yy = ekiMap.Stations[i][1];
@@ -969,7 +960,7 @@ void Method1(Hypers hypers)
             continue;
           }
         }
-        rep(i, 4)
+        for (int i = 0; i < 4; ++i)
         {
           int nx = x + dx[i];
           int ny = y + dy[i];
@@ -997,9 +988,9 @@ void Method1(Hypers hypers)
         continue;
         fff[ssx][ssy] = 3;
         fff[ttx][tty] = 4;
-        rep(i, n)
+        for (int i = 0; i < n; ++i)
         {
-          rep(j, n)
+          for (int j = 0; j < n; ++j)
           {
             cerr << fff[i][j];
           }
@@ -1037,7 +1028,7 @@ void Method1(Hypers hypers)
 
   {
     ans.order.clear();
-    rep(i, ekiMap.StationCount)
+    for (int i = 0; i < ekiMap.StationCount; ++i)
     {
       ans.order.push_back(i);
     }
@@ -1135,11 +1126,6 @@ void SimulatedAnnealing(Hypers hypers)
       if (nowTime > TL) break;
     }
 
-    // 戻す
-    //if (ansScore * 1.2 < best_ansScore) {
-    //  CopyToAns();
-    //}
-
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
@@ -1230,7 +1216,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 13, 14)
+    srep(i, 0, 10)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
@@ -1276,10 +1262,6 @@ int main()
       cout
         << "Loop = " << loop
         << ", Sum = " << sum
-        //<< ", StartTemp = " << hypers.StartTemp
-        //<< ", EndTemp = " << hypers.EndTemp
-        //<< ", MultipleValue = " << hypers.MultipleValue
-        //<< ", Partition1 = " << hypers.Partition
         << ", StationCount = " << hypers.StationCount
         << endl;
 
