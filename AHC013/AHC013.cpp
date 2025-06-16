@@ -29,7 +29,7 @@
 #include <utility>
 #include <vector>
 #include <array>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -236,9 +236,9 @@ int GetIte2(int xx, int yy, char cc)
 
 void MethodCountReset()
 {
-  rep(i, 20)
+  for (int i = 0; i < 20; ++i)
   {
-    rep(j, 2) { methodCount[i][j] = 0; }
+    for (int j = 0; j < 2; ++j) { methodCount[i][j] = 0; }
   }
   methodSum[0] = 0;
   methodSum[1] = 0;
@@ -279,19 +279,19 @@ void GameState::copyTo(GameState& target) const
   target.ope1 = ope1;
   target.ope2 = ope2;
 
-  rep(i, ope1)
+  for (int i = 0; i < ope1; ++i)
   {
-    rep(j, 5) { target.ans1[i][j] = ans1[i][j]; }
+    for (int j = 0; j < 5; ++j) { target.ans1[i][j] = ans1[i][j]; }
   }
-  rep(i, ope2)
+  for (int i = 0; i < ope2; ++i)
   {
-    rep(j, 4) { target.ans2[i][j] = ans2[i][j]; }
+    for (int j = 0; j < 4; ++j) { target.ans2[i][j] = ans2[i][j]; }
   }
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n) { target.a[i][j] = a[i][j]; }
+    for (int j = 0; j < n; ++j) { target.a[i][j] = a[i][j]; }
   }
-  rep(i, K100)
+  for (int i = 0; i < K100; ++i)
   {
     target.x[i] = x[i];
     target.y[i] = y[i];
@@ -299,19 +299,19 @@ void GameState::copyTo(GameState& target) const
     target.D[i] = D[i];
   }
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n) { target.cellUse[i][j] = cellUse[i][j]; }
+    for (int j = 0; j < n; ++j) { target.cellUse[i][j] = cellUse[i][j]; }
   }
 
-  rep(i, K100)
+  for (int i = 0; i < K100; ++i)
   {
     target.moveCnt[i] = moveCnt[i];
-    rep(j, moveCnt[i]) { target.moves[i][j] = moves[i][j]; }
-    rep(j, 4) { target.udlr[i][j] = udlr[i][j]; }
+    for (int j = 0; j < moveCnt[i]; ++j) { target.moves[i][j] = moves[i][j]; }
+    for (int j = 0; j < 4; ++j) { target.udlr[i][j] = udlr[i][j]; }
   }
 
-  rep(i, K100)
+  for (int i = 0; i < K100; ++i)
   {
     target.parent[i] = parent[i];
     target.unionSize[i] = unionSize[i];
@@ -359,7 +359,7 @@ void GameState::updateSingleD(int j)
 void GameState::updateRowR(int i)
 {
   int now = -1;
-  rep(j, n)
+  for (int j = 0; j < n; ++j)
   {
     if (0 <= a[i][j] && a[i][j] < K100) {
       R[a[i][j]] = -1;
@@ -374,7 +374,7 @@ void GameState::updateRowR(int i)
 void GameState::updateColD(int j)
 {
   int now = -1;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     if (0 <= a[i][j] && a[i][j] < K100) {
       D[a[i][j]] = -1;
@@ -434,7 +434,7 @@ int GameState::calcScore(int times, bool makeAns)
       while (queL < queR) {
         int ite = que[queL];
         queL++;
-        rep(j, 4)
+        for (int j = 0; j < 4; ++j)
         {
           int nxt = udlr[ite][j];
           if (nxt != -1 && visited[nxt] != visitedCnt) {
@@ -487,9 +487,9 @@ void Init()
 
   // a,x,y
   int cnt[5] = {};
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       int val = s[i][j] - '0' - 1;
       if (val != -1) {
@@ -505,9 +505,9 @@ void Init()
   }
 
   // gameState.cellUse
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       gameState.cellUse[i][j] = 0;
       if (gameState.a[i][j] != INF) {
@@ -517,18 +517,18 @@ void Init()
   }
 
   // R,D
-  rep(i, n) { gameState.updateRowR(i); }
-  rep(j, n) { gameState.updateColD(j); }
+  for (int i = 0; i < n; ++i) { gameState.updateRowR(i); }
+  for (int j = 0; j < n; ++j) { gameState.updateColD(j); }
 
   // gameState.udlr
-  rep(i, K100)
+  for (int i = 0; i < K100; ++i)
   {
-    rep(j, 4) { gameState.udlr[i][j] = -1; }
+    for (int j = 0; j < 4; ++j) { gameState.udlr[i][j] = -1; }
   }
 
   if (gameState.viewOrder == 0) {
     // 横縦の順
-    rep(i, K100)
+    for (int i = 0; i < K100; ++i)
     {
       if (gameState.R[i] == -1) {
         continue;
@@ -541,7 +541,7 @@ void Init()
       }
     }
 
-    rep(i, K100)
+    for (int i = 0; i < K100; ++i)
     {
       if (gameState.D[i] == -1) {
         continue;
@@ -566,7 +566,7 @@ void Init()
   }
   else {
     // 縦横の順
-    rep(i, K100)
+    for (int i = 0; i < K100; ++i)
     {
       if (gameState.D[i] == -1) {
         continue;
@@ -579,7 +579,7 @@ void Init()
       }
     }
 
-    rep(i, K100)
+    for (int i = 0; i < K100; ++i)
     {
       if (gameState.R[i] == -1) {
         continue;
@@ -606,16 +606,16 @@ void Init()
   gameState.ope1 = 0;
   gameState.ope2 = 0;
   gameState.maxScore = 0;
-  rep(i, K * 100) { gameState.moveCnt[i] = 0; }
+  for (int i = 0; i < K * 100; ++i) { gameState.moveCnt[i] = 0; }
 
   // gameState.parent, gameState.vp
   gameState.vp.clear();
   visitedCnt++;
-  rep(i, K100) { visited[i] = -1; }
+  for (int i = 0; i < K100; ++i) { visited[i] = -1; }
 
-  rep(i, K100) { gameState.unionSize[i] = 0; }
+  for (int i = 0; i < K100; ++i) { gameState.unionSize[i] = 0; }
 
-  rep(i, K100)
+  for (int i = 0; i < K100; ++i)
   {
     if (visited[i] == visitedCnt) continue;
 
@@ -631,7 +631,7 @@ void Init()
     while (queL < queR) {
       int ite = que[queL];
       queL++;
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         int nxt = gameState.udlr[ite][j];
         if (nxt != -1 && visited[nxt] != visitedCnt) {
@@ -659,11 +659,11 @@ void Input(int problemNum)
 
   if (!ifs.is_open()) {  // 標準入力する
     cin >> n >> K;
-    rep(i, n) cin >> s[i];
+    for (int i = 0; i < n; ++i) cin >> s[i];
   }
   else {  // ファイル入力する
     ifs >> n >> K;
-    rep(i, n) ifs >> s[i];
+    for (int i = 0; i < n; ++i) ifs >> s[i];
   }
 
   K100 = K * 100;
@@ -675,16 +675,16 @@ void Output(int mode, int problemNum)
 {
   if (mode == 0) {
     cout << gameState.ope1 << endl;
-    rep(i, gameState.ope1)
+    for (int i = 0; i < gameState.ope1; ++i)
     {
-      rep(j, 4) { cout << gameState.ans1[i][j] << ' '; }
+      for (int j = 0; j < 4; ++j) { cout << gameState.ans1[i][j] << ' '; }
       cout << endl;
     }
 
     cout << gameState.ope2 << endl;
-    rep(i, gameState.ope2)
+    for (int i = 0; i < gameState.ope2; ++i)
     {
-      rep(j, 4) { cout << gameState.ans2[i][j] << ' '; }
+      for (int j = 0; j < 4; ++j) { cout << gameState.ans2[i][j] << ' '; }
       cout << endl;
     }
   }
@@ -693,7 +693,7 @@ void Output(int mode, int problemNum)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
@@ -704,26 +704,26 @@ void Output(int mode, int problemNum)
     ofstream ofs(fileNameOfs);
 
     ofs << gameState.ope1 << endl;
-    rep(i, gameState.ope1)
+    for (int i = 0; i < gameState.ope1; ++i)
     {
-      rep(j, 4) { ofs << gameState.ans1[i][j] << ' '; }
+      for (int j = 0; j < 4; ++j) { ofs << gameState.ans1[i][j] << ' '; }
       ofs << endl;
     }
 
     ofs << gameState.ope2 << endl;
-    rep(i, gameState.ope2)
+    for (int i = 0; i < gameState.ope2; ++i)
     {
-      rep(j, 4) { ofs << gameState.ans2[i][j] << ' '; }
+      for (int j = 0; j < 4; ++j) { ofs << gameState.ans2[i][j] << ' '; }
       ofs << endl;
     }
     ofs << endl;
 
-    rep(i, gameState.ope1 + 1)
+    for (int i = 0; i < gameState.ope1 + 1; ++i)
     {
       ofs << i << endl;
-      rep(j, i)
+      for (int j = 0; j < i; ++j)
       {
-        rep(k, 4) { ofs << gameState.ans1[j][k] << ' '; }
+        for (int k = 0; k < 4; ++k) { ofs << gameState.ans1[j][k] << ' '; }
         ofs << endl;
       }
       ofs << 0 << endl;
@@ -731,16 +731,16 @@ void Output(int mode, int problemNum)
     }
 
     ofs << gameState.ope1 << endl;
-    rep(i, gameState.ope1)
+    for (int i = 0; i < gameState.ope1; ++i)
     {
-      rep(j, 4) { ofs << gameState.ans1[i][j] << ' '; }
+      for (int j = 0; j < 4; ++j) { ofs << gameState.ans1[i][j] << ' '; }
       ofs << endl;
     }
 
     ofs << gameState.ope2 << endl;
-    rep(i, gameState.ope2)
+    for (int i = 0; i < gameState.ope2; ++i)
     {
-      rep(j, 4) { ofs << gameState.ans2[i][j] << ' '; }
+      for (int j = 0; j < 4; ++j) { ofs << gameState.ans2[i][j] << ' '; }
       ofs << endl;
     }
     ofs.close();
@@ -1934,7 +1934,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
     while (queL < queR) {
       int nowIte = que[queL];
       queL++;
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         int nxt = gameState.udlr[nowIte][j];
         if (nxt != -1 && visited[nxt] != visitedCnt) {
@@ -2235,7 +2235,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
 
   // 消したい移動の逆の操作を足してInnerMethodを実行
   int reverseDir = 0;
-  rep(i, 4)
+  for (int i = 0; i < 4; ++i)
   {
     if (gameState.ans1[ite][2] == gameState.ans1[ite][0] + dx[i] &&
       gameState.ans1[ite][3] == gameState.ans1[ite][1] + dy[i]) {
@@ -2258,7 +2258,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
     gameState.ope1--;
     srep(i, ite, gameState.ope1 - 1)
     {
-      rep(j, 5) { gameState.ans1[i][j] = gameState.ans1[i + 1][j]; }
+      for (int j = 0; j < 5; ++j) { gameState.ans1[i][j] = gameState.ans1[i + 1][j]; }
     }
     gameState.ope1--;
     if (isDo == 5) {
@@ -2278,7 +2278,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
 
   while (true) {
     int ite = -1;
-    rep(i, gameState.ope1 - 1)
+    for (int i = 0; i < gameState.ope1 - 1; ++i)
     {
       if (gameState.ans1[i][0] == gameState.ans1[i + 1][2] && gameState.ans1[i][1] == gameState.ans1[i + 1][3] &&
         gameState.ans1[i][2] == gameState.ans1[i + 1][0] && gameState.ans1[i][3] == gameState.ans1[i + 1][1]) {
@@ -2298,7 +2298,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
 
     srep(i, ite, gameState.ope1 - 2)
     {
-      rep(j, 5) { gameState.ans1[i][j] = gameState.ans1[i + 2][j]; }
+      for (int j = 0; j < 5; ++j) { gameState.ans1[i][j] = gameState.ans1[i + 2][j]; }
     }
 
     gameState.ope1 -= 2;
@@ -2317,11 +2317,11 @@ void Method7(double start_temp, double end_temp, double now_progress)
 
 
   while (true) {
-    rep(i, K * 100)
+    for (int i = 0; i < K * 100; ++i)
     {
       vv[i].clear();
     }
-    rep(i, gameState.ope1)
+    for (int i = 0; i < gameState.ope1; ++i)
     {
       int ite = gameState.ans1[i][4];
       vv[ite].push_back(i);
@@ -2329,7 +2329,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
 
     int it1 = -1;
     int it2 = -1;
-    rep(i, K * 100)
+    for (int i = 0; i < K * 100; ++i)
     {
       int sz = vv[i].size();
       drep(j, sz - 1)
@@ -2367,7 +2367,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
     if (it1 != -1) {
       srep(i, it2, gameState.ope1 - 1)
       {
-        rep(j, 5)
+        for (int j = 0; j < 5; ++j)
         {
           gameState.ans1[i][j] = gameState.ans1[i + 1][j];
         }
@@ -2375,7 +2375,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
       gameState.ope1--;
       srep(i, it1, gameState.ope1 - 1)
       {
-        rep(j, 5)
+        for (int j = 0; j < 5; ++j)
         {
           gameState.ans1[i][j] = gameState.ans1[i + 1][j];
         }
@@ -2409,7 +2409,7 @@ int Solve(int mode, int problemNum = 0)
 
   // シード作り
   int seedCount = 10;
-  rep(tei, seedCount)
+  for (int tei = 0; tei < seedCount; ++tei)
   {
     start_time = clock();
 
@@ -2612,7 +2612,7 @@ int SolveOuter(int mode, int problemNum)
   // 入力部
   Input(problemNum);
 
-  rep(_, outer_Split)
+  for (int _ = 0; _ < outer_Split; ++_)
   {
     gameState.viewOrder = _ % 2;
     int score = Solve(mode, problemNum);

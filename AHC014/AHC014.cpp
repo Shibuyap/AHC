@@ -71,6 +71,9 @@ namespace /* 変数 */
   int S;
   int W[64][64];
 
+  // 解答用変数
+  const int ANS_SIZE = 20000;
+  
   struct State
   {
     double maxScore;
@@ -78,35 +81,39 @@ namespace /* 変数 */
     int ans[ANS_SIZE][4][2];
     int ansDelete[ANS_SIZE];
     int ansDeleteCount;
-    bool f[64][64];
-    bool line[64][64][8];
+    int f[64][64];
+    int line[64][64][8];
     int use[64][64];
     int cntH[64], cntW[64];
   };
 
-  // 解答用変数
-  const int ANS_SIZE = 20000;
-  double maxScore;
-  int ansSize;
-  int ans[ANS_SIZE][4][2];
-  int ansDelete[ANS_SIZE];
-  int ansDeleteCount;
-  int f[64][64];
-  int line[64][64][8];
-  int use[64][64];
-  int cntH[64], cntW[64];
-  
+  State current_state;
+  State seed_state;
   State best_state;
-
-  double seed_maxScore;
-  int seed_ansSize;
-  int seed_ans[ANS_SIZE][4][2];
-  int seed_ansDelete[ANS_SIZE];
-  int seed_ansDeleteCount;
-  bool seed_f[64][64];
-  bool seed_line[64][64][8];
-  int seed_use[64][64];
-  int seed_cntH[64], seed_cntW[64];
+  
+  // References to current_state
+  double& maxScore = current_state.maxScore;
+  int& ansSize = current_state.ansSize;
+  int (&ans)[ANS_SIZE][4][2] = current_state.ans;
+  int (&ansDelete)[ANS_SIZE] = current_state.ansDelete;
+  int& ansDeleteCount = current_state.ansDeleteCount;
+  int (&f)[64][64] = current_state.f;
+  int (&line)[64][64][8] = current_state.line;
+  int (&use)[64][64] = current_state.use;
+  int (&cntH)[64] = current_state.cntH;
+  int (&cntW)[64] = current_state.cntW;
+  
+  // References to seed_state
+  double& seed_maxScore = seed_state.maxScore;
+  int& seed_ansSize = seed_state.ansSize;
+  int (&seed_ans)[ANS_SIZE][4][2] = seed_state.ans;
+  int (&seed_ansDelete)[ANS_SIZE] = seed_state.ansDelete;
+  int& seed_ansDeleteCount = seed_state.ansDeleteCount;
+  int (&seed_f)[64][64] = seed_state.f;
+  int (&seed_line)[64][64][8] = seed_state.line;
+  int (&seed_use)[64][64] = seed_state.use;
+  int (&seed_cntH)[64] = seed_state.cntH;
+  int (&seed_cntW)[64] = seed_state.cntW;
 
   // その他
   int methodCount[20][2];
