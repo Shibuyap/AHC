@@ -551,8 +551,6 @@ void Input(int problemNum)
     allSum += dailyTotalSize[i];
   }
   emptySpaceRatio = (double)(w * w * dayCount - allSum) / (w * w * dayCount);
-
-  // InitMostVariableAs();
 }
 
 // 出力ファイルストリームオープン
@@ -3202,19 +3200,19 @@ void Method4_3(double timeLimit)
       if (M43_nowTime < (M43_startTime + timeLimit) / 2) continue;
       Method4_3_2();
     }
-    else if (ra < 69) {  // 69
+    else if (ra < 69) {
       Method4_3_1();
     }
-    else if (ra < 70) {  // 70
+    else if (ra < 70) {
       Method4_3_3();
     }
-    else if (ra < 90) {  // 90
+    else if (ra < 90) {
       Method4_3_4_2();
     }
-    else if (ra < 91) {  // 91
+    else if (ra < 91) {
       Method4_3_5();
     }
-    else if (ra < 100) {  // 100
+    else if (ra < 100) {
       Method4_3_6();
     }
     else if (ra < 100) {
@@ -4871,9 +4869,9 @@ void Method8(double timeLimit)
 
   CopyM8ToAns();
   ans.ansScore = CalcScore();
-  if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
-
-  // cout << loopCount << endl;
+  if (ans.ansScore < real_ans.ansScore) {
+    CopyToRealAns();
+  }
 }
 
 int isFind = 0;
@@ -5019,7 +5017,18 @@ int main()
       {
         maxASum += maxElementSize[j];
       }
-      if (true || (isFind == 0 && ans.ansScore > 1)) cout << i << ", " << dayCount << ", " << elementCount << ", " << 1 - emptySpaceRatio << ", " << maxASum << ", " << isFind << ", " << ans.ansBaseLineCount << ", " << score << ", " << sum << ' ' << GetNowTime() << endl;
+      if (true || (isFind == 0 && ans.ansScore > 1)) {
+        cout << i << ", "
+          << dayCount << ", "
+          << elementCount << ", "
+          << 1 - emptySpaceRatio << ", "
+          << maxASum << ", "
+          << isFind << ", "
+          << ans.ansBaseLineCount << ", "
+          << score << ", "
+          << sum << ' '
+          << GetNowTime() << endl;
+      }
       scores.push_back(score);
     }
     for (auto score : scores) {
