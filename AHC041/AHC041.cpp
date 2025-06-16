@@ -155,62 +155,45 @@ void SetUp()
 // 入力受け取り
 void Input(int problemNum)
 {
-  string fileNameIfs = "./in/";
-  string strNum;
-  for (int i = 0; i < 4; ++i) {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
-
-  // 標準入力する
+  // ファイルパス生成
+  string filePath = "./in/" + to_string(problemNum / 1000) + to_string((problemNum / 100) % 10) + 
+                    to_string((problemNum / 10) % 10) + to_string(problemNum % 10) + ".txt";
+  
+  // 入力ストリーム選択（ファイルか標準入力）
+  ifstream ifs(filePath);
+  istream& input = ifs.is_open() ? ifs : cin;
+  
+  // データ読み込み
   int m, _n, _h;
-  if (!ifs.is_open()) {
-    cin >> _n >> m >> _h;
-    for (int i = 0; i < N; ++i) cin >> A[i];
-    for (int i = 0; i < m; ++i) {
-      int u, v;
-      cin >> u >> v;
-      G[u].push_back(v);
-      G[v].push_back(u);
-    }
-    for (int i = 0; i < N; ++i) cin >> X[i] >> Y[i];
+  input >> _n >> m >> _h;
+  
+  for (int i = 0; i < N; ++i) input >> A[i];
+  
+  for (int i = 0; i < m; ++i) {
+    int u, v;
+    input >> u >> v;
+    G[u].push_back(v);
+    G[v].push_back(u);
   }
-  // ファイル入力する
-  else {
-    ifs >> _n >> m >> _h;
-    for (int i = 0; i < N; ++i) ifs >> A[i];
-    for (int i = 0; i < m; ++i) {
-      int u, v;
-      ifs >> u >> v;
-      G[u].push_back(v);
-      G[v].push_back(u);
-    }
-    for (int i = 0; i < N; ++i) ifs >> X[i] >> Y[i];
-  }
+  
+  for (int i = 0; i < N; ++i) input >> X[i] >> Y[i];
 }
 
 void output_data(int case_num, const Answer& ans)
 {
+  auto output_answer = [&](ostream& out) {
+    for (int i = 0; i < N; ++i) out << ans.p[i] << ' ';
+    out << endl;
+  };
+  
   if (mode == 0) {
-    // 標準出力
-    for (int i = 0; i < N; ++i) cout << ans.p[i] << ' ';
-    cout << endl;
+    output_answer(cout);
   }
   else {
-    // ファイル出力
-    std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-    ofstream ofs(oss.str());
-
-    for (int i = 0; i < N; ++i) ofs << ans.p[i] << ' ';
-    ofs << endl;
-
+    ofstream ofs("./out/" + to_string(case_num / 1000) + to_string((case_num / 100) % 10) + 
+                 to_string((case_num / 10) % 10) + to_string(case_num % 10) + ".txt");
     if (ofs.is_open()) {
-      ofs.close();
+      output_answer(ofs);
     }
   }
 }

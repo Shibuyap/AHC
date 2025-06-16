@@ -356,21 +356,9 @@ void init(int problem_num)
 //------------------------------------------------------------------------------
 void read_input(int problem_num)
 {
-  // ファイル名生成
-  string file_name_ifs = "./in/";
-  {
-    int tmp = problem_num;
-    string str_num;
-    rep(i, 4)
-    {
-      str_num += char((tmp % 10) + '0');
-      tmp /= 10;
-    }
-    reverse(str_num.begin(), str_num.end());
-    file_name_ifs += str_num + ".txt";
-  }
-
-  ifstream ifs(file_name_ifs);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
+  ifstream ifs(oss.str());
 
   // 実行モード=0またはファイルが開けなかったら標準入力から読む
   if (execution_mode == 0 || !ifs.is_open()) {

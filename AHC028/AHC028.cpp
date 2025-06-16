@@ -148,16 +148,9 @@ void resetGlobalState()
 
 void readInput(int problemNum)
 {
-  string fileNameIfs = "./in/";
-  string strNum;
-  for (int i = 0; i < 4; ++i) {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  ifstream ifs(oss.str());
 
   int _n, _m;
   if (!ifs.is_open()) {

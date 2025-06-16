@@ -235,17 +235,9 @@ void Input(int problemNum)
     }
     else if (mode <= 2) {
       // ファイル入力する
-      string fileNameIfs = "./in/";
-      string strNum;
-      rep(i, 4)
-      {
-        strNum += (char)(problemNum % 10 + '0');
-        problemNum /= 10;
-      }
-      reverse(strNum.begin(), strNum.end());
-      fileNameIfs += strNum + ".txt";
-
-      ifstream ifs(fileNameIfs);
+      std::ostringstream oss;
+      oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+      ifstream ifs(oss.str());
 
       ifs >> N >> D >> Q;
       rep(i, N) { ifs >> W[i]; }

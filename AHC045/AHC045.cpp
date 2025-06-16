@@ -505,12 +505,6 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
     }
   }
 
-  //cout << sz << ' ' << es.size() << endl;
-
-  //if (UF_Count(root) == vCount) {
-  //  return es;
-  //}
-
   for (auto p : es) {
     free_use_graph_count[p.first] = 0;
     free_use_graph_count[p.second] = 0;
@@ -559,13 +553,6 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
       pque.emplace(pp);
     }
   }
-
-  //cout << sz << ' ' << vCount << ' ' << newNums.size() << ' ' << es2.size() << endl;
-
-  //for (auto num : newNums) {
-  //  cout << num << ' ';
-  //}
-  //cout << endl;
 
   int now = 0;
   for (auto num : nums) {
@@ -1739,12 +1726,6 @@ ll Solve(int problem_num, Hypers hypers)
   return score;
 }
 
-/////////////////////////////////////////////////////////////////////////
-/*
-メモ
-
-*/
-/////////////////////////////////////////////////////////////////////////
 int main()
 {
   mode = 2;

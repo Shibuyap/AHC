@@ -6,6 +6,8 @@
 #include <string>
 #include <time.h>
 #include <utility>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 typedef long long int ll;
@@ -102,16 +104,9 @@ State Input(int problemNum)
 {
   State current;
 
-  string fileNameIfs = "./in/";
-  string strNum;
-  for (int i = 0; i < 4; ++i) {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameIfs += strNum + ".txt";
-
-  ifstream ifs(fileNameIfs);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  ifstream ifs(oss.str());
 
   // 標準入力する
   if (!ifs.is_open()) {

@@ -174,7 +174,7 @@ void SetUp()
 void Input(int problemNum)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";  // 入力ファイルのパスを作成
+  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
   ifstream ifs(oss.str());  // ファイルストリームを開く
 
   saba.resize(n);    // サバのベクターをリサイズ
