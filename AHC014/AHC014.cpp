@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = s; i > t; --i)
@@ -98,9 +98,9 @@ namespace /* 変数 */
 
 void MethodCountReset()
 {
-  rep(i, 20)
+  for (int i = 0; i < 20; ++i)
   {
-    rep(j, 2) { methodCount[i][j] = 0; }
+    for (int j = 0; j < 2; ++j) { methodCount[i][j] = 0; }
   }
 }
 
@@ -117,9 +117,9 @@ double CalcScore()
 
   int sum = 0;
 
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       if (current_state.f[i][j]) {
         sum += W[i][j];
@@ -137,14 +137,14 @@ void NormalClear()
   current_state.maxScore = 0;
   current_state.ansSize = 0;
   current_state.ansDeleteCount = 0;
-  rep(i, ANS_SIZE) current_state.ansDelete[i] = 0;
-  rep(i, 64) rep(j, 64)
+  for (int i = 0; i < ANS_SIZE; ++i) current_state.ansDelete[i] = 0;
+  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j)
   {
     current_state.f[i][j] = false;
-    rep(k, 8) current_state.line[i][j][k] = 0;
+    for (int k = 0; k < 8; ++k) current_state.line[i][j][k] = 0;
     current_state.use[i][j] = 0;
   }
-  rep(i, 64)
+  for (int i = 0; i < 64; ++i)
   {
     current_state.cntH[i] = 0;
     current_state.cntW[i] = 0;
@@ -156,14 +156,14 @@ void RealClear()
   best_state.maxScore = 0;
   best_state.ansSize = 0;
   best_state.ansDeleteCount = 0;
-  rep(i, ANS_SIZE) best_state.ansDelete[i] = 0;
-  rep(i, 64) rep(j, 64)
+  for (int i = 0; i < ANS_SIZE; ++i) best_state.ansDelete[i] = 0;
+  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j)
   {
     best_state.f[i][j] = false;
-    rep(k, 8) best_state.line[i][j][k] = 0;
+    for (int k = 0; k < 8; ++k) best_state.line[i][j][k] = 0;
     best_state.use[i][j] = 0;
   }
-  rep(i, 64)
+  for (int i = 0; i < 64; ++i)
   {
     best_state.cntH[i] = 0;
     best_state.cntW[i] = 0;
@@ -175,14 +175,14 @@ void SeedClear()
   seed_state.maxScore = 0;
   seed_state.ansSize = 0;
   seed_state.ansDeleteCount = 0;
-  rep(i, ANS_SIZE) seed_state.ansDelete[i] = 0;
-  rep(i, 64) rep(j, 64)
+  for (int i = 0; i < ANS_SIZE; ++i) seed_state.ansDelete[i] = 0;
+  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j)
   {
     seed_state.f[i][j] = false;
-    rep(k, 8) seed_state.line[i][j][k] = 0;
+    for (int k = 0; k < 8; ++k) seed_state.line[i][j][k] = 0;
     seed_state.use[i][j] = 0;
   }
-  rep(i, 64)
+  for (int i = 0; i < 64; ++i)
   {
     seed_state.cntH[i] = 0;
     seed_state.cntW[i] = 0;
@@ -192,14 +192,14 @@ void SeedClear()
 void RefleshAns()
 {
   int tmpCount = 0;
-  rep(i, current_state.ansSize)
+  for (int i = 0; i < current_state.ansSize; ++i)
   {
     if (current_state.ansDelete[i]) {
       tmpCount++;
       current_state.ansDelete[i] = 0;
     }
     else {
-      rep(j, 4) rep(k, 2) current_state.ans[i - tmpCount][j][k] = current_state.ans[i][j][k];
+      for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) current_state.ans[i - tmpCount][j][k] = current_state.ans[i][j][k];
     }
   }
   if (tmpCount != current_state.ansDeleteCount) {
@@ -223,7 +223,7 @@ void AllClear_MultiCase()
 void Init()
 {
   NormalClear();
-  rep(i, M)
+  for (int i = 0; i < M; ++i)
   {
     current_state.f[X[i]][Y[i]] = true;
     current_state.use[X[i]][Y[i]] = 100;
@@ -242,19 +242,19 @@ void Input(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> N >> M;
-    rep(i, M) { cin >> X[i] >> Y[i]; }
+    for (int i = 0; i < M; ++i) { cin >> X[i] >> Y[i]; }
   }
   // ファイル入力する
   else {
     ifs >> N >> M;
-    rep(i, M) { ifs >> X[i] >> Y[i]; }
+    for (int i = 0; i < M; ++i) { ifs >> X[i] >> Y[i]; }
   }
 
   S = 0;
   int c = (N - 1) / 2;
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       W[i][j] = (i - c) * (i - c) + (j - c) * (j - c) + 1;
       S += W[i][j];
@@ -269,10 +269,10 @@ void Output(int mode, int problemNum)
 {
   if (mode == 0) {
     cout << current_state.ansSize - current_state.ansDeleteCount << endl;
-    rep(i, current_state.ansSize)
+    for (int i = 0; i < current_state.ansSize; ++i)
     {
       if (current_state.ansDelete[i]) continue;
-      rep(j, 4) rep(k, 2) { cout << current_state.ans[i][j][k] << ' '; }
+      for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { cout << current_state.ans[i][j][k] << ' '; }
       cout << endl;
     }
   }
@@ -281,7 +281,7 @@ void Output(int mode, int problemNum)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
@@ -292,10 +292,10 @@ void Output(int mode, int problemNum)
     ofstream ofs(fileNameOfs);
 
     ofs << current_state.ansSize - current_state.ansDeleteCount << endl;
-    rep(i, current_state.ansSize)
+    for (int i = 0; i < current_state.ansSize; ++i)
     {
       if (current_state.ansDelete[i]) continue;
-      rep(j, 4) rep(k, 2) { ofs << current_state.ans[i][j][k] << ' '; }
+      for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { ofs << current_state.ans[i][j][k] << ' '; }
       ofs << endl;
     }
 
@@ -901,7 +901,7 @@ void Method2(double temperature)
   methodCount[2][1]++;
 
   int x[4], y[4];
-  rep(i, 4)
+  for (int i = 0; i < 4; ++i)
   {
     x[i] = current_state.ans[ite][i][0];
     y[i] = current_state.ans[ite][i][1];
@@ -918,7 +918,7 @@ void Method2(double temperature)
     current_state.f[x[0]][y[0]] = 0;
     current_state.cntW[x[0]]--;
     current_state.cntH[y[0]]--;
-    rep(i, 4) current_state.use[x[i]][y[i]]--;
+    for (int i = 0; i < 4; ++i) current_state.use[x[i]][y[i]]--;
 
     int RectDir = GetDir(x[0], y[0], x[1], y[1]);
     if (RectDir == 0) {
@@ -1026,7 +1026,7 @@ int Solve(int mode, int problemNum = 0)
 
   // シード作り
   int seedCount = 20;  // 0にするとシード作成を行わない
-  rep(tei, seedCount)
+  for (int tei = 0; tei < seedCount; ++tei)
   {
     startTime = clock();
 
@@ -1198,7 +1198,7 @@ int main()
 
   // 提出用
   if (mode == 0) {
-    rep(i, 1)
+    for (int i = 0; i < 1; ++i)
     {
       SolveOuter(mode, 3);
       AllClear_MultiCase();
@@ -1211,7 +1211,7 @@ int main()
   // 複数ケース試す
   else if (mode == 2) {
     int scoreSum = 0;
-    rep(i, 10)
+    for (int i = 0; i < 10; ++i)
     {
       scoreSum += SolveOuter(mode, i);
       AllClear_MultiCase();
