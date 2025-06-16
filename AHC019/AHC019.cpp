@@ -788,11 +788,6 @@ double solve_problem(int run_mode, int problem_num)
     }
     if (now_progress > 1.0) break;
 
-    if (min_score > real_min_score * 10) {
-      // roll_back_from_real();
-      // rollback_count++;
-    }
-
     double temperature =
       start_temperature + (end_temperature - start_temperature) * now_progress;
 

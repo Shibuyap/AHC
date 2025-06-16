@@ -67,37 +67,6 @@ struct edge
   int id;
 };
 
-//struct RadixHeap {
-//  using uint = unsigned;
-//  vector<pair<uint, int>> v[33];
-//  uint size, last;
-//
-//  RadixHeap() : size(0), last(0) {}
-//
-//  bool empty() const { return size == 0; }
-//
-//  inline int getbit(int a) { return a ? 32 - __builtin_clz(a) : 0; }
-//
-//  void push(uint key, const int &value) {
-//    ++size;
-//    v[getbit(key ^ last)].emplace_back(key, value);
-//  }
-//
-//  pair<uint, int> pop() {
-//    if (v[0].empty()) {
-//      int idx = 1;
-//      while (v[idx].empty()) ++idx;
-//      last = min_element(begin(v[idx]), end(v[idx]))->first;
-//      for (auto &p : v[idx]) v[getbit(p.first ^ last)].emplace_back(p);
-//      v[idx].clear();
-//    }
-//    --size;
-//    auto ret = v[0].back();
-//    v[0].pop_back();
-//    return ret;
-//  }
-//};
-
 namespace
 {
   int N, M, D, K;
@@ -145,50 +114,6 @@ ll Dijkstra(int start, int day)
 int FINISH_COUNT = 50;
 double FIRST_HALF = 0.0;
 double nowTime;
-//ll Dijkstra2(int start, int day) {
-//  rep(i, N) { dist[i] = INF; }
-//  dist[start] = 0;
-//  // priority_queue<P, vector<P>, greater<P>> pque;
-//  RadixHeap heap;
-//  heap.push(0, start);
-//  // pque.push(P(0, start));
-//
-//  ll sum = 0;
-//  int cnt = 0;
-//  // while (!pque.empty()) {
-//  while (!heap.empty()) {
-//    // P p = pque.top();
-//    P p = heap.pop();
-//    // pque.pop();
-//    if (p.first != dist[p.second]) continue;
-//    int x = p.second;
-//    if (distRank[start][x] < FINISH_COUNT) {
-//      sum += dist[x];
-//      cnt++;
-//    }
-//    if (cnt == FINISH_COUNT) {
-//      break;
-//    }
-//    rep(i, G[x].size()) {
-//      int y = G[x][i].to;
-//      if (ans[G[x][i].id] == day) {
-//        continue;
-//      }
-//      int cost = G[x][i].cost;
-//      if (dist[y] > dist[x] + cost) {
-//        dist[y] = dist[x] + cost;
-//        // pque.push(P(dist[y], y));
-//        heap.push(dist[y], y);
-//      }
-//    }
-//  }
-//
-//  if (cnt < min(FINISH_COUNT, N)) {
-//    sum += (ll)(FINISH_COUNT - cnt) * INF;
-//  }
-//
-//  return sum;
-//}
 
 int NG;
 ll Dijkstra22(int start, int day)

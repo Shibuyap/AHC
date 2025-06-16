@@ -35,13 +35,6 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-/*
-いろいろ
-const int INF = 1001001001;
-const char cc[4] = {'U', 'L', 'D', 'R'};
-
-*/
-
 // U, L, D, R, UL, LD, DR, RU
 const int dx[8] = { -1, 0, 1, 0, -1, 1, 1, -1 };
 const int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };

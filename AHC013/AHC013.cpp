@@ -780,12 +780,6 @@ void AllClear_outer()
   MethodCountReset();
 }
 
-
-
-
-
-
-
 // コンピュータをランダムに1マス移動
 void PushACnt(int xx, int yy)
 {

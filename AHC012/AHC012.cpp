@@ -420,9 +420,6 @@ int calculate_score(const Board& board, const Answer& answer)
   for (int i = 1; i <= 10; i++) {
     penalty += max(0, answer.b[i] - board.a[i]) * (11 - i) * 0.01;
   }
-  //penalty += answer.b[11] * 1.0;
-  //penalty += answer.b[12] * 1.0;
-  //penalty += answer.b[13] * 1.0;
 
   int res = round(1e6 * ok_cnt / board.a_sum - penalty);
 
