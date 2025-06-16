@@ -34,6 +34,23 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t Rand()
@@ -50,7 +67,6 @@ namespace /* 乱数ライブラリ */
     z = w;
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
-
 
   static double Rand01()
   {
@@ -83,7 +99,6 @@ const char dc[4] = { 'U', 'L', 'D', 'R' };
 
 double TL = 1.8;
 int mode;
-clock_t startTime, endTime;
 
 const int n = 20;
 int baseH[20][20];
@@ -95,17 +110,9 @@ int real_ans[100000][2];
 int real_ansSize;
 int real_ansScore;
 
-double GetNowTime()
-{
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  return nowTime;
-}
-
 void InitH()
 {
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) { h[i][j] = baseH[i][j]; }
   }
 }
@@ -113,8 +120,7 @@ void InitH()
 void CopyToAns()
 {
   ansSize = real_ansSize;
-  for (int i = 0; i < ansSize; ++i)
-  {
+  for (int i = 0; i < ansSize; ++i) {
     for (int j = 0; j < 2; ++j) { ans[i][j] = real_ans[i][j]; }
   }
 }
@@ -122,8 +128,7 @@ void CopyToAns()
 void CopyToReal()
 {
   real_ansSize = ansSize;
-  for (int i = 0; i < ansSize; ++i)
-  {
+  for (int i = 0; i < ansSize; ++i) {
     for (int j = 0; j < 2; ++j) { real_ans[i][j] = ans[i][j]; }
   }
 }
@@ -142,8 +147,7 @@ void Input(int problemNum)
   if (!ifs.is_open()) {
     int nn;
     cin >> nn;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) { cin >> h[i][j]; }
     }
   }
@@ -151,14 +155,12 @@ void Input(int problemNum)
   else {
     int nn;
     ifs >> nn;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) { ifs >> h[i][j]; }
     }
   }
 
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) { baseH[i][j] = h[i][j]; }
   }
 }
@@ -169,8 +171,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
     }
@@ -185,8 +186,7 @@ int CalcCost()
 {
   int d = 0;
   int sum = 0;
-  for (int i = 0; i < ansSize; ++i)
-  {
+  for (int i = 0; i < ansSize; ++i) {
     if (ans[i][0] < 4) {
       sum += 100 + d;
     }
@@ -202,8 +202,7 @@ int CalcCost()
 ll CalcScore()
 {
   ll base = 0;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) { base += abs(baseH[i][j]); }
   }
   ll res = round(1e9 * base / CalcCost());
@@ -212,8 +211,7 @@ ll CalcScore()
 
 bool IsOK(int x)
 {
-  for (int j = 0; j < n; ++j)
-  {
+  for (int j = 0; j < n; ++j) {
     if (h[x][j] != 0) {
       return false;
     }
@@ -224,50 +222,6 @@ bool IsOK(int x)
 bool IsValidCell(int x, int y, int a[n][n])
 {
   return x >= 0 && x < n && y >= 0 && y < n && a[x][y] == 0;
-}
-
-bool ShouldSkipCell(int idx, int d, bool checkForward)
-{
-  int xx = route[idx].first;
-  int yy = route[idx].second;
-  
-  if (h[xx][yy] < 0 && d > 0) {
-    return false;
-  }
-  
-  if (spot[xx][yy].size() > 0) {
-    for (auto am : spot[xx][yy]) {
-      if ((checkForward && am.idx > idx) || (!checkForward && am.idx < idx)) {
-        return false;
-      }
-    }
-  }
-  
-  return true;
-}
-
-int FindNextValidCellForward(int startIdx, int d)
-{
-  int nidx = startIdx;
-  while (nidx < route.size() - 1) {
-    if (!ShouldSkipCell(nidx, d, true)) {
-      break;
-    }
-    nidx++;
-  }
-  return nidx;
-}
-
-int FindNextValidCellBackward(int startIdx, int d)
-{
-  int nidx = startIdx;
-  while (nidx >= 0) {
-    if (!ShouldSkipCell(nidx, d, false)) {
-      break;
-    }
-    nidx--;
-  }
-  return nidx;
 }
 
 // 初期解生成
@@ -470,8 +424,7 @@ vector<P> route;
 void InitRoute1()
 {
   route.clear();
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     if (i % 2 == 0) {
       for (int j = 0; j < n; ++j) { route.emplace_back(i, j); }
     }
@@ -484,8 +437,7 @@ void InitRoute1()
 void InitRoute2()
 {
   route.clear();
-  for (int j = 0; j < n; ++j)
-  {
+  for (int j = 0; j < n; ++j) {
     if (j % 2 == 0) {
       for (int i = 0; i < n; ++i) { route.emplace_back(i, j); }
     }
@@ -497,8 +449,7 @@ void InitRoute2()
 
 void GenerateSpiralRoute(int& x, int& y, int a[n][n], int spiralDepth)
 {
-  for (int i = 0; i < spiralDepth; ++i)
-  {
+  for (int i = 0; i < spiralDepth; ++i) {
     while (y < n - 1 - i) {
       y++;
       route.emplace_back(x, y);
@@ -531,7 +482,7 @@ void InitRoute3()
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  
+
   GenerateSpiralRoute(x, y, a, ra);
 
   int dir = 1;
@@ -584,7 +535,7 @@ void InitRoute4()
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  
+
   GenerateSpiralRoute(x, y, a, ra);
 
   int dir = 1;
@@ -642,8 +593,7 @@ struct Amount
 vector<Amount> spot[n][n];
 void Method1(int ikichi1 = 300, int ikichi2 = 300)
 {
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) { spot[i][j].clear(); }
   }
   InitH();
@@ -687,8 +637,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
   }
 
   int d = 0;
-  for (int i = 0; i < route.size(); ++i)
-  {
+  for (int i = 0; i < route.size(); ++i) {
     int x = route[i].first;
     int y = route[i].second;
     if (spot[x][y].size() > 0) {
@@ -736,7 +685,29 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     }
 
     if (i < route.size() - 1) {
-      int nidx = FindNextValidCellForward(i + 1, d);
+      int nidx = i + 1;
+      while (nidx < route.size() - 1) {
+        int skip = 1;
+        int ii = nidx;
+        int xx = route[ii].first;
+        int yy = route[ii].second;
+        if (spot[xx][yy].size() > 0) {
+          for (auto am : spot[xx][yy]) {
+            if (am.idx > ii) {
+              skip = 0;
+            }
+          }
+        }
+        if (h[xx][yy] < 0 && d > 0) {
+          skip = 0;
+        }
+        if (skip) {
+          nidx++;
+        }
+        else {
+          break;
+        }
+      }
 
       int nx = route[nidx].first;
       int ny = route[nidx].second;
@@ -811,7 +782,29 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     }
 
     if (i > 0) {
-      int nidx = FindNextValidCellBackward(i - 1, d);
+      int nidx = i - 1;
+      while (nidx > 0) {
+        int skip = 1;
+        int ii = nidx;
+        int xx = route[ii].first;
+        int yy = route[ii].second;
+        if (spot[xx][yy].size() > 0) {
+          for (auto am : spot[xx][yy]) {
+            if (am.idx < ii) {
+              skip = 0;
+            }
+          }
+        }
+        if (h[xx][yy] < 0 && d > 0) {
+          skip = 0;
+        }
+        if (skip) {
+          nidx--;
+        }
+        else {
+          break;
+        }
+      }
 
       int nx = route[nidx].first;
       int ny = route[nidx].second;
@@ -832,8 +825,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    for (int i = 0; i < ansSize; ++i)
-    {
+    for (int i = 0; i < ansSize; ++i) {
       if (ans[i][0] < 4) {
         cout << dc[ans[i][0]] << endl;
       }
@@ -844,8 +836,7 @@ void Output(ofstream& ofs)
     }
   }
   else {
-    for (int i = 0; i < ansSize; ++i)
-    {
+    for (int i = 0; i < ansSize; ++i) {
       if (ans[i][0] < 4) {
         ofs << dc[ans[i][0]] << endl;
       }
@@ -859,7 +850,7 @@ void Output(ofstream& ofs)
 
 ll Solve(int probNum)
 {
-  startTime = clock();
+  start_timer();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -880,11 +871,7 @@ ll Solve(int probNum)
   InitRoute2();
   Method1();
 
-  int loop = 0;
-  while (true) {
-    if (GetNowTime() > 1.8) {
-      break;
-    }
+  for (int loop = 0; loop < 100000; ++loop) {
     int ra1 = Rand() % 1000;
     int ra2 = Rand() % 1000;
     int ra3 = Rand() % 100;
@@ -901,7 +888,6 @@ ll Solve(int probNum)
       InitRoute4();
     }
     Method1(ra1, ra2);
-    loop++;
   }
   CopyToAns();
 
@@ -934,7 +920,8 @@ int main()
       sum += score;
       cout << "num = " << i << ", ";
       cout << "score = " << score << ", ";
-      cout << "sum = " << sum << endl;
+      cout << "sum = " << sum << ", ";
+      cout << "time = " << get_elapsed_time() << " sec" << endl;
     }
   }
 

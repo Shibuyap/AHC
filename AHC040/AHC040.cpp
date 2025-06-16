@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
@@ -314,9 +313,9 @@ public:
   vector<RectanglePiece> CreateQuery() const
   {
     vector<RectanglePiece> pieces;
-    rep(i, sz)
+    for (int i = 0; i < sz; ++i)
     {
-      rep(j, shelves[i].sz)
+      for (int j = 0; j < shelves[i].sz; ++j)
       {
         if (shelves[i].blocks[j].count() >= 1) {
           pieces.push_back(shelves[i].blocks[j].piece1);
@@ -355,7 +354,7 @@ void LoadInputData(int problemNum)
 {
   if (executionMode == 0) {
     cin >> n >> t >> sigma;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       cin >> w[i] >> h[i];
     }
@@ -365,21 +364,21 @@ void LoadInputData(int problemNum)
     oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
     ifstream ifs(oss.str());
     ifs >> n >> t >> sigma;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       ifs >> w[i] >> h[i];
     }
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       ifs >> W[i] >> H[i];
     }
-    rep(i, t)
+    for (int i = 0; i < t; ++i)
     {
       ifs >> dW[i] >> dH[i];
     }
   }
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     w[i] = max(MIN_WIDTH, w[i]);
     w[i] = min(MAX_WIDTH, w[i]);
@@ -388,12 +387,12 @@ void LoadInputData(int problemNum)
   }
 
   if (executionMode == 4) {
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       w[i] = W[i];
       h[i] = H[i];
     }
-    rep(i, t)
+    for (int i = 0; i < t; ++i)
     {
       dW[i] = 0;
       dH[i] = 0;
@@ -414,7 +413,7 @@ ScoreStruct FindBestQueryScore()
 {
   ScoreStruct score;
   score.score = INF;
-  rep(i, queryCounter)
+  for (int i = 0; i < queryCounter; ++i)
   {
     if (tScores[i].score < score.score) {
       score = tScores[i];
@@ -430,7 +429,7 @@ int cs_max_down[MAX_N], cs_max_right[MAX_N];
 ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
 {
   int sz = (int)pieces.size();
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     cs_use[i] = 0;
     cs_up[i] = -1;
@@ -442,7 +441,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
   }
 
   RectanglePiece currentRectPiece;
-  rep(i, sz)
+  for (int i = 0; i < sz; ++i)
   {
     currentRectPiece = pieces[i];
     int num = currentRectPiece.num;
@@ -507,7 +506,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
   }
 
   int maxDown = 0, maxRight = 0;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     if (cs_use[i]) {
       maxDown = max(maxDown, cs_down[i]);
@@ -519,7 +518,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
   scoreResult.ww = maxRight;
   scoreResult.hh = maxDown;
   scoreResult.score = maxDown + maxRight;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     if (cs_use[i] == 0) {
       scoreResult.score += w[i] + h[i];
@@ -535,7 +534,7 @@ ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream
 
   if (executionMode == 0) {
     cout << pieces.size() << endl;
-    rep(i, pieces.size())
+    for (int i = 0; i < pieces.size(); ++i)
     {
       cout << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
@@ -547,13 +546,13 @@ ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream
   }
   else {
     ofs << "# " << pieces.size() << endl;
-    rep(i, pieces.size())
+    for (int i = 0; i < pieces.size(); ++i)
     {
       ofs << "# " << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
 
     ofs << pieces.size() << endl;
-    rep(i, pieces.size())
+    for (int i = 0; i < pieces.size(); ++i)
     {
       ofs << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
@@ -574,7 +573,7 @@ vector<RectanglePiece> basePieces;
 void SetupBasePieces()
 {
   basePieces.resize(n);
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     basePieces[i].num = i;
     basePieces[i].rot = 0;
@@ -589,12 +588,12 @@ int pieceLargestDimension[MAX_N];
 void SetupPieceSizeOrder()
 {
   vector<P> pieceDimensionIndexPairs;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     pieceDimensionIndexPairs.emplace_back(max(w[i], h[i]), i);
   }
   sort(pieceDimensionIndexPairs.begin(), pieceDimensionIndexPairs.end());
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     pieceSizeOrder[pieceDimensionIndexPairs[i].second] = i;
     pieceLargestDimension[pieceDimensionIndexPairs[i].second] = pieceDimensionIndexPairs[i].first;
@@ -619,7 +618,7 @@ void BuildInitialMethod2LayoutsPhase1()
 
   int widthLimit = Rand() % 1000000 + 200000;
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     currentStackUnit.piece1 = basePieces[i];
     if (currentShelf.GetSumWidth() + currentStackUnit.piece1.width() <= widthLimit) {
@@ -676,7 +675,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
   int rankThreshold = Rand() % 10 + 5;
   int lyingConditionThreshold = Rand() % 100;
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     if (candidateLayoutCount == bestsLimit && currentLayout.score() + currentShelf.maxHeight >= candidateLayouts[candidateLayoutCount - 1].score()) {
       terminateFlag = 1;
@@ -720,7 +719,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
       {
         int isAdd = 0;
         if (currentShelf.sz >= 2) {
-          rep(j, currentShelf.sz - 1)
+          for (int j = 0; j < currentShelf.sz - 1; ++j)
           {
             if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
               isPlacementAllowed = 1;
@@ -756,7 +755,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
         int isAdd = 0;
         if (currentLayout.sz >= 1) {
           int accumulatedWidth = 0;
-          rep(j, currentLayout.shelves[currentLayout.sz - 1].sz - 1)
+          for (int j = 0; j < currentLayout.shelves[currentLayout.sz - 1].sz - 1; ++j)
           {
             if (accumulatedWidth < currentShelf.sumWidth) {
               accumulatedWidth += currentLayout.shelves[currentLayout.sz - 1].blocks[j].width();
@@ -783,7 +782,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
 
         if (currentShelf.sz >= 2) {
           isAdd = 0;
-          rep(j, currentShelf.sz - 1)
+          for (int j = 0; j < currentShelf.sz - 1; ++j)
           {
             if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
               isPlacementAllowed = 1;
@@ -917,9 +916,9 @@ int c_count[MAX_N + 10];
 bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
 {
 
-  rep(i, layout.sz)
+  for (int i = 0; i < layout.sz; ++i)
   {
-    rep(j, layout.shelves[i].sz)
+    for (int j = 0; j < layout.shelves[i].sz; ++j)
     {
       if (layout.shelves[i].blocks[j].count() == 1) {
         int num = layout.shelves[i].blocks[j].piece1.num;
@@ -946,13 +945,13 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
     }
   }
 
-  rep(i, layout.sz + 2)
+  for (int i = 0; i < layout.sz + 2; ++i)
   {
     c_sum[i] = 0;
     c_count[i] = 0;
   }
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     int ii = c_i[i];
     int jj = c_j[i];
@@ -999,11 +998,11 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
 
   maxWidth = 0;
   sumHeight = 0;
-  rep(i, layout.sz)
+  for (int i = 0; i < layout.sz; ++i)
   {
     maxWidth = max(maxWidth, c_sum[i]);
     int maxHeight = 0;
-    rep(j, layout.shelves[i].sz)
+    for (int j = 0; j < layout.shelves[i].sz; ++j)
     {
       maxHeight = max(maxHeight, layout.shelves[i].blocks[j].height());
     }
@@ -1015,10 +1014,10 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
 
 bool SortLayout(Layout& layout)
 {
-  rep(i, layout.sz)
+  for (int i = 0; i < layout.sz; ++i)
   {
     sort(layout.shelves[i].blocks, layout.shelves[i].blocks + layout.shelves[i].sz);
-    rep(j, layout.shelves[i].sz)
+    for (int j = 0; j < layout.shelves[i].sz; ++j)
     {
       if (j == 0) {
         layout.shelves[i].blocks[j].SetBase(-1);
@@ -1042,7 +1041,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
   BuildInitialMethod2Layouts();
 
   vector<Layout> layouts;
-  rep(i, candidateLayoutCount)
+  for (int i = 0; i < candidateLayoutCount; ++i)
   {
     layouts.push_back(candidateLayouts[i]);
   }
@@ -1096,9 +1095,9 @@ void RefineAndPrintSolutions(ofstream& ofs)
       int sz = 0;
       int ng = 1;
       if (raMode == 0) {
-        rep(i, keep.sz)
+        for (int i = 0; i < keep.sz; ++i)
         {
-          rep(j, keep.shelves[i].sz)
+          for (int j = 0; j < keep.shelves[i].sz; ++j)
           {
             int num = keep.shelves[i].blocks[j].piece1.num;
             if (num == raNum1) {
@@ -1124,9 +1123,9 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
       else if (raMode == 1) {
-        rep(i, keep.sz)
+        for (int i = 0; i < keep.sz; ++i)
         {
-          rep(j, keep.shelves[i].sz)
+          for (int j = 0; j < keep.shelves[i].sz; ++j)
           {
             int num = keep.shelves[i].blocks[j].piece1.num;
             if (sz <= i) {
@@ -1148,9 +1147,9 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
       else if (raMode == 2) {
-        rep(i, keep.sz)
+        for (int i = 0; i < keep.sz; ++i)
         {
-          rep(j, keep.shelves[i].sz)
+          for (int j = 0; j < keep.shelves[i].sz; ++j)
           {
             if (sz <= i) {
               tmp.shelves[i].clear();
@@ -1169,9 +1168,9 @@ void RefineAndPrintSolutions(ofstream& ofs)
       else if (raMode == 3) {
         int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1;
 
-        rep(i, keep.sz)
+        for (int i = 0; i < keep.sz; ++i)
         {
-          rep(j, keep.shelves[i].sz)
+          for (int j = 0; j < keep.shelves[i].sz; ++j)
           {
             if (sz <= i) {
               tmp.shelves[i].clear();
@@ -1228,14 +1227,14 @@ void RefineAndPrintSolutions(ofstream& ofs)
 
 
   vector<Ans> solutionCandidates;
-  rep(i, candidateLayoutCount)
+  for (int i = 0; i < candidateLayoutCount; ++i)
   {
     Ans ans;
     ans.pieces = candidateLayouts[i].CreateQuery();
     ans.score = EvaluateScore(ans.pieces, false).score;
     solutionCandidates.push_back(ans);
   }
-  rep(i, layouts.size())
+  for (int i = 0; i < layouts.size(); ++i)
   {
     Ans ans;
     ans.pieces = layouts[i].CreateQuery();
@@ -1461,7 +1460,7 @@ int main()
     ExecuteSolution(0);
   }
   else if (executionMode == 3) {
-    rep(_, 10)
+    for (int _ = 0; _ < 10; ++_)
     {
       ll totalScoreSum = 0;
       srep(i, 0, 100)
