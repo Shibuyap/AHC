@@ -28,9 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = s; i > t; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -342,7 +339,7 @@ inline int FindNeighborPoint(int x, int y, int z)
 {
   // 上
   if (z == 0) {
-    drep(i, x)
+    for (int i = x-1; i >= 0; --i)
     {
       if (current_state.f[i][y]) {
         if (current_state.line[i][y][2]) return -2;
@@ -354,7 +351,7 @@ inline int FindNeighborPoint(int x, int y, int z)
 
   // 左
   if (z == 1) {
-    drep(j, y)
+    for (int j = y-1; j >= 0; --j)
     {
       if (current_state.f[x][j]) {
         if (current_state.line[x][j][3]) return -2;
@@ -366,7 +363,7 @@ inline int FindNeighborPoint(int x, int y, int z)
 
   // 下
   if (z == 2) {
-    srep(i, x + 1, N)
+    for (int i = x + 1; i < N; ++i)
     {
       if (current_state.f[i][y]) {
         if (current_state.line[i][y][0]) return -2;
@@ -378,7 +375,7 @@ inline int FindNeighborPoint(int x, int y, int z)
 
   // 右
   if (z == 3) {
-    srep(j, y + 1, N)
+    for (int j = y + 1; j < N; ++j)
     {
       if (current_state.f[x][j]) {
         if (current_state.line[x][j][1]) return -2;
@@ -391,7 +388,7 @@ inline int FindNeighborPoint(int x, int y, int z)
   // 左上
   if (z == 4) {
     int ma = min(x, y);
-    srep(i, 1, ma + 1)
+    for (int i = 1; i < ma + 1; ++i)
     {
       if (current_state.f[x - i][y - i]) {
         if (current_state.line[x - i][y - i][6]) return -2;
@@ -404,7 +401,7 @@ inline int FindNeighborPoint(int x, int y, int z)
   // 左下
   if (z == 5) {
     int ma = min(N - 1 - x, y);
-    srep(i, 1, ma + 1)
+    for (int i = 1; i < ma + 1; ++i)
     {
       if (current_state.f[x + i][y - i]) {
         if (current_state.line[x + i][y - i][7]) return -2;
@@ -417,7 +414,7 @@ inline int FindNeighborPoint(int x, int y, int z)
   // 右下
   if (z == 6) {
     int ma = min(N - 1 - x, N - 1 - y);
-    srep(i, 1, ma + 1)
+    for (int i = 1; i < ma + 1; ++i)
     {
       if (current_state.f[x + i][y + i]) {
         if (current_state.line[x + i][y + i][4]) return -2;
@@ -430,7 +427,7 @@ inline int FindNeighborPoint(int x, int y, int z)
   // 右上
   if (z == 7) {
     int ma = min(x, N - 1 - y);
-    srep(i, 1, ma + 1)
+    for (int i = 1; i < ma + 1; ++i)
     {
       if (current_state.f[x - i][y + i]) {
         if (current_state.line[x - i][y + i][5]) return -2;
@@ -464,8 +461,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][3] || current_state.line[xx][yy][2]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(j, yy + 1, y) if (current_state.f[xx][j]) return false;
-    srep(i, xx + 1, x) if (current_state.f[i][yy]) return false;
+    for (int j = yy + 1; j < y; ++j) if (current_state.f[xx][j]) return false;
+    for (int i = xx + 1; i < x; ++i) if (current_state.f[i][yy]) return false;
 
     return true;
   }
@@ -485,8 +482,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][0] || current_state.line[xx][yy][3]) return false;
 
     // 間に邪魔な頂点がないか
-    dsrep(i, xx - 1, x) if (current_state.f[i][yy]) return false;
-    srep(j, yy + 1, y) if (current_state.f[xx][j]) return false;
+    for (int i = xx - 1; i > x; --i) if (current_state.f[i][yy]) return false;
+    for (int j = yy + 1; j < y; ++j) if (current_state.f[xx][j]) return false;
 
     return true;
   }
@@ -506,8 +503,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][1] || current_state.line[xx][yy][0]) return false;
 
     // 間に邪魔な頂点がないか
-    dsrep(j, yy - 1, y) if (current_state.f[xx][j]) return false;
-    dsrep(i, xx - 1, x) if (current_state.f[i][yy]) return false;
+    for (int j = yy - 1; j > y; --j) if (current_state.f[xx][j]) return false;
+    for (int i = xx - 1; i > x; --i) if (current_state.f[i][yy]) return false;
 
     return true;
   }
@@ -527,8 +524,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][2] || current_state.line[xx][yy][1]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, xx + 1, x) if (current_state.f[i][yy]) return false;
-    dsrep(j, yy - 1, y) if (current_state.f[xx][j]) return false;
+    for (int i = xx + 1; i < x; ++i) if (current_state.f[i][yy]) return false;
+    for (int j = yy - 1; j > y; --j) if (current_state.f[xx][j]) return false;
 
     return true;
   }
@@ -548,8 +545,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][7] || current_state.line[xx][yy][6]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (current_state.f[xx - i][yy + i]) return false;
-    srep(i, 1, diff1) if (current_state.f[xx + i][yy + i]) return false;
+    for (int i = 1; i < diff2; ++i) if (current_state.f[xx - i][yy + i]) return false;
+    for (int i = 1; i < diff1; ++i) if (current_state.f[xx + i][yy + i]) return false;
 
     return true;
   }
@@ -569,8 +566,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][4] || current_state.line[xx][yy][7]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (current_state.f[xx - i][yy - i]) return false;
-    srep(i, 1, diff1) if (current_state.f[xx - i][yy + i]) return false;
+    for (int i = 1; i < diff2; ++i) if (current_state.f[xx - i][yy - i]) return false;
+    for (int i = 1; i < diff1; ++i) if (current_state.f[xx - i][yy + i]) return false;
 
     return true;
   }
@@ -590,8 +587,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][5] || current_state.line[xx][yy][4]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (current_state.f[xx + i][yy - i]) return false;
-    srep(i, 1, diff1) if (current_state.f[xx - i][yy - i]) return false;
+    for (int i = 1; i < diff2; ++i) if (current_state.f[xx + i][yy - i]) return false;
+    for (int i = 1; i < diff1; ++i) if (current_state.f[xx - i][yy - i]) return false;
 
     return true;
   }
@@ -611,8 +608,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][6] || current_state.line[xx][yy][5]) return false;
 
     // 間に邪魔な頂点がないか
-    srep(i, 1, diff2) if (current_state.f[xx + i][yy + i]) return false;
-    srep(i, 1, diff1) if (current_state.f[xx + i][yy - i]) return false;
+    for (int i = 1; i < diff2; ++i) if (current_state.f[xx + i][yy + i]) return false;
+    for (int i = 1; i < diff1; ++i) if (current_state.f[xx + i][yy - i]) return false;
 
     return true;
   }
@@ -1163,7 +1160,7 @@ int Solve(int mode, int problemNum = 0)
       << endl;
     cout << "maxScore = " << current_state.maxScore << endl;
     cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
-    srep(i, 1, 5)
+    for (int i = 1; i < 5; ++i)
     {
       cout << "Method" << i << " = " << methodCount[i][0] << " / "
         << methodCount[i][1] << endl;
