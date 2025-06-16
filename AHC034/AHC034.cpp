@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 using namespace std;
@@ -104,27 +104,27 @@ double GetNowTime()
 
 void InitH()
 {
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n) { h[i][j] = baseH[i][j]; }
+    for (int j = 0; j < n; ++j) { h[i][j] = baseH[i][j]; }
   }
 }
 
 void CopyToAns()
 {
   ansSize = real_ansSize;
-  rep(i, ansSize)
+  for (int i = 0; i < ansSize; ++i)
   {
-    rep(j, 2) { ans[i][j] = real_ans[i][j]; }
+    for (int j = 0; j < 2; ++j) { ans[i][j] = real_ans[i][j]; }
   }
 }
 
 void CopyToReal()
 {
   real_ansSize = ansSize;
-  rep(i, ansSize)
+  for (int i = 0; i < ansSize; ++i)
   {
-    rep(j, 2) { real_ans[i][j] = ans[i][j]; }
+    for (int j = 0; j < 2; ++j) { real_ans[i][j] = ans[i][j]; }
   }
 }
 
@@ -142,24 +142,24 @@ void Input(int problemNum)
   if (!ifs.is_open()) {
     int nn;
     cin >> nn;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n) { cin >> h[i][j]; }
+      for (int j = 0; j < n; ++j) { cin >> h[i][j]; }
     }
   }
   // ファイル入力する
   else {
     int nn;
     ifs >> nn;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
-      rep(j, n) { ifs >> h[i][j]; }
+      for (int j = 0; j < n; ++j) { ifs >> h[i][j]; }
     }
   }
 
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n) { baseH[i][j] = h[i][j]; }
+    for (int j = 0; j < n; ++j) { baseH[i][j] = h[i][j]; }
   }
 }
 
@@ -169,7 +169,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
@@ -185,7 +185,7 @@ int CalcCost()
 {
   int d = 0;
   int sum = 0;
-  rep(i, ansSize)
+  for (int i = 0; i < ansSize; ++i)
   {
     if (ans[i][0] < 4) {
       sum += 100 + d;
@@ -202,9 +202,9 @@ int CalcCost()
 ll CalcScore()
 {
   ll base = 0;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n) { base += abs(baseH[i][j]); }
+    for (int j = 0; j < n; ++j) { base += abs(baseH[i][j]); }
   }
   ll res = round(1e9 * base / CalcCost());
   return res;
@@ -212,7 +212,7 @@ ll CalcScore()
 
 bool IsOK(int x)
 {
-  rep(j, n)
+  for (int j = 0; j < n; ++j)
   {
     if (h[x][j] != 0) {
       return false;
@@ -228,7 +228,6 @@ void Initialize()
   int d = 0;
   int dir = 1;
   while (true) {
-    // cout << h[x][y] << endl;
     if (h[x][y] < 0 && d > 0) {
       if (-h[x][y] <= d) {
         ans[ansSize][0] = 4;
@@ -402,10 +401,10 @@ vector<P> route;
 void InitRoute1()
 {
   route.clear();
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     if (i % 2 == 0) {
-      rep(j, n) { route.emplace_back(i, j); }
+      for (int j = 0; j < n; ++j) { route.emplace_back(i, j); }
     }
     else {
       drep(j, n) { route.emplace_back(i, j); }
@@ -416,10 +415,10 @@ void InitRoute1()
 void InitRoute2()
 {
   route.clear();
-  rep(j, n)
+  for (int j = 0; j < n; ++j)
   {
     if (j % 2 == 0) {
-      rep(i, n) { route.emplace_back(i, j); }
+      for (int i = 0; i < n; ++i) { route.emplace_back(i, j); }
     }
     else {
       drep(i, n) { route.emplace_back(i, j); }
@@ -432,11 +431,11 @@ void InitRoute3()
   route.clear();
   int ra = Rand() % 9 + 1;
   int a[n][n];
-  rep(i, n) rep(j, n) a[i][j] = 0;
+  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) a[i][j] = 0;
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  rep(i, ra)
+  for (int i = 0; i < ra; ++i)
   {
     while (y < n - 1 - i) {
       y++;
@@ -459,11 +458,6 @@ void InitRoute3()
       a[x][y] = 1;
     }
   }
-
-  // rep(i, n) {
-  //   rep(j, n) { cout << a[i][j]; }
-  //   cout << endl;
-  // }
 
   int dir = 1;
   while (true) {
@@ -511,11 +505,11 @@ void InitRoute4()
   route.clear();
   int ra = Rand() % 9 + 1;
   int a[n][n];
-  rep(i, n) rep(j, n) a[i][j] = 0;
+  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) a[i][j] = 0;
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
-  rep(i, ra)
+  for (int i = 0; i < ra; ++i)
   {
     while (y < n - 1 - i) {
       y++;
@@ -538,11 +532,6 @@ void InitRoute4()
       a[x][y] = 1;
     }
   }
-
-  // rep(i, n) {
-  //   rep(j, n) { cout << a[i][j]; }
-  //   cout << endl;
-  // }
 
   int dir = 1;
   if (a[x][y + 1] == 0) {
@@ -599,9 +588,9 @@ struct Amount
 vector<Amount> spot[n][n];
 void Method1(int ikichi1 = 300, int ikichi2 = 300)
 {
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n) { spot[i][j].clear(); }
+    for (int j = 0; j < n; ++j) { spot[i][j].clear(); }
   }
   InitH();
   ansSize = 0;
@@ -644,7 +633,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
   }
 
   int d = 0;
-  rep(i, route.size())
+  for (int i = 0; i < route.size(); ++i)
   {
     int x = route[i].first;
     int y = route[i].second;
@@ -907,7 +896,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    rep(i, ansSize)
+    for (int i = 0; i < ansSize; ++i)
     {
       if (ans[i][0] < 4) {
         cout << dc[ans[i][0]] << endl;
@@ -919,7 +908,7 @@ void Output(ofstream& ofs)
     }
   }
   else {
-    rep(i, ansSize)
+    for (int i = 0; i < ansSize; ++i)
     {
       if (ans[i][0] < 4) {
         ofs << dc[ans[i][0]] << endl;
@@ -996,14 +985,14 @@ ll Solve(int probNum)
 
 int main()
 {
-  mode = 0;
+  mode = 1;
 
   if (mode == 0) {
     Solve(0);
   }
   else if (mode == 1) {
     ll sum = 0;
-    srep(i, 0, 150)
+    srep(i, 0, 10)
     {
       ll score = Solve(i);
       sum += score;
