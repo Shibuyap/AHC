@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -146,7 +144,7 @@ void CopyToBest()
   best_ansCount = ansCount;
   best_fallCount = fallCount;
   best_crystalCount = crystalCount;
-  rep(i, ansCount)
+  for (int i = 0; i < ansCount; ++i)
   {
     best_ans[i][0] = ans[i][0];
     best_ans[i][1] = ans[i][1];
@@ -160,7 +158,7 @@ void CopyToAns()
   ansCount = best_ansCount;
   fallCount = best_fallCount;
   crystalCount = best_crystalCount;
-  rep(i, ansCount)
+  for (int i = 0; i < ansCount; ++i)
   {
     ans[i][0] = best_ans[i][0];
     ans[i][1] = best_ans[i][1];
@@ -178,9 +176,9 @@ bool IsNG(int x, int y)
 void SetUp()
 {
   ansScore = 0;
-  rep(i, n + 2)
+  for (int i = 0; i < n + 2; ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < n + 2; ++j)
     {
       a[i][j] = -2;
       a2[i][j] = -1;
@@ -211,11 +209,11 @@ void Input(int problemNum)
     // 標準入力
     int nn;
     cin >> nn >> m;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       string s;
       cin >> s;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         a[i + 1][j + 1] = -1;
         if (s[j] == '@') {
@@ -246,11 +244,11 @@ void Input(int problemNum)
     // ファイル入力
     int nn;
     ifs >> nn >> m;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       string s;
       ifs >> s;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         a[i + 1][j + 1] = -1;
         if (s[j] == '@') {
@@ -278,9 +276,9 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, n + 2)
+  for (int i = 0; i < n + 2; ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < n + 2; ++j)
     {
       if (1 <= a[i][j] && a[i][j] <= 3) {
         posX.push_back(i);
@@ -291,9 +289,9 @@ void Input(int problemNum)
   }
 
 
-  rep(i, n + 2)
+  for (int i = 0; i < n + 2; ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < n + 2; ++j)
     {
       init_a[i][j] = a[i][j];
       init_a2[i][j] = a2[i][j];
@@ -302,9 +300,9 @@ void Input(int problemNum)
   init_posX = posX;
   init_posY = posY;
 
-  rep(i, n + 2)
+  for (int i = 0; i < n + 2; ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < n + 2; ++j)
     {
       if (a[i][j] >= 11) {
         holeX[a[i][j] - 10] = i;
@@ -316,9 +314,9 @@ void Input(int problemNum)
 
 void InitA()
 {
-  rep(i, n + 2)
+  for (int i = 0; i < n + 2; ++i)
   {
-    rep(j, n + 2)
+    for (int j = 0; j < n + 2; ++j)
     {
       a[i][j] = init_a[i][j];
       a2[i][j] = init_a2[i][j];
@@ -356,7 +354,7 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
-    rep(i, ansCount)
+    for (int i = 0; i < ansCount; ++i)
     {
       cout << ans[i][0] << ' ' << dc[ans[i][1]] << endl;
     }
@@ -364,7 +362,7 @@ void Output(ofstream& ofs)
   else {
     // ファイル出力
     ofs << ansCount << endl;
-    rep(i, ansCount)
+    for (int i = 0; i < ansCount; ++i)
     {
       ofs << ans[i][0] << ' ' << dc[ans[i][1]] << endl;
     }
@@ -567,7 +565,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
         break;
       }
 
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         int nx = x + dx[j];
         int ny = y + dy[j];
@@ -679,7 +677,7 @@ void Method1_3()
 
   int isAllConnected = false;
 
-  rep(i, order.size())
+  for (int i = 0; i < order.size(); ++i)
   {
     // 十字に落とせる岩があれば落とす
     while (true) {
@@ -687,7 +685,7 @@ void Method1_3()
       int ty = -1;
       int dir = -1;
       int isCrystal = 0;
-      rep(j, m)
+      for (int j = 0; j < m; ++j)
       {
         int hx = holeX[j + 1];
         int hy = holeY[j + 1];
@@ -835,7 +833,7 @@ void Method1_3()
             int x = FrontX();
             int y = FrontY();
             Pop();
-            rep(j, 4)
+            for (int j = 0; j < 4; ++j)
             {
               int nx = x + dx[j];
               int ny = y + dy[j];
@@ -871,7 +869,7 @@ void Method1_3()
             int x = FrontX();
             int y = FrontY();
             Pop();
-            rep(j, 4)
+            for (int j = 0; j < 4; ++j)
             {
               int nx = x + dx[j];
               int ny = y + dy[j];
@@ -905,7 +903,7 @@ void Method1_3()
             int x = FrontX();
             int y = FrontY();
             Pop();
-            rep(j, 4)
+            for (int j = 0; j < 4; ++j)
             {
               int nx = x + dx[j];
               int ny = y + dy[j];
@@ -942,7 +940,7 @@ void Method1_3()
             if (k == 1)huyou = 0;
             dsrep(l, 1, k)
             {
-              rep(z, 4)
+              for (int z = 0; z < 4; ++z)
               {
                 int nx = idx + dx[z];
                 int ny = l + dy[z];
@@ -968,7 +966,7 @@ void Method1_3()
             if (k == n)huyou = 0;
             srep(l, k + 1, n + 1)
             {
-              rep(z, 4)
+              for (int z = 0; z < 4; ++z)
               {
                 int nx = idx + dx[z];
                 int ny = l + dy[z];
@@ -996,7 +994,7 @@ void Method1_3()
             if (k == 1)huyou = 0;
             dsrep(l, 1, k)
             {
-              rep(z, 4)
+              for (int z = 0; z < 4; ++z)
               {
                 int nx = l + dx[z];
                 int ny = idx + dy[z];
@@ -1022,7 +1020,7 @@ void Method1_3()
             if (k == n)huyou = 0;
             srep(l, k + 1, n + 1)
             {
-              rep(z, 4)
+              for (int z = 0; z < 4; ++z)
               {
                 int nx = l + dx[z];
                 int ny = idx + dy[z];
@@ -1062,7 +1060,7 @@ void Method1(Hypers hypers)
 {
   ansCount = 0;
   crystalCount = posX.size();
-  rep(i, crystalCount)order.push_back(P(i, 5));
+  for (int i = 0; i < crystalCount; ++i)order.push_back(P(i, 5));
   fallCount = 0;
   ansScore = 0;
   CopyToBest();
@@ -1107,7 +1105,7 @@ void Method1(Hypers hypers)
     }
     else if (raMode < 100) {
       int eCount = 0;
-      rep(i, order.size())
+      for (int i = 0; i < order.size(); ++i)
       {
         if (order[i].second < 4) {
           ErasePos[eCount] = i;
@@ -1153,7 +1151,7 @@ void Method1(Hypers hypers)
 
   if (mode != 0 && mode != 3) {
     cout << loop << endl;
-    rep(i, order.size())
+    for (int i = 0; i < order.size(); ++i)
     {
       if (order[i].second < 4) {
         cout << order[i].first << ':' << order[i].second << endl;

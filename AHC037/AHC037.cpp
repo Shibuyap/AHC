@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
@@ -118,9 +118,9 @@ void CopyToReal()
   real_ansCount = ansCount;
   real_ansCost = ansCost;
 
-  rep(i, ansCount)
+  for (int i = 0; i < ansCount; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       real_ans[i][j] = ans[i][j];
     }
@@ -132,9 +132,9 @@ void CopyToAns()
   ansCount = real_ansCount;
   ansCost = real_ansCost;
 
-  rep(i, ansCount)
+  for (int i = 0; i < ansCount; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       ans[i][j] = real_ans[i][j];
     }
@@ -159,7 +159,7 @@ void Input(int problemNum)
   if (!ifs.is_open()) {
     int nnn;
     cin >> nnn;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       cin >> a[i] >> b[i];
     }
@@ -168,26 +168,26 @@ void Input(int problemNum)
   else {
     int nnn;
     ifs >> nnn;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       ifs >> a[i] >> b[i];
     }
   }
 
   L = 0;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     L = max(L, a[i]);
     L = max(L, b[i]);
   }
 
   vector<P> vp;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     vp.push_back(P(a[i], b[i]));
   }
   sort(vp.begin(), vp.end());
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     a[i] = vp[i].first;
     b[i] = vp[i].second;
@@ -216,9 +216,9 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     cout << ansCount << endl;
-    rep(i, ansCount)
+    for (int i = 0; i < ansCount; ++i)
     {
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         cout << ans[i][j] << ' ';
       }
@@ -227,9 +227,9 @@ void Output(ofstream& ofs)
   }
   else {
     ofs << ansCount << endl;
-    rep(i, ansCount)
+    for (int i = 0; i < ansCount; ++i)
     {
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         ofs << ans[i][j] << ' ';
       }
@@ -254,12 +254,12 @@ void Method23()
   vector<P> points;
   vector<int> used;
   priority_queue<PP> que;
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     points.emplace_back(a[i], b[i]);
     used.push_back(0);
   }
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     srep(j, i + 1, n)
     {
@@ -291,7 +291,7 @@ void Method23()
     used[idx1] = 1;
     used[idx2] = 1;
 
-    rep(i, points.size())
+    for (int i = 0; i < points.size(); ++i)
     {
       if (used[i])continue;
 
@@ -307,9 +307,9 @@ void Method23()
     used.push_back(0);
   }
 
-  rep(i, ansCount / 2)
+  for (int i = 0; i < ansCount / 2; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       swap(ans[i][j], ans[ansCount - 1 - i][j]);
     }

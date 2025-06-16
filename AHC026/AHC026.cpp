@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -128,7 +126,7 @@ struct Problem
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void set_up()
 {
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     init_stacks[i].clear();
   }
@@ -142,7 +140,7 @@ void input(int problem_num)
   oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
   ifstream ifs(oss.str());
 
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     init_stacks[i].resize(n / m); // 各山のサイズを設定
   }
@@ -152,9 +150,9 @@ void input(int problem_num)
   if (!ifs.is_open()) {
     int _n, _m;
     cin >> _n >> _m;
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
-      rep(j, n / m)
+      for (int j = 0; j < n / m; ++j)
       {
         cin >> init_stacks[i][j];
         init_stacks[i][j]--; // 0-indexedに変換
@@ -165,9 +163,9 @@ void input(int problem_num)
   else {
     int _n, _m;
     ifs >> _n >> _m;
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
-      rep(j, n / m)
+      for (int j = 0; j < n / m; ++j)
       {
         ifs >> init_stacks[i][j];
         init_stacks[i][j]--; // 0-indexedに変換
@@ -176,9 +174,9 @@ void input(int problem_num)
   }
 
   // 各箱の位置情報を設定
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
-    rep(j, n / m)
+    for (int j = 0; j < n / m; ++j)
     {
       init_positions[init_stacks[i][j]].x = i; // 山の番号
       init_positions[init_stacks[i][j]].y = j; // 高さ
@@ -203,13 +201,13 @@ int calc_score(const vector<P>& ans)
   vector<Point> tmp_positions = init_positions; // 一時的な箱の位置情報
 
   int cnt = 0; // 運び出した箱の数
-  rep(i, m)
+  for (int i = 0; i < m; ++i)
   {
     tmp_stacks[i] = init_stacks[i]; // 初期状態をコピー
   }
 
   int res = 10000; // 初期スコア
-  rep(i, ans.size())
+  for (int i = 0; i < ans.size(); ++i)
   {
     int num = ans[i].first;         // 操作する箱の番号
     int x = tmp_positions[num].x;   // 箱の現在の山の番号
@@ -225,7 +223,7 @@ int calc_score(const vector<P>& ans)
       int k = tmp_stacks[x].size() - y;
       res -= (k + 1); // 消費体力を計算
 
-      rep(j, tmp_stacks[x].size() - y)
+      for (int j = 0; j < tmp_stacks[x].size() - y; ++j)
       {
         int num2 = tmp_stacks[x][y + j];
         tmp_positions[num2].x = nx;                     // 箱の新しい山の番号を設定
@@ -244,11 +242,11 @@ void output(ofstream& ofs, const vector<P>& ans)
 {
   if (mode == 0) {
     // 標準出力に出力
-    rep(i, ans.size()) { cout << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
+    for (int i = 0; i < ans.size(); ++i) { cout << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
   }
   else {
     // ファイルに出力
-    rep(i, ans.size()) { ofs << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
+    for (int i = 0; i < ans.size(); ++i) { ofs << ans[i].first + 1 << ' ' << ans[i].second + 1 << endl; }
   }
 }
 
@@ -308,10 +306,10 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
   srep(turn, current_box + 1, n)
   {
     vector<P> min_boxes_in_stacks(m);
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
       int min_i = INT_INF;
-      rep(j, problem.stacks[i].size())
+      for (int j = 0; j < problem.stacks[i].size(); ++j)
       {
         min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
@@ -341,16 +339,16 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 Problem greedy_solution()
 {
   Problem problem;
-  rep(i, m) problem.stacks[i] = init_stacks[i]; // 初期状態をコピー
+  for (int i = 0; i < m; ++i) problem.stacks[i] = init_stacks[i]; // 初期状態をコピー
   problem.positions = init_positions;
 
-  rep(current_box, n)
+  for (int current_box = 0; current_box < n; ++current_box)
   { // 各ターン（各箱）について
     vector<P> min_box_per_stack(m);
-    rep(i, m)
+    for (int i = 0; i < m; ++i)
     {
       int min_i = INT_INF;
-      rep(j, problem.stacks[i].size())
+      for (int j = 0; j < problem.stacks[i].size(); ++j)
       {
         min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
@@ -389,7 +387,7 @@ Problem greedy_solution()
 
     // ランダムに移動先を変更して探索（焼きなまし的な手法）
     if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && GetNowTime() < TL) {
-      rep(iteration, 500)
+      for (int iteration = 0; iteration < 500; ++iteration)
       {
         int random_position = Rand() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
         int keep = move_targets[random_position];

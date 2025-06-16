@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -76,7 +76,7 @@ vector<int> V[2000];
 void SetUp()
 {
   ans.clear();
-  rep(i, 2000)
+  for (int i = 0; i < 2000; ++i)
   {
     G[i].clear();
     V[i].clear();
@@ -93,11 +93,11 @@ void Input(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> N;
-    rep(i, N - 1)
+    for (int i = 0; i < N - 1; ++i)
     {
       string s;
       cin >> s;
-      rep(j, N)
+      for (int j = 0; j < N; ++j)
       {
         if (s[j] == '0') {
           G[i * N + j].push_back((i + 1) * N + j);
@@ -105,11 +105,11 @@ void Input(int problemNum)
         }
       }
     }
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       string s;
       cin >> s;
-      rep(j, N - 1)
+      for (int j = 0; j < N - 1; ++j)
       {
         if (s[j] == '0') {
           G[i * N + j].push_back(i * N + j + 1);
@@ -117,16 +117,16 @@ void Input(int problemNum)
         }
       }
     }
-    rep(i, N * N) { cin >> d[i]; }
+    for (int i = 0; i < N * N; ++i) { cin >> d[i]; }
   }
   // ファイル入力する
   else {
     ifs >> N;
-    rep(i, N - 1)
+    for (int i = 0; i < N - 1; ++i)
     {
       string s;
       ifs >> s;
-      rep(j, N)
+      for (int j = 0; j < N; ++j)
       {
         if (s[j] == '0') {
           G[i * N + j].push_back((i + 1) * N + j);
@@ -134,11 +134,11 @@ void Input(int problemNum)
         }
       }
     }
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       string s;
       ifs >> s;
-      rep(j, N - 1)
+      for (int j = 0; j < N - 1; ++j)
       {
         if (s[j] == '0') {
           G[i * N + j].push_back(i * N + j + 1);
@@ -146,7 +146,7 @@ void Input(int problemNum)
         }
       }
     }
-    rep(i, N * N) { ifs >> d[i]; }
+    for (int i = 0; i < N * N; ++i) { ifs >> d[i]; }
   }
 }
 
@@ -156,7 +156,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
@@ -179,7 +179,7 @@ ll CalcScore()
 void Output(ofstream& ofs)
 {
   string ansString;
-  rep(i, ans.size() - 1)
+  for (int i = 0; i < ans.size() - 1; ++i)
   {
     int diff = ans[i + 1] - ans[i];
     if (diff == N) {
@@ -218,7 +218,7 @@ void MakeLoopDfs(int now, vector<int>& vec)
 
 vector<int> MakeLoop(int st)
 {
-  rep(i, N * N) { visited[i] = 0; }
+  for (int i = 0; i < N * N; ++i) { visited[i] = 0; }
   vector<int> res;
   MakeLoopDfs(st, res);
   return res;

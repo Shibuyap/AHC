@@ -29,7 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -158,27 +157,27 @@ void read_input(int problemNum)
         ifs >> item_value[i][j];
       }
     }
-    rep(i, TURN_COUNT)
+    for (int i = 0; i < TURN_COUNT; ++i)
     {
-      rep(j, BOARD_SIZE)
+      for (int j = 0; j < BOARD_SIZE; ++j)
       {
-        rep(k, BOARD_SIZE - 1)
+        for (int k = 0; k < BOARD_SIZE - 1; ++k)
         {
           string s;
           ifs >> s;
-          rep(l, ITEM_KIND)
+          for (int l = 0; l < ITEM_KIND; ++l)
           {
             horizontal_edge_block[i][j][k][l] = s[l] - '0';
           }
         }
       }
-      rep(j, BOARD_SIZE - 1)
+      for (int j = 0; j < BOARD_SIZE - 1; ++j)
       {
-        rep(k, BOARD_SIZE)
+        for (int k = 0; k < BOARD_SIZE; ++k)
         {
           string s;
           ifs >> s;
-          rep(l, ITEM_KIND)
+          for (int l = 0; l < ITEM_KIND; ++l)
           {
             vertical_edge_block[i][j][k][l] = s[l] - '0';
           }
@@ -187,13 +186,13 @@ void read_input(int problemNum)
     }
   }
 
-  rep(j, ITEM_KIND)
+  for (int j = 0; j < ITEM_KIND; ++j)
   {
     item_value_max[j] = 0;
   }
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       item_value_max[j] = max(item_value_max[j], item_value[i][j]);
     }
@@ -206,7 +205,7 @@ void open_output_file(int probNum, ofstream& ofs)
   if (exec_mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
@@ -222,16 +221,16 @@ void open_output_file(int probNum, ofstream& ofs)
 ll calc_final_score()
 {
   ll sumX = 0;
-  rep(j, ITEM_KIND)
+  for (int j = 0; j < ITEM_KIND; ++j)
   {
     sumX += item_value_max[j];
   }
 
   int ma = 0;
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
     int tmp = 0;
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       tmp += item_value[i][j];
     }
@@ -279,38 +278,38 @@ void apply_feedback(int turn)
 void precompute_values()
 {
   vector<P> v[ITEM_KIND];
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       v[j].push_back(P(item_value[i][j], i));
     }
   }
-  rep(i, ITEM_KIND)
+  for (int i = 0; i < ITEM_KIND; ++i)
   {
     sort(v[i].begin(), v[i].end(), greater<P>());
   }
   int val[EDGE_COUNT][ITEM_KIND];
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       val[v[j][i].second][j] = i;
     }
   }
 
   int ma[ITEM_KIND] = {};
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       ma[j] = max(ma[j], item_value[i][j]);
     }
   }
 
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       item_value_pow3[i][j] = item_value[i][j];
       item_value[i][j] = item_value[i][j] * item_value[i][j] * item_value[i][j];
@@ -321,17 +320,17 @@ void precompute_values()
 void sort_by_total_value()
 {
   vector<P> vp;
-  rep(i, EDGE_COUNT)
+  for (int i = 0; i < EDGE_COUNT; ++i)
   {
     int sum = 0;
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       sum += item_value[i][j];
     }
     vp.push_back(P(sum, i));
   }
   sort(vp.begin(), vp.end(), greater<P>());
-  rep(i, vp.size())
+  for (int i = 0; i < vp.size(); ++i)
   {
     sorted_order[i] = vp[i].second;
   }
@@ -351,9 +350,9 @@ void init_spiral_order()
 {
   spiral_cells.clear();
   vector<pair<int, P>> vp;
-  rep(i, 6)
+  for (int i = 0; i < 6; ++i)
   {
-    rep(j, 6)
+    for (int j = 0; j < 6; ++j)
     {
       vp.push_back(make_pair(SPIRAL_RANK[i][j], P(i, j)));
     }
@@ -368,7 +367,7 @@ ll local_neighbor_score(int x, int y)
 {
   ll res = 0;
   int id = placement[x][y];
-  rep(i, 4)
+  for (int i = 0; i < 4; ++i)
   {
     int nx = x + DX[i];
     int ny = y + DY[i];
@@ -376,7 +375,7 @@ ll local_neighbor_score(int x, int y)
       continue;
     }
     int nd = placement[nx][ny];
-    rep(j, ITEM_KIND)
+    for (int j = 0; j < ITEM_KIND; ++j)
     {
       res += 10 * item_value[id][j] + 2 * abs(item_value[id][j] - item_value[nd][j]);
     }
@@ -386,7 +385,7 @@ ll local_neighbor_score(int x, int y)
 
 void anneal_spiral_placement()
 {
-  rep(i, 36)
+  for (int i = 0; i < 36; ++i)
   {
     int x = spiral_cells[i].first;
     int y = spiral_cells[i].second;
@@ -394,7 +393,7 @@ void anneal_spiral_placement()
   }
 
   const int LOOP_COUNT = 500000;
-  rep(_, LOOP_COUNT)
+  for (int _ = 0; _ < LOOP_COUNT; ++_)
   {
     int ra1 = rand_xorshift() % 6;
     int ra2 = rand_xorshift() % 6;

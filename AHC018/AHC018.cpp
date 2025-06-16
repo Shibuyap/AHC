@@ -29,7 +29,6 @@
 #include <vector>
 
 //=== Macros (必要に応じて修正) ===//
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 
@@ -253,7 +252,7 @@ int attack_cell(int x, int y, int power)
     is_broken[x][y] = 1;
 
     // 周囲マスがすでに壊れていれば Union-Find でつなぐ
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       int nx = x + DELTA_X[i];
       int ny = y + DELTA_Y[i];
@@ -264,7 +263,7 @@ int attack_cell(int x, int y, int power)
     }
 
     // もし水源マスだったら、UF_MAX-1 とつなぐ
-    rep(i, w_count)
+    for (int i = 0; i < w_count; ++i)
     {
       if (x == water_x[i] && y == water_y[i]) {
         uf_unite(x * n_size + y, UNION_FIND_MAX - 1);
@@ -273,7 +272,7 @@ int attack_cell(int x, int y, int power)
 
     // ここで再度「全ての家が繋がったかどうか」を判定しているらしい
     res = 2;
-    rep(i, k_count)
+    for (int i = 0; i < k_count; ++i)
     {
       if (!is_united_with_water(house_x[i], house_y[i])) {
         res = 1; // まだ未接続の家がある
@@ -313,9 +312,9 @@ void init(int problem_num)
   health_points = 0;
 
   // 状態クリア
-  rep(i, n_size)
+  for (int i = 0; i < n_size; ++i)
   {
-    rep(j, n_size)
+    for (int j = 0; j < n_size; ++j)
     {
       is_broken[i][j] = 0;
       min_strength[i][j] = 0;
@@ -324,7 +323,7 @@ void init(int problem_num)
   }
 
   // 攻撃コストCに応じて攻撃力を選択
-  rep(i, 8)
+  for (int i = 0; i < 8; ++i)
   {
     if (attack_cost == C_OPTIONS[i]) {
       attack_power_global = ATTACK_POWER_VALUES[i];
@@ -338,7 +337,7 @@ void init(int problem_num)
       // problem_numを4桁化してファイル名を作る
       int tmp = problem_num;
       string str_num;
-      rep(i, 4)
+      for (int i = 0; i < 4; ++i)
       {
         str_num += char((tmp % 10) + '0');
         tmp /= 10;
@@ -363,11 +362,11 @@ void read_input(int problem_num)
   // 実行モード=0またはファイルが開けなかったら標準入力から読む
   if (execution_mode == 0 || !ifs.is_open()) {
     cin >> n_size >> w_count >> k_count >> attack_cost;
-    rep(i, w_count)
+    for (int i = 0; i < w_count; ++i)
     {
       cin >> water_x[i] >> water_y[i];
     }
-    rep(i, k_count)
+    for (int i = 0; i < k_count; ++i)
     {
       cin >> house_x[i] >> house_y[i];
     }
@@ -375,18 +374,18 @@ void read_input(int problem_num)
   else {
     // ローカル時はファイル入力
     ifs >> n_size >> w_count >> k_count >> attack_cost;
-    rep(i, n_size)
+    for (int i = 0; i < n_size; ++i)
     {
-      rep(j, n_size)
+      for (int j = 0; j < n_size; ++j)
       {
         ifs >> rock_strength[i][j];
       }
     }
-    rep(i, w_count)
+    for (int i = 0; i < w_count; ++i)
     {
       ifs >> water_x[i] >> water_y[i];
     }
-    rep(i, k_count)
+    for (int i = 0; i < k_count; ++i)
     {
       ifs >> house_x[i] >> house_y[i];
     }
@@ -418,10 +417,10 @@ int solve_problem(int problem_num = 0)
   init(problem_num);
 
   // 各家の一番近い水源を探す
-  rep(i, k_count)
+  for (int i = 0; i < k_count; ++i)
   {
     int dist = INF;
-    rep(j, w_count)
+    for (int j = 0; j < w_count; ++j)
     {
       int mdist = manhattan_distance(house_x[i], house_y[i], water_x[j], water_y[j]);
       if (mdist < dist) {
@@ -433,7 +432,7 @@ int solve_problem(int problem_num = 0)
   }
 
   // 家を水源につなげる
-  rep(i, k_count)
+  for (int i = 0; i < k_count; ++i)
   {
     int phase = 0;
     int now_x = house_x[i], now_y = house_y[i];
@@ -463,7 +462,7 @@ int solve_problem(int problem_num = 0)
         srep(k, 1, diff_sum)
         {
           bool found = false;
-          rep(j, 4)
+          for (int j = 0; j < 4; ++j)
           {
             int nx = now_x + DELTA_X[j] * k;
             int ny = now_y + DELTA_Y[j] * k;
@@ -600,7 +599,7 @@ int main()
   else if (execution_mode == 2) {
     // 複数ケース
     ll score_sum = 0;
-    rep(i, 100)
+    for (int i = 0; i < 100; ++i)
     {
       score_sum += solve_outer(i);
       clear_all_multicase();

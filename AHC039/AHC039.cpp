@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -137,9 +136,9 @@ int best_f[510][510];
 void CopyToBest(int blockSize)
 {
   best_ansScore = ansScore;
-  rep(i, blockSize + 2)
+  for (int i = 0; i < blockSize + 2; ++i)
   {
-    rep(j, blockSize + 2)
+    for (int j = 0; j < blockSize + 2; ++j)
     {
       best_f[i][j] = f[i][j];
     }
@@ -150,9 +149,9 @@ void CopyToBest(int blockSize)
 void CopyToAns(int blockSize)
 {
   ansScore = best_ansScore;
-  rep(i, blockSize + 2)
+  for (int i = 0; i < blockSize + 2; ++i)
   {
-    rep(j, blockSize + 2)
+    for (int j = 0; j < blockSize + 2; ++j)
     {
       f[i][j] = best_f[i][j];
     }
@@ -163,7 +162,7 @@ void CopyToAns(int blockSize)
 void SetUp()
 {
   ansScore = 0;   // スコアの初期化
-  rep(i, 510)rep(j, 510)best_f[i][j] = 0;
+  for (int i = 0; i < 510; ++i)for (int j = 0; j < 510; ++j)best_f[i][j] = 0;
 
   ans.clear();    // 解答の初期化
   saba.clear();   // サバの座標の初期化
@@ -184,15 +183,15 @@ void Input(int problemNum)
     // 標準入力からの読み込み
     int _n;
     cin >> _n;  // 魚の数（未使用）
-    rep(i, n) cin >> saba[i].x >> saba[i].y;     // サバの座標を読み込む
-    rep(i, n) cin >> iwashi[i].x >> iwashi[i].y; // イワシの座標を読み込む
+    for (int i = 0; i < n; ++i) cin >> saba[i].x >> saba[i].y;     // サバの座標を読み込む
+    for (int i = 0; i < n; ++i) cin >> iwashi[i].x >> iwashi[i].y; // イワシの座標を読み込む
   }
   else {
     // ファイルからの読み込み
     int _n;
     ifs >> _n;  // 魚の数（未使用）
-    rep(i, n) ifs >> saba[i].x >> saba[i].y;     // サバの座標を読み込む
-    rep(i, n) ifs >> iwashi[i].x >> iwashi[i].y; // イワシの座標を読み込む
+    for (int i = 0; i < n; ++i) ifs >> saba[i].x >> saba[i].y;     // サバの座標を読み込む
+    for (int i = 0; i < n; ++i) ifs >> iwashi[i].x >> iwashi[i].y; // イワシの座標を読み込む
   }
 }
 
@@ -234,7 +233,7 @@ bool IsLengthOK(vector<Point> vp)
 {
   int len = 0;
   // 各辺の長さを計算
-  rep(i, vp.size() - 1)
+  for (int i = 0; i < vp.size() - 1; ++i)
   {
     len += abs(vp[i + 1].x - vp[i].x);  // x座標の差の絶対値を加算
     len += abs(vp[i + 1].y - vp[i].y);  // y座標の差の絶対値を加算
@@ -258,10 +257,10 @@ bool IsNG(int x, int y, int blockSize)
 int block[510][510];  // 各グリッドセルのスコアを格納する配列
 void InitBlock(const int blockSize)
 {
-  rep(i, blockSize) rep(j, blockSize) block[i][j] = 0;  // 初期化
+  for (int i = 0; i < blockSize; ++i) for (int j = 0; j < blockSize; ++j) block[i][j] = 0;  // 初期化
 
   // サバとイワシの位置から、各セルのスコアを計算
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     {
       // サバの座標をセルに割り当て、スコアを加算
@@ -306,7 +305,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     int ray = Rand() % blockSize;  // ランダムなセルのyインデックス
 
     int ng = 1;  // 変更が可能かどうかのフラグ
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
@@ -334,7 +333,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     if (prob > Rand01()) {
       // 解答を更新する場合の処理
       // 幅優先探索で連結成分の数を確認
-      rep(i, blockSize + 2) rep(j, blockSize + 2) haba[i][j] = 0;  // 初期化
+      for (int i = 0; i < blockSize + 2; ++i) for (int j = 0; j < blockSize + 2; ++j) haba[i][j] = 0;  // 初期化
       int now = 1;
       upd = 1;
       srep(i, 1, blockSize + 1)
@@ -353,7 +352,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
             int x = que.front().first;
             int y = que.front().second;
             que.pop();
-            rep(k, 4)
+            for (int k = 0; k < 4; ++k)
             {
               int nx = x + dx[k];
               int ny = y + dy[k];
@@ -552,9 +551,9 @@ void Method3()
   }
 
 
-  rep(i, blockSize + 2)
+  for (int i = 0; i < blockSize + 2; ++i)
   {
-    rep(j, blockSize + 2)
+    for (int j = 0; j < blockSize + 2; ++j)
     {
       f[i][j] = 0;  // 初期化
     }
@@ -576,23 +575,23 @@ void Method3()
 
   int loop3 = 0;
   int blockSize40 = 40;
-  rep(i, blockSize + 2)
+  for (int i = 0; i < blockSize + 2; ++i)
   {
-    rep(j, blockSize + 2)
+    for (int j = 0; j < blockSize + 2; ++j)
     {
       ff[i][j] = f[i][j];
     }
   }
-  rep(i, blockSize40 + 2)
+  for (int i = 0; i < blockSize40 + 2; ++i)
   {
-    rep(j, blockSize40 + 2)
+    for (int j = 0; j < blockSize40 + 2; ++j)
     {
       f[i][j] = 0;
     }
   }
-  rep(i, blockSize + 2)
+  for (int i = 0; i < blockSize + 2; ++i)
   {
-    rep(j, blockSize + 2)
+    for (int j = 0; j < blockSize + 2; ++j)
     {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;
@@ -609,23 +608,23 @@ void Method3()
 
   int loop4 = 0;
   int blockSize80 = 80;
-  rep(i, blockSize40 + 2)
+  for (int i = 0; i < blockSize40 + 2; ++i)
   {
-    rep(j, blockSize40 + 2)
+    for (int j = 0; j < blockSize40 + 2; ++j)
     {
       ff[i][j] = f[i][j];
     }
   }
-  rep(i, blockSize80 + 2)
+  for (int i = 0; i < blockSize80 + 2; ++i)
   {
-    rep(j, blockSize80 + 2)
+    for (int j = 0; j < blockSize80 + 2; ++j)
     {
       f[i][j] = 0;
     }
   }
-  rep(i, blockSize40 + 2)
+  for (int i = 0; i < blockSize40 + 2; ++i)
   {
-    rep(j, blockSize40 + 2)
+    for (int j = 0; j < blockSize40 + 2; ++j)
     {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;

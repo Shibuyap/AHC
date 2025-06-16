@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
@@ -163,17 +163,17 @@ double heavyY;
 void CopyToReal()
 {
   real_V = V;
-  rep(i, V)
+  for (int i = 0; i < V; ++i)
   {
     real_pa[i] = pa[i];
     real_le[i] = le[i];
   }
 
   real_real_ansCount = ansCount;
-  rep(i, ansCount)
+  for (int i = 0; i < ansCount; ++i)
   {
     real_dir[i] = dir[i];
-    rep(j, V)
+    for (int j = 0; j < V; ++j)
     {
       real_rot[i][j] = rot[i][j];
       real_tip[i][j] = tip[i][j];
@@ -192,16 +192,16 @@ void CopyToReal()
 void CopyToAns()
 {
   V = real_V;
-  rep(i, V)
+  for (int i = 0; i < V; ++i)
   {
     pa[i] = real_pa[i];
     le[i] = real_le[i];
   }
   ansCount = real_real_ansCount;
-  rep(i, ansCount)
+  for (int i = 0; i < ansCount; ++i)
   {
     dir[i] = real_dir[i];
-    rep(j, V)
+    for (int j = 0; j < V; ++j)
     {
       rot[i][j] = real_rot[i][j];
       tip[i][j] = real_tip[i][j];
@@ -234,7 +234,7 @@ void SetUp()
 {
   V = 0;
   ansCount = 0;
-  rep(i, 100)
+  for (int i = 0; i < 100; ++i)
   {
     PCount[i].clear();
     real_PCount[i].clear();
@@ -252,20 +252,20 @@ void Input(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> n >> m >> v;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       string s;
       cin >> s;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         init_a[i][j] = s[j] - '0';
       }
     }
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       string t;
       cin >> t;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         init_b[i][j] = t[j] - '0';
       }
@@ -274,20 +274,20 @@ void Input(int problemNum)
   else {
     // ファイル入力する
     ifs >> n >> m >> v;
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       string s;
       ifs >> s;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         init_a[i][j] = s[j] - '0';
       }
     }
-    rep(i, n)
+    for (int i = 0; i < n; ++i)
     {
       string t;
       ifs >> t;
-      rep(j, n)
+      for (int j = 0; j < n; ++j)
       {
         init_b[i][j] = t[j] - '0';
       }
@@ -321,9 +321,9 @@ bool IsValidAnswer()
   vector<vector<int>> a, b;
   a.resize(n, vector<int>(n));
   b.resize(n, vector<int>(n));
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       a[i][j] = init_a[i][j];
       b[i][j] = init_b[i][j];
@@ -335,7 +335,7 @@ bool IsValidAnswer()
   int x = sx;
   int y = sy;
 
-  rep(t, ansCount)
+  for (int t = 0; t < ansCount; ++t)
   {
     x = x + dx[dir[t]];
     y = y + dy[dir[t]];
@@ -349,7 +349,7 @@ bool IsValidAnswer()
       nowRot[i] = (nowRot[i] + rot[t][i]) % 4;
     }
 
-    rep(i, V)
+    for (int i = 0; i < V; ++i)
     {
       if (tip[t][i] == 1) {
         // ここでアーム位置を計算
@@ -369,11 +369,11 @@ void Output(ofstream& ofs)
       cout << pa[i] << ' ' << le[i] << endl;
     }
     cout << sx << ' ' << sy << endl;
-    rep(i, ansCount)
+    for (int i = 0; i < ansCount; ++i)
     {
       cout << dirChar[dir[i]];
       srep(j, 1, v)cout << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
-      rep(j, V)cout << tipChar[tip[i][j]];
+      for (int j = 0; j < V; ++j)cout << tipChar[tip[i][j]];
       cout << endl;
     }
   }
@@ -384,11 +384,11 @@ void Output(ofstream& ofs)
       ofs << pa[i] << ' ' << le[i] << endl;
     }
     ofs << sx << ' ' << sy << endl;
-    rep(i, ansCount)
+    for (int i = 0; i < ansCount; ++i)
     {
       ofs << dirChar[dir[i]];
       srep(j, 1, v)ofs << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
-      rep(j, V)ofs << tipChar[tip[i][j]];
+      for (int j = 0; j < V; ++j)ofs << tipChar[tip[i][j]];
       ofs << endl;
     }
   }
@@ -401,16 +401,16 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
   heavyY = 0;
   a.resize(n, vector<int>(n));
   b.resize(n, vector<int>(n));
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
     aRow[i] = 0;
     aColumn[i] = 0;
     bRow[i] = 0;
     bColumn[i] = 0;
   }
-  rep(i, n)
+  for (int i = 0; i < n; ++i)
   {
-    rep(j, n)
+    for (int j = 0; j < n; ++j)
     {
       a[i][j] = init_a[i][j];
       b[i][j] = init_b[i][j];
@@ -464,7 +464,7 @@ public:
 
   void Initialize(const vector<int>& nowRot, const vector<int>& nowTip)
   {
-    rep(i, m_V)
+    for (int i = 0; i < m_V; ++i)
     {
       Rot[i] = 0;
       Tip[i] = 0;
@@ -475,7 +475,7 @@ public:
 
   void Reflect(vector<int>& nowRot, vector<int>& nowTip, const int _t) const
   {
-    rep(i, V)
+    for (int i = 0; i < V; ++i)
     {
       rot[_t][i] = Rot[i];
       tip[_t][i] = Tip[i];
@@ -524,17 +524,17 @@ public:
   void Copy(const KeepAB& src)
   {
     KeepACount = src.KeepACount;
-    rep(i, KeepACount)
+    for (int i = 0; i < KeepACount; ++i)
     {
-      rep(j, 3)
+      for (int j = 0; j < 3; ++j)
       {
         KeepA[i][j] = src.KeepA[i][j];
       }
     }
     KeepBCount = src.KeepBCount;
-    rep(i, KeepBCount)
+    for (int i = 0; i < KeepBCount; ++i)
     {
-      rep(j, 3)
+      for (int j = 0; j < 3; ++j)
       {
         KeepB[i][j] = src.KeepB[i][j];
       }
@@ -546,7 +546,7 @@ public:
 void RestoreArrayWithCount(vector<vector<int>>& arr, int row[], int column[],
   const int keep[][3], int count)
 {
-  rep(i, count)
+  for (int i = 0; i < count; ++i)
   {
     arr[keep[i][0]][keep[i][1]] = keep[i][2];
     row[keep[i][0]]++;
@@ -564,7 +564,7 @@ void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vec
 void ClearArrayWithCount(vector<vector<int>>& arr, int row[], int column[],
   const int keep[][3], int count)
 {
-  rep(i, count)
+  for (int i = 0; i < count; ++i)
   {
     if (arr[keep[i][0]][keep[i][1]] == 0) {
       assert(false);
@@ -586,7 +586,7 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
 void SetArrayToOneWithCount(vector<vector<int>>& arr, int row[], int column[],
   const int keep[][3], int count)
 {
-  rep(i, count)
+  for (int i = 0; i < count; ++i)
   {
     if (arr[keep[i][0]][keep[i][1]] == 1) {
       assert(false);
@@ -627,7 +627,7 @@ public:
 void CalculatePositionBonus(double& actionScore, int nrx, int nry,
   const vector<vector<int>>& arr)
 {
-  rep(k, 4)
+  for (int k = 0; k < 4; ++k)
   {
     srep(l, 1, 2)
     {
@@ -959,7 +959,7 @@ int CalcNeedLength(const int prenrx, const int prenry)
 int CalcMarginCount(const int leafCount, const RotTip& maxRT)
 {
   int marginCount = leafCount;
-  rep(i, V)
+  for (int i = 0; i < V; ++i)
   {
     if (maxRT.Tip[i] == 1) {
       marginCount--;
@@ -1145,7 +1145,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1154,7 +1154,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1185,7 +1185,7 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1194,7 +1194,7 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1231,7 +1231,7 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1240,7 +1240,7 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1283,7 +1283,7 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1292,7 +1292,7 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1341,7 +1341,7 @@ void DecideBest82(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1350,7 +1350,7 @@ void DecideBest82(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1406,7 +1406,7 @@ void DecideBest53(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1415,7 +1415,7 @@ void DecideBest53(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1463,7 +1463,7 @@ void DecideBest63(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1472,7 +1472,7 @@ void DecideBest63(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1526,7 +1526,7 @@ void DecideBest73(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  rep(ord, 5)
+  for (int ord = 0; ord < 5; ++ord)
   {
     // dir
     int nx = x + dx[order[ord]];
@@ -1535,7 +1535,7 @@ void DecideBest73(const int x, const int y, const vector<int>& nowRot, const vec
     if (IsNG(nx, ny))continue;
 
     int ra[6];
-    rep(i, 6)ra[i] = Rand() % 6;
+    for (int i = 0; i < 6; ++i)ra[i] = Rand() % 6;
     for (const auto ii : ordVec[ra[0]]) {
       int nRot1 = (BASE_DIR + nowRot[1] + ii + 4) % 4;
 
@@ -1639,7 +1639,7 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   }
 
   vector<MaxCandidate> maxCand(BEAM_WIDTH);
-  rep(i, BEAM_WIDTH)
+  for (int i = 0; i < BEAM_WIDTH; ++i)
   {
     maxCand[i].maxRT.Initialize(nowRot, nowTip);
   }
@@ -1662,7 +1662,7 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   int minFinishTurn = 999;
   double maxActionScore = -1;
   int bestIndex = -1;
-  rep(aespa, BEAM_WIDTH)
+  for (int aespa = 0; aespa < BEAM_WIDTH; ++aespa)
   {
     auto keepNowRot = nowRot;
     auto keepNowTip = nowTip;
@@ -1740,31 +1740,31 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
   int BEAM_WIDTH = 30;
 
   vector<MaxCandidate> maxCand(BEAM_WIDTH);
-  rep(i, BEAM_WIDTH)
+  for (int i = 0; i < BEAM_WIDTH; ++i)
   {
     maxCand[i].maxRT.Initialize(nowRot, nowTip);
   }
 
-  rep(winter, beamDepth)
+  for (int winter = 0; winter < beamDepth; ++winter)
   {
     if (winter == 0) {
       Beam2_Internal(_t, x, y, nowRot, nowTip, a, b, 0, mCount, BEAM_WIDTH, maxCand);
     }
     else {
       vector<MaxCandidate> maxCand2(BEAM_WIDTH);
-      rep(i, BEAM_WIDTH)
+      for (int i = 0; i < BEAM_WIDTH; ++i)
       {
         maxCand2[i].maxRT.Initialize(nowRot, nowTip);
       }
 
-      rep(aespa, BEAM_WIDTH)
+      for (int aespa = 0; aespa < BEAM_WIDTH; ++aespa)
       {
         auto keepNowRot = nowRot;
         auto keepNowTip = nowTip;
         UpdateTurn(maxCand[aespa], nowRot, nowTip, x, y, _t, a, b, mCount);
 
         vector<MaxCandidate> tmpCand(BEAM_WIDTH);
-        rep(i, BEAM_WIDTH)
+        for (int i = 0; i < BEAM_WIDTH; ++i)
         {
           tmpCand[i].maxRT.Initialize(nowRot, nowTip);
         }
@@ -1775,7 +1775,7 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
         nowTip = keepNowTip;
         RollBackTurn(maxCand[aespa], x, y, _t, a, b, mCount);
 
-        rep(i, BEAM_WIDTH)
+        for (int i = 0; i < BEAM_WIDTH; ++i)
         {
           if (tmpCand[i].finishTurn < maxCand2[BEAM_WIDTH - 1].finishTurn) {
             maxCand2[BEAM_WIDTH - 1] = tmpCand[i];
@@ -1879,7 +1879,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     }
 
     if (Rand() % 2 && Method == real_Method && real_ansCount[Method] < 999) {
-      rep(i, v)
+      for (int i = 0; i < v; ++i)
       {
         pa[i] = real_pa[i];
         le[i] = real_le[i];
@@ -1915,7 +1915,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
 
       //int BEAM_WIDTH = 1;
       //vector<MaxCandidate> maxCand(BEAM_WIDTH);
-      //rep(i, BEAM_WIDTH)
+      //for (int i = 0; i < BEAM_WIDTH; ++i)
       //{
       //  maxCand[i].maxRT.Initialize(nowRot, nowTip);
       //}

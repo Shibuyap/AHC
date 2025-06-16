@@ -29,7 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -102,9 +101,9 @@ int saved_moves[MAX_LOOP][4];
 
 void init_board()
 {
-  rep(i, BOARD_SIZE)
+  for (int i = 0; i < BOARD_SIZE; ++i)
   {
-    rep(j, i + 1)
+    for (int j = 0; j < i + 1; ++j)
     {
       board[i][j] = initial_board[i][j];
       ball_pos[board[i][j]][0] = i;
@@ -117,9 +116,9 @@ void update_best_moves()
 {
   if (move_cnt <= best_move_cnt) {
     best_move_cnt = move_cnt;
-    rep(i, move_cnt)
+    for (int i = 0; i < move_cnt; ++i)
     {
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         best_moves[i][j] = moves[i][j];
       }
@@ -131,9 +130,9 @@ void update_global_best_moves()
 {
   if (best_move_cnt <= global_best_move_cnt) {
     global_best_move_cnt = best_move_cnt;
-    rep(i, best_move_cnt)
+    for (int i = 0; i < best_move_cnt; ++i)
     {
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         global_best_moves[i][j] = best_moves[i][j];
       }
@@ -144,9 +143,9 @@ void update_global_best_moves()
 void save_current_best()
 {
   saved_move_cnt = best_move_cnt;
-  rep(i, best_move_cnt)
+  for (int i = 0; i < best_move_cnt; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       saved_moves[i][j] = best_moves[i][j];
     }
@@ -156,9 +155,9 @@ void save_current_best()
 void restore_best()
 {
   move_cnt = best_move_cnt;
-  rep(i, move_cnt)
+  for (int i = 0; i < move_cnt; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       moves[i][j] = best_moves[i][j];
     }
@@ -168,9 +167,9 @@ void restore_best()
 void restore_global_best()
 {
   best_move_cnt = global_best_move_cnt;
-  rep(i, best_move_cnt)
+  for (int i = 0; i < best_move_cnt; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       best_moves[i][j] = global_best_moves[i][j];
     }
@@ -241,7 +240,7 @@ inline bool one_move(int& x, int& y, int& loop)
 
 inline void some_operation(int& loop)
 {
-  rep(ball, BALL_COUNT)
+  for (int ball = 0; ball < BALL_COUNT; ++ball)
   {
     int x = -1, y = -1;
     x = ball_pos[ball][0];
@@ -267,9 +266,9 @@ void greedy_swap_max_delta_with_tie(bool with_tie)
   while (loop < MAX_LOOP) {
     int tmp[4] = {};
     int diff = 0;
-    rep(i, BOARD_SIZE - 1)
+    for (int i = 0; i < BOARD_SIZE - 1; ++i)
     {
-      rep(j, i + 1)
+      for (int j = 0; j < i + 1; ++j)
       {
         if (board[i][j] - board[i + 1][j] > diff || (board[i][j] - board[i + 1][j] == diff && with_tie)) {
           diff = board[i][j] - board[i + 1][j];
@@ -290,7 +289,7 @@ void greedy_swap_max_delta_with_tie(bool with_tie)
     if (diff == 0) {
       break;
     }
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       moves[loop][j] = tmp[j];
     }
@@ -308,7 +307,7 @@ void ball_wise_ascent_greedy()
   init_board();
 
   int loop = 0;
-  rep(ball, BALL_COUNT)
+  for (int ball = 0; ball < BALL_COUNT; ++ball)
   {
     int x = -1;
     int y = -1;
@@ -358,7 +357,7 @@ void random_prefix_greedy(double time_limit)
     int loop = 0;
 
     int random = Rand() % 20 + 1;
-    rep(_, random)
+    for (int _ = 0; _ < random; ++_)
     {
       while (true) {
         int x = Rand() % (BOARD_SIZE - 1);
@@ -397,7 +396,7 @@ void adaptive_prefix_greedy(double time_limit)
 
     int loop = 0;
 
-    rep(_, random_prefix_len)
+    for (int _ = 0; _ < random_prefix_len; ++_)
     {
       int x = best_moves[loop][0];
       int y = best_moves[loop][1];
@@ -441,9 +440,9 @@ void prefix_lock_local_search(double time_limit)
   start_timer();
 
   best_move_cnt = saved_move_cnt;
-  rep(i, best_move_cnt)
+  for (int i = 0; i < best_move_cnt; ++i)
   {
-    rep(j, 4)
+    for (int j = 0; j < 4; ++j)
     {
       best_moves[i][j] = saved_moves[i][j];
     }
@@ -462,7 +461,7 @@ void prefix_lock_local_search(double time_limit)
     int randomOpe = 0;
     int loop = apply_prefix(LOCK_PREFIX);
 
-    rep(ball, BALL_COUNT)
+    for (int ball = 0; ball < BALL_COUNT; ++ball)
     {
       int x = -1, y = -1;
       x = ball_pos[ball][0];
@@ -636,7 +635,7 @@ void random_local_search(int version)
   int randomOpe = 0;
   int loop = apply_prefix(LOCK_PREFIX);
 
-  rep(ball, BALL_COUNT)
+  for (int ball = 0; ball < BALL_COUNT; ++ball)
   {
     int x = ball_pos[ball][0];
     int y = ball_pos[ball][1];
@@ -682,9 +681,9 @@ void load_input(int case_num)
 
   // 標準入力する
   if (!ifs.is_open()) {
-    rep(i, BOARD_SIZE)
+    for (int i = 0; i < BOARD_SIZE; ++i)
     {
-      rep(j, i + 1)
+      for (int j = 0; j < i + 1; ++j)
       {
         cin >> board[i][j];
         initial_board[i][j] = board[i][j];
@@ -693,9 +692,9 @@ void load_input(int case_num)
   }
   // ファイル入力する
   else {
-    rep(i, BOARD_SIZE)
+    for (int i = 0; i < BOARD_SIZE; ++i)
     {
-      rep(j, i + 1)
+      for (int j = 0; j < i + 1; ++j)
       {
         ifs >> board[i][j];
         initial_board[i][j] = board[i][j];
@@ -708,9 +707,9 @@ void write_output(int mode, int problemNum)
 {
   if (mode == 0) {
     cout << move_cnt << endl;
-    rep(i, move_cnt)
+    for (int i = 0; i < move_cnt; ++i)
     {
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         cout << moves[i][j] << ' ';
       }
@@ -722,7 +721,7 @@ void write_output(int mode, int problemNum)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
@@ -733,9 +732,9 @@ void write_output(int mode, int problemNum)
     ofstream ofs(fileNameOfs);
 
     ofs << move_cnt << endl;
-    rep(i, move_cnt)
+    for (int i = 0; i < move_cnt; ++i)
     {
-      rep(j, 4)
+      for (int j = 0; j < 4; ++j)
       {
         ofs << moves[i][j] << ' ';
       }
@@ -763,7 +762,7 @@ int solve_single_problem(int mode, int probNum)
 
   save_current_best();
 
-  rep(_, 50)
+  for (int _ = 0; _ < 50; ++_)
   {
     prefix_lock_local_search(0.01);
   }
@@ -811,7 +810,7 @@ int main_old()
   }
   else {
     int sum = 0;
-    rep(_, 1)
+    for (int _ = 0; _ < 1; ++_)
     {
       sum += solve_single_problem(1, _);
     }

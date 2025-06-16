@@ -29,7 +29,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -127,7 +127,7 @@ void CalcNNDDQQ()
   NN = min(NN, 13);  // 14
   DD = D - 2;        // 24
   vector<int> qv;
-  rep(i, 40)
+  for (int i = 0; i < 40; ++i)
   {
     double si = 1.0 + 0.1 * (i + 1);
     qv.push_back(round(pow(2, si) * N));
@@ -140,7 +140,7 @@ void CalcNNDDQQ()
 
 void GenerateLocalItems()
 {
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     double num;
     while (true) {
@@ -204,9 +204,9 @@ void GeneratePseudoItems()
   else {
     double pseudoSum[110] = {};
     vector<double> nums(110);
-    rep(loop, 100)
+    for (int loop = 0; loop < 100; ++loop)
     {
-      rep(i, N)
+      for (int i = 0; i < N; ++i)
       {
         while (true) {
           nums[i] = dist(engine);
@@ -217,10 +217,10 @@ void GeneratePseudoItems()
         nums[i] = max(nums[i], 1.0);
       }
       sort(nums.begin(), nums.begin() + N);
-      rep(i, N) { pseudoSum[i] += nums[i]; }
+      for (int i = 0; i < N; ++i) { pseudoSum[i] += nums[i]; }
     }
     pseudoItems.clear();
-    rep(i, N) { pseudoItems.push_back(round(pseudoSum[i] / 1000)); }
+    for (int i = 0; i < N; ++i) { pseudoItems.push_back(round(pseudoSum[i] / 1000)); }
     pseudoItemsAll[N][D] = pseudoItems;
   }
 }
@@ -240,7 +240,7 @@ void Input(int problemNum)
       ifstream ifs(oss.str());
 
       ifs >> N >> D >> Q;
-      rep(i, N) { ifs >> W[i]; }
+      for (int i = 0; i < N; ++i) { ifs >> W[i]; }
     }
     CalcNNDDQQ();
   }
@@ -253,7 +253,7 @@ void OpenOfs(int probNum, ofstream& ofs)
     if (mode != 0) {
       string fileNameOfs = "./out/";
       string strNum;
-      rep(i, 4)
+      for (int i = 0; i < 4; ++i)
       {
         strNum += (char)(probNum % 10 + '0');
         probNum /= 10;
@@ -303,7 +303,7 @@ int getRandomPercentage()
 // Initialize answer array with default pattern
 void initializeAnswerWithDefault()
 {
-  rep(i, N) { ans[i] = i % D; }
+  for (int i = 0; i < N; ++i) { ans[i] = i % D; }
 }
 
 // Complete remaining queries with dummy
@@ -352,7 +352,7 @@ void initializeAnsArray()
 int countItemsInGroup(int groupId)
 {
   int cnt = 0;
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (ans[j] == groupId) {
       cnt++;
@@ -364,7 +364,7 @@ int countItemsInGroup(int groupId)
 void collectItemsFromGroup(int groupId, vector<int>& items)
 {
   items.clear();
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (ans[j] == groupId) {
       items.push_back(j);
@@ -374,27 +374,27 @@ void collectItemsFromGroup(int groupId, vector<int>& items)
 
 void copyAnswersArray(int turn)
 {
-  rep(i, N) { answers[turn][i] = ans[i]; }
+  for (int i = 0; i < N; ++i) { answers[turn][i] = ans[i]; }
 }
 
 void initializeGroups(vector<int>& groups)
 {
-  rep(i, D) { groups.push_back(i); }
+  for (int i = 0; i < D; ++i) { groups.push_back(i); }
 }
 
 void initializeItems(vector<int>& items)
 {
-  rep(i, N) { items.push_back(i); }
+  for (int i = 0; i < N; ++i) { items.push_back(i); }
 }
 
 void updateKarusaArray(const vector<int>& items)
 {
-  rep(i, N) { karusa[items[i]] = i; }
+  for (int i = 0; i < N; ++i) { karusa[items[i]] = i; }
 }
 
 void populateAnsItems(vector<int> ansItems[])
 {
-  rep(i, N) { ansItems[ans[i]].push_back(i); }
+  for (int i = 0; i < N; ++i) { ansItems[ans[i]].push_back(i); }
 }
 
 void moveGroupToPosition(vector<int>& groups, int from, int to)
@@ -407,7 +407,7 @@ void moveGroupToPosition(vector<int>& groups, int from, int to)
 
 void assignHeaviestToGroups(const vector<int>& items, int startIdx)
 {
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
     int id = items[startIdx - i];
     ans[id] = i;
@@ -442,7 +442,7 @@ int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLef
   int right = initialRight;
   while (left < right) {
     int mid = (left + right) / 2;
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       if (ans[j] == gId) {
         l[countQ].push_back(j);
@@ -468,7 +468,7 @@ int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLef
 // Build query groups for comparison
 void buildQueryGroups(int& countQ, int x, int y, int excludeIndex = -1)
 {
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (ans[j] == x && j != excludeIndex) {
       l[countQ].push_back(j);
@@ -485,7 +485,7 @@ bool shouldSkipBasedOnCutline(int z, int cutLine)
   if (cutLine >= 100) return false;
 
   int win = 0, lose = 0;
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (hikaku[z][j] == 1) win++;
     else if (hikaku[z][j] == -1) lose++;
@@ -496,7 +496,7 @@ bool shouldSkipBasedOnCutline(int z, int cutLine)
 int selectRandomFromGroup(int groupId)
 {
   vector<int> groupItems;
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (ans[j] == groupId) {
       groupItems.push_back(j);
@@ -520,7 +520,7 @@ int selectGroupWithMinSize(int minSize)
 
 bool ErrorCheck()
 {
-  rep(i, Q)
+  for (int i = 0; i < Q; ++i)
   {
     if (l[i].empty() || r[i].empty()) {
       cerr << "NG ErrorCheck1 : " << i << endl;
@@ -533,12 +533,12 @@ bool ErrorCheck()
   }
 
   int cnt[110] = {};
-  rep(i, Q)
+  for (int i = 0; i < Q; ++i)
   {
-    rep(j, N) cnt[j] = 0;
+    for (int j = 0; j < N; ++j) cnt[j] = 0;
     for (auto x : l[i]) cnt[x]++;
     for (auto y : r[i]) cnt[y]++;
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       if (cnt[j] >= 2) {
         cerr << "NG ErrorCheck3 : " << i << endl;
@@ -554,12 +554,12 @@ bool ErrorCheck()
 ll CalcScore()
 {
   double t[30] = {};
-  rep(i, N) { t[ans[i]] += W[i]; }
+  for (int i = 0; i < N; ++i) { t[ans[i]] += W[i]; }
   double t_ave = 0;
-  rep(i, D) { t_ave += t[i]; }
+  for (int i = 0; i < D; ++i) { t_ave += t[i]; }
   t_ave /= D;
   double V = 0;
-  rep(i, D) { V += (t[i] - t_ave) * (t[i] - t_ave); }
+  for (int i = 0; i < D; ++i) { V += (t[i] - t_ave) * (t[i] - t_ave); }
   V /= D;
   return 1 + round(100.0 * sqrt(V));
 }
@@ -627,8 +627,8 @@ char Query(int& turn)
       r[turn].push_back(1);
       if (mode == 0) {
         cout << l[turn].size() << ' ' << r[turn].size();
-        rep(j, l[turn].size()) { cout << ' ' << l[turn][j]; }
-        rep(j, r[turn].size()) { cout << ' ' << r[turn][j]; }
+        for (int j = 0; j < l[turn].size(); ++j) { cout << ' ' << l[turn][j]; }
+        for (int j = 0; j < r[turn].size(); ++j) { cout << ' ' << r[turn][j]; }
         cout << endl;
         fflush(stdout);
         cin >> C[turn];
@@ -636,7 +636,7 @@ char Query(int& turn)
       else {
         C[turn] = LocalQuery(turn);
       }
-      rep(i, N) { answers[turn][i] = ans[i]; }
+      for (int i = 0; i < N; ++i) { answers[turn][i] = ans[i]; }
 
       turn++;
       if (turn > 0) {
@@ -651,8 +651,8 @@ char Query(int& turn)
       r[turn].push_back(1);
       if (mode == 0) {
         cout << l[turn].size() << ' ' << r[turn].size();
-        rep(j, l[turn].size()) { cout << ' ' << l[turn][j]; }
-        rep(j, r[turn].size()) { cout << ' ' << r[turn][j]; }
+        for (int j = 0; j < l[turn].size(); ++j) { cout << ' ' << l[turn][j]; }
+        for (int j = 0; j < r[turn].size(); ++j) { cout << ' ' << r[turn][j]; }
         cout << endl;
         fflush(stdout);
         cin >> C[turn];
@@ -660,7 +660,7 @@ char Query(int& turn)
       else {
         C[turn] = LocalQuery(turn);
       }
-      rep(i, N) { answers[turn][i] = ans[i]; }
+      for (int i = 0; i < N; ++i) { answers[turn][i] = ans[i]; }
 
       turn++;
       if (turn > 0) {
@@ -683,8 +683,8 @@ char Query(int& turn)
 
   if (mode == 0) {
     cout << l[turn].size() << ' ' << r[turn].size();
-    rep(j, l[turn].size()) { cout << ' ' << l[turn][j]; }
-    rep(j, r[turn].size()) { cout << ' ' << r[turn][j]; }
+    for (int j = 0; j < l[turn].size(); ++j) { cout << ' ' << l[turn][j]; }
+    for (int j = 0; j < r[turn].size(); ++j) { cout << ' ' << r[turn][j]; }
     cout << endl;
     fflush(stdout);
     cin >> C[turn];
@@ -692,7 +692,7 @@ char Query(int& turn)
   else {
     C[turn] = LocalQuery(turn);
   }
-  rep(i, N) { answers[turn][i] = ans[i]; }
+  for (int i = 0; i < N; ++i) { answers[turn][i] = ans[i]; }
 
   if (true) {
     calledMap[make_pair(l[turn], r[turn])] = C[turn];
@@ -770,7 +770,7 @@ char Query1(int& turn, int lhs, int rhs)
       int y = myQueue[head][1];
       head++;
       int z = hikaku[x][y];
-      rep(i, N)
+      for (int i = 0; i < N; ++i)
       {
         if (z == -1) {
           if (hikaku[i][y] == -2) {
@@ -840,7 +840,7 @@ char Query1(int& turn, int lhs, int rhs)
 
 char QueryGroup(int& turn, int lgId, int rgId)
 {
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     if (ans[i] == lgId) {
       l[turn].push_back(i);
@@ -860,8 +860,8 @@ void DummyQuery(int& countQ)
     r[countQ].push_back(1);
     if (mode == 0) {
       cout << l[countQ].size() << ' ' << r[countQ].size();
-      rep(j, l[countQ].size()) { cout << ' ' << l[countQ][j]; }
-      rep(j, r[countQ].size()) { cout << ' ' << r[countQ][j]; }
+      for (int j = 0; j < l[countQ].size(); ++j) { cout << ' ' << l[countQ][j]; }
+      for (int j = 0; j < r[countQ].size(); ++j) { cout << ' ' << r[countQ][j]; }
       cout << endl;
       fflush(stdout);
       cin >> C[countQ];
@@ -869,7 +869,7 @@ void DummyQuery(int& countQ)
     else {
       C[countQ] = LocalQuery(countQ);
     }
-    rep(i, N) { answers[countQ][i] = ans[i]; }
+    for (int i = 0; i < N; ++i) { answers[countQ][i] = ans[i]; }
 
     countQ++;
     if (countQ > 0) {
@@ -882,8 +882,8 @@ int memory_SwapNeighbor1[110];
 vector<int> DItems[30];
 void ResetMemory()
 {
-  rep(i, 110) { memory_SwapNeighbor1[i] = 0; }
-  rep(i, 30)
+  for (int i = 0; i < 110; ++i) { memory_SwapNeighbor1[i] = 0; }
+  for (int i = 0; i < 30; ++i)
   {
     DItems[i].clear();
   }
@@ -1018,7 +1018,7 @@ void Move1Minimum(int& countQ, int cutLine = 999)
   if (vv.empty()) return;
 
   int z = vv[Rand() % vv.size()];
-  rep(_, 30)
+  for (int _ = 0; _ < 30; ++_)
   {
     int zz = vv[Rand() % vv.size()];
     if (hikaku[zz][z] == 0 || hikaku[zz][z] == -1) {
@@ -1057,7 +1057,7 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
   if (cutLine < 100) {
     int win = 0;
     int lose = 0;
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       if (hikaku[z][j] == 1) {
         win++;
@@ -1120,7 +1120,7 @@ void Swap1(int& countQ, int diffLine)
   if (diffLine < 100) {
     if (hikaku[lid][rid] == -1) {
       int diff = 0;
-      rep(i, N)
+      for (int i = 0; i < N; ++i)
       {
         if (hikaku[lid][i] == -1 && hikaku[i][rid] == -1) {
           diff++;
@@ -1132,7 +1132,7 @@ void Swap1(int& countQ, int diffLine)
     }
     else if (hikaku[lid][rid] == 1) {
       int diff = 0;
-      rep(i, N)
+      for (int i = 0; i < N; ++i)
       {
         if (hikaku[lid][i] == 1 && hikaku[i][rid] == 1) {
           diff++;
@@ -1209,13 +1209,13 @@ void SwapHalf(int& countQ)
 
   std::shuffle(arrSwapHalf_L, arrSwapHalf_L + szL, engine_mt19937);
   std::shuffle(arrSwapHalf_R, arrSwapHalf_R + szR, engine_mt19937);
-  rep(i, szL / 2) { l[countQ].push_back(arrSwapHalf_L[i]); }
-  rep(i, szR / 2) { r[countQ].push_back(arrSwapHalf_R[i]); }
+  for (int i = 0; i < szL / 2; ++i) { l[countQ].push_back(arrSwapHalf_L[i]); }
+  for (int i = 0; i < szR / 2; ++i) { r[countQ].push_back(arrSwapHalf_R[i]); }
 
   char c1 = Query(countQ);
   if (c1 == '=') {
-    rep(i, szL / 2) { ans[arrSwapHalf_L[i]] = y; }
-    rep(i, szR / 2) { ans[arrSwapHalf_R[i]] = x; }
+    for (int i = 0; i < szL / 2; ++i) { ans[arrSwapHalf_L[i]] = y; }
+    for (int i = 0; i < szR / 2; ++i) { ans[arrSwapHalf_R[i]] = x; }
     comments[countQ] += "SwapHalf ";
     ResetMemory();
     return;
@@ -1233,8 +1233,8 @@ void SwapHalf(int& countQ)
   }
 
   if (isSwap) {
-    rep(i, szL / 2) { ans[arrSwapHalf_L[i]] = y; }
-    rep(i, szR / 2) { ans[arrSwapHalf_R[i]] = x; }
+    for (int i = 0; i < szL / 2; ++i) { ans[arrSwapHalf_L[i]] = y; }
+    for (int i = 0; i < szR / 2; ++i) { ans[arrSwapHalf_R[i]] = x; }
     comments[countQ] += "SwapHalf ";
     ResetMemory();
   }
@@ -1262,7 +1262,7 @@ void Method11_1(int& countQ)
   collectItemsFromGroup(y, vr);
   int lid = vl[Rand() % vl.size()];
   int rid = vr[Rand() % vr.size()];
-  rep(i, 50)
+  for (int i = 0; i < 50; ++i)
   {
     rid = vr[Rand() % vr.size()];
     if (hikaku[lid][rid] == 1) {
@@ -1306,7 +1306,7 @@ bool IsAllSearched_SwapNeighbor1(const vector<int>& items)
   vector<int> ansItems[30];
   populateAnsItems(ansItems);
   vector<int> vl, vr;
-  rep(num, N - 1)
+  for (int num = 0; num < N - 1; ++num)
   {
     int x = items[num];
     int y = items[num + 1];
@@ -1373,7 +1373,7 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
   while (true) {
     loop++;
     int num = Rand() % (M - 1);
-    rep(_, 30)
+    for (int _ = 0; _ < 30; ++_)
     {
       if (memory_SwapNeighbor1[num]) {
         num = Rand() % (M - 1);
@@ -1463,7 +1463,7 @@ void SwapNeighbor1Block(const vector<vector<int>>& blocks, int& countQ)
     if (xg == yg) {
       continue;
     }
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       if (ans[i] == xg) {
         int ok = 1;
@@ -1696,7 +1696,7 @@ void Method16(int hiritu = 60)
   int countQ = 0;
 
   // 初期解を少し工夫
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     if (i < D) {
       ans[i] = i;
@@ -1707,7 +1707,7 @@ void Method16(int hiritu = 60)
       while (x == y) {
         y = Rand() % D;
       }
-      rep(j, N)
+      for (int j = 0; j < N; ++j)
       {
         if (ans[j] == x) {
           l[countQ].push_back(j);
@@ -1829,7 +1829,7 @@ void MergeDfs(vector<int>& items, int& countQ, int left, int right,
       }
     }
   }
-  rep(i, tmp.size()) { items[left + i] = tmp[i]; }
+  for (int i = 0; i < tmp.size(); ++i) { items[left + i] = tmp[i]; }
 }
 
 void MergeDfsBlock(vector<vector<int>>& blocks, int& countQ, int left,
@@ -1890,7 +1890,7 @@ void MergeDfsBlock(vector<vector<int>>& blocks, int& countQ, int left,
       }
     }
   }
-  rep(i, tmp.size()) { blocks[left + i] = tmp[i]; }
+  for (int i = 0; i < tmp.size(); ++i) { blocks[left + i] = tmp[i]; }
 }
 
 void MergeSort(vector<int>& items, int& countQ, int ikichi = 1001001, int _m = -1)
@@ -1968,7 +1968,7 @@ void MergeDfs_Group(vector<int>& groups, int& countQ, int left, int right)
       }
     }
   }
-  rep(i, tmp.size()) { groups[left + i] = tmp[i]; }
+  for (int i = 0; i < tmp.size(); ++i) { groups[left + i] = tmp[i]; }
 }
 
 void MergeSort_Group(vector<int>& groups, int& countQ)
@@ -1984,7 +1984,7 @@ bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
   populateAnsItems(ansItems);
   vector<int> vl, vr;
 
-  rep(num, N - 1)
+  for (int num = 0; num < N - 1; ++num)
   {
     int x1 = items[num];
     int y1 = items[num + 1];
@@ -2017,7 +2017,7 @@ bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
     }
     vl.clear();
     vr.clear();
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       if (ans[i] == xg && i != x1 && i != x2) {
         vl.push_back(i);
@@ -2103,7 +2103,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
     if (x2 == -1) {
       break;
     }
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       if (ans[i] == xg && i != x1 && i != x2) {
         l[countQ].push_back(i);
@@ -2201,7 +2201,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   while (true) {
     int ok = 0;
 
-    rep(winter, 10)
+    for (int winter = 0; winter < 10; ++winter)
     {
       if (loop % 2 == 0) {
         P p = vpx[Rand() % vpx.size()];
@@ -2248,17 +2248,17 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   rNum = min(rNum, (int)vpy2.size());
 
   vector<int> vQuery1X, vQuery1Y, vQuery2X, vQuery2Y;
-  rep(i, lNum)
+  for (int i = 0; i < lNum; ++i)
   {
     vQuery1X.push_back(vpx2[i].first);
     vQuery1Y.push_back(vpx2[i].second);
   }
-  rep(i, rNum)
+  for (int i = 0; i < rNum; ++i)
   {
     vQuery1X.push_back(vpy2[i].first);
     vQuery1Y.push_back(vpy2[i].second);
   }
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     if (ans[i] == xg) {
       int notUse = 1;
@@ -2323,7 +2323,7 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
     }
 
     vector<int> vx, vy;
-    rep(i, M)
+    for (int i = 0; i < M; ++i)
     {
       if (ans[blocks[i][0]] == xg && i != num) {
         vx.push_back(i);
@@ -2338,7 +2338,7 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
     int x2 = vx[Rand() % vx.size()];
     int y2 = vy[Rand() % vy.size()];
 
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       if (ans[i] == xg && i != num && i != x2) {
         l[countQ].push_back(i);
@@ -2392,7 +2392,7 @@ int calculateMaxD(int& countQ)
   int tmp_max_D = 0;
   srep(i, 1, D)
   {
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       if (ans[j] == tmp_max_D) {
         l[countQ].push_back(j);
@@ -2413,25 +2413,25 @@ int calculateMaxD(int& countQ)
 void compareAndUpdateBest(int tmp_max_D, int& real_max_D, int real_ans[], int& countQ)
 {
   int cntBoth[110] = {};
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (ans[j] == tmp_max_D) {
       cntBoth[j]++;
     }
   }
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (real_ans[j] == real_max_D) {
       cntBoth[j]++;
     }
   }
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (ans[j] == tmp_max_D && cntBoth[j] == 1) {
       l[countQ].push_back(j);
     }
   }
-  rep(j, N)
+  for (int j = 0; j < N; ++j)
   {
     if (real_ans[j] == real_max_D && cntBoth[j] == 1) {
       r[countQ].push_back(j);
@@ -2440,7 +2440,7 @@ void compareAndUpdateBest(int tmp_max_D, int& real_max_D, int real_ans[], int& c
   char c2 = Query(countQ);
   if (c2 == '<') {
     real_max_D = tmp_max_D;
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       real_ans[j] = ans[j];
     }
@@ -2493,7 +2493,7 @@ bool runOptimizationWithRestarts(vector<int>& items, int& countQ, int hiritu, in
 // Save current state to real_ans
 void saveCurrentState(int real_ans[])
 {
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     real_ans[i] = ans[i];
   }
@@ -2502,7 +2502,7 @@ void saveCurrentState(int real_ans[])
 // Restore state from keepInitialAns
 void restoreInitialState(int keepInitialAns[])
 {
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     ans[i] = keepInitialAns[i];
   }
@@ -2514,14 +2514,14 @@ void randomSwap(vector<int>& items, int kosuu, int saidai)
   vector<int> ningning;
   saidai = min(saidai, N - 1);
   saidai = max(saidai, 1);
-  rep(i, saidai)
+  for (int i = 0; i < saidai; ++i)
   {
     ningning.push_back(i);
   }
   std::shuffle(ningning.begin(), ningning.end(), engine_mt19937);
   kosuu = min(kosuu, saidai);
   kosuu = max(kosuu, 1);
-  rep(i, kosuu)
+  for (int i = 0; i < kosuu; ++i)
   {
     swap(ans[items[i]], ans[items[i + 1]]);
   }
@@ -2539,7 +2539,7 @@ void initializeItemsWithHeaviestAssignment(vector<int>& items, int& countQ, int 
   updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
@@ -2562,7 +2562,7 @@ void assignItemsWithPseudoQuery(vector<int>& items, vector<int>& groups, int& co
     int right = D - 1;
     while (left < right) {
       int mid = (left + right) / 2;
-      rep(j, N)
+      for (int j = 0; j < N; ++j)
       {
         if (ans[j] == gId) {
           l[countQ].push_back(j);
@@ -2647,7 +2647,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
     int id = items[N - 1 - i];
     ans[id] = i;
@@ -2667,7 +2667,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   }
 
   int keepInitialAns[110];
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     keepInitialAns[i] = ans[i];
   }
@@ -2710,7 +2710,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   }
 
   if (setCount > 0) {
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       ans[i] = real_ans[i];
     }
@@ -2744,7 +2744,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
   initializeWithMergeSort(items, groups, countQ);
 
   int keepInitialAns[110];
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     keepInitialAns[i] = ans[i];
   }
@@ -2786,7 +2786,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
   }
 
   if (setCount > 0) {
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       ans[i] = real_ans[i];
     }
@@ -2883,7 +2883,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
 // Common initialization for block-based methods
 bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& countQ, int blockSize)
 {
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     if (i % blockSize == 0) {
       blocks.push_back({});
@@ -2891,7 +2891,7 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
     blocks.back().push_back(i);
   }
   if (blocks.size() < D) {
-    rep(i, N) { ans[i] = i % D; }
+    for (int i = 0; i < N; ++i) { ans[i] = i % D; }
     completeWithDummyQueries(countQ);
     return false;
   }
@@ -2900,9 +2900,9 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
   MergeSortBlock(blocks, countQ);
 
   // 各グループに1個ずつ入れる
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
-    rep(j, blocks[M - 1 - i].size())
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
     {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
@@ -2915,7 +2915,7 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
   drep(i, M - D)
   {
     int gId = groups[D - 1];
-    rep(j, blocks[i].size())
+    for (int j = 0; j < blocks[i].size(); ++j)
     {
       int id = blocks[i][j];
       ans[id] = gId;
@@ -2990,7 +2990,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
 // Initialize blocks from items
 bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ)
 {
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     if (i % blockSize == 0) {
       blocks.push_back({});
@@ -2998,7 +2998,7 @@ bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ)
     blocks.back().push_back(i);
   }
   if (blocks.size() < D) {
-    rep(i, N) { ans[i] = i % D; }
+    for (int i = 0; i < N; ++i) { ans[i] = i % D; }
     completeWithDummyQueries(countQ);
     return false;  // Early exit
   }
@@ -3012,7 +3012,7 @@ bool sortAndValidateBlocks(vector<vector<int>>& blocks, int destroySize, int& co
   MergeSortBlock(blocks, countQ);
 
   if (destroySize >= M) {
-    rep(i, N) { ans[i] = i % D; }
+    for (int i = 0; i < N; ++i) { ans[i] = i % D; }
     completeWithDummyQueries(countQ);
     return false;  // Early exit
   }
@@ -3024,13 +3024,13 @@ void splitLargeBlocks(vector<vector<int>>& blocks, int destroySize,
   vector<vector<int>>& tmp1, vector<vector<int>>& tmp2)
 {
   int M = blocks.size();
-  rep(i, M)
+  for (int i = 0; i < M; ++i)
   {
     if (i < M - destroySize) {
       tmp2.push_back(blocks[i]);
     }
     else {
-      rep(j, blocks[i].size())
+      for (int j = 0; j < blocks[i].size(); ++j)
       {
         tmp1.push_back({ blocks[i][j] });
       }
@@ -3077,7 +3077,7 @@ int createItemsArray(const vector<vector<int>>& blocks, vector<int>& items)
     }
   }
   int M2 = items.size();
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     if (used[i] == 0) {
       items.push_back(i);
@@ -3176,9 +3176,9 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 
   int M = blocks.size();
   // 各グループに1個ずつ入れる
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
-    rep(j, blocks[M - 1 - i].size())
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
     {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
@@ -3192,7 +3192,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   drep(i, M - D)
   {
     int gId = groups[D - 1];
-    rep(j, blocks[i].size())
+    for (int j = 0; j < blocks[i].size(); ++j)
     {
       int id = blocks[i][j];
       ans[id] = gId;
@@ -3234,7 +3234,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       ans[i] = i % D;
     }
@@ -3244,9 +3244,9 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 
   int M = blocks.size();
   // 各グループに1個ずつ入れる
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
-    rep(j, blocks[M - 1 - i].size())
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
     {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
@@ -3260,7 +3260,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   drep(i, M - D)
   {
     int gId = groups[D - 1];
-    rep(j, blocks[i].size())
+    for (int j = 0; j < blocks[i].size(); ++j)
     {
       int id = blocks[i][j];
       ans[id] = gId;
@@ -3301,7 +3301,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       ans[i] = i % D;
     }
@@ -3313,9 +3313,9 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   vector<int> groupNakami[30];
   int flag[110] = {};
   // 各グループに1個ずつ入れる
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
-    rep(j, blocks[M - 1 - i].size())
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
     {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
@@ -3326,7 +3326,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
 
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
     groups.push_back(i);
   }
@@ -3338,7 +3338,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
       break;
     }
     int gId = groups[D - 1];
-    rep(j, blocks[i].size())
+    for (int j = 0; j < blocks[i].size(); ++j)
     {
       int id = blocks[i][j];
       ans[id] = gId;
@@ -3381,7 +3381,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   drep(i, tail)
   {
     int gId = groups[D - 1];
-    rep(j, blocks[i].size())
+    for (int j = 0; j < blocks[i].size(); ++j)
     {
       int id = blocks[i][j];
       ans[id] = gId;
@@ -3422,7 +3422,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       ans[i] = i % D;
     }
@@ -3433,14 +3433,14 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M = blocks.size();
   // つづら折りに入れていく
   int junban[60];
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
     junban[i] = i;
     junban[D * 2 - 1 - i] = i;
   }
-  rep(i, M)
+  for (int i = 0; i < M; ++i)
   {
-    rep(j, blocks[M - 1 - i].size())
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
     {
       int id = blocks[M - 1 - i][j];
       ans[id] = junban[i % (D * 2)];
@@ -3576,7 +3576,7 @@ void Method806(int hiritu, int minDiff, int _m)
   int countQ = 0;
 
   // 1回だけ比べる
-  rep(i, M)
+  for (int i = 0; i < M; ++i)
   {
     int j = N - 1 - i;
     if (j <= i) break;
@@ -3685,13 +3685,13 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
 
     // 初回だけ特別処理
     if (i == tail - 1) {
-      rep(karina, 10)
+      for (int karina = 0; karina < 10; ++karina)
       {
         // 今のグループに数回Move1試す
         int dstId = Move1_Specify(countQ, gId);
         if (dstId != -1) {
           int dstPos = 0;
-          rep(j, D)
+          for (int j = 0; j < D; ++j)
           {
             if (groups[j] == dstId) {
               dstPos = j;
@@ -3834,7 +3834,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
     int right = D - 1;
     while (left < right) {
       int mid = (left + right) / 2;
-      rep(j, N)
+      for (int j = 0; j < N; ++j)
       {
         if (ans[j] == gId) {
           l[countQ].push_back(j);
@@ -3885,29 +3885,29 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
 void PrintAns(ofstream& ofs)
 {
   if (mode == 0) {
-    rep(i, N) { cout << ans[i] << ' '; }
+    for (int i = 0; i < N; ++i) { cout << ans[i] << ' '; }
     cout << endl;
   }
   else if (mode == 1) {
     ofs << "# " << haipara[NN][QQ][DD] << endl;
-    rep(i, Q)
+    for (int i = 0; i < Q; ++i)
     {
       ofs << "#c ";
-      rep(j, N) { ofs << answers[i][j] << ' '; }
+      for (int j = 0; j < N; ++j) { ofs << answers[i][j] << ' '; }
       ofs << endl;
       ofs << comments[i] << endl;
       ofs << l[i].size() << ' ' << r[i].size();
-      rep(j, l[i].size()) { ofs << ' ' << l[i][j]; }
-      rep(j, r[i].size()) { ofs << ' ' << r[i][j]; }
+      for (int j = 0; j < l[i].size(); ++j) { ofs << ' ' << l[i][j]; }
+      for (int j = 0; j < r[i].size(); ++j) { ofs << ' ' << r[i][j]; }
       ofs << endl;
     }
-    rep(i, N) { ofs << ans[i] << ' '; }
+    for (int i = 0; i < N; ++i) { ofs << ans[i] << ' '; }
     ofs << endl;
 
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       ofs << "# ";
-      rep(j, N)
+      for (int j = 0; j < N; ++j)
       {
         if (hikaku[i][j] == -1) {
           ofs << "< ";
@@ -3934,17 +3934,17 @@ void SetUp()
   endTime = clock();
   nowTime = 0.0;
 
-  rep(i, MAX_Q)
+  for (int i = 0; i < MAX_Q; ++i)
   {
     l[i].clear();
     r[i].clear();
     comments[i].clear();
   }
   comments[0] = "# ";
-  rep(i, 110) { ans[i] = -1; }
-  rep(i, 110)
+  for (int i = 0; i < 110; ++i) { ans[i] = -1; }
+  for (int i = 0; i < 110; ++i)
   {
-    rep(j, 110) { hikaku[i][j] = -2; }
+    for (int j = 0; j < 110; ++j) { hikaku[i][j] = -2; }
     hikaku[i][i] = 0;
   }
   calledMap.clear();
@@ -4142,15 +4142,15 @@ void PrintHaipara(int loop)
   string str = "./haipara/haipara" + to_string(loop) + ".txt";
   std::ofstream file(str);
   file << "vector<int> haipara[14][40] = {" << endl;
-  rep(i, 14)
+  for (int i = 0; i < 14; ++i)
   {
     file << "{" << endl;
     int ii = i * 5 + 30 + 4;
     if (i == 13) ii = 100;
-    rep(j, 40)
+    for (int j = 0; j < 40; ++j)
     {
       file << "{";
-      rep(k, haipara[i][j].size())
+      for (int k = 0; k < haipara[i][j].size(); ++k)
       {
         file << setw(7) << haipara[i][j][k];
         if (k < haipara[i][j].size() - 1) {
@@ -4174,15 +4174,15 @@ void PrintHaipara(int loop)
   file << "};" << endl;
   file << endl;
   file << "vector<ll> haipara2[14][40] = {" << endl;
-  rep(i, 14)
+  for (int i = 0; i < 14; ++i)
   {
     file << "{" << endl;
     int ii = i * 5 + 30 + 4;
     if (i == 13) ii = 100;
-    rep(j, 40)
+    for (int j = 0; j < 40; ++j)
     {
       file << "{";
-      rep(k, haipara2[i][j].size())
+      for (int k = 0; k < haipara2[i][j].size(); ++k)
       {
         file << setw(19) << haipara2[i][j][k];
         if (k < haipara2[i][j].size() - 1) {
@@ -4225,7 +4225,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    rep(j, 1)
+    for (int j = 0; j < 1; ++j)
     {
       srep(i, 0, 100)
       {
@@ -4243,7 +4243,7 @@ int main()
   }
   else if (mode == 2) {
     ll sum = 0;
-    rep(ii, 100)
+    for (int ii = 0; ii < 100; ++ii)
     {
       int i = 209;
       ll score = Solve(i);
@@ -4340,7 +4340,7 @@ int main()
       int winSum = 0;
       int loseSum = 0;
       int drawSum = 0;
-      rep(aespa, 1)
+      for (int aespa = 0; aespa < 1; ++aespa)
       {
         int win = 0;
         int lose = 0;
@@ -4348,7 +4348,7 @@ int main()
 
         int WinKijun = 0;
         if (WinKijun == 0) {
-          rep(_, 200)
+          for (int _ = 0; _ < 200; ++_)
           {
             GeneratecaseFromNNDDQQ();
             ll oldScore = Solve(hai, hai2);
@@ -4383,7 +4383,7 @@ int main()
           }
         }
         else {
-          rep(_, 1000)
+          for (int _ = 0; _ < 1000; ++_)
           {
             GeneratecaseFromNNDDQQ();
             ll oldScore = Solve(hai, hai2);
@@ -4434,7 +4434,7 @@ int main()
         cout << " : " << winSum << "/" << loseSum << "/" << drawSum << endl;
 
         // winQueueに入れる
-        rep(_, 6)
+        for (int _ = 0; _ < 6; ++_)
         {
           int NNN = NN;
           int QQQ = QQ;

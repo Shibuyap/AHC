@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -84,7 +84,7 @@ namespace
 int dist[1100];
 ll Dijkstra(int start, int day)
 {
-  rep(i, N) { dist[i] = INF; }
+  for (int i = 0; i < N; ++i) { dist[i] = INF; }
   dist[start] = 0;
   priority_queue<P, vector<P>, greater<P>> pque;
   pque.push(P(0, start));
@@ -93,7 +93,7 @@ ll Dijkstra(int start, int day)
     pque.pop();
     if (p.first != dist[p.second]) continue;
     int x = p.second;
-    rep(i, G[x].size())
+    for (int i = 0; i < G[x].size(); ++i)
     {
       int y = G[x][i].to;
       if (ans[G[x][i].id] == day) {
@@ -107,7 +107,7 @@ ll Dijkstra(int start, int day)
     }
   }
   ll sum = 0;
-  rep(i, N) sum += dist[i];
+  for (int i = 0; i < N; ++i) sum += dist[i];
   return sum;
 }
 
@@ -118,7 +118,7 @@ double nowTime;
 int NG;
 ll Dijkstra22(int start, int day)
 {
-  rep(i, N) { dist[i] = INF; }
+  for (int i = 0; i < N; ++i) { dist[i] = INF; }
   dist[start] = 0;
   priority_queue<P, vector<P>, greater<P>> pque;
   pque.push(P(0, start));
@@ -137,7 +137,7 @@ ll Dijkstra22(int start, int day)
     if (cnt == FINISH_COUNT) {
       break;
     }
-    rep(i, G[x].size())
+    for (int i = 0; i < G[x].size(); ++i)
     {
       int y = G[x][i].to;
       if (ans[G[x][i].id] == day) {
@@ -182,7 +182,7 @@ ll Dijkstra01(int start, int day)
     if (cnt == FINISH_COUNT) {
       break;
     }
-    rep(i, G[x].size())
+    for (int i = 0; i < G[x].size(); ++i)
     {
       int y = G[x][i].to;
       if (ans[G[x][i].id] == day) {
@@ -234,7 +234,7 @@ ll CalcScoreOneDayMiniVertex(int day, int id)
 ll CalcScoreOneDay(int day)
 {
   ll sum = 0;
-  rep(i, N) { sum += Dijkstra(i, day); }
+  for (int i = 0; i < N; ++i) { sum += Dijkstra(i, day); }
   return sum;
 }
 
@@ -242,7 +242,7 @@ ll CalcScoreReal()
 {
   ll sum = 0;
 
-  rep(day, D)
+  for (int day = 0; day < D; ++day)
   {
     sum += CalcScoreOneDay(day);
     sum -= idea;
@@ -263,7 +263,7 @@ ll CalcScoreRealSubstitute()
 ll CalcScore()
 {
   ll sum = 0;
-  rep(day, D) { sum += CalcScoreOneDay(day); }
+  for (int day = 0; day < D; ++day) { sum += CalcScoreOneDay(day); }
   return sum;
 }
 
@@ -271,16 +271,16 @@ ll CalcScore()
 void Init()
 {
   // distRank
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
     vector<P> vec;
-    rep(j, N)
+    for (int j = 0; j < N; ++j)
     {
       vec.push_back(
         P((X[j] - X[i]) * (X[j] - X[i]) + (Y[j] - Y[i]) * (Y[j] - Y[i]), j));
     }
     sort(vec.begin(), vec.end());
-    rep(j, N) { distRank[i][vec[j].second] = j; }
+    for (int j = 0; j < N; ++j) { distRank[i][vec[j].second] = j; }
   }
 }
 
@@ -294,24 +294,24 @@ void Input(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> N >> M >> D >> K;
-    rep(i, M)
+    for (int i = 0; i < M; ++i)
     {
       cin >> u[i] >> v[i] >> w[i];
       u[i]--;
       v[i]--;
     }
-    rep(i, N) { cin >> X[i] >> Y[i]; }
+    for (int i = 0; i < N; ++i) { cin >> X[i] >> Y[i]; }
   }
   // ファイル入力する
   else {
     ifs >> N >> M >> D >> K;
-    rep(i, M)
+    for (int i = 0; i < M; ++i)
     {
       ifs >> u[i] >> v[i] >> w[i];
       u[i]--;
       v[i]--;
     }
-    rep(i, N) { ifs >> X[i] >> Y[i]; }
+    for (int i = 0; i < N; ++i) { ifs >> X[i] >> Y[i]; }
   }
 
   Init();
@@ -321,7 +321,7 @@ void InputAns(int problemNum)
 {
   string fileNameIfs = "./out/";
   string strNum;
-  rep(i, 4)
+  for (int i = 0; i < 4; ++i)
   {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
@@ -333,7 +333,7 @@ void InputAns(int problemNum)
 
   // ファイル入力する
   if (ifs.is_open()) {
-    rep(i, M)
+    for (int i = 0; i < M; ++i)
     {
       ifs >> ans[i];
       ans[i]--;
@@ -345,7 +345,7 @@ void InputAns(int problemNum)
 void Output(int mode, int problemNum)
 {
   if (mode == 0) {
-    rep(i, M) { cout << ans[i] + 1 << ' '; }
+    for (int i = 0; i < M; ++i) { cout << ans[i] + 1 << ' '; }
     cout << endl;
   }
 
@@ -353,7 +353,7 @@ void Output(int mode, int problemNum)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
+    for (int i = 0; i < 4; ++i)
     {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
@@ -363,7 +363,7 @@ void Output(int mode, int problemNum)
 
     ofstream ofs(fileNameOfs);
 
-    rep(i, M) { ofs << ans[i] + 1 << ' '; }
+    for (int i = 0; i < M; ++i) { ofs << ans[i] + 1 << ' '; }
     ofs << endl;
     ofs.close();
   }
@@ -371,12 +371,12 @@ void Output(int mode, int problemNum)
 
 void Method1()
 {
-  rep(i, M) { ans[i] = i / K; }
+  for (int i = 0; i < M; ++i) { ans[i] = i / K; }
 }
 
 void Method2()
 {
-  rep(i, M) { ans[i] = i % D; }
+  for (int i = 0; i < M; ++i) { ans[i] = i % D; }
 }
 
 // ある辺をある日にしたらその周辺4辺はその日にしない
@@ -385,25 +385,25 @@ void Method3()
   // シャッフル
   mt19937 mt(Rand());
 
-  rep(i, M) ans[i] = -1;
+  for (int i = 0; i < M; ++i) ans[i] = -1;
 
   vector<int> vec[32];
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
-    rep(j, M) vec[i].push_back(j);
+    for (int j = 0; j < M; ++j) vec[i].push_back(j);
     std::shuffle(vec[i].begin(), vec[i].end(), mt);
   }
 
   int flag[32][3100];
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
-    rep(j, M) { flag[i][j] = 0; }
+    for (int j = 0; j < M; ++j) { flag[i][j] = 0; }
   }
 
   int cnt[32] = {};
-  rep(ii, M)
+  for (int ii = 0; ii < M; ++ii)
   {
-    rep(j, D)
+    for (int j = 0; j < D; ++j)
     {
       if (cnt[j] == K) continue;
       int i = vec[j][ii];
@@ -415,7 +415,7 @@ void Method3()
       int vv = v[i];
       int uSize = G[uu].size();
       int vSize = G[vv].size();
-      rep(k, uSize)
+      for (int k = 0; k < uSize; ++k)
       {
         if (G[uu][k].id == i) {
           int right = G[uu][(k + 1) % uSize].id;
@@ -424,7 +424,7 @@ void Method3()
           flag[j][left] = 1;
         }
       }
-      rep(k, vSize)
+      for (int k = 0; k < vSize; ++k)
       {
         if (G[vv][k].id == i) {
           int right = G[vv][(k + 1) % vSize].id;
@@ -440,11 +440,11 @@ void Method3()
 // 各頂点でばらけさせる
 void Method4()
 {
-  rep(i, M) ans[i] = -1;
+  for (int i = 0; i < M; ++i) ans[i] = -1;
   int now = 0;
-  rep(i, N)
+  for (int i = 0; i < N; ++i)
   {
-    rep(j, G[i].size())
+    for (int j = 0; j < G[i].size(); ++j)
     {
       int id = G[i][j].id;
       if (ans[id] != -1) continue;
@@ -696,7 +696,7 @@ void InnerMethod7(double temperature)
 
   int newDay = day;
   int sz = edges.size();
-  rep(_, 30)
+  for (int _ = 0; _ < 30; ++_)
   {
     newDay = Rand() % D;
     if (dayCount[newDay] + sz > K) newDay = day;
@@ -744,7 +744,7 @@ void InnerMethod7(double temperature)
 void CalcIdea()
 {
   idea = 0;
-  rep(i, N) { idea += Dijkstra(i, -1); }
+  for (int i = 0; i < N; ++i) { idea += Dijkstra(i, -1); }
 }
 
 int Solve(int mode, int problemNum)
@@ -758,11 +758,11 @@ int Solve(int mode, int problemNum)
 
   // G作成
   {
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       G[i].clear();
     }
-    rep(i, M)
+    for (int i = 0; i < M; ++i)
     {
       edge e;
       e.cost = w[i];
@@ -773,11 +773,11 @@ int Solve(int mode, int problemNum)
       G[v[i]].push_back(e);
     }
     // 偏角ソートしておく
-    rep(i, N)
+    for (int i = 0; i < N; ++i)
     {
       vector<pair<double, int>> GG;
       vector<edge> keepG;
-      rep(j, G[i].size())
+      for (int j = 0; j < G[i].size(); ++j)
       {
         pair<double, int> p;
         p.first = atan2(Y[G[i][j].to] - Y[i], X[G[i][j].to] - X[i]);
@@ -787,7 +787,7 @@ int Solve(int mode, int problemNum)
       }
       G[i].clear();
       sort(GG.begin(), GG.end());
-      rep(j, GG.size()) { G[i].push_back(keepG[GG[j].second]); }
+      for (int j = 0; j < GG.size(); ++j) { G[i].push_back(keepG[GG[j].second]); }
     }
   }
 
@@ -810,15 +810,15 @@ int Solve(int mode, int problemNum)
 
 #if 0
   minScore = 0;
-  rep(i, D)
+  for (int i = 0; i < D; ++i)
   {
     minScoreDays[i] = CalcScoreOneDay(i);
     minScore += minScoreDays[i];
   }
 #endif
 
-  rep(i, D) { dayCount[i] = 0; }
-  rep(i, M) { dayCount[ans[i]]++; }
+  for (int i = 0; i < D; ++i) { dayCount[i] = 0; }
+  for (int i = 0; i < M; ++i) { dayCount[ans[i]]++; }
 
   // 焼きなまし
   endTime = clock();
@@ -868,7 +868,7 @@ int Solve(int mode, int problemNum)
     if (loop % 10 == 0) {
       Output(mode, problemNum);
       cout << loop << "  " << CalcScoreRealSubstitute();
-      rep(i, D) cout << " " << dayCount[i];
+      for (int i = 0; i < D; ++i) cout << " " << dayCount[i];
       cout << endl;
     }
 #endif
@@ -881,7 +881,7 @@ int Solve(int mode, int problemNum)
     cout << "loop = " << loop << endl;
     CalcIdea();
     minScore = 0;
-    rep(i, D)
+    for (int i = 0; i < D; ++i)
     {
       minScoreDays[i] = CalcScoreOneDay(i);
       minScore += minScoreDays[i];
@@ -904,7 +904,7 @@ int main()
   }
   else {
     ll sum = 0;
-    rep(_, 10)
+    for (int _ = 0; _ < 10; ++_)
     {
       sum += Solve(1, _);
     }
