@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -162,12 +160,10 @@ void Input(int problemNum)
     // 標準入力
     int nn;
     cin >> nn;
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       string s;
       cin >> s;
-      rep(j, n)
-      {
+      for (int j = 0; j < n; ++j) {
         a[i + 1][j + 1] = 0;
         if (s[j] == 'x') {
           a[i + 1][j + 1] = 1;
@@ -182,12 +178,10 @@ void Input(int problemNum)
     // ファイル入力
     int nn;
     ifs >> nn;
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       string s;
       ifs >> s;
-      rep(j, n)
-      {
+      for (int j = 0; j < n; ++j) {
         a[i + 1][j + 1] = 0;
         if (s[j] == 'x') {
           a[i + 1][j + 1] = 1;
@@ -199,10 +193,8 @@ void Input(int problemNum)
     }
   }
 
-  rep(i, n + 2)
-  {
-    rep(j, n + 2)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       init_a[i][j] = a[i][j];
     }
   }
@@ -244,8 +236,7 @@ void Output(ofstream& ofs)
 
 void MoveU(int j, bool isClean)
 {
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     a[i][j] = a[i + 1][j];
   }
   if (isClean) {
@@ -259,8 +250,7 @@ void MoveU(int j, bool isClean)
 
 void MoveL(int i, bool isClean)
 {
-  rep(j, n)
-  {
+  for (int j = 0; j < n; ++j) {
     a[i][j] = a[i][j + 1];
   }
   if (isClean) {
@@ -313,10 +303,8 @@ int Method2_CalcScore(int dir, int num)
         while (que.size()) {
           que.pop();
         }
-        rep(k, n + 2)
-        {
-          rep(l, n + 2)
-          {
+        for (int k = 0; k < n + 2; ++k) {
+          for (int l = 0; l < n + 2; ++l) {
             f[k][l] = 99999;
           }
         }
@@ -331,8 +319,7 @@ int Method2_CalcScore(int dir, int num)
             dist = f[x][y] + 1;
             break;
           }
-          rep(k, 4)
-          {
+          for (int k = 0; k < 4; ++k) {
             int nx = x + dx[k];
             int ny = y + dy[k];
             if (IsNG(nx, ny))continue;
@@ -487,10 +474,8 @@ void Method2()
 
 void InitA()
 {
-  rep(i, n + 2)
-  {
-    rep(j, n + 2)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       a[i][j] = init_a[i][j];
     }
   }
@@ -500,8 +485,7 @@ int Sim()
 {
   InitA();
   int cnt = 0;
-  rep(i, ans.size())
-  {
+  for (int i = 0; i < ans.size(); ++i) {
     int dir = ans[i].first;
     int num = ans[i].second;
     if (dir == 0) {
@@ -557,8 +541,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
   ans2.clear();
   InitA();
   int cnt = 0;
-  rep(i, ans.size())
-  {
+  for (int i = 0; i < ans.size(); ++i) {
     int dir = ans[i].first;
     int num = ans[i].second;
     if (dir == 0) {
@@ -740,29 +723,25 @@ int Sim2(vector<P>& ans2, bool oniCheck)
         cnt++;
 
         if (dir == 0) {
-          rep(k, cost)
-          {
+          for (int k = 0; k < cost; ++k) {
             ans2.push_back(P(dir, j));
             MoveU(j, true);
           }
         }
         else if (dir == 1) {
-          rep(k, cost)
-          {
+          for (int k = 0; k < cost; ++k) {
             ans2.push_back(P(dir, i));
             MoveL(i, true);
           }
         }
         else if (dir == 2) {
-          rep(k, cost)
-          {
+          for (int k = 0; k < cost; ++k) {
             ans2.push_back(P(dir, j));
             MoveD(j, true);
           }
         }
         else if (dir == 3) {
-          rep(k, cost)
-          {
+          for (int k = 0; k < cost; ++k) {
             ans2.push_back(P(dir, i));
             MoveR(i, true);
           }
@@ -862,7 +841,6 @@ void Mountain(Haiparas haiparas)
             // 元に戻す
             swap(ans[ra1], ans[ra2]);
           }
-
         }
       }
     }

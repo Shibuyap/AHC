@@ -29,7 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 #define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
@@ -122,10 +121,8 @@ int best_score;
 void store_best_score()
 {
   best_score = current_score;
-  rep(i, m)
-  {
-    rep(j, m)
-    {
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < m; ++j) {
       best_a[i][j] = a[i][j];
     }
   }
@@ -134,10 +131,8 @@ void store_best_score()
 void restore_best_score()
 {
   current_score = best_score;
-  rep(i, m)
-  {
-    rep(j, m)
-    {
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < m; ++j) {
       a[i][j] = best_a[i][j];
     }
   }
@@ -158,8 +153,7 @@ void input_data(int case_num)
     // 標準入力
     int _n, _m, _L;
     cin >> _n >> _m >> _L;
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       cin >> s[i];
       cin >> p[i];
     }
@@ -168,18 +162,15 @@ void input_data(int case_num)
     // ファイル入力
     int _n, _m, _L;
     ifs >> _n >> _m >> _L;
-    rep(i, n)
-    {
+    for (int i = 0; i < n; ++i) {
       ifs >> s[i];
       ifs >> p[i];
     }
   }
 
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     vector<int> v;
-    rep(j, s[i].size())
-    {
+    for (int j = 0; j < s[i].size(); ++j) {
       if (s[i][j] == ' ') continue;
       v.push_back(s[i][j] - 'a');
     }
@@ -187,13 +178,11 @@ void input_data(int case_num)
   }
 
   vector<pair<int, vector<int>>> tmp;
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     tmp.push_back(make_pair(p[i], sv[i]));
   }
   sort(tmp.begin(), tmp.end());
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     p[i] = tmp[i].first;
     sv[i] = tmp[i].second;
   }
@@ -273,13 +262,11 @@ int evaluate_score(bool all = false)
 
   double res = 0;
 
-  rep(i, n)
-  {
+  for (int i = 0; i < n; ++i) {
     double dp[2] = {};
     double dp2[2] = {};
 
-    rep(j, sv[i].size())
-    {
+    for (int j = 0; j < sv[i].size(); ++j) {
       int num = sv[i][j];
       if (j == 0) {
         dp[0] = visited[num];
@@ -313,11 +300,9 @@ void output_data(ofstream& ofs)
 {
   if (exec_mode == 0) {
     // 標準出力
-    rep(i, m)
-    {
+    for (int i = 0; i < m; ++i) {
       cout << (char)('a' + c[i]);
-      rep(j, m)
-      {
+      for (int j = 0; j < m; ++j) {
         cout << ' ' << a[i][j];
       }
       cout << endl;
@@ -325,11 +310,9 @@ void output_data(ofstream& ofs)
   }
   else {
     // ファイル出力
-    rep(i, m)
-    {
+    for (int i = 0; i < m; ++i) {
       ofs << (char)('a' + c[i]);
-      rep(j, m)
-      {
+      for (int j = 0; j < m; ++j) {
         ofs << ' ' << a[i][j];
       }
       ofs << endl;
@@ -340,26 +323,22 @@ void output_data(ofstream& ofs)
 vector<int> normalize_to_100(const vector<double>& v)
 {
   double sum = 0;
-  rep(i, 12)
-  {
+  for (int i = 0; i < 12; ++i) {
     sum += v[i];
   }
   vector<int> res(12);
   if (sum < 0.1) {
-    rep(i, 100)
-    {
+    for (int i = 0; i < 100; ++i) {
       res[i % 12]++;
     }
     return res;
   }
 
-  rep(i, 12)
-  {
+  for (int i = 0; i < 12; ++i) {
     res[i] = round(v[i] / sum * 100.0);
   }
   int sum2 = 0;
-  rep(i, 12)
-  {
+  for (int i = 0; i < 12; ++i) {
     sum2 += res[i];
   }
   if (sum2 > 100) {
@@ -392,13 +371,11 @@ void build_seed_solution(double time_limit)
   int vv[20];
 
   vector<double> cnt_sum[12];
-  rep(i, 12)
-  {
+  for (int i = 0; i < 12; ++i) {
     cnt_sum[i] = vector<double>(12);
   }
 
-  rep(i, m)
-  {
+  for (int i = 0; i < m; ++i) {
     c[i] = i % 6;
   }
 
@@ -409,18 +386,15 @@ void build_seed_solution(double time_limit)
     }
     iter++;
 
-    rep(i, m)
-    {
-      rep(j, m)
-      {
+    for (int i = 0; i < m; ++i) {
+      for (int j = 0; j < m; ++j) {
         a[i][j] = 0;
       }
     }
 
     int ra = rand_xorshift() % 10 + 2;
     int sz = 0;
-    rep(i, ra)
-    {
+    for (int i = 0; i < ra; ++i) {
       int lll = n - 1 - i;
       if (rand_xorshift() % 100 < 90) {
         ras[sz] = lll;
@@ -428,30 +402,24 @@ void build_seed_solution(double time_limit)
       }
     }
 
-    rep(l, sz)
-    {
+    for (int l = 0; l < sz; ++l) {
       int lll = ras[l];
-      rep(i, sv[lll].size())
-      {
+      for (int i = 0; i < sv[lll].size(); ++i) {
         vv[i] = sv[lll][i] + rand_xorshift() % 2 * 6;
       }
-      rep(i, sv[lll].size() - 1)
-      {
+      for (int i = 0; i < sv[lll].size() - 1; ++i) {
         int x = vv[i];
         int y = vv[i + 1];
         cnt_sum[x][y] += p[lll];
       }
     }
 
-    rep(i, 12)
-    {
+    for (int i = 0; i < 12; ++i) {
       auto v = normalize_to_100(cnt_sum[i]);
-      rep(j, 12)
-      {
+      for (int j = 0; j < 12; ++j) {
         a[i][j] = v[j];
       }
-      rep(j, 12)
-      {
+      for (int j = 0; j < 12; ++j) {
         cnt_sum[i][j] = 0;
       }
     }
@@ -459,10 +427,8 @@ void build_seed_solution(double time_limit)
     int score = evaluate_score();
     if (score > max_score) {
       max_score = score;
-      rep(i, m)
-      {
-        rep(j, m)
-        {
+      for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < m; ++j) {
           max_a[i][j] = a[i][j];
         }
       }
@@ -471,10 +437,8 @@ void build_seed_solution(double time_limit)
 
   cerr << iter << ' ' << max_score << ' ' << get_elapsed_time() << endl;
 
-  rep(i, m)
-  {
-    rep(j, m)
-    {
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < m; ++j) {
       a[i][j] = max_a[i][j];
     }
   }
@@ -573,8 +537,7 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
     else if (ra_exec_mode < params.operation_thresholds[3]) {
       // 近傍操作2
       ra1 = rand_xorshift() % 6;
-      rep(j, 12)
-      {
+      for (int j = 0; j < 12; ++j) {
         swap(a[ra1][j], a[ra1 + 6][j]);
       }
     }
@@ -612,8 +575,7 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
       }
       else if (ra_exec_mode < params.operation_thresholds[3]) {
         // 近傍操作2 の巻き戻し
-        rep(j, 12)
-        {
+        for (int j = 0; j < 12; ++j) {
           swap(a[ra1][j], a[ra1 + 6][j]);
         }
       }

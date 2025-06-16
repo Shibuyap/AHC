@@ -25,7 +25,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 using namespace std;
@@ -251,8 +251,7 @@ int Solve(int caseId)
     if (cost[row][col] > 250)
       continue;
 
-    rep(d, 4)
-    {
+    for (int d = 0; d < 4; ++d) {
       int nextRow = row, nextCol = col;
       int steps = 0;
 
@@ -315,7 +314,7 @@ int Solve(int caseId)
       int nextRow = row - dx[d] * steps;
       int nextCol = col - dy[d] * steps;
 
-      rep(k, static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15))
+      for (int k = 0; k < static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15); ++k)
         route.push_back(d);
 
       row = nextRow;
@@ -331,48 +330,52 @@ int Solve(int caseId)
   best_score = -1;
   if (route.size() > MAX_ROUTE_LEN) {
     bool foundFit = false;
-    rep(di, 10) rep(dj, 10)
-    {
-      route.clear();
-      int row = tx - di, col = ty - dj;
-      if (cost[row][col] >= MAX_ROUTE_LEN)
-        continue;
+    for (int di = 0; di < 10; ++di) {
+      for (int dj = 0; dj < 10; ++dj) {
+        route.clear();
+        int row = tx - di, col = ty - dj;
+        if (cost[row][col] >= MAX_ROUTE_LEN) {
+          continue;
+        }
 
-      while (row != sx || col != sy) {
-        int d = prevDir[row][col];
-        int steps = segLen[row][col];
-        int nextRow = row - dx[d] * steps;
-        int nextCol = col - dy[d] * steps;
+        while (row != sx || col != sy) {
+          int d = prevDir[row][col];
+          int steps = segLen[row][col];
+          int nextRow = row - dx[d] * steps;
+          int nextCol = col - dy[d] * steps;
 
-        rep(k, static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15))
-          route.push_back(d);
+          for (int k = 0; k < static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15); ++k) {
+            route.push_back(d);
+          }
 
-        row = nextRow;
-        col = nextCol;
-      }
-      reverse(route.begin(), route.end());
-      while (route.size() < MAX_ROUTE_LEN)
-        route.push_back(rand() % 4);
+          row = nextRow;
+          col = nextCol;
+        }
+        reverse(route.begin(), route.end());
+        while (route.size() < MAX_ROUTE_LEN) {
+          route.push_back(rand() % 4);
+        }
 
-      if (route.size() == MAX_ROUTE_LEN) {
-        foundFit = true;
-        needRandomInit = true;
-        cur_score = simulate_score(route);
-        if (cur_score > best_score) {
-          best_score = cur_score;
-          best_route = route;
+        if (route.size() == MAX_ROUTE_LEN) {
+          foundFit = true;
+          needRandomInit = true;
+          cur_score = simulate_score(route);
+          if (cur_score > best_score) {
+            best_score = cur_score;
+            best_route = route;
+          }
         }
       }
     }
     if (!foundFit) {
       route.clear();
-      rep(i, MAX_ROUTE_LEN + 10) route.push_back(rand() % 4);
+      for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) route.push_back(rand() % 4);
     }
     else {
       route = best_route;
       cur_score = best_score;
       if (cur_score == -1)
-        rep(i, MAX_ROUTE_LEN + 10) route.push_back(rand() % 4);
+        for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) route.push_back(rand() % 4);
     }
   }
 
@@ -381,7 +384,7 @@ int Solve(int caseId)
   if (needRandomInit || route.size() > MAX_ROUTE_LEN) {
     if (!needRandomInit) {
       route.clear();
-      rep(i, MAX_ROUTE_LEN) route.push_back(Rand() % 4);
+      for (int i = 0; i < MAX_ROUTE_LEN; ++i) route.push_back(Rand() % 4);
     }
     cur_score = simulate_score(route);
     best_route = route;
@@ -428,10 +431,10 @@ int Solve(int caseId)
   output_data(caseId);
 
   if (exec_mode != 0) {
-    cout << "route.size() = " << route.size() << '¥n';
-    cout << "iter = " << iter << '¥n';
-    cout << cur_score << '¥n';
-    cout << get_elapsed_time() << " sec.¥n";
+    cout << "route.size() = " << route.size() << endl;
+    cout << "iter = " << iter << endl;
+    cout << cur_score << endl;
+    cout << get_elapsed_time() << " sec." << endl;
   }
   return 0;
 }
@@ -444,7 +447,6 @@ int main()
     Solve(8);
   }
   else if (exec_mode == 1) {
-
     srep(i, 1, 10)
     {
       cout << i << endl;

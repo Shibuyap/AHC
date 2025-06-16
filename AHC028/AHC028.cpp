@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#define rep(i, n) for (int i = 0; i < (n); ++i)
+
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
@@ -142,16 +142,15 @@ inline int manhattanDistance(int i1, int j1, int i2, int j2)
 
 void resetGlobalState()
 {
-  rep(i, COLOR_COUNT) { cells_by_color[i].clear(); }
-  rep(i, TASK_COUNT) { task_paths[i].clear(); }
+  for (int i = 0; i < COLOR_COUNT; ++i) { cells_by_color[i].clear(); }
+  for (int i = 0; i < TASK_COUNT; ++i) { task_paths[i].clear(); }
 }
 
 void readInput(int problemNum)
 {
   string fileNameIfs = "./in/";
   string strNum;
-  rep(i, 4)
-  {
+  for (int i = 0; i < 4; ++i) {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
@@ -164,40 +163,33 @@ void readInput(int problemNum)
   if (!ifs.is_open()) {
     cin >> _n >> _m;
     cin >> start_i >> start_j;
-    rep(i, BOARD_SIZE) cin >> board_chars[i];
-    rep(i, TASK_COUNT) cin >> task_strings[i];
+    for (int i = 0; i < BOARD_SIZE; ++i) cin >> board_chars[i];
+    for (int i = 0; i < TASK_COUNT; ++i) cin >> task_strings[i];
   }
   else {
     ifs >> _n >> _m;
     ifs >> start_i >> start_j;
-    rep(i, BOARD_SIZE) ifs >> board_chars[i];
-    rep(i, TASK_COUNT) ifs >> task_strings[i];
+    for (int i = 0; i < BOARD_SIZE; ++i) ifs >> board_chars[i];
+    for (int i = 0; i < TASK_COUNT; ++i) ifs >> task_strings[i];
   }
 
-  rep(i, BOARD_SIZE)
-  {
-    rep(j, BOARD_SIZE)
-    {
+  for (int i = 0; i < BOARD_SIZE; ++i) {
+    for (int j = 0; j < BOARD_SIZE; ++j) {
       board_color[i][j] = board_chars[i][j] - 'A';
     }
   }
-  rep(i, TASK_COUNT)
-  {
-    rep(j, PATH_LENGTH)
-    {
+  for (int i = 0; i < TASK_COUNT; ++i) {
+    for (int j = 0; j < PATH_LENGTH; ++j) {
       task_colors[i][j] = task_strings[i][j] - 'A';
     }
   }
 
-  rep(i, BOARD_SIZE)
-  {
-    rep(j, BOARD_SIZE)
-    {
+  for (int i = 0; i < BOARD_SIZE; ++i) {
+    for (int j = 0; j < BOARD_SIZE; ++j) {
       cells_by_color[board_color[i][j]].push_back(P(i, j));
     }
   }
-  rep(i, COLOR_COUNT)
-  {
+  for (int i = 0; i < COLOR_COUNT; ++i) {
     cell_count_by_color[i] = cells_by_color[i].size();
   }
 }
@@ -207,8 +199,7 @@ void openOutputFile(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    rep(i, 4)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
     }
@@ -243,8 +234,7 @@ int score_when_share_last2(const Path& x, const Path& y)
 ll calculateTotalScore()
 {
   int score = MAX_SCORE - TASK_COUNT * TASK_PENALTY;
-  rep(i, TASK_COUNT)
-  {
+  for (int i = 0; i < TASK_COUNT; ++i) {
     if (i == 0) {
       score -= manhattanDistance(task_paths[task_order[i]][path_index[i]].start_i, task_paths[task_order[i]][path_index[i]].start_j, start_i, start_j);
     }
@@ -442,11 +432,9 @@ void buildInitialSolution()
 void writeAnswer(ofstream& ofs)
 {
   final_cells.clear();
-  rep(i, TASK_COUNT)
-  {
+  for (int i = 0; i < TASK_COUNT; ++i) {
     Path path = task_paths[task_order[i]][path_index[i]];
-    rep(j, PATH_LENGTH)
-    {
+    for (int j = 0; j < PATH_LENGTH; ++j) {
       if (j <= 2 && i > 0 && score_when_share_last3(task_paths[task_order[i - 1]][path_index[i - 1]], path) > 0) {
         continue;
       }
@@ -655,34 +643,27 @@ ll solveSingleCase(int probNum)
   {
     int dp[PATH_LENGTH][DP_SIZE][DP_SIZE];
     int dp2[PATH_LENGTH][DP_SIZE][DP_SIZE];
-    rep(i, TASK_COUNT)
-    {
-      rep(j, PATH_LENGTH)
-      {
+    for (int i = 0; i < TASK_COUNT; ++i) {
+      for (int j = 0; j < PATH_LENGTH; ++j) {
         int x = task_colors[i][0];
         if (j == 0) {
-          rep(k, cell_count_by_color[x])
-          {
-            rep(l, cell_count_by_color[x]) { dp[j][k][l] = INF; }
+          for (int k = 0; k < cell_count_by_color[x]; ++k) {
+            for (int l = 0; l < cell_count_by_color[x]; ++l) { dp[j][k][l] = INF; }
           }
         }
         else {
           int y = task_colors[i][j];
-          rep(k, cell_count_by_color[x])
-          {
-            rep(l, cell_count_by_color[y]) { dp[j][k][l] = INF; }
+          for (int k = 0; k < cell_count_by_color[x]; ++k) {
+            for (int l = 0; l < cell_count_by_color[y]; ++l) { dp[j][k][l] = INF; }
           }
         }
       }
 
       int x = task_colors[i][0];
-      rep(j, PATH_LENGTH)
-      {
+      for (int j = 0; j < PATH_LENGTH; ++j) {
         if (j == 0) {
-          rep(k, cell_count_by_color[x])
-          {
-            rep(l, cell_count_by_color[x])
-            {
+          for (int k = 0; k < cell_count_by_color[x]; ++k) {
+            for (int l = 0; l < cell_count_by_color[x]; ++l) {
               if (k == l)
                 dp[j][k][l] = 0;
               else
@@ -693,12 +674,9 @@ ll solveSingleCase(int probNum)
         else {
           int y = task_colors[i][j - 1];
           int z = task_colors[i][j];
-          rep(k, cell_count_by_color[x])
-          {
-            rep(l, cell_count_by_color[y])
-            {
-              rep(o, cell_count_by_color[z])
-              {
+          for (int k = 0; k < cell_count_by_color[x]; ++k) {
+            for (int l = 0; l < cell_count_by_color[y]; ++l) {
+              for (int o = 0; o < cell_count_by_color[z]; ++o) {
                 int dist = abs(cells_by_color[z][o].first - cells_by_color[y][l].first) +
                   abs(cells_by_color[z][o].second - cells_by_color[y][l].second);
                 if (dp[j][k][o] > dp[j - 1][k][l] + dist) {
@@ -712,10 +690,8 @@ ll solveSingleCase(int probNum)
       }
 
       int z = task_colors[i][4];
-      rep(j, cell_count_by_color[x])
-      {
-        rep(k, cell_count_by_color[z])
-        {
+      for (int j = 0; j < cell_count_by_color[x]; ++j) {
+        for (int k = 0; k < cell_count_by_color[z]; ++k) {
           Path path;
           path.start_i = cells_by_color[x][j].first;
           path.start_j = cells_by_color[x][j].second;
