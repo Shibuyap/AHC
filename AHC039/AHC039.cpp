@@ -638,24 +638,6 @@ void Method3()
 
   InitBlock(blockSize80);
   Method3_SA(xx1, xx2, yy1, yy2, blockSize80, loop4, TL);
-
-
-  if (mode != 0) {
-    // デバッグ用の出力
-    cout << "loop1 = " << loop1 << ", ";
-    cout << "loop2 = " << loop2 << ", ";
-    cout << "loop3 = " << loop3 << ", ";
-    cout << "loop4 = " << loop4 << ", ";
-    cout << endl;
-    srep(i, 1, blockSize80 + 1)
-    {
-      srep(j, 1, blockSize80 + 1)
-      {
-        cout << f[i][j];
-      }
-      cout << endl;
-    }
-  }
 }
 
 // 問題を解く関数
@@ -691,7 +673,7 @@ ll Solve(int problem_num)
 
 */
 /////////////////////////////////////////////////////////////////////////
-int main_old()
+int main()
 {
   mode = 2;
 
@@ -700,7 +682,7 @@ int main_old()
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100)
+    srep(i, 0, 10)
     {
       ll score = Solve(i);  // 問題番号iを解く
       sum += score;         // スコアの合計を更新
