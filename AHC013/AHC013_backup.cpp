@@ -1051,8 +1051,7 @@ inline void EraseUnion(int ite)
 }
 
 // Helper functions for InnerMethod - preserve exact behavior
-inline void disconnectServers(int server1, int server2, int dir1, int dir2, set<int>& se)
-{
+inline void disconnectServers(int server1, int server2, int dir1, int dir2, set<int>& se) {
   Update_udlr(server1, dir1, -1);
   Update_udlr(server2, dir2, -1);
   EraseUnion(server1);
@@ -1060,28 +1059,23 @@ inline void disconnectServers(int server1, int server2, int dir1, int dir2, set<
   se.insert(server2);
 }
 
-inline void connectServers(int server1, int server2, int dir1, int dir2)
-{
+inline void connectServers(int server1, int server2, int dir1, int dir2) {
   Update_udlr(server1, dir1, server2);
   Update_udlr(server2, dir2, server1);
 }
 
-inline void fillPath(int startCoord, int endCoord, int fixedCoord, bool isVertical,
-  int fillValue, vector<P>& beam)
-{
+inline void fillPath(int startCoord, int endCoord, int fixedCoord, bool isVertical, 
+                    int fillValue, vector<P>& beam) {
   if (isVertical) {
-    srep(i, startCoord, endCoord)
-    {
+    srep(i, startCoord, endCoord) {
       PushACnt(i, fixedCoord);
       gameState.a[i][fixedCoord] = fillValue;
       if (fillValue == INF) {
         beam.push_back(P(i, fixedCoord));
       }
     }
-  }
-  else {
-    srep(j, startCoord, endCoord)
-    {
+  } else {
+    srep(j, startCoord, endCoord) {
       PushACnt(fixedCoord, j);
       gameState.a[fixedCoord][j] = fillValue;
       if (fillValue == INF) {
@@ -1153,8 +1147,956 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
   }
 
   // The direction-specific functions handle all the movement logic
-  // The direction-specific functions handle all the movement logic
   // Continue with edge creation and remaining logic
+  
+  // 新たな辺の作成
+  // 左右
+  if (nx == xx) {
+    for (auto&& p : beam) {
+      int px = p.first;
+      int py = p.second;
+      if (gameState.a[px][py] != INF) continue;
+      int iteL = GetIte2(px, py, 'L');
+      int iteR = GetIte2(px, py, 'R');
+      if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
+        Update_udlr(iteL, 3, iteR);
+        Update_udlr(iteR, 2, iteL);
+        }
+        else {
+          gameState.a[xx][yy] = gameState.a[xx][yy - 1];
+        }
+      }
+      else {
+        gameState.a[xx][yy] = INF;
+      }
+
+      // 元のマスの右のつながり
+      gameState.a[xx][ny] = ite;
+
+      // 元のマスの上下のつながり
+      // 左と繋がっている場合、切る
+      if (gameState.udlr[ite][2] != -1) {
+        if (gameState.udlr[ite][0] != -1) {
+          int iteU = gameState.udlr[ite][0];
+          disconnectServers(iteU, ite, 1, 0, se);
+          fillPath(gameState.x[iteU] + 1, gameState.x[ite], yy, true, INF, beam);
+        }
+
+        if (gameState.udlr[ite][1] != -1) {
+          int iteD = gameState.udlr[ite][1];
+          disconnectServers(iteD, ite, 0, 1, se);
+          fillPath(gameState.x[ite] + 1, gameState.x[iteD], yy, true, INF, beam);
+        }
+      }
+      else {
+        // 上下繋がっていた
+        if (gameState.udlr[ite][0] != -1 && gameState.udlr[ite][1] != -1) {
+          // 繋ぎなおす
+          int iteU = gameState.udlr[ite][0];
+          int iteD = gameState.udlr[ite][1];
+          Update_udlr(iteU, 1, iteD);
+          Update_udlr(iteD, 0, iteU);
+          Update_udlr(ite, 0, -1);
+          Update_udlr(ite, 1, -1);
+
+          EraseUnion(ite);
+          se.insert(iteU);
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteU, iteD);
+          srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = aVal;
+          }
+        }
+        // 上繋がっていた
+        else if (gameState.udlr[ite][0] != -1) {
+          // 切る
+          int iteU = gameState.udlr[ite][0];
+          Update_udlr(iteU, 1, -1);
+          Update_udlr(ite, 0, -1);
+
+          EraseUnion(ite);
+          se.insert(iteU);
+          se.insert(ite);
+
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = INF;
+            beam.push_back(P(i, yy));
+          }
+        }
+        // 下繋がっていた
+        else if (gameState.udlr[ite][1] != -1) {
+          // 切る
+          int iteD = gameState.udlr[ite][1];
+          Update_udlr(iteD, 0, -1);
+          Update_udlr(ite, 1, -1);
+
+          EraseUnion(ite);
+          se.insert(iteD);
+          se.insert(ite);
+
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = INF;
+            beam.push_back(P(i, yy));
+          }
+        }
+        // 繋がりなし
+        else {
+          // 上と下が同じ色の場合
+          int iteU = GetIte2(xx, yy, 'U');
+          int iteD = GetIte2(xx, yy, 'D');
+          if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
+            // 繋ぐ
+            Update_udlr(iteU, 1, iteD);
+            Update_udlr(iteD, 0, iteU);
+
+            EraseUnion(iteU);
+            EraseUnion(iteD);
+            se.insert(iteU);
+
+            int aVal = MakeAValue(iteU, iteD);
+            srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+            {
+              PushACnt(i, yy);
+              gameState.a[i][yy] = aVal;
+            }
+          }
+        }
+      }
+
+      // 先のマスの上下のつながり
+      // 元々繋がっている
+      if (na != INF && gameState.udlr[ite][3] == -1) {
+        int iteU = -na / ENCODING_MULTIPLIER;
+        int iteD = -na % ENCODING_MULTIPLIER;
+        if (gameState.x[iteU] > gameState.x[iteD]) {
+          swap(iteU, iteD);
+        }
+
+        // 同じ色
+        if (getServerType(iteU) == getServerType(ite)) {
+          // 繋ぎなおす
+          Update_udlr(iteU, 1, ite);
+          Update_udlr(iteD, 0, ite);
+          Update_udlr(ite, 0, iteU);
+          Update_udlr(ite, 1, iteD);
+
+          EraseUnion(ite);
+          EraseUnion(iteU);
+
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteU, ite);
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+
+          aVal = MakeAValue(ite, iteD);
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+        }
+        // 違う色
+        else {
+          // 切る
+          Update_udlr(iteU, 1, -1);
+          Update_udlr(iteD, 0, -1);
+
+          EraseUnion(iteU);
+          se.insert(iteU);
+          se.insert(iteD);
+
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = INF;
+            beam.push_back(P(i, ny));
+          }
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = INF;
+            beam.push_back(P(i, ny));
+          }
+        }
+      }
+      // 繋がっていない
+      else {
+        // 上と繋げられるかどうか
+        int iteU = GetIte2(xx, ny, 'U');
+        if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(iteU, 1, ite);
+          Update_udlr(ite, 0, iteU);
+
+          EraseUnion(iteU);
+          EraseUnion(ite);
+          se.insert(iteU);
+
+          int aVal = MakeAValue(iteU, ite);
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+        }
+
+        // 下と繋げられるかどうか
+        int iteD = GetIte2(xx, ny, 'D');
+        if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(ite, 1, iteD);
+          Update_udlr(iteD, 0, ite);
+
+          EraseUnion(ite);
+          EraseUnion(iteD);
+          se.insert(ite);
+
+          int aVal = MakeAValue(ite, iteD);
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+        }
+      }
+    }
+    // 左
+    else {
+      // 元のマスの右のつながり
+      // 繋がっている
+      if (gameState.udlr[ite][3] != -1) {
+        if (HasServer(xx, yy + 1)) {
+          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx][yy + 1]);
+        }
+        else {
+          gameState.a[xx][yy] = gameState.a[xx][yy + 1];
+        }
+      }
+      else {
+        gameState.a[xx][yy] = INF;
+      }
+
+      // 元のマスの左のつながり
+      gameState.a[xx][ny] = ite;
+
+      // 元のマスの上下のつながり
+      // 右と繋がっている場合、切る
+      if (gameState.udlr[ite][3] != -1) {
+        if (gameState.udlr[ite][0] != -1) {
+          int iteU = gameState.udlr[ite][0];
+          Update_udlr(iteU, 1, -1);
+          Update_udlr(ite, 0, -1);
+
+          EraseUnion(ite);
+          se.insert(iteU);
+          se.insert(ite);
+
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = INF;
+            beam.push_back(P(i, yy));
+          }
+        }
+
+        if (gameState.udlr[ite][1] != -1) {
+          int iteD = gameState.udlr[ite][1];
+          Update_udlr(iteD, 0, -1);
+          Update_udlr(ite, 1, -1);
+
+          EraseUnion(ite);
+          se.insert(iteD);
+          se.insert(ite);
+
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = INF;
+            beam.push_back(P(i, yy));
+          }
+        }
+      }
+      else {
+        // 上下繋がっていた
+        if (gameState.udlr[ite][0] != -1 && gameState.udlr[ite][1] != -1) {
+          // 繋ぎなおす
+          int iteU = gameState.udlr[ite][0];
+          int iteD = gameState.udlr[ite][1];
+          Update_udlr(iteU, 1, iteD);
+          Update_udlr(iteD, 0, iteU);
+          Update_udlr(ite, 0, -1);
+          Update_udlr(ite, 1, -1);
+
+          EraseUnion(ite);
+          se.insert(iteU);
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteU, iteD);
+          srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = aVal;
+          }
+        }
+        // 上繋がっていた
+        else if (gameState.udlr[ite][0] != -1) {
+          // 切る
+          int iteU = gameState.udlr[ite][0];
+          Update_udlr(iteU, 1, -1);
+          Update_udlr(ite, 0, -1);
+
+          EraseUnion(iteU);
+          EraseUnion(ite);
+          se.insert(iteU);
+          se.insert(ite);
+
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = INF;
+            beam.push_back(P(i, yy));
+          }
+        }
+        // 下繋がっていた
+        else if (gameState.udlr[ite][1] != -1) {
+          // 切る
+          int iteD = gameState.udlr[ite][1];
+          Update_udlr(iteD, 0, -1);
+          Update_udlr(ite, 1, -1);
+
+          EraseUnion(iteD);
+          EraseUnion(ite);
+          se.insert(iteD);
+          se.insert(ite);
+
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, yy);
+            gameState.a[i][yy] = INF;
+            beam.push_back(P(i, yy));
+          }
+        }
+        // 繋がりなし
+        else {
+          // 上と下が同じ色の場合
+          int iteU = GetIte2(xx, yy, 'U');
+          int iteD = GetIte2(xx, yy, 'D');
+          if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
+            // 繋ぐ
+            Update_udlr(iteU, 1, iteD);
+            Update_udlr(iteD, 0, iteU);
+
+            EraseUnion(iteU);
+            EraseUnion(iteD);
+            se.insert(iteU);
+
+            int aVal = MakeAValue(iteU, iteD);
+            srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+            {
+              PushACnt(i, yy);
+              gameState.a[i][yy] = aVal;
+            }
+          }
+        }
+      }
+
+      // 先のマスの上下のつながり
+      // 元々繋がっている
+      if (na != INF && gameState.udlr[ite][2] == -1) {
+        int iteU = -na / ENCODING_MULTIPLIER;
+        int iteD = -na % ENCODING_MULTIPLIER;
+        if (gameState.x[iteU] > gameState.x[iteD]) {
+          swap(iteU, iteD);
+        }
+
+        // 同じ色
+        if (getServerType(iteU) == getServerType(ite)) {
+          // 繋ぎなおす
+          Update_udlr(iteU, 1, ite);
+          Update_udlr(iteD, 0, ite);
+          Update_udlr(ite, 0, iteU);
+          Update_udlr(ite, 1, iteD);
+
+          EraseUnion(ite);
+          EraseUnion(iteU);
+
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteU, ite);
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+
+          aVal = MakeAValue(ite, iteD);
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+        }
+        // 違う色
+        else {
+          // 切る
+          Update_udlr(iteU, 1, -1);
+          Update_udlr(iteD, 0, -1);
+
+          EraseUnion(iteU);
+          se.insert(iteU);
+          se.insert(iteD);
+
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = INF;
+            beam.push_back(P(i, ny));
+          }
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = INF;
+            beam.push_back(P(i, ny));
+          }
+        }
+      }
+      // 繋がっていない
+      else {
+        // 上と繋げられるかどうか
+        int iteU = GetIte2(xx, ny, 'U');
+        if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(iteU, 1, ite);
+          Update_udlr(ite, 0, iteU);
+
+          EraseUnion(iteU);
+          EraseUnion(ite);
+          se.insert(iteU);
+
+          int aVal = MakeAValue(iteU, ite);
+          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+        }
+
+        // 下と繋げられるかどうか
+        int iteD = GetIte2(xx, ny, 'D');
+        if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(ite, 1, iteD);
+          Update_udlr(iteD, 0, ite);
+
+          EraseUnion(ite);
+          EraseUnion(iteD);
+          se.insert(ite);
+
+          int aVal = MakeAValue(ite, iteD);
+          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          {
+            PushACnt(i, ny);
+            gameState.a[i][ny] = aVal;
+          }
+        }
+      }
+    }
+  }
+  else {
+    // 下
+    if (nx == xx + 1) {
+      // 元のマスの上のつながり
+      // 繋がっている
+      if (gameState.udlr[ite][0] != -1) {
+        if (HasServer(xx - 1, yy)) {
+          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx - 1][yy]);
+        }
+        else {
+          gameState.a[xx][yy] = gameState.a[xx - 1][yy];
+        }
+      }
+      else {
+        gameState.a[xx][yy] = INF;
+      }
+
+      // 元のマスの下のつながり
+      gameState.a[nx][yy] = ite;
+
+      // 元のマスの左右のつながり
+      // 上と繋がっている場合、切る
+      if (gameState.udlr[ite][0] != -1) {
+        if (gameState.udlr[ite][2] != -1) {
+          int iteL = gameState.udlr[ite][2];
+          Update_udlr(iteL, 3, -1);
+          Update_udlr(ite, 2, -1);
+
+          EraseUnion(ite);
+          se.insert(iteL);
+          se.insert(ite);
+
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+
+        if (gameState.udlr[ite][3] != -1) {
+          int iteR = gameState.udlr[ite][3];
+          Update_udlr(iteR, 2, -1);
+          Update_udlr(ite, 3, -1);
+
+          EraseUnion(ite);
+          se.insert(iteR);
+          se.insert(ite);
+
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+      }
+      else {
+        // 左右繋がっていた
+        if (gameState.udlr[ite][2] != -1 && gameState.udlr[ite][3] != -1) {
+          // 繋ぎなおす
+          int iteL = gameState.udlr[ite][2];
+          int iteR = gameState.udlr[ite][3];
+          Update_udlr(iteL, 3, iteR);
+          Update_udlr(iteR, 2, iteL);
+          Update_udlr(ite, 2, -1);
+          Update_udlr(ite, 3, -1);
+
+          EraseUnion(ite);
+          se.insert(iteL);
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteL, iteR);
+          srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = aVal;
+          }
+        }
+        // 左繋がっていた
+        else if (gameState.udlr[ite][2] != -1) {
+          // 切る
+          int iteL = gameState.udlr[ite][2];
+          Update_udlr(iteL, 3, -1);
+          Update_udlr(ite, 2, -1);
+
+          EraseUnion(iteL);
+          EraseUnion(ite);
+          se.insert(iteL);
+          se.insert(ite);
+
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+        // 右繋がっていた
+        else if (gameState.udlr[ite][3] != -1) {
+          // 切る
+          int iteR = gameState.udlr[ite][3];
+          Update_udlr(iteR, 2, -1);
+          Update_udlr(ite, 3, -1);
+
+          EraseUnion(iteR);
+          EraseUnion(ite);
+          se.insert(iteR);
+          se.insert(ite);
+
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+        // 繋がりなし
+        else {
+          // 左と右が同じ色の場合
+          int iteL = GetIte2(xx, yy, 'L');
+          int iteR = GetIte2(xx, yy, 'R');
+          if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
+            // 繋ぐ
+            Update_udlr(iteL, 3, iteR);
+            Update_udlr(iteR, 2, iteL);
+
+            EraseUnion(iteL);
+            EraseUnion(iteR);
+            se.insert(iteL);
+
+            int aVal = MakeAValue(iteL, iteR);
+            srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+            {
+              PushACnt(xx, i);
+              gameState.a[xx][i] = aVal;
+            }
+          }
+        }
+      }
+
+      // 先のマスの左右のつながり
+      // 元々繋がっている
+      if (na != INF && gameState.udlr[ite][1] == -1) {
+        int iteL = -na / ENCODING_MULTIPLIER;
+        int iteR = -na % ENCODING_MULTIPLIER;
+        if (gameState.y[iteL] > gameState.y[iteR]) {
+          swap(iteL, iteR);
+        }
+
+        // 同じ色
+        if (getServerType(iteL) == getServerType(ite)) {
+          // 繋ぎなおす
+          Update_udlr(iteL, 3, ite);
+          Update_udlr(iteR, 2, ite);
+          Update_udlr(ite, 2, iteL);
+          Update_udlr(ite, 3, iteR);
+
+          EraseUnion(ite);
+          EraseUnion(iteL);
+
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteL, ite);
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+
+          aVal = MakeAValue(ite, iteR);
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+        }
+        // 違う色
+        else {
+          // 切る
+          Update_udlr(iteL, 3, -1);
+          Update_udlr(iteR, 2, -1);
+
+          EraseUnion(iteL);
+          se.insert(iteL);
+          se.insert(iteR);
+
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = INF;
+            beam.push_back(P(nx, i));
+          }
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = INF;
+            beam.push_back(P(nx, i));
+          }
+        }
+      }
+      // 繋がっていない
+      else {
+        // 左と繋げられるかどうか
+        int iteL = GetIte2(nx, yy, 'L');
+        if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(iteL, 3, ite);
+          Update_udlr(ite, 2, iteL);
+
+          EraseUnion(iteL);
+          EraseUnion(ite);
+          se.insert(iteL);
+
+          int aVal = MakeAValue(iteL, ite);
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+        }
+
+        // 右と繋げられるかどうか
+        int iteR = GetIte2(nx, yy, 'R');
+        if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(ite, 3, iteR);
+          Update_udlr(iteR, 2, ite);
+
+          EraseUnion(ite);
+          EraseUnion(iteR);
+          se.insert(ite);
+
+          int aVal = MakeAValue(ite, iteR);
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+        }
+      }
+    }
+    // 上
+    else {
+      // 元のマスの下のつながり
+      // 繋がっている
+      if (gameState.udlr[ite][1] != -1) {
+        if (HasServer(xx + 1, yy)) {
+          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx + 1][yy]);
+        }
+        else {
+          gameState.a[xx][yy] = gameState.a[xx + 1][yy];
+        }
+      }
+      else {
+        gameState.a[xx][yy] = INF;
+      }
+
+      // 元のマスの上のつながり
+      gameState.a[nx][yy] = ite;
+
+      // 元のマスの左右のつながり
+      // 下と繋がっている場合、切る
+      if (gameState.udlr[ite][1] != -1) {
+        if (gameState.udlr[ite][2] != -1) {
+          int iteL = gameState.udlr[ite][2];
+          Update_udlr(iteL, 3, -1);
+          Update_udlr(ite, 2, -1);
+
+          EraseUnion(ite);
+          se.insert(iteL);
+          se.insert(ite);
+
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+
+        if (gameState.udlr[ite][3] != -1) {
+          int iteR = gameState.udlr[ite][3];
+          Update_udlr(iteR, 2, -1);
+          Update_udlr(ite, 3, -1);
+
+          EraseUnion(ite);
+          se.insert(iteR);
+          se.insert(ite);
+
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+      }
+      else {
+        // 左右繋がっていた
+        if (gameState.udlr[ite][2] != -1 && gameState.udlr[ite][3] != -1) {
+          // 繋ぎなおす
+          int iteL = gameState.udlr[ite][2];
+          int iteR = gameState.udlr[ite][3];
+          Update_udlr(iteL, 3, iteR);
+          Update_udlr(iteR, 2, iteL);
+          Update_udlr(ite, 2, -1);
+          Update_udlr(ite, 3, -1);
+
+          EraseUnion(ite);
+          se.insert(iteL);
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteL, iteR);
+          srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = aVal;
+          }
+        }
+        // 左繋がっていた
+        else if (gameState.udlr[ite][2] != -1) {
+          // 切る
+          int iteL = gameState.udlr[ite][2];
+          Update_udlr(iteL, 3, -1);
+          Update_udlr(ite, 2, -1);
+
+          EraseUnion(iteL);
+          EraseUnion(ite);
+          se.insert(iteL);
+          se.insert(ite);
+
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+        // 右繋がっていた
+        else if (gameState.udlr[ite][3] != -1) {
+          // 切る
+          int iteR = gameState.udlr[ite][3];
+          Update_udlr(iteR, 2, -1);
+          Update_udlr(ite, 3, -1);
+
+          EraseUnion(iteR);
+          EraseUnion(ite);
+          se.insert(iteR);
+          se.insert(ite);
+
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(xx, i);
+            gameState.a[xx][i] = INF;
+            beam.push_back(P(xx, i));
+          }
+        }
+        // 繋がりなし
+        else {
+          // 左と右が同じ色の場合
+          int iteL = GetIte2(xx, yy, 'L');
+          int iteR = GetIte2(xx, yy, 'R');
+          if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
+            // 繋ぐ
+            Update_udlr(iteL, 3, iteR);
+            Update_udlr(iteR, 2, iteL);
+
+            EraseUnion(iteL);
+            EraseUnion(iteR);
+            se.insert(iteL);
+
+            int aVal = MakeAValue(iteL, iteR);
+            srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+            {
+              PushACnt(xx, i);
+              gameState.a[xx][i] = aVal;
+            }
+          }
+        }
+      }
+
+      // 先のマスの左右のつながり
+      // 元々繋がっている
+      if (na != INF && gameState.udlr[ite][0] == -1) {
+        int iteL = -na / ENCODING_MULTIPLIER;
+        int iteR = -na % ENCODING_MULTIPLIER;
+        if (gameState.y[iteL] > gameState.y[iteR]) {
+          swap(iteL, iteR);
+        }
+
+        // 同じ色
+        if (getServerType(iteL) == getServerType(ite)) {
+          // 繋ぎなおす
+          Update_udlr(iteL, 3, ite);
+          Update_udlr(iteR, 2, ite);
+          Update_udlr(ite, 2, iteL);
+          Update_udlr(ite, 3, iteR);
+
+          EraseUnion(ite);
+          EraseUnion(iteL);
+
+          se.insert(ite);
+
+          int aVal = MakeAValue(iteL, ite);
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+
+          aVal = MakeAValue(ite, iteR);
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+        }
+        // 違う色
+        else {
+          // 切る
+          Update_udlr(iteL, 3, -1);
+          Update_udlr(iteR, 2, -1);
+
+          EraseUnion(iteL);
+          se.insert(iteL);
+          se.insert(iteR);
+
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = INF;
+            beam.push_back(P(nx, i));
+          }
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = INF;
+            beam.push_back(P(nx, i));
+          }
+        }
+      }
+      // 繋がっていない
+      else {
+        // 左と繋げられるかどうか
+        int iteL = GetIte2(nx, yy, 'L');
+        if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(iteL, 3, ite);
+          Update_udlr(ite, 2, iteL);
+
+          EraseUnion(iteL);
+          EraseUnion(ite);
+          se.insert(iteL);
+
+          int aVal = MakeAValue(iteL, ite);
+          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+        }
+
+        // 右と繋げられるかどうか
+        int iteR = GetIte2(nx, yy, 'R');
+        if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
+          // 繋ぐ
+          Update_udlr(ite, 3, iteR);
+          Update_udlr(iteR, 2, ite);
+
+          EraseUnion(ite);
+          EraseUnion(iteR);
+          se.insert(ite);
+
+          int aVal = MakeAValue(ite, iteR);
+          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          {
+            PushACnt(nx, i);
+            gameState.a[nx][i] = aVal;
+          }
+        }
+      }
+    }
+  }
 
   // 新たな辺の作成
   // 左右
@@ -1329,8 +2271,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 }
 
 // Implementation of direction-specific move processing functions
-void processRightMove(int ite, int xx, int yy, int ny, int na, set<int>& se, vector<P>& beam)
-{
+void processRightMove(int ite, int xx, int yy, int ny, int na, set<int>& se, vector<P>& beam) {
   // This is extracted from the original InnerMethod right movement logic
   // 元のマスの左のつながり
   // 繋がっている
@@ -1390,21 +2331,21 @@ void processRightMove(int ite, int xx, int yy, int ny, int na, set<int>& se, vec
     if (gameState.x[iteU] > gameState.x[iteD]) {
       swap(iteU, iteD);
     }
-
+    
     // Same color servers
     if (getServerType(iteU) == getServerType(ite)) {
       // Reconnect through the moved server
       connectServers(iteU, ite, DOWN, UP);
       connectServers(ite, iteD, DOWN, UP);
-
+      
       EraseUnion(ite);
       EraseUnion(iteU);
       se.insert(ite);
-
+      
       // Fill vertical paths
       int aVal = MakeAValue(iteU, ite);
       fillPath(gameState.x[iteU] + 1, gameState.x[ite], ny, true, aVal, beam);
-
+      
       aVal = MakeAValue(ite, iteD);
       fillPath(gameState.x[ite] + 1, gameState.x[iteD], ny, true, aVal, beam);
     }
@@ -1412,440 +2353,35 @@ void processRightMove(int ite, int xx, int yy, int ny, int na, set<int>& se, vec
     else {
       // Disconnect the existing connection
       disconnectServers(iteU, iteD, DOWN, UP, se);
-
+      
       // Fill the disconnected paths with INF
       fillPath(gameState.x[iteU] + 1, gameState.x[ite], ny, true, INF, beam);
       fillPath(gameState.x[ite] + 1, gameState.x[iteD], ny, true, INF, beam);
     }
   }
-
+  
   // Handle server on the left of destination
   int iteL = GetIte2(xx, ny, 'L');
   if (iteL != -1 && iteL != ite && getServerType(iteL) == getServerType(ite)) {
     connectServers(iteL, ite, RIGHT, LEFT);
     EraseUnion(iteL);
     se.insert(iteL);
-
+    
     int aVal = MakeAValue(iteL, ite);
     fillPath(gameState.y[iteL] + 1, gameState.y[ite], xx, false, aVal, beam);
   }
 }
 
-void processLeftMove(int ite, int xx, int yy, int ny, int na, set<int>& se, vector<P>& beam)
-{
-  // Handle right connection of source square
-  if (gameState.udlr[ite][3] != -1) {
-    if (HasServer(xx, yy + 1)) {
-      gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx][yy + 1]);
-    }
-    else {
-      gameState.a[xx][yy] = gameState.a[xx][yy + 1];
-    }
-  }
-  else {
-    gameState.a[xx][yy] = INF;
-  }
-
-  // Place server at destination
-  gameState.a[xx][ny] = ite;
-
-  // Handle vertical connections when connected to right
-  if (gameState.udlr[ite][3] != -1) {
-    if (gameState.udlr[ite][0] != -1) {
-      int iteU = gameState.udlr[ite][0];
-      disconnectServers(iteU, ite, 1, 0, se);
-      fillPath(gameState.x[iteU] + 1, gameState.x[ite], yy, true, INF, beam);
-    }
-
-    if (gameState.udlr[ite][1] != -1) {
-      int iteD = gameState.udlr[ite][1];
-      disconnectServers(iteD, ite, 0, 1, se);
-      fillPath(gameState.x[ite] + 1, gameState.x[iteD], yy, true, INF, beam);
-    }
-  }
-  else {
-    // Handle vertical reconnections
-    if (gameState.udlr[ite][0] != -1 && gameState.udlr[ite][1] != -1) {
-      int iteU = gameState.udlr[ite][0];
-      int iteD = gameState.udlr[ite][1];
-      connectServers(iteU, iteD, 1, 0);
-      Update_udlr(ite, 0, -1);
-      Update_udlr(ite, 1, -1);
-
-      EraseUnion(ite);
-      se.insert(iteU);
-      se.insert(ite);
-
-      int aVal = MakeAValue(iteU, iteD);
-      fillPath(gameState.x[iteU] + 1, gameState.x[iteD], yy, true, aVal, beam);
-    }
-    else if (gameState.udlr[ite][0] != -1) {
-      int iteU = gameState.udlr[ite][0];
-      disconnectServers(iteU, ite, 1, 0, se);
-      fillPath(gameState.x[iteU] + 1, gameState.x[ite], yy, true, INF, beam);
-    }
-    else if (gameState.udlr[ite][1] != -1) {
-      int iteD = gameState.udlr[ite][1];
-      disconnectServers(iteD, ite, 0, 1, se);
-      fillPath(gameState.x[ite] + 1, gameState.x[iteD], yy, true, INF, beam);
-    }
-    else {
-      // Check if can connect U and D at source
-      int iteU = GetIte2(xx, yy, 'U');
-      int iteD = GetIte2(xx, yy, 'D');
-      if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
-        connectServers(iteU, iteD, 1, 0);
-        EraseUnion(iteU);
-        EraseUnion(iteD);
-        se.insert(iteU);
-
-        int aVal = MakeAValue(iteU, iteD);
-        fillPath(gameState.x[iteU] + 1, gameState.x[iteD], yy, true, aVal, beam);
-      }
-    }
-  }
-
-  // Handle destination square connections
-  if (na != INF && gameState.udlr[ite][2] == -1) {
-    int iteU = -na / ENCODING_MULTIPLIER;
-    int iteD = -na % ENCODING_MULTIPLIER;
-    if (gameState.x[iteU] > gameState.x[iteD]) {
-      swap(iteU, iteD);
-    }
-
-    if (getServerType(iteU) == getServerType(ite)) {
-      connectServers(iteU, ite, DOWN, UP);
-      connectServers(ite, iteD, DOWN, UP);
-
-      EraseUnion(ite);
-      EraseUnion(iteU);
-      se.insert(ite);
-
-      int aVal = MakeAValue(iteU, ite);
-      fillPath(gameState.x[iteU] + 1, gameState.x[ite], ny, true, aVal, beam);
-
-      aVal = MakeAValue(ite, iteD);
-      fillPath(gameState.x[ite] + 1, gameState.x[iteD], ny, true, aVal, beam);
-    }
-    else {
-      disconnectServers(iteU, iteD, DOWN, UP, se);
-      fillPath(gameState.x[iteU] + 1, gameState.x[ite], ny, true, INF, beam);
-      fillPath(gameState.x[ite] + 1, gameState.x[iteD], ny, true, INF, beam);
-    }
-  }
-  else {
-    // Check connections at destination
-    int iteU = GetIte2(xx, ny, 'U');
-    if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
-      connectServers(iteU, ite, DOWN, UP);
-      EraseUnion(iteU);
-      EraseUnion(ite);
-      se.insert(iteU);
-
-      int aVal = MakeAValue(iteU, ite);
-      fillPath(gameState.x[iteU] + 1, gameState.x[ite], ny, true, aVal, beam);
-    }
-
-    int iteD = GetIte2(xx, ny, 'D');
-    if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
-      connectServers(ite, iteD, DOWN, UP);
-      EraseUnion(ite);
-      EraseUnion(iteD);
-      se.insert(ite);
-
-      int aVal = MakeAValue(ite, iteD);
-      fillPath(gameState.x[ite] + 1, gameState.x[iteD], ny, true, aVal, beam);
-    }
-  }
-
-  // Connect to right server if same type
-  int iteR = GetIte2(xx, ny, 'R');
-  if (iteR != -1 && iteR != ite && getServerType(iteR) == getServerType(ite)) {
-    connectServers(ite, iteR, RIGHT, LEFT);
-    EraseUnion(ite);
-    se.insert(ite);
-
-    int aVal = MakeAValue(ite, iteR);
-    fillPath(gameState.y[ite] + 1, gameState.y[iteR], xx, false, aVal, beam);
-  }
+void processLeftMove(int ite, int xx, int yy, int ny, int na, set<int>& se, vector<P>& beam) {
+  // TODO: Implement left movement logic
 }
 
-void processDownMove(int ite, int xx, int yy, int nx, int na, set<int>& se, vector<P>& beam)
-{
-  // Handle up connection of source square
-  if (gameState.udlr[ite][0] != -1) {
-    if (HasServer(xx - 1, yy)) {
-      gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx - 1][yy]);
-    }
-    else {
-      gameState.a[xx][yy] = gameState.a[xx - 1][yy];
-    }
-  }
-  else {
-    gameState.a[xx][yy] = INF;
-  }
-
-  // Place server at destination
-  gameState.a[nx][yy] = ite;
-
-  // Handle horizontal connections when connected up
-  if (gameState.udlr[ite][0] != -1) {
-    if (gameState.udlr[ite][2] != -1) {
-      int iteL = gameState.udlr[ite][2];
-      disconnectServers(iteL, ite, 3, 2, se);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], xx, false, INF, beam);
-    }
-
-    if (gameState.udlr[ite][3] != -1) {
-      int iteR = gameState.udlr[ite][3];
-      disconnectServers(iteR, ite, 2, 3, se);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], xx, false, INF, beam);
-    }
-  }
-  else {
-    // Handle horizontal reconnections
-    if (gameState.udlr[ite][2] != -1 && gameState.udlr[ite][3] != -1) {
-      int iteL = gameState.udlr[ite][2];
-      int iteR = gameState.udlr[ite][3];
-      connectServers(iteL, iteR, 3, 2);
-      Update_udlr(ite, 2, -1);
-      Update_udlr(ite, 3, -1);
-
-      EraseUnion(ite);
-      se.insert(iteL);
-      se.insert(ite);
-
-      int aVal = MakeAValue(iteL, iteR);
-      fillPath(gameState.y[iteL] + 1, gameState.y[iteR], xx, false, aVal, beam);
-    }
-    else if (gameState.udlr[ite][2] != -1) {
-      int iteL = gameState.udlr[ite][2];
-      disconnectServers(iteL, ite, 3, 2, se);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], xx, false, INF, beam);
-    }
-    else if (gameState.udlr[ite][3] != -1) {
-      int iteR = gameState.udlr[ite][3];
-      disconnectServers(iteR, ite, 2, 3, se);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], xx, false, INF, beam);
-    }
-    else {
-      // Check if can connect L and R at source
-      int iteL = GetIte2(xx, yy, 'L');
-      int iteR = GetIte2(xx, yy, 'R');
-      if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
-        connectServers(iteL, iteR, 3, 2);
-        EraseUnion(iteL);
-        EraseUnion(iteR);
-        se.insert(iteL);
-
-        int aVal = MakeAValue(iteL, iteR);
-        fillPath(gameState.y[iteL] + 1, gameState.y[iteR], xx, false, aVal, beam);
-      }
-    }
-  }
-
-  // Handle destination square connections
-  if (na != INF && gameState.udlr[ite][1] == -1) {
-    int iteL = -na / ENCODING_MULTIPLIER;
-    int iteR = -na % ENCODING_MULTIPLIER;
-    if (gameState.y[iteL] > gameState.y[iteR]) {
-      swap(iteL, iteR);
-    }
-
-    if (getServerType(iteL) == getServerType(ite)) {
-      connectServers(iteL, ite, RIGHT, LEFT);
-      connectServers(ite, iteR, RIGHT, LEFT);
-
-      EraseUnion(ite);
-      EraseUnion(iteL);
-      se.insert(ite);
-
-      int aVal = MakeAValue(iteL, ite);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], nx, false, aVal, beam);
-
-      aVal = MakeAValue(ite, iteR);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], nx, false, aVal, beam);
-    }
-    else {
-      disconnectServers(iteL, iteR, RIGHT, LEFT, se);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], nx, false, INF, beam);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], nx, false, INF, beam);
-    }
-  }
-  else {
-    // Check connections at destination
-    int iteL = GetIte2(nx, yy, 'L');
-    if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
-      connectServers(iteL, ite, RIGHT, LEFT);
-      EraseUnion(iteL);
-      EraseUnion(ite);
-      se.insert(iteL);
-
-      int aVal = MakeAValue(iteL, ite);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], nx, false, aVal, beam);
-    }
-
-    int iteR = GetIte2(nx, yy, 'R');
-    if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
-      connectServers(ite, iteR, RIGHT, LEFT);
-      EraseUnion(ite);
-      EraseUnion(iteR);
-      se.insert(ite);
-
-      int aVal = MakeAValue(ite, iteR);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], nx, false, aVal, beam);
-    }
-  }
-
-  // Connect to up server if same type
-  int iteU = GetIte2(nx, yy, 'U');
-  if (iteU != -1 && iteU != ite && getServerType(iteU) == getServerType(ite)) {
-    connectServers(iteU, ite, DOWN, UP);
-    EraseUnion(iteU);
-    se.insert(iteU);
-
-    int aVal = MakeAValue(iteU, ite);
-    fillPath(gameState.x[iteU] + 1, gameState.x[ite], yy, true, aVal, beam);
-  }
+void processDownMove(int ite, int xx, int yy, int nx, int na, set<int>& se, vector<P>& beam) {
+  // TODO: Implement down movement logic
 }
 
-void processUpMove(int ite, int xx, int yy, int nx, int na, set<int>& se, vector<P>& beam)
-{
-  // Handle down connection of source square
-  if (gameState.udlr[ite][1] != -1) {
-    if (HasServer(xx + 1, yy)) {
-      gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx + 1][yy]);
-    }
-    else {
-      gameState.a[xx][yy] = gameState.a[xx + 1][yy];
-    }
-  }
-  else {
-    gameState.a[xx][yy] = INF;
-  }
-
-  // Place server at destination
-  gameState.a[nx][yy] = ite;
-
-  // Handle horizontal connections when connected down
-  if (gameState.udlr[ite][1] != -1) {
-    if (gameState.udlr[ite][2] != -1) {
-      int iteL = gameState.udlr[ite][2];
-      disconnectServers(iteL, ite, 3, 2, se);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], xx, false, INF, beam);
-    }
-
-    if (gameState.udlr[ite][3] != -1) {
-      int iteR = gameState.udlr[ite][3];
-      disconnectServers(iteR, ite, 2, 3, se);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], xx, false, INF, beam);
-    }
-  }
-  else {
-    // Handle horizontal reconnections
-    if (gameState.udlr[ite][2] != -1 && gameState.udlr[ite][3] != -1) {
-      int iteL = gameState.udlr[ite][2];
-      int iteR = gameState.udlr[ite][3];
-      connectServers(iteL, iteR, 3, 2);
-      Update_udlr(ite, 2, -1);
-      Update_udlr(ite, 3, -1);
-
-      EraseUnion(ite);
-      se.insert(iteL);
-      se.insert(ite);
-
-      int aVal = MakeAValue(iteL, iteR);
-      fillPath(gameState.y[iteL] + 1, gameState.y[iteR], xx, false, aVal, beam);
-    }
-    else if (gameState.udlr[ite][2] != -1) {
-      int iteL = gameState.udlr[ite][2];
-      disconnectServers(iteL, ite, 3, 2, se);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], xx, false, INF, beam);
-    }
-    else if (gameState.udlr[ite][3] != -1) {
-      int iteR = gameState.udlr[ite][3];
-      disconnectServers(iteR, ite, 2, 3, se);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], xx, false, INF, beam);
-    }
-    else {
-      // Check if can connect L and R at source
-      int iteL = GetIte2(xx, yy, 'L');
-      int iteR = GetIte2(xx, yy, 'R');
-      if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
-        connectServers(iteL, iteR, 3, 2);
-        EraseUnion(iteL);
-        EraseUnion(iteR);
-        se.insert(iteL);
-
-        int aVal = MakeAValue(iteL, iteR);
-        fillPath(gameState.y[iteL] + 1, gameState.y[iteR], xx, false, aVal, beam);
-      }
-    }
-  }
-
-  // Handle destination square connections
-  if (na != INF && gameState.udlr[ite][0] == -1) {
-    int iteL = -na / ENCODING_MULTIPLIER;
-    int iteR = -na % ENCODING_MULTIPLIER;
-    if (gameState.y[iteL] > gameState.y[iteR]) {
-      swap(iteL, iteR);
-    }
-
-    if (getServerType(iteL) == getServerType(ite)) {
-      connectServers(iteL, ite, RIGHT, LEFT);
-      connectServers(ite, iteR, RIGHT, LEFT);
-
-      EraseUnion(ite);
-      EraseUnion(iteL);
-      se.insert(ite);
-
-      int aVal = MakeAValue(iteL, ite);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], nx, false, aVal, beam);
-
-      aVal = MakeAValue(ite, iteR);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], nx, false, aVal, beam);
-    }
-    else {
-      disconnectServers(iteL, iteR, RIGHT, LEFT, se);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], nx, false, INF, beam);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], nx, false, INF, beam);
-    }
-  }
-  else {
-    // Check connections at destination
-    int iteL = GetIte2(nx, yy, 'L');
-    if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
-      connectServers(iteL, ite, RIGHT, LEFT);
-      EraseUnion(iteL);
-      EraseUnion(ite);
-      se.insert(iteL);
-
-      int aVal = MakeAValue(iteL, ite);
-      fillPath(gameState.y[iteL] + 1, gameState.y[ite], nx, false, aVal, beam);
-    }
-
-    int iteR = GetIte2(nx, yy, 'R');
-    if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
-      connectServers(ite, iteR, RIGHT, LEFT);
-      EraseUnion(ite);
-      EraseUnion(iteR);
-      se.insert(ite);
-
-      int aVal = MakeAValue(ite, iteR);
-      fillPath(gameState.y[ite] + 1, gameState.y[iteR], nx, false, aVal, beam);
-    }
-  }
-
-  // Connect to down server if same type
-  int iteD = GetIte2(nx, yy, 'D');
-  if (iteD != -1 && iteD != ite && getServerType(iteD) == getServerType(ite)) {
-    connectServers(ite, iteD, DOWN, UP);
-    EraseUnion(ite);
-    se.insert(ite);
-
-    int aVal = MakeAValue(ite, iteD);
-    fillPath(gameState.x[ite] + 1, gameState.x[iteD], yy, true, aVal, beam);
-  }
+void processUpMove(int ite, int xx, int yy, int nx, int na, set<int>& se, vector<P>& beam) {
+  // TODO: Implement up movement logic
 }
 
 void Method1(double start_temp, double end_temp, double now_progress)
