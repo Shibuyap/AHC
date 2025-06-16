@@ -71,6 +71,19 @@ namespace /* 変数 */
   int S;
   int W[64][64];
 
+  struct State
+  {
+    double maxScore;
+    int ansSize;
+    int ans[ANS_SIZE][4][2];
+    int ansDelete[ANS_SIZE];
+    int ansDeleteCount;
+    bool f[64][64];
+    bool line[64][64][8];
+    int use[64][64];
+    int cntH[64], cntW[64];
+  };
+
   // 解答用変数
   const int ANS_SIZE = 20000;
   double maxScore;
@@ -82,16 +95,8 @@ namespace /* 変数 */
   int line[64][64][8];
   int use[64][64];
   int cntH[64], cntW[64];
-
-  double real_maxScore;
-  int real_ansSize;
-  int real_ans[ANS_SIZE][4][2];
-  int real_ansDelete[ANS_SIZE];
-  int real_ansDeleteCount;
-  bool real_f[64][64];
-  bool real_line[64][64][8];
-  int real_use[64][64];
-  int real_cntH[64], real_cntW[64];
+  
+  State best_state;
 
   double seed_maxScore;
   int seed_ansSize;
@@ -165,20 +170,20 @@ void NormalClear()
 
 void RealClear()
 {
-  real_maxScore = 0;
-  real_ansSize = 0;
-  real_ansDeleteCount = 0;
-  rep(i, ANS_SIZE) real_ansDelete[i] = 0;
+  best_state.maxScore = 0;
+  best_state.ansSize = 0;
+  best_state.ansDeleteCount = 0;
+  rep(i, ANS_SIZE) best_state.ansDelete[i] = 0;
   rep(i, 64) rep(j, 64)
   {
-    real_f[i][j] = false;
-    rep(k, 8) real_line[i][j][k] = 0;
-    real_use[i][j] = 0;
+    best_state.f[i][j] = false;
+    rep(k, 8) best_state.line[i][j][k] = 0;
+    best_state.use[i][j] = 0;
   }
   rep(i, 64)
   {
-    real_cntH[i] = 0;
-    real_cntW[i] = 0;
+    best_state.cntH[i] = 0;
+    best_state.cntW[i] = 0;
   }
 }
 
@@ -317,24 +322,24 @@ void Output(int mode, int problemNum)
 
 void CopyToReal()
 {
-  real_maxScore = maxScore;
-  real_ansSize = ansSize;
-  real_ansDeleteCount = ansDeleteCount;
+  best_state.maxScore = maxScore;
+  best_state.ansSize = ansSize;
+  best_state.ansDeleteCount = ansDeleteCount;
   rep(i, ansSize)
   {
-    rep(j, 4) rep(k, 2) { real_ans[i][j][k] = ans[i][j][k]; }
-    real_ansDelete[i] = ansDelete[i];
+    rep(j, 4) rep(k, 2) { best_state.ans[i][j][k] = ans[i][j][k]; }
+    best_state.ansDelete[i] = ansDelete[i];
   }
   rep(i, N) rep(j, N)
   {
-    real_f[i][j] = f[i][j];
-    rep(k, 8) real_line[i][j][k] = line[i][j][k];
-    real_use[i][j] = use[i][j];
+    best_state.f[i][j] = f[i][j];
+    rep(k, 8) best_state.line[i][j][k] = line[i][j][k];
+    best_state.use[i][j] = use[i][j];
   }
   rep(i, 64)
   {
-    real_cntH[i] = cntH[i];
-    real_cntW[i] = cntW[i];
+    best_state.cntH[i] = cntH[i];
+    best_state.cntW[i] = cntW[i];
   }
 }
 
@@ -363,24 +368,24 @@ void CopyToSeed()
 
 void RollBackFromReal()
 {
-  maxScore = real_maxScore;
-  ansSize = real_ansSize;
-  ansDeleteCount = real_ansDeleteCount;
+  maxScore = best_state.maxScore;
+  ansSize = best_state.ansSize;
+  ansDeleteCount = best_state.ansDeleteCount;
   rep(i, ansSize)
   {
-    rep(j, 4) rep(k, 2) { ans[i][j][k] = real_ans[i][j][k]; }
-    ansDelete[i] = real_ansDelete[i];
+    rep(j, 4) rep(k, 2) { ans[i][j][k] = best_state.ans[i][j][k]; }
+    ansDelete[i] = best_state.ansDelete[i];
   }
   rep(i, N) rep(j, N)
   {
-    f[i][j] = real_f[i][j];
-    rep(k, 8) line[i][j][k] = real_line[i][j][k];
-    use[i][j] = real_use[i][j];
+    f[i][j] = best_state.f[i][j];
+    rep(k, 8) line[i][j][k] = best_state.line[i][j][k];
+    use[i][j] = best_state.use[i][j];
   }
   rep(i, 64)
   {
-    cntH[i] = real_cntH[i];
-    cntW[i] = real_cntW[i];
+    cntH[i] = best_state.cntH[i];
+    cntW[i] = best_state.cntW[i];
   }
 }
 
@@ -951,7 +956,7 @@ void Method1(double temperature)
       line[x3][y3][7] = true;
     }
 
-    if (maxScore > real_maxScore) {
+    if (maxScore > best_state.maxScore) {
       // RefleshAns();
       CopyToReal();
     }
@@ -1138,7 +1143,7 @@ int Solve(int mode, int problemNum = 0)
       if (nowProgress > 1.0) break;
 
       // 現在のスコアが悪いときは元に戻す
-      if (maxScore * 1.2 < real_maxScore) {
+      if (maxScore * 1.2 < best_state.maxScore) {
         RollBackFromReal();
         rollbackCount++;
       }
@@ -1200,7 +1205,7 @@ int Solve(int mode, int problemNum = 0)
     if (nowProgress > 1.0) break;
 
     // 現在のスコアが悪いときは元に戻す
-    if (maxScore * 1.2 < real_maxScore) {
+    if (maxScore * 1.2 < best_state.maxScore) {
       RollBackFromReal();
       rollbackCount++;
     }
@@ -1274,7 +1279,7 @@ int main()
   mainStart = clock();
   mainEnd = clock();
 
-  int mode = 0;
+  int mode = 2;
 
   // 提出用
   if (mode == 0) {
@@ -1291,7 +1296,7 @@ int main()
   // 複数ケース試す
   else if (mode == 2) {
     int scoreSum = 0;
-    rep(i, 100)
+    rep(i, 10)
     {
       scoreSum += SolveOuter(mode, i);
       AllClear_MultiCase();
