@@ -499,8 +499,6 @@ public:
   }
 };
 
-// グローバルインスタンスは削除し、ローカルで作成する
-
 // Method2のヘルパー関数：インデックスを指定して解答を出力
 bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs, Method2State& m2)
 {
@@ -776,7 +774,7 @@ void Method2_2_Initialize(Method2State& m2)
   // candidates配列のサイズ調整と初期化
   m2.candidates.resize(gridFourth, vector<vector<int>>(n, vector<int>(n, 0)));
   m2.isValidPattern.resize(gridFourth, true);
-  
+
   for (int i = 0; i < gridFourth; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
@@ -821,7 +819,7 @@ void Method2_2_Initialize(Method2State& m2)
   m2.confirmedValue1.resize(n, vector<int>(n, -1));
   m2.confirmedValue2.resize(n, vector<int>(n, -1));
   m2.ambiguousValue.resize(n, vector<int>(n, -1));
-  
+
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       m2.confirmedValue1[i][j] = -1;
