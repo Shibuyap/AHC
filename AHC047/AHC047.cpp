@@ -106,16 +106,16 @@ const int n = 36;
 const int m = 12;
 const int L = 1000000;
 
-string s[n];
-vector<int> sv[n];
-int p[n];
+string target_strings[n];
+vector<int> target_sequences[n];
+int preferences[n];
 
-int c[m];
+int state_chars[m];
 
-int a[m][m];
+int transition_probs[m][m];
 int current_score;
 
-int best_a[m][m];
+int best_transition_probs[m][m];
 int best_score;
 
 void store_best_score()
@@ -123,7 +123,7 @@ void store_best_score()
   best_score = current_score;
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < m; ++j) {
-      best_a[i][j] = a[i][j];
+      best_transition_probs[i][j] = transition_probs[i][j];
     }
   }
 }
@@ -133,7 +133,7 @@ void restore_best_score()
   current_score = best_score;
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < m; ++j) {
-      a[i][j] = best_a[i][j];
+      transition_probs[i][j] = best_transition_probs[i][j];
     }
   }
 }
@@ -154,8 +154,8 @@ void input_data(int case_num)
     int _n, _m, _L;
     cin >> _n >> _m >> _L;
     for (int i = 0; i < n; ++i) {
-      cin >> s[i];
-      cin >> p[i];
+      cin >> target_strings[i];
+      cin >> preferences[i];
     }
   }
   else {
@@ -163,28 +163,28 @@ void input_data(int case_num)
     int _n, _m, _L;
     ifs >> _n >> _m >> _L;
     for (int i = 0; i < n; ++i) {
-      ifs >> s[i];
-      ifs >> p[i];
+      ifs >> target_strings[i];
+      ifs >> preferences[i];
     }
   }
 
   for (int i = 0; i < n; ++i) {
     vector<int> v;
-    for (int j = 0; j < s[i].size(); ++j) {
-      if (s[i][j] == ' ') continue;
-      v.push_back(s[i][j] - 'a');
+    for (int j = 0; j < target_strings[i].size(); ++j) {
+      if (target_strings[i][j] == ' ') continue;
+      v.push_back(target_strings[i][j] - 'a');
     }
-    sv[i] = v;
+    target_sequences[i] = v;
   }
 
-  vector<pair<int, vector<int>>> tmp;
+  vector<pair<int, vector<int>>> sorted_preferences;
   for (int i = 0; i < n; ++i) {
-    tmp.push_back(make_pair(p[i], sv[i]));
+    sorted_preferences.push_back(make_pair(preferences[i], target_sequences[i]));
   }
-  sort(tmp.begin(), tmp.end());
+  sort(sorted_preferences.begin(), sorted_preferences.end());
   for (int i = 0; i < n; ++i) {
-    p[i] = tmp[i].first;
-    sv[i] = tmp[i].second;
+    preferences[i] = sorted_preferences[i].first;
+    target_sequences[i] = sorted_preferences[i].second;
   }
 }
 
@@ -203,7 +203,7 @@ inline void build_transition(double P[12][12])
   constexpr double kInv = 1.0 / 100.0;
   for (int i = 0; i < 12; ++i)
     for (int j = 0; j < 12; ++j)
-      P[i][j] = a[i][j] * kInv;        // row-stochastic
+      P[i][j] = transition_probs[i][j] * kInv;        // row-stochastic
 }
 
 inline void stationary_dist(const double P[12][12],
@@ -266,8 +266,8 @@ int evaluate_score(bool all = false)
     double dp[2] = {};
     double dp2[2] = {};
 
-    for (int j = 0; j < sv[i].size(); ++j) {
-      int num = sv[i][j];
+    for (int j = 0; j < target_sequences[i].size(); ++j) {
+      int num = target_sequences[i][j];
       if (j == 0) {
         dp[0] = visited[num];
         dp[1] = visited[num + 6];
@@ -276,20 +276,20 @@ int evaluate_score(bool all = false)
         dp2[0] = 0;
         dp2[1] = 0;
 
-        dp2[0] += dp[0] * a[sv[i][j - 1]][sv[i][j]] / 100.0;
-        dp2[1] += dp[0] * a[sv[i][j - 1]][sv[i][j] + 6] / 100.0;
-        dp2[0] += dp[1] * a[sv[i][j - 1] + 6][sv[i][j]] / 100.0;
-        dp2[1] += dp[1] * a[sv[i][j - 1] + 6][sv[i][j] + 6] / 100.0;
+        dp2[0] += dp[0] * transition_probs[target_sequences[i][j - 1]][target_sequences[i][j]] / 100.0;
+        dp2[1] += dp[0] * transition_probs[target_sequences[i][j - 1]][target_sequences[i][j] + 6] / 100.0;
+        dp2[0] += dp[1] * transition_probs[target_sequences[i][j - 1] + 6][target_sequences[i][j]] / 100.0;
+        dp2[1] += dp[1] * transition_probs[target_sequences[i][j - 1] + 6][target_sequences[i][j] + 6] / 100.0;
 
         dp[0] = dp2[0];
         dp[1] = dp2[1];
       }
     }
 
-    double kaku = prob_one_or_more(dp[0] + dp[1]);
-    res += kaku * p[i];
+    double appearance_prob = prob_one_or_more(dp[0] + dp[1]);
+    res += appearance_prob * preferences[i];
     if (all) {
-      cout << i << " " << dp[0] + dp[1] << " " << kaku << " " << p[i] << endl;
+      cout << i << " " << dp[0] + dp[1] << " " << appearance_prob << " " << preferences[i] << endl;
     }
   }
 
@@ -301,9 +301,9 @@ void output_data(ofstream& ofs)
   if (exec_mode == 0) {
     // 標準出力
     for (int i = 0; i < m; ++i) {
-      cout << (char)('a' + c[i]);
+      cout << (char)('a' + state_chars[i]);
       for (int j = 0; j < m; ++j) {
-        cout << ' ' << a[i][j];
+        cout << ' ' << transition_probs[i][j];
       }
       cout << endl;
     }
@@ -311,9 +311,9 @@ void output_data(ofstream& ofs)
   else {
     // ファイル出力
     for (int i = 0; i < m; ++i) {
-      ofs << (char)('a' + c[i]);
+      ofs << (char)('a' + state_chars[i]);
       for (int j = 0; j < m; ++j) {
-        ofs << ' ' << a[i][j];
+        ofs << ' ' << transition_probs[i][j];
       }
       ofs << endl;
     }
@@ -364,11 +364,11 @@ vector<int> normalize_to_100(const vector<double>& v)
 
 void build_seed_solution(double time_limit)
 {
-  int max_a[m][m];
+  int max_transition_probs[m][m];
   int max_score = -1;
 
-  int ras[n];
-  int vv[20];
+  int selected_indices[n];
+  int state_sequence[20];
 
   vector<double> cnt_sum[12];
   for (int i = 0; i < 12; ++i) {
@@ -376,7 +376,7 @@ void build_seed_solution(double time_limit)
   }
 
   for (int i = 0; i < m; ++i) {
-    c[i] = i % 6;
+    state_chars[i] = i % 6;
   }
 
   int iter = 0;
@@ -388,36 +388,36 @@ void build_seed_solution(double time_limit)
 
     for (int i = 0; i < m; ++i) {
       for (int j = 0; j < m; ++j) {
-        a[i][j] = 0;
+        transition_probs[i][j] = 0;
       }
     }
 
-    int ra = rand_xorshift() % 10 + 2;
+    int num_selected = rand_xorshift() % 10 + 2;
     int sz = 0;
-    for (int i = 0; i < ra; ++i) {
-      int lll = n - 1 - i;
+    for (int i = 0; i < num_selected; ++i) {
+      int string_index = n - 1 - i;
       if (rand_xorshift() % 100 < 90) {
-        ras[sz] = lll;
+        selected_indices[sz] = string_index;
         sz++;
       }
     }
 
     for (int l = 0; l < sz; ++l) {
-      int lll = ras[l];
-      for (int i = 0; i < sv[lll].size(); ++i) {
-        vv[i] = sv[lll][i] + rand_xorshift() % 2 * 6;
+      int string_index = selected_indices[l];
+      for (int i = 0; i < target_sequences[string_index].size(); ++i) {
+        state_sequence[i] = target_sequences[string_index][i] + rand_xorshift() % 2 * 6;
       }
-      for (int i = 0; i < sv[lll].size() - 1; ++i) {
-        int x = vv[i];
-        int y = vv[i + 1];
-        cnt_sum[x][y] += p[lll];
+      for (int i = 0; i < target_sequences[string_index].size() - 1; ++i) {
+        int x = state_sequence[i];
+        int y = state_sequence[i + 1];
+        cnt_sum[x][y] += preferences[string_index];
       }
     }
 
     for (int i = 0; i < 12; ++i) {
       auto v = normalize_to_100(cnt_sum[i]);
       for (int j = 0; j < 12; ++j) {
-        a[i][j] = v[j];
+        transition_probs[i][j] = v[j];
       }
       for (int j = 0; j < 12; ++j) {
         cnt_sum[i][j] = 0;
@@ -429,7 +429,7 @@ void build_seed_solution(double time_limit)
       max_score = score;
       for (int i = 0; i < m; ++i) {
         for (int j = 0; j < m; ++j) {
-          max_a[i][j] = a[i][j];
+          max_transition_probs[i][j] = transition_probs[i][j];
         }
       }
     }
@@ -439,7 +439,7 @@ void build_seed_solution(double time_limit)
 
   for (int i = 0; i < m; ++i) {
     for (int j = 0; j < m; ++j) {
-      a[i][j] = max_a[i][j];
+      transition_probs[i][j] = max_transition_probs[i][j];
     }
   }
 }
@@ -452,7 +452,7 @@ struct AnnealingParams
   int operation_thresholds[10];
 };
 
-void run_simulated_annealing(AnnealingParams params, int siki, double time_limit)
+void run_simulated_annealing(AnnealingParams params, int mode, double time_limit)
 {
   current_score = evaluate_score();
   store_best_score();
@@ -480,18 +480,18 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % params.operation_thresholds[2];
+    int operation_type = rand_xorshift() % params.operation_thresholds[2];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
-    if (ra_exec_mode < params.operation_thresholds[0]) {
+    if (operation_type < params.operation_thresholds[0]) {
       // 近傍操作1
       ra5 = rand_xorshift() % 15 + 1;
       ra1 = rand_xorshift() % 2;
       ra2 = rand_xorshift() % 6;
       ra3 = rand_xorshift() % 6;
       int ng = 0;
-      while (a[ra2 + ra1 * 6][ra3 + ra1 * 6] < ra5) {
+      while (transition_probs[ra2 + ra1 * 6][ra3 + ra1 * 6] < ra5) {
         ra2 = rand_xorshift() % 6;
         ra3 = rand_xorshift() % 6;
         ng++;
@@ -503,17 +503,17 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
         ra4 = rand_xorshift() % 6;
       }
 
-      a[ra2 + ra1 * 6][ra3 + ra1 * 6] -= ra5;
-      a[ra2 + ra1 * 6][ra4 + ra1 * 6] += ra5;
+      transition_probs[ra2 + ra1 * 6][ra3 + ra1 * 6] -= ra5;
+      transition_probs[ra2 + ra1 * 6][ra4 + ra1 * 6] += ra5;
     }
-    else if (ra_exec_mode < params.operation_thresholds[1]) {
+    else if (operation_type < params.operation_thresholds[1]) {
       // 近傍操作2
       ra1 = 0;
       ra5 = rand_xorshift() % 15 + 1;
       ra2 = rand_xorshift() % 12;
       ra3 = rand_xorshift() % 12;
       int ng = 0;
-      while (a[ra2][ra3] < ra5) {
+      while (transition_probs[ra2][ra3] < ra5) {
         ra2 = rand_xorshift() % 12;
         ra3 = rand_xorshift() % 12;
         ng++;
@@ -525,20 +525,20 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
         ra4 = rand_xorshift() % 12;
       }
 
-      a[ra2][ra3] -= ra5;
-      a[ra2][ra4] += ra5;
+      transition_probs[ra2][ra3] -= ra5;
+      transition_probs[ra2][ra4] += ra5;
     }
-    else if (ra_exec_mode < params.operation_thresholds[2]) {
+    else if (operation_type < params.operation_thresholds[2]) {
       // 近傍操作2
       ra1 = rand_xorshift() % 6;
       ra2 = rand_xorshift() % 6;
-      swap(a[ra1][ra2], a[ra1][ra2 + 6]);
+      swap(transition_probs[ra1][ra2], transition_probs[ra1][ra2 + 6]);
     }
-    else if (ra_exec_mode < params.operation_thresholds[3]) {
+    else if (operation_type < params.operation_thresholds[3]) {
       // 近傍操作2
       ra1 = rand_xorshift() % 6;
       for (int j = 0; j < 12; ++j) {
-        swap(a[ra1][j], a[ra1 + 6][j]);
+        swap(transition_probs[ra1][j], transition_probs[ra1 + 6][j]);
       }
     }
 
@@ -559,24 +559,24 @@ void run_simulated_annealing(AnnealingParams params, int siki, double time_limit
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < params.operation_thresholds[0]) {
+      if (operation_type < params.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
-        a[ra2 + ra1 * 6][ra3 + ra1 * 6] += ra5;
-        a[ra2 + ra1 * 6][ra4 + ra1 * 6] -= ra5;
+        transition_probs[ra2 + ra1 * 6][ra3 + ra1 * 6] += ra5;
+        transition_probs[ra2 + ra1 * 6][ra4 + ra1 * 6] -= ra5;
       }
-      else if (ra_exec_mode < params.operation_thresholds[1]) {
+      else if (operation_type < params.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
-        a[ra2][ra3] += ra5;
-        a[ra2][ra4] -= ra5;
+        transition_probs[ra2][ra3] += ra5;
+        transition_probs[ra2][ra4] -= ra5;
       }
-      else if (ra_exec_mode < params.operation_thresholds[2]) {
+      else if (operation_type < params.operation_thresholds[2]) {
         // 近傍操作2 の巻き戻し
-        swap(a[ra1][ra2], a[ra1][ra2 + 6]);
+        swap(transition_probs[ra1][ra2], transition_probs[ra1][ra2 + 6]);
       }
-      else if (ra_exec_mode < params.operation_thresholds[3]) {
+      else if (operation_type < params.operation_thresholds[3]) {
         // 近傍操作2 の巻き戻し
         for (int j = 0; j < 12; ++j) {
-          swap(a[ra1][j], a[ra1 + 6][j]);
+          swap(transition_probs[ra1][j], transition_probs[ra1 + 6][j]);
         }
       }
     }
