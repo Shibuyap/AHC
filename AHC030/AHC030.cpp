@@ -451,7 +451,8 @@ ll CalcScore()
 }
 
 // Method2の状態を管理するクラス
-class Method2State {
+class Method2State
+{
 public:
   int kouho[MAX_NNNN][MAX_N][MAX_N];
   bool ok[MAX_NNNN];
@@ -459,26 +460,27 @@ public:
   int kakuteiValue2[MAX_N][MAX_N];
   int aimaiValue[MAX_N][MAX_N];
   int nums[MAX_N][MAX_N][MAX_M + 1];
-  
+
   // コンストラクタ
-  Method2State() {
+  Method2State()
+  {
     // 初期化はresetメソッドで行う
+    // 静的配列なのでゼロ初期化は自動的に行われる
   }
-  
+
   // 全てのデータをリセット
-  void reset() {
-    // nnnnとnが初期化されていることを前提とする
+  void reset()
+  {
+    // 全配列を初期化（サイズはMAX定数を使用）
     for (int i = 0; i < MAX_NNNN; ++i) {
       ok[i] = true;
-      if (i < nnnn) {
-        for (int j = 0; j < n; ++j) {
-          for (int k = 0; k < n; ++k) {
-            kouho[i][j][k] = 0;
-          }
+      for (int j = 0; j < MAX_N; ++j) {
+        for (int k = 0; k < MAX_N; ++k) {
+          kouho[i][j][k] = 0;
         }
       }
     }
-    
+
     for (int i = 0; i < MAX_N; ++i) {
       for (int j = 0; j < MAX_N; ++j) {
         kakuteiValue1[i][j] = -1;
@@ -492,11 +494,10 @@ public:
   }
 };
 
-// グローバルインスタンス
-Method2State m2;
+// グローバルインスタンスは削除し、ローカルで作成する
 
 // Method2のヘルパー関数：インデックスを指定して解答を出力
-bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
+bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs, Method2State& m2)
 {
   vector<P> ans;
   for (int i = 0; i < n; ++i) {
@@ -509,7 +510,7 @@ bool Method2_PrintAnsWithIndex(int idx, ofstream& ofs)
 }
 
 // Method2のヘルパー関数：候補数のカウント
-int Method2_CountCandidates()
+int Method2_CountCandidates(Method2State& m2)
 {
   int kouhoCount = 0;
 
@@ -537,7 +538,7 @@ int Method2_CountCandidates()
 }
 
 // Method2のヘルパー関数：候補パターンの列挙
-void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
+void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1, Method2State& m2)
 {
   if (isTotyuu == 0 || isTotyuu == 2) {
     // 2つのパターンの全組み合わせを列挙
@@ -597,7 +598,7 @@ void Method2_EnumerateCandidates(int isTotyuu, int mNum0, int mNum1)
 }
 
 // Method2のヘルパー関数：クエリ位置の選択
-P Method2_SelectQueryPosition()
+P Method2_SelectQueryPosition(Method2State& m2)
 {
   P result = { -1, -1 };
   bool findOne = false;
@@ -644,7 +645,7 @@ P Method2_SelectQueryPosition()
 }
 
 // Method2のヘルパー関数：単一候補の処理
-void Method2_HandleSingleCandidate(ofstream& ofs)
+void Method2_HandleSingleCandidate(ofstream& ofs, Method2State& m2)
 {
   int idx = -1;
   for (int i = 0; i < nnnn; ++i) {
@@ -653,13 +654,13 @@ void Method2_HandleSingleCandidate(ofstream& ofs)
       break;
     }
   }
-  Method2_PrintAnsWithIndex(idx, ofs);
+  Method2_PrintAnsWithIndex(idx, ofs, m2);
 }
 
 // Method2のヘルパー関数：クエリ実行と更新
-void Method2_QueryAndUpdate(ofstream& ofs, int& cnt)
+void Method2_QueryAndUpdate(ofstream& ofs, int& cnt, Method2State& m2)
 {
-  P pos = Method2_SelectQueryPosition();
+  P pos = Method2_SelectQueryPosition(m2);
   int x = pos.first;
   int y = pos.second;
 
@@ -675,7 +676,7 @@ void Method2_QueryAndUpdate(ofstream& ofs, int& cnt)
   }
 }
 
-void Method2_Kakutei(ofstream& ofs)
+void Method2_Kakutei(ofstream& ofs, Method2State& m2)
 {
   vector<P> ans;
   for (int i = 0; i < n; ++i) {
@@ -687,10 +688,24 @@ void Method2_Kakutei(ofstream& ofs)
 }
 
 // Method2のヘルパー関数：初期化処理
-void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, const vector<vector<int>>& kakuteiValue2, int& cnt, int& cnt2)
+void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, const vector<vector<int>>& kakuteiValue2, int& cnt, int& cnt2, Method2State& m2)
 {
-  // 状態をリセット
-  m2.reset();
+  // 新しいインスタンスの場合、必要な部分だけ初期化
+  // 配列は静的メンバなので、ゼロ初期化されている
+
+  // okフラグだけは全てtrueにする必要がある
+  for (int i = 0; i < nnnn; ++i) {
+    m2.ok[i] = true;
+  }
+
+  // 確定値の初期化（実際に使う範囲のみ）
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      m2.kakuteiValue1[i][j] = -1;
+      m2.kakuteiValue2[i][j] = -1;
+      m2.aimaiValue[i][j] = -1;
+    }
+  }
 
   // 途中からの場合は確定値をコピー
   cnt = 0;
@@ -709,27 +724,30 @@ void Method2_Initialize(int isTotyuu, const vector<vector<int>>& kakuteiValue1, 
 
 void Method2(ofstream& ofs, int isTotyuu = 0, int mNum0 = 0, int mNum1 = 1, const vector<vector<int>>& kakuteiValue1 = {}, const vector<vector<int>>& kakuteiValue2 = {})
 {
+  // ローカルインスタンスを作成
+  Method2State m2;
+
   int cnt, cnt2;
-  Method2_Initialize(isTotyuu, kakuteiValue1, kakuteiValue2, cnt, cnt2);
+  Method2_Initialize(isTotyuu, kakuteiValue1, kakuteiValue2, cnt, cnt2, m2);
 
   // 候補パターンを列挙
-  Method2_EnumerateCandidates(isTotyuu, mNum0, mNum1);
+  Method2_EnumerateCandidates(isTotyuu, mNum0, mNum1, m2);
 
   while (true) {
     if (cnt + cnt2 == sum) {
-      Method2_Kakutei(ofs);
+      Method2_Kakutei(ofs, m2);
       break;
     }
     else {
       // 候補数をカウント
-      int kouhoCount = Method2_CountCandidates();
+      int kouhoCount = Method2_CountCandidates(m2);
 
       if (kouhoCount == 1) {
-        Method2_HandleSingleCandidate(ofs);
+        Method2_HandleSingleCandidate(ofs, m2);
         break;
       }
       else {
-        Method2_QueryAndUpdate(ofs, cnt);
+        Method2_QueryAndUpdate(ofs, cnt, m2);
       }
     }
   }
@@ -748,7 +766,7 @@ bool CanHaiti(int sx, int sy, int mNum)
 
 double m2_2_penalty[MAX_NNNN];
 
-void Method2_2_Initialize()
+void Method2_2_Initialize(Method2State& m2)
 {
   for (int i = 0; i < nnnn; ++i) {
     for (int j = 0; j < n; ++j) {
@@ -799,7 +817,7 @@ void Method2_2_Initialize()
   }
 }
 
-void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues)
+void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues, Method2State& m2)
 {
   int valCount[MAX_N][MAX_N];
   for (int i = 0; i < n; ++i) {
@@ -829,7 +847,7 @@ void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues)
 pair<double, int> m2_2_penaltySortedArray[MAX_NNNN];
 int m2_2_kouhoCount;
 
-int Method2_2_ChallengeAns(ofstream& ofs)
+int Method2_2_ChallengeAns(ofstream& ofs, Method2State& m2)
 {
   for (int i = 0; i < nnnn; ++i) {
     if (!m2.ok[i]) {
@@ -863,13 +881,13 @@ int Method2_2_ChallengeAns(ofstream& ofs)
   sort(m2_2_penaltySortedArray, m2_2_penaltySortedArray + m2_2_kouhoCount);
   if (m2_2_kouhoCount == 1) {
     int idx = m2_2_penaltySortedArray[0].second;
-    Method2_PrintAnsWithIndex(idx, ofs);
+    Method2_PrintAnsWithIndex(idx, ofs, m2);
     return 1;
   }
   else {
     if (m2_2_penaltySortedArray[0].first + 180.0 < m2_2_penaltySortedArray[1].first) {
       int idx = m2_2_penaltySortedArray[0].second;
-      bool isCorect = Method2_PrintAnsWithIndex(idx, ofs);
+      bool isCorect = Method2_PrintAnsWithIndex(idx, ofs, m2);
       if (isCorect) {
         return 1;
       }
@@ -885,17 +903,20 @@ int Method2_2_ChallengeAns(ofstream& ofs)
 
 void Method2_2(int query2Size, ofstream& ofs)
 {
-  Method2_2_Initialize();
+  // ローカルインスタンスを作成
+  Method2State m2;
+
+  Method2_2_Initialize(m2);
   vector<pair<P, int>> kakuteiValues;
   // 確定マスを探す
-  Method2_2_SearchKakuteiMasu(kakuteiValues);
+  Method2_2_SearchKakuteiMasu(kakuteiValues, m2);
 
   int isAC = 0;
   while (true) {
     if (g_cost > 20) { break; }
     // 回答するかどうか
     {
-      int ret = Method2_2_ChallengeAns(ofs);
+      int ret = Method2_2_ChallengeAns(ofs, m2);
       if (ret == 0) {         // 回答せず
       }
       else if (ret == 1) {  // 正解
