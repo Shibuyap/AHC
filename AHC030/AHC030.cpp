@@ -454,24 +454,29 @@ ll CalcScore()
 class Method2State
 {
 public:
-  int kouho[MAX_NNNN][MAX_N][MAX_N];
-  bool ok[MAX_NNNN];
-  int kakuteiValue1[MAX_N][MAX_N];
-  int kakuteiValue2[MAX_N][MAX_N];
-  int aimaiValue[MAX_N][MAX_N];
-  int nums[MAX_N][MAX_N][MAX_M + 1];
+  vector<vector<vector<int>>> kouho;
+  vector<bool> ok;
+  vector<vector<int>> kakuteiValue1;
+  vector<vector<int>> kakuteiValue2;
+  vector<vector<int>> aimaiValue;
+  vector<vector<vector<int>>> nums;
 
   // コンストラクタ
   Method2State()
   {
-    // 初期化はresetメソッドで行う
-    // 静的配列なのでゼロ初期化は自動的に行われる
+    // vectorのサイズを設定
+    kouho.resize(MAX_NNNN, vector<vector<int>>(MAX_N, vector<int>(MAX_N, 0)));
+    ok.resize(MAX_NNNN, true);
+    kakuteiValue1.resize(MAX_N, vector<int>(MAX_N, -1));
+    kakuteiValue2.resize(MAX_N, vector<int>(MAX_N, -1));
+    aimaiValue.resize(MAX_N, vector<int>(MAX_N, -1));
+    nums.resize(MAX_N, vector<vector<int>>(MAX_N, vector<int>(MAX_M + 1, 0)));
   }
 
   // 全てのデータをリセット
   void reset()
   {
-    // 全配列を初期化（サイズはMAX定数を使用）
+    // 全配列を初期化
     for (int i = 0; i < MAX_NNNN; ++i) {
       ok[i] = true;
       for (int j = 0; j < MAX_N; ++j) {
@@ -768,6 +773,10 @@ double m2_2_penalty[MAX_NNNN];
 
 void Method2_2_Initialize(Method2State& m2)
 {
+  // kouho配列のサイズ調整と初期化
+  m2.kouho.resize(nnnn, vector<vector<int>>(n, vector<int>(n, 0)));
+  m2.ok.resize(nnnn, true);
+  
   for (int i = 0; i < nnnn; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
@@ -808,6 +817,11 @@ void Method2_2_Initialize(Method2State& m2)
     }
   }
 
+  // その他の配列も適切なサイズに調整
+  m2.kakuteiValue1.resize(n, vector<int>(n, -1));
+  m2.kakuteiValue2.resize(n, vector<int>(n, -1));
+  m2.aimaiValue.resize(n, vector<int>(n, -1));
+  
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       m2.kakuteiValue1[i][j] = -1;
@@ -819,12 +833,7 @@ void Method2_2_Initialize(Method2State& m2)
 
 void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& kakuteiValues, Method2State& m2)
 {
-  int valCount[MAX_N][MAX_N];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      valCount[i][j] = 0;
-    }
-  }
+  vector<vector<int>> valCount(n, vector<int>(n, 0));
   for (int i = 0; i < nnnn; ++i) {
     if (!m2.ok[i]) continue;
     for (int j = 0; j < n; ++j) {
@@ -930,14 +939,7 @@ void Method2_2(int query2Size, ofstream& ofs)
 
     // 次のクエリ作成
     {
-      int nums[MAX_N][MAX_N][3];
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          for (int k = 0; k < 3; ++k) {
-            nums[i][j][k] = 0;
-          }
-        }
-      }
+      vector<vector<vector<int>>> nums(n, vector<vector<int>>(n, vector<int>(3, 0)));
 
       if (kakuteiValues.size() >= query2Size - 1) {
         // あいまいクエリ
@@ -981,9 +983,10 @@ void Method2_2(int query2Size, ofstream& ofs)
 
       // 確定クエリ
       {
+        // numsを再初期化
         for (int i = 0; i < n; ++i) {
           for (int j = 0; j < n; ++j) {
-            for (int k = 0; k < n; ++k) {
+            for (int k = 0; k < 3; ++k) {
               nums[i][j][k] = 0;
             }
           }
@@ -1285,7 +1288,7 @@ bool Method3_CheckUniquePattern(const vector<P>& ones, ofstream& ofs, int& cnt, 
 void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, int& cnt2)
 {
   int minKouhoCount = INF;
-  int minNums[MAX_N][MAX_N];
+  vector<vector<int>> minNums(MAX_N, vector<int>(MAX_N, 0));
   int minx = -1, miny = -1;
 
   // 各点での候補数を計算
@@ -1293,9 +1296,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
     int x = p.first;
     int y = p.second;
     int kouhoCount = 0;
-    int nums[MAX_N][MAX_N];
-
-    for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) nums[i][j] = 0;
+    vector<vector<int>> nums(n, vector<int>(n, 0));
 
     vector<P> allKouho;
     if (GetNowTime() < 1.0) {
@@ -1395,12 +1396,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cnt, i
 // 空白マスからパターン候補を生成して最適な場所にクエリを投げる
 void Method3_QueryEmptyCell(ofstream& ofs, int& cnt, int& cnt2)
 {
-  int nums[MAX_N][MAX_N];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      nums[i][j] = 0;
-    }
-  }
+  vector<vector<int>> nums(n, vector<int>(n, 0));
 
   // 全ての候補パターンを取得
   auto allKouho = Method3_GetAllKouho();
