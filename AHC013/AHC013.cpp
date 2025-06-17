@@ -872,6 +872,35 @@ void DisconnectServersBoth(int server1, int server2, int udlr_idx1, int udlr_idx
   se.insert(server2);
 }
 
+// サーバー間の経路を設定する共通処理
+// isVertical: true=縦方向(y方向), false=横方向(x方向)
+// useBeam: trueの場合beam.push_backも実行
+void SetServerPath(int server1, int server2, int coord, int value, bool isVertical, bool useBeam, vector<P>& beam)
+{
+  if (isVertical) {
+    // 縦方向
+    for (int i = gameState.x[server1] + 1; i < gameState.x[server2]; ++i)
+    {
+      PushACnt(i, coord);
+      gameState.a[i][coord] = value;
+      if (useBeam && value == INF) {
+        beam.push_back(P(i, coord));
+      }
+    }
+  }
+  else {
+    // 横方向
+    for (int i = gameState.y[server1] + 1; i < gameState.y[server2]; ++i)
+    {
+      PushACnt(coord, i);
+      gameState.a[coord][i] = value;
+      if (useBeam && value == INF) {
+        beam.push_back(P(coord, i));
+      }
+    }
+  }
+}
+
 // サーバー間を接続する共通処理
 // isVertical: true=縦方向(y方向), false=横方向(x方向)
 void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int coord, bool isVertical, set<int>& se)
@@ -885,22 +914,8 @@ void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int 
   se.insert(server1);
   
   int aVal = MakeAValue(server1, server2);
-  if (isVertical) {
-    // 縦方向の接続
-    for (int i = gameState.x[server1] + 1; i < gameState.x[server2]; ++i)
-    {
-      PushACnt(i, coord);
-      gameState.a[i][coord] = aVal;
-    }
-  }
-  else {
-    // 横方向の接続
-    for (int i = gameState.y[server1] + 1; i < gameState.y[server2]; ++i)
-    {
-      PushACnt(coord, i);
-      gameState.a[coord][i] = aVal;
-    }
-  }
+  vector<P> dummy; // ConnectServersではbeamを使わない
+  SetServerPath(server1, server2, coord, aVal, isVertical, false, dummy);
 }
 
 // 戻り値：更新したかどうか
@@ -963,12 +978,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(ite);
 
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(iteU, ite, yy, INF, true, true, beam);
         }
 
         if (gameState.udlr[ite][1] != -1) {
@@ -980,12 +990,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteD);
           se.insert(ite);
 
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(ite, iteD, yy, INF, true, true, beam);
         }
       }
       else {
@@ -1004,11 +1009,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, iteD);
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = aVal;
-          }
+          SetServerPath(iteU, iteD, yy, aVal, true, false, beam);
         }
         // 上繋がっていた
         else if (gameState.udlr[ite][0] != -1) {
@@ -1017,12 +1018,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           DisconnectServers(ite, iteU, 0, 1, se);
           se.insert(ite);
 
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(iteU, ite, yy, INF, true, true, beam);
         }
         // 下繋がっていた
         else if (gameState.udlr[ite][1] != -1) {
@@ -1031,12 +1027,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           DisconnectServers(ite, iteD, 1, 0, se);
           se.insert(ite);
 
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(ite, iteD, yy, INF, true, true, beam);
         }
         // 繋がりなし
         else {
@@ -1073,18 +1064,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, ite);
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          SetServerPath(iteU, ite, ny, aVal, true, false, beam);
 
           aVal = MakeAValue(ite, iteD);
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          SetServerPath(ite, iteD, ny, aVal, true, false, beam);
         }
         // 違う色
         else {
@@ -1096,18 +1079,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(iteD);
 
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = INF;
-            beam.push_back(P(i, ny));
-          }
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = INF;
-            beam.push_back(P(i, ny));
-          }
+          SetServerPath(iteU, ite, ny, INF, true, true, beam);
+          SetServerPath(ite, iteD, ny, INF, true, true, beam);
         }
       }
       // 繋がっていない
@@ -1158,12 +1131,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(ite);
 
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(iteU, ite, yy, INF, true, true, beam);
         }
 
         if (gameState.udlr[ite][1] != -1) {
@@ -1175,12 +1143,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteD);
           se.insert(ite);
 
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(ite, iteD, yy, INF, true, true, beam);
         }
       }
       else {
@@ -1199,11 +1162,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, iteD);
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = aVal;
-          }
+          SetServerPath(iteU, iteD, yy, aVal, true, false, beam);
         }
         // 上繋がっていた
         else if (gameState.udlr[ite][0] != -1) {
@@ -1211,12 +1170,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           int iteU = gameState.udlr[ite][0];
           DisconnectServersBoth(iteU, ite, 1, 0, se);
 
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(iteU, ite, yy, INF, true, true, beam);
         }
         // 下繋がっていた
         else if (gameState.udlr[ite][1] != -1) {
@@ -1224,12 +1178,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           int iteD = gameState.udlr[ite][1];
           DisconnectServersBoth(iteD, ite, 0, 1, se);
 
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, yy);
-            gameState.a[i][yy] = INF;
-            beam.push_back(P(i, yy));
-          }
+          SetServerPath(ite, iteD, yy, INF, true, true, beam);
         }
         // 繋がりなし
         else {
@@ -1266,18 +1215,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, ite);
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          SetServerPath(iteU, ite, ny, aVal, true, false, beam);
 
           aVal = MakeAValue(ite, iteD);
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          SetServerPath(ite, iteD, ny, aVal, true, false, beam);
         }
         // 違う色
         else {
@@ -1289,18 +1230,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(iteD);
 
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = INF;
-            beam.push_back(P(i, ny));
-          }
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = INF;
-            beam.push_back(P(i, ny));
-          }
+          SetServerPath(iteU, ite, ny, INF, true, true, beam);
+          SetServerPath(ite, iteD, ny, INF, true, true, beam);
         }
       }
       // 繋がっていない
@@ -1353,12 +1284,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(ite);
 
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(iteL, ite, xx, INF, false, true, beam);
         }
 
         if (gameState.udlr[ite][3] != -1) {
@@ -1370,12 +1296,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteR);
           se.insert(ite);
 
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(ite, iteR, xx, INF, false, true, beam);
         }
       }
       else {
@@ -1394,11 +1315,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, iteR);
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = aVal;
-          }
+          SetServerPath(iteL, iteR, xx, aVal, false, false, beam);
         }
         // 左繋がっていた
         else if (gameState.udlr[ite][2] != -1) {
@@ -1406,12 +1323,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           int iteL = gameState.udlr[ite][2];
           DisconnectServersBoth(iteL, ite, 3, 2, se);
 
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(iteL, ite, xx, INF, false, true, beam);
         }
         // 右繋がっていた
         else if (gameState.udlr[ite][3] != -1) {
@@ -1419,12 +1331,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           int iteR = gameState.udlr[ite][3];
           DisconnectServersBoth(iteR, ite, 2, 3, se);
 
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(ite, iteR, xx, INF, false, true, beam);
         }
         // 繋がりなし
         else {
@@ -1461,18 +1368,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, ite);
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          SetServerPath(iteL, ite, nx, aVal, false, false, beam);
 
           aVal = MakeAValue(ite, iteR);
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          SetServerPath(ite, iteR, nx, aVal, false, false, beam);
         }
         // 違う色
         else {
@@ -1484,18 +1383,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(iteR);
 
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = INF;
-            beam.push_back(P(nx, i));
-          }
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = INF;
-            beam.push_back(P(nx, i));
-          }
+          SetServerPath(iteL, ite, nx, INF, false, true, beam);
+          SetServerPath(ite, iteR, nx, INF, false, true, beam);
         }
       }
       // 繋がっていない
@@ -1546,12 +1435,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(ite);
 
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(iteL, ite, xx, INF, false, true, beam);
         }
 
         if (gameState.udlr[ite][3] != -1) {
@@ -1563,12 +1447,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteR);
           se.insert(ite);
 
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(ite, iteR, xx, INF, false, true, beam);
         }
       }
       else {
@@ -1587,11 +1466,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, iteR);
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = aVal;
-          }
+          SetServerPath(iteL, iteR, xx, aVal, false, false, beam);
         }
         // 左繋がっていた
         else if (gameState.udlr[ite][2] != -1) {
@@ -1599,12 +1474,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           int iteL = gameState.udlr[ite][2];
           DisconnectServersBoth(iteL, ite, 3, 2, se);
 
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(iteL, ite, xx, INF, false, true, beam);
         }
         // 右繋がっていた
         else if (gameState.udlr[ite][3] != -1) {
@@ -1612,12 +1482,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           int iteR = gameState.udlr[ite][3];
           DisconnectServersBoth(iteR, ite, 2, 3, se);
 
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(xx, i);
-            gameState.a[xx][i] = INF;
-            beam.push_back(P(xx, i));
-          }
+          SetServerPath(ite, iteR, xx, INF, false, true, beam);
         }
         // 繋がりなし
         else {
@@ -1654,18 +1519,10 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, ite);
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          SetServerPath(iteL, ite, nx, aVal, false, false, beam);
 
           aVal = MakeAValue(ite, iteR);
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          SetServerPath(ite, iteR, nx, aVal, false, false, beam);
         }
         // 違う色
         else {
@@ -1677,18 +1534,8 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(iteR);
 
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = INF;
-            beam.push_back(P(nx, i));
-          }
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = INF;
-            beam.push_back(P(nx, i));
-          }
+          SetServerPath(iteL, ite, nx, INF, false, true, beam);
+          SetServerPath(ite, iteR, nx, INF, false, true, beam);
         }
       }
       // 繋がっていない
