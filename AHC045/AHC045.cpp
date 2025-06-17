@@ -260,12 +260,10 @@ void CopyToBest()
 {
   best_ansScore = ansScore;
   best_dScore = dScore;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     best_ans[i] = ans[i];
   }
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     best_ans_nums[i] = ans_nums[i];
     best_ans_edges[i] = ans_edges[i];
     best_ans_MSTSums[i] = ans_MSTSums[i];
@@ -276,12 +274,10 @@ void CopyToAns()
 {
   ansScore = best_ansScore;
   dScore = best_dScore;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     ans[i] = best_ans[i];
   }
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     ans_nums[i] = best_ans_nums[i];
     ans_edges[i] = best_ans_edges[i];
     ans_MSTSums[i] = best_ans_MSTSums[i];
@@ -292,28 +288,24 @@ void CopyToAns()
 void SetUp()
 {
   ansScore = INT_INF;
-  for (int i = 0; i < MAX_M; ++i)
-  {
+  for (int i = 0; i < MAX_M; ++i) {
     ans_nums[i].clear();
     ans_edges[i].clear();
   }
   CopyToBest();
 
   queryCount = 0;
-  for (int i = 0; i < q; ++i)
-  {
+  for (int i = 0; i < q; ++i) {
     queries[i].clear();
     queryAnswers[i].clear();
     queryPredMST[i].clear();
   }
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     num_queries[i].clear();
   }
   querySet.clear();
   edgeCompareSet.clear();
-  for (int i = 0; i < n * n; ++i)
-  {
+  for (int i = 0; i < n * n; ++i) {
     shorterEdges[i].clear();
     longerEdges[i].clear();
   }
@@ -383,8 +375,7 @@ int buildMST_idxDict[n];
 
 void BuildMST_InitPoints(const vector<int>& nums, int startIndex, bool isTrue)
 {
-  for (int i = 0; i < nums.size(); ++i)
-  {
+  for (int i = 0; i < nums.size(); ++i) {
     if (isTrue) {
       buildMST_points[startIndex + i] = GetTruePoint(nums[i]);
     }
@@ -404,8 +395,7 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
   BuildMST_InitPoints(nums, 0, isTrue);
 
   int edgeCount = 0;
-  for (int i = 0; i < nums.size(); ++i)
-  {
+  for (int i = 0; i < nums.size(); ++i) {
     srep(j, i + 1, nums.size())
     {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
@@ -420,8 +410,7 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
   vector<P> res(nums.size() - 1);
   int resCount = 0;
 
-  for (int i = 0; i < edgeCount; ++i)
-  {
+  for (int i = 0; i < edgeCount; ++i) {
     if (!UF_Same(buildMST_edges[i].u, buildMST_edges[i].v)) {
       buildMST_sum += sqrt(buildMST_edges[i].dist);
       UF_Unite(buildMST_edges[i].u, buildMST_edges[i].v);
@@ -441,8 +430,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 {
   int vCount = _nums.size();
   auto nums = _nums;
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     if (sort_g[i] == 1) {
       nums.push_back(ans_nums[i][0]);
     }
@@ -456,8 +444,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
   BuildMST_InitPoints(nums, 0, isTrue);
 
   int edgeCount = 0;
-  for (int i = 0; i < nums.size(); ++i)
-  {
+  for (int i = 0; i < nums.size(); ++i) {
     srep(j, i + 1, nums.size())
     {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
@@ -475,8 +462,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
   int rootNum = -1;
   int sz = -1;
 
-  for (int i = 0; i < edgeCount; ++i)
-  {
+  for (int i = 0; i < edgeCount; ++i) {
     if (!UF_Same(buildMST_edges[i].u, buildMST_edges[i].v)) {
       UF_Unite(buildMST_edges[i].u, buildMST_edges[i].v);
       res.push_back(P(nums[buildMST_edges[i].u], nums[buildMST_edges[i].v]));
@@ -498,8 +484,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
   newNums.clear();
 
   vector<P> es;
-  for (int i = 0; i < res.size(); ++i)
-  {
+  for (int i = 0; i < res.size(); ++i) {
     if (UF_Find(idxs[i].first) == root) {
       es.push_back(res[i]);
     }
@@ -519,8 +504,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
   priority_queue<pair<int, P>, vector<pair<int, P>>, greater<pair<int, P>>> pque;
   pair<int, P> pp;
-  for (int i = 0; i < free_use_graph_count[rootNum]; ++i)
-  {
+  for (int i = 0; i < free_use_graph_count[rootNum]; ++i) {
     int y = free_use_graph[rootNum][i];
     pp.first = Distance(rootNum, y);
     pp.second.first = rootNum;
@@ -543,8 +527,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
     int par = pp.second.first;
     int x = pp.second.second;
-    for (int i = 0; i < free_use_graph_count[x]; ++i)
-    {
+    for (int i = 0; i < free_use_graph_count[x]; ++i) {
       int y = free_use_graph[x][i];
       if (y == par)continue;
       pp.first = Distance(x, y);
@@ -582,8 +565,7 @@ vector<P> BuildMSTWithEdgeCompare(const vector<int>& nums, bool isTrue = false)
   BuildMST_InitPoints(nums, 0, isTrue);
 
   int edgeCount = 0;
-  for (int i = 0; i < nums.size(); ++i)
-  {
+  for (int i = 0; i < nums.size(); ++i) {
     srep(j, i + 1, nums.size())
     {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
@@ -599,13 +581,11 @@ vector<P> BuildMSTWithEdgeCompare(const vector<int>& nums, bool isTrue = false)
   int resCount = 0;
 
   vector<int> numsa, numsb;
-  for (int i = 0; i < edgeCount; ++i)
-  {
+  for (int i = 0; i < edgeCount; ++i) {
     int ia = buildMST_edges[i].u;
     int ib = buildMST_edges[i].v;
     if (!UF_Same(ia, ib)) {
-      for (int _ = 0; _ < 5; ++_)
-      {
+      for (int _ = 0; _ < 5; ++_) {
         int a = nums[ia];
         int b = nums[ib];
         if (a > b) {
@@ -620,8 +600,7 @@ vector<P> BuildMSTWithEdgeCompare(const vector<int>& nums, bool isTrue = false)
         if (UF_Count(ia) > 1 || UF_Count(ib) > 1) {
           int ra = UF_Find(ia);
           int rb = UF_Find(ib);
-          for (int j = 0; j < nums.size(); ++j)
-          {
+          for (int j = 0; j < nums.size(); ++j) {
             if (j == ia || j == ib)continue;
             int rj = UF_Find(j);
             if (rj == ra) {
@@ -720,10 +699,8 @@ vector<P> BuildMST(const vector<int>& nums1, const vector<P>& edges1, const vect
   Edge minE;
   minE.dist = INT_INF;
   bool contains = false;
-  for (int ii = 0; ii < nums1.size(); ++ii)
-  {
-    for (int jj = 0; jj < nums2.size(); ++jj)
-    {
+  for (int ii = 0; ii < nums1.size(); ++ii) {
+    for (int jj = 0; jj < nums2.size(); ++jj) {
       int i = ii;
       int j = jj + n1;
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
@@ -749,8 +726,7 @@ vector<P> BuildMST(const vector<int>& nums1, const vector<P>& edges1, const vect
   vector<P> res((ll)n1 + n2 - 1);
   int resCount = 0;
 
-  for (int i = 0; i < edgeCount; ++i)
-  {
+  for (int i = 0; i < edgeCount; ++i) {
     if (!UF_Same(buildMST_edges[i].u, buildMST_edges[i].v)) {
       buildMST_sum += sqrt(buildMST_edges[i].dist);
       UF_Unite(buildMST_edges[i].u, buildMST_edges[i].v);
@@ -796,8 +772,7 @@ void Input(int problemNum)
     int _n, _q;
     cin >> _n >> m >> _q >> l >> w;
     for (int i = 0; i < m; ++i)cin >> g[i];
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       cin >> lx[i] >> rx[i] >> ly[i] >> ry[i];
     }
   }
@@ -806,16 +781,14 @@ void Input(int problemNum)
     int _n, _q;
     ifs >> _n >> m >> _q >> l >> w;
     for (int i = 0; i < m; ++i)ifs >> g[i];
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       ifs >> lx[i] >> rx[i] >> ly[i] >> ry[i];
     }
     for (int i = 0; i < n; ++i)ifs >> true_x[i] >> true_y[i];
   }
 
   if (isSimulateTruePoint) {
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       lx[i] = true_x[i];
       rx[i] = true_x[i];
       ly[i] = true_y[i];
@@ -823,20 +796,17 @@ void Input(int problemNum)
     }
   }
 
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     pred_x[i] = GetMIddlePoint(i).first;
     pred_y[i] = GetMIddlePoint(i).second;
   }
 
   vector<P> vp;
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     vp.emplace_back(g[i], i);
   }
   sort(vp.begin(), vp.end());
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     sort_g[i] = vp[i].first;
     arg_g[i] = vp[i].second;
     arg_rev_g[vp[i].second] = i;
@@ -877,8 +847,7 @@ int CalcScore(int g_num, bool isTrue = false)
 int CalcScoreAll()
 {
   int res = 0;
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     res += CalcScore(i);
   }
   return res;
@@ -887,8 +856,7 @@ int CalcScoreAll()
 int CalcScoreLocal()
 {
   int res = 0;
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     res += CalcScore(i, true);
   }
   return res;
@@ -900,8 +868,7 @@ void Output(ofstream& ofs)
   if (mode == 0) {
     // 標準出力
     cout << '!' << endl;
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
       int rev_i = arg_rev_g[i];
       for (auto po : ans_nums[rev_i]) {
         cout << po << ' ';
@@ -915,8 +882,7 @@ void Output(ofstream& ofs)
   else {
     // ファイル出力
     ofs << '!' << endl;
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
       int rev_i = arg_rev_g[i];
       for (auto po : ans_nums[rev_i]) {
         ofs << po << ' ';
@@ -976,15 +942,13 @@ void Query()
 {
   if (mode == 0) {
     cout << "? " << l;
-    for (int j = 0; j < l; ++j)
-    {
+    for (int j = 0; j < l; ++j) {
       cout << ' ' << queries[queryCount][j];
     }
     cout << endl;
     fflush(stdout);
 
-    for (int j = 0; j < l - 1; ++j)
-    {
+    for (int j = 0; j < l - 1; ++j) {
       int a, b;
       cin >> a >> b;
       queryAnswers[queryCount].push_back(P(a, b));
@@ -992,8 +956,7 @@ void Query()
   }
   else {
     ofs << "? " << l;
-    for (int j = 0; j < l; ++j)
-    {
+    for (int j = 0; j < l; ++j) {
       ofs << ' ' << queries[queryCount][j];
     }
     ofs << endl;
@@ -1004,8 +967,7 @@ void Query()
   queryPredMST[queryCount] = BuildMST(queries[queryCount], false);
   queryPredMSTSum[queryCount] = buildMST_sum;
 
-  for (int i = 0; i < queryAnswers[queryCount].size(); ++i)
-  {
+  for (int i = 0; i < queryAnswers[queryCount].size(); ++i) {
     P edge = queryAnswers[queryCount][i];
     int a = edge.first;
     int b = edge.second;
@@ -1030,8 +992,7 @@ void Query()
 void Method1_Query(int start, int queryEnd)
 {
   vector<P> vp;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     vp.emplace_back((rx[i] - lx[i] + 1) * (ry[i] - ly[i] + 1), i);
   }
   sort(vp.begin(), vp.end(), greater<P>());
@@ -1041,22 +1002,19 @@ void Method1_Query(int start, int queryEnd)
     int num = vp[i].second;
     auto po = GetPoint(num);
     vector<P> dists;
-    for (int j = 0; j < n; ++j)
-    {
+    for (int j = 0; j < n; ++j) {
       dists.emplace_back(Distance(po, GetPoint(j)), j);
     }
     sort(dists.begin(), dists.end());
     queries[queryCount].clear();
-    for (int j = 0; j < l; ++j)
-    {
+    for (int j = 0; j < l; ++j) {
       queries[queryCount].push_back(dists[j].second);
     }
     sort(queries[queryCount].begin(), queries[queryCount].end());
     if (querySet.find(queries[queryCount]) != querySet.end()) {
       continue;
     }
-    for (int j = 0; j < l; ++j)
-    {
+    for (int j = 0; j < l; ++j) {
       num_queries[dists[j].second].push_back(queryCount);
     }
     querySet.insert(queries[queryCount]);
@@ -1074,18 +1032,15 @@ void Method1_Query(int start, int queryEnd)
 void Method1()
 {
   int now = 0;
-  for (int i = 0; i < m; ++i)
-  {
-    for (int j = 0; j < sort_g[i]; ++j)
-    {
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < sort_g[i]; ++j) {
       ans[now] = i;
       ans_nums[i].push_back(now);
       now++;
     }
   }
 
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     ans_edges[i] = BuildMST(ans_nums[i]);
   }
 
@@ -1219,8 +1174,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       ra3 = max(ra3, ly[ra1]);
       ra3 = min(ra3, ry[ra1]);
 
-      for (int i = 0; i < num_queries[ra1].size(); ++i)
-      {
+      for (int i = 0; i < num_queries[ra1].size(); ++i) {
         int q_num = num_queries[ra1][i];
         sa0_keepMST[i] = queryPredMST[q_num];
         sa0_keepMSTSum[i] = queryPredMSTSum[q_num];
@@ -1236,8 +1190,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       pred_x[ra1] = ra2;
       pred_y[ra1] = ra3;
 
-      for (int i = 0; i < num_queries[ra1].size(); ++i)
-      {
+      for (int i = 0; i < num_queries[ra1].size(); ++i) {
         int q_num = num_queries[ra1][i];
         queryPredMST[q_num] = BuildMST(queries[q_num]);
         queryPredMSTSum[q_num] = buildMST_sum;
@@ -1266,8 +1219,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
       if (raMode < hypers.Partition[0]) {
         pred_x[ra1] = keep2;
         pred_y[ra1] = keep3;
-        for (int i = 0; i < num_queries[ra1].size(); ++i)
-        {
+        for (int i = 0; i < num_queries[ra1].size(); ++i) {
           int q_num = num_queries[ra1][i];
           queryPredMST[q_num] = sa0_keepMST[i];
           queryPredMSTSum[q_num] = sa0_keepMSTSum[i];
@@ -1282,8 +1234,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
 
   CopyToAns();
 
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     ans_edges[i] = BuildMST(ans_nums[i]);
   }
   ansScore = CalcScoreAll();
@@ -1375,8 +1326,7 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
 
   CopyToAns();
 
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     ans_edges[i] = BuildMST(ans_nums[i]);
     ans_MSTSums[i] = buildMST_sum;
   }
@@ -1486,8 +1436,7 @@ int sa3_dfs(int u, int p)
   free_use_parent[u] = p;
   fre_use__visited[u] = true;
   int cnt = 1; // 自分自身を含めるので1からスタート
-  for (int i = 0; i < free_use_graph_count[u]; ++i)
-  {
+  for (int i = 0; i < free_use_graph_count[u]; ++i) {
     if (!fre_use__visited[free_use_graph[u][i]]) {
       cnt += sa3_dfs(free_use_graph[u][i], u);
     }
@@ -1500,8 +1449,7 @@ void sa3_dfs2(int u, int p, int g_num)
 {
   ans[u] = g_num;
   ans_nums[g_num].push_back(u);
-  for (int i = 0; i < free_use_graph_count[u]; ++i)
-  {
+  for (int i = 0; i < free_use_graph_count[u]; ++i) {
     if (free_use_graph[u][i] != p) {
       ans_edges[g_num].emplace_back(u, free_use_graph[u][i]);
       sa3_dfs2(free_use_graph[u][i], u, g_num);
@@ -1575,8 +1523,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       int ra1Root = -1;
       int ra2Root = -1;
       double cutLen = -1;
-      for (int i = 0; i < zen.size(); ++i)
-      {
+      for (int i = 0; i < zen.size(); ++i) {
         int u = zen[i].first;
         int v = zen[i].second;
         if (free_use_parent[v] == u) {
@@ -1645,8 +1592,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
     cout << "sa3 : " << loop << endl;
   }
 
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     ans_edges[i] = BuildMST(ans_nums[i]);
   }
   ansScore = CalcScoreAll();
@@ -1701,8 +1647,7 @@ ll Solve(int problem_num, Hypers hypers)
   // 焼きなまし
   int aespa = 2;
   if (l <= 4)aespa = 4;
-  for (int i = 0; i < aespa; ++i)
-  {
+  for (int i = 0; i < aespa; ++i) {
     Method1_Query(0, q / aespa * (i + 1));
     SimulatedAnnealing0(hypers, (TL * 0.6) / aespa * (i + 1));
   }
@@ -1789,7 +1734,7 @@ int main()
       hypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
-      srep(i, 0, 15)
+      srep(i, 0, 10)
       {
         ll score = Solve(i, hypers);
         sum += score;
