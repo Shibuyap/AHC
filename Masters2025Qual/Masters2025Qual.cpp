@@ -30,7 +30,6 @@
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
 
 using namespace std;
 
@@ -690,7 +689,7 @@ void Method1_3()
         int hx = holeX[j + 1];
         int hy = holeY[j + 1];
         if (dir == -1) {
-          dsrep(k, 1, hx)
+          for (int k = hx - 1; k >= 1; --k)
           {
             if (a[k][hy] == 0) {
               tx = k;
@@ -732,7 +731,7 @@ void Method1_3()
           }
         }
         if (dir == -1) {
-          dsrep(k, 1, hy)
+          for (int k = hy - 1; k >= 1; --k)
           {
             if (a[hx][k] == 0) {
               tx = hx;
@@ -934,11 +933,11 @@ void Method1_3()
 
         // その行・列を全部落とす
         if (dir == 0) {
-          dsrep(k, 1, hy)
+          for (int k = hy - 1; k >= 1; --k)
           {
             int huyou = 1;
             if (k == 1)huyou = 0;
-            dsrep(l, 1, k)
+            for (int l = k - 1; l >= 1; --l)
             {
               for (int z = 0; z < 4; ++z)
               {
@@ -988,11 +987,11 @@ void Method1_3()
           }
         }
         else {
-          dsrep(k, 1, hx)
+          for (int k = hx - 1; k >= 1; --k)
           {
             int huyou = 1;
             if (k == 1)huyou = 0;
-            dsrep(l, 1, k)
+            for (int l = k - 1; l >= 1; --l)
             {
               for (int z = 0; z < 4; ++z)
               {

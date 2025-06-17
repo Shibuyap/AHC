@@ -31,7 +31,6 @@
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n)-1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t)-1; i >= s; --i)
 
 using namespace std;
 typedef long long int ll;
@@ -3284,7 +3283,7 @@ int Method3_Oshii()
         int minOver = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        dsrep(k, M3_alreadyCount, ans.ansLineCount[i])
+        for (int k = ans.ansLineCount[i] - 1; k >= M3_alreadyCount; --k)
         {
           int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
           if (!canFitInColumn(i, j, width)) break;
@@ -3954,7 +3953,7 @@ int Method3_Normal(int loopCount)
       int minOver = INT_INF;
       int posNum = -1;
       int tmpNeed = 0;
-      dsrep(k, startLine, ans.ansLineCount[i])
+      for (int k = ans.ansLineCount[i] - 1; k >= startLine; --k)
       {
         int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
         if (!canFitInColumn(i, j, width)) break;
@@ -4666,7 +4665,7 @@ void Method8(double timeLimit)
         int minAmari = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        dsrep(k, 0, ans.ansBaseLineCount)
+        for (int k = ans.ansBaseLineCount - 1; k >= 0; --k)
         {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
           if (!canFitInColumn(i, j, width)) break;

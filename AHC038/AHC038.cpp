@@ -30,7 +30,6 @@
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -1784,7 +1783,7 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
             maxCand2[BEAM_WIDTH - 1] = tmpCand[i];
           }
 
-          dsrep(j, 1, BEAM_WIDTH)
+          for (int j = BEAM_WIDTH - 1; j >= 1; --j)
           {
             if (maxCand2[j].finishTurn < maxCand2[j - 1].finishTurn) {
               swap(maxCand2[j], maxCand2[j - 1]);

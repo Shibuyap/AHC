@@ -30,7 +30,6 @@
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
 #define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<ll, ll> P;
