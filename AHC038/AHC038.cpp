@@ -2137,7 +2137,7 @@ int main()
   }
   else if (mode <= 100) {
     ll sum = 0;
-    for (int i = 0; i < 100; ++i)
+    for (int i = 0; i < 10; ++i)
     {
       ll score = Solve(i);
       sum += score;
