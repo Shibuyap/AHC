@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -342,7 +341,7 @@ bool IsValidAnswer()
       return false;
     }
 
-    srep(i, 1, V)
+    for (int i = 1; i < V; ++i)
     {
       nowRot[i] = (nowRot[i] + rot[t][i]) % 4;
     }
@@ -362,7 +361,7 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     cout << V << endl;
-    srep(i, 1, V)
+    for (int i = 1; i < V; ++i)
     {
       cout << pa[i] << ' ' << le[i] << endl;
     }
@@ -370,14 +369,14 @@ void Output(ofstream& ofs)
     for (int i = 0; i < ansCount; ++i)
     {
       cout << dirChar[dir[i]];
-      srep(j, 1, v)cout << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
+      for (int j = 1; j < v; ++j)cout << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
       for (int j = 0; j < V; ++j)cout << tipChar[tip[i][j]];
       cout << endl;
     }
   }
   else {
     ofs << V << endl;
-    srep(i, 1, V)
+    for (int i = 1; i < V; ++i)
     {
       ofs << pa[i] << ' ' << le[i] << endl;
     }
@@ -385,7 +384,7 @@ void Output(ofstream& ofs)
     for (int i = 0; i < ansCount; ++i)
     {
       ofs << dirChar[dir[i]];
-      srep(j, 1, v)ofs << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
+      for (int j = 1; j < v; ++j)ofs << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
       for (int j = 0; j < V; ++j)ofs << tipChar[tip[i][j]];
       ofs << endl;
     }
@@ -627,7 +626,7 @@ void CalculatePositionBonus(double& actionScore, int nrx, int nry,
 {
   for (int k = 0; k < 4; ++k)
   {
-    srep(l, 1, 2)
+    for (int l = 1; l < 2; ++l)
     {
       int nkrx = nrx + dx[k] * l;
       int nkry = nry + dy[k] * l;
@@ -668,7 +667,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
 
       CalculatePositionBonus(actionScore, nrx, nry, a);
 
-      //srep(l, 1, 10)
+      //for (int l = 1; l < 10; ++l)
       //{
       //  int nkrx = nrx + l;
       //  if (IsNG(nkrx, nry))break;
@@ -678,7 +677,7 @@ bool CanCatch(const vector<int>& nowRot, const vector<int>& nowTip,
       //  if (a[nkrx][nry] == 0)break;
       //  actionScore -= POSITION_RATIO * 3453;
       //}
-      //srep(l, 1, 10)
+      //for (int l = 1; l < 10; ++l)
       //{
       //  int nkry = nry + l;
       //  if (IsNG(nrx, nkry))break;
@@ -760,14 +759,14 @@ void SetTreeParents(int* parentRules, int ruleCount)
 // 木構造の長さ設定共通処理
 void SetTreeLengths(int ra, int startIdx, int baseOffset, int range)
 {
-  srep(i, 1, V)
+  for (int i = 1; i < V; ++i)
   {
     le[i] = MakeLength(ra);
   }
 
   if (Rand() % 2) {
     int st = Rand() % range + 1;
-    srep(i, startIdx, V)le[i] = i - startIdx + st;
+    for (int i = startIdx; i < V; ++i)le[i] = i - startIdx + st;
   }
 }
 
@@ -826,7 +825,7 @@ void MakeTree22()
   int ra = Rand() % 100;
   V = v;
   leafs1 = Rand() % (V - 6) + 1;
-  srep(i, 1, V)
+  for (int i = 1; i < V; ++i)
   {
     if (i == 1) {
       pa[i] = 0;
@@ -848,9 +847,9 @@ void MakeTree22()
 
   if (Rand() % 2) {
     int st = Rand() % 4 + 1;
-    srep(i, 4, 4 + leafs1)le[i] = i - 4 + st;
+    for (int i = 4; i < 4 + leafs1; ++i)le[i] = i - 4 + st;
     st = Rand() % 4 + 1;
-    srep(i, 4 + leafs1, V)le[i] = i - (4 + leafs1) + st;
+    for (int i = 4 + leafs1; i < V; ++i)le[i] = i - (4 + leafs1) + st;
   }
 }
 
@@ -859,7 +858,7 @@ void MakeTree32()
   int ra = Rand() % 100;
   V = v;
   leafs1 = Rand() % (V - 7) + 1;
-  srep(i, 1, V)
+  for (int i = 1; i < V; ++i)
   {
     if (i == 1) {
       pa[i] = 0;
@@ -884,9 +883,9 @@ void MakeTree32()
 
   if (Rand() % 2) {
     int st = Rand() % 5 + 1;
-    srep(i, 5, 5 + leafs1)le[i] = i - 5 + st;
+    for (int i = 5; i < 5 + leafs1; ++i)le[i] = i - 5 + st;
     st = Rand() % 5 + 1;
-    srep(i, 5 + leafs1, V)le[i] = i - (5 + leafs1) + st;
+    for (int i = 5 + leafs1; i < V; ++i)le[i] = i - (5 + leafs1) + st;
   }
 }
 
@@ -895,7 +894,7 @@ void MakeTree42()
   int ra = Rand() % 100;
   V = v;
   leafs1 = Rand() % (V - 8) + 1;
-  srep(i, 1, V)
+  for (int i = 1; i < V; ++i)
   {
     if (i == 1) {
       pa[i] = 0;
@@ -923,9 +922,9 @@ void MakeTree42()
 
   if (Rand() % 2) {
     int st = Rand() % 5 + 1;
-    srep(i, 6, 6 + leafs1)le[i] = i - 6 + st;
+    for (int i = 6; i < 6 + leafs1; ++i)le[i] = i - 6 + st;
     st = Rand() % 5 + 1;
-    srep(i, 6 + leafs1, V)le[i] = i - (6 + leafs1) + st;
+    for (int i = 6 + leafs1; i < V; ++i)le[i] = i - (6 + leafs1) + st;
   }
 }
 
@@ -993,12 +992,12 @@ double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
   double actionScoreSum = 0;
   keepAB.Clear();
 
-  srep(i, startLeaf, V)
+  for (int i = startLeaf; i < V; ++i)
   {
     if (le[i] < needLength)continue;
 
     bool isCatch = false;
-    srep(j, -1, 2)
+    for (int j = -1; j < 2; ++j)
     {
       int nRot = (prenRot + nowRot[i] + j + 4) % 4;
       int nrx = prenrx + le[i] * dx[nRot];
@@ -1055,12 +1054,12 @@ double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
   double actionScoreSum = 0;
   keepAB.Clear();
 
-  srep(i, startLeaf, startLeaf + leafs1)
+  for (int i = startLeaf; i < startLeaf + leafs1; ++i)
   {
     if (le[i] < needLength1)continue;
 
     bool isCatch = false;
-    srep(j, -1, 2)
+    for (int j = -1; j < 2; ++j)
     {
       int nRot = (prenRot1 + nowRot[i] + j + 4) % 4;
       int nrx = prenrx1 + le[i] * dx[nRot];
@@ -1084,7 +1083,7 @@ double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
     }
   }
 
-  srep(i, startLeaf + leafs1, V)
+  for (int i = startLeaf + leafs1; i < V; ++i)
   {
     if (margin < 0) {
       doMarginCount++;
@@ -1094,7 +1093,7 @@ double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
     if (le[i] < needLength2)continue;
 
     bool isCatch = false;
-    srep(j, -1, 2)
+    for (int j = -1; j < 2; ++j)
     {
       int nRot = (prenRot2 + nowRot[i] + j + 4) % 4;
       int nrx = prenrx2 + le[i] * dx[nRot];
@@ -1957,7 +1956,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
         cout << "Method" << Method << ", " << "loop = " << loop[Method];
         cout << ", score = " << real_ansCount[Method];
         cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
+        for (int i = 1; i < V; ++i)cout << ", " << le[i];
         cout << endl;
 
         if (ofs.is_open()) {
@@ -1973,7 +1972,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
         cout << "Method" << Method << ", " << "loop = " << loop[Method];
         cout << ", score = " << real_ansCount[Method];
         cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
+        for (int i = 1; i < V; ++i)cout << ", " << le[i];
         cout << endl;
       }
     }
@@ -2050,7 +2049,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
         cout << "Method" << Method << ", " << "loop = " << loop[Method];
         cout << ", score = " << real_ansCount[Method];
         cout << ", sx = " << sx << ", sy = " << sy;
-        srep(i, 1, V)cout << ", " << le[i];
+        for (int i = 1; i < V; ++i)cout << ", " << le[i];
         cout << endl;
       }
     }
@@ -2138,7 +2137,7 @@ int main()
   }
   else if (mode <= 100) {
     ll sum = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       ll score = Solve(i);
       sum += score;
@@ -2154,7 +2153,7 @@ int main()
         cout << "V = " << setw(2) << v << ", ";
         cout << "Method = " << Method << ", ";
         cout << "ArmLengthMethod = " << ArmLengthMethod << ", ";
-        srep(i, 1, V)cout << ", " << le[i];
+        for (int i = 1; i < V; ++i)cout << ", " << le[i];
         cout << endl;
       }
     }

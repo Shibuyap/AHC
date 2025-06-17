@@ -13,7 +13,6 @@
 #include <string>
 #include <utility>
 
-#define srep(i,s,t) for(int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -464,7 +463,7 @@ void anneal_path_segment(const AnnealParam& param)
 
     /* ─ keep_path (旧区間) ─ */
     keep_path.init(seg_start_x, seg_start_y);
-    srep(i, seg_left, seg_right)
+    for (int i = seg_left; i < seg_right; ++i)
     {
       keep_path.add(current_path.direction[i]);
       int cx = keep_path.x[keep_path.length - 1];
@@ -476,7 +475,7 @@ void anneal_path_segment(const AnnealParam& param)
 
     /* ─ after_keep_path ─ */
     after_keep_path.init(seg_goal_x, seg_goal_y);
-    srep(i, seg_right, path_len - 1)
+    for (int i = seg_right; i < path_len - 1; ++i)
     {
       after_keep_path.add(current_path.direction[i]);
       int cx = after_keep_path.x[after_keep_path.length - 1];

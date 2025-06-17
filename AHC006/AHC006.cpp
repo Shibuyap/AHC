@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 #define MAX_N 200005
@@ -142,7 +141,7 @@ public:
   int compute_path_time()
   {
     length = 0;
-    srep(i, 1, path.size())
+    for (int i = 1; i < path.size(); ++i)
     {
       length += manhattan(path[i], path[i - 1]);
     }
@@ -583,7 +582,7 @@ int main()
     solve_case(0);
   }
   else if (exec_mode == 1) {
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       solve_case(i);
     }

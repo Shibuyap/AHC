@@ -30,7 +30,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -1220,8 +1219,8 @@ void SwapHalf(int& countQ)
     return;
   }
 
-  srep(i, szL / 2, szL) { l[countQ].push_back(arrSwapHalf_L[i]); }
-  srep(i, szR / 2, szR) { r[countQ].push_back(arrSwapHalf_R[i]); }
+  for (int i = szL / 2; i < szL; ++i) { l[countQ].push_back(arrSwapHalf_L[i]); }
+  for (int i = szR / 2; i < szR; ++i) { r[countQ].push_back(arrSwapHalf_R[i]); }
   char c2 = Query(countQ);
   bool isSwap = false;
   if (c2 == '=') {
@@ -2389,7 +2388,7 @@ bool IsAllCandidateSearched_Method6(const vector<int>& items, int minDiff)
 int calculateMaxD(int& countQ)
 {
   int tmp_max_D = 0;
-  srep(i, 1, D)
+  for (int i = 1; i < D; ++i)
   {
     for (int j = 0; j < N; ++j)
     {
@@ -3513,7 +3512,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   // ソートしていないアイテムを入れる
   int _D = D - aketoku;
   _D = max(_D, 2);
-  srep(i, M, N)
+  for (int i = M; i < N; ++i)
   {
     int id = items[i];
     ans[id] = (i - M) % _D;
@@ -3589,7 +3588,7 @@ void Method806(int hiritu, int minDiff, int _m)
   MergeSort(items, countQ, 1001001, M);
 
   // ソートしていないアイテムを入れる
-  srep(i, M, N)
+  for (int i = M; i < N; ++i)
   {
     int id = items[i];
     ans[id] = (i - M) % D;
@@ -3656,7 +3655,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   // ソートしていないアイテムを入れる
   int _D = D - aketoku;
   _D = max(_D, 2);
-  srep(i, M, N)
+  for (int i = M; i < N; ++i)
   {
     int id = items[i];
     ans[id] = (i - M) % _D;
@@ -4226,7 +4225,7 @@ int main()
     ll sum = 0;
     for (int j = 0; j < 1; ++j)
     {
-      srep(i, 0, 100)
+      for (int i = 0; i < 100; ++i)
       {
         ll score = Solve(i);
         sum += score;

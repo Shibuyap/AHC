@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-
 using namespace std;
 
 typedef long long int ll;
@@ -334,9 +332,9 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       for (int i = 0; i < blockSize + 2; ++i) for (int j = 0; j < blockSize + 2; ++j) haba[i][j] = 0;  // 初期化
       int now = 1;
       upd = 1;
-      srep(i, 1, blockSize + 1)
+      for (int i = 1; i < blockSize + 1; ++i)
       {
-        srep(j, 1, blockSize + 1)
+        for (int j = 1; j < blockSize + 1; ++j)
         {
           if (haba[i][j] != 0) continue;  // 既に探索済みならスキップ
           if (now == 3) {
@@ -377,9 +375,9 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       int sx = -1, sy = -1;
       int befx = -1, befy = -1;
       // 境界の始点を探す
-      srep(i, 1, blockSize + 1)
+      for (int i = 1; i < blockSize + 1; ++i)
       {
-        srep(j, 1, blockSize + 1)
+        for (int j = 1; j < blockSize + 1; ++j)
         {
           if (f[i][j] == 1 && f[i][j - 1] == 0) {
             sx = i;
@@ -450,9 +448,9 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
           assert(false);  // 次の点が見つからない場合はエラー
           for (auto p : vp) cout << p.first << ' ' << p.second << endl;
           cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
-          srep(i, 1, blockSize + 1)
+          for (int i = 1; i < blockSize + 1; ++i)
           {
-            srep(j, 1, blockSize + 1)
+            for (int j = 1; j < blockSize + 1; ++j)
             {
               cout << f[i][j];
             }
@@ -523,9 +521,9 @@ void Method3()
     if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
 
     int cnt = 0;  // 選択した領域のスコア
-    srep(i, x1, x2 + 1)
+    for (int i = x1; i < x2 + 1; ++i)
     {
-      srep(j, y1, y2 + 1)
+      for (int j = y1; j < y2 + 1; ++j)
       {
         cnt += block[i][j];  // 選択したセルのスコアを合計
       }
@@ -558,9 +556,9 @@ void Method3()
   }
 
   // 最良の矩形領域をf配列に設定
-  srep(i, xx1, xx2 + 1)
+  for (int i = xx1; i < xx2 + 1; ++i)
   {
-    srep(j, yy1, yy2 + 1)
+    for (int j = yy1; j < yy2 + 1; ++j)
     {
       f[i + 1][j + 1] = 1;  // 選択した領域を1とする
     }
@@ -680,7 +678,7 @@ int main()
   }
   else {
     ll sum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       ll score = Solve(i);  // 問題番号iを解く
       sum += score;         // スコアの合計を更新

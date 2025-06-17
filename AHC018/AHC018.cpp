@@ -28,9 +28,6 @@
 #include <utility>
 #include <vector>
 
-//=== Macros (必要に応じて修正) ===//
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-
 using namespace std;
 
 typedef long long int ll;
@@ -458,7 +455,7 @@ int solve_problem(int problem_num = 0)
 
         // 既に壊れて水路が通っているマスが近くにあれば、そちらを優先
         int diff_sum = abs(diff_x) + abs(diff_y);
-        srep(k, 1, diff_sum)
+        for (int k = 1; k < diff_sum; ++k)
         {
           bool found = false;
           for (int j = 0; j < 4; ++j)

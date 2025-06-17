@@ -28,9 +28,6 @@
 #include <utility>
 #include <vector>
 
-//=== Macros (必要に応じて調整) ===//
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-
 using namespace std;
 
 typedef long long int ll;
@@ -316,7 +313,7 @@ void write_output(int run_mode, int problem_num)
   for (int i = 0; i < 2; ++i)
   {
     int count_sum[100] = {};
-    srep(j, 1, 100)
+    for (int j = 1; j < 100; ++j)
     {
       count_sum[j] = ans_sum[j - 1];
     }
@@ -465,7 +462,7 @@ double calc_score()
   double resd = 0;
   double ma, mi;
   // srep(j, 1, 3)  => j=1,2
-  srep(j, 1, 3)
+  for (int j = 1; j < 3; ++j)
   {
     if (block_count[0][j] >= block_count[1][j]) {
       ma = block_count[0][j];
@@ -801,7 +798,7 @@ double solve_problem(int run_mode, int problem_num)
     cout << "min_score = " << min_score << endl;
     cout << "loop_count = " << loop_count
       << ", rollback_count = " << rollback_count << endl;
-    srep(i, 1, 5)
+    for (int i = 1; i < 5; ++i)
     {
       cout << "method_" << i << " = "
         << method_count[i][0] << " / " << method_count[i][1] << endl;

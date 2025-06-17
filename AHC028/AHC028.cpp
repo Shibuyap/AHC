@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -735,7 +734,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       ll score = solveSingleCase(i);
       sum += score;

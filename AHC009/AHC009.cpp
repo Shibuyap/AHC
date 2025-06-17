@@ -26,7 +26,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -446,7 +445,7 @@ int main()
     Solve(8);
   }
   else if (exec_mode == 1) {
-    srep(i, 1, 10)
+    for (int i = 1; i < 10; ++i)
     {
       cout << i << endl;
       Solve(i);

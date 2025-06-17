@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 
 using namespace std;
 
@@ -493,7 +492,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
     cs_max_right[num] = cs_right[num];
     if (i > 0) {
       int previousNum = pieces[i - 1].num;
-      srep(j, previousNum + 1, num + 1)
+      for (int j = previousNum + 1; j < num + 1; ++j)
       {
         cs_max_down[j] = max(cs_max_down[j], cs_max_down[previousNum]);
         cs_max_right[j] = max(cs_max_right[j], cs_max_right[previousNum]);
@@ -1298,7 +1297,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
       int base2_1 = randomCandidateIndex;
       int base2_21 = -2;
       int base2_22 = -2;
-      srep(i, randomCandidateIndex + 1, randomPieceIndex2)
+      for (int i = randomCandidateIndex + 1; i < randomPieceIndex2; ++i)
       {
         if (solutionCandidates[randomCandidateIndex].pieces[i].base == base2_1) {
           if (base2_21 == -2) {
@@ -1461,7 +1460,7 @@ int main()
     for (int _ = 0; _ < 10; ++_)
     {
       ll totalScoreSum = 0;
-      srep(i, 0, 100)
+      for (int i = 0; i < 100; ++i)
       {
         ll score = ExecuteSolution(i);
         totalScoreSum += score;
@@ -1471,7 +1470,7 @@ int main()
   }
   else {
     ll totalScoreSum = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       ll score = ExecuteSolution(i);
       totalScoreSum += score;

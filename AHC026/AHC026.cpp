@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 
 using namespace std;
 
@@ -259,7 +258,7 @@ void execute_turn(Problem& problem, int current_box, int from_stack, const vecto
     while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--; // 同じ移動先の箱をまとめる
 
     // 箱を移動
-    srep(l, k, problem.stacks[from_stack].size())
+    for (int l = k; l < problem.stacks[from_stack].size(); ++l)
     {
       int num = problem.stacks[from_stack][l];
       problem.positions[num].x = to_stack;                    // 新しい山の番号
@@ -293,7 +292,7 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 {
   int current_y = problem.positions[current_box].y;
   // 移動先を決定
-  srep(i, position + 1, problem.stacks[from_stack].size())
+  for (int i = position + 1; i < problem.stacks[from_stack].size(); ++i)
   {
     decide_move_destination(problem, move_targets, min_box_per_stack, from_stack, i);
   }
@@ -301,7 +300,7 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
   execute_turn(problem, current_box, from_stack, move_targets);
 
   // 残りのターンを順次実行
-  srep(turn, current_box + 1, n)
+  for (int turn = current_box + 1; turn < n; ++turn)
   {
     vector<P> min_boxes_in_stacks(m);
     for (int i = 0; i < m; ++i)
@@ -321,7 +320,7 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 
     vector<int> next_move_targets(problem.stacks[next_from_stack].size(), -1);
     // 箱の移動先を決定
-    srep(k, next_y + 1, problem.stacks[next_from_stack].size())
+    for (int k = next_y + 1; k < problem.stacks[next_from_stack].size(); ++k)
     {
       decide_move_destination(problem, next_move_targets, min_boxes_in_stacks, next_from_stack, k);
     }
@@ -361,13 +360,13 @@ Problem greedy_solution()
     vector<int> move_targets(problem.stacks[from_stack].size(), -1);
 
     // 各箱について最適な移動先を探索
-    srep(position, current_y + 1, problem.stacks[from_stack].size())
+    for (int position = current_y + 1; position < problem.stacks[from_stack].size(); ++position)
     {
       int max_score = -1;
       int max_id = -1;
 
       // 各可能な移動先についてプレイアウト
-      srep(l, 1, m)
+      for (int l = 1; l < m; ++l)
       {
         move_targets[position] = min_box_per_stack[l].second;
         int tmp_score = simulate_remaining_moves(problem, current_box, position, move_targets, min_box_per_stack, from_stack);
@@ -467,7 +466,7 @@ int main()
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       ll score = solve(i); // 複数のケースを解く
       sum += score;

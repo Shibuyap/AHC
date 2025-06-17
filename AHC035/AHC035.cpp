@@ -29,7 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 
 using namespace std;
 
@@ -501,7 +500,7 @@ int main()
   }
   else if (exec_mode == 1) {
     ll sum = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       ll score = solve_case(i);
       sum += score;

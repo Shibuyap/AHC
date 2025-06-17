@@ -29,8 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -404,7 +402,7 @@ void InitMostVariableAs()
 {
   for (int i = 0; i < dayCount; ++i)
   {
-    srep(j, 1, w + 1)
+    for (int j = 1; j < w + 1; ++j)
     {
       mostVariableAsCount[i][j] = 0;
       for (int k = 0; k < 10; ++k)
@@ -610,7 +608,7 @@ bool IsInvalidSolution()
   {
     for (int j = 0; j < elementCount; ++j)
     {
-      srep(k, j + 1, elementCount)
+      for (int k = j + 1; k < elementCount; ++k)
       {
         if (max(ans.ans[i][j][0], ans.ans[i][k][0]) < min(ans.ans[i][j][2], ans.ans[i][k][2])) {
           if (max(ans.ans[i][j][1], ans.ans[i][k][1]) < min(ans.ans[i][j][3], ans.ans[i][k][3])) { return true; }
@@ -1971,14 +1969,14 @@ void Method4_3_1()
       // 10回シャッフルnextLine
       M43_neighborPosCount = 0;
       if (raD > 0) {
-        srep(k, 1, columnSchedule.schedulesCount[raD - 1][nextLine])
+        for (int k = 1; k < columnSchedule.schedulesCount[raD - 1][nextLine]; ++k)
         {
           CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][nextLine][k];
           M43_neighborPosCount++;
         }
       }
       if (raD < dayCount - 1) {
-        srep(k, 1, columnSchedule.schedulesCount[raD + 1][nextLine])
+        for (int k = 1; k < columnSchedule.schedulesCount[raD + 1][nextLine]; ++k)
         {
           CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][nextLine][k];
           M43_neighborPosCount++;
@@ -2025,14 +2023,14 @@ void Method4_3_1()
       // 10回シャッフルlineNum
       M43_neighborPosCount = 0;
       if (raD > 0) {
-        srep(k, 1, columnSchedule.schedulesCount[raD - 1][lineNum])
+        for (int k = 1; k < columnSchedule.schedulesCount[raD - 1][lineNum]; ++k)
         {
           CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][lineNum][k];
           M43_neighborPosCount++;
         }
       }
       if (raD < dayCount - 1) {
-        srep(k, 1, columnSchedule.schedulesCount[raD + 1][lineNum])
+        for (int k = 1; k < columnSchedule.schedulesCount[raD + 1][lineNum]; ++k)
         {
           CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][lineNum][k];
           M43_neighborPosCount++;
@@ -2455,14 +2453,14 @@ void Method4_3_3()
   // 10回シャッフルline2
   M43_neighborPosCount = 0;
   if (raD > 0) {
-    srep(k, 1, columnSchedule.schedulesCount[raD - 1][line2])
+    for (int k = 1; k < columnSchedule.schedulesCount[raD - 1][line2]; ++k)
     {
       CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][line2][k];
       M43_neighborPosCount++;
     }
   }
   if (raD < dayCount - 1) {
-    srep(k, 1, columnSchedule.schedulesCount[raD + 1][line2])
+    for (int k = 1; k < columnSchedule.schedulesCount[raD + 1][line2]; ++k)
     {
       CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][line2][k];
       M43_neighborPosCount++;
@@ -2503,14 +2501,14 @@ void Method4_3_3()
   // 10回シャッフルline1
   M43_neighborPosCount = 0;
   if (raD > 0) {
-    srep(k, 1, columnSchedule.schedulesCount[raD - 1][line1])
+    for (int k = 1; k < columnSchedule.schedulesCount[raD - 1][line1]; ++k)
     {
       CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][line1][k];
       M43_neighborPosCount++;
     }
   }
   if (raD < dayCount - 1) {
-    srep(k, 1, columnSchedule.schedulesCount[raD + 1][line1])
+    for (int k = 1; k < columnSchedule.schedulesCount[raD + 1][line1]; ++k)
     {
       CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][line1][k];
       M43_neighborPosCount++;
@@ -2603,7 +2601,7 @@ void Method4_3_4_2()
   for (int i = raD; i >= 0; --i)
   {
     int lineIndex = -1;
-    srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
+    for (int j = 1; j < columnSchedule.schedulesCount[i][lineNum]; ++j)
     {
       if (columnSchedule.schedulesPosition[i][lineNum][j] == beforeLinePos) {
         lineIndex = j;
@@ -2622,10 +2620,10 @@ void Method4_3_4_2()
     }
     if (margin == 0) return;
   }
-  srep(i, raD + 1, dayCount)
+  for (int i = raD + 1; i < dayCount; ++i)
   {
     int lineIndex = -1;
-    srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
+    for (int j = 1; j < columnSchedule.schedulesCount[i][lineNum]; ++j)
     {
       if (columnSchedule.schedulesPosition[i][lineNum][j] == beforeLinePos) {
         lineIndex = j;
@@ -2666,10 +2664,10 @@ void Method4_3_4_2()
   }
 
   if (diffScore >= 0) {
-    srep(i, startDay, endDay + 1)
+    for (int i = startDay; i < endDay + 1; ++i)
     {
       int ok = 0;
-      srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
+      for (int j = 1; j < columnSchedule.schedulesCount[i][lineNum]; ++j)
       {
         if (columnSchedule.schedulesPosition[i][lineNum][j] == beforeLinePos) {
           columnSchedule.schedulesPosition[i][lineNum][j] = afterLinePos;
@@ -2706,7 +2704,7 @@ void Method4_3_5()
   if (margin == 0) return;
   int moveAmount = Rand() % margin + 1;
   int diffScore = 0;
-  srep(i, 1, dayCount)
+  for (int i = 1; i < dayCount; ++i)
   {
     int ite1 = 1;
     int ite2 = 1;
@@ -2889,14 +2887,14 @@ void Method4_3_7()
   // 10回シャッフルlineNum
   M43_neighborPosCount = 0;
   if (raD > 0) {
-    srep(k, 1, columnSchedule.schedulesCount[raD - 1][lineNum])
+    for (int k = 1; k < columnSchedule.schedulesCount[raD - 1][lineNum]; ++k)
     {
       CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD - 1][lineNum][k];
       M43_neighborPosCount++;
     }
   }
   if (raD < dayCount - 1) {
-    srep(k, 1, columnSchedule.schedulesCount[raD + 1][lineNum])
+    for (int k = 1; k < columnSchedule.schedulesCount[raD + 1][lineNum]; ++k)
     {
       CD3_NeighborPos[M43_neighborPosCount] = columnSchedule.schedulesPosition[raD + 1][lineNum][k];
       M43_neighborPosCount++;
@@ -3659,7 +3657,7 @@ void Method3_Oshii2()
       if (ok) continue;
 
       ok = 0;
-      srep(newjeans, 1, ans.ansLineCount[i])
+      for (int newjeans = 1; newjeans < ans.ansLineCount[i]; ++newjeans)
       {
         int keepPos = ans.ansLinePos[i][newjeans];
         ans.ansLinePos[i][newjeans] = ans.ansLinePos[i][newjeans + 1];
@@ -3772,7 +3770,7 @@ int Method3_Normal(int loopCount)
       for (int _ = 0; _ < 10; ++_)
       {
         ans.ansLinePos[0][ans.ansBaseLineCount] = (startW + nokoriW - nokoriLine * hosyouWidth);
-        srep(i, startLine + 1, ans.ansBaseLineCount)
+        for (int i = startLine + 1; i < ans.ansBaseLineCount; ++i)
         {
           ans.ansLinePos[0][i] = startW + Rand() % (nokoriW - nokoriLine * hosyouWidth);
         }
@@ -3791,7 +3789,7 @@ int Method3_Normal(int loopCount)
         }
       }
       if (ok2 == 0) return 0;
-      srep(i, startLine, ans.ansBaseLineCount)
+      for (int i = startLine; i < ans.ansBaseLineCount; ++i)
       {
         ans.ansLinePos[0][i + 1] += hosyouWidth * (i + 1 - startLine);
       }
@@ -3805,7 +3803,7 @@ int Method3_Normal(int loopCount)
         ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
         if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) break;
         int ng = 0;
-        srep(i, startLine + 1, ans.ansBaseLineCount - 1)
+        for (int i = startLine + 1; i < ans.ansBaseLineCount - 1; ++i)
         {
           ans.ansLinePos[0][i] = startW + (w - maxNeed - startW) * i / (ans.ansBaseLineCount - 1 - startLine);
           ans.ansLinePos[0][i] += Rand() % 31 - 15;
@@ -3840,7 +3838,7 @@ int Method3_Normal(int loopCount)
         ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
         if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) break;
         int ng = 0;
-        srep(i, startLine + 1, ans.ansBaseLineCount - 1)
+        for (int i = startLine + 1; i < ans.ansBaseLineCount - 1; ++i)
         {
           ans.ansLinePos[0][i] = startW + Rand() % (nokoriW - maxNeed);
         }
@@ -3865,7 +3863,7 @@ int Method3_Normal(int loopCount)
       for (int _ = 0; _ < 10; ++_)
       {
         ans.ansLinePos[0][ans.ansBaseLineCount] = w;
-        srep(i, 1, ans.ansBaseLineCount)
+        for (int i = 1; i < ans.ansBaseLineCount; ++i)
         {
           ans.ansLinePos[0][i] = startW + Rand() % nokoriW;
         }
@@ -3910,7 +3908,7 @@ int Method3_Normal(int loopCount)
   {
     ans.ansLineCount[i] = ans.ansBaseLineCount;
   }
-  srep(i, 1, dayCount)
+  for (int i = 1; i < dayCount; ++i)
   {
     for (int j = 0; j < ans.ansBaseLineCount + 1; ++j)
     {
@@ -3996,7 +3994,7 @@ int Method3_Normal(int loopCount)
       if (oshiiDecideMethod == 0) {
         tmpOshiiSum += minOver;
         if (tmpOshiiSum > oshiiMinMax) {
-          srep(iii, ii, dayCount - 1)
+          for (int iii = ii; iii < dayCount - 1; ++iii)
           {
             swap(daysDifficultySorted[iii], daysDifficultySorted[iii + 1]);
           }
@@ -4014,7 +4012,7 @@ int Method3_Normal(int loopCount)
     }
     if (ng == 1) { break; }
 
-    srep(j, startLine, ans.ansLineCount[i])
+    for (int j = startLine; j < ans.ansLineCount[i]; ++j)
     {
       if (lastNum[j] == -1) continue;
       ans.ans[i][lastNum[j]][2] = w;
@@ -4359,7 +4357,7 @@ void Method3_2(double timeLimit)
     const double prob = exp((double)diffScore / temp);
 
     if (prob > Rand01()) {
-      srep(i, 1, dayCount)
+      for (int i = 1; i < dayCount; ++i)
       {
         ans.ansLinePos[i][ra] = ans.ansLinePos[0][ra];
       }
@@ -4440,7 +4438,7 @@ void Method7()
   int yokoLineCount[MAX_LINECOUNT] = {};
   for (int j = 0; j < ans.ansBaseLineCount; ++j)
   {
-    srep(i, 1, dayCount)
+    for (int i = 1; i < dayCount; ++i)
     {
       yokoLineCount[j] += max(0, columnSchedule.schedulesCount[i - 1][j] - 1) + max(0, columnSchedule.schedulesCount[i][j] - 1);
       int ite1 = 1;
@@ -4596,7 +4594,7 @@ void Method8(double timeLimit)
     for (int _2 = 0; _2 < 10; ++_2)
     {
       ans.ansLinePos[0][ans.ansBaseLineCount] = w;
-      srep(i, 1, ans.ansBaseLineCount)
+      for (int i = 1; i < ans.ansBaseLineCount; ++i)
       {
         ans.ansLinePos[0][i] = Rand() % w;
       }
@@ -4630,7 +4628,7 @@ void Method8(double timeLimit)
     }
 
     M8ansLineCount[TMP_NUM] = ans.ansBaseLineCount;
-    srep(i, 0, ans.ansBaseLineCount + 1)
+    for (int i = 0; i < ans.ansBaseLineCount + 1; ++i)
     {
       M8ansLinePos[TMP_NUM][i] = ans.ansLinePos[0][i];
     }
@@ -4693,7 +4691,7 @@ void Method8(double timeLimit)
       if (ok == 1) {
         okCount++;
         M8ansOK[TMP_NUM][i] = 1;
-        srep(j, 0, ans.ansBaseLineCount)
+        for (int j = 0; j < ans.ansBaseLineCount; ++j)
         {
           if (lastNum[j] == -1) continue;
           M8ans[TMP_NUM][i][lastNum[j]][2] = w;
@@ -4997,7 +4995,7 @@ int main()
   else if (mode == 1) {
     vector<ll> scores;
     ll sum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       ll score = Solve(i);
       sum += score;

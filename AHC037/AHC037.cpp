@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<ll, ll> P;
@@ -259,7 +258,7 @@ void Method23()
   }
   for (int i = 0; i < n; ++i)
   {
-    srep(j, i + 1, n)
+    for (int j = i + 1; j < n; ++j)
     {
       PP pp;
       pp.first.first = points[i].first + points[i].second + points[j].first + points[j].second
@@ -353,7 +352,7 @@ int main()
   }
   else {
     ll sum = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       ll score = Solve(i);
       sum += score;

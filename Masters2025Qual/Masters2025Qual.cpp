@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 
 using namespace std;
 
@@ -494,7 +493,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     tx = hx;
     ty = nowY;
     if (nowX < hx) {
-      srep(i, nowX + 1, hx + 1)
+      for (int i = nowX + 1; i < hx + 1; ++i)
       {
         if (a[i][nowY] != -1) {
           saitan = 0;
@@ -504,7 +503,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
       }
     }
     else {
-      srep(i, hx, nowX)
+      for (int i = hx; i < nowX; ++i)
       {
         if (a[i][nowY] != -1) {
           saitan = 0;
@@ -518,7 +517,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     tx = nowX;
     ty = hy;
     if (nowY < hy) {
-      srep(i, nowY + 1, hy + 1)
+      for (int i = nowY + 1; i < hy + 1; ++i)
       {
         if (a[nowX][i] != -1) {
           saitan = 0;
@@ -528,7 +527,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
       }
     }
     else {
-      srep(i, hy, nowY)
+      for (int i = hy; i < nowY; ++i)
       {
         if (a[nowX][i] != -1) {
           saitan = 0;
@@ -709,7 +708,7 @@ void Method1_3()
           }
         }
         if (dir == -1) {
-          srep(k, hx + 1, n + 1)
+          for (int k = hx + 1; k < n + 1; ++k)
           {
             if (a[k][hy] == 0) {
               tx = k;
@@ -751,7 +750,7 @@ void Method1_3()
           }
         }
         if (dir == -1) {
-          srep(k, hy + 1, n + 1)
+          for (int k = hy + 1; k < n + 1; ++k)
           {
             if (a[hx][k] == 0) {
               tx = hx;
@@ -855,7 +854,7 @@ void Method1_3()
         int idx = -1;
         int maxCount = 0;
         // 行
-        srep(k, 1, n + 1)
+        for (int k = 1; k < n + 1; ++k)
         {
           int tmpCount = 0;
           int rockCount = 0;
@@ -889,7 +888,7 @@ void Method1_3()
           }
         }
         // 列
-        srep(k, 1, n + 1)
+        for (int k = 1; k < n + 1; ++k)
         {
           int tmpCount = 0;
           int rockCount = 0;
@@ -958,11 +957,11 @@ void Method1_3()
               Method1_3_Fall(hx, hy, nowX, nowY, idx, k, a2[idx][k], 5);
             }
           }
-          srep(k, hy + 1, n + 1)
+          for (int k = hy + 1; k < n + 1; ++k)
           {
             int huyou = 1;
             if (k == n)huyou = 0;
-            srep(l, k + 1, n + 1)
+            for (int l = k + 1; l < n + 1; ++l)
             {
               for (int z = 0; z < 4; ++z)
               {
@@ -1012,11 +1011,11 @@ void Method1_3()
               Method1_3_Fall(hx, hy, nowX, nowY, k, idx, a2[k][idx], 5);
             }
           }
-          srep(k, hx + 1, n + 1)
+          for (int k = hx + 1; k < n + 1; ++k)
           {
             int huyou = 1;
             if (k == n)huyou = 0;
-            srep(l, k + 1, n + 1)
+            for (int l = k + 1; l < n + 1; ++l)
             {
               for (int z = 0; z < 4; ++z)
               {
@@ -1206,7 +1205,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 15)
+    for (int i = 0; i < 15; ++i)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
@@ -1235,7 +1234,7 @@ int main()
       hypers.Partition = Rand() % 101;
 
       ll sum = 0;
-      srep(i, 8, 15)
+      for (int i = 8; i < 15; ++i)
       {
         ll score = Solve(i, hypers);
         sum += score;

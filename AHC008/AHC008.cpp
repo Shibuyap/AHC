@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -794,7 +793,7 @@ public:
       }
     }
 
-    srep(turn, startTurn, T)
+    for (int turn = startTurn; turn < T; ++turn)
     {
       // cout << "# Solve2" << endl;
       string outStr;
@@ -939,7 +938,7 @@ public:
         else {
           outStr += "..";
         }
-        srep(i, 2, m)
+        for (int i = 2; i < m; ++i)
         {
           outStr += ".";
         }
@@ -984,7 +983,7 @@ public:
             }
             else if (i == 1) {
               int gx = -1, gy = -1;
-              srep(j, 15, 29)
+              for (int j = 15; j < 29; ++j)
               {
                 if (grid[1][j] == 0) {
                   gx = 1;
@@ -1115,7 +1114,7 @@ public:
       }
     }
 
-    srep(turn, startTurn, T)
+    for (int turn = startTurn; turn < T; ++turn)
     {
       // cout << "# Solve2" << endl;
       string outStr;
@@ -1310,7 +1309,7 @@ public:
         else {
           outStr += "..";
         }
-        srep(i, 2, m)
+        for (int i = 2; i < m; ++i)
         {
           outStr += ".";
         }
@@ -1355,7 +1354,7 @@ public:
             }
             else if (i == 1) {
               int gx = -1, gy = -1;
-              srep(j, 15, 29)
+              for (int j = 15; j < 29; ++j)
               {
                 if (grid[1][j] == 0) {
                   gx = 1;
@@ -1486,7 +1485,7 @@ public:
       }
     }
 
-    srep(turn, startTurn, T)
+    for (int turn = startTurn; turn < T; ++turn)
     {
       // cout << "# Solve2" << endl;
       string outStr;
@@ -1681,7 +1680,7 @@ public:
         else {
           outStr += "..";
         }
-        srep(i, 2, m)
+        for (int i = 2; i < m; ++i)
         {
           outStr += ".";
         }
@@ -1726,7 +1725,7 @@ public:
             }
             else if (i == 1) {
               int gx = -1, gy = -1;
-              srep(j, 15, 29)
+              for (int j = 15; j < 29; ++j)
               {
                 if (grid[1][j] == 0) {
                   gx = 1;

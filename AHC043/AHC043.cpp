@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-
 using namespace std;
 
 
@@ -617,7 +615,7 @@ int Simulate(int simMode, const EkiMap& ekiMap, const vector<int>& people, bool 
           }
 
           // 道作る
-          srep(i, 1, ParentEdge[num2].route.size() - 1)
+          for (int i = 1; i < ParentEdge[num2].route.size() - 1; ++i)
           {
             while (money < 100 && turn < TT) {
               Action(-1, 0, 0, income);
@@ -678,7 +676,7 @@ int Simulate(int simMode, const EkiMap& ekiMap, const vector<int>& people, bool 
             money += income;
 
             // 道作る
-            srep(i, 1, ParentEdge[num2].route.size() - 1)
+            for (int i = 1; i < ParentEdge[num2].route.size() - 1; ++i)
             {
               while (money < 100 && turn < TT) {
                 Action(-1, 0, 0, income);
@@ -890,7 +888,7 @@ void Method1(Hypers hypers)
   vector<Edge> es;
   for (int i = 0; i < ekiMap.StationCount; ++i)
   {
-    srep(j, i + 1, ekiMap.StationCount)
+    for (int j = i + 1; j < ekiMap.StationCount; ++j)
     {
       Edge e;
       e.from = i;
@@ -1017,7 +1015,7 @@ void Method1(Hypers hypers)
 
       uf.Unite(e.from, e.to);
 
-      srep(i, 1, route.size() - 1)
+      for (int i = 1; i < route.size() - 1; ++i)
       {
         fff[route[i].first][route[i].second] = 1;
       }
@@ -1214,7 +1212,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       ll score = Solve(i, HYPERS);
       sum += score;
@@ -1246,7 +1244,7 @@ int main()
       cout << "StationCount = " << hypers.StationCount << endl;
 
       ll sum = 0;
-      srep(i, 0, 10)
+      for (int i = 0; i < 10; ++i)
       {
         ll score = Solve(i, hypers);
         sum += score;

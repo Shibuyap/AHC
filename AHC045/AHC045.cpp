@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 
 using namespace std;
 
@@ -394,7 +393,7 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
 
   int edgeCount = 0;
   for (int i = 0; i < nums.size(); ++i) {
-    srep(j, i + 1, nums.size())
+    for (int j = i + 1; j < nums.size(); ++j)
     {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
@@ -443,7 +442,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
   int edgeCount = 0;
   for (int i = 0; i < nums.size(); ++i) {
-    srep(j, i + 1, nums.size())
+    for (int j = i + 1; j < nums.size(); ++j)
     {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
@@ -564,7 +563,7 @@ vector<P> BuildMSTWithEdgeCompare(const vector<int>& nums, bool isTrue = false)
 
   int edgeCount = 0;
   for (int i = 0; i < nums.size(); ++i) {
-    srep(j, i + 1, nums.size())
+    for (int j = i + 1; j < nums.size(); ++j)
     {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
@@ -995,7 +994,7 @@ void Method1_Query(int start, int queryEnd)
   }
   sort(vp.begin(), vp.end(), greater<P>());
 
-  srep(i, start, n)
+  for (int i = start; i < n; ++i)
   {
     int num = vp[i].second;
     auto po = GetPoint(num);
@@ -1703,7 +1702,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       ll score = Solve(5, HYPERS);
       sum += score;
@@ -1732,7 +1731,7 @@ int main()
       hypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
-      srep(i, 0, 10)
+      for (int i = 0; i < 10; ++i)
       {
         ll score = Solve(i, hypers);
         sum += score;

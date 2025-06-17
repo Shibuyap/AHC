@@ -30,7 +30,6 @@
 #include <vector>
 
 #define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 
 using namespace std;
 
@@ -313,7 +312,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    srep(i, 0, 15)
+    for (int i = 0; i < 15; ++i)
     {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
@@ -342,7 +341,7 @@ int main()
       new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
-      srep(i, 0, 15)
+      for (int i = 0; i < 15; ++i)
       {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;

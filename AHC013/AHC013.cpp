@@ -30,7 +30,6 @@
 #include <vector>
 #include <array>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef pair<int, int> P;
 #define MAX_N 200005
@@ -536,7 +535,7 @@ void Init()
         gameState.udlr[i][3] = gameState.R[i];
         gameState.udlr[gameState.R[i]][2] = i;
         int aVal = MakeAValue(i, gameState.R[i]);
-        srep(k, gameState.y[i] + 1, gameState.y[gameState.R[i]]) { gameState.a[gameState.x[i]][k] = aVal; }
+        for (int k = gameState.y[i] + 1; k < gameState.y[gameState.R[i]]; ++k) { gameState.a[gameState.x[i]][k] = aVal; }
       }
     }
 
@@ -547,7 +546,7 @@ void Init()
       }
       if (getServerType(i) == gameState.D[i] / 100) {
         int ok = 1;
-        srep(k, gameState.x[i] + 1, gameState.x[gameState.D[i]])
+        for (int k = gameState.x[i] + 1; k < gameState.x[gameState.D[i]]; ++k)
         {
           if (gameState.a[k][gameState.y[i]] < 0) {
             ok = 0;
@@ -558,7 +557,7 @@ void Init()
           gameState.udlr[i][1] = gameState.D[i];
           gameState.udlr[gameState.D[i]][0] = i;
           int aVal = MakeAValue(i, gameState.D[i]);
-          srep(k, gameState.x[i] + 1, gameState.x[gameState.D[i]]) { gameState.a[k][gameState.y[i]] = aVal; }
+          for (int k = gameState.x[i] + 1; k < gameState.x[gameState.D[i]]; ++k) { gameState.a[k][gameState.y[i]] = aVal; }
         }
       }
     }
@@ -574,7 +573,7 @@ void Init()
         gameState.udlr[i][1] = gameState.D[i];
         gameState.udlr[gameState.D[i]][0] = i;
         int aVal = MakeAValue(i, gameState.D[i]);
-        srep(k, gameState.x[i] + 1, gameState.x[gameState.D[i]]) { gameState.a[k][gameState.y[i]] = aVal; }
+        for (int k = gameState.x[i] + 1; k < gameState.x[gameState.D[i]]; ++k) { gameState.a[k][gameState.y[i]] = aVal; }
       }
     }
 
@@ -585,7 +584,7 @@ void Init()
       }
       if (getServerType(i) == gameState.R[i] / 100) {
         int ok = 1;
-        srep(k, gameState.y[i] + 1, gameState.y[gameState.R[i]])
+        for (int k = gameState.y[i] + 1; k < gameState.y[gameState.R[i]]; ++k)
         {
           if (gameState.a[gameState.x[i]][k] < 0) {
             ok = 0;
@@ -596,7 +595,7 @@ void Init()
           gameState.udlr[i][3] = gameState.R[i];
           gameState.udlr[gameState.R[i]][2] = i;
           int aVal = MakeAValue(i, gameState.R[i]);
-          srep(k, gameState.y[i] + 1, gameState.y[gameState.R[i]]) { gameState.a[gameState.x[i]][k] = aVal; }
+          for (int k = gameState.y[i] + 1; k < gameState.y[gameState.R[i]]; ++k) { gameState.a[gameState.x[i]][k] = aVal; }
         }
       }
     }
@@ -909,7 +908,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(ite);
 
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -926,7 +925,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteD);
           se.insert(ite);
 
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -950,7 +949,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, iteD);
-          srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = aVal;
@@ -967,7 +966,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(ite);
 
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -985,7 +984,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteD);
           se.insert(ite);
 
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -1007,7 +1006,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             se.insert(iteU);
 
             int aVal = MakeAValue(iteU, iteD);
-            srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+            for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
             {
               PushACnt(i, yy);
               gameState.a[i][yy] = aVal;
@@ -1039,14 +1038,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, ite);
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
           }
 
           aVal = MakeAValue(ite, iteD);
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
@@ -1062,13 +1061,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(iteD);
 
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = INF;
             beam.push_back(P(i, ny));
           }
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = INF;
@@ -1090,7 +1089,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
 
           int aVal = MakeAValue(iteU, ite);
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
@@ -1109,7 +1108,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(ite, iteD);
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
@@ -1148,7 +1147,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(ite);
 
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -1165,7 +1164,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteD);
           se.insert(ite);
 
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -1189,7 +1188,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, iteD);
-          srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = aVal;
@@ -1207,7 +1206,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(ite);
 
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -1226,7 +1225,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteD);
           se.insert(ite);
 
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, yy);
             gameState.a[i][yy] = INF;
@@ -1248,7 +1247,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             se.insert(iteU);
 
             int aVal = MakeAValue(iteU, iteD);
-            srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+            for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
             {
               PushACnt(i, yy);
               gameState.a[i][yy] = aVal;
@@ -1280,14 +1279,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteU, ite);
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
           }
 
           aVal = MakeAValue(ite, iteD);
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
@@ -1303,13 +1302,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
           se.insert(iteD);
 
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = INF;
             beam.push_back(P(i, ny));
           }
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = INF;
@@ -1331,7 +1330,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteU);
 
           int aVal = MakeAValue(iteU, ite);
-          srep(i, gameState.x[iteU] + 1, gameState.x[ite])
+          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
@@ -1350,7 +1349,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(ite, iteD);
-          srep(i, gameState.x[ite] + 1, gameState.x[iteD])
+          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
           {
             PushACnt(i, ny);
             gameState.a[i][ny] = aVal;
@@ -1391,7 +1390,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(ite);
 
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1408,7 +1407,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteR);
           se.insert(ite);
 
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1432,7 +1431,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, iteR);
-          srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = aVal;
@@ -1450,7 +1449,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(ite);
 
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1469,7 +1468,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteR);
           se.insert(ite);
 
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1491,7 +1490,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             se.insert(iteL);
 
             int aVal = MakeAValue(iteL, iteR);
-            srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+            for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
             {
               PushACnt(xx, i);
               gameState.a[xx][i] = aVal;
@@ -1523,14 +1522,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, ite);
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
           }
 
           aVal = MakeAValue(ite, iteR);
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
@@ -1546,13 +1545,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(iteR);
 
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = INF;
             beam.push_back(P(nx, i));
           }
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = INF;
@@ -1574,7 +1573,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
 
           int aVal = MakeAValue(iteL, ite);
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
@@ -1593,7 +1592,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(ite, iteR);
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
@@ -1632,7 +1631,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(ite);
 
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1649,7 +1648,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteR);
           se.insert(ite);
 
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1673,7 +1672,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, iteR);
-          srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = aVal;
@@ -1691,7 +1690,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(ite);
 
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1710,7 +1709,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteR);
           se.insert(ite);
 
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(xx, i);
             gameState.a[xx][i] = INF;
@@ -1732,7 +1731,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
             se.insert(iteL);
 
             int aVal = MakeAValue(iteL, iteR);
-            srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+            for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
             {
               PushACnt(xx, i);
               gameState.a[xx][i] = aVal;
@@ -1764,14 +1763,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(iteL, ite);
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
           }
 
           aVal = MakeAValue(ite, iteR);
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
@@ -1787,13 +1786,13 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
           se.insert(iteR);
 
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = INF;
             beam.push_back(P(nx, i));
           }
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = INF;
@@ -1815,7 +1814,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(iteL);
 
           int aVal = MakeAValue(iteL, ite);
-          srep(i, gameState.y[iteL] + 1, gameState.y[ite])
+          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
@@ -1834,7 +1833,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           se.insert(ite);
 
           int aVal = MakeAValue(ite, iteR);
-          srep(i, gameState.y[ite] + 1, gameState.y[iteR])
+          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
           {
             PushACnt(nx, i);
             gameState.a[nx][i] = aVal;
@@ -1862,7 +1861,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         se.insert(iteL);
 
         int aVal = MakeAValue(iteL, iteR);
-        srep(i, gameState.y[iteL] + 1, gameState.y[iteR])
+        for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
         {
           PushACnt(px, i);
           gameState.a[px][i] = aVal;
@@ -1887,7 +1886,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         se.insert(iteU);
 
         int aVal = MakeAValue(iteU, iteD);
-        srep(i, gameState.x[iteU] + 1, gameState.x[iteD])
+        for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
         {
           PushACnt(i, py);
           gameState.a[i][py] = aVal;
@@ -2219,7 +2218,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
 
   // NGチェック
   // ite以降の操作で、操作元が移動後のマス、操作後が移動前のマス、の操作が出てこなければOK
-  srep(i, ite + 1, gameState.ope1)
+  for (int i = ite + 1; i < gameState.ope1; ++i)
   {
     if (gameState.ans1[i][4] == gameState.ans1[ite][4]) {
       return;
@@ -2255,7 +2254,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
     */
     // 消すのはiteとope1-1
     gameState.ope1--;
-    srep(i, ite, gameState.ope1 - 1)
+    for (int i = ite; i < gameState.ope1 - 1; ++i)
     {
       for (int j = 0; j < 5; ++j) { gameState.ans1[i][j] = gameState.ans1[i + 1][j]; }
     }
@@ -2295,7 +2294,7 @@ void Method6(double start_temp, double end_temp, double now_progress)
     methodCount[6][0]++;
     methodSum[0]++;
 
-    srep(i, ite, gameState.ope1 - 2)
+    for (int i = ite; i < gameState.ope1 - 2; ++i)
     {
       for (int j = 0; j < 5; ++j) { gameState.ans1[i][j] = gameState.ans1[i + 2][j]; }
     }
@@ -2339,7 +2338,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
           gameState.ans1[ite1][2] == gameState.ans1[ite2][0] && gameState.ans1[ite1][3] == gameState.ans1[ite2][1]) {
           // ngチェック
           int ng = 0;
-          srep(k, ite1 + 1, ite2)
+          for (int k = ite1 + 1; k < ite2; ++k)
           {
             if (gameState.ans1[k][2] == gameState.ans1[ite1][0] && gameState.ans1[k][3] == gameState.ans1[ite1][1]) {
               ng = 1;
@@ -2364,7 +2363,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
     }
 
     if (it1 != -1) {
-      srep(i, it2, gameState.ope1 - 1)
+      for (int i = it2; i < gameState.ope1 - 1; ++i)
       {
         for (int j = 0; j < 5; ++j)
         {
@@ -2372,7 +2371,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
         }
       }
       gameState.ope1--;
-      srep(i, it1, gameState.ope1 - 1)
+      for (int i = it1; i < gameState.ope1 - 1; ++i)
       {
         for (int j = 0; j < 5; ++j)
         {
@@ -2594,7 +2593,7 @@ int Solve(int mode, int problemNum = 0)
     cerr << "gameState.maxScore = " << gameState.maxScore << ", gameState.ope1 = " << gameState.ope1 << ", gameState.ope2 = " << gameState.ope2 << endl;
     cerr << "cal = " << cal << endl;
     cerr << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
-    srep(i, 1, 8)
+    for (int i = 1; i < 8; ++i)
     {
       cerr << "Method" << i << " = " << methodCount[i][0] << " / "
         << methodCount[i][1] << endl;
@@ -2640,7 +2639,7 @@ int main()
   }
   else if (mode == 2) {
     int sum = 0;
-    srep(i, 0, 10)
+    for (int i = 0; i < 10; ++i)
     {
       sum += SolveOuter(mode, i);
       AllClear_outer();

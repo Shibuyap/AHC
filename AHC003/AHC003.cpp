@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i,s,t) for(int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -304,8 +303,8 @@ int Solve(string iunputFileNum)
     inputMode = 0;
   }
   else {
-    for (int i = 0; i < n; ++i) srep(j, 1, n) ifs >> dReal[1][i][j];
-    srep(i, 1, n) for (int j = 0; j < n; ++j) ifs >> dReal[0][i][j];
+    for (int i = 0; i < n; ++i) for (int j = 1; j < n; ++j) ifs >> dReal[1][i][j];
+    for (int i = 1; i < n; ++i) for (int j = 0; j < n; ++j) ifs >> dReal[0][i][j];
   }
 
   string fileName = (string)"./out/" + iunputFileNum + "_out.txt";
@@ -417,14 +416,14 @@ int Solve(string iunputFileNum)
     }
     sx = keepSx; sy = keepSy;
     for (int j = 0; j < n; ++j) {
-      srep(i, 1, n)
+      for (int i = 1; i < n; ++i)
       {
         VerticalSum[turn][i][j] = VerticalSum[turn][i - 1][j] + tatePath[i][j];
       }
       if (VerticalSum[turn][n - 1][j]) TurnUD[j].push_back(turn);
     }
     for (int i = 0; i < n; ++i) {
-      srep(j, 1, n)
+      for (int j = 1; j < n; ++j)
       {
         HorizontalSum[turn][i][j] = HorizontalSum[turn][i][j - 1] + yokoPath[i][j];
       }
@@ -728,7 +727,7 @@ int Solve(string iunputFileNum)
             maxDiff += (abs(amari[i]) - std::abs(DistResponce[turnID] - DistEstimate[turnID])) * (40000.0 / DistResponce[turnID]);
           }
           double keepMaxDiff = maxDiff;
-          srep(kugiri, 3, 27)
+          for (int kugiri = 3; kugiri < 27; ++kugiri)
           {
             for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
               double rA = Rand() % 8001 + 1000;
@@ -821,7 +820,7 @@ int Solve(string iunputFileNum)
             maxDiff += (abs(amari[i]) - std::abs(DistResponce[turnID] - DistEstimate[turnID])) * (40000.0 / DistResponce[turnID]);
           }
           double keepMaxDiff = maxDiff;
-          srep(kugiri, 3, 27)
+          for (int kugiri = 3; kugiri < 27; ++kugiri)
           {
             for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
               double rA = Rand() % 8001 + 1000;
@@ -1038,7 +1037,7 @@ int main()
   else if (mode == 1) { // サンプル0‾99でチェック
     vector<P> ranking;
     ll allScore = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       string inputFileNum;
       inputFileNum += (char)((i % 10000) / 1000 + '0');

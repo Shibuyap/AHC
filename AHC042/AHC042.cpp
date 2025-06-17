@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-
 using namespace std;
 
 
@@ -293,9 +291,9 @@ int Method2_CalcScore(int dir, int num)
   int score = 0;
   queue<P> que;
   int f[n + 2][n + 2];
-  srep(i, 1, n + 1)
+  for (int i = 1; i < n + 1; ++i)
   {
-    srep(j, 1, n + 1)
+    for (int j = 1; j < n + 1; ++j)
     {
       if (a[i][j] == 1) {
         while (que.size()) {
@@ -371,7 +369,7 @@ void Method2()
       int cost = 99999;
 
       // U
-      srep(j, 1, n + 1)
+      for (int j = 1; j < n + 1; ++j)
       {
         if (a[1][j] == 2) {
           continue;
@@ -388,7 +386,7 @@ void Method2()
       }
 
       // L
-      srep(i, 1, n + 1)
+      for (int i = 1; i < n + 1; ++i)
       {
         if (a[i][1] == 2) {
           continue;
@@ -405,7 +403,7 @@ void Method2()
       }
 
       // D
-      srep(j, 1, n + 1)
+      for (int j = 1; j < n + 1; ++j)
       {
         if (a[n][j] == 2) {
           continue;
@@ -422,7 +420,7 @@ void Method2()
       }
 
       // R
-      srep(i, 1, n + 1)
+      for (int i = 1; i < n + 1; ++i)
       {
         if (a[i][n] == 2) {
           continue;
@@ -552,7 +550,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
       if (oniCheck) {
         int oni = 0;
-        srep(i, 1, n + 1)
+        for (int i = 1; i < n + 1; ++i)
         {
           if (a[i][num] == 1) {
             oni = 1;
@@ -575,7 +573,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
       if (oniCheck) {
         int oni = 0;
-        srep(j, 1, n + 1)
+        for (int j = 1; j < n + 1; ++j)
         {
           if (a[num][j] == 1) {
             oni = 1;
@@ -598,7 +596,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
       if (oniCheck) {
         int oni = 0;
-        srep(i, 1, n + 1)
+        for (int i = 1; i < n + 1; ++i)
         {
           if (a[i][num] == 1) {
             oni = 1;
@@ -621,7 +619,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
       if (oniCheck) {
         int oni = 0;
-        srep(j, 1, n + 1)
+        for (int j = 1; j < n + 1; ++j)
         {
           if (a[num][j] == 1) {
             oni = 1;
@@ -639,10 +637,10 @@ int Sim2(vector<P>& ans2, bool oniCheck)
     }
   }
 
-  srep(i, 1, n + 1)
+  for (int i = 1; i < n + 1; ++i)
   {
     //if (ans2.size() >= ansScore + 5)break;
-    srep(j, 1, n + 1)
+    for (int j = 1; j < n + 1; ++j)
     {
       //if (ans2.size() >= ansScore + 5)break;
 
@@ -652,7 +650,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
         // U
         int ok = 1;
-        srep(k, 1, i)
+        for (int k = 1; k < i; ++k)
         {
           if (a[k][j] != 0) {
             ok = 0;
@@ -668,7 +666,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
         // L
         ok = 1;
-        srep(k, 1, j)
+        for (int k = 1; k < j; ++k)
         {
           if (a[i][k] != 0) {
             ok = 0;
@@ -684,7 +682,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
         // D
         ok = 1;
-        srep(k, i + 1, n + 1)
+        for (int k = i + 1; k < n + 1; ++k)
         {
           if (a[k][j] != 0) {
             ok = 0;
@@ -700,7 +698,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
 
         // R
         ok = 1;
-        srep(k, j + 1, n + 1)
+        for (int k = j + 1; k < n + 1; ++k)
         {
           if (a[i][k] != 0) {
             ok = 0;
@@ -951,7 +949,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    srep(i, 0, 15)
+    for (int i = 0; i < 15; ++i)
     {
       ll score = Solve(i, HAIPARAS);
       sum += score;
@@ -981,7 +979,7 @@ int main()
       haiparas.SimPartition = Rand01();
 
       ll sum = 0;
-      srep(i, 0, 15)
+      for (int i = 0; i < 15; ++i)
       {
         ll score = Solve(i, haiparas);
         sum += score;

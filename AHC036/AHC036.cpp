@@ -28,7 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define srep(i, s, t) for (int i = s; i < t; ++i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -581,7 +580,7 @@ void MakeA1()
   route.clear();
   for (int i = 0; i < N; ++i) visited[i] = 0;
   MakeA1DFS(center, route, visited, 1);
-  srep(j, 1, route.size())
+  for (int j = 1; j < route.size(); ++j)
   {
     if (i == LA) break;
     a[i] = route[j];
@@ -693,7 +692,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    srep(i, 0, 100)
+    for (int i = 0; i < 100; ++i)
     {
       ll score = Solve(i);
       sum += score;
