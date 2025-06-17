@@ -1006,8 +1006,7 @@ void DisconnectWithPath(int movingServer, int connectedServer, int udlr_idx_movi
 }
 
 // 戻り値：更新したかどうか
-int InnerMethod(double start_temp, double end_temp, double now_progress,
-  int ite, int dir, bool forceDo = false, int MethodeMode = 0)
+int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int MethodeMode = 0)
 {
   acnt = 0;
   udlrcnt = 0;
@@ -1559,7 +1558,6 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
 
   int diffScore = tmpScore - gameState.maxScore;
 
-  double temp = start_temp + (end_temp - start_temp) * now_progress;
   double prob = exp((double)diffScore / temp);
   int isDo = 0;
   if (forceDo || prob > Rand01()) {
@@ -1628,7 +1626,8 @@ void Method1(double start_temp, double end_temp, double now_progress)
     }
   }
 
-  InnerMethod(start_temp, end_temp, now_progress, ite, dir);
+  double temp = start_temp + (end_temp - start_temp) * now_progress;
+  InnerMethod(temp, ite, dir);
 }
 
 
@@ -1835,8 +1834,8 @@ void Method5(double start_temp, double end_temp, double now_progress)
     }
   }
 
-  int isDo = InnerMethod(start_temp, end_temp, now_progress, gameState.ans1[ite][4],
-    reverseDir, false, 5);
+  double temp = start_temp + (end_temp - start_temp) * now_progress;
+  int isDo = InnerMethod(temp, gameState.ans1[ite][4], reverseDir, false, 5);
 
   // 実行した場合、2つ消す
   if (isDo) {
