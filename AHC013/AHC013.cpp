@@ -848,6 +848,17 @@ inline void EraseUnion(int ite)
   }
 }
 
+// サーバー間の接続を切る共通処理
+void DisconnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, set<int>& se)
+{
+  // 切る
+  Update_udlr(server1, udlr_idx1, -1);
+  Update_udlr(server2, udlr_idx2, -1);
+  
+  EraseUnion(server1);
+  se.insert(server2);
+}
+
 // サーバー間を接続する共通処理
 // isVertical: true=縦方向(y方向), false=横方向(x方向)
 void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int coord, bool isVertical, set<int>& se)
@@ -990,11 +1001,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         else if (gameState.udlr[ite][0] != -1) {
           // 切る
           int iteU = gameState.udlr[ite][0];
-          Update_udlr(iteU, 1, -1);
-          Update_udlr(ite, 0, -1);
-
-          EraseUnion(ite);
-          se.insert(iteU);
+          DisconnectServers(ite, iteU, 0, 1, se);
           se.insert(ite);
 
           for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
@@ -1008,11 +1015,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         else if (gameState.udlr[ite][1] != -1) {
           // 切る
           int iteD = gameState.udlr[ite][1];
-          Update_udlr(iteD, 0, -1);
-          Update_udlr(ite, 1, -1);
-
-          EraseUnion(ite);
-          se.insert(iteD);
+          DisconnectServers(ite, iteD, 1, 0, se);
           se.insert(ite);
 
           for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
