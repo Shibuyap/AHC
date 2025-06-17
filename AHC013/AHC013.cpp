@@ -959,6 +959,52 @@ void ReconnectServersWithCut(int serverU, int serverD, int newServer, int udlr_U
   SetServerPath(newServer, serverD, coord, aVal2, isVertical, false, dummy);
 }
 
+// 既存の2つのサーバー間の接続を切って、間に新しくサーバーを挟む共通処理
+// isVertical: true=縦方向(y方向), false=横方向(x方向)
+void DisconnectAndInsertServer(int server1, int server2, int newServer, int udlr_idx1, int udlr_idx2, int coord, bool isVertical, set<int>& se, vector<P>& beam)
+{
+  // 切る
+  Update_udlr(server1, udlr_idx1, -1);
+  Update_udlr(server2, udlr_idx2, -1);
+  
+  EraseUnion(server1);
+  se.insert(server1);
+  se.insert(server2);
+  
+  // 新しい経路を設定
+  SetServerPath(server1, newServer, coord, INF, isVertical, true, beam);
+  SetServerPath(newServer, server2, coord, INF, isVertical, true, beam);
+}
+
+// サーバー移動時に既存の接続を切ってINF経路を設定する共通処理
+// isVertical: true=縦方向(y方向), false=横方向(x方向)
+// movingServer: 移動するサーバー、connectedServer: 接続されていたサーバー
+void DisconnectWithPath(int movingServer, int connectedServer, int udlr_idx_moving, int udlr_idx_connected, int coord, bool isVertical, set<int>& se, vector<P>& beam)
+{
+  // 切る
+  Update_udlr(movingServer, udlr_idx_moving, -1);
+  Update_udlr(connectedServer, udlr_idx_connected, -1);
+  
+  EraseUnion(movingServer);
+  se.insert(connectedServer);
+  se.insert(movingServer);
+  
+  // 経路の向きを考慮：上から下、左から右の方向で設定
+  if (isVertical) {
+    if (gameState.x[connectedServer] < gameState.x[movingServer]) {
+      SetServerPath(connectedServer, movingServer, coord, INF, isVertical, true, beam);
+    } else {
+      SetServerPath(movingServer, connectedServer, coord, INF, isVertical, true, beam);
+    }
+  } else {
+    if (gameState.y[connectedServer] < gameState.y[movingServer]) {
+      SetServerPath(connectedServer, movingServer, coord, INF, isVertical, true, beam);
+    } else {
+      SetServerPath(movingServer, connectedServer, coord, INF, isVertical, true, beam);
+    }
+  }
+}
+
 // 戻り値：更新したかどうか
 int InnerMethod(double start_temp, double end_temp, double now_progress,
   int ite, int dir, bool forceDo = false, int MethodeMode = 0)
@@ -1012,26 +1058,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (gameState.udlr[ite][2] != -1) {
         if (gameState.udlr[ite][0] != -1) {
           int iteU = gameState.udlr[ite][0];
-          Update_udlr(iteU, 1, -1);
-          Update_udlr(ite, 0, -1);
-
-          EraseUnion(ite);
-          se.insert(iteU);
-          se.insert(ite);
-
-          SetServerPath(iteU, ite, yy, INF, true, true, beam);
+          DisconnectWithPath(ite, iteU, 0, 1, yy, true, se, beam);
         }
 
         if (gameState.udlr[ite][1] != -1) {
           int iteD = gameState.udlr[ite][1];
-          Update_udlr(iteD, 0, -1);
-          Update_udlr(ite, 1, -1);
-
-          EraseUnion(ite);
-          se.insert(iteD);
-          se.insert(ite);
-
-          SetServerPath(ite, iteD, yy, INF, true, true, beam);
+          DisconnectWithPath(ite, iteD, 1, 0, yy, true, se, beam);
         }
       }
       else {
@@ -1089,15 +1121,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 違う色
         else {
           // 切る
-          Update_udlr(iteU, 1, -1);
-          Update_udlr(iteD, 0, -1);
-
-          EraseUnion(iteU);
-          se.insert(iteU);
-          se.insert(iteD);
-
-          SetServerPath(iteU, ite, ny, INF, true, true, beam);
-          SetServerPath(ite, iteD, ny, INF, true, true, beam);
+          DisconnectAndInsertServer(iteU, iteD, ite, 1, 0, ny, true, se, beam);
         }
       }
       // 繋がっていない
@@ -1141,26 +1165,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (gameState.udlr[ite][3] != -1) {
         if (gameState.udlr[ite][0] != -1) {
           int iteU = gameState.udlr[ite][0];
-          Update_udlr(iteU, 1, -1);
-          Update_udlr(ite, 0, -1);
-
-          EraseUnion(ite);
-          se.insert(iteU);
-          se.insert(ite);
-
-          SetServerPath(iteU, ite, yy, INF, true, true, beam);
+          DisconnectWithPath(ite, iteU, 0, 1, yy, true, se, beam);
         }
 
         if (gameState.udlr[ite][1] != -1) {
           int iteD = gameState.udlr[ite][1];
-          Update_udlr(iteD, 0, -1);
-          Update_udlr(ite, 1, -1);
-
-          EraseUnion(ite);
-          se.insert(iteD);
-          se.insert(ite);
-
-          SetServerPath(ite, iteD, yy, INF, true, true, beam);
+          DisconnectWithPath(ite, iteD, 1, 0, yy, true, se, beam);
         }
       }
       else {
@@ -1216,15 +1226,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 違う色
         else {
           // 切る
-          Update_udlr(iteU, 1, -1);
-          Update_udlr(iteD, 0, -1);
-
-          EraseUnion(iteU);
-          se.insert(iteU);
-          se.insert(iteD);
-
-          SetServerPath(iteU, ite, ny, INF, true, true, beam);
-          SetServerPath(ite, iteD, ny, INF, true, true, beam);
+          DisconnectAndInsertServer(iteU, iteD, ite, 1, 0, ny, true, se, beam);
         }
       }
       // 繋がっていない
@@ -1270,26 +1272,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (gameState.udlr[ite][0] != -1) {
         if (gameState.udlr[ite][2] != -1) {
           int iteL = gameState.udlr[ite][2];
-          Update_udlr(iteL, 3, -1);
-          Update_udlr(ite, 2, -1);
-
-          EraseUnion(ite);
-          se.insert(iteL);
-          se.insert(ite);
-
-          SetServerPath(iteL, ite, xx, INF, false, true, beam);
+          DisconnectWithPath(ite, iteL, 2, 3, xx, false, se, beam);
         }
 
         if (gameState.udlr[ite][3] != -1) {
           int iteR = gameState.udlr[ite][3];
-          Update_udlr(iteR, 2, -1);
-          Update_udlr(ite, 3, -1);
-
-          EraseUnion(ite);
-          se.insert(iteR);
-          se.insert(ite);
-
-          SetServerPath(ite, iteR, xx, INF, false, true, beam);
+          DisconnectWithPath(ite, iteR, 3, 2, xx, false, se, beam);
         }
       }
       else {
@@ -1345,15 +1333,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 違う色
         else {
           // 切る
-          Update_udlr(iteL, 3, -1);
-          Update_udlr(iteR, 2, -1);
-
-          EraseUnion(iteL);
-          se.insert(iteL);
-          se.insert(iteR);
-
-          SetServerPath(iteL, ite, nx, INF, false, true, beam);
-          SetServerPath(ite, iteR, nx, INF, false, true, beam);
+          DisconnectAndInsertServer(iteL, iteR, ite, 3, 2, nx, false, se, beam);
         }
       }
       // 繋がっていない
@@ -1397,26 +1377,12 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       if (gameState.udlr[ite][1] != -1) {
         if (gameState.udlr[ite][2] != -1) {
           int iteL = gameState.udlr[ite][2];
-          Update_udlr(iteL, 3, -1);
-          Update_udlr(ite, 2, -1);
-
-          EraseUnion(ite);
-          se.insert(iteL);
-          se.insert(ite);
-
-          SetServerPath(iteL, ite, xx, INF, false, true, beam);
+          DisconnectWithPath(ite, iteL, 2, 3, xx, false, se, beam);
         }
 
         if (gameState.udlr[ite][3] != -1) {
           int iteR = gameState.udlr[ite][3];
-          Update_udlr(iteR, 2, -1);
-          Update_udlr(ite, 3, -1);
-
-          EraseUnion(ite);
-          se.insert(iteR);
-          se.insert(ite);
-
-          SetServerPath(ite, iteR, xx, INF, false, true, beam);
+          DisconnectWithPath(ite, iteR, 3, 2, xx, false, se, beam);
         }
       }
       else {
@@ -1472,15 +1438,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 違う色
         else {
           // 切る
-          Update_udlr(iteL, 3, -1);
-          Update_udlr(iteR, 2, -1);
-
-          EraseUnion(iteL);
-          se.insert(iteL);
-          se.insert(iteR);
-
-          SetServerPath(iteL, ite, nx, INF, false, true, beam);
-          SetServerPath(ite, iteR, nx, INF, false, true, beam);
+          DisconnectAndInsertServer(iteL, iteR, ite, 3, 2, nx, false, se, beam);
         }
       }
       // 繋がっていない
