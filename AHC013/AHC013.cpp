@@ -848,6 +848,25 @@ inline void EraseUnion(int ite)
   }
 }
 
+// サーバー間を接続する共通処理
+void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int ny, set<int>& se)
+{
+  // 繋ぐ
+  Update_udlr(server1, udlr_idx1, server2);
+  Update_udlr(server2, udlr_idx2, server1);
+  
+  EraseUnion(server1);
+  EraseUnion(server2);
+  se.insert(server1);
+  
+  int aVal = MakeAValue(server1, server2);
+  for (int i = gameState.x[server1] + 1; i < gameState.x[server2]; ++i)
+  {
+    PushACnt(i, ny);
+    gameState.a[i][ny] = aVal;
+  }
+}
+
 // 戻り値：更新したかどうか
 int InnerMethod(double start_temp, double end_temp, double now_progress,
   int ite, int dir, bool forceDo = false, int MethodeMode = 0)
@@ -1322,38 +1341,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         int iteU = GetIte2(xx, ny, 'U');
         if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(iteU, 1, ite);
-          Update_udlr(ite, 0, iteU);
-
-          EraseUnion(iteU);
-          EraseUnion(ite);
-          se.insert(iteU);
-
-          int aVal = MakeAValue(iteU, ite);
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          ConnectServers(iteU, ite, 1, 0, ny, se);
         }
 
         // 下と繋げられるかどうか
         int iteD = GetIte2(xx, ny, 'D');
         if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(ite, 1, iteD);
-          Update_udlr(iteD, 0, ite);
-
-          EraseUnion(ite);
-          EraseUnion(iteD);
-          se.insert(ite);
-
-          int aVal = MakeAValue(ite, iteD);
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          ConnectServers(ite, iteD, 1, 0, ny, se);
         }
       }
     }
