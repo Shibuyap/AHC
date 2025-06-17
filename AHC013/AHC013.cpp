@@ -849,7 +849,8 @@ inline void EraseUnion(int ite)
 }
 
 // サーバー間を接続する共通処理
-void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int ny, set<int>& se)
+// isVertical: true=縦方向(y方向), false=横方向(x方向)
+void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int coord, bool isVertical, set<int>& se)
 {
   // 繋ぐ
   Update_udlr(server1, udlr_idx1, server2);
@@ -860,10 +861,21 @@ void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int 
   se.insert(server1);
   
   int aVal = MakeAValue(server1, server2);
-  for (int i = gameState.x[server1] + 1; i < gameState.x[server2]; ++i)
-  {
-    PushACnt(i, ny);
-    gameState.a[i][ny] = aVal;
+  if (isVertical) {
+    // 縦方向の接続
+    for (int i = gameState.x[server1] + 1; i < gameState.x[server2]; ++i)
+    {
+      PushACnt(i, coord);
+      gameState.a[i][coord] = aVal;
+    }
+  }
+  else {
+    // 横方向の接続
+    for (int i = gameState.y[server1] + 1; i < gameState.y[server2]; ++i)
+    {
+      PushACnt(coord, i);
+      gameState.a[coord][i] = aVal;
+    }
   }
 }
 
@@ -1100,38 +1112,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         int iteU = GetIte2(xx, ny, 'U');
         if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(iteU, 1, ite);
-          Update_udlr(ite, 0, iteU);
-
-          EraseUnion(iteU);
-          EraseUnion(ite);
-          se.insert(iteU);
-
-          int aVal = MakeAValue(iteU, ite);
-          for (int i = gameState.x[iteU] + 1; i < gameState.x[ite]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          ConnectServers(iteU, ite, 1, 0, ny, true, se);
         }
 
         // 下と繋げられるかどうか
         int iteD = GetIte2(xx, ny, 'D');
         if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(ite, 1, iteD);
-          Update_udlr(iteD, 0, ite);
-
-          EraseUnion(ite);
-          EraseUnion(iteD);
-          se.insert(ite);
-
-          int aVal = MakeAValue(ite, iteD);
-          for (int i = gameState.x[ite] + 1; i < gameState.x[iteD]; ++i)
-          {
-            PushACnt(i, ny);
-            gameState.a[i][ny] = aVal;
-          }
+          ConnectServers(ite, iteD, 1, 0, ny, true, se);
         }
       }
     }
@@ -1341,14 +1329,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         int iteU = GetIte2(xx, ny, 'U');
         if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
           // 繋ぐ
-          ConnectServers(iteU, ite, 1, 0, ny, se);
+          ConnectServers(iteU, ite, 1, 0, ny, true, se);
         }
 
         // 下と繋げられるかどうか
         int iteD = GetIte2(xx, ny, 'D');
         if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
           // 繋ぐ
-          ConnectServers(ite, iteD, 1, 0, ny, se);
+          ConnectServers(ite, iteD, 1, 0, ny, true, se);
         }
       }
     }
@@ -1560,38 +1548,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         int iteL = GetIte2(nx, yy, 'L');
         if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(iteL, 3, ite);
-          Update_udlr(ite, 2, iteL);
-
-          EraseUnion(iteL);
-          EraseUnion(ite);
-          se.insert(iteL);
-
-          int aVal = MakeAValue(iteL, ite);
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          ConnectServers(iteL, ite, 3, 2, nx, false, se);
         }
 
         // 右と繋げられるかどうか
         int iteR = GetIte2(nx, yy, 'R');
         if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(ite, 3, iteR);
-          Update_udlr(iteR, 2, ite);
-
-          EraseUnion(ite);
-          EraseUnion(iteR);
-          se.insert(ite);
-
-          int aVal = MakeAValue(ite, iteR);
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          ConnectServers(ite, iteR, 3, 2, nx, false, se);
         }
       }
     }
@@ -1801,38 +1765,14 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         int iteL = GetIte2(nx, yy, 'L');
         if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(iteL, 3, ite);
-          Update_udlr(ite, 2, iteL);
-
-          EraseUnion(iteL);
-          EraseUnion(ite);
-          se.insert(iteL);
-
-          int aVal = MakeAValue(iteL, ite);
-          for (int i = gameState.y[iteL] + 1; i < gameState.y[ite]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          ConnectServers(iteL, ite, 3, 2, nx, false, se);
         }
 
         // 右と繋げられるかどうか
         int iteR = GetIte2(nx, yy, 'R');
         if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
           // 繋ぐ
-          Update_udlr(ite, 3, iteR);
-          Update_udlr(iteR, 2, ite);
-
-          EraseUnion(ite);
-          EraseUnion(iteR);
-          se.insert(ite);
-
-          int aVal = MakeAValue(ite, iteR);
-          for (int i = gameState.y[ite] + 1; i < gameState.y[iteR]; ++i)
-          {
-            PushACnt(nx, i);
-            gameState.a[nx][i] = aVal;
-          }
+          ConnectServers(ite, iteR, 3, 2, nx, false, se);
         }
       }
     }
@@ -1848,19 +1788,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       int iteL = GetIte2(px, py, 'L');
       int iteR = GetIte2(px, py, 'R');
       if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
-        Update_udlr(iteL, 3, iteR);
-        Update_udlr(iteR, 2, iteL);
-
-        EraseUnion(iteL);
-        EraseUnion(iteR);
-        se.insert(iteL);
-
-        int aVal = MakeAValue(iteL, iteR);
-        for (int i = gameState.y[iteL] + 1; i < gameState.y[iteR]; ++i)
-        {
-          PushACnt(px, i);
-          gameState.a[px][i] = aVal;
-        }
+        ConnectServers(iteL, iteR, 3, 2, px, false, se);
       }
     }
   }
@@ -1873,19 +1801,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
       int iteU = GetIte2(px, py, 'U');
       int iteD = GetIte2(px, py, 'D');
       if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
-        Update_udlr(iteU, 1, iteD);
-        Update_udlr(iteD, 0, iteU);
-
-        EraseUnion(iteU);
-        EraseUnion(iteD);
-        se.insert(iteU);
-
-        int aVal = MakeAValue(iteU, iteD);
-        for (int i = gameState.x[iteU] + 1; i < gameState.x[iteD]; ++i)
-        {
-          PushACnt(i, py);
-          gameState.a[i][py] = aVal;
-        }
+        ConnectServers(iteU, iteD, 1, 0, py, true, se);
       }
     }
   }
