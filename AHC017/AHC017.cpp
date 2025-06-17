@@ -29,7 +29,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;

@@ -30,7 +30,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 
 using namespace std;
 typedef long long int ll;
@@ -415,7 +414,7 @@ void InitMostVariableAs()
       int n2 = 0;
       int n2Need = calculateRequiredSize(elementSizes[i][n2], j);
       if (n2Need > w) continue;
-      drep(n1, elementCount)
+      for (int n1 = elementCount - 1; n1 >= 0; --n1)
       {
         if (n2 == elementCount) break;
         int val = elementSizes[i][n1];
@@ -2601,7 +2600,7 @@ void Method4_3_4_2()
   int margin = w;
   int startDay = raD;
   int endDay = raD;
-  drep(i, raD + 1)
+  for (int i = raD; i >= 0; --i)
   {
     int lineIndex = -1;
     srep(j, 1, columnSchedule.schedulesCount[i][lineNum])
@@ -3147,7 +3146,7 @@ void Method4_3(double timeLimit)
   }
   for (int i = 0; i < dayCount; ++i)
   {
-    drep(j, elementCount)
+    for (int j = elementCount - 1; j >= 0; --j)
     {
       int lineNum = columnSchedule.columnNum[i][j];
       columnSchedule.schedules[i][lineNum][columnSchedule.schedulesCount[i][lineNum]] = j;
@@ -3268,7 +3267,7 @@ int Method3_Oshii()
 
     std::array<int, MAX_LINECOUNT> now = {};
     int ng = 0;
-    drep(ii, dayCount)
+    for (int ii = dayCount - 1; ii >= 0; --ii)
     {
       int i = daysDifficultySorted[ii];
       for (int j = 0; j < ans.ansLineCount[i]; ++j)
@@ -3276,7 +3275,7 @@ int Method3_Oshii()
         now[j] = 0;
       }
 
-      drep(j, elementCount)
+      for (int j = elementCount - 1; j >= 0; --j)
       {
         if (M3_alreadyUsed[i][j]) continue;
         int minAmari = INT_INF;
@@ -3414,7 +3413,7 @@ int Method3_Oshii()
       if (kouhoCount == 0 || kouhoCount > MAX_CANDIDATES) continue;
 
       if (kouhoCount <= SMALL_DATA_THRESHOLD) {
-        drep(chaewon, (1 << kouhoCount))
+        for (int chaewon = (1 << kouhoCount) - 1; chaewon >= 0; --chaewon)
         {
           if (chaewon == 0) continue;
           int nextSpace = 0;
@@ -3538,7 +3537,7 @@ int Method3_Oshii()
         now[j] = 0;
         lastNum[j] = -1;
       }
-      drep(j, elementCount)
+      for (int j = elementCount - 1; j >= 0; --j)
       {
         int posNum = columnSchedule.columnNum[i][j];
         int need = preCalcScheduleSizes[i][j][posNum];
@@ -3587,7 +3586,7 @@ void Method3_Oshii2()
 
     std::array<int, MAX_LINECOUNT> now = {};
     int ng = 0;
-    drep(ii, dayCount)
+    for (int ii = dayCount - 1; ii >= 0; --ii)
     {
       int i = daysDifficultySorted[ii];
       for (int j = 0; j < ans.ansLineCount[i]; ++j)
@@ -3595,13 +3594,13 @@ void Method3_Oshii2()
         now[j] = 0;
       }
 
-      drep(j, elementCount)
+      for (int j = elementCount - 1; j >= 0; --j)
       {
         int minAmari = INT_INF;
         int minOver = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        drep(k, ans.ansLineCount[i])
+        for (int k = ans.ansLineCount[i] - 1; k >= 0; --k)
         {
           int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
           if (!canFitInColumn(i, j, width)) break;
@@ -3672,12 +3671,12 @@ void Method3_Oshii2()
         }
 
         int hanni = 1;
-        drep(j, elementCount)
+        for (int j = elementCount - 1; j >= 0; --j)
         {
           int minAmari = INT_INF;
           int posNum = -1;
           int tmpNeed = 0;
-          drep(k, ans.ansLineCount[i])
+          for (int k = ans.ansLineCount[i] - 1; k >= 0; --k)
           {
             int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
             if (!canFitInColumn(i, j, width)) continue;
@@ -3925,7 +3924,7 @@ int Method3_Normal(int loopCount)
   int tmpOshiiMax = 0;
   int tmpOshiiNGMax = 0;
   int numsOrder[MAX_N];
-  drep(ii, dayCount)
+  for (int ii = dayCount - 1; ii >= 0; --ii)
   {
     int i = daysDifficultySorted[ii];
     for (int j = 0; j < ans.ansLineCount[i]; ++j)
@@ -3945,7 +3944,7 @@ int Method3_Normal(int loopCount)
         swap(numsOrder[raN], numsOrder[raN + 1]);
       }
     }
-    drep(jj, elementCount)
+    for (int jj = elementCount - 1; jj >= 0; --jj)
     {
       int j = numsOrder[jj];
       if (M3_alreadyUsed[i][j]) { continue; }
@@ -4307,12 +4306,12 @@ void Method3_2(double timeLimit)
         lastNum[j] = -1;
       }
 
-      drep(j, elementCount)
+      for (int j = elementCount - 1; j >= 0; --j)
       {
         int minAmari = INT_INF;
         int posNum = -1;
         int tmpNeed = 0;
-        drep(k, ans.ansBaseLineCount)
+        for (int k = ans.ansBaseLineCount - 1; k >= 0; --k)
         {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
           if (!canFitInColumn(i, j, width)) break;
@@ -4640,7 +4639,7 @@ void Method8(double timeLimit)
     std::array<int, MAX_LINECOUNT> now = {};
     std::array<int, MAX_LINECOUNT> lastNum = {};
     int numsOrder[MAX_N];
-    drep(ii, dayCount)
+    for (int ii = dayCount - 1; ii >= 0; --ii)
     {
       int i = daysDifficultySorted[ii];
       for (int j = 0; j < ans.ansBaseLineCount; ++j)
@@ -4659,7 +4658,7 @@ void Method8(double timeLimit)
         }
       }
       int ok = 1;
-      drep(jj, elementCount)
+      for (int jj = elementCount - 1; jj >= 0; --jj)
       {
         int j = numsOrder[jj];
         int minAmari = INT_INF;

@@ -31,7 +31,6 @@
 #include <array>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef pair<int, int> P;
 #define MAX_N 200005
@@ -783,7 +782,7 @@ void PushACnt(int xx, int yy)
 }
 void BackA()
 {
-  drep(i, acnt) { gameState.a[keepA[i][0]][keepA[i][1]] = keepA[i][2]; }
+  for (int i = acnt - 1; i >= 0; --i) { gameState.a[keepA[i][0]][keepA[i][1]] = keepA[i][2]; }
   acnt = 0;
 }
 
@@ -801,7 +800,7 @@ void Update_udlr(int ite, int dir, int val)
 }
 void Back_udlr()
 {
-  drep(i, udlrcnt) { gameState.udlr[keep_udlr[i][0]][keep_udlr[i][1]] = keep_udlr[i][2]; }
+  for (int i = udlrcnt - 1; i >= 0; --i) { gameState.udlr[keep_udlr[i][0]][keep_udlr[i][1]] = keep_udlr[i][2]; }
   udlrcnt = 0;
 }
 
@@ -813,7 +812,7 @@ void PushParent(int ite)
 }
 void BackParent()
 {
-  drep(i, parentcnt) { gameState.parent[keep_parent[i][0]] = keep_parent[i][1]; }
+  for (int i = parentcnt - 1; i >= 0; --i) { gameState.parent[keep_parent[i][0]] = keep_parent[i][1]; }
   parentcnt = 0;
 }
 
@@ -826,7 +825,7 @@ void PushVp(int val, int ite, int pushpop)
 }
 void BackVp()
 {
-  drep(i, vpcnt)
+  for (int i = vpcnt - 1; i >= 0; --i)
   {
     if (keep_vp[i][2] == 0) {
       // pushされたのでpopする
@@ -2332,7 +2331,7 @@ void Method7(double start_temp, double end_temp, double now_progress)
     for (int i = 0; i < K * 100; ++i)
     {
       int sz = vv[i].size();
-      drep(j, sz - 1)
+      for (int j = sz - 2; j >= 0; --j)
       {
         int ite1 = vv[i][j];
         int ite2 = vv[i][j + 1];

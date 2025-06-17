@@ -30,7 +30,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 
 using namespace std;
 
@@ -310,9 +309,9 @@ void ball_wise_ascent_greedy()
   {
     int x = -1;
     int y = -1;
-    drep(i, BOARD_SIZE)
+    for (int i = BOARD_SIZE - 1; i >= 0; --i)
     {
-      drep(j, i + 1)
+      for (int j = i; j >= 0; --j)
       {
         if (board[i][j] == ball) {
           x = i;

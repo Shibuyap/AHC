@@ -15,7 +15,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -815,7 +814,7 @@ public:
               }
             }
             else {
-              drep(j, N)
+              for (int j = N - 1; j >= 0; --j)
               {
                 if (fence[j] == 0) {
                   myFence[i] = j;
@@ -1142,7 +1141,7 @@ public:
               }
             }
             else {
-              drep(j, N)
+              for (int j = N - 1; j >= 0; --j)
               {
                 if (fenceU[j] == 0) {
                   myFence[i] = j;
@@ -1513,7 +1512,7 @@ public:
               }
             }
             else {
-              drep(j, N)
+              for (int j = N - 1; j >= 0; --j)
               {
                 if (fenceU[j] == 0) {
                   myFence[i] = j;

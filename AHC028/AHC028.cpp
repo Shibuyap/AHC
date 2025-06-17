@@ -29,7 +29,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -693,7 +692,7 @@ ll solveSingleCase(int probNum)
           path.path_cost = dp[4][j][k];
           vector<P> tmp;
           int now = k;
-          drep(l, PATH_LENGTH)
+          for (int l = PATH_LENGTH - 1; l >= 0; --l)
           {
             int y = task_colors[i][l];
             tmp.push_back(cells_by_color[y][now]);

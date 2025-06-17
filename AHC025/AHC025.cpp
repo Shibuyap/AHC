@@ -31,7 +31,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -1997,7 +1996,7 @@ bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
     int y2 = -1;
     int lastX = 1001001;
     int lastI = 1001001;
-    drep(ii, N)
+    for (int ii = N - 1; ii >= 0; --ii)
     {
       int i = items[ii];
       if (ans[i] == xg && i != x1) {
@@ -2085,7 +2084,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
     int y2 = -1;
     int lastX = 1001001;
     int lastI = 1001001;
-    drep(ii, N)
+    for (int ii = N - 1; ii >= 0; --ii)
     {
       int i = items[ii];
       if (ans[i] == xg && i != x1) {
@@ -2154,7 +2153,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   {
     int lastX = 1001001;
     int lastI = 1001001;
-    drep(ii, N)
+    for (int ii = N - 1; ii >= 0; --ii)
     {
       int i = items[ii];
       if (ans[i] == xg) {
@@ -2174,7 +2173,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   {
     int lastY = 1001001;
     int lastI = 1001001;
-    drep(ii, N)
+    for (int ii = N - 1; ii >= 0; --ii)
     {
       int i = items[ii];
       if (ans[i] == yg) {
@@ -2549,7 +2548,7 @@ void initializeItemsWithHeaviestAssignment(vector<int>& items, int& countQ, int 
 // Assign items using PseudoItems until totyuu threshold
 void assignItemsWithPseudoQuery(vector<int>& items, vector<int>& groups, int& countQ, int totyuu)
 {
-  drep(i, N - D)
+  for (int i = N - D - 1; i >= 0; --i)
   {
     if (N - i >= totyuu) {
       break;
@@ -2657,7 +2656,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  drep(i, N - D)
+  for (int i = N - D - 1; i >= 0; --i)
   {
     int id = items[i];
     int gId = groups[D - 1];
@@ -2729,7 +2728,7 @@ void initializeWithMergeSort(vector<int>& items, vector<int>& groups, int& count
   assignHeaviestToGroups(items, N - 1);
   initializeGroups(groups);
 
-  drep(i, N - D)
+  for (int i = N - D - 1; i >= 0; --i)
   {
     assignToLightestGroup(items, i, countQ, groups);
   }
@@ -2912,7 +2911,7 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  drep(i, M - D)
+  for (int i = M - D - 1; i >= 0; --i)
   {
     int gId = groups[D - 1];
     for (int j = 0; j < blocks[i].size(); ++j)
@@ -3189,7 +3188,7 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  drep(i, M - D)
+  for (int i = M - D - 1; i >= 0; --i)
   {
     int gId = groups[D - 1];
     for (int j = 0; j < blocks[i].size(); ++j)
@@ -3257,7 +3256,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  drep(i, M - D)
+  for (int i = M - D - 1; i >= 0; --i)
   {
     int gId = groups[D - 1];
     for (int j = 0; j < blocks[i].size(); ++j)
@@ -3332,7 +3331,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   }
 
   // 途中までpseudoItemsを用いて一番軽いグループに入れていく
-  drep(i, M - D)
+  for (int i = M - D - 1; i >= 0; --i)
   {
     if (M - i >= totyuu) {
       break;
@@ -3378,7 +3377,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
       break;
     }
   }
-  drep(i, tail)
+  for (int i = tail - 1; i >= 0; --i)
   {
     int gId = groups[D - 1];
     for (int j = 0; j < blocks[i].size(); ++j)
@@ -3534,7 +3533,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
       break;
     }
   }
-  drep(i, tail)
+  for (int i = tail - 1; i >= 0; --i)
   {
     int id = items[i];
     int gId = groups[D - 1];
@@ -3610,7 +3609,7 @@ void Method806(int hiritu, int minDiff, int _m)
       break;
     }
   }
-  drep(i, tail)
+  for (int i = tail - 1; i >= 0; --i)
   {
     int id = items[i];
     int gId = groups[D - 1];
@@ -3677,7 +3676,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
       break;
     }
   }
-  drep(i, tail)
+  for (int i = tail - 1; i >= 0; --i)
   {
     int id = items[i];
     int gId = groups[D - 1];
@@ -3825,7 +3824,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
   initializeGroups(groups);
 
   // pseudoItemsを用いて一番軽いグループに入れていく
-  drep(i, N - D)
+  for (int i = N - D - 1; i >= 0; --i)
   {
     int id = items[i];
     int gId = groups[D - 1];

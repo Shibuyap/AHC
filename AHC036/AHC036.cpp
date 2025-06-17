@@ -29,7 +29,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -276,7 +275,7 @@ void MakeA2(const vector<int>& route)
       }
     }
     for (int j = 0; j < N; ++j) f[j] = 0;
-    drep(j, route.size())
+    for (int j = route.size() - 1; j >= 0; --j)
     {
       if (i == LA) break;
       int x = route[j];
@@ -547,7 +546,7 @@ void MakeA1DFS(int x, vector<int>& route, vector<int>& visited, int order = 0)
     }
   }
   else {
-    drep(i, G[x].size())
+    for (int i = G[x].size() - 1; i >= 0; --i)
     {
       int y = G[x][i];
       MakeA1DFS(y, route, visited);

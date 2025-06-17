@@ -30,7 +30,6 @@
 
 //=== Macros (必要に応じて調整) ===//
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 
 using namespace std;
 
@@ -49,8 +48,6 @@ const int DZ[6] = { 0, 0, -1, 0, 0, 1 };
 // 関数プロトタイプ (先に宣言しておく)
 //------------------------------------------------------------------------------
 int get_direction(int num);
-double rand_double_01();
-uint32_t rand_uint32();
 void clear_all_multicase();
 void init_state();
 void normal_clear();

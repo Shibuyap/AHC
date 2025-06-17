@@ -29,7 +29,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
@@ -429,7 +428,7 @@ void InitRoute1()
       for (int j = 0; j < n; ++j) { route.emplace_back(i, j); }
     }
     else {
-      drep(j, n) { route.emplace_back(i, j); }
+      for (int j = n - 1; j >= 0; --j) { route.emplace_back(i, j); }
     }
   }
 }
@@ -442,7 +441,7 @@ void InitRoute2()
       for (int i = 0; i < n; ++i) { route.emplace_back(i, j); }
     }
     else {
-      drep(i, n) { route.emplace_back(i, j); }
+      for (int i = n - 1; i >= 0; --i) { route.emplace_back(i, j); }
     }
   }
 }
@@ -717,7 +716,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     }
   }
 
-  drep(i, route.size())
+  for (int i = route.size() - 1; i >= 0; --i)
   {
     int x = route[i].first;
     int y = route[i].second;
@@ -767,7 +766,7 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
 
     if (d == 0) {
       int ok = 1;
-      drep(j, i + 1)
+      for (int j = i; j >= 0; --j)
       {
         int x = route[j].first;
         int y = route[j].second;

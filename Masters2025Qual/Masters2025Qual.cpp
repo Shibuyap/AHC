@@ -29,7 +29,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n)-1; i >= 0; --i)
 
 using namespace std;
 
@@ -594,7 +593,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     xx = nx;
     yy = ny;
   }
-  drep(j, sousaCount)
+  for (int j = sousaCount - 1; j >= 0; --j)
   {
     ans[ansCount][0] = 2;
     ans[ansCount][1] = sousa[j];

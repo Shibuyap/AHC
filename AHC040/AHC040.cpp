@@ -29,7 +29,6 @@
 #include <vector>
 
 #define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
 
 using namespace std;
 
@@ -459,7 +458,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
       cs_right[num] = cs_left[num] + currentWidth;
 
       cs_up[num] = 0;
-      drep(j, num)
+      for (int j = num - 1; j >= 0; --j)
       {
         if (cs_use[j]) {
           if (isCrossing(cs_left[num], cs_right[num], cs_left[j], cs_right[j])) {
@@ -478,7 +477,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
       cs_down[num] = cs_up[num] + currentHeight;
 
       cs_left[num] = 0;
-      drep(j, num)
+      for (int j = num - 1; j >= 0; --j)
       {
         if (cs_use[j]) {
           if (isCrossing(cs_up[num], cs_down[num], cs_up[j], cs_down[j])) {
