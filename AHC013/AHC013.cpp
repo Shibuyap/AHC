@@ -918,6 +918,47 @@ void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int 
   SetServerPath(server1, server2, coord, aVal, isVertical, false, dummy);
 }
 
+// 中間のサーバーを除外して両端をつなぎなおす共通処理
+// isVertical: true=縦方向(y方向), false=横方向(x方向) 
+void ReconnectServers(int server1, int server2, int middle, int udlr_idx1, int udlr_idx2, int udlr_idx_m1, int udlr_idx_m2, int coord, bool isVertical, set<int>& se)
+{
+  // 繋ぎなおす
+  Update_udlr(server1, udlr_idx1, server2);
+  Update_udlr(server2, udlr_idx2, server1);
+  Update_udlr(middle, udlr_idx_m1, -1);
+  Update_udlr(middle, udlr_idx_m2, -1);
+  
+  EraseUnion(middle);
+  se.insert(server1);
+  se.insert(middle);
+  
+  int aVal = MakeAValue(server1, server2);
+  vector<P> dummy;
+  SetServerPath(server1, server2, coord, aVal, isVertical, false, dummy);
+}
+
+// 既存の接続を切って新しく接続しなおす共通処理
+// isVertical: true=縦方向(y方向), false=横方向(x方向)
+void ReconnectServersWithCut(int serverU, int serverD, int newServer, int udlr_U, int udlr_D, int udlr_new1, int udlr_new2, int coord, bool isVertical, set<int>& se)
+{
+  // 繋ぎなおす
+  Update_udlr(serverU, udlr_U, newServer);
+  Update_udlr(serverD, udlr_D, newServer);
+  Update_udlr(newServer, udlr_new1, serverU);
+  Update_udlr(newServer, udlr_new2, serverD);
+  
+  EraseUnion(newServer);
+  EraseUnion(serverU);
+  
+  se.insert(newServer);
+  
+  int aVal1 = MakeAValue(serverU, newServer);
+  int aVal2 = MakeAValue(newServer, serverD);
+  vector<P> dummy;
+  SetServerPath(serverU, newServer, coord, aVal1, isVertical, false, dummy);
+  SetServerPath(newServer, serverD, coord, aVal2, isVertical, false, dummy);
+}
+
 // 戻り値：更新したかどうか
 int InnerMethod(double start_temp, double end_temp, double now_progress,
   int ite, int dir, bool forceDo = false, int MethodeMode = 0)
@@ -999,17 +1040,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 繋ぎなおす
           int iteU = gameState.udlr[ite][0];
           int iteD = gameState.udlr[ite][1];
-          Update_udlr(iteU, 1, iteD);
-          Update_udlr(iteD, 0, iteU);
-          Update_udlr(ite, 0, -1);
-          Update_udlr(ite, 1, -1);
-
-          EraseUnion(ite);
-          se.insert(iteU);
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteU, iteD);
-          SetServerPath(iteU, iteD, yy, aVal, true, false, beam);
+          ReconnectServers(iteU, iteD, ite, 1, 0, 0, 1, yy, true, se);
         }
         // 上繋がっていた
         else if (gameState.udlr[ite][0] != -1) {
@@ -1053,21 +1084,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 同じ色
         if (getServerType(iteU) == getServerType(ite)) {
           // 繋ぎなおす
-          Update_udlr(iteU, 1, ite);
-          Update_udlr(iteD, 0, ite);
-          Update_udlr(ite, 0, iteU);
-          Update_udlr(ite, 1, iteD);
-
-          EraseUnion(ite);
-          EraseUnion(iteU);
-
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteU, ite);
-          SetServerPath(iteU, ite, ny, aVal, true, false, beam);
-
-          aVal = MakeAValue(ite, iteD);
-          SetServerPath(ite, iteD, ny, aVal, true, false, beam);
+          ReconnectServersWithCut(iteU, iteD, ite, 1, 0, 0, 1, ny, true, se);
         }
         // 違う色
         else {
@@ -1152,17 +1169,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 繋ぎなおす
           int iteU = gameState.udlr[ite][0];
           int iteD = gameState.udlr[ite][1];
-          Update_udlr(iteU, 1, iteD);
-          Update_udlr(iteD, 0, iteU);
-          Update_udlr(ite, 0, -1);
-          Update_udlr(ite, 1, -1);
-
-          EraseUnion(ite);
-          se.insert(iteU);
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteU, iteD);
-          SetServerPath(iteU, iteD, yy, aVal, true, false, beam);
+          ReconnectServers(iteU, iteD, ite, 1, 0, 0, 1, yy, true, se);
         }
         // 上繋がっていた
         else if (gameState.udlr[ite][0] != -1) {
@@ -1204,21 +1211,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 同じ色
         if (getServerType(iteU) == getServerType(ite)) {
           // 繋ぎなおす
-          Update_udlr(iteU, 1, ite);
-          Update_udlr(iteD, 0, ite);
-          Update_udlr(ite, 0, iteU);
-          Update_udlr(ite, 1, iteD);
-
-          EraseUnion(ite);
-          EraseUnion(iteU);
-
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteU, ite);
-          SetServerPath(iteU, ite, ny, aVal, true, false, beam);
-
-          aVal = MakeAValue(ite, iteD);
-          SetServerPath(ite, iteD, ny, aVal, true, false, beam);
+          ReconnectServersWithCut(iteU, iteD, ite, 1, 0, 0, 1, ny, true, se);
         }
         // 違う色
         else {
@@ -1305,17 +1298,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 繋ぎなおす
           int iteL = gameState.udlr[ite][2];
           int iteR = gameState.udlr[ite][3];
-          Update_udlr(iteL, 3, iteR);
-          Update_udlr(iteR, 2, iteL);
-          Update_udlr(ite, 2, -1);
-          Update_udlr(ite, 3, -1);
-
-          EraseUnion(ite);
-          se.insert(iteL);
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteL, iteR);
-          SetServerPath(iteL, iteR, xx, aVal, false, false, beam);
+          ReconnectServers(iteL, iteR, ite, 3, 2, 2, 3, xx, false, se);
         }
         // 左繋がっていた
         else if (gameState.udlr[ite][2] != -1) {
@@ -1357,21 +1340,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 同じ色
         if (getServerType(iteL) == getServerType(ite)) {
           // 繋ぎなおす
-          Update_udlr(iteL, 3, ite);
-          Update_udlr(iteR, 2, ite);
-          Update_udlr(ite, 2, iteL);
-          Update_udlr(ite, 3, iteR);
-
-          EraseUnion(ite);
-          EraseUnion(iteL);
-
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteL, ite);
-          SetServerPath(iteL, ite, nx, aVal, false, false, beam);
-
-          aVal = MakeAValue(ite, iteR);
-          SetServerPath(ite, iteR, nx, aVal, false, false, beam);
+          ReconnectServersWithCut(iteL, iteR, ite, 3, 2, 2, 3, nx, false, se);
         }
         // 違う色
         else {
@@ -1456,17 +1425,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
           // 繋ぎなおす
           int iteL = gameState.udlr[ite][2];
           int iteR = gameState.udlr[ite][3];
-          Update_udlr(iteL, 3, iteR);
-          Update_udlr(iteR, 2, iteL);
-          Update_udlr(ite, 2, -1);
-          Update_udlr(ite, 3, -1);
-
-          EraseUnion(ite);
-          se.insert(iteL);
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteL, iteR);
-          SetServerPath(iteL, iteR, xx, aVal, false, false, beam);
+          ReconnectServers(iteL, iteR, ite, 3, 2, 2, 3, xx, false, se);
         }
         // 左繋がっていた
         else if (gameState.udlr[ite][2] != -1) {
@@ -1508,21 +1467,7 @@ int InnerMethod(double start_temp, double end_temp, double now_progress,
         // 同じ色
         if (getServerType(iteL) == getServerType(ite)) {
           // 繋ぎなおす
-          Update_udlr(iteL, 3, ite);
-          Update_udlr(iteR, 2, ite);
-          Update_udlr(ite, 2, iteL);
-          Update_udlr(ite, 3, iteR);
-
-          EraseUnion(ite);
-          EraseUnion(iteL);
-
-          se.insert(ite);
-
-          int aVal = MakeAValue(iteL, ite);
-          SetServerPath(iteL, ite, nx, aVal, false, false, beam);
-
-          aVal = MakeAValue(ite, iteR);
-          SetServerPath(ite, iteR, nx, aVal, false, false, beam);
+          ReconnectServersWithCut(iteL, iteR, ite, 3, 2, 2, 3, nx, false, se);
         }
         // 違う色
         else {
