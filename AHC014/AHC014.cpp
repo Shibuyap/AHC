@@ -174,13 +174,17 @@ namespace /* 変数 */
 void MethodCountReset()
 {
   for (int i = 0; i < 20; ++i) {
-    for (int j = 0; j < 2; ++j) { methodCount[i][j] = 0; }
+    for (int j = 0; j < 2; ++j) {
+      methodCount[i][j] = 0;
+    }
   }
 }
 
 bool IsNGXY(int x, int y)
 {
-  if (x < 0 || N <= x || y < 0 || N <= y) return true;
+  if (x < 0 || N <= x || y < 0 || N <= y) {
+    return true;
+  }
   return false;
 }
 
@@ -916,9 +920,8 @@ int Solve(int mode, int problemNum = 0)
     SimulatedAnnealing(4.2 / seedCount, 200048, 0, "seed");
 
     // スコアが良ければシードを更新
-    current_state.copyFrom(best_state);
-    if (current_state.maxScore > seed_state.maxScore) {
-      seed_state.copyFrom(current_state);
+    if (best_state.maxScore > seed_state.maxScore) {
+      seed_state.copyFrom(best_state);
     }
   }
 
