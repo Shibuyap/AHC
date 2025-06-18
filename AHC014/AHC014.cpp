@@ -70,7 +70,7 @@ namespace /* 変数 */
 
   // 解答用変数
   const int ANS_SIZE = 20000;
-  
+
   struct State
   {
     double maxScore;
@@ -95,8 +95,7 @@ namespace /* 変数 */
 
 void MethodCountReset()
 {
-  for (int i = 0; i < 20; ++i)
-  {
+  for (int i = 0; i < 20; ++i) {
     for (int j = 0; j < 2; ++j) { methodCount[i][j] = 0; }
   }
 }
@@ -114,10 +113,8 @@ double CalcScore()
 
   int sum = 0;
 
-  for (int i = 0; i < N; ++i)
-  {
-    for (int j = 0; j < N; ++j)
-    {
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < N; ++j) {
       if (current_state.f[i][j]) {
         sum += W[i][j];
       }
@@ -135,14 +132,12 @@ void NormalClear()
   current_state.ansSize = 0;
   current_state.ansDeleteCount = 0;
   for (int i = 0; i < ANS_SIZE; ++i) current_state.ansDelete[i] = 0;
-  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j)
-  {
+  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
     current_state.f[i][j] = false;
     for (int k = 0; k < 8; ++k) current_state.line[i][j][k] = 0;
     current_state.use[i][j] = 0;
   }
-  for (int i = 0; i < 64; ++i)
-  {
+  for (int i = 0; i < 64; ++i) {
     current_state.cntH[i] = 0;
     current_state.cntW[i] = 0;
   }
@@ -154,14 +149,12 @@ void RealClear()
   best_state.ansSize = 0;
   best_state.ansDeleteCount = 0;
   for (int i = 0; i < ANS_SIZE; ++i) best_state.ansDelete[i] = 0;
-  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j)
-  {
+  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
     best_state.f[i][j] = false;
     for (int k = 0; k < 8; ++k) best_state.line[i][j][k] = 0;
     best_state.use[i][j] = 0;
   }
-  for (int i = 0; i < 64; ++i)
-  {
+  for (int i = 0; i < 64; ++i) {
     best_state.cntH[i] = 0;
     best_state.cntW[i] = 0;
   }
@@ -173,14 +166,12 @@ void SeedClear()
   seed_state.ansSize = 0;
   seed_state.ansDeleteCount = 0;
   for (int i = 0; i < ANS_SIZE; ++i) seed_state.ansDelete[i] = 0;
-  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j)
-  {
+  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
     seed_state.f[i][j] = false;
     for (int k = 0; k < 8; ++k) seed_state.line[i][j][k] = 0;
     seed_state.use[i][j] = 0;
   }
-  for (int i = 0; i < 64; ++i)
-  {
+  for (int i = 0; i < 64; ++i) {
     seed_state.cntH[i] = 0;
     seed_state.cntW[i] = 0;
   }
@@ -189,8 +180,7 @@ void SeedClear()
 void RefleshAns()
 {
   int tmpCount = 0;
-  for (int i = 0; i < current_state.ansSize; ++i)
-  {
+  for (int i = 0; i < current_state.ansSize; ++i) {
     if (current_state.ansDelete[i]) {
       tmpCount++;
       current_state.ansDelete[i] = 0;
@@ -220,8 +210,7 @@ void AllClear_MultiCase()
 void Init()
 {
   NormalClear();
-  for (int i = 0; i < M; ++i)
-  {
+  for (int i = 0; i < M; ++i) {
     current_state.f[X[i]][Y[i]] = true;
     current_state.use[X[i]][Y[i]] = 100;
     current_state.cntH[Y[i]]++;
@@ -249,10 +238,8 @@ void Input(int problemNum)
 
   S = 0;
   int c = (N - 1) / 2;
-  for (int i = 0; i < N; ++i)
-  {
-    for (int j = 0; j < N; ++j)
-    {
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < N; ++j) {
       W[i][j] = (i - c) * (i - c) + (j - c) * (j - c) + 1;
       S += W[i][j];
     }
@@ -266,8 +253,7 @@ void Output(int mode, int problemNum)
 {
   if (mode == 0) {
     cout << current_state.ansSize - current_state.ansDeleteCount << endl;
-    for (int i = 0; i < current_state.ansSize; ++i)
-    {
+    for (int i = 0; i < current_state.ansSize; ++i) {
       if (current_state.ansDelete[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { cout << current_state.ans[i][j][k] << ' '; }
       cout << endl;
@@ -278,8 +264,7 @@ void Output(int mode, int problemNum)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
     }
@@ -289,8 +274,7 @@ void Output(int mode, int problemNum)
     ofstream ofs(fileNameOfs);
 
     ofs << current_state.ansSize - current_state.ansDeleteCount << endl;
-    for (int i = 0; i < current_state.ansSize; ++i)
-    {
+    for (int i = 0; i < current_state.ansSize; ++i) {
       if (current_state.ansDelete[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { ofs << current_state.ans[i][j][k] << ' '; }
       ofs << endl;
@@ -332,6 +316,44 @@ void RollBackFromSeed()
   7 : 右上 : RU
 */
 
+// 直線方向の隣接点を探索する共通関数
+// 戻り値：距離（見つからない場合は-1、既に線がある場合は-2）
+inline int FindNeighborStraight(int x, int y, int dir, int start, int end, int step, bool isVertical)
+{
+  for (int i = start; step > 0 ? i < end : i >= end; i += step) {
+    int nx = isVertical ? i : x;
+    int ny = isVertical ? y : i;
+
+    if (current_state.f[nx][ny]) {
+      int oppositeDir = (dir + 2) % 4; // 反対方向
+      if (current_state.line[nx][ny][oppositeDir]) return -2;
+      return abs(isVertical ? nx - x : ny - y);
+    }
+  }
+  return -1;
+}
+
+// 斜め方向の隣接点を探索する共通関数
+// 戻り値：距離（見つからない場合は-1、既に線がある場合は-2）
+inline int FindNeighborDiagonal(int x, int y, int dir, int limit, int dx, int dy)
+{
+  // 斜め方向の反対方向の対応表
+  // 4(UL) <-> 6(DR), 5(LD) <-> 7(RU)
+  const int diagonalOpposite[8] = { 0, 0, 0, 0, 6, 7, 4, 5 };
+
+  for (int i = 1; i < limit + 1; ++i) {
+    int nx = x + i * dx;
+    int ny = y + i * dy;
+
+    if (current_state.f[nx][ny]) {
+      int oppositeDir = diagonalOpposite[dir];
+      if (current_state.line[nx][ny][oppositeDir]) return -2;
+      return i;
+    }
+  }
+  return -1;
+}
+
 // 各方向の1番近い点が使えるかどうか
 // 入力 z：方向
 // 戻り値：距離
@@ -339,102 +361,46 @@ inline int FindNeighborPoint(int x, int y, int z)
 {
   // 上
   if (z == 0) {
-    for (int i = x-1; i >= 0; --i)
-    {
-      if (current_state.f[i][y]) {
-        if (current_state.line[i][y][2]) return -2;
-        return x - i;
-      }
-    }
-    return -1;
+    return FindNeighborStraight(x, y, 0, x - 1, -1, -1, true);
   }
 
   // 左
   if (z == 1) {
-    for (int j = y-1; j >= 0; --j)
-    {
-      if (current_state.f[x][j]) {
-        if (current_state.line[x][j][3]) return -2;
-        return y - j;
-      }
-    }
-    return -1;
+    return FindNeighborStraight(x, y, 1, y - 1, -1, -1, false);
   }
 
   // 下
   if (z == 2) {
-    for (int i = x + 1; i < N; ++i)
-    {
-      if (current_state.f[i][y]) {
-        if (current_state.line[i][y][0]) return -2;
-        return i - x;
-      }
-    }
-    return -1;
+    return FindNeighborStraight(x, y, 2, x + 1, N, 1, true);
   }
 
   // 右
   if (z == 3) {
-    for (int j = y + 1; j < N; ++j)
-    {
-      if (current_state.f[x][j]) {
-        if (current_state.line[x][j][1]) return -2;
-        return j - y;
-      }
-    }
-    return -1;
+    return FindNeighborStraight(x, y, 3, y + 1, N, 1, false);
   }
 
   // 左上
   if (z == 4) {
     int ma = min(x, y);
-    for (int i = 1; i < ma + 1; ++i)
-    {
-      if (current_state.f[x - i][y - i]) {
-        if (current_state.line[x - i][y - i][6]) return -2;
-        return i;
-      }
-    }
-    return -1;
+    return FindNeighborDiagonal(x, y, 4, ma, -1, -1);
   }
 
   // 左下
   if (z == 5) {
     int ma = min(N - 1 - x, y);
-    for (int i = 1; i < ma + 1; ++i)
-    {
-      if (current_state.f[x + i][y - i]) {
-        if (current_state.line[x + i][y - i][7]) return -2;
-        return i;
-      }
-    }
-    return -1;
+    return FindNeighborDiagonal(x, y, 5, ma, 1, -1);
   }
 
   // 右下
   if (z == 6) {
     int ma = min(N - 1 - x, N - 1 - y);
-    for (int i = 1; i < ma + 1; ++i)
-    {
-      if (current_state.f[x + i][y + i]) {
-        if (current_state.line[x + i][y + i][4]) return -2;
-        return i;
-      }
-    }
-    return -1;
+    return FindNeighborDiagonal(x, y, 6, ma, 1, 1);
   }
 
   // 右上
   if (z == 7) {
     int ma = min(x, N - 1 - y);
-    for (int i = 1; i < ma + 1; ++i)
-    {
-      if (current_state.f[x - i][y + i]) {
-        if (current_state.line[x - i][y + i][5]) return -2;
-        return i;
-      }
-    }
-    return -1;
+    return FindNeighborDiagonal(x, y, 7, ma, -1, 1);
   }
 
   cerr << "ERROR FindNeighborPoint" << endl;
@@ -898,8 +864,7 @@ void Method2(double temperature)
   methodCount[2][1]++;
 
   int x[4], y[4];
-  for (int i = 0; i < 4; ++i)
-  {
+  for (int i = 0; i < 4; ++i) {
     x[i] = current_state.ans[ite][i][0];
     y[i] = current_state.ans[ite][i][1];
   }
@@ -1023,8 +988,7 @@ int Solve(int mode, int problemNum = 0)
 
   // シード作り
   int seedCount = 20;  // 0にするとシード作成を行わない
-  for (int tei = 0; tei < seedCount; ++tei)
-  {
+  for (int tei = 0; tei < seedCount; ++tei) {
     startTime = clock();
 
     // 初期状態に戻す
@@ -1160,8 +1124,7 @@ int Solve(int mode, int problemNum = 0)
       << endl;
     cout << "maxScore = " << current_state.maxScore << endl;
     cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
-    for (int i = 1; i < 5; ++i)
-    {
+    for (int i = 1; i < 5; ++i) {
       cout << "Method" << i << " = " << methodCount[i][0] << " / "
         << methodCount[i][1] << endl;
     }
@@ -1195,8 +1158,7 @@ int main()
 
   // 提出用
   if (mode == 0) {
-    for (int i = 0; i < 1; ++i)
-    {
+    for (int i = 0; i < 1; ++i) {
       SolveOuter(mode, 3);
       AllClear_MultiCase();
     }
@@ -1208,8 +1170,7 @@ int main()
   // 複数ケース試す
   else if (mode == 2) {
     int scoreSum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       scoreSum += SolveOuter(mode, i);
       AllClear_MultiCase();
     }
