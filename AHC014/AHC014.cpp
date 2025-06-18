@@ -71,8 +71,9 @@ namespace /* 変数 */
   // 解答用変数
   const int ANS_SIZE = 20000;
 
-  struct State
+  class State
   {
+  public:
     double maxScore;
     int ansSize;
     int ans[ANS_SIZE][4][2];
@@ -82,6 +83,60 @@ namespace /* 変数 */
     int line[64][64][8];
     int use[64][64];
     int cntH[64], cntW[64];
+
+    // クリア関数
+    void clear()
+    {
+      maxScore = 0;
+      ansSize = 0;
+      ansDeleteCount = 0;
+      for (int i = 0; i < ANS_SIZE; ++i) ansDelete[i] = 0;
+      for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
+        f[i][j] = false;
+        for (int k = 0; k < 8; ++k) line[i][j][k] = 0;
+        use[i][j] = 0;
+      }
+      for (int i = 0; i < 64; ++i) {
+        cntH[i] = 0;
+        cntW[i] = 0;
+      }
+    }
+
+    // 他のStateからコピー
+    void copyFrom(const State& other)
+    {
+      maxScore = other.maxScore;
+      ansSize = other.ansSize;
+      ansDeleteCount = other.ansDeleteCount;
+
+      for (int i = 0; i < ansSize; ++i) {
+        for (int j = 0; j < 4; ++j) {
+          ans[i][j][0] = other.ans[i][j][0];
+          ans[i][j][1] = other.ans[i][j][1];
+        }
+        ansDelete[i] = other.ansDelete[i];
+      }
+
+      for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
+        f[i][j] = other.f[i][j];
+        for (int k = 0; k < 8; ++k) line[i][j][k] = other.line[i][j][k];
+        use[i][j] = other.use[i][j];
+      }
+
+      for (int i = 0; i < 64; ++i) {
+        cntH[i] = other.cntH[i];
+        cntW[i] = other.cntW[i];
+      }
+    }
+
+    // 長方形の辺を設定/解除するメソッド
+    void setRectangleLines(int x[4], int y[4], int rectDir, bool setValue);
+
+    // スコア計算メソッド
+    double calcScore() const;
+
+    // 初期化メソッド
+    void init();
   };
 
   State current_state;
@@ -106,8 +161,8 @@ bool IsNGXY(int x, int y)
   return false;
 }
 
-// スコア計算
-double CalcScore()
+// State::calcScoreの実装
+double State::calcScore() const
 {
   double resd = 1000000.0 * N * N / M;
 
@@ -115,7 +170,7 @@ double CalcScore()
 
   for (int i = 0; i < N; ++i) {
     for (int j = 0; j < N; ++j) {
-      if (current_state.f[i][j]) {
+      if (f[i][j]) {
         sum += W[i][j];
       }
     }
@@ -126,55 +181,25 @@ double CalcScore()
   return resd;
 }
 
+// 旧関数（互換性のため残す）
+double CalcScore()
+{
+  return current_state.calcScore();
+}
+
 void NormalClear()
 {
-  current_state.maxScore = 0;
-  current_state.ansSize = 0;
-  current_state.ansDeleteCount = 0;
-  for (int i = 0; i < ANS_SIZE; ++i) current_state.ansDelete[i] = 0;
-  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
-    current_state.f[i][j] = false;
-    for (int k = 0; k < 8; ++k) current_state.line[i][j][k] = 0;
-    current_state.use[i][j] = 0;
-  }
-  for (int i = 0; i < 64; ++i) {
-    current_state.cntH[i] = 0;
-    current_state.cntW[i] = 0;
-  }
+  current_state.clear();
 }
 
 void RealClear()
 {
-  best_state.maxScore = 0;
-  best_state.ansSize = 0;
-  best_state.ansDeleteCount = 0;
-  for (int i = 0; i < ANS_SIZE; ++i) best_state.ansDelete[i] = 0;
-  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
-    best_state.f[i][j] = false;
-    for (int k = 0; k < 8; ++k) best_state.line[i][j][k] = 0;
-    best_state.use[i][j] = 0;
-  }
-  for (int i = 0; i < 64; ++i) {
-    best_state.cntH[i] = 0;
-    best_state.cntW[i] = 0;
-  }
+  best_state.clear();
 }
 
 void SeedClear()
 {
-  seed_state.maxScore = 0;
-  seed_state.ansSize = 0;
-  seed_state.ansDeleteCount = 0;
-  for (int i = 0; i < ANS_SIZE; ++i) seed_state.ansDelete[i] = 0;
-  for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
-    seed_state.f[i][j] = false;
-    for (int k = 0; k < 8; ++k) seed_state.line[i][j][k] = 0;
-    seed_state.use[i][j] = 0;
-  }
-  for (int i = 0; i < 64; ++i) {
-    seed_state.cntH[i] = 0;
-    seed_state.cntW[i] = 0;
-  }
+  seed_state.clear();
 }
 
 void RefleshAns()
@@ -207,15 +232,21 @@ void AllClear_MultiCase()
 }
 
 // 初期状態作成（これを呼べばスタート位置に戻れることを想定、real_maxScore等は戻さない）
+// State::initの実装
+void State::init()
+{
+  clear();
+  for (int i = 0; i < M; ++i) {
+    f[X[i]][Y[i]] = true;
+    use[X[i]][Y[i]] = 100;
+    cntH[Y[i]]++;
+    cntW[X[i]]++;
+  }
+}
+
 void Init()
 {
-  NormalClear();
-  for (int i = 0; i < M; ++i) {
-    current_state.f[X[i]][Y[i]] = true;
-    current_state.use[X[i]][Y[i]] = 100;
-    current_state.cntH[Y[i]]++;
-    current_state.cntW[X[i]]++;
-  }
+  current_state.init();
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
@@ -286,22 +317,22 @@ void Output(int mode, int problemNum)
 
 void CopyToReal()
 {
-  best_state = current_state;
+  best_state.copyFrom(current_state);
 }
 
 void CopyToSeed()
 {
-  seed_state = current_state;
+  seed_state.copyFrom(current_state);
 }
 
 void RollBackFromReal()
 {
-  current_state = best_state;
+  current_state.copyFrom(best_state);
 }
 
 void RollBackFromSeed()
 {
-  current_state = seed_state;
+  current_state.copyFrom(seed_state);
 }
 
 /*
@@ -577,19 +608,19 @@ static const RectLineSettings rectLineSettings[8] = {
   { 7, 4, 4, 5, 5, 6, 6, 7 }
 };
 
-// 長方形の辺を設定/解除する共通関数
-inline void SetRectangleLines(int x[4], int y[4], int rectDir, bool setValue)
+// State::setRectangleLinesの実装
+void State::setRectangleLines(int x[4], int y[4], int rectDir, bool setValue)
 {
   const RectLineSettings& settings = rectLineSettings[rectDir];
 
-  current_state.line[x[0]][y[0]][settings.line1_1] = setValue;
-  current_state.line[x[0]][y[0]][settings.line1_2] = setValue;
-  current_state.line[x[1]][y[1]][settings.line2_1] = setValue;
-  current_state.line[x[1]][y[1]][settings.line2_2] = setValue;
-  current_state.line[x[2]][y[2]][settings.line3_1] = setValue;
-  current_state.line[x[2]][y[2]][settings.line3_2] = setValue;
-  current_state.line[x[3]][y[3]][settings.line4_1] = setValue;
-  current_state.line[x[3]][y[3]][settings.line4_2] = setValue;
+  line[x[0]][y[0]][settings.line1_1] = setValue;
+  line[x[0]][y[0]][settings.line1_2] = setValue;
+  line[x[1]][y[1]][settings.line2_1] = setValue;
+  line[x[1]][y[1]][settings.line2_2] = setValue;
+  line[x[2]][y[2]][settings.line3_1] = setValue;
+  line[x[2]][y[2]][settings.line3_2] = setValue;
+  line[x[3]][y[3]][settings.line4_1] = setValue;
+  line[x[3]][y[3]][settings.line4_2] = setValue;
 }
 
 /*
@@ -760,7 +791,7 @@ void Method1(double temperature)
     // 長方形の辺を設定
     int rectX[4] = { x, x1, xx, x3 };
     int rectY[4] = { y, y1, yy, y3 };
-    SetRectangleLines(rectX, rectY, RectDir, true);
+    current_state.setRectangleLines(rectX, rectY, RectDir, true);
 
     if (current_state.maxScore > best_state.maxScore) {
       // RefleshAns();
@@ -816,7 +847,7 @@ void Method2(double temperature)
 
     // 長方形の辺を解除
     int RectDir = GetDir(x[0], y[0], x[1], y[1]);
-    SetRectangleLines(x, y, RectDir, false);
+    current_state.setRectangleLines(x, y, RectDir, false);
 
     current_state.ansDelete[ite] = 1;
     current_state.ansDeleteCount++;
