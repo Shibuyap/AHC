@@ -407,6 +407,31 @@ inline int FindNeighborPoint(int x, int y, int z)
   return -2;
 }
 
+// 長方形の対角線上に邪魔な頂点がないかチェックする共通関数
+inline bool CheckDiagonalPath(int xx, int yy, int start, int limit, int dx, int dy)
+{
+  for (int i = start; i < limit; ++i) {
+    if (current_state.f[xx + i * dx][yy + i * dy]) return false;
+  }
+  return true;
+}
+
+// 長方形の辺上に邪魔な頂点がないかチェックする共通関数
+inline bool CheckStraightPath(int x, int y, int start, int end, bool isVertical)
+{
+  if (isVertical) {
+    for (int i = start; i != end; i += (start < end ? 1 : -1)) {
+      if (current_state.f[i][y]) return false;
+    }
+  }
+  else {
+    for (int j = start; j != end; j += (start < end ? 1 : -1)) {
+      if (current_state.f[x][j]) return false;
+    }
+  }
+  return true;
+}
+
 // 4点目の確認
 inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
 {
@@ -427,8 +452,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][3] || current_state.line[xx][yy][2]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int j = yy + 1; j < y; ++j) if (current_state.f[xx][j]) return false;
-    for (int i = xx + 1; i < x; ++i) if (current_state.f[i][yy]) return false;
+    if (!CheckStraightPath(xx, 0, yy + 1, y, false)) return false;
+    if (!CheckStraightPath(0, yy, xx + 1, x, true)) return false;
 
     return true;
   }
@@ -448,8 +473,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][0] || current_state.line[xx][yy][3]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int i = xx - 1; i > x; --i) if (current_state.f[i][yy]) return false;
-    for (int j = yy + 1; j < y; ++j) if (current_state.f[xx][j]) return false;
+    if (!CheckStraightPath(0, yy, xx - 1, x, true)) return false;
+    if (!CheckStraightPath(xx, 0, yy + 1, y, false)) return false;
 
     return true;
   }
@@ -469,8 +494,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][1] || current_state.line[xx][yy][0]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int j = yy - 1; j > y; --j) if (current_state.f[xx][j]) return false;
-    for (int i = xx - 1; i > x; --i) if (current_state.f[i][yy]) return false;
+    if (!CheckStraightPath(xx, 0, yy - 1, y, false)) return false;
+    if (!CheckStraightPath(0, yy, xx - 1, x, true)) return false;
 
     return true;
   }
@@ -490,8 +515,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][2] || current_state.line[xx][yy][1]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int i = xx + 1; i < x; ++i) if (current_state.f[i][yy]) return false;
-    for (int j = yy - 1; j > y; --j) if (current_state.f[xx][j]) return false;
+    if (!CheckStraightPath(0, yy, xx + 1, x, true)) return false;
+    if (!CheckStraightPath(xx, 0, yy - 1, y, false)) return false;
 
     return true;
   }
@@ -511,8 +536,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][7] || current_state.line[xx][yy][6]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int i = 1; i < diff2; ++i) if (current_state.f[xx - i][yy + i]) return false;
-    for (int i = 1; i < diff1; ++i) if (current_state.f[xx + i][yy + i]) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff2, -1, 1)) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff1, 1, 1)) return false;
 
     return true;
   }
@@ -532,8 +557,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][4] || current_state.line[xx][yy][7]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int i = 1; i < diff2; ++i) if (current_state.f[xx - i][yy - i]) return false;
-    for (int i = 1; i < diff1; ++i) if (current_state.f[xx - i][yy + i]) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff2, -1, -1)) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff1, -1, 1)) return false;
 
     return true;
   }
@@ -553,8 +578,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][5] || current_state.line[xx][yy][4]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int i = 1; i < diff2; ++i) if (current_state.f[xx + i][yy - i]) return false;
-    for (int i = 1; i < diff1; ++i) if (current_state.f[xx - i][yy - i]) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff2, 1, -1)) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff1, -1, -1)) return false;
 
     return true;
   }
@@ -574,8 +599,8 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     if (current_state.line[xx][yy][6] || current_state.line[xx][yy][5]) return false;
 
     // 間に邪魔な頂点がないか
-    for (int i = 1; i < diff2; ++i) if (current_state.f[xx + i][yy + i]) return false;
-    for (int i = 1; i < diff1; ++i) if (current_state.f[xx + i][yy - i]) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff2, 1, 1)) return false;
+    if (!CheckDiagonalPath(xx, yy, 1, diff1, 1, -1)) return false;
 
     return true;
   }
