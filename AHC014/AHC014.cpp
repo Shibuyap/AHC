@@ -845,6 +845,52 @@ void Method2(double temperature)
   }
 }
 
+// 焼きなまし処理の共通関数
+// 戻り値: pair<loop, rollbackCount>
+pair<int, int> SimulatedAnnealing(double timeLimit, double startTemp, double endTemp, const char* debugLabel = "")
+{
+  double nowTime = get_elapsed_time();
+  double nowProgress = nowTime / timeLimit;
+  int loop = 0;
+  int rollbackCount = 0;
+
+  while (true) {
+    loop++;
+    if (loop % 100 == 1) {
+      nowTime = get_elapsed_time();
+      nowProgress = nowTime / timeLimit;
+    }
+    if (nowProgress > 1.0) {
+      break;
+    }
+
+    // 現在のスコアが悪いときは元に戻す
+    if (current_state.maxScore * 1.2 < best_state.maxScore) {
+      current_state.copyFrom(best_state);
+      rollbackCount++;
+    }
+
+    if (current_state.ansDeleteCount >= 10000) {
+      RefleshAns();
+    }
+
+    double temperature = startTemp + (endTemp - startTemp) * nowProgress;
+
+    if (Rand() % 2 == 0) {
+      Method1(temperature);
+    }
+    else {
+      Method2(temperature);
+    }
+  }
+
+  if (debugLabel[0] != '\0') {
+    cerr << debugLabel << " loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
+  }
+
+  return make_pair(loop, rollbackCount);
+}
+
 int Solve(int mode, int problemNum = 0)
 {
   start_timer();
@@ -867,45 +913,7 @@ int Solve(int mode, int problemNum = 0)
     current_state.maxScore = CalcScore();
 
     // 焼きなまし
-    double nowTime = get_elapsed_time();
-
-    double TL = 4.2 / seedCount;
-    double nowProgress = nowTime / TL;
-    double startTemperature = 200048;
-    double endTemperature = 0;
-    int loop = 0;
-    int rollbackCount = 0;
-    while (true) {
-      loop++;
-      if (loop % 100 == 1) {
-        nowTime = get_elapsed_time();
-        nowProgress = nowTime / TL;
-      }
-      if (nowProgress > 1.0) {
-        break;
-      }
-
-      // 現在のスコアが悪いときは元に戻す
-      if (current_state.maxScore * 1.2 < best_state.maxScore) {
-        current_state.copyFrom(best_state);
-        rollbackCount++;
-      }
-
-      if (current_state.ansDeleteCount >= 10000) {
-        RefleshAns();
-      }
-
-      double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;
-
-      if (Rand() % 2 == 0) {
-        Method1(temperature);
-      }
-      else {
-        Method2(temperature);
-      }
-    }
-
-    cerr << "seed loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
+    SimulatedAnnealing(4.2 / seedCount, 200048, 0, "seed");
 
     // スコアが良ければシードを更新
     current_state.copyFrom(best_state);
@@ -920,44 +928,9 @@ int Solve(int mode, int problemNum = 0)
 
   // 焼きなまし
   start_timer();
-  double nowTime = get_elapsed_time();
-  double TL = 0.5;
-  double nowProgress = nowTime / TL;
-  double startTemperature = 20048;
-  double endTemperature = 0;
-  int loop = 0;
-  int rollbackCount = 0;
-  while (true) {
-    loop++;
-    if (loop % 100 == 1) {
-      nowTime = get_elapsed_time();
-      nowProgress = nowTime / TL;
-    }
-    if (nowProgress > 1.0) {
-      break;
-    }
-
-    // 現在のスコアが悪いときは元に戻す
-    if (current_state.maxScore * 1.2 < best_state.maxScore) {
-      current_state.copyFrom(best_state);
-      rollbackCount++;
-    }
-
-    if (current_state.ansDeleteCount >= 10000) {
-      RefleshAns();
-    }
-
-    double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;
-
-    if (Rand() % 2 == 0) {
-      Method1(temperature);
-    }
-    else {
-      Method2(temperature);
-    }
-  }
-
-  cerr << "main loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
+  pair<int, int> mainResult = SimulatedAnnealing(0.5, 20048, 0, "main");
+  int loop = mainResult.first;
+  int rollbackCount = mainResult.second;
 
   // 一番スコアの良い解
   current_state.copyFrom(best_state);
