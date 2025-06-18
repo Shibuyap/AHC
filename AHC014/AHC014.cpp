@@ -630,38 +630,38 @@ void Method1(double temperature)
   int x = Rand() % N;
   int y = Rand() % N;
 
-  if (current_state.f[x][y]) return;
+  if (current_state.f[x][y]) { return; }
 
   methodCount[1][1]++;
 
   int u = -1;
   if (current_state.cntH[y] != 0) {
     u = FindNeighborPoint(x, y, 0);
-    if (u == -2) return;
+    if (u == -2) { return; }
   }
   int l = -1;
   if (current_state.cntW[x] != 0) {
     l = FindNeighborPoint(x, y, 1);
-    if (l == -2) return;
+    if (l == -2) { return; }
   }
   int d = -1;
   if (current_state.cntH[y] != 0) {
     d = FindNeighborPoint(x, y, 2);
-    if (d == -2) return;
+    if (d == -2) { return; }
   }
   int r = -1;
   if (current_state.cntW[x] != 0) {
     r = FindNeighborPoint(x, y, 3);
-    if (r == -2) return;
+    if (r == -2) { return; }
   }
   int ul = FindNeighborPoint(x, y, 4);
-  if (ul == -2) return;
+  if (ul == -2) { return; }
   int ld = FindNeighborPoint(x, y, 5);
-  if (ld == -2) return;
+  if (ld == -2) { return; }
   int dr = FindNeighborPoint(x, y, 6);
-  if (dr == -2) return;
+  if (dr == -2) { return; }
   int ru = FindNeighborPoint(x, y, 7);
-  if (ru == -2) return;
+  if (ru == -2) { return; }
 
   // 8種類の長方形
   int RectDir = -1;
@@ -755,7 +755,7 @@ void Method1(double temperature)
     y3 = y - ul;
   }
 
-  if (RectDir == -1) return;
+  if (RectDir == -1) { return; }
 
   double diffScore = 1000000.0 * N * N / M * W[x][y] / S;
 
@@ -890,10 +890,10 @@ inline int GetDir(int x1, int y1, int x2, int y2)
 // ランダムに1点選びほかに影響ないなら削除
 void Method2(double temperature)
 {
-  if (current_state.ansSize == 0) return;
+  if (current_state.ansSize == 0) { return; }
   int ite = Rand() % current_state.ansSize;
-  if (current_state.ansDelete[ite]) return;
-  if (current_state.use[current_state.ans[ite][0][0]][current_state.ans[ite][0][1]] > 1) return;
+  if (current_state.ansDelete[ite]) { return; }
+  if (current_state.use[current_state.ans[ite][0][0]][current_state.ans[ite][0][1]] > 1) { return; }
 
   methodCount[2][1]++;
 

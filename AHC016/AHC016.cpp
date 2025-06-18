@@ -1012,7 +1012,7 @@ namespace
     }
     minn--;
 
-    if (numPairArrOK == 0) return;
+    if (numPairArrOK == 0) { return; }
 
     {
       cnt = 0;

@@ -153,7 +153,7 @@ namespace
   {
     x = UF_Find(x);
     y = UF_Find(y);
-    if (x == y) return;
+    if (x == y) { return; }
 
     if (UF_rank[x] < UF_rank[y]) {
       UF_par[x] = y;

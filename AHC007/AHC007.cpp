@@ -68,7 +68,7 @@ public:
   {
     x = Find(x);
     y = Find(y);
-    if (x == y) return;
+    if (x == y) { return; }
 
     if (Rank[x] < Rank[y]) {
       Par[x] = y;

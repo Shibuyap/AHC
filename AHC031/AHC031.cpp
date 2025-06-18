@@ -1811,8 +1811,8 @@ void Method4_3_1()
     }
   }
 
-  if (M43_kouhos.size() > MAX_CANDIDATES) return;
-  if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) return;
+  if (M43_kouhos.size() > MAX_CANDIDATES) { return; }
+  if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) { return; }
 
   int karinaCount = 0;
   if (M43_kouhos.size() == 0) {
@@ -2054,9 +2054,9 @@ void Method4_3_2()
     }
   }
 
-  if (M43_kouhos.size() > MAX_CANDIDATES) return;
-  if (M43_kouhos.size() == 0) return;
-  if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) return;
+  if (M43_kouhos.size() > MAX_CANDIDATES) { return; }
+  if (M43_kouhos.size() == 0) { return; }
+  if (preCalcScheduleSizes[raD][raN][nextLine] > maxNextLineCapacity) { return; }
 
   int karinaCount = 0;
   if (M43_kouhos.size() == 0) {
@@ -2281,7 +2281,7 @@ void Method4_3_3()
   while (line2 == line1) {
     line2 = Rand() % ans.ansLineCount[raD];
   }
-  if (columnSchedule.schedulesCount[raD][line1] == 0 || columnSchedule.schedulesCount[raD][line2] == 0) return;
+  if (columnSchedule.schedulesCount[raD][line1] == 0 || columnSchedule.schedulesCount[raD][line2] == 0) { return; }
 
   {
     int line1NextSum = 0;
@@ -2289,7 +2289,7 @@ void Method4_3_3()
       int num = columnSchedule.schedules[raD][line1][k];
       line1NextSum += preCalcScheduleSizes[raD][num][line2];
     }
-    if (line1NextSum > w) return;
+    if (line1NextSum > w) { return; }
   }
   {
     int line2NextSum = 0;
@@ -2297,7 +2297,7 @@ void Method4_3_3()
       int num = columnSchedule.schedules[raD][line2][k];
       line2NextSum += preCalcScheduleSizes[raD][num][line1];
     }
-    if (line2NextSum > w) return;
+    if (line2NextSum > w) { return; }
   }
 
   int diffScore1 = (columnSchedule.schedulesCount[raD][line1] - columnSchedule.schedulesCount[raD][line2]) * (widths[line1] - widths[line2]) * 2;
@@ -2436,7 +2436,7 @@ void Method4_3_4_2()
 {
   int raD = Rand() % dayCount;
   int lineNum = Rand() % ans.ansBaseLineCount;
-  if (columnSchedule.schedulesCount[raD][lineNum] <= 1) return;
+  if (columnSchedule.schedulesCount[raD][lineNum] <= 1) { return; }
   int raIndex = Rand() % columnSchedule.schedulesCount[raD][lineNum];
   int raDir = Rand() % 2;
   if (raIndex == 0) { raDir = 1; }
@@ -2465,7 +2465,7 @@ void Method4_3_4_2()
       int raN = columnSchedule.schedules[i][lineNum][lineIndex - 1];
       margin = min(margin, (columnSchedule.schedulesPosition[i][lineNum][lineIndex] - columnSchedule.schedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
-    if (margin == 0) return;
+    if (margin == 0) { return; }
   }
   for (int i = raD + 1; i < dayCount; ++i) {
     int lineIndex = -1;
@@ -2485,7 +2485,7 @@ void Method4_3_4_2()
       int raN = columnSchedule.schedules[i][lineNum][lineIndex - 1];
       margin = min(margin, (columnSchedule.schedulesPosition[i][lineNum][lineIndex] - columnSchedule.schedulesPosition[i][lineNum][lineIndex - 1]) - preCalcScheduleSizes[i][raN][lineNum]);
     }
-    if (margin == 0) return;
+    if (margin == 0) { return; }
   }
 
   int moveAmount = Rand() % margin + 1;
@@ -2540,7 +2540,7 @@ void Method4_3_5()
     }
     if (margin <= 0) { break; }
   }
-  if (margin == 0) return;
+  if (margin == 0) { return; }
   int moveAmount = Rand() % margin + 1;
   int diffScore = 0;
   for (int i = 1; i < dayCount; ++i) {
@@ -2709,7 +2709,7 @@ void Method4_3_7()
   int raN = Rand() % elementCount;
   int lineNum = columnSchedule.columnNum[raD][raN];
   int lineCapacity = w;
-  if (columnSchedule.schedulesCount[raD][lineNum] == 1) return;
+  if (columnSchedule.schedulesCount[raD][lineNum] == 1) { return; }
 
   int diffScore2 = 0;
   if (raD > 0) { diffScore2 += CalcDiffScore2(raD, raD - 1, lineNum); }
@@ -2803,7 +2803,7 @@ void Method4_3_8()
       if (minLineCount == 0) { break; }
     }
   }
-  if (minLineNum == taisyouLineNum) return;
+  if (minLineNum == taisyouLineNum) { return; }
 
   // 対象列の中身をなるべく小さくする
   // marginを計算する
@@ -2836,7 +2836,7 @@ void Method4_3_8()
     }
   }
 
-  if (margin == 0) return;
+  if (margin == 0) { return; }
   int diffScore = margin * (M438_yokoLineCount[taisyouLineNum] - minLineCount);
 
   // ansLinePosとpreCalcScheduleSizesとwidthsを更新
@@ -4561,7 +4561,7 @@ void Method5()
   double TL31 = TL * 0.5;
   Method3_1(TL31);
 
-  if (ans.ansBaseLineCount == -1) return;
+  if (ans.ansBaseLineCount == -1) { return; }
 
   CopyToRealRealAns();
 

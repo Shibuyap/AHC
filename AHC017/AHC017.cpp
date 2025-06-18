@@ -495,7 +495,7 @@ void InnerMethod2()
     int sz = G[vertex].size();
     id2 = G[vertex][Rand() % sz].id;
   }
-  if (ans[id] == ans[id2]) return;
+  if (ans[id] == ans[id2]) { return; }
 
   swap(ans[id], ans[id2]);
 
@@ -597,7 +597,7 @@ void InnerMethod5(double temperature)
   for (auto x : se) {
     if (x != day) vec.push_back(x);
   }
-  if (vec.size() == 0) return;
+  if (vec.size() == 0) { return; }
   int newDay = vec[Rand() % vec.size()];
   if (dayCount[newDay] == K) {
     return;
@@ -633,7 +633,7 @@ void InnerMethod6(double temperature)
     int sz = G[vertex].size();
     id2 = G[vertex][Rand() % sz].id;
   }
-  if (ans[id1] == ans[id2]) return;
+  if (ans[id1] == ans[id2]) { return; }
 
   int day1 = ans[id1];
   int day2 = ans[id2];
@@ -700,7 +700,7 @@ void InnerMethod7(double temperature)
     if (dayCount[newDay] + sz > K) newDay = day;
     if (newDay != day) { break; }
   }
-  if (newDay == day) return;
+  if (newDay == day) { return; }
 
   set<int> vertices;
   for (auto e_id : edges) {

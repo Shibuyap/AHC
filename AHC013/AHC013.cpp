@@ -1805,7 +1805,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
 // 移動をランダムに1つ削除
 void Method5(double start_temp, double end_temp, double now_progress)
 {
-  if (gameState.ope1 == 0) return;
+  if (gameState.ope1 == 0) { return; }
   int ite = Rand() % gameState.ope1;
 
   // NGチェック

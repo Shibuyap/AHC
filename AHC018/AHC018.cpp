@@ -72,7 +72,7 @@ namespace
   {
     x = uf_find(x);
     y = uf_find(y);
-    if (x == y) return;
+    if (x == y) { return; }
 
     if (uf_rank[x] < uf_rank[y]) {
       uf_parent[x] = y;

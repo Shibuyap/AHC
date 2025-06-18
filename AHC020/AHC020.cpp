@@ -127,7 +127,7 @@ namespace
   {
     x = find(par, x);
     y = find(par, y);
-    if (x == y) return;
+    if (x == y) { return; }
 
     if (rank[x] < rank[y]) {
       par[x] = y;

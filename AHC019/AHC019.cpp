@@ -533,8 +533,8 @@ void method_1(double temperature)
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
   int z = rand_uint32() % dimension;
-  if (answer_grid[i][x][y][z] != -1) return;
-  if (!f_matrix[i][z][x] || !r_matrix[i][z][y]) return;
+  if (answer_grid[i][x][y][z] != -1) { return; }
+  if (!f_matrix[i][z][x] || !r_matrix[i][z][y]) { return; }
 
   method_count[1][1]++;
   answer_grid[i][x][y][z] = 0;
@@ -565,8 +565,8 @@ void method_2(double temperature)
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
   int z = rand_uint32() % dimension;
-  if (answer_grid[i][x][y][z] != 0) return;
-  if (!can_delete_block(i, x, y, z)) return;
+  if (answer_grid[i][x][y][z] != 0) { return; }
+  if (!can_delete_block(i, x, y, z)) { return; }
 
   method_count[2][1]++;
   answer_grid[i][x][y][z] = -1;
@@ -597,12 +597,12 @@ void method_3(double temperature)
   int y = rand_uint32() % dimension;
   int z = rand_uint32() % dimension;
   int dir = rand_uint32() % 6;
-  if (answer_grid[i][x][y][z] != 0) return;
+  if (answer_grid[i][x][y][z] != 0) { return; }
   int nx = x + DX[dir];
   int ny = y + DY[dir];
   int nz = z + DZ[dir];
-  if (is_invalid_coord(nx, ny, nz)) return;
-  if (answer_grid[i][nx][ny][nz] != 0) return;
+  if (is_invalid_coord(nx, ny, nz)) { return; }
+  if (answer_grid[i][nx][ny][nz] != 0) { return; }
 
   method_count[3][1]++;
   // つなげる
@@ -637,7 +637,7 @@ void method_4(double temperature)
   int x = rand_uint32() % dimension;
   int y = rand_uint32() % dimension;
   int z = rand_uint32() % dimension;
-  if (answer_grid[i][x][y][z] <= 0) return;
+  if (answer_grid[i][x][y][z] <= 0) { return; }
   int dir = get_direction(answer_grid[i][x][y][z]);
   int nx = x + DX[dir];
   int ny = y + DY[dir];

@@ -144,7 +144,7 @@ namespace /* Union Find*/
   {
     x = findUF(x);
     y = findUF(y);
-    if (x == y) return;
+    if (x == y) { return; }
 
     if (rankUF[x] < rankUF[y]) {
       parUF[x] = y;

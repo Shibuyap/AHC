@@ -1001,7 +1001,7 @@ inline void aspectChange(int ite, double temp)
 
   int S = yokoRatio * tateRatio;
   int mul = sqrt(target_sizes[ite] / S);
-  if (mul == 0) return;
+  if (mul == 0) { return; }
 
   int yoko = yokoRatio * mul;
   int tate = tateRatio * mul;
@@ -1011,12 +1011,12 @@ inline void aspectChange(int ite, double temp)
   int leftA = max(0, target_points[ite].x - (yoko - 1));
   int rightA = min(target_points[ite].x, 10000 - yoko);
   int rangeA = rightA - leftA + 1;
-  if (rangeA < 1) return;
+  if (rangeA < 1) { return; }
 
   int leftB = max(0, target_points[ite].y - (tate - 1));
   int rightB = min(target_points[ite].y, 10000 - tate);
   int rangeB = rightB - leftB + 1;
-  if (rangeB < 1) return;
+  if (rangeB < 1) { return; }
 
   rects[ite].p1.x = Rand() % rangeA + leftA;
   rects[ite].p2.x = rects[ite].p1.x + rangeA;

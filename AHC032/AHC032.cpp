@@ -270,7 +270,7 @@ ll work_grid[3][3];
 ll pattern_ids[10];
 void search_best_patterns_dfs(int mm, int cnt, int lim)
 {
-  if (cnt == lim) return;
+  if (cnt == lim) { return; }
   ll keep[3][3];
   for (int p = 0; p < 3; ++p) {
     for (int q = 0; q < 3; ++q) {

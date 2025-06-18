@@ -536,7 +536,7 @@ vector<int> GetRoute()
 
 void MakeA1DFS(int x, vector<int>& route, vector<int>& visited, int order = 0)
 {
-  if (visited[x]) return;
+  if (visited[x]) { return; }
   visited[x] = 1;
   route.push_back(x);
   if (order == 0) {

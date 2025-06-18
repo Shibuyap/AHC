@@ -318,7 +318,7 @@ int adjustHirituByTime(int baseHiritu, double timeFraction = 1.0 / 3.0)
 void performStandardMoveSwap(int& countQ, int hiritu)
 {
   if (isNearQueryLimit(countQ)) {
-    if (hiritu < 10) return;
+    if (hiritu < 10) { return; }
     return;
   }
 
@@ -886,7 +886,7 @@ void Move1Base(int& countQ, int srcGroup, int dstGroup, int itemToMove, const st
 void Move1(int& countQ, int cutLine)
 {
   int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
+  if (x == -1) { return; }
 
   int y = Rand() % D;
   while (x == y) {
@@ -894,7 +894,7 @@ void Move1(int& countQ, int cutLine)
   }
 
   int z = selectRandomFromGroup(x);
-  if (z == -1) return;
+  if (z == -1) { return; }
 
   if (shouldSkipBasedOnCutline(z, cutLine)) {
     return;
@@ -959,7 +959,7 @@ void Move1_Two(int& countQ, int cutLine = 999)
   }
 
   int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
+  if (x == -1) { return; }
 
   int y1 = Rand() % D;
   while (x == y1) {
@@ -974,7 +974,7 @@ void Move1_Two(int& countQ, int cutLine = 999)
   int y = (c1 == '>') ? y2 : y1;
 
   int z = selectRandomFromGroup(x);
-  if (z == -1) return;
+  if (z == -1) { return; }
 
   if (shouldSkipBasedOnCutline(z, cutLine)) {
     return;
@@ -986,7 +986,7 @@ void Move1_Two(int& countQ, int cutLine = 999)
 void Move1Minimum(int& countQ, int cutLine = 999)
 {
   int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
+  if (x == -1) { return; }
 
   int y = Rand() % D;
   while (x == y) {
@@ -995,7 +995,7 @@ void Move1Minimum(int& countQ, int cutLine = 999)
 
   vector<int> vv;
   collectItemsFromGroup(x, vv);
-  if (vv.empty()) return;
+  if (vv.empty()) { return; }
 
   int z = vv[Rand() % vv.size()];
   for (int _ = 0; _ < 30; ++_) {
@@ -1086,7 +1086,7 @@ int arr8_2_R[110];
 void Swap1(int& countQ, int diffLine)
 {
   int x, y;
-  if (!selectTwoGroupsWithMinSize(x, y)) return;
+  if (!selectTwoGroupsWithMinSize(x, y)) { return; }
 
   vector<int> vx, vy;
   collectItemsFromGroup(x, vx);
@@ -1156,7 +1156,7 @@ int arrSwapHalf_R[110];
 void SwapHalf(int& countQ)
 {
   int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
+  if (x == -1) { return; }
 
   int y = Rand() % D;
   while (true) {
@@ -1219,7 +1219,7 @@ void SwapHalf(int& countQ)
 void Method11_1(int& countQ)
 {
   int x = selectGroupWithMinSize(2);
-  if (x == -1) return;
+  if (x == -1) { return; }
 
   int y = Rand() % D;
   while (true) {
@@ -2864,7 +2864,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
   vector<vector<int>> blocks;
   vector<int> groups;
 
-  if (!initializeBlocks(blocks, groups, countQ, blockSize)) return;
+  if (!initializeBlocks(blocks, groups, countQ, blockSize)) { return; }
 
   int loopCount = 0;
   while (countQ < Q) {

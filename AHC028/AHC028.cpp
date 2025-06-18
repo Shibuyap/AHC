@@ -499,7 +499,7 @@ void twoSwap(double temperature)
   if (idx_a > idx_b) std::swap(idx_a, idx_b);
 
   // 隣接要素の入れ替えは無効
-  if (idx_b - idx_a <= 1) return;
+  if (idx_b - idx_a <= 1) { return; }
 
   int prev_a = idx_a - 1;
   int next_a = idx_a + 1;
@@ -602,9 +602,9 @@ void changePathId(double temperature)
   int new_path_id = Random::xorshift() % 10;
 
   // 無効な操作をスキップ
-  if (task_paths[task_order[task_idx]].size() <= new_path_id) return;
-  if (task_idx == 0 || task_idx == TASK_COUNT - 1) return;
-  if (new_path_id == path_index[task_idx]) return;
+  if (task_paths[task_order[task_idx]].size() <= new_path_id) { return; }
+  if (task_idx == 0 || task_idx == TASK_COUNT - 1) { return; }
+  if (new_path_id == path_index[task_idx]) { return; }
 
   // 現在のコストを計算
   int before_score = calculatePathChangeScore(task_idx, path_index[task_idx]);
