@@ -521,7 +521,7 @@ int Method2_CountCandidates(Method2State& m2)
 
   // 各候補パターンでの値をカウント
   for (int i = 0; i < gridFourth; ++i) {
-    if (!m2.isValidPattern[i]) continue;
+    if (!m2.isValidPattern[i]) { continue; }
     candidateCount++;
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
@@ -611,7 +611,7 @@ P Method2_SelectQueryPosition(Method2State& m2)
     int minCandidateCount = INF;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
-        if (m2.confirmedValue1[i][j] != -1) continue;
+        if (m2.confirmedValue1[i][j] != -1) { continue; }
         int maxValue = max(m2.overlapCountGrid[i][j][0], max(m2.overlapCountGrid[i][j][1], m2.overlapCountGrid[i][j][2]));
         if (maxValue < minCandidateCount) {
           minCandidateCount = maxValue;
@@ -667,7 +667,7 @@ void Method2_QueryAndUpdate(ofstream& ofs, int& cellCount, Method2State& m2)
 
   // 候補を更新
   for (int i = 0; i < gridFourth; ++i) {
-    if (!m2.isValidPattern[i]) continue;
+    if (!m2.isValidPattern[i]) { continue; }
     if (m2.candidates[i][queryX][queryY] != queryResult) m2.isValidPattern[i] = false;
   }
 }
@@ -792,7 +792,7 @@ void Method2_2_Initialize(Method2State& m2)
       for (int i1 = 0; i1 < n; ++i1) {
         for (int j1 = 0; j1 < n; ++j1) {
           int idx = i0 * gridCubed + j0 * gridSquared + i1 * n + j1;
-          if (!m2.isValidPattern[idx]) continue;
+          if (!m2.isValidPattern[idx]) { continue; }
           for (int k = 0; k < d[0]; ++k) {
             int x = i0 + patternOffsetX[0][k];
             int y = j0 + patternOffsetY[0][k];
@@ -826,7 +826,7 @@ void Method2_2_SearchKakuteiMasu(vector<pair<P, int>>& confirmedCells, Method2St
 {
   vector<vector<int>> valueCount(n, vector<int>(n, 0));
   for (int i = 0; i < gridFourth; ++i) {
-    if (!m2.isValidPattern[i]) continue;
+    if (!m2.isValidPattern[i]) { continue; }
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
         valueCount[j][k] += m2.candidates[i][j][k];
@@ -940,7 +940,7 @@ void Method2_2(int query2Size, ofstream& ofs)
           int idx = m2_2_penaltySortedArray[i].second;
           for (int j = 0; j < n; ++j) {
             for (int k = 0; k < n; ++k) {
-              if (m2.confirmedValue1[j][k] != -1 || m2.ambiguousValue[j][k] != -1) continue;
+              if (m2.confirmedValue1[j][k] != -1 || m2.ambiguousValue[j][k] != -1) { continue; }
               nums[j][k][m2.candidates[idx][j][k]]++;
             }
           }
@@ -949,7 +949,7 @@ void Method2_2(int query2Size, ofstream& ofs)
         for (int j = 0; j < n; ++j) {
           for (int k = 0; k < n; ++k) {
             int maxValue = max(nums[j][k][0], max(nums[j][k][1], nums[j][k][2]));
-            if (maxValue == 0) continue;
+            if (maxValue == 0) { continue; }
             if (maxValue < minCandidateCount) {
               queryX = j;
               queryY = k;
@@ -988,7 +988,7 @@ void Method2_2(int query2Size, ofstream& ofs)
           int idx = m2_2_penaltySortedArray[i].second;
           for (int j = 0; j < n; ++j) {
             for (int k = 0; k < n; ++k) {
-              if (m2.confirmedValue1[j][k] != -1) continue;
+              if (m2.confirmedValue1[j][k] != -1) { continue; }
               nums[j][k][m2.candidates[idx][j][k]]++;
             }
           }
@@ -998,7 +998,7 @@ void Method2_2(int query2Size, ofstream& ofs)
         for (int j = 0; j < n; ++j) {
           for (int k = 0; k < n; ++k) {
             int maxValue = max(nums[j][k][0], max(nums[j][k][1], nums[j][k][2]));
-            if (maxValue == 0) continue;
+            if (maxValue == 0) { continue; }
             if (maxValue < minCandidateCount) {
               queryX = j;
               queryY = k;
@@ -1061,7 +1061,7 @@ vector<Candidate> Method3_GetAllKouho()
 {
   vector<Candidate> result;
   for (int i = 0; i < m; ++i) {
-    if (m3_usedM[i]) continue;
+    if (m3_usedM[i]) { continue; }
     // チェック
     for (int j = 0; j < d[i]; ++j) {
       for (int xxx = 0; xxx < n; ++xxx) {
@@ -1092,7 +1092,7 @@ vector<P> Method3_GetAllKouhoSpecificPoint1(int xxx, int yyy)
 {
   vector<P> result;
   for (int i = 0; i < m; ++i) {
-    if (m3_usedM[i]) continue;
+    if (m3_usedM[i]) { continue; }
     // チェック
     for (int j = 0; j < d[i]; ++j) {
       int isOk = 1;
@@ -1122,7 +1122,7 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
 {
   vector<P> result;
   for (int i = 0; i < m; ++i) {
-    if (m3_usedM[i]) continue;
+    if (m3_usedM[i]) { continue; }
     // チェック
     const int shuuiSize = 3;
     for (int j = 0; j < d[i]; ++j) {
@@ -1321,7 +1321,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cellCo
       int ny = -1;
       int minDiff = INF;
       for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) {
-        if (m3_used[i][j] != -1 || nums[i][j] == 0) continue;
+        if (m3_used[i][j] != -1 || nums[i][j] == 0) { continue; }
         int diff = abs(kouhoCount / 2 - nums[i][j]);
         if (diff < minDiff) {
           minDiff = diff;
@@ -1329,7 +1329,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cellCo
           ny = j;
         }
       }
-      if (nx == -1) continue;
+      if (nx == -1) { continue; }
 
       minKouhoCount = kouhoCount;
       for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) minNums[i][j] = nums[i][j];
@@ -1344,7 +1344,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cellCo
     int ny = -1;
     int minDiff = INF;
     for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) {
-      if (m3_used[i][j] != -1 || minNums[i][j] == 0) continue;
+      if (m3_used[i][j] != -1 || minNums[i][j] == 0) { continue; }
       int diff = abs(minKouhoCount / 2 - minNums[i][j]);
       if (diff < minDiff) {
         minDiff = diff;
@@ -1426,7 +1426,7 @@ void Method3_QueryEmptyCell(ofstream& ofs, int& cellCount, int& secondaryCellCou
               }
             }
           }
-          if (hasNeighbor) continue;
+          if (hasNeighbor) { continue; }
         }
         maxNums = nums[i][j];
         x = i;
@@ -1506,7 +1506,7 @@ void Method4(int kakuteiCount, ofstream& ofs)
           int maI = i + (maxPatternOffsetX[k] - patternOffsetX[k][l]);
           int miJ = j - patternOffsetY[k][l];
           int maJ = j + (maxPatternOffsetY[k] - patternOffsetY[k][l]);
-          if (IsNG(miI, miJ) || IsNG(maI, maJ)) continue;
+          if (IsNG(miI, miJ) || IsNG(maI, maJ)) { continue; }
           m4_kouhos[i][j].emplace_back(k, l);
           m4_kouhos_OK[i][j].push_back(1);
         }
@@ -1523,9 +1523,9 @@ void Method4(int kakuteiCount, ofstream& ofs)
     {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (m4_values1[i][j] <= 0 && m4_values2[i][j] <= 0) continue;
+          if (m4_values1[i][j] <= 0 && m4_values2[i][j] <= 0) { continue; }
           for (int k = 0; k < m4_kouhos[i][j].size(); ++k) {
-            if (m4_kouhos_OK[i][j][k] == 0) continue;
+            if (m4_kouhos_OK[i][j][k] == 0) { continue; }
           }
         }
       }
@@ -1634,7 +1634,7 @@ void Battle()
     }
 
     // 同じ値の場合はcontinue
-    if (hyperParams[mIndex][epsIndex] == newPara) continue;
+    if (hyperParams[mIndex][epsIndex] == newPara) { continue; }
 
     int win = 0;
     int lose = 0;
@@ -1642,7 +1642,7 @@ void Battle()
 
     int judgeMode = 0;
     bool isWin = false;
-    if (m != 2 || eps > 0.1) continue;
+    if (m != 2 || eps > 0.1) { continue; }
     cout << loop << ' ' << m << ' ' << eps << ", oldPara = " << hyperParams[mIndex][epsIndex] << ", newPara = " << newPara;
     if (judgeMode == 0) {  // 20戦18勝
       for (int _ = 0; _ < 20; _++) {
@@ -1762,8 +1762,8 @@ void Battle()
         }
 
         // 範囲チェック
-        if (nextMIndex < 2 || 20 < nextMIndex) continue;
-        if (nextEpsIndex <= 0 || 20 < nextEpsIndex) continue;
+        if (nextMIndex < 2 || 20 < nextMIndex) { continue; }
+        if (nextEpsIndex <= 0 || 20 < nextEpsIndex) { continue; }
 
         // キューに入れる
         winQueue.push(make_pair(nextEpsIndex, newPara));
@@ -1790,7 +1790,7 @@ int main()
     for (int i = 0; i < 10; ++i) {
       onesEmptyCount = 0;
       ll score = Solve(i);
-      if (score == 0) continue;
+      if (score == 0) { continue; }
       sum += score;
       onesEmptySum += onesEmptyCount * 1000000LL;
       cout << "num = " << setw(3) << i << ", ";

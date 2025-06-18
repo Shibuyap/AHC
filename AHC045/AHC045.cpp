@@ -1557,7 +1557,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
         }
       }
 
-      if (cutNum == -1) continue;
+      if (cutNum == -1) { continue; }
 
       ans_nums[ra1].clear();
       ans_edges[ra1].clear();

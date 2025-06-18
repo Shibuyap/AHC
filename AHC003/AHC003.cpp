@@ -190,11 +190,11 @@ void Dijkstra(int sx, int sy, int gx, int gy)
     int y = p.second.second;
     double val = p.first;
     if (x == gx && y == gy) break;
-    if (val > dp[x][y]) continue;
+    if (val > dp[x][y]) { continue; }
     for (int i = 0; i < 4; ++i) {
       int nx = x + dx[i];
       int ny = y + dy[i];
-      if (IsNgNxNy(nx, ny)) continue;
+      if (IsNgNxNy(nx, ny)) { continue; }
       double dd = 0;
       if (i == 0) {
         if (x <= CutUD[y]) dd = Upper[y];
@@ -240,11 +240,11 @@ void Dijkstra2(int sx, int sy, int gx, int gy)
     int y = p.second.second;
     double val = p.first;
     if (x == gx && y == gy) break;
-    if (val > dp[x][y]) continue;
+    if (val > dp[x][y]) { continue; }
     for (int i = 0; i < 4; ++i) {
       int nx = x + dx[i];
       int ny = y + dy[i];
-      if (IsNgNxNy(nx, ny)) continue;
+      if (IsNgNxNy(nx, ny)) { continue; }
       double dd = 0;
       if (i == 0) {
         if (x <= CutUD[y]) dd = Upper[y];
@@ -377,7 +377,7 @@ int Solve(string iunputFileNum)
     int length = ans.size();
     double myDistance = dp[gx][gy];
 
-    if (turn < 0) continue;
+    if (turn < 0) { continue; }
     end = clock();
     if ((double)(end - start) / CLOCKS_PER_SEC > 1.8) {
       if (timeOverFlag == 0 && ifs) {
@@ -492,10 +492,10 @@ int Solve(string iunputFileNum)
 
         double rA = Rand01() * 20 - 10;
 
-        if (rULDR == 0) if (Upper[rN] + rA < 1000 || 9000 < Upper[rN] + rA) continue;
-        if (rULDR == 1) if (Lefter[rN] + rA < 1000 || 9000 < Lefter[rN] + rA) continue;
-        if (rULDR == 2) if (Downer[rN] + rA < 1000 || 9000 < Downer[rN] + rA) continue;
-        if (rULDR == 3) if (Righter[rN] + rA < 1000 || 9000 < Righter[rN] + rA) continue;
+        if (rULDR == 0) if (Upper[rN] + rA < 1000 || 9000 < Upper[rN] + rA) { continue; }
+        if (rULDR == 1) if (Lefter[rN] + rA < 1000 || 9000 < Lefter[rN] + rA) { continue; }
+        if (rULDR == 2) if (Downer[rN] + rA < 1000 || 9000 < Downer[rN] + rA) { continue; }
+        if (rULDR == 3) if (Righter[rN] + rA < 1000 || 9000 < Righter[rN] + rA) { continue; }
 
         double diff = 0;
 
@@ -581,10 +581,10 @@ int Solve(string iunputFileNum)
 
         double rA = Rand01() * 20 - 10;
 
-        if (rUL == 0) if (Upper[rN] + rA < 1000 || 9000 < Upper[rN] + rA) continue;
-        if (rUL == 1) if (Lefter[rN] + rA < 1000 || 9000 < Lefter[rN] + rA) continue;
-        if (rUL == 0) if (Downer[rN] + rA < 1000 || 9000 < Downer[rN] + rA) continue;
-        if (rUL == 1) if (Righter[rN] + rA < 1000 || 9000 < Righter[rN] + rA) continue;
+        if (rUL == 0) if (Upper[rN] + rA < 1000 || 9000 < Upper[rN] + rA) { continue; }
+        if (rUL == 1) if (Lefter[rN] + rA < 1000 || 9000 < Lefter[rN] + rA) { continue; }
+        if (rUL == 0) if (Downer[rN] + rA < 1000 || 9000 < Downer[rN] + rA) { continue; }
+        if (rUL == 1) if (Righter[rN] + rA < 1000 || 9000 < Righter[rN] + rA) { continue; }
 
         double diff = 0;
 
@@ -636,8 +636,8 @@ int Solve(string iunputFileNum)
         int rN = Rand() % 30;
         int rA = Rand() % 30 + 1;
         if (Rand() % 2 == 1) rA *= -1;
-        if (rUL == 0) if (CutUD[rN] + rA < 3 || 27 <= CutUD[rN] + rA) continue;
-        if (rUL == 1) if (CutLR[rN] + rA < 3 || 27 <= CutLR[rN] + rA) continue;
+        if (rUL == 0) if (CutUD[rN] + rA < 3 || 27 <= CutUD[rN] + rA) { continue; }
+        if (rUL == 1) if (CutLR[rN] + rA < 3 || 27 <= CutLR[rN] + rA) { continue; }
 
         double diff = 0;
 
@@ -740,7 +740,7 @@ int Solve(string iunputFileNum)
                 vec[i].second = (VerticalSum[turnID][n - 1][rN] - VerticalSum[turnID][kugiri][rN]) * (40000.0 / DistResponce[turnID]);
                 countSum += vec[i].second;
               }
-              if (countSum == 0) continue;
+              if (countSum == 0) { continue; }
               vec[TurnUD[rN].size()].first = rA;
               vec[TurnUD[rN].size()].second = SabunCostMultiple;
               countSum += SabunCostMultiple;
@@ -775,7 +775,7 @@ int Solve(string iunputFileNum)
               }
             }
           }
-          if (changeFlag == 0) continue;
+          if (changeFlag == 0) { continue; }
           int kugiriDiff = argmaxCutUD - CutUD[rN];
           for (int i = 0; i < TurnUD[rN].size(); ++i) {
             int turnID = TurnUD[rN][i];
@@ -832,7 +832,7 @@ int Solve(string iunputFileNum)
                 vec[i].second = (HorizontalSum[turnID][rN][n - 1] - HorizontalSum[turnID][rN][kugiri]) * (40000.0 / DistResponce[turnID]);
                 countSum += vec[i].second;
               }
-              if (countSum == 0) continue;
+              if (countSum == 0) { continue; }
               vec[TurnLR[rN].size()].first = rA;
               vec[TurnLR[rN].size()].second = SabunCostMultiple;
               countSum += SabunCostMultiple;
@@ -867,7 +867,7 @@ int Solve(string iunputFileNum)
               }
             }
           }
-          if (changeFlag == 0) continue;
+          if (changeFlag == 0) { continue; }
           int kugiriDiff = argmaxCutLR - CutLR[rN];
           for (int i = 0; i < TurnLR[rN].size(); ++i) {
             int turnID = TurnLR[rN][i];
@@ -938,18 +938,18 @@ int Solve(string iunputFileNum)
       double ra = Rand01() * 200.0 - 100.0;
       if (rv == 0) {
         if (rx <= CutUD[ry]) {
-          if (Upper[ry] + ra < 1000 || 9000 < Upper[ry] + ra) continue;
+          if (Upper[ry] + ra < 1000 || 9000 < Upper[ry] + ra) { continue; }
         }
         else {
-          if (Downer[ry] + ra < 1000 || 9000 < Downer[ry] + ra) continue;
+          if (Downer[ry] + ra < 1000 || 9000 < Downer[ry] + ra) { continue; }
         }
       }
       else {
         if (ry <= CutLR[rx]) {
-          if (Lefter[rx] + ra < 1000 || 9000 < Lefter[rx] + ra) continue;
+          if (Lefter[rx] + ra < 1000 || 9000 < Lefter[rx] + ra) { continue; }
         }
         else {
-          if (Righter[rx] + ra < 1000 || 9000 < Righter[rx] + ra) continue;
+          if (Righter[rx] + ra < 1000 || 9000 < Righter[rx] + ra) { continue; }
         }
       }
 

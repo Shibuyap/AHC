@@ -168,7 +168,7 @@ void input_data(int case_num)
   for (int i = 0; i < n; ++i) {
     vector<int> v;
     for (int j = 0; j < target_strings[i].size(); ++j) {
-      if (target_strings[i][j] == ' ') continue;
+      if (target_strings[i][j] == ' ') { continue; }
       v.push_back(target_strings[i][j] - 'a');
     }
     target_sequences[i] = v;

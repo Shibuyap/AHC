@@ -177,14 +177,14 @@ void Output(int probNum, const State& current)
 
   int L = 0;
   for (int i = 0; i < T; ++i) {
-    if (current.turns[i][0] == -1) continue;
+    if (current.turns[i][0] == -1) { continue; }
     L++;
   }
 
   if (mode == 0) {
     cout << L << endl;
     for (int i = 0; i < T; ++i) {
-      if (current.turns[i][0] == -1) continue;
+      if (current.turns[i][0] == -1) { continue; }
       for (int j = 0; j < 3; ++j) cout << current.turns[i][j] << ' ';
       cout << endl;
     }
@@ -192,7 +192,7 @@ void Output(int probNum, const State& current)
   else {
     ofs << L << endl;
     for (int i = 0; i < T; ++i) {
-      if (current.turns[i][0] == -1) continue;
+      if (current.turns[i][0] == -1) { continue; }
       for (int j = 0; j < 3; ++j) ofs << current.turns[i][j] << ' ';
       ofs << endl;
     }
@@ -608,7 +608,7 @@ void heuristicSweep(double timeLimit, State& current)
         }
       }
     }
-    if (abortFlag) continue;
+    if (abortFlag) { continue; }
 
     for (int t = turnCount; t < T; ++t) current.turns[t][0] = -1;
     current.calc_score();

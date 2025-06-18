@@ -575,7 +575,7 @@ void solve_layered_sa()
   for (int f_idx = n - 1; f_idx >= 0; --f_idx) {
     int node_id = farthest[f_idx].second;
     int cap_value = farthest[f_idx].first;
-    if (power_rad[node_id] != 0) continue;
+    if (power_rad[node_id] != 0) { continue; }
 
     ll need_radius = 0;
     for (int res_idx = 0; res_idx < k; ++res_idx) {

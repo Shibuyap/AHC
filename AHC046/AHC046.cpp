@@ -713,7 +713,7 @@ private:
       // ---------- generate & apply neighbourhood move ----------
       OperationCtx op;
       op.type = pick_op(rand_xorshift() % param.operation_thresholds[2], param.operation_thresholds);
-      if (!apply_op(op, answer, best, board, rand_xorshift)) continue;
+      if (!apply_op(op, answer, best, board, rand_xorshift)) { continue; }
 
       // ---------- evaluate new solution ----------
       board.init_board();

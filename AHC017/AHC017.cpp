@@ -89,7 +89,7 @@ ll Dijkstra(int start, int day)
   while (!pque.empty()) {
     P p = pque.top();
     pque.pop();
-    if (p.first != dist[p.second]) continue;
+    if (p.first != dist[p.second]) { continue; }
     int x = p.second;
     for (int i = 0; i < G[x].size(); ++i)
     {
@@ -126,7 +126,7 @@ ll Dijkstra22(int start, int day)
   while (!pque.empty()) {
     P p = pque.top();
     pque.pop();
-    if (p.first != dist[p.second]) continue;
+    if (p.first != dist[p.second]) { continue; }
     int x = p.second;
     if (distRank[start][x] < FINISH_COUNT) {
       sum += dist[x];
@@ -403,9 +403,9 @@ void Method3()
   {
     for (int j = 0; j < D; ++j)
     {
-      if (cnt[j] == K) continue;
+      if (cnt[j] == K) { continue; }
       int i = vec[j][ii];
-      if (ans[i] != -1 || flag[j][i]) continue;
+      if (ans[i] != -1 || flag[j][i]) { continue; }
       ans[i] = j;
       cnt[j]++;
       // 周囲4辺をNGに
@@ -445,7 +445,7 @@ void Method4()
     for (int j = 0; j < G[i].size(); ++j)
     {
       int id = G[i][j].id;
-      if (ans[id] != -1) continue;
+      if (ans[id] != -1) { continue; }
       ans[id] = now;
       now = (now + 1) % D;
     }
@@ -677,14 +677,14 @@ void InnerMethod7(double temperature)
     int e_id = que.front();
     que.pop();
     for (auto e : G[u[e_id]]) {
-      if (ans[e.id] != day) continue;
+      if (ans[e.id] != day) { continue; }
       if (edges.find(e.id) == edges.end()) {
         que.push(e.id);
         edges.insert(e.id);
       }
     }
     for (auto e : G[v[e_id]]) {
-      if (ans[e.id] != day) continue;
+      if (ans[e.id] != day) { continue; }
       if (edges.find(e.id) == edges.end()) {
         que.push(e.id);
         edges.insert(e.id);

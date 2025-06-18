@@ -125,8 +125,7 @@ void CalcNNDDQQ()
   NN = min(NN, 13);  // 14
   DD = D - 2;        // 24
   vector<int> qv;
-  for (int i = 0; i < 40; ++i)
-  {
+  for (int i = 0; i < 40; ++i) {
     double si = 1.0 + 0.1 * (i + 1);
     qv.push_back(round(pow(2, si) * N));
     if (i == 39) {
@@ -138,8 +137,7 @@ void CalcNNDDQQ()
 
 void GenerateLocalItems()
 {
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     double num;
     while (true) {
       num = dist(engine);
@@ -202,10 +200,8 @@ void GeneratePseudoItems()
   else {
     double pseudoSum[110] = {};
     vector<double> nums(110);
-    for (int loop = 0; loop < 100; ++loop)
-    {
-      for (int i = 0; i < N; ++i)
-      {
+    for (int loop = 0; loop < 100; ++loop) {
+      for (int i = 0; i < N; ++i) {
         while (true) {
           nums[i] = dist(engine);
           if (nums[i] < 100000.0 * N / D) {
@@ -251,8 +247,7 @@ void OpenOfs(int probNum, ofstream& ofs)
     if (mode != 0) {
       string fileNameOfs = "./out/";
       string strNum;
-      for (int i = 0; i < 4; ++i)
-      {
+      for (int i = 0; i < 4; ++i) {
         strNum += (char)(probNum % 10 + '0');
         probNum /= 10;
       }
@@ -350,8 +345,7 @@ void initializeAnsArray()
 int countItemsInGroup(int groupId)
 {
   int cnt = 0;
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (ans[j] == groupId) {
       cnt++;
     }
@@ -362,8 +356,7 @@ int countItemsInGroup(int groupId)
 void collectItemsFromGroup(int groupId, vector<int>& items)
 {
   items.clear();
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (ans[j] == groupId) {
       items.push_back(j);
     }
@@ -405,8 +398,7 @@ void moveGroupToPosition(vector<int>& groups, int from, int to)
 
 void assignHeaviestToGroups(const vector<int>& items, int startIdx)
 {
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     int id = items[startIdx - i];
     ans[id] = i;
   }
@@ -440,8 +432,7 @@ int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLef
   int right = initialRight;
   while (left < right) {
     int mid = (left + right) / 2;
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
       if (ans[j] == gId) {
         l[countQ].push_back(j);
       }
@@ -466,8 +457,7 @@ int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLef
 // Build query groups for comparison
 void buildQueryGroups(int& countQ, int x, int y, int excludeIndex = -1)
 {
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (ans[j] == x && j != excludeIndex) {
       l[countQ].push_back(j);
     }
@@ -483,8 +473,7 @@ bool shouldSkipBasedOnCutline(int z, int cutLine)
   if (cutLine >= 100) return false;
 
   int win = 0, lose = 0;
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (hikaku[z][j] == 1) win++;
     else if (hikaku[z][j] == -1) lose++;
   }
@@ -494,8 +483,7 @@ bool shouldSkipBasedOnCutline(int z, int cutLine)
 int selectRandomFromGroup(int groupId)
 {
   vector<int> groupItems;
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (ans[j] == groupId) {
       groupItems.push_back(j);
     }
@@ -518,8 +506,7 @@ int selectGroupWithMinSize(int minSize)
 
 bool ErrorCheck()
 {
-  for (int i = 0; i < Q; ++i)
-  {
+  for (int i = 0; i < Q; ++i) {
     if (l[i].empty() || r[i].empty()) {
       cerr << "NG ErrorCheck1 : " << i << endl;
       return false;
@@ -531,13 +518,11 @@ bool ErrorCheck()
   }
 
   int cnt[110] = {};
-  for (int i = 0; i < Q; ++i)
-  {
+  for (int i = 0; i < Q; ++i) {
     for (int j = 0; j < N; ++j) cnt[j] = 0;
     for (auto x : l[i]) cnt[x]++;
     for (auto y : r[i]) cnt[y]++;
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
       if (cnt[j] >= 2) {
         cerr << "NG ErrorCheck3 : " << i << endl;
         return false;
@@ -768,8 +753,7 @@ char Query1(int& turn, int lhs, int rhs)
       int y = myQueue[head][1];
       head++;
       int z = hikaku[x][y];
-      for (int i = 0; i < N; ++i)
-      {
+      for (int i = 0; i < N; ++i) {
         if (z == -1) {
           if (hikaku[i][y] == -2) {
             if (hikaku[i][x] == -1 || hikaku[i][x] == 0) {
@@ -838,8 +822,7 @@ char Query1(int& turn, int lhs, int rhs)
 
 char QueryGroup(int& turn, int lgId, int rgId)
 {
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     if (ans[i] == lgId) {
       l[turn].push_back(i);
     }
@@ -881,8 +864,7 @@ vector<int> DItems[30];
 void ResetMemory()
 {
   for (int i = 0; i < 110; ++i) { memory_SwapNeighbor1[i] = 0; }
-  for (int i = 0; i < 30; ++i)
-  {
+  for (int i = 0; i < 30; ++i) {
     DItems[i].clear();
   }
 }
@@ -1016,8 +998,7 @@ void Move1Minimum(int& countQ, int cutLine = 999)
   if (vv.empty()) return;
 
   int z = vv[Rand() % vv.size()];
-  for (int _ = 0; _ < 30; ++_)
-  {
+  for (int _ = 0; _ < 30; ++_) {
     int zz = vv[Rand() % vv.size()];
     if (hikaku[zz][z] == 0 || hikaku[zz][z] == -1) {
       z = zz;
@@ -1055,8 +1036,7 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
   if (cutLine < 100) {
     int win = 0;
     int lose = 0;
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
       if (hikaku[z][j] == 1) {
         win++;
       }
@@ -1093,7 +1073,7 @@ bool selectTwoGroupsWithMinSize(int& x, int& y, int minSize = 2)
     if (yloop == 30) return false;
 
     y = Rand() % D;
-    if (x == y) continue;
+    if (x == y) { continue; }
 
     int cnt = countItemsInGroup(y);
     if (cnt >= minSize) return true;
@@ -1118,8 +1098,7 @@ void Swap1(int& countQ, int diffLine)
   if (diffLine < 100) {
     if (hikaku[lid][rid] == -1) {
       int diff = 0;
-      for (int i = 0; i < N; ++i)
-      {
+      for (int i = 0; i < N; ++i) {
         if (hikaku[lid][i] == -1 && hikaku[i][rid] == -1) {
           diff++;
           if (diff >= diffLine) {
@@ -1130,8 +1109,7 @@ void Swap1(int& countQ, int diffLine)
     }
     else if (hikaku[lid][rid] == 1) {
       int diff = 0;
-      for (int i = 0; i < N; ++i)
-      {
+      for (int i = 0; i < N; ++i) {
         if (hikaku[lid][i] == 1 && hikaku[i][rid] == 1) {
           diff++;
           if (diff >= diffLine) {
@@ -1260,8 +1238,7 @@ void Method11_1(int& countQ)
   collectItemsFromGroup(y, vr);
   int lid = vl[Rand() % vl.size()];
   int rid = vr[Rand() % vr.size()];
-  for (int i = 0; i < 50; ++i)
-  {
+  for (int i = 0; i < 50; ++i) {
     rid = vr[Rand() % vr.size()];
     if (hikaku[lid][rid] == 1) {
       break;
@@ -1304,8 +1281,7 @@ bool IsAllSearched_SwapNeighbor1(const vector<int>& items)
   vector<int> ansItems[30];
   populateAnsItems(ansItems);
   vector<int> vl, vr;
-  for (int num = 0; num < N - 1; ++num)
-  {
+  for (int num = 0; num < N - 1; ++num) {
     int x = items[num];
     int y = items[num + 1];
     int xg = ans[x];
@@ -1371,8 +1347,7 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
   while (true) {
     loop++;
     int num = Rand() % (M - 1);
-    for (int _ = 0; _ < 30; ++_)
-    {
+    for (int _ = 0; _ < 30; ++_) {
       if (memory_SwapNeighbor1[num]) {
         num = Rand() % (M - 1);
       }
@@ -1461,8 +1436,7 @@ void SwapNeighbor1Block(const vector<vector<int>>& blocks, int& countQ)
     if (xg == yg) {
       continue;
     }
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       if (ans[i] == xg) {
         int ok = 1;
         for (auto x : xb) {
@@ -1694,8 +1668,7 @@ void Method16(int hiritu = 60)
   int countQ = 0;
 
   // 初期解を少し工夫
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     if (i < D) {
       ans[i] = i;
     }
@@ -1705,8 +1678,7 @@ void Method16(int hiritu = 60)
       while (x == y) {
         y = Rand() % D;
       }
-      for (int j = 0; j < N; ++j)
-      {
+      for (int j = 0; j < N; ++j) {
         if (ans[j] == x) {
           l[countQ].push_back(j);
         }
@@ -1982,8 +1954,7 @@ bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
   populateAnsItems(ansItems);
   vector<int> vl, vr;
 
-  for (int num = 0; num < N - 1; ++num)
-  {
+  for (int num = 0; num < N - 1; ++num) {
     int x1 = items[num];
     int y1 = items[num + 1];
     int xg = ans[x1];
@@ -1995,8 +1966,7 @@ bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
     int y2 = -1;
     int lastX = 1001001;
     int lastI = 1001001;
-    for (int ii = N - 1; ii >= 0; --ii)
-    {
+    for (int ii = N - 1; ii >= 0; --ii) {
       int i = items[ii];
       if (ans[i] == xg && i != x1) {
         lastX = i;
@@ -2015,8 +1985,7 @@ bool IsAllSearched_Swap2(const vector<int>& items, int minDiff)
     }
     vl.clear();
     vr.clear();
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       if (ans[i] == xg && i != x1 && i != x2) {
         vl.push_back(i);
       }
@@ -2083,8 +2052,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
     int y2 = -1;
     int lastX = 1001001;
     int lastI = 1001001;
-    for (int ii = N - 1; ii >= 0; --ii)
-    {
+    for (int ii = N - 1; ii >= 0; --ii) {
       int i = items[ii];
       if (ans[i] == xg && i != x1) {
         lastX = i;
@@ -2101,8 +2069,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
     if (x2 == -1) {
       break;
     }
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       if (ans[i] == xg && i != x1 && i != x2) {
         l[countQ].push_back(i);
       }
@@ -2152,8 +2119,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   {
     int lastX = 1001001;
     int lastI = 1001001;
-    for (int ii = N - 1; ii >= 0; --ii)
-    {
+    for (int ii = N - 1; ii >= 0; --ii) {
       int i = items[ii];
       if (ans[i] == xg) {
         lastX = i;
@@ -2172,8 +2138,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   {
     int lastY = 1001001;
     int lastI = 1001001;
-    for (int ii = N - 1; ii >= 0; --ii)
-    {
+    for (int ii = N - 1; ii >= 0; --ii) {
       int i = items[ii];
       if (ans[i] == yg) {
         lastY = i;
@@ -2199,8 +2164,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   while (true) {
     int ok = 0;
 
-    for (int winter = 0; winter < 10; ++winter)
-    {
+    for (int winter = 0; winter < 10; ++winter) {
       if (loop % 2 == 0) {
         P p = vpx[Rand() % vpx.size()];
         int x = p.first;
@@ -2246,18 +2210,15 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   rNum = min(rNum, (int)vpy2.size());
 
   vector<int> vQuery1X, vQuery1Y, vQuery2X, vQuery2Y;
-  for (int i = 0; i < lNum; ++i)
-  {
+  for (int i = 0; i < lNum; ++i) {
     vQuery1X.push_back(vpx2[i].first);
     vQuery1Y.push_back(vpx2[i].second);
   }
-  for (int i = 0; i < rNum; ++i)
-  {
+  for (int i = 0; i < rNum; ++i) {
     vQuery1X.push_back(vpy2[i].first);
     vQuery1Y.push_back(vpy2[i].second);
   }
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     if (ans[i] == xg) {
       int notUse = 1;
       for (auto xx : vQuery1X) {
@@ -2321,8 +2282,7 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
     }
 
     vector<int> vx, vy;
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       if (ans[blocks[i][0]] == xg && i != num) {
         vx.push_back(i);
       }
@@ -2336,8 +2296,7 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
     int x2 = vx[Rand() % vx.size()];
     int y2 = vy[Rand() % vy.size()];
 
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       if (ans[i] == xg && i != num && i != x2) {
         l[countQ].push_back(i);
       }
@@ -2388,10 +2347,8 @@ bool IsAllCandidateSearched_Method6(const vector<int>& items, int minDiff)
 int calculateMaxD(int& countQ)
 {
   int tmp_max_D = 0;
-  for (int i = 1; i < D; ++i)
-  {
-    for (int j = 0; j < N; ++j)
-    {
+  for (int i = 1; i < D; ++i) {
+    for (int j = 0; j < N; ++j) {
       if (ans[j] == tmp_max_D) {
         l[countQ].push_back(j);
       }
@@ -2411,26 +2368,22 @@ int calculateMaxD(int& countQ)
 void compareAndUpdateBest(int tmp_max_D, int& real_max_D, int real_ans[], int& countQ)
 {
   int cntBoth[110] = {};
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (ans[j] == tmp_max_D) {
       cntBoth[j]++;
     }
   }
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (real_ans[j] == real_max_D) {
       cntBoth[j]++;
     }
   }
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (ans[j] == tmp_max_D && cntBoth[j] == 1) {
       l[countQ].push_back(j);
     }
   }
-  for (int j = 0; j < N; ++j)
-  {
+  for (int j = 0; j < N; ++j) {
     if (real_ans[j] == real_max_D && cntBoth[j] == 1) {
       r[countQ].push_back(j);
     }
@@ -2438,8 +2391,7 @@ void compareAndUpdateBest(int tmp_max_D, int& real_max_D, int real_ans[], int& c
   char c2 = Query(countQ);
   if (c2 == '<') {
     real_max_D = tmp_max_D;
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
       real_ans[j] = ans[j];
     }
   }
@@ -2491,8 +2443,7 @@ bool runOptimizationWithRestarts(vector<int>& items, int& countQ, int hiritu, in
 // Save current state to real_ans
 void saveCurrentState(int real_ans[])
 {
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     real_ans[i] = ans[i];
   }
 }
@@ -2500,8 +2451,7 @@ void saveCurrentState(int real_ans[])
 // Restore state from keepInitialAns
 void restoreInitialState(int keepInitialAns[])
 {
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     ans[i] = keepInitialAns[i];
   }
 }
@@ -2512,15 +2462,13 @@ void randomSwap(vector<int>& items, int kosuu, int saidai)
   vector<int> ningning;
   saidai = min(saidai, N - 1);
   saidai = max(saidai, 1);
-  for (int i = 0; i < saidai; ++i)
-  {
+  for (int i = 0; i < saidai; ++i) {
     ningning.push_back(i);
   }
   std::shuffle(ningning.begin(), ningning.end(), engine_mt19937);
   kosuu = min(kosuu, saidai);
   kosuu = max(kosuu, 1);
-  for (int i = 0; i < kosuu; ++i)
-  {
+  for (int i = 0; i < kosuu; ++i) {
     swap(ans[items[i]], ans[items[i + 1]]);
   }
 }
@@ -2537,8 +2485,7 @@ void initializeItemsWithHeaviestAssignment(vector<int>& items, int& countQ, int 
   updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
@@ -2547,8 +2494,7 @@ void initializeItemsWithHeaviestAssignment(vector<int>& items, int& countQ, int 
 // Assign items using PseudoItems until totyuu threshold
 void assignItemsWithPseudoQuery(vector<int>& items, vector<int>& groups, int& countQ, int totyuu)
 {
-  for (int i = N - D - 1; i >= 0; --i)
-  {
+  for (int i = N - D - 1; i >= 0; --i) {
     if (N - i >= totyuu) {
       break;
     }
@@ -2560,8 +2506,7 @@ void assignItemsWithPseudoQuery(vector<int>& items, vector<int>& groups, int& co
     int right = D - 1;
     while (left < right) {
       int mid = (left + right) / 2;
-      for (int j = 0; j < N; ++j)
-      {
+      for (int j = 0; j < N; ++j) {
         if (ans[j] == gId) {
           l[countQ].push_back(j);
         }
@@ -2645,8 +2590,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   updateKarusaArray(items);
 
   // 各グループに1個ずつ入れる
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     int id = items[N - 1 - i];
     ans[id] = i;
   }
@@ -2655,8 +2599,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  for (int i = N - D - 1; i >= 0; --i)
-  {
+  for (int i = N - D - 1; i >= 0; --i) {
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
@@ -2665,8 +2608,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   }
 
   int keepInitialAns[110];
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     keepInitialAns[i] = ans[i];
   }
 
@@ -2708,8 +2650,7 @@ void Method266(int hiritu, int minDiff, int kosuu, int saidai, int maxFailedCoun
   }
 
   if (setCount > 0) {
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ans[i] = real_ans[i];
     }
   }
@@ -2727,8 +2668,7 @@ void initializeWithMergeSort(vector<int>& items, vector<int>& groups, int& count
   assignHeaviestToGroups(items, N - 1);
   initializeGroups(groups);
 
-  for (int i = N - D - 1; i >= 0; --i)
-  {
+  for (int i = N - D - 1; i >= 0; --i) {
     assignToLightestGroup(items, i, countQ, groups);
   }
 }
@@ -2742,8 +2682,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
   initializeWithMergeSort(items, groups, countQ);
 
   int keepInitialAns[110];
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     keepInitialAns[i] = ans[i];
   }
 
@@ -2784,8 +2723,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
   }
 
   if (setCount > 0) {
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ans[i] = real_ans[i];
     }
   }
@@ -2881,8 +2819,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
 // Common initialization for block-based methods
 bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& countQ, int blockSize)
 {
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     if (i % blockSize == 0) {
       blocks.push_back({});
     }
@@ -2898,10 +2835,8 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
   MergeSortBlock(blocks, countQ);
 
   // 各グループに1個ずつ入れる
-  for (int i = 0; i < D; ++i)
-  {
-    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
-    {
+  for (int i = 0; i < D; ++i) {
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j) {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
     }
@@ -2910,11 +2845,9 @@ bool initializeBlocks(vector<vector<int>>& blocks, vector<int>& groups, int& cou
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  for (int i = M - D - 1; i >= 0; --i)
-  {
+  for (int i = M - D - 1; i >= 0; --i) {
     int gId = groups[D - 1];
-    for (int j = 0; j < blocks[i].size(); ++j)
-    {
+    for (int j = 0; j < blocks[i].size(); ++j) {
       int id = blocks[i][j];
       ans[id] = gId;
     }
@@ -2988,8 +2921,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
 // Initialize blocks from items
 bool initializeBlocks(vector<vector<int>>& blocks, int blockSize, int& countQ)
 {
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     if (i % blockSize == 0) {
       blocks.push_back({});
     }
@@ -3022,14 +2954,12 @@ void splitLargeBlocks(vector<vector<int>>& blocks, int destroySize,
   vector<vector<int>>& tmp1, vector<vector<int>>& tmp2)
 {
   int M = blocks.size();
-  for (int i = 0; i < M; ++i)
-  {
+  for (int i = 0; i < M; ++i) {
     if (i < M - destroySize) {
       tmp2.push_back(blocks[i]);
     }
     else {
-      for (int j = 0; j < blocks[i].size(); ++j)
-      {
+      for (int j = 0; j < blocks[i].size(); ++j) {
         tmp1.push_back({ blocks[i][j] });
       }
     }
@@ -3075,8 +3005,7 @@ int createItemsArray(const vector<vector<int>>& blocks, vector<int>& items)
     }
   }
   int M2 = items.size();
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     if (used[i] == 0) {
       items.push_back(i);
     }
@@ -3174,10 +3103,8 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 
   int M = blocks.size();
   // 各グループに1個ずつ入れる
-  for (int i = 0; i < D; ++i)
-  {
-    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
-    {
+  for (int i = 0; i < D; ++i) {
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j) {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
     }
@@ -3187,11 +3114,9 @@ void Method216(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  for (int i = M - D - 1; i >= 0; --i)
-  {
+  for (int i = M - D - 1; i >= 0; --i) {
     int gId = groups[D - 1];
-    for (int j = 0; j < blocks[i].size(); ++j)
-    {
+    for (int j = 0; j < blocks[i].size(); ++j) {
       int id = blocks[i][j];
       ans[id] = gId;
     }
@@ -3232,8 +3157,7 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ans[i] = i % D;
     }
     completeWithDummyQueries(countQ);
@@ -3242,10 +3166,8 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
 
   int M = blocks.size();
   // 各グループに1個ずつ入れる
-  for (int i = 0; i < D; ++i)
-  {
-    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
-    {
+  for (int i = 0; i < D; ++i) {
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j) {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
     }
@@ -3255,11 +3177,9 @@ void Method316(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   initializeGroups(groups);
 
   // 一番軽いグループに入れていく
-  for (int i = M - D - 1; i >= 0; --i)
-  {
+  for (int i = M - D - 1; i >= 0; --i) {
     int gId = groups[D - 1];
-    for (int j = 0; j < blocks[i].size(); ++j)
-    {
+    for (int j = 0; j < blocks[i].size(); ++j) {
       int id = blocks[i][j];
       ans[id] = gId;
     }
@@ -3299,8 +3219,7 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ans[i] = i % D;
     }
     completeWithDummyQueries(countQ);
@@ -3311,10 +3230,8 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
   vector<int> groupNakami[30];
   int flag[110] = {};
   // 各グループに1個ずつ入れる
-  for (int i = 0; i < D; ++i)
-  {
-    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
-    {
+  for (int i = 0; i < D; ++i) {
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j) {
       int id = blocks[M - 1 - i][j];
       ans[id] = i;
     }
@@ -3324,20 +3241,17 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
 
   vector<int> groups;  // 常に重い順に並んでいるようにする
 
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     groups.push_back(i);
   }
 
   // 途中までpseudoItemsを用いて一番軽いグループに入れていく
-  for (int i = M - D - 1; i >= 0; --i)
-  {
+  for (int i = M - D - 1; i >= 0; --i) {
     if (M - i >= totyuu) {
       break;
     }
     int gId = groups[D - 1];
-    for (int j = 0; j < blocks[i].size(); ++j)
-    {
+    for (int j = 0; j < blocks[i].size(); ++j) {
       int id = blocks[i][j];
       ans[id] = gId;
     }
@@ -3376,11 +3290,9 @@ void Method916(int totyuu, int hiritu1, int hiritu2, int timing, int blockSize, 
       break;
     }
   }
-  for (int i = tail - 1; i >= 0; --i)
-  {
+  for (int i = tail - 1; i >= 0; --i) {
     int gId = groups[D - 1];
-    for (int j = 0; j < blocks[i].size(); ++j)
-    {
+    for (int j = 0; j < blocks[i].size(); ++j) {
       int id = blocks[i][j];
       ans[id] = gId;
     }
@@ -3420,8 +3332,7 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M2 = createItemsArray(blocks, items);
 
   if (M2 < 5) {
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ans[i] = i % D;
     }
     completeWithDummyQueries(countQ);
@@ -3431,15 +3342,12 @@ void Method516(int hiritu1, int hiritu2, int timing, int blockSize, int destroyS
   int M = blocks.size();
   // つづら折りに入れていく
   int junban[60];
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     junban[i] = i;
     junban[D * 2 - 1 - i] = i;
   }
-  for (int i = 0; i < M; ++i)
-  {
-    for (int j = 0; j < blocks[M - 1 - i].size(); ++j)
-    {
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < blocks[M - 1 - i].size(); ++j) {
       int id = blocks[M - 1 - i][j];
       ans[id] = junban[i % (D * 2)];
     }
@@ -3512,8 +3420,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   // ソートしていないアイテムを入れる
   int _D = D - aketoku;
   _D = max(_D, 2);
-  for (int i = M; i < N; ++i)
-  {
+  for (int i = M; i < N; ++i) {
     int id = items[i];
     ans[id] = (i - M) % _D;
   }
@@ -3532,8 +3439,7 @@ void Method306(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
       break;
     }
   }
-  for (int i = tail - 1; i >= 0; --i)
-  {
+  for (int i = tail - 1; i >= 0; --i) {
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
@@ -3574,8 +3480,7 @@ void Method806(int hiritu, int minDiff, int _m)
   int countQ = 0;
 
   // 1回だけ比べる
-  for (int i = 0; i < M; ++i)
-  {
+  for (int i = 0; i < M; ++i) {
     int j = N - 1 - i;
     if (j <= i) break;
     char c = Query1(countQ, i, j);
@@ -3588,8 +3493,7 @@ void Method806(int hiritu, int minDiff, int _m)
   MergeSort(items, countQ, 1001001, M);
 
   // ソートしていないアイテムを入れる
-  for (int i = M; i < N; ++i)
-  {
+  for (int i = M; i < N; ++i) {
     int id = items[i];
     ans[id] = (i - M) % D;
   }
@@ -3608,8 +3512,7 @@ void Method806(int hiritu, int minDiff, int _m)
       break;
     }
   }
-  for (int i = tail - 1; i >= 0; --i)
-  {
+  for (int i = tail - 1; i >= 0; --i) {
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
@@ -3655,8 +3558,7 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
   // ソートしていないアイテムを入れる
   int _D = D - aketoku;
   _D = max(_D, 2);
-  for (int i = M; i < N; ++i)
-  {
+  for (int i = M; i < N; ++i) {
     int id = items[i];
     ans[id] = (i - M) % _D;
   }
@@ -3675,22 +3577,19 @@ void Method606(int hiritu = 100, int minDiff = 10, int totyuu = 999, int _m = 30
       break;
     }
   }
-  for (int i = tail - 1; i >= 0; --i)
-  {
+  for (int i = tail - 1; i >= 0; --i) {
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
 
     // 初回だけ特別処理
     if (i == tail - 1) {
-      for (int karina = 0; karina < 10; ++karina)
-      {
+      for (int karina = 0; karina < 10; ++karina) {
         // 今のグループに数回Move1試す
         int dstId = Move1_Specify(countQ, gId);
         if (dstId != -1) {
           int dstPos = 0;
-          for (int j = 0; j < D; ++j)
-          {
+          for (int j = 0; j < D; ++j) {
             if (groups[j] == dstId) {
               dstPos = j;
             }
@@ -3823,8 +3722,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
   initializeGroups(groups);
 
   // pseudoItemsを用いて一番軽いグループに入れていく
-  for (int i = N - D - 1; i >= 0; --i)
-  {
+  for (int i = N - D - 1; i >= 0; --i) {
     int id = items[i];
     int gId = groups[D - 1];
     ans[id] = gId;
@@ -3832,8 +3730,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
     int right = D - 1;
     while (left < right) {
       int mid = (left + right) / 2;
-      for (int j = 0; j < N; ++j)
-      {
+      for (int j = 0; j < N; ++j) {
         if (ans[j] == gId) {
           l[countQ].push_back(j);
         }
@@ -3888,8 +3785,7 @@ void PrintAns(ofstream& ofs)
   }
   else if (mode == 1) {
     ofs << "# " << haipara[NN][QQ][DD] << endl;
-    for (int i = 0; i < Q; ++i)
-    {
+    for (int i = 0; i < Q; ++i) {
       ofs << "#c ";
       for (int j = 0; j < N; ++j) { ofs << answers[i][j] << ' '; }
       ofs << endl;
@@ -3902,11 +3798,9 @@ void PrintAns(ofstream& ofs)
     for (int i = 0; i < N; ++i) { ofs << ans[i] << ' '; }
     ofs << endl;
 
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ofs << "# ";
-      for (int j = 0; j < N; ++j)
-      {
+      for (int j = 0; j < N; ++j) {
         if (hikaku[i][j] == -1) {
           ofs << "< ";
         }
@@ -3932,16 +3826,14 @@ void SetUp()
   endTime = clock();
   nowTime = 0.0;
 
-  for (int i = 0; i < MAX_Q; ++i)
-  {
+  for (int i = 0; i < MAX_Q; ++i) {
     l[i].clear();
     r[i].clear();
     comments[i].clear();
   }
   comments[0] = "# ";
   for (int i = 0; i < 110; ++i) { ans[i] = -1; }
-  for (int i = 0; i < 110; ++i)
-  {
+  for (int i = 0; i < 110; ++i) {
     for (int j = 0; j < 110; ++j) { hikaku[i][j] = -2; }
     hikaku[i][i] = 0;
   }
@@ -4140,16 +4032,13 @@ void PrintHaipara(int loop)
   string str = "./haipara/haipara" + to_string(loop) + ".txt";
   std::ofstream file(str);
   file << "vector<int> haipara[14][40] = {" << endl;
-  for (int i = 0; i < 14; ++i)
-  {
+  for (int i = 0; i < 14; ++i) {
     file << "{" << endl;
     int ii = i * 5 + 30 + 4;
     if (i == 13) ii = 100;
-    for (int j = 0; j < 40; ++j)
-    {
+    for (int j = 0; j < 40; ++j) {
       file << "{";
-      for (int k = 0; k < haipara[i][j].size(); ++k)
-      {
+      for (int k = 0; k < haipara[i][j].size(); ++k) {
         file << setw(7) << haipara[i][j][k];
         if (k < haipara[i][j].size() - 1) {
           file << ",";
@@ -4172,16 +4061,13 @@ void PrintHaipara(int loop)
   file << "};" << endl;
   file << endl;
   file << "vector<ll> haipara2[14][40] = {" << endl;
-  for (int i = 0; i < 14; ++i)
-  {
+  for (int i = 0; i < 14; ++i) {
     file << "{" << endl;
     int ii = i * 5 + 30 + 4;
     if (i == 13) ii = 100;
-    for (int j = 0; j < 40; ++j)
-    {
+    for (int j = 0; j < 40; ++j) {
       file << "{";
-      for (int k = 0; k < haipara2[i][j].size(); ++k)
-      {
+      for (int k = 0; k < haipara2[i][j].size(); ++k) {
         file << setw(19) << haipara2[i][j][k];
         if (k < haipara2[i][j].size() - 1) {
           file << ",";
@@ -4223,13 +4109,11 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    for (int j = 0; j < 1; ++j)
-    {
-      for (int i = 0; i < 100; ++i)
-      {
+    for (int j = 0; j < 1; ++j) {
+      for (int i = 0; i < 100; ++i) {
         ll score = Solve(i);
         sum += score;
-        if (score == 0) continue;
+        if (score == 0) { continue; }
         cout << "num = " << setw(2) << i << ", ";
         cout << "N = " << N << ", Q = " << Q << ", D = " << D << ", queryCount = " << queryCount << ", ";
         cout << "nowTime = " << nowTime << ", ";
@@ -4241,8 +4125,7 @@ int main()
   }
   else if (mode == 2) {
     ll sum = 0;
-    for (int ii = 0; ii < 100; ++ii)
-    {
+    for (int ii = 0; ii < 100; ++ii) {
       int i = 209;
       ll score = Solve(i);
       sum += score;
@@ -4338,16 +4221,14 @@ int main()
       int winSum = 0;
       int loseSum = 0;
       int drawSum = 0;
-      for (int aespa = 0; aespa < 1; ++aespa)
-      {
+      for (int aespa = 0; aespa < 1; ++aespa) {
         int win = 0;
         int lose = 0;
         int draw = 0;
 
         int WinKijun = 0;
         if (WinKijun == 0) {
-          for (int _ = 0; _ < 200; ++_)
-          {
+          for (int _ = 0; _ < 200; ++_) {
             GeneratecaseFromNNDDQQ();
             ll oldScore = Solve(hai, hai2);
             ll newScore = Solve(newHai, newHai2);
@@ -4381,8 +4262,7 @@ int main()
           }
         }
         else {
-          for (int _ = 0; _ < 1000; ++_)
-          {
+          for (int _ = 0; _ < 1000; ++_) {
             GeneratecaseFromNNDDQQ();
             ll oldScore = Solve(hai, hai2);
             ll newScore = Solve(newHai, newHai2);
@@ -4432,35 +4312,34 @@ int main()
         cout << " : " << winSum << "/" << loseSum << "/" << drawSum << endl;
 
         // winQueueに入れる
-        for (int _ = 0; _ < 6; ++_)
-        {
+        for (int _ = 0; _ < 6; ++_) {
           int NNN = NN;
           int QQQ = QQ;
           int DDD = DD;
           if (_ == 0) {
             NNN = NN - 1;
-            if (NNN < 0) continue;
+            if (NNN < 0) { continue; }
           }
           else if (_ == 1) {
             NNN = NN + 1;
-            if (NNN >= 14) continue;
+            if (NNN >= 14) { continue; }
           }
           else if (_ == 2) {
             QQQ = QQ - 1;
-            if (QQQ < 0) continue;
+            if (QQQ < 0) { continue; }
           }
           else if (_ == 3) {
             QQQ = QQ + 1;
-            if (QQQ >= 40) continue;
+            if (QQQ >= 40) { continue; }
           }
           else if (_ == 4) {
             DDD = DD - 1;
-            if (DDD < 0) continue;
+            if (DDD < 0) { continue; }
           }
           else if (_ == 5) {
             DDD = DD + 1;
           }
-          if (DDD >= haipara[NNN][QQQ].size()) continue;
+          if (DDD >= haipara[NNN][QQQ].size()) { continue; }
           winQueue.push(
             P(NN * 10000 + QQ * 100 + DD, NNN * 10000 + QQQ * 100 + DDD));
         }

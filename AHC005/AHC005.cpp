@@ -146,7 +146,7 @@ public:
   {
     for (int i = 0; i < n * n; i++) {
       int x = get_x(i, n), y = get_y(i, n);
-      if (grid[x][y] == Constants::WALL) continue;
+      if (grid[x][y] == Constants::WALL) { continue; }
       if (x == 0 || grid[x - 1][y] == Constants::WALL) {
         Vertex v;
         int cur_x = x;
@@ -177,7 +177,7 @@ public:
     dist_to_vertices.clear();
     dist_to_vertices.resize(n * n);
     for (int i = 0; i < n * n; i++) {
-      if (grid[get_x(i, n)][get_y(i, n)] == Constants::WALL) continue;
+      if (grid[get_x(i, n)][get_y(i, n)] == Constants::WALL) { continue; }
       for (size_t j = 0; j < vertices.size(); j++) {
         const Vertex& v = vertices[j];
         int min_dist = INT_MAX;
@@ -202,7 +202,7 @@ public:
     graph.resize(n * n);
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        if (grid[i][j] == Constants::WALL) continue;
+        if (grid[i][j] == Constants::WALL) { continue; }
         int idx = to_index(i, j, n);
         // 上下左右の隣接点を追加
         if (i > 0 && grid[i - 1][j] != Constants::WALL) graph[idx].push_back(to_index(i - 1, j, n));
@@ -225,7 +225,7 @@ public:
   {
     dist.resize(n * n, vector<int>(n * n, INT_MAX));
     for (int start = 0; start < n * n; start++) {
-      if (grid[get_x(start, n)][get_y(start, n)] == Constants::WALL) continue;
+      if (grid[get_x(start, n)][get_y(start, n)] == Constants::WALL) { continue; }
       dist[start] = dijkstra(start);
     }
   }
@@ -248,7 +248,7 @@ public:
     while (!pq.empty()) {
       auto [cost, u] = pq.top();
       pq.pop();
-      if (cost > d[u]) continue;
+      if (cost > d[u]) { continue; }
       for (int v : graph[u]) {
         if (d[v] > d[u] + get_cost(v)) {
           d[v] = d[u] + get_cost(v);
@@ -270,7 +270,7 @@ public:
     while (!pq.empty()) {
       auto [cost, u] = pq.top();
       pq.pop();
-      if (cost > d[u]) continue;
+      if (cost > d[u]) { continue; }
       for (int v : graph[u]) {
         if (d[v] > d[u] + get_cost(v)) {
           d[v] = d[u] + get_cost(v);

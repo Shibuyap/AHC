@@ -305,11 +305,11 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     {
       int nx = rax + dx[i];
       int ny = ray + dy[i];
-      if (IsNG(nx, ny, blockSize)) continue;  // 範囲外は無視
+      if (IsNG(nx, ny, blockSize)) { continue; }  // 範囲外は無視
       if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // 隣接セルが異なる状態なら変更可能
     }
 
-    if (ng) continue;  // 変更不可なら次のループへ
+    if (ng) { continue; }  // 変更不可なら次のループへ
 
     int tmpScore = ansScore;
     if (f[rax + 1][ray + 1] == 0) {
@@ -336,7 +336,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       {
         for (int j = 1; j < blockSize + 1; ++j)
         {
-          if (haba[i][j] != 0) continue;  // 既に探索済みならスキップ
+          if (haba[i][j] != 0) { continue; }  // 既に探索済みならスキップ
           if (now == 3) {
             upd = 0;  // 連結成分が2つを超える場合は更新不可
             break;
@@ -352,7 +352,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
             {
               int nx = x + dx[k];
               int ny = y + dy[k];
-              if (IsNG(nx - 1, ny - 1, blockSize)) continue;
+              if (IsNG(nx - 1, ny - 1, blockSize)) { continue; }
               if (haba[nx][ny] == 0 && f[nx][ny] == f[i][j]) {
                 haba[nx][ny] = now;
                 que.push(P(nx, ny));

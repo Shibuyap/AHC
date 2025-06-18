@@ -673,7 +673,7 @@ public:
       //     x = hx[i];
       //     y = hy[i] + 1;
       //   }
-      //   if (x == -1) continue;
+      //   if (x == -1) { continue; }
       //   for (int j = 0; j < m; ++j) {
       //     if (hx[j] == x && hy[j] == y) {
       //       outStr[i]  = '.';

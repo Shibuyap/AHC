@@ -268,7 +268,7 @@ void Output(int mode, int problemNum)
     cout << current_state.ansSize - current_state.ansDeleteCount << endl;
     for (int i = 0; i < current_state.ansSize; ++i)
     {
-      if (current_state.ansDelete[i]) continue;
+      if (current_state.ansDelete[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { cout << current_state.ans[i][j][k] << ' '; }
       cout << endl;
     }
@@ -291,7 +291,7 @@ void Output(int mode, int problemNum)
     ofs << current_state.ansSize - current_state.ansDeleteCount << endl;
     for (int i = 0; i < current_state.ansSize; ++i)
     {
-      if (current_state.ansDelete[i]) continue;
+      if (current_state.ansDelete[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { ofs << current_state.ans[i][j][k] << ' '; }
       ofs << endl;
     }

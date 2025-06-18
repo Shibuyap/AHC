@@ -246,7 +246,7 @@ void filter_input_points(double time_limit)
 
     // “広さ” の代わりに幅＋高さを評価指標にしている
     const int rect_metric = (rect_right - rect_left) + (rect_lower - rect_upper);
-    if (rect_metric >= best_metric) continue;
+    if (rect_metric >= best_metric) { continue; }
 
     // 矩形内に収まる点を抽出
     for (int i = 0; i < n; ++i) {

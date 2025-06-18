@@ -634,7 +634,7 @@ ll Solve(int probNum)
       swap(a[ra1], a[ra2]);
     }
     else {
-      if (ra1 + raLen > LA) continue;
+      if (ra1 + raLen > LA) { continue; }
       reverse(a + ra1, a + ra1 + raLen);
     }
 

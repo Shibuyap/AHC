@@ -615,7 +615,7 @@ void Init()
 
   for (int i = 0; i < K100; ++i)
   {
-    if (visited[i] == visitedCnt) continue;
+    if (visited[i] == visitedCnt) { continue; }
 
     int queL = 0;
     int queR = 0;
@@ -1465,7 +1465,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     for (auto&& p : beam) {
       int px = p.first;
       int py = p.second;
-      if (gameState.a[px][py] != INF) continue;
+      if (gameState.a[px][py] != INF) { continue; }
       int iteL = GetIte2(px, py, 'L');
       int iteR = GetIte2(px, py, 'R');
       if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
@@ -1478,7 +1478,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     for (auto&& p : beam) {
       int px = p.first;
       int py = p.second;
-      if (gameState.a[px][py] != INF) continue;
+      if (gameState.a[px][py] != INF) { continue; }
       int iteU = GetIte2(px, py, 'U');
       int iteD = GetIte2(px, py, 'D');
       if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {

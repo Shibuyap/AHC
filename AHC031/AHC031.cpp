@@ -408,12 +408,12 @@ void InitMostVariableAs()
       }
       int n2 = 0;
       int n2Need = calculateRequiredSize(elementSizes[i][n2], j);
-      if (n2Need > w) continue;
+      if (n2Need > w) { continue; }
       for (int n1 = elementCount - 1; n1 >= 0; --n1) {
         if (n2 == elementCount) break;
         int val = elementSizes[i][n1];
         int n1Need = (val - 1) / j + 1;
-        if (n1Need + n2Need > w) continue;
+        if (n1Need + n2Need > w) { continue; }
         while (n2 < elementCount - 1) {
           int nxtNeed = calculateRequiredSize(elementSizes[i][n2 + 1], j);
           if (n1Need + nxtNeed <= w) {
@@ -426,7 +426,7 @@ void InitMostVariableAs()
         }
         for (int k = 0; k < 10; ++k) {
           if (n2 - k < 0) break;
-          if (n2 - k == n1) continue;
+          if (n2 - k == n1) { continue; }
           int valSum = val + elementSizes[i][n2 - k];
           int junni = mostVariableAsCount[i][j];
           if (junni == 10) {
@@ -849,10 +849,10 @@ void Method1()
       int newx = -1;
       int newy = -1;
       for (int jj = 0; jj < elementCount; ++jj) {
-        if (used[jj]) continue;
+        if (used[jj]) { continue; }
         int lenx = w - x;
         int leny = w - y;
-        if (elementSizes[i][jj] > lenx * leny) continue;
+        if (elementSizes[i][jj] > lenx * leny) { continue; }
         int need1 = calculateRequiredSize(elementSizes[i][jj], leny);
         int need2 = calculateRequiredSize(elementSizes[i][jj], lenx);
         int amari1 = need1 * leny - elementSizes[i][jj];
@@ -915,7 +915,7 @@ void MethodPerfect()
       int newx = -1;
       int newy = -1;
       for (int jj = 0; jj < elementCount; ++jj) {
-        if (used[jj]) continue;
+        if (used[jj]) { continue; }
         int lenx = w - x;
         int leny = w - y;
         if (maxElementSize[jj] > lenx * leny) {
@@ -1821,7 +1821,7 @@ void Method4_3_1()
   }
   else if (M43_kouhos.size() <= SMALL_DATA_THRESHOLD) {
     for (int karina = 0; karina < (1 << M43_kouhos.size()); ++karina) {
-      // if (karina == 0) continue;
+      // if (karina == 0) { continue; }
       M43_karinas[karinaCount] = karina;
       karinaCount++;
     }
@@ -2065,7 +2065,7 @@ void Method4_3_2()
   }
   else if (M43_kouhos.size() <= SMALL_DATA_THRESHOLD) {
     for (int karina = 0; karina < (1 << M43_kouhos.size()); ++karina) {
-      if (karina == 0) continue;
+      if (karina == 0) { continue; }
       M43_karinas[karinaCount] = karina;
       karinaCount++;
     }
@@ -2681,7 +2681,7 @@ void Method4_3_6()
   int now = Rand() % elementCount;
   for (int jisoo = 0; jisoo < elementCount; ++jisoo) {
     now = (now + 97) % elementCount;
-    if (now == raN) continue;
+    if (now == raN) { continue; }
     int nextLine = columnSchedule.columnNum[raD][now];
     int nextLineIndex = 0;
     int nowSpace = 0;
@@ -2814,7 +2814,7 @@ void Method4_3_8()
       int height = columnSchedule.schedulesPosition[i][taisyouLineNum][j + 1] - columnSchedule.schedulesPosition[i][taisyouLineNum][j];
       for (int k = 0; k < elementCount; ++k) {
         if (k == num) break;
-        if (columnSchedule.columnNum[i][k] == taisyouLineNum) continue;
+        if (columnSchedule.columnNum[i][k] == taisyouLineNum) { continue; }
         if (preCalcScheduleSizes[i][k][taisyouLineNum] <= height) {
           int nextLine = columnSchedule.columnNum[i][k];
           int nextLineIndex = -1;
@@ -2824,7 +2824,7 @@ void Method4_3_8()
               break;
             }
           }
-          if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) continue;
+          if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) { continue; }
           swap(columnSchedule.schedules[i][taisyouLineNum][j], columnSchedule.schedules[i][nextLine][nextLineIndex]);
           swap(columnSchedule.columnNum[i][num], columnSchedule.columnNum[i][k]);
           break;
@@ -2978,7 +2978,7 @@ void Method4_3(double timeLimit)
 
     int ra = Rand() % 101;
     if (ra < 0) {
-      if (M43_nowTime < (M43_startTime + timeLimit) / 2) continue;
+      if (M43_nowTime < (M43_startTime + timeLimit) / 2) { continue; }
       Method4_3_2();
     }
     else if (ra < 69) {
@@ -3003,7 +3003,7 @@ void Method4_3(double timeLimit)
       Method4_3_7();
     }
     else if (ra < 101) {
-      if (Rand() % 100 != 0) continue;
+      if (Rand() % 100 != 0) { continue; }
       Method4_3_9();
     }
   }
@@ -3060,7 +3060,7 @@ int Method3_Oshii()
       }
 
       for (int j = elementCount - 1; j >= 0; --j) {
-        if (M3_alreadyUsed[i][j]) continue;
+        if (M3_alreadyUsed[i][j]) { continue; }
         int minAmari = INT_INF;
         int minOver = INT_INF;
         int posNum = -1;
@@ -3143,7 +3143,7 @@ int Method3_Oshii()
         break;
       }
     }
-    if (ok) continue;
+    if (ok) { continue; }
     int nowSum[MAX_LINECOUNT] = {};
     for (int j = 0; j < elementCount; ++j) {
       nowSum[columnSchedule.columnNum[i][j]] = max(nowSum[columnSchedule.columnNum[i][j]], ans.ans[i][j][2]);
@@ -3171,18 +3171,18 @@ int Method3_Oshii()
         nextLine = Rand() % ans.ansBaseLineCount;
       }
       kouhoCount = 0;
-      if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][raN][nextLine] > w) continue;
+      if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][raN][nextLine] > w) { continue; }
       for (int j = 0; j < columnSchedule.schedulesCount[i][nextLine]; ++j) {
-        if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][columnSchedule.schedules[i][nextLine][j]][lineNum] > w) continue;
+        if (nowSum[lineNum] <= w && nowSum[nextLine] <= w && preCalcScheduleSizes[i][columnSchedule.schedules[i][nextLine][j]][lineNum] > w) { continue; }
         kouhos[kouhoCount] = columnSchedule.schedules[i][nextLine][j];
         kouhoCount++;
       }
 
-      if (kouhoCount == 0 || kouhoCount > MAX_CANDIDATES) continue;
+      if (kouhoCount == 0 || kouhoCount > MAX_CANDIDATES) { continue; }
 
       if (kouhoCount <= SMALL_DATA_THRESHOLD) {
         for (int chaewon = (1 << kouhoCount) - 1; chaewon >= 0; --chaewon) {
-          if (chaewon == 0) continue;
+          if (chaewon == 0) { continue; }
           int nextSpace = 0;
           int needSpace = 0;
           for (int jj = 0; jj < kouhoCount; ++jj) {
@@ -3227,7 +3227,7 @@ int Method3_Oshii()
       else {
         for (int eunchae = 0; eunchae < 32; ++eunchae) {
           int chaewon = Rand() % ((1 << kouhoCount) - 1) + 1;
-          if (chaewon == 0) continue;
+          if (chaewon == 0) { continue; }
           int nextSpace = 0;
           int needSpace = 0;
           for (int jj = 0; jj < kouhoCount; ++jj) {
@@ -3304,7 +3304,7 @@ int Method3_Oshii()
         lastNum[posNum] = j;
       }
       for (int j = 0; j < ans.ansLineCount[i]; ++j) {
-        if (lastNum[j] == -1) continue;
+        if (lastNum[j] == -1) { continue; }
         ans.ans[i][lastNum[j]][2] = w;
       }
     }
@@ -3401,7 +3401,7 @@ void Method3_Oshii2()
           break;
         }
       }
-      if (ok) continue;
+      if (ok) { continue; }
 
       ok = 0;
       for (int newjeans = 1; newjeans < ans.ansLineCount[i]; ++newjeans) {
@@ -3420,9 +3420,9 @@ void Method3_Oshii2()
           int tmpNeed = 0;
           for (int k = ans.ansLineCount[i] - 1; k >= 0; --k) {
             int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-            if (!canFitInColumn(i, j, width)) continue;
+            if (!canFitInColumn(i, j, width)) { continue; }
             int need = calculateRequiredSize(elementSizes[i][j], width);
-            if (now[k] + need > w) continue;
+            if (now[k] + need > w) { continue; }
             int amari = need * width - elementSizes[i][j];
             if (amari <= minAmari) {
               minAmari = amari;
@@ -3445,7 +3445,7 @@ void Method3_Oshii2()
         }
         if (hanni == 1) {
           for (int j = 0; j < ans.ansLineCount[i]; ++j) {
-            if (lastNum[j] == -1) continue;
+            if (lastNum[j] == -1) { continue; }
             ans.ans[i][lastNum[j]][2] = w;
           }
           ok = 1;
@@ -3548,7 +3548,7 @@ int Method3_Normal(int loopCount)
             break;
           }
         }
-        if (ng) continue;
+        if (ng) { continue; }
         sort(ans.ansLinePos[0] + startLine, ans.ansLinePos[0] + ans.ansBaseLineCount);
         int ok = 1;
         for (int i = 0; i < ans.ansBaseLineCount; ++i) {
@@ -3732,7 +3732,7 @@ int Method3_Normal(int loopCount)
     if (ng == 1) { break; }
 
     for (int j = startLine; j < ans.ansLineCount[i]; ++j) {
-      if (lastNum[j] == -1) continue;
+      if (lastNum[j] == -1) { continue; }
       ans.ans[i][lastNum[j]][2] = w;
     }
 
@@ -3840,7 +3840,7 @@ void Method3_1(double timeLimit)
         }
       }
 
-      if (M3_alreadyCount == 0) continue;
+      if (M3_alreadyCount == 0) { continue; }
       for (int blackpink = 0; blackpink < M3_alreadyCount; ++blackpink) {
         int baseWidth = Rand() % 100 + 50;
         if (M3_alreadyCount >= 5) { baseWidth = Rand() % 100 + 20; }
@@ -3874,7 +3874,7 @@ void Method3_1(double timeLimit)
               break;
             }
           }
-          if (ng) continue;
+          if (ng) { continue; }
           double tmpValue = (double)minValue / (width * w);
           if (tmpValue > maxValue) {
             maxValue = tmpValue;
@@ -4004,7 +4004,7 @@ void Method3_2(double timeLimit)
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
           if (!canFitInColumn(i, j, width)) break;
           int need = calculateRequiredSize(elementSizes[i][j], width);
-          if (now[k] + need > w) continue;
+          if (now[k] + need > w) { continue; }
           int amari = need * width - elementSizes[i][j];
           if (amari <= minAmari) {
             minAmari = amari;
@@ -4028,7 +4028,7 @@ void Method3_2(double timeLimit)
       if (ng) { break; }
 
       for (int j = 0; j < ans.ansBaseLineCount; ++j) {
-        if (lastNum[j] == -1) continue;
+        if (lastNum[j] == -1) { continue; }
         ans.ans[i][lastNum[j]][2] = w;
       }
     }
@@ -4140,7 +4140,7 @@ void Method7()
       if (line1 == line2) {
         continue;
       }
-      if (yokoLineCount[line1] <= yokoLineCount[line2]) continue;
+      if (yokoLineCount[line1] <= yokoLineCount[line2]) { continue; }
       int margin = widths[line1] - 1;
       for (int i = 0; i < dayCount; ++i) {
         for (int j = 0; j < columnSchedule.schedulesCount[i][line1]; ++j) {
@@ -4148,7 +4148,7 @@ void Method7()
           int height = columnSchedule.schedulesPosition[i][line1][j + 1] - columnSchedule.schedulesPosition[i][line1][j];
           for (int k = 0; k < elementCount; ++k) {
             if (k == num) break;
-            if (columnSchedule.columnNum[i][k] == line1) continue;
+            if (columnSchedule.columnNum[i][k] == line1) { continue; }
             if (preCalcScheduleSizes[i][k][line1] <= height) {
               int nextLine = columnSchedule.columnNum[i][k];
               int nextLineIndex = -1;
@@ -4158,7 +4158,7 @@ void Method7()
                   break;
                 }
               }
-              if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) continue;
+              if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) { continue; }
               swap(columnSchedule.schedules[i][line1][j], columnSchedule.schedules[i][nextLine][nextLineIndex]);
               swap(columnSchedule.columnNum[i][num], columnSchedule.columnNum[i][k]);
               break;
@@ -4170,7 +4170,7 @@ void Method7()
         }
       }
 
-      if (margin == 0) continue;
+      if (margin == 0) { continue; }
       int diffScore = margin * (yokoLineCount[line1] - yokoLineCount[line2]);
 
       // ansLinePosとpreCalcScheduleSizesとwidthsを更新
@@ -4270,7 +4270,7 @@ void Method8(double timeLimit)
         break;
       }
     }
-    if (ok2 == 0) continue;
+    if (ok2 == 0) { continue; }
 
     {
       std::array<int, MAX_LINECOUNT> widths = {};
@@ -4344,7 +4344,7 @@ void Method8(double timeLimit)
         okCount++;
         M8ansOK[TMP_NUM][i] = 1;
         for (int j = 0; j < ans.ansBaseLineCount; ++j) {
-          if (lastNum[j] == -1) continue;
+          if (lastNum[j] == -1) { continue; }
           M8ans[TMP_NUM][i][lastNum[j]][2] = w;
         }
       }
@@ -4409,9 +4409,9 @@ void Method8(double timeLimit)
     }
 
     int raD = Rand() % dayCount;
-    if (M8ansansCountEachDay[raD] == 0) continue;
+    if (M8ansansCountEachDay[raD] == 0) { continue; }
     int raNum = M8ansansNumEachDay[raD][Rand() % M8ansansCountEachDay[raD]];
-    if (raNum == M8ansNum[raD]) continue;
+    if (raNum == M8ansNum[raD]) { continue; }
 
     int beforeNum = M8ansNum[raD];
     int diffScore = (M8ansScore[beforeNum][raD] - M8ansScore[raNum][raD]) * 2;

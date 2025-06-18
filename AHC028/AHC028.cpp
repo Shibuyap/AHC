@@ -298,7 +298,7 @@ TaskPathSelection selectBestTaskPath(const vector<int>& shuffled_tasks, const in
   TaskPathSelection best = { -1, -1, INF };
 
   for (int task_id : shuffled_tasks) {
-    if (used[task_id]) continue;
+    if (used[task_id]) { continue; }
 
     for (int path_id = 0; path_id < min((int)task_paths[task_id].size(), BOARD_SIZE); ++path_id) {
       int delta = calculateDelta(task_id, path_id, pos, cur_i, cur_j);

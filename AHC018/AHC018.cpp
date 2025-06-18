@@ -252,7 +252,7 @@ int attack_cell(int x, int y, int power)
     {
       int nx = x + DELTA_X[i];
       int ny = y + DELTA_Y[i];
-      if (is_out_of_bounds(nx, ny)) continue;
+      if (is_out_of_bounds(nx, ny)) { continue; }
       if (is_broken[nx][ny] != 0) {
         uf_unite(x * n_size + y, nx * n_size + ny);
       }

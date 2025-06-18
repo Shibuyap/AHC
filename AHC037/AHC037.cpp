@@ -278,7 +278,7 @@ void Method23()
 
     int idx1 = pp.second.first;
     int idx2 = pp.second.second;
-    if (used[idx1] || used[idx2]) continue;
+    if (used[idx1] || used[idx2]) { continue; }
 
     int newX = min(points[idx1].first, points[idx2].first);
     int newY = min(points[idx1].second, points[idx2].second);

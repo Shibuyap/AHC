@@ -323,7 +323,7 @@ void write_output(int run_mode, int problem_num)
       {
         for (int l = 0; l < dimension; ++l)
         {
-          if (ans_print[i][j][k][l] != 0) continue;
+          if (ans_print[i][j][k][l] != 0) { continue; }
           if (answer_grid[i][j][k][l] == -1) {
             ans_print[i][j][k][l] = 0;
           }
@@ -489,7 +489,7 @@ bool can_delete_block(int i, int x, int y, int z)
     bool ok = false;
     for (int k = 0; k < dimension; ++k)
     {
-      if (k == y) continue;
+      if (k == y) { continue; }
       if (answer_grid[i][x][k][z] != -1) {
         ok = true;
         break;
@@ -502,7 +502,7 @@ bool can_delete_block(int i, int x, int y, int z)
     bool ok = false;
     for (int j = 0; j < dimension; ++j)
     {
-      if (j == x) continue;
+      if (j == x) { continue; }
       if (answer_grid[i][j][y][z] != -1) {
         ok = true;
         break;

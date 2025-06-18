@@ -504,14 +504,14 @@ namespace
     if (n % 2 == 0) {
       int cnt = 0;
       for (int i = (n / 2) - 1; i >= 0; --i) {
-        if (i % 2 == 1) continue;
+        if (i % 2 == 1) { continue; }
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
         cnt++;
       }
       for (int i = (n / 2) - 1; i >= 0; --i) {
-        if (i % 2 == 0) continue;
+        if (i % 2 == 0) { continue; }
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
@@ -523,14 +523,14 @@ namespace
       numArr[cnt] = n / 2 + 1;
       cnt++;
       for (int i = (n / 2) - 1; i >= 0; --i) {
-        if (i % 2 == 0) continue;
+        if (i % 2 == 0) { continue; }
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
         cnt++;
       }
       for (int i = (n / 2) - 1; i >= 0; --i) {
-        if (i % 2 == 1) continue;
+        if (i % 2 == 1) { continue; }
         numArr[cnt] = i + 1;
         cnt++;
         numArr[cnt] = n - i;
@@ -547,7 +547,7 @@ namespace
       int cnt = 0;
       for (int j = 0; j < (3); ++j) {
         for (int i = (n / 2) - 1; i >= 0; --i) {
-          if (i % 3 != j) continue;
+          if (i % 3 != j) { continue; }
           numArr[cnt] = i + 1;
           cnt++;
           numArr[cnt] = n - i;
@@ -561,7 +561,7 @@ namespace
       cnt++;
       for (int j = 2; j < 5; ++j) {
         for (int i = (n / 2) - 1; i >= 0; --i) {
-          if (i % 3 != j % 3) continue;
+          if (i % 3 != j % 3) { continue; }
           numArr[cnt] = i + 1;
           cnt++;
           numArr[cnt] = n - i;
@@ -637,7 +637,7 @@ namespace
     int cnt = 0;
     for (int j = 1; j < 3; ++j) {
       for (int i = (n)-1; i >= 0; --i) {
-        if (i % 2 != j % 2) continue;
+        if (i % 2 != j % 2) { continue; }
         numArr[cnt] = i + 1;
         cnt++;
       }
@@ -1639,10 +1639,10 @@ int Solver4()
       std::array<int, 2> tri = {};
       for (int j = 0; j < (res); ++j) {
         int jj = vec[j];
-        if (jj == i) continue;
+        if (jj == i) { continue; }
         for (int k = j + 1; k < res; ++k) {
           int kk = vec[k];
-          if (kk == i) continue;
+          if (kk == i) { continue; }
           tri[1]++;
           if (b[i][jj] && b[i][kk]) {
             tri[0]++;
@@ -2034,7 +2034,7 @@ void expandCore(vector<int>& cores, std::array<int, 100>& f, int markValue)
     int arg = -1;
     int ma = -1;
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < (sz); ++j) {
         if (b[i][cores[j]]) cnt++;
@@ -2087,7 +2087,7 @@ int performGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt,
     if (arg == -1) break;
 
     for (int i = 0; i < n; ++i) {
-      if (i == arg) continue;
+      if (i == arg) { continue; }
       if (f[i] && b[i][arg]) {
         cnt[i]--;
       }
@@ -2131,7 +2131,7 @@ int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 
 
     // 隣接頂点の次数を更新
     for (int i = 0; i < n; ++i) {
-      if (i == arg) continue;
+      if (i == arg) { continue; }
       if (f[i] && b[i][arg]) {
         cnt[i]--;
       }
@@ -2149,12 +2149,12 @@ void collectCandidates(vector<int>& kouho, const std::array<int, 100>& f, int mi
 {
   kouho.clear();
   for (int i = 0; i < n; ++i) {
-    if (f[i] != 0) continue;
+    if (f[i] != 0) { continue; }
     int cnt = 0;
     for (int j = 0; j < n; ++j) {
       if (f[j] == 0) cnt += b[i][j];
     }
-    if (cnt <= minConnectivity) continue;
+    if (cnt <= minConnectivity) { continue; }
     kouho.push_back(i);
   }
 }
@@ -2526,19 +2526,19 @@ int Solver14()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) continue;
+    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
 
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 4) continue;
+      if (cnt <= 4) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
@@ -2593,19 +2593,19 @@ int Solver15()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) continue;
+    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
 
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 4) continue;
+      if (cnt <= 4) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
@@ -2677,7 +2677,7 @@ int Solver16()
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (i == j) continue;
+          if (i == j) { continue; }
           b[i][j] = 1 - b[i][j];
         }
       }
@@ -2688,19 +2688,19 @@ int Solver16()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) continue;
+    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
 
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 4) continue;
+      if (cnt <= 4) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
@@ -2728,7 +2728,7 @@ int Solver16()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) continue;
+      if (omoteArr[i] != tei % 2) { continue; }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2779,7 +2779,7 @@ int Solver17()
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (i == j) continue;
+          if (i == j) { continue; }
           b[i][j] = 1 - b[i][j];
         }
       }
@@ -2790,19 +2790,19 @@ int Solver17()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) continue;
+    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
 
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 4) continue;
+      if (cnt <= 4) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
@@ -2830,7 +2830,7 @@ int Solver17()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) continue;
+      if (omoteArr[i] != tei % 2) { continue; }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2935,7 +2935,7 @@ int Solver19()
     if (wataruoop % 2 == 1) {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (i == j) continue;
+          if (i == j) { continue; }
           b[i][j] = 1 - b[i][j];
         }
       }
@@ -2945,19 +2945,19 @@ int Solver19()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) continue;
+    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
 
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 4) continue;
+      if (cnt <= 4) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 4) {
@@ -2985,7 +2985,7 @@ int Solver19()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != wataruoop % 2) continue;
+      if (omoteArr[i] != wataruoop % 2) { continue; }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3028,7 +3028,7 @@ int Solver20()
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (i == j) continue;
+          if (i == j) { continue; }
           b[i][j] = 1 - b[i][j];
         }
       }
@@ -3039,7 +3039,7 @@ int Solver20()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) continue;
+    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
 
     int res1 = cores1.size();
     int res2 = 0;
@@ -3057,7 +3057,7 @@ int Solver20()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) continue;
+      if (omoteArr[i] != tei % 2) { continue; }
       int num1 = numSingleArr[i];
       if (abs(num1 - res1) < diff) {
         diff = abs(num1 - res1);
@@ -3099,8 +3099,8 @@ int Solver21()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 5) continue;
-    if (!findClique(kouho, f, cores1, 5, 1)) continue;
+    if (kouho.size() < 5) { continue; }
+    if (!findClique(kouho, f, cores1, 5, 1)) { continue; }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3188,8 +3188,8 @@ int Solver22()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 3) continue;
-    if (!findClique(kouho, f, cores1, 3, 1)) continue;
+    if (kouho.size() < 3) { continue; }
+    if (!findClique(kouho, f, cores1, 3, 1)) { continue; }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3198,13 +3198,13 @@ int Solver22()
     vector<int> cores2;
     kouho.clear();
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 2) continue;
+      if (cnt <= 2) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
@@ -3295,7 +3295,7 @@ int Solver23()
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (i == j) continue;
+          if (i == j) { continue; }
           b[i][j] = 1 - b[i][j];
         }
       }
@@ -3308,7 +3308,7 @@ int Solver23()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 3) continue;
+    if (kouho.size() < 3) { continue; }
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[4] = {};
       for (int i = 0; i < (3); ++i) {
@@ -3334,7 +3334,7 @@ int Solver23()
         break;
       }
     }
-    if (cores1.size() == 0) continue;
+    if (cores1.size() == 0) { continue; }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3343,13 +3343,13 @@ int Solver23()
     vector<int> cores2;
     kouho.clear();
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) continue;
+      if (f[i] != 0) { continue; }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 2) continue;
+      if (cnt <= 2) { continue; }
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
@@ -3401,7 +3401,7 @@ int Solver23()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) continue;
+      if (omoteArr[i] != tei % 2) { continue; }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3452,7 +3452,7 @@ int Solver24()
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-          if (i == j) continue;
+          if (i == j) { continue; }
           b[i][j] = 1 - b[i][j];
         }
       }
@@ -3465,7 +3465,7 @@ int Solver24()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 5) continue;
+    if (kouho.size() < 5) { continue; }
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (5); ++i) {
@@ -3491,7 +3491,7 @@ int Solver24()
         break;
       }
     }
-    if (cores1.size() == 0) continue;
+    if (cores1.size() == 0) { continue; }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3548,7 +3548,7 @@ int Solver24()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) continue;
+      if (omoteArr[i] != tei % 2) { continue; }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3692,7 +3692,7 @@ void solve(int mode)
           hyperStep2 = hyperStep2Arr[m][iEps];
 
           InitNumArray(mode);
-          if (!numPairArrOK) continue;
+          if (!numPairArrOK) { continue; }
 
           if (_ < 100) {
             OutputArrayAsString(mode);
@@ -3839,7 +3839,7 @@ void solve(int mode)
       }
 
       InitNumArray(mode);
-      if (!numPairArrOK) continue;
+      if (!numPairArrOK) { continue; }
 
       int nown = hyperN[m][iEps];
       int nowhyperSolverNum = hyperSolver[m][iEps];
@@ -3862,7 +3862,7 @@ void solve(int mode)
       if (nowhyperMaxRound != chahyperMaxRound) same = 0;
       if (nowhyperStep1 != chahyperStep1) same = 0;
       if (nowhyperStep2 != chahyperStep2) same = 0;
-      if (same) continue;
+      if (same) { continue; }
 
       int winCount = 0;
       double score = 0;
@@ -3960,7 +3960,7 @@ void solve(int mode)
       hyperStep2 = hyperStep2Arr[m][iEps];
 
       InitNumArray(mode);
-      if (!numPairArrOK) continue;
+      if (!numPairArrOK) { continue; }
 
       if (_ < 100) {
         OutputArrayAsString(mode);
@@ -4011,7 +4011,7 @@ void solve(int mode)
         hyperSolverNum = 1154;
 
         InitNumArray(mode);
-        if (!numPairArrOK) continue;
+        if (!numPairArrOK) { continue; }
 
         if (_ < 100) {
           OutputArrayAsString(mode);
@@ -4042,7 +4042,7 @@ int main()
   for (int i = 0; i < (105); ++i) {
     for (int j = 0; j < (105); ++j) {
       com[i][j] = 0;
-      if (j > i) continue;
+      if (j > i) { continue; }
       for (int k = 0; k < (j); ++k) {
         com[i][j] += log(i - k);
         com[i][j] -= log(j - k);

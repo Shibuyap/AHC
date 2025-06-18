@@ -226,7 +226,7 @@ inline int isOK2(int ite)
     if (target_points[ite].x < rects[ite].p1.x || rects[ite].p2.x <= target_points[ite].x) return 0;
     if (target_points[ite].y < rects[ite].p1.y || rects[ite].p2.y <= target_points[ite].y) return 0;
     for (int i = 0; i < n; ++i) {
-      if (i == ite) continue;
+      if (i == ite) { continue; }
       if (kasanarihantei(i, ite)) return 0;
     }
   }
@@ -610,7 +610,7 @@ inline void AnaWoAkeru(int hole = 100)
   rects[ite].p2.x += hole;
   rects[ite].p2.y += hole;
   for (int i = 0; i < n; ++i) {
-    if (i == ite) continue;
+    if (i == ite) { continue; }
     if (kasanarihantei(i, ite)) keep.emplace_back(i);
   }
   int keepSize = keep.size();
@@ -638,7 +638,7 @@ inline void hukuramashiKing(int ite)
     int argX = arg_sort_x[ite];
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
-      if (target_points[i].x == target_points[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) { continue; }
       int flagKasanari = 0;
       if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
       if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
@@ -653,7 +653,7 @@ inline void hukuramashiKing(int ite)
     }
     for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
-      if (target_points[i].x == target_points[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) { continue; }
       int flagKasanari = 0;
       if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
       if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
@@ -670,7 +670,7 @@ inline void hukuramashiKing(int ite)
     int argY = arg_sort_y[ite];
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
-      if (target_points[i].y == target_points[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) { continue; }
       int flagKasanari = 0;
       if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
       if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
@@ -685,7 +685,7 @@ inline void hukuramashiKing(int ite)
     }
     for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
-      if (target_points[i].y == target_points[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) { continue; }
       int flagKasanari = 0;
       if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
       if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
@@ -703,7 +703,7 @@ inline void hukuramashiKing(int ite)
     int argY = arg_sort_y[ite];
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
-      if (target_points[i].y == target_points[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) { continue; }
       int flagKasanari = 0;
       if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
       if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
@@ -718,7 +718,7 @@ inline void hukuramashiKing(int ite)
     }
     for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
-      if (target_points[i].y == target_points[ite].y) continue;
+      if (target_points[i].y == target_points[ite].y) { continue; }
       int flagKasanari = 0;
       if (target_points[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < target_points[i].x + 1) flagKasanari = 1;
       if (vExtendKing.p1.x <= target_points[i].x && target_points[i].x < vExtendKing.p2.x) flagKasanari = 1;
@@ -735,7 +735,7 @@ inline void hukuramashiKing(int ite)
     int argX = arg_sort_x[ite];
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
-      if (target_points[i].x == target_points[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) { continue; }
       int flagKasanari = 0;
       if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
       if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
@@ -750,7 +750,7 @@ inline void hukuramashiKing(int ite)
     }
     for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
-      if (target_points[i].x == target_points[ite].x) continue;
+      if (target_points[i].x == target_points[ite].x) { continue; }
       int flagKasanari = 0;
       if (target_points[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < target_points[i].y + 1) flagKasanari = 1;
       if (vExtendKing.p1.y <= target_points[i].y && target_points[i].y < vExtendKing.p2.y) flagKasanari = 1;
@@ -846,7 +846,7 @@ inline void ExtendKing(int ite)
   rects[ite] = vExtendKing;
 
   for (int i = 0; i < n; ++i) {
-    if (i == ite) continue;
+    if (i == ite) { continue; }
     if (kasanarihantei(i, ite)) {
       init_rect(rects[i], target_points[i]);
     }
@@ -1063,7 +1063,7 @@ inline int selfNg(int ite)
 inline int dokasuOK(int ite, int abcd)
 {
   for (int i = 0; i < n; ++i) {
-    if (i == ite) continue;
+    if (i == ite) { continue; }
     if (kasanarihantei(i, ite)) {
       if (abcd == 0) rects[i].p2.x = rects[ite].p1.x;
       if (abcd == 1) rects[i].p2.y = rects[ite].p1.y;

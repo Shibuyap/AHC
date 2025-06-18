@@ -489,14 +489,14 @@ void init_box()
         break;
       }
     }
-    if (ok == 0) continue;
+    if (ok == 0) { continue; }
     for (int i = 0; i < C; ++i) {
       if (up <= c[i].x && c[i].x <= down && left <= c[i].y && c[i].y <= right) {
         ok = 0;
         break;
       }
     }
-    if (ok == 0) continue;
+    if (ok == 0) { continue; }
     int cnt = 0;
     for (int i = 0; i < A; ++i) {
       if (up <= a[i].x && a[i].x <= down && left <= a[i].y && a[i].y <= right) {
@@ -504,7 +504,7 @@ void init_box()
         cnt++;
       }
     }
-    if (cnt == 0) continue;
+    if (cnt == 0) { continue; }
     for (int i = 0; i < cnt; ++i) {
       int idx = flag[i];
       if (cnt > box_a_count[idx]) {
@@ -564,14 +564,14 @@ void init_box()
         break;
       }
     }
-    if (ok == 0) continue;
+    if (ok == 0) { continue; }
     for (int i = 0; i < C; ++i) {
       if (up <= c[i].x && c[i].x <= down && left <= c[i].y && c[i].y <= right) {
         ok = 0;
         break;
       }
     }
-    if (ok == 0) continue;
+    if (ok == 0) { continue; }
     int cnt = 0;
     for (int i = 0; i < B; ++i) {
       if (up <= b[i].x && b[i].x <= down && left <= b[i].y && b[i].y <= right) {
@@ -579,7 +579,7 @@ void init_box()
         flag[cnt] = i;
       }
     }
-    if (cnt == 0) continue;
+    if (cnt == 0) { continue; }
     for (int i = 0; i < cnt; ++i) {
       int idx = flag[i];
       if (cnt > box_b_count[idx]) {
@@ -617,7 +617,7 @@ void merge_gomi()
     Point mi_nua, mi_nda;
     for (int i = 0; i < ua.size(); ++i) {
       for (int j = i + 1; j < ua.size(); ++j) {
-        if (i == j) continue;
+        if (i == j) { continue; }
         Point nua = ua[i];
         nua.x = min(nua.x, ua[j].x);
         nua.y = min(nua.y, ua[j].y);
@@ -625,7 +625,7 @@ void merge_gomi()
         nda.x = max(nda.x, da[j].x);
         nda.y = max(nda.y, da[j].y);
         ll tmp = (nda.x - nua.x) * (nda.y - nua.y);
-        if (tmp >= mi) continue;
+        if (tmp >= mi) { continue; }
         int ok = 1;
         for (int k = 0; k < B; ++k) {
           if (nua.x <= b[k].x && b[k].x <= nda.x && nua.y <= b[k].y && b[k].y <= nda.y) {
@@ -633,14 +633,14 @@ void merge_gomi()
             break;
           }
         }
-        if (ok == 0) continue;
+        if (ok == 0) { continue; }
         for (int k = 0; k < C; ++k) {
           if (nua.x <= c[k].x && c[k].x <= nda.x && nua.y <= c[k].y && c[k].y <= nda.y) {
             ok = 0;
             break;
           }
         }
-        if (ok == 0) continue;
+        if (ok == 0) { continue; }
 
         mi = tmp;
         idx1 = i;
@@ -677,7 +677,7 @@ void merge_gomi()
     Point mi_nub, mi_ndb;
     for (int i = 0; i < ub.size(); ++i) {
       for (int j = i + 1; j < ub.size(); ++j) {
-        if (i == j) continue;
+        if (i == j) { continue; }
         Point nub = ub[i];
         nub.x = min(nub.x, ub[j].x);
         nub.y = min(nub.y, ub[j].y);
@@ -685,7 +685,7 @@ void merge_gomi()
         ndb.x = max(ndb.x, db[j].x);
         ndb.y = max(ndb.y, db[j].y);
         ll tmp = (ndb.x - nub.x) * (ndb.y - nub.y);
-        if (tmp >= mi) continue;
+        if (tmp >= mi) { continue; }
         int ok = 1;
         for (int k = 0; k < A; ++k) {
           if (nub.x <= a[k].x && a[k].x <= ndb.x && nub.y <= a[k].y && a[k].y <= ndb.y) {
@@ -693,14 +693,14 @@ void merge_gomi()
             break;
           }
         }
-        if (ok == 0) continue;
+        if (ok == 0) { continue; }
         for (int k = 0; k < C; ++k) {
           if (nub.x <= c[k].x && c[k].x <= ndb.x && nub.y <= c[k].y && c[k].y <= ndb.y) {
             ok = 0;
             break;
           }
         }
-        if (ok == 0) continue;
+        if (ok == 0) { continue; }
 
         mi = tmp;
         idx1 = i;
