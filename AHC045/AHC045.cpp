@@ -250,7 +250,7 @@ int best_ans_MSTSums[MAX_M];
 
 int free_use_graph[n][n];
 int free_use_graph_count[n];
-bool fre_use__visited[n];
+bool free_use_visited[n];
 int free_use_parent[n];
 
 void CopyToBest()
@@ -422,7 +422,7 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
   return res;
 }
 
-int buildMSTWithOnePoint_IsOne[n];
+int buildMSTWithOnePoint_used[n];
 vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, bool isTrue = false)
 {
   int vCount = _nums.size();
@@ -536,13 +536,13 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
   int now = 0;
   for (auto num : nums) {
-    buildMSTWithOnePoint_IsOne[num] = true;
+    buildMSTWithOnePoint_used[num] = true;
   }
   for (auto num : newNums) {
-    buildMSTWithOnePoint_IsOne[num] = false;
+    buildMSTWithOnePoint_used[num] = false;
   }
   for (auto num : nums) {
-    if (buildMSTWithOnePoint_IsOne[num]) {
+    if (buildMSTWithOnePoint_used[num]) {
       ans_nums[now][0] = num;
       ans[num] = now;
       now++;
@@ -1119,8 +1119,8 @@ void sa0_DivideTree(const vector<int>& nums, const vector<P>& edges, int root)
   }
 }
 
-vector<P> sa0_keepMST[q];
-int sa0_keepMSTSum[q];
+vector<P> sa0_tmpMST[q];
+int sa0_tmpMSTSum[q];
 void SimulatedAnnealing0(Hypers hypers, double timeLimit)
 {
   double startTime = GetNowTime();
@@ -1147,48 +1147,48 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
     double tmpScore = dScore;
 
     // 近傍解作成
-    int raMode = Rand() % hypers.Partition[0];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
+    int mode = Rand() % hypers.Partition[0];
+    int idx1, idx2, nx, ny, tmp;
+    int prev_x, prev_y, tmp3, tmp4, tmp5;
 
-    if (raMode < hypers.Partition[0]) {
-      ra1 = Rand() % n;
-      while (num_queries[ra1].empty()) {
-        ra1 = Rand() % n;
+    if (mode < hypers.Partition[0]) {
+      idx1 = Rand() % n;
+      while (num_queries[idx1].empty()) {
+        idx1 = Rand() % n;
       }
       if (Rand() % 100 < 50) {
-        ra2 = Rand() % (rx[ra1] - lx[ra1] + 1) + lx[ra1];
-        ra3 = Rand() % (ry[ra1] - ly[ra1] + 1) + ly[ra1];
+        nx = Rand() % (rx[idx1] - lx[idx1] + 1) + lx[idx1];
+        ny = Rand() % (ry[idx1] - ly[idx1] + 1) + ly[idx1];
       }
       else {
-        int len2 = (rx[ra1] - lx[ra1] + 1) / 5 + 1;
-        int len3 = (ry[ra1] - ly[ra1] + 1) / 5 + 1;
-        ra2 = Rand() % (len2 * 2 + 1) - len2 + pred_x[ra1];
-        ra3 = Rand() % (len3 * 2 + 1) - len3 + pred_y[ra1];
+        int len_x = (rx[idx1] - lx[idx1] + 1) / 5 + 1;
+        int len_y = (ry[idx1] - ly[idx1] + 1) / 5 + 1;
+        nx = Rand() % (len_x * 2 + 1) - len_x + pred_x[idx1];
+        ny = Rand() % (len_y * 2 + 1) - len_y + pred_y[idx1];
       }
-      ra2 = max(ra2, lx[ra1]);
-      ra2 = min(ra2, rx[ra1]);
-      ra3 = max(ra3, ly[ra1]);
-      ra3 = min(ra3, ry[ra1]);
+      nx = max(nx, lx[idx1]);
+      nx = min(nx, rx[idx1]);
+      ny = max(ny, ly[idx1]);
+      ny = min(ny, ry[idx1]);
 
-      for (int i = 0; i < num_queries[ra1].size(); ++i) {
-        int q_num = num_queries[ra1][i];
-        sa0_keepMST[i] = queryPredMST[q_num];
-        sa0_keepMSTSum[i] = queryPredMSTSum[q_num];
+      for (int i = 0; i < num_queries[idx1].size(); ++i) {
+        int q_num = num_queries[idx1][i];
+        sa0_tmpMST[i] = queryPredMST[q_num];
+        sa0_tmpMSTSum[i] = queryPredMSTSum[q_num];
         double querySum = 0;
         for (auto p : queryAnswers[q_num]) {
           querySum += sqrt(Distance(GetPoint(p.first), GetPoint(p.second)));
         }
-        tmpScore -= querySum / sa0_keepMSTSum[i];
+        tmpScore -= querySum / sa0_tmpMSTSum[i];
       }
 
-      keep2 = pred_x[ra1];
-      keep3 = pred_y[ra1];
-      pred_x[ra1] = ra2;
-      pred_y[ra1] = ra3;
+      prev_x = pred_x[idx1];
+      prev_y = pred_y[idx1];
+      pred_x[idx1] = nx;
+      pred_y[idx1] = ny;
 
-      for (int i = 0; i < num_queries[ra1].size(); ++i) {
-        int q_num = num_queries[ra1][i];
+      for (int i = 0; i < num_queries[idx1].size(); ++i) {
+        int q_num = num_queries[idx1][i];
         queryPredMST[q_num] = BuildMST(queries[q_num]);
         queryPredMSTSum[q_num] = buildMST_sum;
         double querySum = 0;
@@ -1213,13 +1213,13 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
     }
     else {
       // 元に戻す
-      if (raMode < hypers.Partition[0]) {
-        pred_x[ra1] = keep2;
-        pred_y[ra1] = keep3;
-        for (int i = 0; i < num_queries[ra1].size(); ++i) {
-          int q_num = num_queries[ra1][i];
-          queryPredMST[q_num] = sa0_keepMST[i];
-          queryPredMSTSum[q_num] = sa0_keepMSTSum[i];
+      if (mode < hypers.Partition[0]) {
+        pred_x[idx1] = prev_x;
+        pred_y[idx1] = prev_y;
+        for (int i = 0; i < num_queries[idx1].size(); ++i) {
+          int q_num = num_queries[idx1][i];
+          queryPredMST[q_num] = sa0_tmpMST[i];
+          queryPredMSTSum[q_num] = sa0_tmpMSTSum[i];
         }
       }
     }
@@ -1264,32 +1264,32 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
     ll tmpScore = ansScore;
 
     // 近傍解作成
-    int raMode = Rand() % hypers.Partition[0];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
+    int mode = Rand() % hypers.Partition[0];
+    int idx1, idx2, nx, ny, tmp;
+    int prev_x, prev_y, tmp3, tmp4, tmp5;
     if (m == 1)continue;
-    ra1 = Rand() % n;
-    ra2 = Rand() % n;
-    while (ans[ra1] == ans[ra2]) {
-      ra1 = Rand() % n;
-      ra2 = Rand() % n;
+    idx1 = Rand() % n;
+    idx2 = Rand() % n;
+    while (ans[idx1] == ans[idx2]) {
+      idx1 = Rand() % n;
+      idx2 = Rand() % n;
     }
 
-    int g_num1 = ans[ra1];
-    int g_num2 = ans[ra2];
+    int g_num1 = ans[idx1];
+    int g_num2 = ans[idx2];
 
     tmpScore -= BoundingScore(g_num1);
     tmpScore -= BoundingScore(g_num2);
 
-    ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-    ans_nums[g_num1].push_back(ra2);
-    ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-    ans_nums[g_num2].push_back(ra1);
+    ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), idx1));
+    ans_nums[g_num1].push_back(idx2);
+    ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), idx2));
+    ans_nums[g_num2].push_back(idx1);
 
     tmpScore += BoundingScore(g_num1);
     tmpScore += BoundingScore(g_num2);
 
-    swap(ans[ra1], ans[ra2]);
+    swap(ans[idx1], ans[idx2]);
 
     // 焼きなまし
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
@@ -1305,15 +1305,15 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
     }
     else {
       // 元に戻す
-      int g_num1 = ans[ra1];
-      int g_num2 = ans[ra2];
+      int g_num1 = ans[idx1];
+      int g_num2 = ans[idx2];
 
-      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-      ans_nums[g_num1].push_back(ra2);
-      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-      ans_nums[g_num2].push_back(ra1);
+      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), idx1));
+      ans_nums[g_num1].push_back(idx2);
+      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), idx2));
+      ans_nums[g_num2].push_back(idx1);
 
-      swap(ans[ra1], ans[ra2]);
+      swap(ans[idx1], ans[idx2]);
     }
   }
 
@@ -1358,28 +1358,28 @@ void SimulatedAnnealing2(Hypers hypers)
     double tmpScore = INT_INF;
 
     // 近傍解作成
-    int ra1, ra2, ra3, ra4, ra5;
+    int idx1, idx2, tmp3, tmp4, tmp5;
     int keep1, keep2, keep3, keep4, keep5;
 
     if (m == 1)continue;
-    ra1 = Rand() % n;
-    ra2 = Rand() % n;
-    while (ans[ra1] == ans[ra2]) {
-      ra1 = Rand() % n;
-      ra2 = Rand() % n;
+    idx1 = Rand() % n;
+    idx2 = Rand() % n;
+    while (ans[idx1] == ans[idx2]) {
+      idx1 = Rand() % n;
+      idx2 = Rand() % n;
     }
 
-    int g_num1 = ans[ra1];
-    int g_num2 = ans[ra2];
+    int g_num1 = ans[idx1];
+    int g_num2 = ans[idx2];
 
     tmpScore = ansScore;
     tmpScore -= CalcScore(g_num1);
     tmpScore -= CalcScore(g_num2);
 
-    ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-    ans_nums[g_num1].push_back(ra2);
-    ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-    ans_nums[g_num2].push_back(ra1);
+    ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), idx1));
+    ans_nums[g_num1].push_back(idx2);
+    ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), idx2));
+    ans_nums[g_num2].push_back(idx1);
 
     ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
     ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
@@ -1387,7 +1387,7 @@ void SimulatedAnnealing2(Hypers hypers)
     tmpScore += CalcScore(g_num1);
     tmpScore += CalcScore(g_num2);
 
-    swap(ans[ra1], ans[ra2]);
+    swap(ans[idx1], ans[idx2]);
 
     // 焼きなまし
     double diffScore = (ansScore - tmpScore) * hypers.MultipleValue;
@@ -1403,18 +1403,18 @@ void SimulatedAnnealing2(Hypers hypers)
     }
     else {
       // 元に戻す
-      int g_num1 = ans[ra1];
-      int g_num2 = ans[ra2];
+      int g_num1 = ans[idx1];
+      int g_num2 = ans[idx2];
 
-      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), ra1));
-      ans_nums[g_num1].push_back(ra2);
-      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), ra2));
-      ans_nums[g_num2].push_back(ra1);
+      ans_nums[g_num1].erase(find(ans_nums[g_num1].begin(), ans_nums[g_num1].end(), idx1));
+      ans_nums[g_num1].push_back(idx2);
+      ans_nums[g_num2].erase(find(ans_nums[g_num2].begin(), ans_nums[g_num2].end(), idx2));
+      ans_nums[g_num2].push_back(idx1);
 
       ans_edges[g_num1] = BuildMST(ans_nums[g_num1]);
       ans_edges[g_num2] = BuildMST(ans_nums[g_num2]);
 
-      swap(ans[ra1], ans[ra2]);
+      swap(ans[idx1], ans[idx2]);
     }
   }
 
@@ -1431,10 +1431,10 @@ int sa3_subtree_size[n];
 int sa3_dfs(int u, int p)
 {
   free_use_parent[u] = p;
-  fre_use__visited[u] = true;
+  free_use_visited[u] = true;
   int cnt = 1; // 自分自身を含めるので1からスタート
   for (int i = 0; i < free_use_graph_count[u]; ++i) {
-    if (!fre_use__visited[free_use_graph[u][i]]) {
+    if (!free_use_visited[free_use_graph[u][i]]) {
       cnt += sa3_dfs(free_use_graph[u][i], u);
     }
   }
@@ -1472,42 +1472,42 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
     }
 
     // 近傍解作成
-    int raMode = Rand() % hypers.Partition[1];
-    int ra1, ra2, ra3, ra4, ra5;
+    int mode = Rand() % hypers.Partition[1];
+    int g1, g2, tmp3, tmp4, tmp5;
     int keep1, keep2, keep3, keep4, keep5;
-    if (true || raMode < hypers.Partition[0]) {
+    if (true || mode < hypers.Partition[0]) {
       if (m == 1)continue;
-      ra1 = Rand() % m;
-      ra2 = Rand() % m;
-      while (ra1 == ra2) {
-        ra1 = Rand() % m;
-        ra2 = Rand() % m;
+      g1 = Rand() % m;
+      g2 = Rand() % m;
+      while (g1 == g2) {
+        g1 = Rand() % m;
+        g2 = Rand() % m;
       }
 
-      int sz1 = sort_g[ra1];
-      int sz2 = sort_g[ra2];
+      int sz1 = sort_g[g1];
+      int sz2 = sort_g[g2];
 
-      auto vec = ans_nums[ra1];
-      vec.insert(vec.end(), ans_nums[ra2].begin(), ans_nums[ra2].end());
+      auto vec = ans_nums[g1];
+      vec.insert(vec.end(), ans_nums[g2].begin(), ans_nums[g2].end());
 
-      vector<P> zen;
+      vector<P> mst_edges;
       if (Rand() % 100 < 100) {
         if (Rand() % 100 < 90) {
-          zen = BuildMST(ra1, ra2);
+          mst_edges = BuildMST(g1, g2);
         }
         else {
-          zen = BuildMST(vec);
+          mst_edges = BuildMST(vec);
         }
       }
       else {
-        zen = BuildMSTWithEdgeCompare(vec);
+        mst_edges = BuildMSTWithEdgeCompare(vec);
       }
 
       for (auto num : vec) {
         free_use_graph_count[num] = 0;
-        fre_use__visited[num] = false;
+        free_use_visited[num] = false;
       }
-      for (auto p : zen) {
+      for (auto p : mst_edges) {
         free_use_graph[p.first][free_use_graph_count[p.first]] = p.second;
         free_use_graph_count[p.first]++;
         free_use_graph[p.second][free_use_graph_count[p.second]] = p.first;
@@ -1517,24 +1517,24 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
       sa3_dfs(vec[0], -1);
 
       int cutNum = -1;
-      int ra1Root = -1;
-      int ra2Root = -1;
+      int root1 = -1;
+      int root2 = -1;
       double cutLen = -1;
-      for (int i = 0; i < zen.size(); ++i) {
-        int u = zen[i].first;
-        int v = zen[i].second;
+      for (int i = 0; i < mst_edges.size(); ++i) {
+        int u = mst_edges[i].first;
+        int v = mst_edges[i].second;
         if (free_use_parent[v] == u) {
           if (sa3_subtree_size[v] == sz1 || sa3_subtree_size[v] == sz2) {
             if (Distance(GetPoint(u), GetPoint(v)) > cutLen) {
               cutLen = Distance(GetPoint(u), GetPoint(v));
               cutNum = i;
               if (sa3_subtree_size[v] == sz1) {
-                ra1Root = v;
-                ra2Root = u;
+                root1 = v;
+                root2 = u;
               }
               else {
-                ra1Root = u;
-                ra2Root = v;
+                root1 = u;
+                root2 = v;
               }
             }
           }
@@ -1545,12 +1545,12 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
               cutLen = Distance(GetPoint(u), GetPoint(v));
               cutNum = i;
               if (sa3_subtree_size[u] == sz1) {
-                ra1Root = u;
-                ra2Root = v;
+                root1 = u;
+                root2 = v;
               }
               else {
-                ra1Root = v;
-                ra2Root = u;
+                root1 = v;
+                root2 = u;
               }
             }
           }
@@ -1559,25 +1559,25 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
 
       if (cutNum == -1) { continue; }
 
-      ans_nums[ra1].clear();
-      ans_edges[ra1].clear();
-      ans_nums[ra2].clear();
-      ans_edges[ra2].clear();
-      sa3_dfs2(ra1Root, ra2Root, ra1);
-      sa3_dfs2(ra2Root, ra1Root, ra2);
+      ans_nums[g1].clear();
+      ans_edges[g1].clear();
+      ans_nums[g2].clear();
+      ans_edges[g2].clear();
+      sa3_dfs2(root1, root2, g1);
+      sa3_dfs2(root2, root1, g2);
     }
-    else if (raMode < hypers.Partition[1]) {
-      ra1 = Rand() % m;
-      while (sort_g[ra1] == 1) {
-        ra1 = Rand() % m;
+    else if (mode < hypers.Partition[1]) {
+      g1 = Rand() % m;
+      while (sort_g[g1] == 1) {
+        g1 = Rand() % m;
       }
 
-      auto res = BuildMSTWithOnePoint(ans_nums[ra1], ans_nums[ra1]);
+      auto res = BuildMSTWithOnePoint(ans_nums[g1], ans_nums[g1]);
       if (!res.empty()) {
-        ans_edges[ra1] = res;
-        ans_MSTSums[ra1] = buildMST_sum;
-        for (auto num : ans_nums[ra1]) {
-          ans[num] = ra1;
+        ans_edges[g1] = res;
+        ans_MSTSums[g1] = buildMST_sum;
+        for (auto num : ans_nums[g1]) {
+          ans[num] = g1;
         }
       }
     }
@@ -1612,9 +1612,9 @@ void SimulatedAnnealing4(Hypers hypers, double timeLimit)
     }
 
     // 近傍解作成
-    int ra1 = Rand() % m;
-    ans_edges[ra1] = BuildMSTWithEdgeCompare(ans_nums[ra1]);
-    ans_MSTSums[ra1] = buildMST_sum;
+    int g_idx = Rand() % m;
+    ans_edges[g_idx] = BuildMSTWithEdgeCompare(ans_nums[g_idx]);
+    ans_MSTSums[g_idx] = buildMST_sum;
   }
 
   if (mode == 2) {
@@ -1642,11 +1642,11 @@ ll Solve(int problem_num, Hypers hypers)
   Method1();
 
   // 焼きなまし
-  int aespa = 2;
-  if (l <= 4)aespa = 4;
-  for (int i = 0; i < aespa; ++i) {
-    Method1_Query(0, q / aespa * (i + 1));
-    SimulatedAnnealing0(hypers, (TL * 0.6) / aespa * (i + 1));
+  int phase_cnt = 2;
+  if (l <= 4)phase_cnt = 4;
+  for (int i = 0; i < phase_cnt; ++i) {
+    Method1_Query(0, q / phase_cnt * (i + 1));
+    SimulatedAnnealing0(hypers, (TL * 0.6) / phase_cnt * (i + 1));
   }
   InitShorterEdges();
   SimulatedAnnealing1(hypers, TL * 0.7);

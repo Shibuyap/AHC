@@ -100,7 +100,7 @@ namespace /* 変数 */
   int route_backup[2100];
 
   // 焼きなまし用変数
-  double TL = 2.9;
+  double TIME_LIMIT = 2.9;
   double start_temp = 2048;
   double end_temp = 0.0001;
   ll best_score;
@@ -110,75 +110,75 @@ namespace /* 変数 */
 
 namespace /* Union Find*/
 {
-  int parUF[MAX_N];   // 親
-  int rankUF[MAX_N];  // 木の深さ
-  int cntUF[MAX_N];   // 属する頂点の個数(親のみ正しい)
+  int parent[MAX_N];   // 親
+  int rank[MAX_N];  // 木の深さ
+  int cnt[MAX_N];   // 属する頂点の個数(親のみ正しい)
 
   // n要素で初期化
-  void UFinit(const int nn)
+  void init(const int n)
   {
-    for (int i = 0; i < nn; i++) {
-      parUF[i] = i;
-      rankUF[i] = 0;
-      cntUF[i] = 1;
+    for (int i = 0; i < n; i++) {
+      parent[i] = i;
+      rank[i] = 0;
+      cnt[i] = 1;
       int val = board[i / board_size][i % board_size];
       if (val == 1 || val == 2 || val == 4 || val == 8) {
-        cntUF[i] = 1;
+        cnt[i] = 1;
       }
     }
   }
 
   // 木の根を求める
-  int findUF(int x)
+  int find(int x)
   {
-    if (parUF[x] == x) {
+    if (parent[x] == x) {
       return x;
     }
     else {
-      return parUF[x] = findUF(parUF[x]);
+      return parent[x] = find(parent[x]);
     }
   }
 
   // xとyの属する集合を併合
-  void uniteUF(int x, int y)
+  void unite(int x, int y)
   {
-    x = findUF(x);
-    y = findUF(y);
+    x = find(x);
+    y = find(y);
     if (x == y) { return; }
 
-    if (rankUF[x] < rankUF[y]) {
-      parUF[x] = y;
-      cntUF[y] += cntUF[x];
+    if (rank[x] < rank[y]) {
+      parent[x] = y;
+      cnt[y] += cnt[x];
     }
     else {
-      parUF[y] = x;
-      cntUF[x] += cntUF[y];
-      if (rankUF[x] == rankUF[y]) rankUF[x]++;
+      parent[y] = x;
+      cnt[x] += cnt[y];
+      if (rank[x] == rank[y]) rank[x]++;
     }
   } /* Union Find*/
 
   // xとyが同じ集合に属するか否か
-  bool sameUF(int x, int y)
+  bool same(int x, int y)
   {
-    return findUF(x) == findUF(y);
+    return find(x) == find(y);
   }
 }  // namespace
 
 // スコア計算
-int boardForCalc[10][10];
+int calc_board[10][10];
 int calc_score(const vector<int>& ope)
 {
-  UFinit(board_size * board_size);
+  init(board_size * board_size);
 
   int x = startX, y = startY;
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      boardForCalc[i][j] = board[i][j];
+      calc_board[i][j] = board[i][j];
     }
   }
 
   for (int i = 0; i < ope.size(); ++i) {
-    swap(boardForCalc[x][y], boardForCalc[x + DX[ope[i]]][y + DY[ope[i]]]);
+    swap(calc_board[x][y], calc_board[x + DX[ope[i]]][y + DY[ope[i]]]);
     x += DX[ope[i]];
     y += DY[ope[i]];
   }
@@ -186,8 +186,8 @@ int calc_score(const vector<int>& ope)
   // 横の繋がり
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size - 1; ++j) {
-      if ((boardForCalc[i][j] & (1 << 2)) && (boardForCalc[i][j + 1] & (1 << 0))) {
-        uniteUF(i * board_size + j, i * board_size + j + 1);
+      if ((calc_board[i][j] & (1 << 2)) && (calc_board[i][j + 1] & (1 << 0))) {
+        unite(i * board_size + j, i * board_size + j + 1);
       }
     }
   }
@@ -195,8 +195,8 @@ int calc_score(const vector<int>& ope)
   // 縦の繋がり
   for (int i = 0; i < board_size - 1; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      if ((boardForCalc[i][j] & (1 << 3)) && (boardForCalc[i + 1][j] & (1 << 1))) {
-        uniteUF(i * board_size + j, (i + 1) * board_size + j);
+      if ((calc_board[i][j] & (1 << 3)) && (calc_board[i + 1][j] & (1 << 1))) {
+        unite(i * board_size + j, (i + 1) * board_size + j);
       }
     }
   }
@@ -207,13 +207,13 @@ int calc_score(const vector<int>& ope)
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
       int ij = i * board_size + j;
-      if (findUF(ij) == ij) {
-        if (cntUF[ij] == board_size * board_size - 1) {
+      if (find(ij) == ij) {
+        if (cnt[ij] == board_size * board_size - 1) {
           res = 500000.0 * (2.0 - (double)ope.size() / turn_limit);
           return res;
         }
         else {
-          res = max(res, (int)round(500000.0 * cntUF[ij] / (board_size * board_size - 1)));
+          res = max(res, (int)round(500000.0 * cnt[ij] / (board_size * board_size - 1)));
         }
       }
     }
@@ -222,10 +222,10 @@ int calc_score(const vector<int>& ope)
   return res;
 }
 
-void read_input(int problemNum)
+void read_input(int case_num)
 {
   std::ostringstream sout;
-  sout << std::setfill('0') << std::setw(4) << problemNum;
+  sout << std::setfill('0') << std::setw(4) << case_num;
   std::string numStr = sout.str();
   string fileNameIfs = "in/" + numStr + ".txt ";
   ifstream ifs(fileNameIfs.c_str());
@@ -375,15 +375,15 @@ void swap_adjacent(double temp)
 // 木を全探索
 namespace
 {
-  int dfsBoard[10][10];
+  int tree_board[10][10];
   bool CheckAllDfs(const vector<vector<int>>& vec)
   {
-    UFinit(board_size * board_size);
+    init(board_size * board_size);
     // 横の繋がり
     for (int i = 0; i < board_size; ++i) {
       for (int j = 0; j < board_size - 1; ++j) {
         if ((vec[i][j] & (1 << 2)) && (vec[i][j + 1] & (1 << 0))) {
-          uniteUF(i * board_size + j, i * board_size + j + 1);
+          unite(i * board_size + j, i * board_size + j + 1);
         }
       }
     }
@@ -392,12 +392,12 @@ namespace
     for (int i = 0; i < board_size - 1; ++i) {
       for (int j = 0; j < board_size; ++j) {
         if ((vec[i][j] & (1 << 3)) && (vec[i + 1][j] & (1 << 1))) {
-          uniteUF(i * board_size + j, (i + 1) * board_size + j);
+          unite(i * board_size + j, (i + 1) * board_size + j);
         }
       }
     }
 
-    if (cntUF[findUF(0)] == board_size * board_size - 1) {
+    if (cnt[find(0)] == board_size * board_size - 1) {
       return true;
     }
     return false;
@@ -405,16 +405,16 @@ namespace
 }  // namespace
 
 // 木を焼きなましで見つける
-int aniBoard[10][10];
-int bestMaxAniBoard[10][10];
-int calc_anneal_score()
+int anneal_board[10][10];
+int best_anneal_board[10][10];
+int calc_tree_score()
 {
-  UFinit(board_size * board_size);
+  init(board_size * board_size);
   // 横の繋がり
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size - 1; ++j) {
-      if ((aniBoard[i][j] & (1 << 2)) && (aniBoard[i][j + 1] & (1 << 0))) {
-        uniteUF(i * board_size + j, i * board_size + j + 1);
+      if ((anneal_board[i][j] & (1 << 2)) && (anneal_board[i][j + 1] & (1 << 0))) {
+        unite(i * board_size + j, i * board_size + j + 1);
       }
     }
   }
@@ -422,8 +422,8 @@ int calc_anneal_score()
   // 縦の繋がり
   for (int i = 0; i < board_size - 1; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      if ((aniBoard[i][j] & (1 << 3)) && (aniBoard[i + 1][j] & (1 << 1))) {
-        uniteUF(i * board_size + j, (i + 1) * board_size + j);
+      if ((anneal_board[i][j] & (1 << 3)) && (anneal_board[i + 1][j] & (1 << 1))) {
+        unite(i * board_size + j, (i + 1) * board_size + j);
       }
     }
   }
@@ -431,7 +431,7 @@ int calc_anneal_score()
   int MaxSize = 0;
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      MaxSize = max(MaxSize, cntUF[findUF(i * board_size + j)]);
+      MaxSize = max(MaxSize, cnt[find(i * board_size + j)]);
     }
     if (MaxSize >= board_size * board_size / 2) {
       break;
@@ -441,41 +441,41 @@ int calc_anneal_score()
   return MaxSize;
 }
 
-bool anneal_find_tree(bool isReset = false)
+bool find_tree_anneal(bool isReset = false)
 {
-  clock_t startAniTime, endAniTime;
-  const double AniTL = 0.1;
-  startAniTime = clock();
-  endAniTime = clock();
-  double nowAniTime = (double)(endAniTime - startAniTime) / CLOCKS_PER_SEC;
-  int loopAni = 0;
-  double startAniTemp = 0.1;
-  double endAniTemp = 0.0;
+  clock_t start_time, end_time;
+  const double ANNEAL_TIME_LIMIT = 0.1;
+  start_time = clock();
+  end_time = clock();
+  double elapsed = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+  int loop = 0;
+  double start_temp_anneal = 0.1;
+  double end_temp_anneal = 0.0;
 
   if (isReset) {
     for (int i = 0; i < board_size; ++i) {
       for (int j = 0; j < board_size; ++j) {
-        aniBoard[i][j] = board[i][j];
+        anneal_board[i][j] = board[i][j];
       }
     }
   }
 
   // カーソルは右下固定
-  swap(aniBoard[startX][startY], aniBoard[board_size - 1][board_size - 1]);
+  swap(anneal_board[startX][startY], anneal_board[board_size - 1][board_size - 1]);
 
-  int maxAniScore = calc_anneal_score();
-  int bestMaxAniScore = maxAniScore;
+  int max_score = calc_tree_score();
+  int best_max_score = max_score;
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      bestMaxAniBoard[i][j] = aniBoard[i][j];
+      best_anneal_board[i][j] = anneal_board[i][j];
     }
   }
 
   while (true) {
-    if (loopAni % 100 == 1) {
-      endAniTime = clock();
-      nowAniTime = (double)(endAniTime - startAniTime) / CLOCKS_PER_SEC;
-      if (nowAniTime > AniTL) { break; }
+    if (loop % 100 == 1) {
+      end_time = clock();
+      elapsed = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+      if (elapsed > ANNEAL_TIME_LIMIT) { break; }
     }
 
     int x1 = rand32() % board_size;
@@ -496,43 +496,43 @@ bool anneal_find_tree(bool isReset = false)
       continue;
     }
 
-    swap(aniBoard[x1][y1], aniBoard[x2][y2]);
-    int newPoint = calc_anneal_score();
+    swap(anneal_board[x1][y1], anneal_board[x2][y2]);
+    int newPoint = calc_tree_score();
 
-    int diffScore = newPoint - maxAniScore;
+    int diffScore = newPoint - max_score;
 
-    double temp = startAniTemp + (endAniTemp - startAniTemp) * nowAniTime / AniTL;
+    double temp = start_temp_anneal + (end_temp_anneal - start_temp_anneal) * elapsed / ANNEAL_TIME_LIMIT;
     double prob = exp((double)diffScore / temp);
     if (prob > rand_unit()) {
-      maxAniScore += diffScore;
-      if (maxAniScore > bestMaxAniScore) {
-        bestMaxAniScore = maxAniScore;
+      max_score += diffScore;
+      if (max_score > best_max_score) {
+        best_max_score = max_score;
         for (int i = 0; i < board_size; ++i) {
           for (int j = 0; j < board_size; ++j) {
-            bestMaxAniBoard[i][j] = aniBoard[i][j];
+            best_anneal_board[i][j] = anneal_board[i][j];
           }
         }
       }
     }
     else {
       // 元に戻す
-      swap(aniBoard[x1][y1], aniBoard[x2][y2]);
+      swap(anneal_board[x1][y1], anneal_board[x2][y2]);
     }
 
-    loopAni++;
-    if (bestMaxAniScore == board_size * board_size - 1) {
+    loop++;
+    if (best_max_score == board_size * board_size - 1) {
       break;
     }
   }
 
-  maxAniScore = bestMaxAniScore;
+  max_score = best_max_score;
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      aniBoard[i][j] = bestMaxAniBoard[i][j];
+      anneal_board[i][j] = best_anneal_board[i][j];
     }
   }
 
-  if (maxAniScore == board_size * board_size - 1) {
+  if (max_score == board_size * board_size - 1) {
     return true;
   }
   return false;
@@ -599,7 +599,7 @@ void init_kind_indices()
 {
   for (int i = 0; i < board_size; ++i) {
     for (int j = 0; j < board_size; ++j) {
-      kindNumbers[dfsBoard[i][j]].push_back(i * board_size + j);
+      kindNumbers[tree_board[i][j]].push_back(i * board_size + j);
       origin_positions[board[i][j]].push_back(P(i, j));
     }
   }
@@ -683,7 +683,7 @@ void apply_move(int& x, int& y, int nd, vector<vector<int>>& tmpBoard, vector<in
   y += DY[nd];
 }
 
-void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs, int mode = 0)
+void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii, int jj, vector<vector<int>>& tmpBoard, vector<int>& answer, int mode = 0)
 {
   int dp[10][10];
   int dir[10][10];
@@ -727,7 +727,7 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
     int a = que.front().first;
     int b = que.front().second;
     que.pop();
-    bool isFinish = false;
+    bool finished = false;
     for (int i = 0; i < 4; ++i) {
       int na = a + DX[i];
       int nb = b + DY[i];
@@ -736,29 +736,29 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
         que.push(P(na, nb));
         dir[na][nb] = i;
         if (na == tx && nb == ty) {
-          isFinish = true;
+          finished = true;
           break;
         }
       }
     }
-    if (isFinish) {
+    if (finished) {
       break;
     }
   }
 
-  vector<int> rev;
+  vector<int> reverse_path;
   int revX = tx, revY = ty;
   while (revX != x || revY != y) {
-    int revD = dir[revX][revY];
-    rev.push_back(revD);
-    revX -= DX[revD];
-    revY -= DY[revD];
+    int rev_dir = dir[revX][revY];
+    reverse_path.push_back(rev_dir);
+    revX -= DX[rev_dir];
+    revY -= DY[rev_dir];
   }
 
-  reverse(rev.begin(), rev.end());
+  reverse(reverse_path.begin(), reverse_path.end());
 
-  for (auto nd : rev) {
-    ansDfs.push_back(nd);
+  for (auto nd : reverse_path) {
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
@@ -768,7 +768,7 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
       swap(tmpBoard[x][y], tmpBoard[xx][yy]);
       swap(x, xx);
       swap(y, yy);
-      ansDfs.push_back(i);
+      answer.push_back(i);
       break;
     }
   }
@@ -776,17 +776,17 @@ void route_move_cursor(int& x, int& y, int& xx, int& yy, int tx, int ty, int ii,
 
 // 3×2マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
-void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& answer)
 {
   while (y != yy + 1) {
-    ansDfs.push_back(3);
+    answer.push_back(3);
     swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
     y++;
   }
   // 上左下右
   vector<int> order = { 0, 1, 2, 3, 2, 1, 0, 0, 3, 2, 1, 2, 3, 0, 0, 1, 2 };
   for (auto nd : order) {
-    ansDfs.push_back(nd);
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
@@ -795,22 +795,22 @@ void swap_vertical_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmp
 
 // 2×3マスを使って上にマスを入れ替える
 // (xx,yy) = (左上,右上)
-void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+void swap_horizontal_pair(int& x, int& y, int xx, int yy, vector<vector<int>>& tmpBoard, vector<int>& answer)
 {
   while (x != board_size - 1) {
-    apply_move(x, y, 2, tmpBoard, ansDfs);
+    apply_move(x, y, 2, tmpBoard, answer);
   }
   // 上左下右
   vector<int> order = { 1, 0, 3, 2, 3, 0, 1, 1, 2, 3, 0, 3, 2, 1, 1, 0, 3 };
   for (auto nd : order) {
-    ansDfs.push_back(nd);
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
   }
 }
 
-void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, vector<int>& answer)
 {
   // カーソル移動
   int dp[10][10];
@@ -836,7 +836,7 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
     int a = que.front().first;
     int b = que.front().second;
     que.pop();
-    bool isFinish = false;
+    bool finished = false;
     for (int i = 0; i < 4; ++i) {
       int na = a + DX[i];
       int nb = b + DY[i];
@@ -845,29 +845,29 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
         que.push(P(na, nb));
         dir[na][nb] = i;
         if (na == ii && nb == board_size - 1) {
-          isFinish = true;
+          finished = true;
           break;
         }
       }
     }
-    if (isFinish) {
+    if (finished) {
       break;
     }
   }
 
-  vector<int> rev;
+  vector<int> reverse_path;
   int revX = ii, revY = board_size - 1;
   while (revX != x || revY != y) {
-    int revD = dir[revX][revY];
-    rev.push_back(revD);
-    revX -= DX[revD];
-    revY -= DY[revD];
+    int rev_dir = dir[revX][revY];
+    reverse_path.push_back(rev_dir);
+    revX -= DX[rev_dir];
+    revY -= DY[rev_dir];
   }
 
-  reverse(rev.begin(), rev.end());
+  reverse(reverse_path.begin(), reverse_path.end());
 
-  for (auto nd : rev) {
-    ansDfs.push_back(nd);
+  for (auto nd : reverse_path) {
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
@@ -876,14 +876,14 @@ void fix_last_two_in_row(int& x, int& y, int ii, vector<vector<int>>& tmpBoard, 
   // 上左下右
   vector<int> order = { 1, 2 };
   for (auto nd : order) {
-    ansDfs.push_back(nd);
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
   }
 }
 
-void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& ansDfs)
+void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, vector<int>& answer)
 {
   // カーソル移動
   int dp[10][10];
@@ -912,7 +912,7 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
     int a = que.front().first;
     int b = que.front().second;
     que.pop();
-    bool isFinish = false;
+    bool finished = false;
     for (int i = 0; i < 4; ++i) {
       int na = a + DX[i];
       int nb = b + DY[i];
@@ -921,29 +921,29 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
         que.push(P(na, nb));
         dir[na][nb] = i;
         if (na == board_size - 1 && nb == jj) {
-          isFinish = true;
+          finished = true;
           break;
         }
       }
     }
-    if (isFinish) {
+    if (finished) {
       break;
     }
   }
 
-  vector<int> rev;
+  vector<int> reverse_path;
   int revX = board_size - 1, revY = jj;
   while (revX != x || revY != y) {
-    int revD = dir[revX][revY];
-    rev.push_back(revD);
-    revX -= DX[revD];
-    revY -= DY[revD];
+    int rev_dir = dir[revX][revY];
+    reverse_path.push_back(rev_dir);
+    revX -= DX[rev_dir];
+    revY -= DY[rev_dir];
   }
 
-  reverse(rev.begin(), rev.end());
+  reverse(reverse_path.begin(), reverse_path.end());
 
-  for (auto nd : rev) {
-    ansDfs.push_back(nd);
+  for (auto nd : reverse_path) {
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
@@ -952,7 +952,7 @@ void fix_last_two_in_col(int& x, int& y, int jj, vector<vector<int>>& tmpBoard, 
   // 上左下右
   vector<int> order = { 0, 3 };
   for (auto nd : order) {
-    ansDfs.push_back(nd);
+    answer.push_back(nd);
     swap(tmpBoard[x][y], tmpBoard[x + DX[nd]][y + DY[nd]]);
     x += DX[nd];
     y += DY[nd];
@@ -968,7 +968,7 @@ vector<int> build_route()
     }
   }
 
-  vector<int> ansDfs;
+  vector<int> answer;
 
   int x = startX;
   int y = startY;
@@ -976,12 +976,12 @@ vector<int> build_route()
   // 1列目から下から3列目まで完成させる
   for (int i = 0; i < board_size - 2; ++i) {
     for (int j = 0; j < board_size - 1; ++j) {
-      int num = aniBoard[i][j];
+      int num = anneal_board[i][j];
       if (j == board_size - 2) {
-        num = aniBoard[i][board_size - 1];
+        num = anneal_board[i][board_size - 1];
       }
 
-      vector<int> vxx, vyy;
+      vector<int> xs, ys;
       for (int k = 0; k < board_size; ++k) {
         for (int l = 0; l < board_size; ++l) {
           if (k < i) {
@@ -991,24 +991,24 @@ vector<int> build_route()
             continue;
           }
           if (tmpBoard[k][l] == num) {
-            vxx.push_back(k);
-            vyy.push_back(l);
+            xs.push_back(k);
+            ys.push_back(l);
           }
         }
       }
 
-      int miniScore = INF;
-      vector<int> miniVec;
+      int min_score = INF;
+      vector<int> min_moves;
       int keepX = x;
       int keepY = y;
-      int miniX = -1;
-      int miniY = -1;
+      int minX = -1;
+      int minY = -1;
       vector<vector<int>> keeptmpBoard;
-      for (int k = 0; k < vxx.size(); ++k) {
+      for (int k = 0; k < xs.size(); ++k) {
         x = keepX;
         y = keepY;
-        int xx = vxx[k];
-        int yy = vyy[k];
+        int xx = xs[k];
+        int yy = ys[k];
         vector<int> tmpVec;
         vector<vector<int>> tmptmpBoard = tmpBoard;
         // 適切な位置にピースを移動させる
@@ -1027,60 +1027,60 @@ vector<int> build_route()
           }
         }
 
-        if (tmpVec.size() < miniScore || rand32() % 100 == 0) {
-          miniScore = tmpVec.size();
-          miniVec = tmpVec;
+        if (tmpVec.size() < min_score || rand32() % 100 == 0) {
+          min_score = tmpVec.size();
+          min_moves = tmpVec;
           keeptmpBoard = tmptmpBoard;
-          miniX = x;
-          miniY = y;
+          minX = x;
+          minY = y;
         }
       }
 
-      for (auto& nd : miniVec) {
-        ansDfs.push_back(nd);
+      for (auto& nd : min_moves) {
+        answer.push_back(nd);
       }
-      x = miniX;
-      y = miniY;
+      x = minX;
+      y = minY;
       tmpBoard = keeptmpBoard;
     }
 
     if (x == i && y == board_size - 1) {
-      ansDfs.push_back(2);
+      answer.push_back(2);
       swap(tmpBoard[x][y], tmpBoard[x + 1][y]);
       x++;
     }
 
     // 最後の2個を揃える
-    if (tmpBoard[i][board_size - 1] == aniBoard[i][board_size - 2]) {
-      swap_vertical_pair(x, y, i, board_size - 2, tmpBoard, ansDfs);
+    if (tmpBoard[i][board_size - 1] == anneal_board[i][board_size - 2]) {
+      swap_vertical_pair(x, y, i, board_size - 2, tmpBoard, answer);
     }
     else {
-      int num = aniBoard[i][board_size - 2];
-      vector<int> vxx, vyy;
+      int num = anneal_board[i][board_size - 2];
+      vector<int> xs, ys;
       for (int k = 0; k < board_size; ++k) {
         for (int l = 0; l < board_size; ++l) {
           if (k <= i) {
             continue;
           }
           if (tmpBoard[k][l] == num) {
-            vxx.push_back(k);
-            vyy.push_back(l);
+            xs.push_back(k);
+            ys.push_back(l);
           }
         }
       }
 
-      int miniScore = INF;
-      vector<int> miniVec;
+      int min_score = INF;
+      vector<int> min_moves;
       int keepX = x;
       int keepY = y;
-      int miniX = -1;
-      int miniY = -1;
+      int minX = -1;
+      int minY = -1;
       vector<vector<int>> keeptmpBoard;
-      for (int k = 0; k < vxx.size(); ++k) {
+      for (int k = 0; k < xs.size(); ++k) {
         x = keepX;
         y = keepY;
-        int xx = vxx[k];
-        int yy = vyy[k];
+        int xx = xs[k];
+        int yy = ys[k];
         vector<int> tmpVec;
         vector<vector<int>> tmptmpBoard = tmpBoard;
 
@@ -1099,30 +1099,30 @@ vector<int> build_route()
           }
         }
 
-        if (tmpVec.size() < miniScore || rand32() % 100 == 0) {
-          miniScore = tmpVec.size();
-          miniVec = tmpVec;
+        if (tmpVec.size() < min_score || rand32() % 100 == 0) {
+          min_score = tmpVec.size();
+          min_moves = tmpVec;
           keeptmpBoard = tmptmpBoard;
-          miniX = x;
-          miniY = y;
+          minX = x;
+          minY = y;
         }
       }
 
-      for (auto& nd : miniVec) {
-        ansDfs.push_back(nd);
+      for (auto& nd : min_moves) {
+        answer.push_back(nd);
       }
-      x = miniX;
-      y = miniY;
+      x = minX;
+      y = minY;
       tmpBoard = keeptmpBoard;
 
-      fix_last_two_in_row(x, y, i, tmpBoard, ansDfs);
+      fix_last_two_in_row(x, y, i, tmpBoard, answer);
     }
   }
 
   // 下2列をそろえる
   for (int j = 0; j < board_size - 2; ++j) {
     // 下のマスを上のマスの位置に持ってくる
-    int num = aniBoard[board_size - 1][j];
+    int num = anneal_board[board_size - 1][j];
     int xx = -1, yy = -1;
     for (int k = 0; k < board_size; ++k) {
       for (int l = 0; l < board_size; ++l) {
@@ -1146,29 +1146,29 @@ vector<int> build_route()
     while (xx != board_size - 2 || yy != j) {
       if (yy != j) {
         if (yy < j) {
-          route_move_cursor(x, y, xx, yy, xx, yy + 1, board_size - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy + 1, board_size - 2, j, tmpBoard, answer, 2);
         }
         else {
-          route_move_cursor(x, y, xx, yy, xx, yy - 1, board_size - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, board_size - 2, j, tmpBoard, answer, 2);
         }
       }
       else if (xx != board_size - 2) {
-        route_move_cursor(x, y, xx, yy, xx - 1, yy, board_size - 2, j, tmpBoard, ansDfs);
+        route_move_cursor(x, y, xx, yy, xx - 1, yy, board_size - 2, j, tmpBoard, answer);
       }
     }
 
     if (x == board_size - 1 && y == j) {
-      ansDfs.push_back(3);
+      answer.push_back(3);
       swap(tmpBoard[x][y], tmpBoard[x][y + 1]);
       y++;
     }
 
     // 最後の2個を揃える
-    if (tmpBoard[board_size - 1][j] == aniBoard[board_size - 2][j]) {
-      swap_horizontal_pair(x, y, board_size - 2, j, tmpBoard, ansDfs);
+    if (tmpBoard[board_size - 1][j] == anneal_board[board_size - 2][j]) {
+      swap_horizontal_pair(x, y, board_size - 2, j, tmpBoard, answer);
     }
     else {
-      int num = aniBoard[board_size - 2][j];
+      int num = anneal_board[board_size - 2][j];
       int xx = -1, yy = -1;
       for (int k = 0; k < board_size; ++k) {
         for (int l = 0; l < board_size; ++l) {
@@ -1191,41 +1191,41 @@ vector<int> build_route()
       while (xx != board_size - 2 || yy != j + 1) {
         if (xx != board_size - 2) {
           if (xx < board_size - 2) {
-            route_move_cursor(x, y, xx, yy, xx + 1, yy, board_size - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx + 1, yy, board_size - 2, j, tmpBoard, answer, 2);
           }
           else {
-            route_move_cursor(x, y, xx, yy, xx - 1, yy, board_size - 2, j, tmpBoard, ansDfs, 2);
+            route_move_cursor(x, y, xx, yy, xx - 1, yy, board_size - 2, j, tmpBoard, answer, 2);
           }
         }
         else if (yy != j + 1) {
-          route_move_cursor(x, y, xx, yy, xx, yy - 1, board_size - 2, j, tmpBoard, ansDfs, 2);
+          route_move_cursor(x, y, xx, yy, xx, yy - 1, board_size - 2, j, tmpBoard, answer, 2);
         }
       }
-      fix_last_two_in_col(x, y, j, tmpBoard, ansDfs);
+      fix_last_two_in_col(x, y, j, tmpBoard, answer);
     }
   }
 
   // カーソルを右下に持ってくる
   while (x != board_size - 1 || y != board_size - 1) {
     if (y != board_size - 1) {
-      apply_move(x, y, 3, tmpBoard, ansDfs);
+      apply_move(x, y, 3, tmpBoard, answer);
     }
     else {
-      apply_move(x, y, 2, tmpBoard, ansDfs);
+      apply_move(x, y, 2, tmpBoard, answer);
     }
   }
 
   if (!CheckAllDfs(tmpBoard)) {
-    ansDfs.clear();
+    answer.clear();
   }
 
-  return ansDfs;
+  return answer;
 }
 
-int exec_mode = 0; // 0: 標準出力, 1: ファイル出力
+int mode = 0; // 0: 標準出力, 1: ファイル出力
 void output_data(int case_num)
 {
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
     for (int i = 0; i < route.size(); ++i) {
       cout << DIR_CHAR[route[i]];
@@ -1245,38 +1245,38 @@ void output_data(int case_num)
   }
 }
 
-int solve_case(int mode, int problemNum = 0)
+int solve_case(int mode, int case_num = 0)
 {
   start_timer();
 
   // 入力部
-  read_input(problemNum);
+  read_input(case_num);
 
   // 木を1つ見つける
-  bool isFind = false;
+  bool found = false;
   {
     // 焼きなまし
     for (int _ = 0; _ < 25; ++_) {
       bool isReset = true;
-      if (anneal_find_tree(isReset)) {
-        isFind = true;
+      if (find_tree_anneal(isReset)) {
+        found = true;
         break;
       }
     }
     for (int i = 0; i < board_size; ++i) {
       for (int j = 0; j < board_size; ++j) {
-        dfsBoard[i][j] = aniBoard[i][j];
+        tree_board[i][j] = anneal_board[i][j];
       }
     }
   }
 
-  if (isFind) {
+  if (found) {
     // それぞれのピースに番号を付ける
     init_kind_indices();
     init_piece_numbers();
 
-    vector<int> ansDfs = build_route();
-    route = ansDfs;
+    vector<int> answer = build_route();
+    route = answer;
     cur_score = calc_score(route);
 
     best_route = route;
@@ -1287,11 +1287,11 @@ int solve_case(int mode, int problemNum = 0)
     while (true) {
       if (loop % 10 == 1) {
         now_time = get_elapsed_time();
-        if (now_time > TL) { break; }
+        if (now_time > TIME_LIMIT) { break; }
       }
-      pair<P, P> pp[2];
+      pair<P, P> swap_pairs[2];
       for (int i = 0; i < 2; ++i) {
-        pp[i] = shuffle_same_kind_piece();
+        swap_pairs[i] = shuffle_same_kind_piece();
       }
 
       vector<int> tmpAns = build_route();
@@ -1299,7 +1299,7 @@ int solve_case(int mode, int problemNum = 0)
 
       int diffScore = tmpScore - cur_score;
 
-      double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+      double temp = start_temp + (end_temp - start_temp) * now_time / TIME_LIMIT;
       double prob = exp((double)diffScore / temp);
       if (prob > rand_unit()) {
         route = tmpAns;
@@ -1313,7 +1313,7 @@ int solve_case(int mode, int problemNum = 0)
       else {
         // 元に戻す
         for (int i = 0; i < 2; ++i) {
-          swap(piece_number[pp[i].first.first][pp[i].first.second], piece_number[pp[i].second.first][pp[i].second.second]);
+          swap(piece_number[swap_pairs[i].first.first][swap_pairs[i].first.second], piece_number[swap_pairs[i].second.first][swap_pairs[i].second.second]);
         }
       }
       loop++;
@@ -1346,10 +1346,10 @@ int solve_case(int mode, int problemNum = 0)
     while (true) {
       if (loop % 100 == 1) {
         now_time = get_elapsed_time();
-        if (now_time > TL) { break; }
+        if (now_time > TIME_LIMIT) { break; }
       }
 
-      double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+      double temp = start_temp + (end_temp - start_temp) * now_time / TIME_LIMIT;
       if (loop % 10 == 0) {
         shuffle_suffix(temp);
       }
@@ -1371,24 +1371,24 @@ int solve_case(int mode, int problemNum = 0)
     cout << get_elapsed_time() << "sec." << endl;
   }
 
-  output_data(problemNum);
+  output_data(case_num);
 
   return 0;
 }
 
 int main()
 {
-  exec_mode = 10;
+  mode = 10;
 
-  if (exec_mode == 0) {
-    solve_case(exec_mode);
+  if (mode == 0) {
+    solve_case(mode);
   }
-  else if (exec_mode == 1) {
-    solve_case(exec_mode, 0);
+  else if (mode == 1) {
+    solve_case(mode, 0);
   }
-  else if (exec_mode == 10) {
+  else if (mode == 10) {
     for (int _ = 4; _ < 5; ++_) {
-      solve_case(exec_mode, _);
+      solve_case(mode, _);
       reset_state();
     }
   }

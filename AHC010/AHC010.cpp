@@ -86,20 +86,20 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
 
 const double TIME_LIMIT = 1.8;
-int exec_mode;
+int mode;
 
-void input_data(int case_num)
+void input_data(int cn)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << cn << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
@@ -110,25 +110,25 @@ void input_data(int case_num)
   }
 }
 
-ll calculate_score()
+ll calc_score()
 {
   ll res = 0;
   return res;
 }
 
-void output_data(int case_num)
+void output_data(int cn)
 {
-  if (exec_mode != 0) {
+  if (mode != 0) {
 
   }
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
   }
   else {
     // ファイル出力
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << cn << ".txt";
     ofstream ofs(oss.str());
 
     if (ofs.is_open()) {
@@ -137,40 +137,40 @@ void output_data(int case_num)
   }
 }
 
-ll solve_case(int case_num)
+ll solve(int cn)
 {
   start_timer();
 
-  input_data(case_num);
+  input_data(cn);
 
-  output_data(case_num);
+  output_data(cn);
 
   ll score = 0;
-  if (exec_mode != 0) {
-    score = calculate_score();
+  if (mode != 0) {
+    score = calc_score();
   }
   return score;
 }
 
 int main()
 {
-  exec_mode = 2;
+  mode = 2;
 
-  if (exec_mode == 0) {
-    solve_case(0);
+  if (mode == 0) {
+    solve(0);
   }
-  else if (exec_mode <= 2) {
-    ll sum_score = 0;
+  else if (mode <= 2) {
+    ll sum = 0;
     for (int i = 0; i < 15; i++) {
-      ll score = solve_case(i);
-      sum_score += score;
-      if (exec_mode == 1) {
+      ll score = solve(i);
+      sum += score;
+      if (mode == 1) {
         cerr << score << endl;
       }
       else {
         cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
-          << "sum = " << setw(5) << sum_score << ", "
+          << "sum = " << setw(5) << sum << ", "
           << "time = " << setw(5) << get_elapsed_time() << ", "
           << endl;
       }

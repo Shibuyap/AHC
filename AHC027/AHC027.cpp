@@ -34,7 +34,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -50,9 +50,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -82,10 +82,10 @@ void SetUp()
 }
 
 // 入力受け取り
-void Input(int problemNum)
+void Input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   // 標準入力する
@@ -149,15 +149,15 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
     for (int i = 0; i < 4; ++i)
     {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
+      strNum += (char)(case_num % 10 + '0');
+      case_num /= 10;
     }
     reverse(strNum.begin(), strNum.end());
     fileNameOfs += strNum + ".txt";
@@ -222,20 +222,20 @@ vector<int> MakeLoop(int st)
   return res;
 }
 
-ll Solve(int probNum)
+ll Solve(int case_num)
 {
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(case_num);
 
   vector<int> loop = MakeLoop(0);
   ans = loop;
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
 
   // 解答を出力
   Output(ofs);

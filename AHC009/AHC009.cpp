@@ -34,7 +34,7 @@ typedef pair<int, int> P;
 const int INF = 1001001001;
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
-const char DIR_CHAR[4] = { 'U', 'L', 'D', 'R' };
+const char DC[4] = { 'U', 'L', 'D', 'R' };
 
 // タイマー
 namespace
@@ -76,7 +76,7 @@ namespace /* 乱数ライブラリ */
   }
 } // namespace
 
-int exec_mode;
+int mode;
 
 namespace /* 変数 */
 {
@@ -84,12 +84,12 @@ namespace /* 変数 */
   const int BOARD_SIZE = 20;
   const int MAX_ROUTE_LEN = 200;
   int sx, sy, tx, ty;
-  double forgetProb;
-  int hWall[BOARD_SIZE][BOARD_SIZE];
-  int vWall[BOARD_SIZE][BOARD_SIZE];
+  double forget_prob;
+  int h_wall[BOARD_SIZE][BOARD_SIZE];
+  int v_wall[BOARD_SIZE][BOARD_SIZE];
 
   // 解答用変数
-  ll cur_score;
+  ll score;
   vector<int> route;
 
   // 焼きなまし用変数
@@ -98,69 +98,69 @@ namespace /* 変数 */
 
 } // namespace
 
-void input_data(int case_num)
+void input_data(int cn)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << cn << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
     // 標準入力
-    cin >> sx >> sy >> tx >> ty >> forgetProb;
+    cin >> sx >> sy >> tx >> ty >> forget_prob;
     for (int i = 0; i < BOARD_SIZE; ++i) {
       for (int j = 0; j < BOARD_SIZE - 1; ++j) {
-        char ccc;
-        cin >> ccc;
-        hWall[i][j] = ccc - '0';
+        char c;
+        cin >> c;
+        h_wall[i][j] = c - '0';
       }
     }
     for (int i = 0; i < BOARD_SIZE - 1; ++i) {
       for (int j = 0; j < BOARD_SIZE; ++j) {
-        char ccc;
-        cin >> ccc;
-        vWall[i][j] = ccc - '0';
+        char c;
+        cin >> c;
+        v_wall[i][j] = c - '0';
       }
     }
   }
   else {
     // ファイル入力
-    ifs >> sx >> sy >> tx >> ty >> forgetProb;
+    ifs >> sx >> sy >> tx >> ty >> forget_prob;
     for (int i = 0; i < BOARD_SIZE; ++i) {
       for (int j = 0; j < BOARD_SIZE - 1; ++j) {
-        char ccc;
-        ifs >> ccc;
-        hWall[i][j] = ccc - '0';
+        char c;
+        ifs >> c;
+        h_wall[i][j] = c - '0';
       }
     }
     for (int i = 0; i < BOARD_SIZE - 1; ++i) {
       for (int j = 0; j < BOARD_SIZE; ++j) {
-        char ccc;
-        ifs >> ccc;
-        vWall[i][j] = ccc - '0';
+        char c;
+        ifs >> c;
+        v_wall[i][j] = c - '0';
       }
     }
   }
 }
 
-void output_data(int case_num)
+void output_data(int cn)
 {
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
     for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {
-      cout << DIR_CHAR[route[i]];
+      cout << DC[route[i]];
     }
-    cout << '¥n';
+    cout << '\n';
   }
   else {
     // ファイル出力
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << cn << ".txt";
     ofstream ofs(oss.str());
 
     for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {
-      ofs << DIR_CHAR[route[i]];
+      ofs << DC[route[i]];
     }
-    ofs << '¥n';
+    ofs << '\n';
   }
 }
 
@@ -168,69 +168,69 @@ void output_data(int case_num)
 ll simulate_score(vector<int>& vec)
 {
   const int TRIALS = 100;
-  double totalReward = 0.0;
+  double total = 0.0;
 
   for (int trial = 0; trial < TRIALS; ++trial) {
     int len = vec.size();
     int row = sx, col = sy;
 
     for (int step = 0; step < len; ++step) {
-      if (Rand01() < forgetProb) {
+      if (Rand01() < forget_prob) {
         // 忘却：その場に留まる
       }
       else {
         int dir = vec[step];
 
         if (dir == 0) {
-          if (row == 0 || vWall[row - 1][col])
+          if (row == 0 || v_wall[row - 1][col])
             continue;
         }
         if (dir == 1) {
-          if (col == 0 || hWall[row][col - 1])
+          if (col == 0 || h_wall[row][col - 1])
             continue;
         }
         if (dir == 2) {
-          if (row == 19 || vWall[row][col])
+          if (row == 19 || v_wall[row][col])
             continue;
         }
         if (dir == 3) {
-          if (col == 19 || hWall[row][col])
+          if (col == 19 || h_wall[row][col])
             continue;
         }
 
         row += dx[dir];
         col += dy[dir];
         if (row == tx && col == ty) {
-          totalReward += 400 - step;
+          total += 400 - step;
           break;
         }
       }
     }
   }
-  return (totalReward / TRIALS) * 250000.0;
+  return (total / TRIALS) * 250000.0;
 }
 
-int Solve(int caseId)
+int Solve(int cn)
 {
   start_timer();
 
-  input_data(caseId);
+  input_data(cn);
 
   route.clear();
   for (int i = 0; i < MAX_ROUTE_LEN; ++i) {
     route.push_back(Rand() % 4);
   }
-  cur_score = simulate_score(route);
+  score = simulate_score(route);
 
   /* ──────────────────────  Dijkstra 前処理  ────────────────────── */
   int cost[BOARD_SIZE][BOARD_SIZE];
-  int prevDir[21][21];
-  int segLen[BOARD_SIZE][BOARD_SIZE];
+  int prev_dir[21][21];
+  int seg_len[BOARD_SIZE][BOARD_SIZE];
   for (int r = 0; r < BOARD_SIZE; ++r) {
     for (int c = 0; c < BOARD_SIZE; ++c) {
       cost[r][c] = INF;
-      prevDir[20][20] = -1;
-      segLen[r][c] = -1;
+      prev_dir[20][20] = -1;
+      seg_len[r][c] = -1;
     }
   }
 
@@ -250,50 +250,50 @@ int Solve(int caseId)
       continue;
 
     for (int d = 0; d < 4; ++d) {
-      int nextRow = row, nextCol = col;
+      int nr = row, nc = col;
       int steps = 0;
 
       if (d == 0) {
-        while (nextRow != 0 && vWall[nextRow - 1][nextCol] == 0) {
-          --nextRow;
+        while (nr != 0 && v_wall[nr - 1][nc] == 0) {
+          --nr;
           ++steps;
-          if (nextRow == tx && nextCol == ty)
+          if (nr == tx && nc == ty)
             break;
         }
       }
       if (d == 1) {
-        while (nextCol != 0 && hWall[nextRow][nextCol - 1] == 0) {
-          --nextCol;
+        while (nc != 0 && h_wall[nr][nc - 1] == 0) {
+          --nc;
           ++steps;
-          if (nextRow == tx && nextCol == ty)
+          if (nr == tx && nc == ty)
             break;
         }
       }
       if (d == 2) {
-        while (nextRow != 19 && vWall[nextRow][nextCol] == 0) {
-          ++nextRow;
+        while (nr != 19 && v_wall[nr][nc] == 0) {
+          ++nr;
           ++steps;
-          if (nextRow == tx && nextCol == ty)
+          if (nr == tx && nc == ty)
             break;
         }
       }
       if (d == 3) {
-        while (nextCol != 19 && hWall[nextRow][nextCol] == 0) {
-          ++nextCol;
+        while (nc != 19 && h_wall[nr][nc] == 0) {
+          ++nc;
           ++steps;
-          if (nextRow == tx && nextCol == ty)
+          if (nr == tx && nc == ty)
             break;
         }
       }
-      if (nextRow == row && nextCol == col)
+      if (nr == row && nc == col)
         continue;
 
-      int newCost = cost[row][col] + steps + forgetProb * 15;
-      if (cost[nextRow][nextCol] > newCost) {
-        cost[nextRow][nextCol] = newCost;
-        segLen[nextRow][nextCol] = steps;
-        prevDir[nextRow][nextCol] = d;
-        pq.push({ newCost, {nextRow, nextCol} });
+      int newCost = cost[row][col] + steps + forget_prob * 15;
+      if (cost[nr][nc] > newCost) {
+        cost[nr][nc] = newCost;
+        seg_len[nr][nc] = steps;
+        prev_dir[nr][nc] = d;
+        pq.push({ newCost, {nr, nc} });
       }
     }
   }
@@ -307,27 +307,27 @@ int Solve(int caseId)
     route.clear();
     int row = tx, col = ty;
     while (row != sx || col != sy) {
-      int d = prevDir[row][col];
-      int steps = segLen[row][col];
-      int nextRow = row - dx[d] * steps;
-      int nextCol = col - dy[d] * steps;
+      int d = prev_dir[row][col];
+      int steps = seg_len[row][col];
+      int nr = row - dx[d] * steps;
+      int nc = col - dy[d] * steps;
 
-      for (int k = 0; k < static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15); ++k)
+      for (int k = 0; k < static_cast<int>(steps / (1.0 - forget_prob) + forget_prob * 15); ++k)
         route.push_back(d);
 
-      row = nextRow;
-      col = nextCol;
+      row = nr;
+      col = nc;
     }
     reverse(route.begin(), route.end());
     while (route.size() < MAX_ROUTE_LEN)
       route.push_back(rand() % 4);
-    cur_score = simulate_score(route);
+    score = simulate_score(route);
   }
 
-  bool needRandomInit = false;
+  bool need_random = false;
   best_score = -1;
   if (route.size() > MAX_ROUTE_LEN) {
-    bool foundFit = false;
+    bool found = false;
     for (int di = 0; di < 10; ++di) {
       for (int dj = 0; dj < 10; ++dj) {
         route.clear();
@@ -337,17 +337,17 @@ int Solve(int caseId)
         }
 
         while (row != sx || col != sy) {
-          int d = prevDir[row][col];
-          int steps = segLen[row][col];
-          int nextRow = row - dx[d] * steps;
-          int nextCol = col - dy[d] * steps;
+          int d = prev_dir[row][col];
+          int steps = seg_len[row][col];
+          int nr = row - dx[d] * steps;
+          int nc = col - dy[d] * steps;
 
-          for (int k = 0; k < static_cast<int>(steps / (1.0 - forgetProb) + forgetProb * 15); ++k) {
+          for (int k = 0; k < static_cast<int>(steps / (1.0 - forget_prob) + forget_prob * 15); ++k) {
             route.push_back(d);
           }
 
-          row = nextRow;
-          col = nextCol;
+          row = nr;
+          col = nc;
         }
         reverse(route.begin(), route.end());
         while (route.size() < MAX_ROUTE_LEN) {
@@ -355,38 +355,38 @@ int Solve(int caseId)
         }
 
         if (route.size() == MAX_ROUTE_LEN) {
-          foundFit = true;
-          needRandomInit = true;
-          cur_score = simulate_score(route);
-          if (cur_score > best_score) {
-            best_score = cur_score;
+          found = true;
+          need_random = true;
+          score = simulate_score(route);
+          if (score > best_score) {
+            best_score = score;
             best_route = route;
           }
         }
       }
     }
-    if (!foundFit) {
+    if (!found) {
       route.clear();
       for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) route.push_back(rand() % 4);
     }
     else {
       route = best_route;
-      cur_score = best_score;
-      if (cur_score == -1)
+      score = best_score;
+      if (score == -1)
         for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) route.push_back(rand() % 4);
     }
   }
 
   /* ──────────────────────  焼きなまし  ────────────────────── */
   int iter = 0;
-  if (needRandomInit || route.size() > MAX_ROUTE_LEN) {
-    if (!needRandomInit) {
+  if (need_random || route.size() > MAX_ROUTE_LEN) {
+    if (!need_random) {
       route.clear();
       for (int i = 0; i < MAX_ROUTE_LEN; ++i) route.push_back(Rand() % 4);
     }
-    cur_score = simulate_score(route);
+    score = simulate_score(route);
     best_route = route;
-    best_score = cur_score;
+    best_score = score;
 
     double elapsed = get_elapsed_time();
     const double timeLimit = 1.9;
@@ -406,15 +406,15 @@ int Solve(int caseId)
       route[pos] = newDir;
 
       int candScore = simulate_score(route);
-      int diff = candScore - cur_score;
+      int diff = candScore - score;
 
       double temp = tempInit + (tempFinal - tempInit) * elapsed / timeLimit;
       double prob = exp(diff / temp);
 
       if (diff > 0 || prob > Rand01()) {
-        cur_score = candScore;
-        if (cur_score > best_score) {
-          best_score = cur_score;
+        score = candScore;
+        if (score > best_score) {
+          best_score = score;
           best_route = route;
         }
       }
@@ -423,15 +423,15 @@ int Solve(int caseId)
       }
     }
     route = best_route;
-    cur_score = best_score;
+    score = best_score;
   }
 
-  output_data(caseId);
+  output_data(cn);
 
-  if (exec_mode != 0) {
+  if (mode != 0) {
     cout << "route.size() = " << route.size() << endl;
     cout << "iter = " << iter << endl;
-    cout << cur_score << endl;
+    cout << score << endl;
     cout << get_elapsed_time() << " sec." << endl;
   }
   return 0;
@@ -439,12 +439,12 @@ int Solve(int caseId)
 
 int main()
 {
-  exec_mode = 1;
+  mode = 1;
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     Solve(8);
   }
-  else if (exec_mode == 1) {
+  else if (mode == 1) {
     for (int i = 1; i < 10; ++i)
     {
       cout << i << endl;

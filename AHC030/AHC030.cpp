@@ -54,7 +54,7 @@ const ll D18 = 1000000000000000000LL;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -70,9 +70,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -89,7 +89,7 @@ double TL = 2.5;
 int mode;
 double g_cost;
 int g_query2Count;
-clock_t g_startTime, g_endTime;
+clock_t start_time_clock, end_time_clock;
 
 const int MAX_N = 20;
 const int MAX_M = 20;
@@ -123,10 +123,10 @@ int localAnsGrid[MAX_N][MAX_N];
 vector<P> localAns;
 double sampleEs[3 * MAX_N * MAX_N];
 
-double GetNowTime()
+double get_elapsed_time()
 {
-  g_endTime = clock();
-  double nowTime = (double)(g_endTime - g_startTime) / CLOCKS_PER_SEC;
+  end_time_clock = clock();
+  double nowTime = (double)(end_time_clock - start_time_clock) / CLOCKS_PER_SEC;
   return nowTime;
 }
 
@@ -150,31 +150,31 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
     }
   }
   if (isMakeN && isMakeM) {
-    n = Rand() % (20 - 10 + 1) + 10;
+    n = rand_xorshift() % (20 - 10 + 1) + 10;
     int ma = n * n / 20;
-    m = Rand() % (ma - 2 + 1) + 2;
+    m = rand_xorshift() % (ma - 2 + 1) + 2;
   }
   else if (isMakeN && !isMakeM) {
     while (true) {
-      n = Rand() % (20 - 10 + 1) + 10;
+      n = rand_xorshift() % (20 - 10 + 1) + 10;
       int ma = n * n / 20;
       if (m <= ma) { break; }
     }
   }
   else if (!isMakeN && !isMakeM) {
     int ma = n * n / 20;
-    m = Rand() % (ma - 2 + 1) + 2;
+    m = rand_xorshift() % (ma - 2 + 1) + 2;
   }
 
   if (isMakeEps) {
-    eps = (double)(Rand() % (20 - 1 + 1) + 1) * 0.01;
+    eps = (double)(rand_xorshift() % (20 - 1 + 1) + 1) * 0.01;
     intEps = static_cast<int>(round(eps * 100 + 0.2));
   }
   {
-    int paraA = (Rand() % (n * n / 2 - n * n / 5 + 1) + n * n / 5) / m;
-    int paraD = Rand() % ((paraA - 4) - 0 + 1) + 0;
+    int paraA = (rand_xorshift() % (n * n / 2 - n * n / 5 + 1) + n * n / 5) / m;
+    int paraD = rand_xorshift() % ((paraA - 4) - 0 + 1) + 0;
     for (int i = 0; i < m; ++i) {
-      d[i] = Rand() % ((paraA + paraD) - (paraA - paraD) + 1) + (paraA - paraD);
+      d[i] = rand_xorshift() % ((paraA + paraD) - (paraA - paraD) + 1) + (paraA - paraD);
       int grid[MAX_N][MAX_N];
       for (int j = 0; j < n; ++j) {
         for (int k = 0; k < n; ++k) {
@@ -196,7 +196,7 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
           }
         }
         vector<P> v(se.begin(), se.end());
-        P p = v[Rand() % v.size()];
+        P p = v[rand_xorshift() % v.size()];
         grid[p.first][p.second] = 1;
       }
       int miX = INF, miY = INF;
@@ -223,8 +223,8 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
       }
 
       // ローカルテスタ変数
-      int sx = Rand() % ((n - 1 - (maX - miX)) - 0 + 1);
-      int sy = Rand() % ((n - 1 - (maY - miY)) - 0 + 1);
+      int sx = rand_xorshift() % ((n - 1 - (maX - miX)) - 0 + 1);
+      int sy = rand_xorshift() % ((n - 1 - (maY - miY)) - 0 + 1);
       di[i] = sx;
       dj[i] = sy;
       for (int j = 0; j < n; ++j) {
@@ -340,11 +340,11 @@ void SetUp()
 }
 
 // 入力受け取り
-void Input(int problemNum)
+void Input(int case_num)
 {
   if (mode == 0 || mode == 1) {
     std::ostringstream oss;
-    oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+    oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ifstream ifs(oss.str());
 
     // 標準入力する
@@ -420,19 +420,19 @@ void Initialize()
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
+    string filename = "./out/";
     string strNum;
     for (int i = 0; i < 4; ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
+      strNum += (char)(case_num % 10 + '0');
+      case_num /= 10;
     }
     reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
+    filename += strNum + ".txt";
 
-    ofs.open(fileNameOfs);
+    ofs.open(filename);
   }
 }
 
@@ -1220,7 +1220,7 @@ bool Method3_CheckUniquePattern(const vector<P>& ones, ofstream& ofs, int& cellC
     int x = p.first;
     int y = p.second;
     vector<P> allKouho;
-    if (GetNowTime() < 1.0) {
+    if (get_elapsed_time() < 1.0) {
       allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
     }
     else {
@@ -1296,7 +1296,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cellCo
     vector<vector<int>> nums(n, vector<int>(n, 0));
 
     vector<P> allKouho;
-    if (GetNowTime() < 1.0) {
+    if (get_elapsed_time() < 1.0) {
       allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
     }
     else {
@@ -1359,8 +1359,8 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cellCo
         ofs << "# random choice, kouhoCount = " << minKouhoCount << endl;
       }
       while (nx == -1) {
-        int gridSquaredx = Rand() % n;
-        int gridSquaredy = Rand() % n;
+        int gridSquaredx = rand_xorshift() % n;
+        int gridSquaredy = rand_xorshift() % n;
         if (m3_used[gridSquaredx][gridSquaredy] == -1) {
           nx = gridSquaredx;
           ny = gridSquaredy;
@@ -1534,22 +1534,22 @@ void Method4(int kakuteiCount, ofstream& ofs)
   }
 }
 
-ll Solve(int probNum)
+ll Solve(int case_num)
 {
-  g_startTime = clock();
-  g_endTime = clock();
+  start_time_clock = clock();
+  end_time_clock = clock();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(case_num);
 
   Initialize();
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
 
   // 解答を出力
   ll para = hyperParams[mIndex][epsIndex];
@@ -1628,7 +1628,7 @@ void Battle()
         newPara = solverNum * D10;
       }
       else if (solverNum == 1) {
-        int query2Size = Rand() % 9 + 1;
+        int query2Size = rand_xorshift() % 9 + 1;
         newPara = solverNum * D10 + query2Size;
       }
     }

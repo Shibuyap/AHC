@@ -144,10 +144,10 @@ void resetGlobalState()
   for (int i = 0; i < TASK_COUNT; ++i) { task_paths[i].clear(); }
 }
 
-void readInput(int problemNum)
+void readInput(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   int _n, _m;
@@ -185,19 +185,19 @@ void readInput(int problemNum)
   }
 }
 
-void openOutputFile(int probNum, ofstream& ofs)
+void openOutputFile(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
+    string filename = "./out/";
     string strNum;
     for (int i = 0; i < 4; ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
+      strNum += (char)(case_num % 10 + '0');
+      case_num /= 10;
     }
     reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
+    filename += strNum + ".txt";
 
-    ofs.open(fileNameOfs);
+    ofs.open(filename);
   }
 }
 
@@ -620,16 +620,16 @@ void changePathId(double temperature)
 }
 
 
-ll solveSingleCase(int probNum)
+ll solveSingleCase(int case_num)
 {
   Timer::start();
 
   resetGlobalState();
 
-  readInput(probNum);
+  readInput(case_num);
 
   ofstream ofs;
-  openOutputFile(probNum, ofs);
+  openOutputFile(case_num, ofs);
 
   {
     int dp[PATH_LENGTH][DP_SIZE][DP_SIZE];

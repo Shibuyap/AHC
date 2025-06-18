@@ -88,9 +88,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -599,7 +599,7 @@ private:
         int ny = y + DY[best_answer.ans[i][1]];
         if (board.board[nx][ny] == 2) {
           lastRockX = x;
-          lastRockX = y;
+          lastRockY = y;
           lastRockDir = best_answer.ans[i][1];
           lastRockMM = mm;
         }
@@ -615,54 +615,56 @@ private:
   //------------------------------------------------------------------------------
   enum class OpType
   {
-    OP1, OP2, OP3
+    ADD_ROCK_AT_POS,    // OP1: Add rock at position
+    ADD_ROCK_AFTER_MOVE, // OP2: Add rock after specific move
+    TOGGLE_LAST_ROCK     // OP3: Toggle last rock
   };
 
   struct OperationCtx
   {
     OpType type;
-    int a1{ -1 }, a2{ -1 }, a3{ -1 }, a4{ -1 }, a5{ -1 }; // indices used by each op
+    int idx1{ -1 }, dir{ -1 }, x{ -1 }, y{ -1 }, target{ -1 }; // parameters for operations
   };
 
   // Pick an operation type from thresholds
   inline OpType pick_op(uint32_t rnd, const int th[3])
   {
-    return (rnd < th[0]) ? OpType::OP1
-      : (rnd < th[1]) ? OpType::OP2
-      : OpType::OP3;
+    return (rnd < th[0]) ? OpType::ADD_ROCK_AT_POS
+      : (rnd < th[1]) ? OpType::ADD_ROCK_AFTER_MOVE
+      : OpType::TOGGLE_LAST_ROCK;
   }
 
   //------------------------------------------------------------------------------
   // "Apply" & "Rollback" of neighbourhood moves ------------------------------
   //------------------------------------------------------------------------------
 
-  // Return false when OP3 aborts (ra2 == -1)
+  // Return false when TOGGLE_LAST_ROCK aborts (x == -1)
   bool apply_op(OperationCtx& ctx, Answer& ans, const Answer& best, Board& board, uint32_t(*rnd)())
   {
     switch (ctx.type) {
-      case OpType::OP1:
+      case OpType::ADD_ROCK_AT_POS:
       {
-        ctx.a1 = rnd() % (m - 1);
-        ctx.a2 = rnd() % 4;
-        ans.add_flags[ctx.a1][ctx.a2] ^= 1;
+        ctx.idx1 = rnd() % (m - 1);
+        ctx.dir = rnd() % 4;
+        ans.add_flags[ctx.idx1][ctx.dir] ^= 1;
         return true;
       }
-      case OpType::OP2:
+      case OpType::ADD_ROCK_AFTER_MOVE:
       {
-        ctx.a1 = rnd() % (best.ans_count - 1);
-        ctx.a2 = rnd() % 4;
-        int _1, _2, _3, _4;
-        simulate_best(board, ans, best, ctx.a3, ctx.a4, ctx.a5, ctx.a1, _1, _2, _3, _4);
-        ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+        ctx.idx1 = rnd() % (best.ans_count - 1);
+        ctx.dir = rnd() % 4;
+        int dummy1, dummy2, dummy3, dummy4;
+        simulate_best(board, ans, best, ctx.x, ctx.y, ctx.target, ctx.idx1, dummy1, dummy2, dummy3, dummy4);
+        ans.add_flags_2[ctx.x][ctx.y][ctx.target][ctx.dir] ^= 1;
         return true;
       }
-      case OpType::OP3:
+      case OpType::TOGGLE_LAST_ROCK:
       {
-        ctx.a1 = rnd() % (best.ans_count - 1);
-        int _1, _2, _3;
-        simulate_best(board, ans, best, _1, _2, _3, ctx.a1, ctx.a2, ctx.a3, ctx.a4, ctx.a5);
-        if (ctx.a2 == -1) return false;              // abort – same as original
-        ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+        ctx.idx1 = rnd() % (best.ans_count - 1);
+        int dummy1, dummy2, dummy3;
+        simulate_best(board, ans, best, dummy1, dummy2, dummy3, ctx.idx1, ctx.x, ctx.y, ctx.dir, ctx.target);
+        if (ctx.x == -1) return false;              // abort – same as original
+        ans.add_flags_2[ctx.x][ctx.y][ctx.target][ctx.dir] ^= 1;
         return true;
       }
     }
@@ -673,14 +675,14 @@ private:
   void rollback_op(const OperationCtx& ctx, Answer& ans)
   {
     switch (ctx.type) {
-      case OpType::OP1:
-        ans.add_flags[ctx.a1][ctx.a2] ^= 1;
+      case OpType::ADD_ROCK_AT_POS:
+        ans.add_flags[ctx.idx1][ctx.dir] ^= 1;
         break;
-      case OpType::OP2:
-        ans.add_flags_2[ctx.a3][ctx.a4][ctx.a5][ctx.a2] ^= 1;
+      case OpType::ADD_ROCK_AFTER_MOVE:
+        ans.add_flags_2[ctx.x][ctx.y][ctx.target][ctx.dir] ^= 1;
         break;
-      case OpType::OP3:
-        ans.add_flags_2[ctx.a2][ctx.a3][ctx.a5][ctx.a4] ^= 1;
+      case OpType::TOGGLE_LAST_ROCK:
+        ans.add_flags_2[ctx.x][ctx.y][ctx.target][ctx.dir] ^= 1;
         break;
     }
   }
@@ -703,7 +705,7 @@ private:
       }
 
       const double progress = get_elapsed_time() / TIME_LIMIT;
-      const double temp = std::lerp(START_TEMP, END_TEMP, progress);
+      const double temp = START_TEMP + (END_TEMP - START_TEMP) * progress;
 
       if (rand_xorshift() % 100 == 0) {
         eliminate_unused_rock(board, answer);

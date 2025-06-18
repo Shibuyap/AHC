@@ -36,7 +36,7 @@ const ll LLINF = 1001001001001001001;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -52,9 +52,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -70,17 +70,17 @@ namespace
   int N, M, D, K;
   int u[3100], v[3100], w[3100];
   int X[1100], Y[1100];
-  int distRank[1100][1100];
+  int dist_rank[1100][1100];
   int ans[3100];
-  int dayCount[32];
+  int day_count[32];
   vector<edge> G[1100];
   ll idea;
-  ll minScore;
-  ll minScoreDays[32];
+  ll min_score;
+  ll min_score_days[32];
 }  // namespace
 
 int dist[1100];
-ll Dijkstra(int start, int day)
+ll dijkstra(int start, int day)
 {
   for (int i = 0; i < N; ++i) { dist[i] = INF; }
   dist[start] = 0;
@@ -111,10 +111,10 @@ ll Dijkstra(int start, int day)
 
 int FINISH_COUNT = 50;
 double FIRST_HALF = 0.0;
-double nowTime;
+double current_time;
 
 int NG;
-ll Dijkstra22(int start, int day)
+ll dijkstra_limited(int start, int day)
 {
   for (int i = 0; i < N; ++i) { dist[i] = INF; }
   dist[start] = 0;
@@ -128,7 +128,7 @@ ll Dijkstra22(int start, int day)
     pque.pop();
     if (p.first != dist[p.second]) { continue; }
     int x = p.second;
-    if (distRank[start][x] < FINISH_COUNT) {
+    if (dist_rank[start][x] < FINISH_COUNT) {
       sum += dist[x];
       cnt++;
     }
@@ -158,11 +158,11 @@ ll Dijkstra22(int start, int day)
 }
 
 int queArr[10000];
-ll Dijkstra01(int start, int day)
+ll dijkstra_bfs(int start, int day)
 {
   bitset<1100> visited(0);
   dist[start] = 0;
-  int ite = 0;
+  int idx = 0;
   int sz = 0;
   queArr[sz] = start;
   sz++;
@@ -170,10 +170,10 @@ ll Dijkstra01(int start, int day)
 
   ll sum = 0;
   int cnt = 0;
-  while (ite < sz) {
-    int x = queArr[ite];
-    ite++;
-    if (distRank[start][x] < FINISH_COUNT) {
+  while (idx < sz) {
+    int x = queArr[idx];
+    idx++;
+    if (dist_rank[start][x] < FINISH_COUNT) {
       sum += dist[x];
       cnt++;
     }
@@ -204,45 +204,45 @@ ll Dijkstra01(int start, int day)
 }
 
 
-ll CalcScoreOneDayMini(int day, int id)
+ll calc_score_one_day_mini(int day, int id)
 {
-  ll sum = Dijkstra(u[id], day) + Dijkstra(v[id], day);
+  ll sum = dijkstra(u[id], day) + dijkstra(v[id], day);
   return sum;
 }
 
-ll CalcScoreOneDayMini2(int day, int id)
+ll calc_score_one_day_mini2(int day, int id)
 {
-  if (nowTime < FIRST_HALF) {
-    return Dijkstra01(u[id], day) + Dijkstra01(v[id], day);
+  if (current_time < FIRST_HALF) {
+    return dijkstra_bfs(u[id], day) + dijkstra_bfs(v[id], day);
   }
-  ll sum = Dijkstra22(u[id], day) + Dijkstra22(v[id], day);
+  ll sum = dijkstra_limited(u[id], day) + dijkstra_limited(v[id], day);
   return sum;
 }
 
-ll CalcScoreOneDayMiniVertex(int day, int id)
+ll calc_score_one_day_mini_vertex(int day, int id)
 {
-  if (nowTime < FIRST_HALF) {
-    return Dijkstra01(id, day);
+  if (current_time < FIRST_HALF) {
+    return dijkstra_bfs(id, day);
   }
-  ll sum = Dijkstra22(id, day);
+  ll sum = dijkstra_limited(id, day);
   return sum;
 }
 
 
-ll CalcScoreOneDay(int day)
+ll calc_score_one_day(int day)
 {
   ll sum = 0;
-  for (int i = 0; i < N; ++i) { sum += Dijkstra(i, day); }
+  for (int i = 0; i < N; ++i) { sum += dijkstra(i, day); }
   return sum;
 }
 
-ll CalcScoreReal()
+ll calc_score_real()
 {
   ll sum = 0;
 
   for (int day = 0; day < D; ++day)
   {
-    sum += CalcScoreOneDay(day);
+    sum += calc_score_one_day(day);
     sum -= idea;
   }
 
@@ -250,25 +250,25 @@ ll CalcScoreReal()
   return roundSum;
 }
 
-ll CalcScoreRealSubstitute()
+ll calc_score_real_substitute()
 {
-  ll sum = minScore;
+  ll sum = min_score;
   sum -= idea * D;
   ll roundSum = round((double)sum * 1000 / D / (N * (N - 1)));
   return roundSum;
 }
 
-ll CalcScore()
+ll calc_score()
 {
   ll sum = 0;
-  for (int day = 0; day < D; ++day) { sum += CalcScoreOneDay(day); }
+  for (int day = 0; day < D; ++day) { sum += calc_score_one_day(day); }
   return sum;
 }
 
 // 初期状態作成（これを呼べばスタート位置に戻れることを想定、real_maxScore等は戻さない）
-void Init()
+void init()
 {
-  // distRank
+  // dist_rank
   for (int i = 0; i < N; ++i)
   {
     vector<P> vec;
@@ -278,12 +278,12 @@ void Init()
         P((X[j] - X[i]) * (X[j] - X[i]) + (Y[j] - Y[i]) * (Y[j] - Y[i]), j));
     }
     sort(vec.begin(), vec.end());
-    for (int j = 0; j < N; ++j) { distRank[i][vec[j].second] = j; }
+    for (int j = 0; j < N; ++j) { dist_rank[i][vec[j].second] = j; }
   }
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
-void Input(int problemNum)
+void input_data(int problemNum)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
@@ -312,10 +312,10 @@ void Input(int problemNum)
     for (int i = 0; i < N; ++i) { ifs >> X[i] >> Y[i]; }
   }
 
-  Init();
+  init();
 }
 
-void InputAns(int problemNum)
+void input_ans(int problemNum)
 {
   string fileNameIfs = "./out/";
   string strNum;
@@ -340,7 +340,7 @@ void InputAns(int problemNum)
 }
 
 // 解答出力
-void Output(int mode, int problemNum)
+void output_data(int mode, int problemNum)
 {
   if (mode == 0) {
     for (int i = 0; i < M; ++i) { cout << ans[i] + 1 << ' '; }
@@ -367,21 +367,21 @@ void Output(int mode, int problemNum)
   }
 }
 
-void Method1()
+void method1()
 {
   for (int i = 0; i < M; ++i) { ans[i] = i / K; }
 }
 
-void Method2()
+void method2()
 {
   for (int i = 0; i < M; ++i) { ans[i] = i % D; }
 }
 
 // ある辺をある日にしたらその周辺4辺はその日にしない
-void Method3()
+void method3()
 {
   // シャッフル
-  mt19937 mt(Rand());
+  mt19937 mt(rand32());
 
   for (int i = 0; i < M; ++i) ans[i] = -1;
 
@@ -436,7 +436,7 @@ void Method3()
 }
 
 // 各頂点でばらけさせる
-void Method4()
+void method4()
 {
   for (int i = 0; i < M; ++i) ans[i] = -1;
   int now = 0;
@@ -453,32 +453,32 @@ void Method4()
 }
 
 // ある辺の日にちを変える
-void InnerMethod1()
+void inner_method1()
 {
-  int id = Rand() % M;
+  int id = rand32() % M;
   int day = ans[id];
   int newDay = day;
   while (newDay == day) {
-    newDay = Rand() % D;
-    if (dayCount[newDay] == K) {
+    newDay = rand32() % D;
+    if (day_count[newDay] == K) {
       newDay = day;
     }
   }
 
   ans[id] = newDay;
 
-  ll newOldDayScore = CalcScoreOneDay(day);
-  ll newNewDayScore = CalcScoreOneDay(newDay);
+  ll newOldDayScore = calc_score_one_day(day);
+  ll newNewDayScore = calc_score_one_day(newDay);
   ll diff = (newOldDayScore + newNewDayScore) -
-    (minScoreDays[day] + minScoreDays[newDay]);
+    (min_score_days[day] + min_score_days[newDay]);
 
   // 小さくなれば更新
   if (diff <= 0) {
-    minScoreDays[day] = newOldDayScore;
-    minScoreDays[newDay] = newNewDayScore;
-    minScore += diff;
-    dayCount[day]--;
-    dayCount[newDay]++;
+    min_score_days[day] = newOldDayScore;
+    min_score_days[newDay] = newNewDayScore;
+    min_score += diff;
+    day_count[day]--;
+    day_count[newDay]++;
   }
   else {
     ans[id] = day;
@@ -486,29 +486,29 @@ void InnerMethod1()
 }
 
 // 隣接する2つの辺の日にちをスワップする
-void InnerMethod2()
+void inner_method2()
 {
-  int id = Rand() % M;
-  int vertex = Rand() % 2 ? u[id] : v[id];
+  int id = rand32() % M;
+  int vertex = rand32() % 2 ? u[id] : v[id];
   int id2 = id;
   while (id2 == id) {
     int sz = G[vertex].size();
-    id2 = G[vertex][Rand() % sz].id;
+    id2 = G[vertex][rand32() % sz].id;
   }
   if (ans[id] == ans[id2]) { return; }
 
   swap(ans[id], ans[id2]);
 
-  ll Day1Score = CalcScoreOneDay(ans[id]);
-  ll Day2Score = CalcScoreOneDay(ans[id2]);
+  ll Day1Score = calc_score_one_day(ans[id]);
+  ll Day2Score = calc_score_one_day(ans[id2]);
   ll diff = (Day1Score + Day2Score) -
-    (minScoreDays[ans[id]] + minScoreDays[ans[id2]]);
+    (min_score_days[ans[id]] + min_score_days[ans[id2]]);
 
   // 小さくなれば更新
   if (diff <= 0) {
-    minScoreDays[ans[id]] = Day1Score;
-    minScoreDays[ans[id2]] = Day2Score;
-    minScore += diff;
+    min_score_days[ans[id]] = Day1Score;
+    min_score_days[ans[id2]] = Day2Score;
+    min_score += diff;
   }
   else {
     swap(ans[id], ans[id2]);
@@ -516,32 +516,32 @@ void InnerMethod2()
 }
 
 // ある辺の日にちを変える
-void InnerMethod3()
+void inner_method3()
 {
-  int id = Rand() % M;
+  int id = rand32() % M;
   int day = ans[id];
   int newDay = day;
   while (newDay == day) {
-    newDay = Rand() % D;
-    if (dayCount[newDay] == K) {
+    newDay = rand32() % D;
+    if (day_count[newDay] == K) {
       newDay = day;
     }
   }
 
-  ll oldOldDayScore = CalcScoreOneDayMini(day, id);
-  ll oldNewDayScore = CalcScoreOneDayMini(newDay, id);
+  ll oldOldDayScore = calc_score_one_day_mini(day, id);
+  ll oldNewDayScore = calc_score_one_day_mini(newDay, id);
 
   ans[id] = newDay;
 
-  ll newOldDayScore = CalcScoreOneDayMini(day, id);
-  ll newNewDayScore = CalcScoreOneDayMini(newDay, id);
+  ll newOldDayScore = calc_score_one_day_mini(day, id);
+  ll newNewDayScore = calc_score_one_day_mini(newDay, id);
   ll diff =
     (newOldDayScore + newNewDayScore) - (oldOldDayScore + oldNewDayScore);
 
   // 小さくなれば更新
   if (diff <= 0) {
-    dayCount[day]--;
-    dayCount[newDay]++;
+    day_count[day]--;
+    day_count[newDay]++;
   }
   else {
     ans[id] = day;
@@ -549,32 +549,32 @@ void InnerMethod3()
 }
 
 
-void InnerMethod4(double temperature)
+void inner_method4(double temperature)
 {
-  int id = Rand() % M;
+  int id = rand32() % M;
   int day = ans[id];
   int newDay = day;
   while (newDay == day) {
-    newDay = Rand() % D;
-    if (dayCount[newDay] == K) {
+    newDay = rand32() % D;
+    if (day_count[newDay] == K) {
       newDay = day;
     }
   }
 
-  ll oldOldDayScore = CalcScoreOneDayMini2(day, id);
-  ll oldNewDayScore = CalcScoreOneDayMini2(newDay, id);
+  ll oldOldDayScore = calc_score_one_day_mini2(day, id);
+  ll oldNewDayScore = calc_score_one_day_mini2(newDay, id);
 
   ans[id] = newDay;
 
-  ll newOldDayScore = CalcScoreOneDayMini2(day, id);
-  ll newNewDayScore = CalcScoreOneDayMini2(newDay, id);
+  ll newOldDayScore = calc_score_one_day_mini2(day, id);
+  ll newNewDayScore = calc_score_one_day_mini2(newDay, id);
   ll diffScore =
     (newOldDayScore + newNewDayScore) - (oldOldDayScore + oldNewDayScore);
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > Rand01()) {
-    dayCount[day]--;
-    dayCount[newDay]++;
+  if (prob > rand_01()) {
+    day_count[day]--;
+    day_count[newDay]++;
   }
   else {
     ans[id] = day;
@@ -582,9 +582,9 @@ void InnerMethod4(double temperature)
 }
 
 // ある辺の日にちを隣接する辺と同じにする
-void InnerMethod5(double temperature)
+void inner_method5(double temperature)
 {
-  int id = Rand() % M;
+  int id = rand32() % M;
   int day = ans[id];
   set<int> se;
   for (auto e : G[u[id]]) {
@@ -598,25 +598,25 @@ void InnerMethod5(double temperature)
     if (x != day) vec.push_back(x);
   }
   if (vec.size() == 0) { return; }
-  int newDay = vec[Rand() % vec.size()];
-  if (dayCount[newDay] == K) {
+  int newDay = vec[rand32() % vec.size()];
+  if (day_count[newDay] == K) {
     return;
   }
 
-  ll oldOldDayScore = CalcScoreOneDayMini2(day, id);
-  ll oldNewDayScore = CalcScoreOneDayMini2(newDay, id);
+  ll oldOldDayScore = calc_score_one_day_mini2(day, id);
+  ll oldNewDayScore = calc_score_one_day_mini2(newDay, id);
 
   ans[id] = newDay;
 
-  ll newOldDayScore = CalcScoreOneDayMini2(day, id);
-  ll newNewDayScore = CalcScoreOneDayMini2(newDay, id);
+  ll newOldDayScore = calc_score_one_day_mini2(day, id);
+  ll newNewDayScore = calc_score_one_day_mini2(newDay, id);
   ll diffScore =
     (newOldDayScore + newNewDayScore) - (oldOldDayScore + oldNewDayScore);
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > Rand01()) {
-    dayCount[day]--;
-    dayCount[newDay]++;
+  if (prob > rand_01()) {
+    day_count[day]--;
+    day_count[newDay]++;
   }
   else {
     ans[id] = day;
@@ -624,14 +624,14 @@ void InnerMethod5(double temperature)
 }
 
 // 隣接する2つの辺の日にちをスワップする
-void InnerMethod6(double temperature)
+void inner_method6(double temperature)
 {
-  int id1 = Rand() % M;
-  int vertex = Rand() % 2 ? u[id1] : v[id1];
+  int id1 = rand32() % M;
+  int vertex = rand32() % 2 ? u[id1] : v[id1];
   int id2 = id1;
   while (id2 == id1) {
     int sz = G[vertex].size();
-    id2 = G[vertex][Rand() % sz].id;
+    id2 = G[vertex][rand32() % sz].id;
   }
   if (ans[id1] == ans[id2]) { return; }
 
@@ -640,23 +640,23 @@ void InnerMethod6(double temperature)
 
 
 
-  ll oldOldDay1Score = CalcScoreOneDayMini2(day1, id1);
-  ll oldNewDay1Score = CalcScoreOneDayMini2(day2, id1);
+  ll oldOldDay1Score = calc_score_one_day_mini2(day1, id1);
+  ll oldNewDay1Score = calc_score_one_day_mini2(day2, id1);
   ans[id1] = day2;
-  ll newOldDay1Score = CalcScoreOneDayMini2(day1, id1);
-  ll newNewDay1Score = CalcScoreOneDayMini2(day2, id1);
+  ll newOldDay1Score = calc_score_one_day_mini2(day1, id1);
+  ll newNewDay1Score = calc_score_one_day_mini2(day2, id1);
 
-  ll oldOldDay2Score = CalcScoreOneDayMini2(day1, id2);
-  ll oldNewDay2Score = CalcScoreOneDayMini2(day2, id2);
+  ll oldOldDay2Score = calc_score_one_day_mini2(day1, id2);
+  ll oldNewDay2Score = calc_score_one_day_mini2(day2, id2);
   ans[id2] = day1;
-  ll newOldDay2Score = CalcScoreOneDayMini2(day1, id2);
-  ll newNewDay2Score = CalcScoreOneDayMini2(day2, id2);
+  ll newOldDay2Score = calc_score_one_day_mini2(day1, id2);
+  ll newNewDay2Score = calc_score_one_day_mini2(day2, id2);
 
   ll diffScore = (newOldDay1Score + newNewDay1Score) - (oldOldDay1Score + oldNewDay1Score)
     + (newOldDay2Score + newNewDay2Score) - (oldOldDay2Score + oldNewDay2Score);
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > Rand01()) {
+  if (prob > rand_01()) {
     ;
   }
   else {
@@ -665,9 +665,9 @@ void InnerMethod6(double temperature)
 }
 
 // まとめて引っ越し
-void InnerMethod7(double temperature)
+void inner_method7(double temperature)
 {
-  int id = Rand() % M;
+  int id = rand32() % M;
   int day = ans[id];
   queue<int> que;
   que.push(id);
@@ -696,8 +696,8 @@ void InnerMethod7(double temperature)
   int sz = edges.size();
   for (int _ = 0; _ < 30; ++_)
   {
-    newDay = Rand() % D;
-    if (dayCount[newDay] + sz > K) newDay = day;
+    newDay = rand32() % D;
+    if (day_count[newDay] + sz > K) newDay = day;
     if (newDay != day) { break; }
   }
   if (newDay == day) { return; }
@@ -710,14 +710,14 @@ void InnerMethod7(double temperature)
 
   ll diffScore = 0;
   for (auto x : vertices) {
-    diffScore -= (CalcScoreOneDayMiniVertex(day, x) + CalcScoreOneDayMiniVertex(newDay, x));
+    diffScore -= (calc_score_one_day_mini_vertex(day, x) + calc_score_one_day_mini_vertex(newDay, x));
   }
   for (auto e_id : edges) {
     ans[e_id] = newDay;
   }
   for (auto x : vertices) {
     NG = 0;
-    diffScore += (CalcScoreOneDayMiniVertex(day, x) + CalcScoreOneDayMiniVertex(newDay, x));
+    diffScore += (calc_score_one_day_mini_vertex(day, x) + calc_score_one_day_mini_vertex(newDay, x));
     if (NG) {
       NG = 0;
       for (auto e_id : edges) {
@@ -728,9 +728,9 @@ void InnerMethod7(double temperature)
   }
 
   double prob = exp((double)-diffScore / temperature);
-  if (prob > Rand01()) {
-    dayCount[day] -= sz;
-    dayCount[newDay] += sz;
+  if (prob > rand_01()) {
+    day_count[day] -= sz;
+    day_count[newDay] += sz;
   }
   else {
     for (auto e_id : edges) {
@@ -739,20 +739,20 @@ void InnerMethod7(double temperature)
   }
 }
 
-void CalcIdea()
+void calc_idea()
 {
   idea = 0;
-  for (int i = 0; i < N; ++i) { idea += Dijkstra(i, -1); }
+  for (int i = 0; i < N; ++i) { idea += dijkstra(i, -1); }
 }
 
-int Solve(int mode, int problemNum)
+int solve(int mode, int problemNum)
 {
   clock_t startTime, endTime;
   startTime = clock();
   endTime = clock();
 
   // 入力
-  Input(problemNum);
+  input_data(problemNum);
 
   // G作成
   {
@@ -791,38 +791,38 @@ int Solve(int mode, int problemNum)
 
 #if 0
   // 理論値計算
-  CalcIdea();
+  calc_idea();
 #endif
 
   // Method1();
   // Method2();
-  Method3();
+  method3();
   // Method4();
 
 #if 0
   // 過去のスコアをインプット
   if (mode != 0) {
-    InputAns(problemNum);
+    input_ans(problemNum);
   }
 #endif
 
 #if 0
-  minScore = 0;
+  min_score = 0;
   for (int i = 0; i < D; ++i)
   {
-    minScoreDays[i] = CalcScoreOneDay(i);
-    minScore += minScoreDays[i];
+    min_score_days[i] = calc_score_one_day(i);
+    min_score += min_score_days[i];
   }
 #endif
 
-  for (int i = 0; i < D; ++i) { dayCount[i] = 0; }
-  for (int i = 0; i < M; ++i) { dayCount[ans[i]]++; }
+  for (int i = 0; i < D; ++i) { day_count[i] = 0; }
+  for (int i = 0; i < M; ++i) { day_count[ans[i]]++; }
 
   // 焼きなまし
   endTime = clock();
-  nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+  current_time = ((double)endTime - startTime) / CLOCKS_PER_SEC;
   double TL = 5.8;
-  double nowProgress = nowTime / TL;
+  double nowProgress = current_time / TL;
   int loop = 0;
   double startTemperature = 5000;
   double endTemperature = 0;
@@ -830,62 +830,62 @@ int Solve(int mode, int problemNum)
     loop++;
     if (loop % 1 == 0) {
       endTime = clock();
-      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-      nowProgress = nowTime / TL;
+      current_time = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+      nowProgress = current_time / TL;
     }
     if (nowProgress > 1.0) { break; }
 
 #if 0
-    if (Rand() % 2 == 0) {
-      InnerMethod1();
+    if (rand32() % 2 == 0) {
+      inner_method1();
     }
     else {
-      InnerMethod2();
+      inner_method2();
     }
 #endif
     FINISH_COUNT = nowProgress * 100 + 50;
     double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;
-    if (nowTime < FIRST_HALF) {
-      temperature = 200 + (0 - 200) * (nowTime / FIRST_HALF);
+    if (current_time < FIRST_HALF) {
+      temperature = 200 + (0 - 200) * (current_time / FIRST_HALF);
     }
-    int ra = Rand() % 100;
+    int ra = rand32() % 100;
     if (ra < 60) {
-      InnerMethod5(temperature);
+      inner_method5(temperature);
     }
     else if (ra < 90) {
-      InnerMethod7(temperature);
+      inner_method7(temperature);
     }
     else if (ra < 92) {
-      InnerMethod6(temperature);
+      inner_method6(temperature);
     }
     else {
-      InnerMethod4(temperature);
+      inner_method4(temperature);
     }
 
 #if 0
     if (loop % 10 == 0) {
-      Output(mode, problemNum);
-      cout << loop << "  " << CalcScoreRealSubstitute();
-      for (int i = 0; i < D; ++i) cout << " " << dayCount[i];
+      output_data(mode, problemNum);
+      cout << loop << "  " << calc_score_real_substitute();
+      for (int i = 0; i < D; ++i) cout << " " << day_count[i];
       cout << endl;
     }
 #endif
   }  // while文ここまで（メインループ）
 
   // 出力
-  Output(mode, problemNum);
+  output_data(mode, problemNum);
 
   if (mode != 0) {
     cout << "loop = " << loop << endl;
-    CalcIdea();
-    minScore = 0;
+    calc_idea();
+    min_score = 0;
     for (int i = 0; i < D; ++i)
     {
-      minScoreDays[i] = CalcScoreOneDay(i);
-      minScore += minScoreDays[i];
+      min_score_days[i] = calc_score_one_day(i);
+      min_score += min_score_days[i];
     }
-    cout << "Score = " << CalcScoreRealSubstitute() << endl;
-    return CalcScoreRealSubstitute();
+    cout << "Score = " << calc_score_real_substitute() << endl;
+    return calc_score_real_substitute();
   }
 
   return 0;
@@ -895,16 +895,16 @@ int main()
 {
   int mode = 0;
   if (mode == 0) {
-    Solve(0, 2);
+    solve(0, 2);
   }
   else if (mode == 1) {
-    Solve(1, 2);
+    solve(1, 2);
   }
   else {
     ll sum = 0;
     for (int _ = 0; _ < 10; ++_)
     {
-      sum += Solve(1, _);
+      sum += solve(1, _);
     }
     cout << "sum = " << sum << endl;
   }

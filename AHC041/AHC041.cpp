@@ -98,20 +98,20 @@ int X[N], Y[N];
 class Answer
 {
 public:
-  vector<int> p;
+  vector<int> parent;
 
   Answer()
   {
-    p.resize(N);
+    parent.resize(N);
     for (int i = 0; i < N; ++i) {
-      p[i] = -1;
+      parent[i] = -1;
     }
   }
 
   void Init()
   {
     for (int i = 0; i < N; ++i) {
-      p[i] = -1;
+      parent[i] = -1;
     }
   }
 };
@@ -153,11 +153,11 @@ void SetUp()
 }
 
 // 入力受け取り
-void Input(int problemNum)
+void Input(int num)
 {
   // ファイルパス生成
-  string filePath = "./in/" + to_string(problemNum / 1000) + to_string((problemNum / 100) % 10) + 
-                    to_string((problemNum / 10) % 10) + to_string(problemNum % 10) + ".txt";
+  string filePath = "./in/" + to_string(num / 1000) + to_string((num / 100) % 10) + 
+                    to_string((num / 10) % 10) + to_string(num % 10) + ".txt";
   
   // 入力ストリーム選択（ファイルか標準入力）
   ifstream ifs(filePath);
@@ -179,10 +179,10 @@ void Input(int problemNum)
   for (int i = 0; i < N; ++i) input >> X[i] >> Y[i];
 }
 
-void output_data(int case_num, const Answer& ans)
+void output(int case_num, const Answer& ans)
 {
   auto output_answer = [&](ostream& out) {
-    for (int i = 0; i < N; ++i) out << ans.p[i] << ' ';
+    for (int i = 0; i < N; ++i) out << ans.parent[i] << ' ';
     out << endl;
   };
   
@@ -198,41 +198,41 @@ void output_data(int case_num, const Answer& ans)
   }
 }
 
-Answer convert_heights_to_answer(const Heights& heights)
+Answer heights_to_ans(const Heights& heights)
 {
   Answer ans;
   for (int i = 0; i < N; ++i) {
-    ans.p[i] = -1;
+    ans.parent[i] = -1;
   }
   for (int i = 0; i < N; ++i) {
     if (heights.height[i] == 0) {
-      ans.p[i] = -1;
+      ans.parent[i] = -1;
     }
     for (auto y : G[i]) {
       if (heights.height[y] == heights.height[i] + 1) {
-        ans.p[y] = i;
+        ans.parent[y] = i;
       }
     }
   }
   return ans;
 }
 
-bool check_if_valid(Heights& heights, int start_height)
+bool can_reach_all(Heights& heights, int start_h)
 {
-  queue<int> que;
+  queue<int> q;
   for (int i = 0; i < N; ++i) {
-    if (heights.height[i] == start_height && start_height < H) {
-      que.push(i);
+    if (heights.height[i] == start_h && start_h < H) {
+      q.push(i);
     }
   }
-  while (que.size()) {
-    int x = que.front();
-    que.pop();
+  while (q.size()) {
+    int x = q.front();
+    q.pop();
     for (auto y : G[x]) {
       if (heights.height[y] == -1) {
         heights.height[y] = heights.height[x] + 1;
         if (heights.height[y] < H) {
-          que.push(y);
+          q.push(y);
         }
       }
     }
@@ -248,7 +248,7 @@ bool check_if_valid(Heights& heights, int start_height)
 
   // 元に戻す
   for (int i = 0; i < N; ++i) {
-    if (heights.height[i] >= start_height + 1) {
+    if (heights.height[i] >= start_h + 1) {
       heights.height[i] = -1;
     }
   }
@@ -256,14 +256,14 @@ bool check_if_valid(Heights& heights, int start_height)
   return res;
 }
 
-void greedy_1(Heights& heights)
+void greedy_assign(Heights& heights)
 {
   heights.Init();
   for (int i = 0; i <= H; i++) {
-    set<int> se;
+    set<int> candidates;
     if (i == 0) {
       for (int j = 0; j < N; ++j) {
-        se.insert(j);
+        candidates.insert(j);
       }
     }
     else {
@@ -271,44 +271,44 @@ void greedy_1(Heights& heights)
         if (heights.height[j] == i - 1) {
           for (auto y : G[j]) {
             if (heights.height[y] == -1) {
-              se.insert(y);
+              candidates.insert(y);
             }
           }
         }
       }
     }
 
-    vector<pair<int, int>> vp;
-    for (auto num : se) {
+    vector<pair<int, int>> nodes;
+    for (auto num : candidates) {
       heights.height[num] = i;
-      vp.push_back(make_pair(A[num], num));
+      nodes.push_back(make_pair(A[num], num));
     }
-    sort(vp.begin(), vp.end(), greater<pair<int, int>>());
-    for (auto p : vp) {
+    sort(nodes.begin(), nodes.end(), greater<pair<int, int>>());
+    for (auto p : nodes) {
       int num = p.second;
       heights.height[num] = -1;
-      if (!check_if_valid(heights, i)) {
+      if (!can_reach_all(heights, i)) {
         heights.height[num] = i;
       }
     }
   }
 }
 
-ll Solve(int probNum)
+ll Solve(int num)
 {
   startTime = clock();
 
   SetUp();
 
-  Input(probNum);
+  Input(num);
 
   Heights heights;
   heights.Init();
-  greedy_1(heights);
+  greedy_assign(heights);
 
-  Answer ans = convert_heights_to_answer(heights);
+  Answer ans = heights_to_ans(heights);
 
-  output_data(probNum, ans);
+  output(num, ans);
 
   ll score = 0;
   if (mode != 0) {

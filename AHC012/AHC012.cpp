@@ -86,14 +86,14 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
 
-int exec_mode;
+int mode;
 
 class Board
 {
@@ -103,7 +103,7 @@ public:
 
   int n;
   int a[14];
-  int a_sum;
+  int total_a;
   vector<vector<int>> x, y;
 
   Board() : n(0), x(20000), y(20000)
@@ -117,9 +117,9 @@ public:
       sort(y[i].begin(), y[i].end());
     }
 
-    a_sum = 0;
+    total_a = 0;
     for (int i = 1; i <= 10; i++) {
-      a_sum += a[i];
+      total_a += a[i];
     }
   }
 };
@@ -135,19 +135,19 @@ public:
   vector<vector<int>> counts;
   int b[14];
 
-  void initialize(int v_num, int h_num)
+  void initialize(int v_lines, int h_lines)
   {
     xs.clear();
     xs.push_back(MIN);
-    for (int i = 1; i < v_num + 1; i++) {
-      xs.push_back(MIN + (MAX - MIN) * i / (v_num + 1));
+    for (int i = 1; i < v_lines + 1; i++) {
+      xs.push_back(MIN + (MAX - MIN) * i / (v_lines + 1));
     }
     xs.push_back(MAX);
 
     ys.clear();
     ys.push_back(MIN);
-    for (int i = 1; i < h_num + 1; i++) {
-      ys.push_back(MIN + (MAX - MIN) * i / (h_num + 1));
+    for (int i = 1; i < h_lines + 1; i++) {
+      ys.push_back(MIN + (MAX - MIN) * i / (h_lines + 1));
     }
     ys.push_back(MAX);
   }
@@ -411,9 +411,9 @@ Board input_data(int case_num)
 
 int calculate_score(const Board& board, const Answer& answer)
 {
-  int ok_cnt = 0;
+  int ok_count = 0;
   for (int i = 1; i <= 10; i++) {
-    ok_cnt += min(answer.b[i], board.a[i]);
+    ok_count += min(answer.b[i], board.a[i]);
   }
 
   double penalty = 0;
@@ -421,14 +421,14 @@ int calculate_score(const Board& board, const Answer& answer)
     penalty += max(0, answer.b[i] - board.a[i]) * (11 - i) * 0.01;
   }
 
-  int res = round(1e6 * ok_cnt / board.a_sum - penalty);
+  int res = round(1e6 * ok_count / board.total_a - penalty);
 
   return res;
 }
 
 void output_data(int case_num, const Answer& answer)
 {
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
     cout << answer.xs.size() + answer.ys.size() - 4 << endl;
     for (int i = 1; i < answer.xs.size() - 1; i++) {
@@ -462,32 +462,32 @@ Answer build_one_solution(const Board& board)
 {
   Answer answer;
   int sum = rand_xorshift() % 61 + 40;
-  int v_num = rand_xorshift() % (sum - 1) + 1;
-  int h_num = sum - v_num;
-  answer.initialize(v_num, h_num);
+  int v_lines = rand_xorshift() % (sum - 1) + 1;
+  int h_lines = sum - v_lines;
+  answer.initialize(v_lines, h_lines);
   answer.calc_counts(board);
   return answer;
 }
 
 Answer build_one_solution_2(const Board& board)
 {
-  double best_pieces = board.a_sum * 4 / 3.141592;
+  double best_pieces = board.total_a * 4 / 3.141592;
 
   Answer answer;
   int sum = rand_xorshift() % 61 + 40;
-  int v_num = rand_xorshift() % (sum - 1) + 1;
-  int h_num = sum - v_num;
+  int v_lines = rand_xorshift() % (sum - 1) + 1;
+  int h_lines = sum - v_lines;
   while (true) {
-    double pieces = (v_num + 1) * (h_num + 1);
+    double pieces = (v_lines + 1) * (h_lines + 1);
     double ratio = pieces / best_pieces;
     if (0.90 < ratio && ratio < 1.1) {
       break;
     }
     sum = rand_xorshift() % 61 + 40;
-    v_num = rand_xorshift() % (sum - 1) + 1;
-    h_num = sum - v_num;
+    v_lines = rand_xorshift() % (sum - 1) + 1;
+    h_lines = sum - v_lines;
   }
-  answer.initialize(v_num, h_num);
+  answer.initialize(v_lines, h_lines);
   answer.calc_counts(board);
   return answer;
 }
@@ -506,14 +506,14 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
   int best_score = calculate_score(board, answer);
 
   double start_time = get_elapsed_time();
-  double now_time = start_time;
+  double current_time = start_time;
   int iter = 0;
   while (true) {
     iter++;
 
     if (iter % 100 == 0) {
-      now_time = get_elapsed_time();
-      if (now_time > time_limit) {
+      current_time = get_elapsed_time();
+      if (current_time > time_limit) {
         break;
       }
     }
@@ -551,7 +551,7 @@ void annealing(const Board& board, Answer& answer, const AnnealingParams& params
       answer.update_ys(board, num, diff);
     }
 
-    double progress_ratio = (now_time - start_time) / (time_limit - start_time);
+    double progress_ratio = (current_time - start_time) / (time_limit - start_time);
     double temp = params.start_temperature + (params.end_temperature - params.start_temperature) * progress_ratio;
 
     int new_score = calculate_score(board, answer);
@@ -633,12 +633,12 @@ Answer build_initial_solution_2(const Board& board, double time_limit)
   return best_answer;
 }
 
-const int VEC_SIZE = 2;
+const int NUM_SOLUTIONS = 2;
 vector<Answer> build_initial_solution_3(const Board& board, double time_limit)
 {
-  vector<Answer> best_answers(VEC_SIZE);
-  int best_scores[VEC_SIZE];
-  for (int i = 0; i < VEC_SIZE; i++) {
+  vector<Answer> best_answers(NUM_SOLUTIONS);
+  int best_scores[NUM_SOLUTIONS];
+  for (int i = 0; i < NUM_SOLUTIONS; i++) {
     best_scores[i] = -1;
   }
 
@@ -654,11 +654,11 @@ vector<Answer> build_initial_solution_3(const Board& board, double time_limit)
     annealing(board, answer, params, get_elapsed_time() + 0.002, false);
 
     int score = calculate_score(board, answer);
-    if (score > best_scores[VEC_SIZE - 1]) {
-      best_scores[VEC_SIZE - 1] = score;
-      best_answers[VEC_SIZE - 1] = answer;
+    if (score > best_scores[NUM_SOLUTIONS - 1]) {
+      best_scores[NUM_SOLUTIONS - 1] = score;
+      best_answers[NUM_SOLUTIONS - 1] = answer;
 
-      int idx = VEC_SIZE - 1;
+      int idx = NUM_SOLUTIONS - 1;
       while (idx > 0 && best_scores[idx] > best_scores[idx - 1]) {
         swap(best_scores[idx], best_scores[idx - 1]);
         swap(best_answers[idx], best_answers[idx - 1]);
@@ -690,9 +690,9 @@ ll solve_case(int case_num)
   params.end_temperature = 0.0;
   params.score_scale = 12345.0;
 
-  double now_time = get_elapsed_time();
-  for (int i = 0; i < VEC_SIZE; i++) {
-    double time_limit = now_time + (TIME_LIMIT - now_time) / VEC_SIZE * (i + 1);
+  double current_time = get_elapsed_time();
+  for (int i = 0; i < NUM_SOLUTIONS; i++) {
+    double time_limit = current_time + (TIME_LIMIT - current_time) / NUM_SOLUTIONS * (i + 1);
     annealing(board, answers[i], params, time_limit, true);
     int score = calculate_score(board, answers[i]);
     if (score > best_score) {
@@ -709,7 +709,7 @@ ll solve_case(int case_num)
   output_data(case_num, best_answer);
 
   int score = 0;
-  if (exec_mode != 0) {
+  if (mode != 0) {
     score = calculate_score(board, best_answer);
     cerr << best_answer.xs.size() + best_answer.ys.size() - 4 << endl;
   }
@@ -718,17 +718,17 @@ ll solve_case(int case_num)
 
 int main()
 {
-  exec_mode = 2;
+  mode = 2;
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     solve_case(0);
   }
-  else if (exec_mode <= 2) {
+  else if (mode <= 2) {
     int sum_score = 0;
     for (int i = 0; i < 150; i++) {
       int score = solve_case(i);
       sum_score += score;
-      if (exec_mode == 1) {
+      if (mode == 1) {
         cerr << score << endl;
       }
       else {

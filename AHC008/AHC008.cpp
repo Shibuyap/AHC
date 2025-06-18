@@ -24,7 +24,7 @@ const int INF = 1001001001;
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 const char cc[4] = { 'U', 'L', 'D', 'R' };
-const char cGetPet[4] = { 'u', 'l', 'd', 'r' };
+const char c_pet[4] = { 'u', 'l', 'd', 'r' };
 
 namespace /* 乱数ライブラリ */
 {
@@ -60,7 +60,7 @@ namespace /* 変数 */
   // 入力用変数
   int n, m;
   vector<int> px, py, pt, hx, hy;
-  int dogCount;
+  int dog_cnt;
 
   // マスの状態
   /*
@@ -73,64 +73,64 @@ namespace /* 変数 */
 
 namespace /* ユーティリティ */
 {
-  bool NgXY(int x, int y);
-  bool CanMakeFence(int x, int y);
-  bool CanCatchPet(int sx, int sy);
-  P CalcRouteBfs(int sx, int sy, int gx, int gy);
-  int PetCatch(int id);
+  bool ng_xy(int x, int y);
+  bool can_fence(int x, int y);
+  bool can_catch(int sx, int sy);
+  P calc_route(int sx, int sy, int gx, int gy);
+  int pet_catch(int id);
 
   // 人間と柵の干渉をチェックして座標を更新
-  void CheckHumanFenceCollision(string& outStr)
+  void check_collision(string& out)
   {
     for (int i = 0; i < m; ++i) {
-      if (outStr[i] == 'U') {
+      if (out[i] == 'U') {
         hx[i]--;
         if (grid[hx[i]][hy[i]] == 1) {
           hx[i]++;
-          outStr[i] = '.';
+          out[i] = '.';
         }
       }
-      if (outStr[i] == 'D') {
+      if (out[i] == 'D') {
         hx[i]++;
         if (grid[hx[i]][hy[i]] == 1) {
           hx[i]--;
-          outStr[i] = '.';
+          out[i] = '.';
         }
       }
-      if (outStr[i] == 'L') {
+      if (out[i] == 'L') {
         hy[i]--;
         if (grid[hx[i]][hy[i]] == 1) {
           hy[i]++;
-          outStr[i] = '.';
+          out[i] = '.';
         }
       }
-      if (outStr[i] == 'R') {
+      if (out[i] == 'R') {
         hy[i]++;
         if (grid[hx[i]][hy[i]] == 1) {
           hy[i]--;
-          outStr[i] = '.';
+          out[i] = '.';
         }
       }
     }
   }
 
   // ペットの移動を読み込んで座標を更新
-  void ReadAndUpdatePetPositions()
+  void read_pet_pos()
   {
     for (int i = 0; i < n; ++i) {
-      string petMove;
-      cin >> petMove;
-      for (int j = 0; j < petMove.size(); ++j) {
-        if (petMove[j] == 'U') {
+      string move;
+      cin >> move;
+      for (int j = 0; j < move.size(); ++j) {
+        if (move[j] == 'U') {
           px[i]--;
         }
-        if (petMove[j] == 'D') {
+        if (move[j] == 'D') {
           px[i]++;
         }
-        if (petMove[j] == 'L') {
+        if (move[j] == 'L') {
           py[i]--;
         }
-        if (petMove[j] == 'R') {
+        if (move[j] == 'R') {
           py[i]++;
         }
       }
@@ -138,7 +138,7 @@ namespace /* ユーティリティ */
   }
 
   // グリッドをデバッグ出力
-  void PrintGrid()
+  void print_grid()
   {
     for (int i = 0; i < N; ++i) {
       cout << "# ";
@@ -150,106 +150,106 @@ namespace /* ユーティリティ */
   }
 
   // 左右の柵を作る処理
-  void TryMakeFenceBothSides(int x, int y, string& outStr)
+  void make_fence_both(int x, int y, string& out)
   {
-    if (CanMakeFence(x, y - 1)) {
-      outStr += "l";
+    if (can_fence(x, y - 1)) {
+      out += "l";
       grid[x][y - 1] = 1;
     }
-    else if (CanMakeFence(x, y + 1)) {
-      outStr += "r";
+    else if (can_fence(x, y + 1)) {
+      out += "r";
       grid[x][y + 1] = 1;
     }
     else {
-      outStr += ".";
+      out += ".";
     }
   }
 
   // 左の柵を作る処理
-  void TryMakeFenceLeft(int x, int y, string& outStr)
+  void make_fence_left(int x, int y, string& out)
   {
-    if (CanMakeFence(x, y - 1)) {
-      outStr += "l";
+    if (can_fence(x, y - 1)) {
+      out += "l";
       grid[x][y - 1] = 1;
     }
     else {
-      outStr += ".";
+      out += ".";
     }
   }
 
   // 右の柵を作る処理
-  void TryMakeFenceRight(int x, int y, string& outStr)
+  void make_fence_right(int x, int y, string& out)
   {
-    if (CanMakeFence(x, y + 1)) {
-      outStr += "r";
+    if (can_fence(x, y + 1)) {
+      out += "r";
       grid[x][y + 1] = 1;
     }
     else {
-      outStr += ".";
+      out += ".";
     }
   }
 
   // ペットを取得できるかチェックして柵を作る
-  int CheckAndTryGetPet(int id, string& outStr)
+  int try_get_pet(int id, string& out)
   {
-    int getPetFlag = -1;
+    int get_flag = -1;
     grid[hx[id]][hy[id]] = 1;
     for (int j = 0; j < 4; ++j) {
       int nx = hx[id] + dx[j];
       int ny = hy[id] + dy[j];
-      if (NgXY(nx, ny))
+      if (ng_xy(nx, ny))
         continue;
       if (grid[nx][ny])
         continue;
-      if (CanCatchPet(nx, ny)) {
-        getPetFlag = j;
+      if (can_catch(nx, ny)) {
+        get_flag = j;
         break;
       }
     }
     grid[hx[id]][hy[id]] = 0;
 
-    if (getPetFlag != -1) {
+    if (get_flag != -1) {
       cout << "# " << "getpet" << endl;
-      outStr += cGetPet[getPetFlag];
-      grid[hx[id] + dx[getPetFlag]][hy[id] + dy[getPetFlag]] = 1;
+      out += c_pet[get_flag];
+      grid[hx[id] + dx[get_flag]][hy[id] + dy[get_flag]] = 1;
     }
-    return getPetFlag;
+    return get_flag;
   }
 
   // 中央の列に向かう動き
-  void MoveToMiddleRow(int id, string& outStr)
+  void move_middle(int id, string& out)
   {
     if (hx[id] < N / 2) {
-      outStr += "D";
+      out += "D";
     }
     else if (hx[id] > N / 2) {
-      outStr += "U";
+      out += "U";
     }
     else {
-      outStr += ".";
+      out += ".";
     }
   }
 
   // 左右に徘徊する動き
-  void PatrolLeftRight(int id, int& humanDir, string& outStr)
+  void patrol(int id, int& dir, string& out)
   {
-    if (humanDir == 0 && (hy[id] == 0 || grid[hx[id]][hy[id] - 1])) {
-      humanDir = 1;
+    if (dir == 0 && (hy[id] == 0 || grid[hx[id]][hy[id] - 1])) {
+      dir = 1;
     }
-    else if (humanDir == 1 && (hy[id] == N - 1 || grid[hx[id]][hy[id] + 1])) {
-      humanDir = 0;
+    else if (dir == 1 && (hy[id] == N - 1 || grid[hx[id]][hy[id] + 1])) {
+      dir = 0;
     }
 
-    if (humanDir == 0) {
-      outStr += "L";
+    if (dir == 0) {
+      out += "L";
     }
     else {
-      outStr += "R";
+      out += "R";
     }
   }
 
   // 全員が目標位置に到達しているかチェック
-  bool CheckAllHumansAtCorners()
+  bool all_at_corners()
   {
     for (int i = 0; i < m; ++i) {
       if (i % 2 == 0) {
@@ -267,7 +267,7 @@ namespace /* ユーティリティ */
   }
 
   // 犬を捕獲可能な状態かチェック
-  bool CanCaptureDogs()
+  bool can_capture_dogs()
   {
     for (int i = 0; i < n; ++i) {
       if (pt[i] != 4)
@@ -279,22 +279,22 @@ namespace /* ユーティリティ */
         return false;
       }
     }
-    if (!CanMakeFence(0, 1)) {
+    if (!can_fence(0, 1)) {
       return false;
     }
-    if (!CanMakeFence(0, 28)) {
+    if (!can_fence(0, 28)) {
       return false;
     }
     return true;
   }
-  bool NgXY(int x, int y)
+  bool ng_xy(int x, int y)
   {
     return x < 0 || x >= N || y < 0 || y >= N;
   }
 
   // 最短距離計算
   // 戻り値 : (距離, 1歩目の方向)
-  P CalcRouteBfs(int sx, int sy, int gx, int gy)
+  P calc_route(int sx, int sy, int gx, int gy)
   {
     int dp[N][N];
     int dir[N][N];
@@ -318,7 +318,7 @@ namespace /* ユーティリティ */
       for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
         int ny = y + dy[i];
-        if (NgXY(nx, ny))
+        if (ng_xy(nx, ny))
           continue;
         if (grid[nx][ny] == 1)
           continue;
@@ -339,9 +339,9 @@ namespace /* ユーティリティ */
   }
 
   // 柵を作れるか
-  bool CanMakeFence(int x, int y)
+  bool can_fence(int x, int y)
   {
-    if (NgXY(x, y)) {
+    if (ng_xy(x, y)) {
       return false;
     }
     if (grid[x][y] == 1) {
@@ -365,9 +365,9 @@ namespace /* ユーティリティ */
 
   // 人間idがこのターンペットを捕獲できるか
   // 1:上側で捕獲可能、2:下側で捕獲可能
-  int PetCatch(int id)
+  int pet_catch(int id)
   {
-    if (CanMakeFence(hx[id] - 1, hy[id])) {
+    if (can_fence(hx[id] - 1, hy[id])) {
       int ok = 1;
       for (int i = 0; i < hx[id]; ++i) {
         if (hy[id] != 0 && grid[i][hy[id] - 1] != 1) {
@@ -399,7 +399,7 @@ namespace /* ユーティリティ */
       }
     }
 
-    if (CanMakeFence(hx[id] + 1, hy[id])) {
+    if (can_fence(hx[id] + 1, hy[id])) {
       int ok = 1;
       for (int i = N - 1; i > hx[id]; i--) {
         if (hy[id] != 0 && grid[i][hy[id] - 1] != 1) {
@@ -434,9 +434,9 @@ namespace /* ユーティリティ */
   }
 
   // (sx,sy)に柵を作ることで20マス以下の区画でペットを孤立させられるか
-  bool CanCatchPet(int sx, int sy)
+  bool can_catch(int sx, int sy)
   {
-    if (!CanMakeFence(sx, sy))
+    if (!can_fence(sx, sy))
       return false;
     int personFlag = 0;
     int petFlag = 0;
@@ -452,7 +452,7 @@ namespace /* ユーティリティ */
       for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
         int ny = y + dy[i];
-        if (NgXY(nx, ny))
+        if (ng_xy(nx, ny))
           continue;
         if (grid[nx][ny])
           continue;
@@ -512,7 +512,7 @@ public:
     }
     // 徘徊する方向
     // 0:LEFT, 1:RIGHT
-    int humanDir[MAX_HUMAN] = {};
+    int dir[MAX_HUMAN] = {};
 
     // 柵の状況
     /*
@@ -530,7 +530,7 @@ public:
     }
 
     for (int turn = 0; turn < T; ++turn) {
-      string outStr;
+      string out;
       // 人間の行動
       for (int i = 0; i < m; ++i) {
         if (finishFenceCount < N) {
@@ -550,24 +550,24 @@ public:
           }
 
           if (humanMode[i] == 1) {
-            P p = CalcRouteBfs(hx[i], hy[i], 0, myFence[i]);
-            outStr += cc[p.second];
+            P p = calc_route(hx[i], hy[i], 0, myFence[i]);
+            out += cc[p.second];
           }
           else if (humanMode[i] == 2) {
             if (hx[i] == N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 左にも右にも柵がない
-              TryMakeFenceBothSides(hx[i], hy[i], outStr);
+              make_fence_both(hx[i], hy[i], out);
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
               // 左に柵がない
-              TryMakeFenceLeft(hx[i], hy[i], outStr);
+              make_fence_left(hx[i], hy[i], out);
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 右に柵がない
-              TryMakeFenceRight(hx[i], hy[i], outStr);
+              make_fence_right(hx[i], hy[i], out);
             }
             else {
               // 両サイド柵あり
@@ -576,41 +576,41 @@ public:
                 fence[myFence[i]] = 10;
                 myFence[i] = -1;
                 finishFenceCount++;
-                outStr += ".";
+                out += ".";
               }
               else {
-                outStr += "D";
+                out += "D";
               }
             }
           }
           else {
             if (hx[i] < N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else if (hx[i] > N / 2) {
-              outStr += "U";
+              out += "U";
             }
             else {
-              if (humanDir[i] == 0 && hy[i] == 0) {
-                humanDir[i] = 1;
+              if (dir[i] == 0 && hy[i] == 0) {
+                dir[i] = 1;
               }
-              else if (humanDir[i] == 1 && hy[i] == N - 1) {
-                humanDir[i] = 0;
+              else if (dir[i] == 1 && hy[i] == N - 1) {
+                dir[i] = 0;
               }
 
-              if (PetCatch(i) == 1) {
-                outStr += "u";
+              if (pet_catch(i) == 1) {
+                out += "u";
                 grid[hx[i] - 1][hy[i]] = 1;
               }
-              else if (PetCatch(i) == 2) {
-                outStr += "d";
+              else if (pet_catch(i) == 2) {
+                out += "d";
                 grid[hx[i] + 1][hy[i]] = 1;
               }
-              else if (humanDir[i] == 0) {
-                outStr += "L";
+              else if (dir[i] == 0) {
+                out += "L";
               }
               else {
-                outStr += "R";
+                out += "R";
               }
             }
           }
@@ -618,74 +618,74 @@ public:
         else {
           if (hx[i] != N / 2) {
             if (hx[i] < N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else {
-              outStr += "U";
+              out += "U";
             }
           }
           else {
-            if (humanDir[i] == 0 && hy[i] == 0) {
-              humanDir[i] = 1;
+            if (dir[i] == 0 && hy[i] == 0) {
+              dir[i] = 1;
             }
-            else if (humanDir[i] == 1 && hy[i] == N - 1) {
-              humanDir[i] = 0;
+            else if (dir[i] == 1 && hy[i] == N - 1) {
+              dir[i] = 0;
             }
 
-            if (PetCatch(i) == 1) {
-              outStr += "u";
+            if (pet_catch(i) == 1) {
+              out += "u";
               grid[hx[i] - 1][hy[i]] = 1;
             }
-            else if (PetCatch(i) == 2) {
-              outStr += "d";
+            else if (pet_catch(i) == 2) {
+              out += "d";
               grid[hx[i] + 1][hy[i]] = 1;
             }
-            else if (humanDir[i] == 0) {
-              outStr += "L";
+            else if (dir[i] == 0) {
+              out += "L";
             }
             else {
-              outStr += "R";
+              out += "R";
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
       // このターンの人間と柵の干渉チェック
       // 柵作成を優先するためコメントアウト
       // for (int i = 0; i < m; ++i) {
       //   int x = -1, y = -1;
-      //   if (outStr[i] == 'u') {
+      //   if (out[i] == 'u') {
       //     x = hx[i] - 1;
       //     y = hy[i];
       //   }
-      //   if (outStr[i] == 'd') {
+      //   if (out[i] == 'd') {
       //     x = hx[i] + 1;
       //     y = hy[i];
       //   }
-      //   if (outStr[i] == 'l') {
+      //   if (out[i] == 'l') {
       //     x = hx[i];
       //     y = hy[i] - 1;
       //   }
-      //   if (outStr[i] == 'r') {
+      //   if (out[i] == 'r') {
       //     x = hx[i];
       //     y = hy[i] + 1;
       //   }
       //   if (x == -1) { continue; }
       //   for (int j = 0; j < m; ++j) {
       //     if (hx[j] == x && hy[j] == y) {
-      //       outStr[i]  = '.';
+      //       out[i]  = '.';
       //       grid[x][y] = 0;
       //     }
       //   }
       // }
 
-      cout << outStr << endl;
+      cout << out << endl;
       fflush(stdout);
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
   }
 };
@@ -776,7 +776,7 @@ public:
     }
     // 徘徊する方向
     // 0:LEFT, 1:RIGHT
-    int humanDir[MAX_HUMAN] = {};
+    int dir[MAX_HUMAN] = {};
 
     // 柵の状況
     /*
@@ -796,11 +796,11 @@ public:
     for (int turn = startTurn; turn < T; ++turn)
     {
       // cout << "# Solve2" << endl;
-      string outStr;
+      string out;
       // 人間の行動
       for (int i = 0; i < m; ++i) {
-        int getPetFlag = CheckAndTryGetPet(i, outStr);
-        if (getPetFlag == -1 && finishFenceCount < N) {
+        int get_flag = try_get_pet(i, out);
+        if (get_flag == -1 && finishFenceCount < N) {
           if (humanMode[i] == 0) {
             if (i % 2 == 0) {
               for (int j = 0; j < N; ++j) {
@@ -836,24 +836,24 @@ public:
 
           cout << "#humanMode[" << i << "] = " << humanMode[i] << endl;
           if (humanMode[i] == 1) {
-            P p = CalcRouteBfs(hx[i], hy[i], startX, myFence[i]);
-            outStr += cc[p.second];
+            P p = calc_route(hx[i], hy[i], startX, myFence[i]);
+            out += cc[p.second];
           }
           else if (humanMode[i] == 2) {
             if (hx[i] == N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 左にも右にも柵がない
-              TryMakeFenceBothSides(hx[i], hy[i], outStr);
+              make_fence_both(hx[i], hy[i], out);
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
               // 左に柵がない
-              TryMakeFenceLeft(hx[i], hy[i], outStr);
+              make_fence_left(hx[i], hy[i], out);
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 右に柵がない
-              TryMakeFenceRight(hx[i], hy[i], outStr);
+              make_fence_right(hx[i], hy[i], out);
             }
             else {
               // 両サイド柵あり
@@ -862,59 +862,59 @@ public:
                 fence[myFence[i]] = 10;
                 myFence[i] = -1;
                 finishFenceCount++;
-                outStr += ".";
+                out += ".";
               }
               else {
-                outStr += "D";
+                out += "D";
               }
             }
           }
           else {
             if (hx[i] < N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else if (hx[i] > N / 2) {
-              outStr += "U";
+              out += "U";
             }
             else {
-              PatrolLeftRight(i, humanDir[i], outStr);
+              patrol(i, dir[i], out);
             }
           }
         }
         else {
           if (hx[i] < N / 2) {
-            outStr += "D";
+            out += "D";
           }
           else if (hx[i] > N / 2) {
-            outStr += "U";
+            out += "U";
           }
           else {
-            if (humanDir[i] == 0 && (hy[i] == 0 || grid[hx[i]][hy[i] - 1])) {
-              humanDir[i] = 1;
+            if (dir[i] == 0 && (hy[i] == 0 || grid[hx[i]][hy[i] - 1])) {
+              dir[i] = 1;
             }
-            else if (humanDir[i] == 1 && (hy[i] == N - 1 || grid[hx[i]][hy[i] + 1])) {
-              humanDir[i] = 0;
+            else if (dir[i] == 1 && (hy[i] == N - 1 || grid[hx[i]][hy[i] + 1])) {
+              dir[i] = 0;
             }
 
-            if (humanDir[i] == 0) {
-              outStr += "L";
+            if (dir[i] == 0) {
+              out += "L";
             }
             else {
-              outStr += "R";
+              out += "R";
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
-      PrintGrid();
+      print_grid();
 
-      cout << outStr << endl;
+      cout << out << endl;
       fflush(stdout);
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
   }
 
@@ -924,23 +924,23 @@ public:
     int blockCount = 0;
     int turn = 0;
     for (turn = 0; turn < T; turn++) {
-      string outStr;
+      string out;
       if (finish == 3) {
         break;
       }
       else if (finish == 2) {
-        if (CanCaptureDogs()) {
-          outStr += "rl";
+        if (can_capture_dogs()) {
+          out += "rl";
           grid[0][1] = 1;
           grid[0][28] = 1;
           finish = 3;
         }
         else {
-          outStr += "..";
+          out += "..";
         }
         for (int i = 2; i < m; ++i)
         {
-          outStr += ".";
+          out += ".";
         }
       }
       else {
@@ -962,22 +962,22 @@ public:
                 }
               }
               if (gx == -1) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                P p = CalcRouteBfs(hx[i], hy[i], gx, gy);
+                P p = calc_route(hx[i], hy[i], gx, gy);
                 if (p.first == 0) {
-                  if (CanMakeFence(gx, gy + 1)) {
-                    outStr += "r";
+                  if (can_fence(gx, gy + 1)) {
+                    out += "r";
                     grid[gx][gy + 1] = 1;
                     blockCount++;
                   }
                   else {
-                    outStr += ".";
+                    out += ".";
                   }
                 }
                 else {
-                  outStr += cc[p.second];
+                  out += cc[p.second];
                 }
               }
             }
@@ -998,58 +998,58 @@ public:
                 }
               }
               if (gx == -1) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                P p = CalcRouteBfs(hx[i], hy[i], gx, gy);
+                P p = calc_route(hx[i], hy[i], gx, gy);
                 if (p.first == 0) {
-                  if (CanMakeFence(gx, gy - 1)) {
-                    outStr += "l";
+                  if (can_fence(gx, gy - 1)) {
+                    out += "l";
                     grid[gx][gy - 1] = 1;
                     blockCount++;
                   }
                   else {
-                    outStr += ".";
+                    out += ".";
                   }
                 }
                 else {
-                  outStr += cc[p.second];
+                  out += cc[p.second];
                 }
               }
             }
             else {
               int targetY = (i % 2 == 0) ? 0 : 29;
-              P p = CalcRouteBfs(hx[i], hy[i], 0, targetY);
+              P p = calc_route(hx[i], hy[i], 0, targetY);
               if (p.first == 0) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                outStr += cc[p.second];
+                out += cc[p.second];
               }
             }
           }
           if (finish == 1) {
             P p;
             if (i % 2 == 0) {
-              p = CalcRouteBfs(hx[i], hy[i], 0, 0);
+              p = calc_route(hx[i], hy[i], 0, 0);
             }
             else {
-              p = CalcRouteBfs(hx[i], hy[i], 0, 29);
+              p = calc_route(hx[i], hy[i], 0, 29);
             }
             if (p.first == 0) {
-              outStr += ".";
+              out += ".";
             }
             else {
-              outStr += cc[p.second];
+              out += cc[p.second];
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
-      cout << outStr << endl;
+      cout << out << endl;
       cout << "# finish = " << finish << endl;
       fflush(stdout);
 
@@ -1057,12 +1057,12 @@ public:
         finish = 1;
       }
       else if (finish == 1) {
-        if (CheckAllHumansAtCorners()) {
+        if (all_at_corners()) {
           finish = 2;
         }
       }
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
 
     Solve2(turn);
@@ -1094,7 +1094,7 @@ public:
     }
     // 徘徊する方向
     // 0:LEFT, 1:RIGHT
-    int humanDir[MAX_HUMAN] = {};
+    int dir[MAX_HUMAN] = {};
 
     // 柵の状況
     /*
@@ -1117,11 +1117,11 @@ public:
     for (int turn = startTurn; turn < T; ++turn)
     {
       // cout << "# Solve2" << endl;
-      string outStr;
+      string out;
       // 人間の行動
       for (int i = 0; i < m; ++i) {
-        int getPetFlag = CheckAndTryGetPet(i, outStr);
-        if (getPetFlag == -1 && finishFenceCount < N * 2) {
+        int get_flag = try_get_pet(i, out);
+        if (get_flag == -1 && finishFenceCount < N * 2) {
           if (humanMode[i] == 0) {
             if (i % 2 == 0) {
               for (int j = 0; j < N; ++j) {
@@ -1170,42 +1170,42 @@ public:
 
           cout << "#humanMode[" << i << "] = " << humanMode[i] << endl;
           if (humanMode[i] == 1) {
-            P p = CalcRouteBfs(hx[i], hy[i], startX, myFence[i] % 100);
-            outStr += cc[p.second];
+            P p = calc_route(hx[i], hy[i], startX, myFence[i] % 100);
+            out += cc[p.second];
           }
           else if (humanMode[i] == 2) {
             if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 左にも右にも柵がない
-              if (CanMakeFence(hx[i], hy[i] - 1)) {
-                outStr += "l";
+              if (can_fence(hx[i], hy[i] - 1)) {
+                out += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
               }
-              else if (CanMakeFence(hx[i], hy[i] + 1)) {
-                outStr += "r";
+              else if (can_fence(hx[i], hy[i] + 1)) {
+                out += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
               }
               else {
-                outStr += ".";
+                out += ".";
               }
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
               // 左に柵がない
-              if (CanMakeFence(hx[i], hy[i] - 1)) {
-                outStr += "l";
+              if (can_fence(hx[i], hy[i] - 1)) {
+                out += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
               }
               else {
-                outStr += ".";
+                out += ".";
               }
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 右に柵がない
-              if (CanMakeFence(hx[i], hy[i] + 1)) {
-                outStr += "r";
+              if (can_fence(hx[i], hy[i] + 1)) {
+                out += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
               }
               else {
-                outStr += ".";
+                out += ".";
               }
             }
             else {
@@ -1220,10 +1220,10 @@ public:
                   fenceU[myFence[i] % 100] = 10;
                   myFence[i] = -1;
                   finishFenceCount++;
-                  outStr += "D";
+                  out += "D";
                 }
                 else {
-                  outStr += "U";
+                  out += "U";
                 }
               }
               else {
@@ -1232,60 +1232,60 @@ public:
                   fenceD[myFence[i] % 100] = 10;
                   myFence[i] = -1;
                   finishFenceCount++;
-                  outStr += "U";
+                  out += "U";
                 }
                 else {
-                  outStr += "D";
+                  out += "D";
                 }
               }
             }
           }
           else {
             if (hx[i] < N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else if (hx[i] > N / 2) {
-              outStr += "U";
+              out += "U";
             }
             else {
-              PatrolLeftRight(i, humanDir[i], outStr);
+              patrol(i, dir[i], out);
             }
           }
         }
         else {
           if (hx[i] < N / 2) {
-            outStr += "D";
+            out += "D";
           }
           else if (hx[i] > N / 2) {
-            outStr += "U";
+            out += "U";
           }
           else {
-            if (humanDir[i] == 0 && (hy[i] == 0 || grid[hx[i]][hy[i] - 1])) {
-              humanDir[i] = 1;
+            if (dir[i] == 0 && (hy[i] == 0 || grid[hx[i]][hy[i] - 1])) {
+              dir[i] = 1;
             }
-            else if (humanDir[i] == 1 && (hy[i] == N - 1 || grid[hx[i]][hy[i] + 1])) {
-              humanDir[i] = 0;
+            else if (dir[i] == 1 && (hy[i] == N - 1 || grid[hx[i]][hy[i] + 1])) {
+              dir[i] = 0;
             }
 
-            if (humanDir[i] == 0) {
-              outStr += "L";
+            if (dir[i] == 0) {
+              out += "L";
             }
             else {
-              outStr += "R";
+              out += "R";
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
-      PrintGrid();
+      print_grid();
 
-      cout << outStr << endl;
+      cout << out << endl;
       fflush(stdout);
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
   }
 
@@ -1295,23 +1295,23 @@ public:
     int blockCount = 0;
     int turn = 0;
     for (turn = 0; turn < T; turn++) {
-      string outStr;
+      string out;
       if (finish == 3) {
         break;
       }
       else if (finish == 2) {
-        if (CanCaptureDogs()) {
-          outStr += "rl";
+        if (can_capture_dogs()) {
+          out += "rl";
           grid[0][1] = 1;
           grid[0][28] = 1;
           finish = 3;
         }
         else {
-          outStr += "..";
+          out += "..";
         }
         for (int i = 2; i < m; ++i)
         {
-          outStr += ".";
+          out += ".";
         }
       }
       else {
@@ -1333,22 +1333,22 @@ public:
                 }
               }
               if (gx == -1) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                P p = CalcRouteBfs(hx[i], hy[i], gx, gy);
+                P p = calc_route(hx[i], hy[i], gx, gy);
                 if (p.first == 0) {
-                  if (CanMakeFence(gx, gy + 1)) {
-                    outStr += "r";
+                  if (can_fence(gx, gy + 1)) {
+                    out += "r";
                     grid[gx][gy + 1] = 1;
                     blockCount++;
                   }
                   else {
-                    outStr += ".";
+                    out += ".";
                   }
                 }
                 else {
-                  outStr += cc[p.second];
+                  out += cc[p.second];
                 }
               }
             }
@@ -1369,58 +1369,58 @@ public:
                 }
               }
               if (gx == -1) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                P p = CalcRouteBfs(hx[i], hy[i], gx, gy);
+                P p = calc_route(hx[i], hy[i], gx, gy);
                 if (p.first == 0) {
-                  if (CanMakeFence(gx, gy - 1)) {
-                    outStr += "l";
+                  if (can_fence(gx, gy - 1)) {
+                    out += "l";
                     grid[gx][gy - 1] = 1;
                     blockCount++;
                   }
                   else {
-                    outStr += ".";
+                    out += ".";
                   }
                 }
                 else {
-                  outStr += cc[p.second];
+                  out += cc[p.second];
                 }
               }
             }
             else {
               int targetY = (i % 2 == 0) ? 0 : 29;
-              P p = CalcRouteBfs(hx[i], hy[i], 0, targetY);
+              P p = calc_route(hx[i], hy[i], 0, targetY);
               if (p.first == 0) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                outStr += cc[p.second];
+                out += cc[p.second];
               }
             }
           }
           if (finish == 1) {
             P p;
             if (i % 2 == 0) {
-              p = CalcRouteBfs(hx[i], hy[i], 0, 0);
+              p = calc_route(hx[i], hy[i], 0, 0);
             }
             else {
-              p = CalcRouteBfs(hx[i], hy[i], 0, 29);
+              p = calc_route(hx[i], hy[i], 0, 29);
             }
             if (p.first == 0) {
-              outStr += ".";
+              out += ".";
             }
             else {
-              outStr += cc[p.second];
+              out += cc[p.second];
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
-      cout << outStr << endl;
+      cout << out << endl;
       cout << "# finish = " << finish << endl;
       fflush(stdout);
 
@@ -1428,12 +1428,12 @@ public:
         finish = 1;
       }
       else if (finish == 1) {
-        if (CheckAllHumansAtCorners()) {
+        if (all_at_corners()) {
           finish = 2;
         }
       }
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
 
     Solve2(turn);
@@ -1465,7 +1465,7 @@ public:
     }
     // 徘徊する方向
     // 0:LEFT, 1:RIGHT
-    int humanDir[MAX_HUMAN] = {};
+    int dir[MAX_HUMAN] = {};
 
     // 柵の状況
     /*
@@ -1488,11 +1488,11 @@ public:
     for (int turn = startTurn; turn < T; ++turn)
     {
       // cout << "# Solve2" << endl;
-      string outStr;
+      string out;
       // 人間の行動
       for (int i = 0; i < m; ++i) {
-        int getPetFlag = CheckAndTryGetPet(i, outStr);
-        if (getPetFlag == -1 && finishFenceCount < N * 2) {
+        int get_flag = try_get_pet(i, out);
+        if (get_flag == -1 && finishFenceCount < N * 2) {
           if (humanMode[i] == 0) {
             if (i % 2 == 0) {
               for (int j = 0; j < N; ++j) {
@@ -1541,42 +1541,42 @@ public:
 
           cout << "#humanMode[" << i << "] = " << humanMode[i] << endl;
           if (humanMode[i] == 1) {
-            P p = CalcRouteBfs(hx[i], hy[i], startX, myFence[i] % 100);
-            outStr += cc[p.second];
+            P p = calc_route(hx[i], hy[i], startX, myFence[i] % 100);
+            out += cc[p.second];
           }
           else if (humanMode[i] == 2) {
             if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0 && hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 左にも右にも柵がない
-              if (CanMakeFence(hx[i], hy[i] - 1)) {
-                outStr += "l";
+              if (can_fence(hx[i], hy[i] - 1)) {
+                out += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
               }
-              else if (CanMakeFence(hx[i], hy[i] + 1)) {
-                outStr += "r";
+              else if (can_fence(hx[i], hy[i] + 1)) {
+                out += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
               }
               else {
-                outStr += ".";
+                out += ".";
               }
             }
             else if (hy[i] != 0 && grid[hx[i]][hy[i] - 1] == 0) {
               // 左に柵がない
-              if (CanMakeFence(hx[i], hy[i] - 1)) {
-                outStr += "l";
+              if (can_fence(hx[i], hy[i] - 1)) {
+                out += "l";
                 grid[hx[i]][hy[i] - 1] = 1;
               }
               else {
-                outStr += ".";
+                out += ".";
               }
             }
             else if (hy[i] != N - 1 && grid[hx[i]][hy[i] + 1] == 0) {
               // 右に柵がない
-              if (CanMakeFence(hx[i], hy[i] + 1)) {
-                outStr += "r";
+              if (can_fence(hx[i], hy[i] + 1)) {
+                out += "r";
                 grid[hx[i]][hy[i] + 1] = 1;
               }
               else {
-                outStr += ".";
+                out += ".";
               }
             }
             else {
@@ -1591,10 +1591,10 @@ public:
                   fenceU[myFence[i] % 100] = 10;
                   myFence[i] = -1;
                   finishFenceCount++;
-                  outStr += "D";
+                  out += "D";
                 }
                 else {
-                  outStr += "U";
+                  out += "U";
                 }
               }
               else {
@@ -1603,60 +1603,60 @@ public:
                   fenceD[myFence[i] % 100] = 10;
                   myFence[i] = -1;
                   finishFenceCount++;
-                  outStr += "U";
+                  out += "U";
                 }
                 else {
-                  outStr += "D";
+                  out += "D";
                 }
               }
             }
           }
           else {
             if (hx[i] < N / 2) {
-              outStr += "D";
+              out += "D";
             }
             else if (hx[i] > N / 2) {
-              outStr += "U";
+              out += "U";
             }
             else {
-              PatrolLeftRight(i, humanDir[i], outStr);
+              patrol(i, dir[i], out);
             }
           }
         }
         else {
           if (hx[i] < N / 2) {
-            outStr += "D";
+            out += "D";
           }
           else if (hx[i] > N / 2) {
-            outStr += "U";
+            out += "U";
           }
           else {
-            if (humanDir[i] == 0 && (hy[i] == 0 || grid[hx[i]][hy[i] - 1])) {
-              humanDir[i] = 1;
+            if (dir[i] == 0 && (hy[i] == 0 || grid[hx[i]][hy[i] - 1])) {
+              dir[i] = 1;
             }
-            else if (humanDir[i] == 1 && (hy[i] == N - 1 || grid[hx[i]][hy[i] + 1])) {
-              humanDir[i] = 0;
+            else if (dir[i] == 1 && (hy[i] == N - 1 || grid[hx[i]][hy[i] + 1])) {
+              dir[i] = 0;
             }
 
-            if (humanDir[i] == 0) {
-              outStr += "L";
+            if (dir[i] == 0) {
+              out += "L";
             }
             else {
-              outStr += "R";
+              out += "R";
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
-      PrintGrid();
+      print_grid();
 
-      cout << outStr << endl;
+      cout << out << endl;
       fflush(stdout);
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
   }
 
@@ -1666,23 +1666,23 @@ public:
     int blockCount = 0;
     int turn = 0;
     for (turn = 0; turn < T; turn++) {
-      string outStr;
+      string out;
       if (finish == 3) {
         break;
       }
       else if (finish == 2) {
-        if (CanCaptureDogs()) {
-          outStr += "rl";
+        if (can_capture_dogs()) {
+          out += "rl";
           grid[0][1] = 1;
           grid[0][28] = 1;
           finish = 3;
         }
         else {
-          outStr += "..";
+          out += "..";
         }
         for (int i = 2; i < m; ++i)
         {
-          outStr += ".";
+          out += ".";
         }
       }
       else {
@@ -1704,22 +1704,22 @@ public:
                 }
               }
               if (gx == -1) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                P p = CalcRouteBfs(hx[i], hy[i], gx, gy);
+                P p = calc_route(hx[i], hy[i], gx, gy);
                 if (p.first == 0) {
-                  if (CanMakeFence(gx, gy + 1)) {
-                    outStr += "r";
+                  if (can_fence(gx, gy + 1)) {
+                    out += "r";
                     grid[gx][gy + 1] = 1;
                     blockCount++;
                   }
                   else {
-                    outStr += ".";
+                    out += ".";
                   }
                 }
                 else {
-                  outStr += cc[p.second];
+                  out += cc[p.second];
                 }
               }
             }
@@ -1740,58 +1740,58 @@ public:
                 }
               }
               if (gx == -1) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                P p = CalcRouteBfs(hx[i], hy[i], gx, gy);
+                P p = calc_route(hx[i], hy[i], gx, gy);
                 if (p.first == 0) {
-                  if (CanMakeFence(gx, gy - 1)) {
-                    outStr += "l";
+                  if (can_fence(gx, gy - 1)) {
+                    out += "l";
                     grid[gx][gy - 1] = 1;
                     blockCount++;
                   }
                   else {
-                    outStr += ".";
+                    out += ".";
                   }
                 }
                 else {
-                  outStr += cc[p.second];
+                  out += cc[p.second];
                 }
               }
             }
             else {
               int targetY = (i % 2 == 0) ? 0 : 29;
-              P p = CalcRouteBfs(hx[i], hy[i], 0, targetY);
+              P p = calc_route(hx[i], hy[i], 0, targetY);
               if (p.first == 0) {
-                outStr += ".";
+                out += ".";
               }
               else {
-                outStr += cc[p.second];
+                out += cc[p.second];
               }
             }
           }
           if (finish == 1) {
             P p;
             if (i % 2 == 0) {
-              p = CalcRouteBfs(hx[i], hy[i], 0, 0);
+              p = calc_route(hx[i], hy[i], 0, 0);
             }
             else {
-              p = CalcRouteBfs(hx[i], hy[i], 0, 29);
+              p = calc_route(hx[i], hy[i], 0, 29);
             }
             if (p.first == 0) {
-              outStr += ".";
+              out += ".";
             }
             else {
-              outStr += cc[p.second];
+              out += cc[p.second];
             }
           }
         }
       }
 
       // このターンの人間と柵の干渉チェック
-      CheckHumanFenceCollision(outStr);
+      check_collision(out);
 
-      cout << outStr << endl;
+      cout << out << endl;
       cout << "# finish = " << finish << endl;
       fflush(stdout);
 
@@ -1799,12 +1799,12 @@ public:
         finish = 1;
       }
       else if (finish == 1) {
-        if (CheckAllHumansAtCorners()) {
+        if (all_at_corners()) {
           finish = 2;
         }
       }
 
-      ReadAndUpdatePetPositions();
+      read_pet_pos();
     }
 
     Solve2(turn);
@@ -1858,7 +1858,7 @@ void Input()
 
   for (int i = 0; i < n; ++i) {
     if (pt[i] == 4) {
-      dogCount++;
+      dog_cnt++;
     }
   }
 }
@@ -1872,7 +1872,7 @@ int Solve(int mode)
   // 入力受け取り
   Input();
 
-  if (dogCount == 0) {
+  if (dog_cnt == 0) {
     SolveVer1 solve1;
     solve1.Solve();
   }

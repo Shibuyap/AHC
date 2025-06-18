@@ -86,9 +86,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 
@@ -378,9 +378,9 @@ public:
 
   void layout_2()
   {
-    int minimum_sum = INT_INF;
-    int minimum_x = -1;
-    int minimum_y = -1;
+    int min_sum = INT_INF;
+    int min_x = -1;
+    int min_y = -1;
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
         int sum = 0;
@@ -389,16 +389,16 @@ public:
           int dx = min(abs(j - X[k]), L - abs(j - X[k]));
           sum += dy + dx;
         }
-        if (sum < minimum_sum) {
-          minimum_sum = sum;
-          minimum_x = j;
-          minimum_y = i;
+        if (sum < min_sum) {
+          min_sum = sum;
+          min_x = j;
+          min_y = i;
         }
       }
     }
 
-    top_x = minimum_x;
-    top_y = minimum_y;
+    top_x = min_x;
+    top_y = min_y;
 
     for (int i = 0; i < L; i++) {
       for (int j = 0; j < L; j++) {
@@ -475,23 +475,23 @@ public:
     tmp_prob.resize(n, 0.0);
   }
 
-  double calc_ruiseki(double num)
+  double calc_cdf(double num)
   {
     return 1.0 / 2.0 * (1.0 + erf(num / sqrt(2.0 * S * S)));
   }
 
-  double calc_kakuritsu(int kitai, int output)
+  double calc_prob(int exp, int output)
   {
     double res = 0.0;
-    int diff = output - kitai;
+    int diff = output - exp;
     if (output == 0) {
-      res = calc_ruiseki(diff + 0.5) - calc_ruiseki(diff - S * 10);
+      res = calc_cdf(diff + 0.5) - calc_cdf(diff - S * 10);
     }
     else if (output == 1000) {
-      res = calc_ruiseki(diff + S * 10) - calc_ruiseki(diff - 0.5);
+      res = calc_cdf(diff + S * 10) - calc_cdf(diff - 0.5);
     }
     else {
-      res = calc_ruiseki(diff + 0.5) - calc_ruiseki(diff - 0.5);
+      res = calc_cdf(diff + 0.5) - calc_cdf(diff - 0.5);
     }
     return res;
   }
@@ -501,8 +501,8 @@ public:
     y = (y + L) % L;
     x = (x + L) % L;
     for (int i = 0; i < N; i++) {
-      int kitai = layout.p[(y + Y[i]) % L][(x + X[i]) % L];
-      tmp_prob[i] = calc_kakuritsu(kitai, m);
+      int exp = layout.p[(y + Y[i]) % L][(x + X[i]) % L];
+      tmp_prob[i] = calc_prob(exp, m);
     }
     normalize(tmp_prob);
     for (int j = 0; j < N; j++) {
@@ -646,10 +646,10 @@ ll calculate_local_score(const Layout& layout, const Estimation& estimation)
   }
 
   double res = 1e14;
-  int seikai_count = 0;
+  int correct = 0;
   for (int i = 0; i < N; i++) {
     if (estimation.E[i] == local_case.A[i]) {
-      seikai_count++;
+      correct++;
     }
     else {
       res *= 0.8;
@@ -662,7 +662,7 @@ ll calculate_local_score(const Layout& layout, const Estimation& estimation)
       << "cost = " << cost << ", "
       << "local_case.cost = " << local_case.cost << ", "
       << "layout.cost = " << layout.cost << ", "
-      << "seikai_count = " << seikai_count << " / " << N << endl;
+      << "correct = " << correct << " / " << N << endl;
   }
 
   res /= cost;

@@ -55,7 +55,7 @@ const int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -71,9 +71,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -91,11 +91,11 @@ namespace /* 変数 */
   class State
   {
   public:
-    double maxScore;
-    int ansSize;
+    double max_score;
+    int ans_count;
     int ans[ANS_SIZE][4][2];
     int deleted[ANS_SIZE];
-    int delCnt;
+    int del_count;
     int f[64][64];
     int edge[64][64][8];
     int deg[64][64];
@@ -104,9 +104,9 @@ namespace /* 変数 */
     // クリア関数
     void clear()
     {
-      maxScore = 0;
-      ansSize = 0;
-      delCnt = 0;
+      max_score = 0;
+      ans_count = 0;
+      del_count = 0;
       for (int i = 0; i < ANS_SIZE; ++i) deleted[i] = 0;
       for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
         f[i][j] = false;
@@ -122,11 +122,11 @@ namespace /* 変数 */
     // 他のStateからコピー
     void copyFrom(const State& other)
     {
-      maxScore = other.maxScore;
-      ansSize = other.ansSize;
-      delCnt = other.delCnt;
+      max_score = other.max_score;
+      ans_count = other.ans_count;
+      del_count = other.del_count;
 
-      for (int i = 0; i < ansSize; ++i) {
+      for (int i = 0; i < ans_count; ++i) {
         for (int j = 0; j < 4; ++j) {
           ans[i][j][0] = other.ans[i][j][0];
           ans[i][j][1] = other.ans[i][j][1];
@@ -171,7 +171,7 @@ namespace /* 変数 */
 
 }  // namespace
 
-void resetStats()
+void reset_stats()
 {
   for (int i = 0; i < 20; ++i) {
     for (int j = 0; j < 2; ++j) {
@@ -209,15 +209,15 @@ double State::calcScore() const
 }
 
 // 旧関数（互換性のため残す）
-double CalcScore()
+double calc_score()
 {
   return current_state.calcScore();
 }
 
-void compact()
+void compact_answers()
 {
   int tmpCount = 0;
-  for (int i = 0; i < current_state.ansSize; ++i) {
+  for (int i = 0; i < current_state.ans_count; ++i) {
     if (current_state.deleted[i]) {
       tmpCount++;
       current_state.deleted[i] = 0;
@@ -226,24 +226,24 @@ void compact()
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) current_state.ans[i - tmpCount][j][k] = current_state.ans[i][j][k];
     }
   }
-  if (tmpCount != current_state.delCnt) {
+  if (tmpCount != current_state.del_count) {
     cerr << "error" << endl;
-    cerr << tmpCount << ' ' << current_state.delCnt << endl;
+    cerr << tmpCount << ' ' << current_state.del_count << endl;
   }
-  current_state.ansSize -= tmpCount;
-  current_state.delCnt = 0;
+  current_state.ans_count -= tmpCount;
+  current_state.del_count = 0;
 }
 
 // ローカルで複数ケース試すための全て消す関数
-void AllClear_MultiCase()
+void clear_all_multi_case()
 {
   current_state.clear();
   best_state.clear();
   seed_state.clear();
-  resetStats();
+  reset_stats();
 }
 
-// 初期状態作成（これを呼べばスタート位置に戻れることを想定、real_maxScore等は戻さない）
+// 初期状態作成（これを呼べばスタート位置に戻れることを想定、real_max_score等は戻さない）
 // State::initの実装
 void State::init()
 {
@@ -257,7 +257,7 @@ void State::init()
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
-void Input(int problemNum)
+void input_data(int problemNum)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
@@ -287,11 +287,11 @@ void Input(int problemNum)
 }
 
 // 解答出力
-void Output(int mode, int problemNum)
+void output_data(int mode, int problemNum)
 {
   if (mode == 0) {
-    cout << current_state.ansSize - current_state.delCnt << endl;
-    for (int i = 0; i < current_state.ansSize; ++i) {
+    cout << current_state.ans_count - current_state.del_count << endl;
+    for (int i = 0; i < current_state.ans_count; ++i) {
       if (current_state.deleted[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { cout << current_state.ans[i][j][k] << ' '; }
       cout << endl;
@@ -311,8 +311,8 @@ void Output(int mode, int problemNum)
 
     ofstream ofs(fileNameOfs);
 
-    ofs << current_state.ansSize - current_state.delCnt << endl;
-    for (int i = 0; i < current_state.ansSize; ++i) {
+    ofs << current_state.ans_count - current_state.del_count << endl;
+    for (int i = 0; i < current_state.ans_count; ++i) {
       if (current_state.deleted[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { ofs << current_state.ans[i][j][k] << ' '; }
       ofs << endl;
@@ -613,12 +613,12 @@ void State::setRectangleLines(int x[4], int y[4], int rectDir, bool setValue)
 // State::addRectangleの実装
 void State::addRectangle(int x[4], int y[4], int rectDir)
 {
-  ans[ansSize][0][0] = x[0]; ans[ansSize][0][1] = y[0];
-  ans[ansSize][1][0] = x[1]; ans[ansSize][1][1] = y[1];
-  ans[ansSize][2][0] = x[2]; ans[ansSize][2][1] = y[2];
-  ans[ansSize][3][0] = x[3]; ans[ansSize][3][1] = y[3];
-  deleted[ansSize] = 0;
-  ansSize++;
+  ans[ans_count][0][0] = x[0]; ans[ans_count][0][1] = y[0];
+  ans[ans_count][1][0] = x[1]; ans[ans_count][1][1] = y[1];
+  ans[ans_count][2][0] = x[2]; ans[ans_count][2][1] = y[2];
+  ans[ans_count][3][0] = x[3]; ans[ans_count][3][1] = y[3];
+  deleted[ans_count] = 0;
+  ans_count++;
 
   f[x[0]][y[0]] = 1;
   colCnt[x[0]]++;
@@ -652,10 +652,10 @@ void State::removeRectangle(int x[4], int y[4], int rectDir)
 */
 
 // ランダムに1点が足せるかどうか
-void tryAdd(double temperature)
+void try_add(double temperature)
 {
-  int x = Rand() % N;
-  int y = Rand() % N;
+  int x = rand32() % N;
+  int y = rand32() % N;
 
   if (current_state.f[x][y]) { return; }
 
@@ -787,17 +787,17 @@ void tryAdd(double temperature)
   double diffScore = 1000000.0 * N * N / M * W[x][y] / S;
 
   double prob = exp(diffScore / temperature);
-  if (prob > Rand01()) {
+  if (prob > rand_01()) {
     stats[1][0]++;
 
-    current_state.maxScore += diffScore;
+    current_state.max_score += diffScore;
 
     // 長方形を追加
     int rectX[4] = { x, x1, xx, x3 };
     int rectY[4] = { y, y1, yy, y3 };
     current_state.addRectangle(rectX, rectY, dir);
 
-    if (current_state.maxScore > best_state.maxScore) {
+    if (current_state.max_score > best_state.max_score) {
       best_state.copyFrom(current_state);
     }
   }
@@ -819,8 +819,8 @@ inline int GetDir(int x1, int y1, int x2, int y2)
 // ランダムに1点選びほかに影響ないなら削除
 void tryDel(double temperature)
 {
-  if (current_state.ansSize == 0) { return; }
-  int ite = Rand() % current_state.ansSize;
+  if (current_state.ans_count == 0) { return; }
+  int ite = rand32() % current_state.ans_count;
   if (current_state.deleted[ite]) { return; }
   if (current_state.deg[current_state.ans[ite][0][0]][current_state.ans[ite][0][1]] > 1) { return; }
 
@@ -835,17 +835,17 @@ void tryDel(double temperature)
   double diffScore = -1000000.0 * N * N / M * W[x[0]][y[0]] / S;
 
   double prob = exp(diffScore / temperature);
-  if (prob > Rand01()) {
+  if (prob > rand_01()) {
     stats[2][0]++;
 
-    current_state.maxScore += diffScore;
+    current_state.max_score += diffScore;
 
     // 長方形を削除
     int dir = GetDir(x[0], y[0], x[1], y[1]);
     current_state.removeRectangle(x, y, dir);
 
     current_state.deleted[ite] = 1;
-    current_state.delCnt++;
+    current_state.del_count++;
   }
 }
 
@@ -869,19 +869,19 @@ pair<int, int> SimulatedAnnealing(double timeLimit, double startTemp, double end
     }
 
     // 現在のスコアが悪いときは元に戻す
-    if (current_state.maxScore * 1.2 < best_state.maxScore) {
+    if (current_state.max_score * 1.2 < best_state.max_score) {
       current_state.copyFrom(best_state);
       rollbackCount++;
     }
 
-    if (current_state.delCnt >= 10000) {
-      compact();
+    if (current_state.del_count >= 10000) {
+      compact_answers();
     }
 
     double temperature = startTemp + (endTemp - startTemp) * nowProgress;
 
-    if (Rand() % 2 == 0) {
-      tryAdd(temperature);
+    if (rand32() % 2 == 0) {
+      try_add(temperature);
     }
     else {
       tryDel(temperature);
@@ -903,7 +903,7 @@ int Solve(int mode, int problemNum = 0)
   current_state.init();
 
   // 愚直解作成
-  current_state.maxScore = CalcScore();
+  current_state.max_score = calc_score();
   best_state.copyFrom(current_state);
   seed_state.copyFrom(current_state);
 
@@ -914,13 +914,13 @@ int Solve(int mode, int problemNum = 0)
 
     // 初期状態に戻す
     current_state.init();
-    current_state.maxScore = CalcScore();
+    current_state.max_score = calc_score();
 
     // 焼きなまし
     SimulatedAnnealing(4.2 / seedCount, 200048, 0, "seed");
 
     // スコアが良ければシードを更新
-    if (best_state.maxScore > seed_state.maxScore) {
+    if (best_state.max_score > seed_state.max_score) {
       seed_state.copyFrom(best_state);
     }
   }
@@ -938,15 +938,15 @@ int Solve(int mode, int problemNum = 0)
   // 一番スコアの良い解
   current_state.copyFrom(best_state);
 
-  compact();
+  compact_answers();
 
-  CalcScore();
+  calc_score();
 
   // デバッグログ
   if (mode != 0) {
     cout << "problemNum = " << problemNum << ", N = " << N << endl;
-    cout << "ansSize = " << current_state.ansSize << ", delCnt = " << current_state.delCnt << endl;
-    cout << "maxScore = " << current_state.maxScore << endl;
+    cout << "ans_count = " << current_state.ans_count << ", del_count = " << current_state.del_count << endl;
+    cout << "max_score = " << current_state.max_score << endl;
     cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
     for (int i = 1; i < 5; ++i) {
       cout << "Method" << i << " = " << stats[i][0] << " / " << stats[i][1] << endl;
@@ -955,18 +955,18 @@ int Solve(int mode, int problemNum = 0)
   }
 
   cerr << loop << endl;
-  return current_state.maxScore;
+  return current_state.max_score;
 }
 
 int SolveOuter(int mode, int problemNum = 0)
 {
   // 入力受け取り
-  Input(problemNum);
+  input_data(problemNum);
 
   int score = Solve(mode, problemNum);
 
   // 解答の出力
-  Output(mode, problemNum);
+  output_data(mode, problemNum);
 
   return score;
 }
@@ -983,7 +983,7 @@ int main()
   if (mode == 0) {
     for (int i = 0; i < 1; ++i) {
       SolveOuter(mode, 3);
-      AllClear_MultiCase();
+      clear_all_multi_case();
     }
   }
   // 1ケース試す
@@ -995,7 +995,7 @@ int main()
     int scoreSum = 0;
     for (int i = 0; i < 10; ++i) {
       scoreSum += SolveOuter(mode, i);
-      AllClear_MultiCase();
+      clear_all_multi_case();
     }
     cout << "scoreSum = " << scoreSum << endl;
   }

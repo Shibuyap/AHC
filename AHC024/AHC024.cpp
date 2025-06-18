@@ -34,7 +34,7 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-static uint32_t Rand()
+static uint32_t rand_xorshift()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -50,25 +50,25 @@ static uint32_t Rand()
 }
 
 
-static double Rand01()
+static double rand_01()
 {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
 }
 
 
 static double RandRange(double l, double r)
 {
-  return l + (r - l) * Rand01();
+  return l + (r - l) * rand_01();
 }
 
 
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = Rand() % (i + 1);
-    int swa = data[i];
+    int j = rand_xorshift() % (i + 1);
+    int tmp = data[i];
     data[i] = data[j];
-    data[j] = swa;
+    data[j] = tmp;
   }
 }
 
@@ -121,16 +121,16 @@ const int dy[4] = { 0, -1, 0, 1 };
 double TL = 1.8;
 int mode;
 
-std::chrono::steady_clock::time_point startTimeClock;
+std::chrono::steady_clock::time_point start_time_clock;
 
-void ResetTime()
+void start_timer()
 {
-  startTimeClock = std::chrono::steady_clock::now();
+  start_time_clock = std::chrono::steady_clock::now();
 }
 
-double GetNowTime()
+double get_elapsed_time()
 {
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
   return elapsed.count();
 }
 
@@ -178,10 +178,10 @@ void SetUp()
 }
 
 // 入力を受け取る関数
-void Input(int problemNum)
+void Input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
@@ -231,11 +231,11 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }
@@ -374,7 +374,7 @@ void SimulatedAnnealing(Hypers hypers)
 
   CopyToBest();
 
-  double nowTime = GetNowTime();
+  double nowTime = get_elapsed_time();
   const double START_TEMP = hypers.StartTemp;
   const double END_TEMP = hypers.EndTemp;
 
@@ -384,7 +384,7 @@ void SimulatedAnnealing(Hypers hypers)
     loop++;
 
     if (loop % 100 == 0) {
-      nowTime = GetNowTime();
+      nowTime = get_elapsed_time();
       if (nowTime > TL) { break; }
     }
 
@@ -392,16 +392,16 @@ void SimulatedAnnealing(Hypers hypers)
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
     // 近傍解作成
-    int raMode = Rand() % hypers.Partition[2];
+    int raMode = rand_xorshift() % hypers.Partition[2];
     int ra1, ra2, ra3, ra4, ra5, raDir;
     int keep1, keep2, keep3, keep4, keep5;
     if (raMode < hypers.Partition[0]) {
-      int raDir = Rand() % 2;
-      int ra1 = Rand() % n + 1;
+      int raDir = rand_xorshift() % 2;
+      int ra1 = rand_xorshift() % n + 1;
       int ok = 0;
       while (ok == 0) {
-        raDir = Rand() % 2;
-        ra1 = Rand() % n + 1;
+        raDir = rand_xorshift() % 2;
+        ra1 = rand_xorshift() % n + 1;
         if (raDir == 0) {
           for (int j = 1; j < n + 1; ++j) {
             if (d[ra1][j] != 0)ok = 1;
@@ -450,9 +450,9 @@ void SimulatedAnnealing(Hypers hypers)
     else if (raMode < hypers.Partition[1]) {
 
       while (true) {
-        ra1 = Rand() % (n - 1) + 1;
-        ra2 = Rand() % (n - 1) + 1;
-        raDir = Rand() % 4;
+        ra1 = rand_xorshift() % (n - 1) + 1;
+        ra2 = rand_xorshift() % (n - 1) + 1;
+        raDir = rand_xorshift() % 4;
         if (d[ra1][ra2] == 0 || d[ra1][ra2 + 1] == 0 || d[ra1 + 1][ra2] == 0 || d[ra1 + 1][ra2 + 1] == 0)continue;
         break;
       }
@@ -480,9 +480,9 @@ void SimulatedAnnealing(Hypers hypers)
     }
     else if (raMode < hypers.Partition[2]) {
       while (true) {
-        ra1 = Rand() % n + 1;
-        ra2 = Rand() % n + 1;
-        int dir = Rand() % 4;
+        ra1 = rand_xorshift() % n + 1;
+        ra2 = rand_xorshift() % n + 1;
+        int dir = rand_xorshift() % 4;
         ra3 = ra1 + dx[dir];
         ra4 = ra2 + dy[dir];
         if (d[ra1][ra2] == 0 || d[ra1][ra2] == d[ra3][ra4])continue;
@@ -502,7 +502,7 @@ void SimulatedAnnealing(Hypers hypers)
     // 焼きなまし
     double diffScore = (tmpScore - ansScore) * hypers.MultipleValue;
     double prob = exp(diffScore / temp);
-    if (prob > Rand01()) {
+    if (prob > rand_01()) {
       // 採用
       ansScore = tmpScore;
 
@@ -540,19 +540,19 @@ void SimulatedAnnealing(Hypers hypers)
 }
 
 // 問題を解く関数
-ll Solve(int problem_num, Hypers hypers)
+ll Solve(int case_num, Hypers hypers)
 {
-  ResetTime();
+  start_timer();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
   // 入力受け取り
-  Input(problem_num);
+  Input(case_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(problem_num, ofs);
+  OpenOfs(case_num, ofs);
 
   // 焼きなまし
   SimulatedAnnealing(hypers);
@@ -605,7 +605,7 @@ int main()
         cout << "num = " << setw(2) << i << ", ";
         cout << "score = " << setw(4) << score << ", ";
         cout << "sum = " << setw(5) << sum << ", ";
-        cout << "time = " << setw(5) << GetNowTime() << ", ";
+        cout << "time = " << setw(5) << get_elapsed_time() << ", ";
         cout << endl;
       }
     }
@@ -617,10 +617,10 @@ int main()
 
     while (true) {
       Hypers hypers;
-      hypers.StartTemp = pow(2.0, Rand01() * 20);
+      hypers.StartTemp = pow(2.0, rand_01() * 20);
       hypers.EndTemp = 0.0;
-      hypers.MultipleValue = pow(2.0, Rand01() * 20);
-      hypers.Partition[0] = Rand() % 101;
+      hypers.MultipleValue = pow(2.0, rand_01() * 20);
+      hypers.Partition[0] = rand_xorshift() % 101;
 
       ll sum = 0;
       for (int i = 0; i < 15; ++i) {

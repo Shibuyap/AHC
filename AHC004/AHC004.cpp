@@ -71,9 +71,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -85,7 +85,7 @@ const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
 
 double TIME_LIMIT = 2.9;
-int exec_mode;
+int mode;
 
 static const ll PERFECT_SCORE = 100000000;
 static const int N = 20;
@@ -96,7 +96,7 @@ static const int CHARACTER_SIZE = 8;
 int L;
 
 char true_genome[N][N];
-vector<string> true_genome_strs;
+vector<string> true_strs;
 void generate_true_genome(int l, int m)
 {
   for (int i = 0; i < N; i++) {
@@ -104,7 +104,7 @@ void generate_true_genome(int l, int m)
       true_genome[i][j] = 'A' + rand_xorshift() % CHARACTER_SIZE;
     }
   }
-  true_genome_strs.clear();
+  true_strs.clear();
   for (int _ = 0; _ < m; ++_) {
     string s;
 
@@ -120,7 +120,7 @@ void generate_true_genome(int l, int m)
         s += true_genome[(i + k) % N][j];
       }
     }
-    true_genome_strs.push_back(s);
+    true_strs.push_back(s);
   }
 }
 
@@ -128,17 +128,17 @@ struct Pattern
 {
 public:
   vector<int> pattern;
-  int merged_count;
+  int merge_cnt;
 
   Pattern() = delete;
-  Pattern(vector<int> p) : pattern(p), merged_count(1) {}
+  Pattern(vector<int> p) : pattern(p), merge_cnt(1) {}
 };
 
 struct Patterns
 {
 public:
-  vector<vector<Pattern>> vv_patterns;
-  int pattern_count = 0;
+  vector<vector<Pattern>> patterns;
+  int cnt = 0;
 };
 
 class PatternsManager
@@ -150,8 +150,8 @@ public:
 public:
   void initialize(vector<string> strs)
   {
-    initial_patterns.vv_patterns.clear();
-    initial_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
+    initial_patterns.patterns.clear();
+    initial_patterns.patterns.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = 0; i < strs.size(); i++) {
       string s = strs[i];
       int len = s.size();
@@ -159,35 +159,35 @@ public:
       for (int j = 0; j < len; j++) {
         tmp[j] = s[j] - 'A';
       }
-      initial_patterns.vv_patterns[len].emplace_back(tmp);
+      initial_patterns.patterns[len].emplace_back(tmp);
     }
-    initial_patterns.pattern_count = 0;
-    for (auto& v_patterns : initial_patterns.vv_patterns) {
+    initial_patterns.cnt = 0;
+    for (auto& v_patterns : initial_patterns.patterns) {
       for (auto& pattern : v_patterns) {
-        initial_patterns.pattern_count += pattern.merged_count;
+        initial_patterns.cnt += pattern.merge_cnt;
       }
     }
   }
 
   void build_merge_patterns(double time_limit, int need_length)
   {
-    vector<Pattern> patterns_tmp;
-    for (auto& v_patterns : initial_patterns.vv_patterns) {
+    vector<Pattern> tmp;
+    for (auto& v_patterns : initial_patterns.patterns) {
       for (auto& pattern : v_patterns) {
-        patterns_tmp.emplace_back(pattern);
+        tmp.emplace_back(pattern);
       }
     }
 
     {
-      vector<Pattern> patterns_tmp_2;
-      for (int i = 0; i < patterns_tmp.size(); ++i) {
+      vector<Pattern> tmp2;
+      for (int i = 0; i < tmp.size(); ++i) {
         bool skip = false;
-        for (int j = 0; j < patterns_tmp.size(); ++j) {
+        for (int j = 0; j < tmp.size(); ++j) {
           if (i == j) {
             continue;
           }
-          const auto& p1 = patterns_tmp[i].pattern;
-          const auto& p2 = patterns_tmp[j].pattern;
+          const auto& p1 = tmp[i].pattern;
+          const auto& p2 = tmp[j].pattern;
           if (p1.size() > p2.size()) {
             continue;
           }
@@ -209,11 +209,11 @@ public:
           }
         }
         if (!skip) {
-          patterns_tmp_2.push_back(patterns_tmp[i]);
+          tmp2.push_back(tmp[i]);
         }
       }
 
-      patterns_tmp = patterns_tmp_2;
+      tmp = tmp2;
     }
 
     while (true) {
@@ -225,17 +225,17 @@ public:
       int idx2 = -1;
       int diff = 0;
       int max_len = 0;
-      int max_min_len = 9999;
-      for (int i = patterns_tmp.size() - 1; i >= 0; --i) {
-        int size_i = patterns_tmp[i].pattern.size();
+      int min_max = 9999;
+      for (int i = tmp.size() - 1; i >= 0; --i) {
+        int size_i = tmp[i].pattern.size();
         if (size_i < max_len) {
           continue;
         }
-        for (int j = patterns_tmp.size() - 1; j >= 0; --j) {
+        for (int j = tmp.size() - 1; j >= 0; --j) {
           if (i == j) {
             continue;
           }
-          int size_j = patterns_tmp[j].pattern.size();
+          int size_j = tmp[j].pattern.size();
           for (int k = 0; k < size_i; ++k) {
             int new_len = min(size_i - k, size_j);
             int new_len2 = max(0, size_j + k - N);
@@ -249,7 +249,7 @@ public:
 
             bool ok = true;
             for (int l = 0; l < new_len; l++) {
-              if (patterns_tmp[i].pattern[l + k] != patterns_tmp[j].pattern[l]) {
+              if (tmp[i].pattern[l + k] != tmp[j].pattern[l]) {
                 ok = false;
                 break;
               }
@@ -258,7 +258,7 @@ public:
             if (ok && max(size_i, size_j + k) > MAX_PATTERN_LENGTH) {
               for (int l = 0; l < size_j; l++) {
                 if (l + k >= MAX_PATTERN_LENGTH) {
-                  if (patterns_tmp[i].pattern[l + k - MAX_PATTERN_LENGTH] != patterns_tmp[j].pattern[l]) {
+                  if (tmp[i].pattern[l + k - MAX_PATTERN_LENGTH] != tmp[j].pattern[l]) {
                     ok = false;
                     break;
                   }
@@ -269,14 +269,14 @@ public:
             if (ok) {
               if (new_len + new_len2 > max_len) {
                 max_len = new_len + new_len2;
-                max_min_len = max(size_i, size_j);
+                min_max = max(size_i, size_j);
                 idx1 = i;
                 idx2 = j;
                 diff = k;
               }
-              else if (new_len + new_len2 == max_len && max(size_j, size_j) < max_min_len) {
+              else if (new_len + new_len2 == max_len && max(size_j, size_j) < min_max) {
                 max_len = new_len + new_len2;
-                max_min_len = max(size_i, size_j);
+                min_max = max(size_i, size_j);
                 idx1 = i;
                 idx2 = j;
                 diff = k;
@@ -293,8 +293,8 @@ public:
         break;
       }
 
-      Pattern merged_pattern = patterns_tmp[idx1];
-      int size_j = patterns_tmp[idx2].pattern.size();
+      Pattern merged_pattern = tmp[idx1];
+      int size_j = tmp[idx2].pattern.size();
       for (int k = 0; k < size_j; ++k) {
         if (merged_pattern.pattern.size() >= MAX_PATTERN_LENGTH) {
           break;
@@ -303,35 +303,35 @@ public:
           continue;
         }
         else {
-          merged_pattern.pattern.push_back(patterns_tmp[idx2].pattern[k]);
+          merged_pattern.pattern.push_back(tmp[idx2].pattern[k]);
         }
       }
-      merged_pattern.merged_count += patterns_tmp[idx2].merged_count;
+      merged_pattern.merge_cnt += tmp[idx2].merge_cnt;
 
       if (idx1 < idx2) {
-        patterns_tmp.erase(patterns_tmp.begin() + idx2);
-        patterns_tmp.erase(patterns_tmp.begin() + idx1);
+        tmp.erase(tmp.begin() + idx2);
+        tmp.erase(tmp.begin() + idx1);
       }
       else {
-        patterns_tmp.erase(patterns_tmp.begin() + idx1);
-        patterns_tmp.erase(patterns_tmp.begin() + idx2);
+        tmp.erase(tmp.begin() + idx1);
+        tmp.erase(tmp.begin() + idx2);
       }
-      patterns_tmp.push_back(merged_pattern);
-      if (patterns_tmp.size() == N * 2) {
+      tmp.push_back(merged_pattern);
+      if (tmp.size() == N * 2) {
         break;
       }
     }
 
-    merged_patterns.vv_patterns.clear();
-    merged_patterns.vv_patterns.resize(MAX_PATTERN_LENGTH + 1);
-    for (auto& pattern : patterns_tmp) {
-      merged_patterns.vv_patterns[pattern.pattern.size()].push_back(pattern);
+    merged_patterns.patterns.clear();
+    merged_patterns.patterns.resize(MAX_PATTERN_LENGTH + 1);
+    for (auto& pattern : tmp) {
+      merged_patterns.patterns[pattern.pattern.size()].push_back(pattern);
     }
 
-    merged_patterns.pattern_count = 0;
-    for (auto& v_patterns : merged_patterns.vv_patterns) {
+    merged_patterns.cnt = 0;
+    for (auto& v_patterns : merged_patterns.patterns) {
       for (auto& pattern : v_patterns) {
-        merged_patterns.pattern_count += pattern.merged_count;
+        merged_patterns.cnt += pattern.merge_cnt;
       }
     }
   }
@@ -386,9 +386,9 @@ class State
 public:
   PatternsManager& patterns;
 
-  int matched_count;
+  int match_cnt;
   int grid[N][N];
-  vector<vector<MatchedFlag>> matched_flags;
+  vector<vector<MatchedFlag>> matched;
 
   State() = delete;
   State(PatternsManager& p) : patterns(p)
@@ -399,7 +399,7 @@ public:
       }
     }
 
-    reset_matched_flags(patterns.initial_patterns);
+    reset_matched(patterns.initial_patterns);
   }
 
   void generate_random_empty()
@@ -419,8 +419,8 @@ public:
 
     // 置けてないパターンを長い順に置けるところに置いていく
     for (int len = MAX_PATTERN_LENGTH; len >= MIN_PATTERN_LENGTH; len--) {
-      for (int pat_index = 0; pat_index < patterns.vv_patterns[len].size(); pat_index++) {
-        if (matched_flags[len][pat_index].get_count() > 0) {
+      for (int pi = 0; pi < patterns.patterns[len].size(); pi++) {
+        if (matched[len][pi].get_count() > 0) {
           continue;
         }
 
@@ -431,14 +431,14 @@ public:
             {
               ok = 1;
               for (int k = 0; k < len; ++k) {
-                if (patterns.vv_patterns[len][pat_index].pattern[k] != grid[i][(j + k) % N] && grid[i][(j + k) % N] != CHARACTER_SIZE) {
+                if (patterns.patterns[len][pi].pattern[k] != grid[i][(j + k) % N] && grid[i][(j + k) % N] != CHARACTER_SIZE) {
                   ok = 0;
                   break;
                 }
               }
               if (ok) {
                 for (int k = 0; k < len; ++k) {
-                  grid[i][(j + k) % N] = patterns.vv_patterns[len][pat_index].pattern[k];
+                  grid[i][(j + k) % N] = patterns.patterns[len][pi].pattern[k];
                 }
                 break;
               }
@@ -447,14 +447,14 @@ public:
             {
               ok = 1;
               for (int k = 0; k < len; ++k) {
-                if (patterns.vv_patterns[len][pat_index].pattern[k] != grid[(i + k) % N][j] && grid[(i + k) % N][j] != CHARACTER_SIZE) {
+                if (patterns.patterns[len][pi].pattern[k] != grid[(i + k) % N][j] && grid[(i + k) % N][j] != CHARACTER_SIZE) {
                   ok = 0;
                   break;
                 }
               }
               if (ok) {
                 for (int k = 0; k < len; ++k) {
-                  grid[(i + k) % N][j] = patterns.vv_patterns[len][pat_index].pattern[k];
+                  grid[(i + k) % N][j] = patterns.patterns[len][pi].pattern[k];
                 }
                 break;
               }
@@ -468,46 +468,46 @@ public:
     }
   }
 
-  void reset_matched_flags(const Patterns& patterns)
+  void reset_matched(const Patterns& patterns)
   {
-    matched_flags.resize(MAX_PATTERN_LENGTH + 1);
+    matched.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      matched_flags[i].resize(patterns.vv_patterns[i].size());
-      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
-        matched_flags[i][j].clear();
+      matched[i].resize(patterns.patterns[i].size());
+      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+        matched[i][j].clear();
       }
     }
 
-    matched_count = 0;
+    match_cnt = 0;
   }
 
   void recalc_all(const Patterns& patterns, bool rough = false)
   {
-    reset_matched_flags(patterns);
+    reset_matched(patterns);
 
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
-        matched_flags[i][j].clear();
+      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+        matched[i][j].clear();
         for (int k = 0; k < N; ++k) {
           for (int l = 0; l < N; ++l) {
-            matched_flags[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 0));
-            matched_flags[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.vv_patterns[i][j].pattern, 1));
-            if (rough && matched_flags[i][j].get_count() > 0) {
+            matched[i][j].set_flag(k, l, 0, is_matched(k, l, patterns.patterns[i][j].pattern, 0));
+            matched[i][j].set_flag(k, l, 1, is_matched(k, l, patterns.patterns[i][j].pattern, 1));
+            if (rough && matched[i][j].get_count() > 0) {
               break;
             }
           }
-          if (rough && matched_flags[i][j].get_count() > 0) {
+          if (rough && matched[i][j].get_count() > 0) {
             break;
           }
         }
       }
     }
 
-    matched_count = 0;
+    match_cnt = 0;
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
-        if (matched_flags[i][j].get_count() > 0) {
-          matched_count += patterns.vv_patterns[i][j].merged_count;
+      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+        if (matched[i][j].get_count() > 0) {
+          match_cnt += patterns.patterns[i][j].merge_cnt;
         }
       }
     }
@@ -516,16 +516,16 @@ public:
   void update_one_point(int row, int col, const Patterns& patterns)
   {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.vv_patterns[i].size(); j++) {
-        if (matched_flags[i][j].get_count() > 0) {
-          matched_count -= patterns.vv_patterns[i][j].merged_count;
+      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+        if (matched[i][j].get_count() > 0) {
+          match_cnt -= patterns.patterns[i][j].merge_cnt;
         }
         for (int k = 0; k < i; ++k) {
-          matched_flags[i][j].set_flag(row, (col + N - k) % N, 0, is_matched(row, (col + N - k) % N, patterns.vv_patterns[i][j].pattern, 0));
-          matched_flags[i][j].set_flag((row + N - k) % N, col, 1, is_matched((row + N - k) % N, col, patterns.vv_patterns[i][j].pattern, 1));
+          matched[i][j].set_flag(row, (col + N - k) % N, 0, is_matched(row, (col + N - k) % N, patterns.patterns[i][j].pattern, 0));
+          matched[i][j].set_flag((row + N - k) % N, col, 1, is_matched((row + N - k) % N, col, patterns.patterns[i][j].pattern, 1));
         }
-        if (matched_flags[i][j].get_count() > 0) {
-          matched_count += patterns.vv_patterns[i][j].merged_count;
+        if (matched[i][j].get_count() > 0) {
+          match_cnt += patterns.patterns[i][j].merge_cnt;
         }
       }
     }
@@ -533,14 +533,14 @@ public:
 
   ll get_score(const Patterns& patterns)
   {
-    return PERFECT_SCORE * matched_count / patterns.pattern_count;
+    return PERFECT_SCORE * match_cnt / patterns.cnt;
   }
 
   void assemble(double time_limit, const Patterns& patterns)
   {
     vector<vector<int>> vv;
     for (int i = MAX_PATTERN_LENGTH + 1 - 1; i >= 0; --i) {
-      for (auto& pattern : patterns.vv_patterns[i]) {
+      for (auto& pattern : patterns.patterns[i]) {
         vv.push_back(pattern.pattern);
         if (vv.size() == N * 2) {
           break;
@@ -961,12 +961,12 @@ void input_data(int case_num, PatternsManager& patterns_manager)
 
   int _n, _m;
   vector<string> vs;
-  if (exec_mode == 4) {
+  if (mode == 4) {
     int _l = 10;
     int _m = 800;
     generate_true_genome(_l, _m);
     for (int i = 0; i < _m; i++) {
-      vs.push_back(true_genome_strs[i]);
+      vs.push_back(true_strs[i]);
     }
   }
   else if (!ifs.is_open()) {
@@ -1006,7 +1006,7 @@ void input_data(int case_num, PatternsManager& patterns_manager)
 
 void open_ofs(int case_num, ofstream& ofs)
 {
-  if (exec_mode != 0) {
+  if (mode != 0) {
     std::ostringstream oss;
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
@@ -1015,7 +1015,7 @@ void open_ofs(int case_num, ofstream& ofs)
 
 void output_data(ofstream& ofs, State& state)
 {
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
@@ -1072,7 +1072,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
+    int ra_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5;
 
@@ -1085,10 +1085,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     int old_value = state.grid[row][col];
 
     int len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
-    while (patterns.vv_patterns[len].size() == 0) {
+    while (patterns.patterns[len].size() == 0) {
       len = rand_xorshift() % MAX_PATTERN_LENGTH + 1;
     }
-    int index = rand_xorshift() % patterns.vv_patterns[len].size();
+    int index = rand_xorshift() % patterns.patterns[len].size();
     int dir = rand_xorshift() % 2;
 
     int row2 = rand_xorshift() % N;
@@ -1106,25 +1106,25 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
       }
     }
 
-    if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+    if (ra_mode < annealingParams.operation_thresholds[0]) {
       // 近傍操作1
       state.grid[row][col] = candidate_value;
       state.update_one_point(row, col, patterns);
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+    else if (ra_mode < annealingParams.operation_thresholds[1]) {
       // 近傍操作2
       for (int i = 0; i < len; i++) {
         if (dir == 0) {
-          state.grid[row][(col + i) % N] = patterns.vv_patterns[len][index].pattern[i];
+          state.grid[row][(col + i) % N] = patterns.patterns[len][index].pattern[i];
           state.update_one_point(row, (col + i) % N, patterns);
         }
         else {
-          state.grid[(row + i) % N][col] = patterns.vv_patterns[len][index].pattern[i];;
+          state.grid[(row + i) % N][col] = patterns.patterns[len][index].pattern[i];;
           state.update_one_point((row + i) % N, col, patterns);
         }
       }
     }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
+    else if (ra_mode < annealingParams.operation_thresholds[2]) {
       // 近傍操作3
       int keep[N];
       for (int i = 0; i < N; i++) {
@@ -1151,12 +1151,12 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     }
     else {
       // 元に戻す
-      if (ra_exec_mode < annealingParams.operation_thresholds[0]) {
+      if (ra_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
         state.grid[row][col] = old_value;
         state.update_one_point(row, col, patterns);
       }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
+      else if (ra_mode < annealingParams.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
         for (int i = 0; i < len; i++) {
           if (dir == 0) {
@@ -1169,7 +1169,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
           }
         }
       }
-      else if (ra_exec_mode < annealingParams.operation_thresholds[2]) {
+      else if (ra_mode < annealingParams.operation_thresholds[2]) {
         // 近傍操作3 の巻き戻し
         int keep[N];
         for (int i = 0; i < N; i++) {
@@ -1187,10 +1187,10 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
     }
   }
 
-  if (exec_mode >= 3 && exec_mode != 4) {
+  if (mode >= 3 && mode != 4) {
     cerr << "iteration_count = " << iteration_count << endl;
   }
-  if (exec_mode >= 2 && exec_mode != 4) {
+  if (mode >= 2 && mode != 4) {
     cerr << "焼きなまし処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 }
@@ -1208,21 +1208,21 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
     return PERFECT_SCORE;
   }
 
-  if (exec_mode >= 3) {
-    for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
+  if (mode >= 3) {
+    for (int i = 0; i < patterns_manager.merged_patterns.patterns.size(); i++) {
       cerr << setw(3) << i << " ";
     }
     cerr << endl;
-    for (int i = 0; i < patterns_manager.merged_patterns.vv_patterns.size(); i++) {
-      cerr << setw(3) << patterns_manager.merged_patterns.vv_patterns[i].size() << " ";
+    for (int i = 0; i < patterns_manager.merged_patterns.patterns.size(); i++) {
+      cerr << setw(3) << patterns_manager.merged_patterns.patterns[i].size() << " ";
     }
     cerr << endl;
   }
-  if (exec_mode >= 2 && exec_mode != 4) {
+  if (mode >= 2 && mode != 4) {
     cerr << "パターンマージ処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 
-  if (exec_mode >= 3 && exec_mode != 4) {
+  if (mode >= 3 && mode != 4) {
     for (int i = 0; i < N; ++i) {
       for (int j = 0; j < N; ++j) {
         if (state.grid[i][j] == CHARACTER_SIZE) {
@@ -1235,7 +1235,7 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
       cerr << endl;
     }
   }
-  if (exec_mode >= 2 && exec_mode != 4) {
+  if (mode >= 2 && mode != 4) {
     cerr << "完全復元処理終了 : " << get_elapsed_time() << " sec" << endl;
   }
 
@@ -1282,7 +1282,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
 int main()
 {
-  exec_mode = 3;
+  mode = 3;
 
   AnnealingParams annealingParams;
   annealingParams.start_temperature[0] = 2048.0;
@@ -1308,20 +1308,20 @@ int main()
   annealingParams.operation_thresholds[8] = 900;
   annealingParams.operation_thresholds[9] = 1000;
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     solve_case(0, annealingParams);
   }
-  else if (exec_mode < 100) {
+  else if (mode < 100) {
     ll sum_score = 0;
     for (int i = 0; i < 10; ++i) {
-      if (exec_mode == 1) {
+      if (mode == 1) {
       }
       else {
         cerr << endl;
       }
       ll score = solve_case(i, annealingParams);
       sum_score += score;
-      if (exec_mode == 1) {
+      if (mode == 1) {
         cerr << score << endl;
       }
       else {
@@ -1333,7 +1333,7 @@ int main()
       }
     }
   }
-  else if (exec_mode == 100) {
+  else if (mode == 100) {
     int loop_count = 0;
     AnnealingParams best_annealingParams;
     ll best_sum_score = 0;

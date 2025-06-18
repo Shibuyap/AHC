@@ -57,7 +57,7 @@ const ll D18 = 1000000000000000000LL;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -73,9 +73,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -152,26 +152,26 @@ void GenerateLocalItems()
 
 void GenerateCase(int _n = -1, int _d = -1, int _q = -1)
 {
-  N = Rand() % 71 + 30;
+  N = rand_xorshift() % 71 + 30;
   if (_n != -1) N = _n;
-  D = Rand() % (N / 4 - 1) + 2;
+  D = rand_xorshift() % (N / 4 - 1) + 2;
   if (_d != -1) D = _d;
-  Q = round(pow(2, Rand01() * 4.0 + 1.0) * N);
+  Q = round(pow(2, rand_01() * 4.0 + 1.0) * N);
   if (_q != -1) Q = _q;
   GenerateLocalItems();
 }
 
 void GenerateNNDDQQ(int _nn = -1, int _qq = -1, int _dd = -1)
 {
-  NN = Rand() % 14;
+  NN = rand_xorshift() % 14;
   if (_nn != -1) {
     NN = _nn;
   }
-  QQ = Rand() % 40;
+  QQ = rand_xorshift() % 40;
   if (_qq != -1) {
     QQ = _qq;
   }
-  DD = Rand() % haipara[NN][QQ].size();
+  DD = rand_xorshift() % haipara[NN][QQ].size();
   if (_dd != -1) {
     DD = _dd;
   }
@@ -180,12 +180,12 @@ void GenerateNNDDQQ(int _nn = -1, int _qq = -1, int _dd = -1)
 void GeneratecaseFromNNDDQQ()
 {
   if (NN == 13) {
-    N = Rand() % 6 + 30 + NN * 5;
+    N = rand_xorshift() % 6 + 30 + NN * 5;
   }
   else {
-    N = Rand() % 5 + 30 + NN * 5;
+    N = rand_xorshift() % 5 + 30 + NN * 5;
   }
-  double dou = Rand01() * 0.1;
+  double dou = rand_01() * 0.1;
   Q = round(pow(2, 1.0 + 0.1 * QQ + dou) * N);
   D = DD + 2;
   GenerateLocalItems();
@@ -220,7 +220,7 @@ void GeneratePseudoItems()
 }
 
 // 入力受け取り
-void Input(int problemNum)
+void Input(int case_num)
 {
   if (mode <= 2) {
     if (mode == 0) {
@@ -230,7 +230,7 @@ void Input(int problemNum)
     else if (mode <= 2) {
       // ファイル入力する
       std::ostringstream oss;
-      oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+      oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
       ifstream ifs(oss.str());
 
       ifs >> N >> D >> Q;
@@ -241,15 +241,15 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode < 1000000) {
     if (mode != 0) {
       string fileNameOfs = "./out/";
       string strNum;
       for (int i = 0; i < 4; ++i) {
-        strNum += (char)(probNum % 10 + '0');
-        probNum /= 10;
+        strNum += (char)(case_num % 10 + '0');
+        case_num /= 10;
       }
       reverse(strNum.begin(), strNum.end());
       fileNameOfs += strNum + ".txt";
@@ -290,7 +290,7 @@ bool isNearQueryLimit(int countQ, int margin = 1)
 // Random percentage selection
 int getRandomPercentage()
 {
-  return Rand() % 100;
+  return rand_xorshift() % 100;
 }
 
 // Initialize answer array with default pattern
@@ -488,17 +488,17 @@ int selectRandomFromGroup(int groupId)
       groupItems.push_back(j);
     }
   }
-  return groupItems.empty() ? -1 : groupItems[Rand() % groupItems.size()];
+  return groupItems.empty() ? -1 : groupItems[rand_xorshift() % groupItems.size()];
 }
 
 int selectGroupWithMinSize(int minSize)
 {
-  int x = Rand() % D;
+  int x = rand_xorshift() % D;
   int loop = 0;
   while (true) {
     loop++;
     if (loop >= 100) return -1;
-    x = Rand() % D;
+    x = rand_xorshift() % D;
     int cnt = countItemsInGroup(x);
     if (cnt >= minSize) return x;
   }
@@ -888,9 +888,9 @@ void Move1(int& countQ, int cutLine)
   int x = selectGroupWithMinSize(2);
   if (x == -1) { return; }
 
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (x == y) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
   }
 
   int z = selectRandomFromGroup(x);
@@ -907,16 +907,16 @@ void Move1(int& countQ, int cutLine)
 int Move1_Specify(int& countQ, int groupId)
 {
   int x = groupId;
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (x == y) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
   }
   vector<int> vx;
   collectItemsFromGroup(x, vx);
   if (vx.size() <= 1) {
     return -1;
   }
-  int z = vx[Rand() % vx.size()];
+  int z = vx[rand_xorshift() % vx.size()];
 
   buildQueryGroups(countQ, x, y, z);
 
@@ -934,11 +934,11 @@ void MoveSmall1(const vector<int>&, int& countQ, int smallLine)
 {
   int _N = min(smallLine, N);
   _N = max(1, _N);
-  int z = Rand() % _N;
+  int z = rand_xorshift() % _N;
   int x = ans[z];
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (x == y) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
   }
 
   buildQueryGroups(countQ, x, y, z);
@@ -961,13 +961,13 @@ void Move1_Two(int& countQ, int cutLine = 999)
   int x = selectGroupWithMinSize(2);
   if (x == -1) { return; }
 
-  int y1 = Rand() % D;
+  int y1 = rand_xorshift() % D;
   while (x == y1) {
-    y1 = Rand() % D;
+    y1 = rand_xorshift() % D;
   }
-  int y2 = Rand() % D;
+  int y2 = rand_xorshift() % D;
   while (x == y2 || y1 == y2) {
-    y2 = Rand() % D;
+    y2 = rand_xorshift() % D;
   }
 
   char c1 = QueryGroup(countQ, y1, y2);
@@ -988,18 +988,18 @@ void Move1Minimum(int& countQ, int cutLine = 999)
   int x = selectGroupWithMinSize(2);
   if (x == -1) { return; }
 
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (x == y) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
   }
 
   vector<int> vv;
   collectItemsFromGroup(x, vv);
   if (vv.empty()) { return; }
 
-  int z = vv[Rand() % vv.size()];
+  int z = vv[rand_xorshift() % vv.size()];
   for (int _ = 0; _ < 30; ++_) {
-    int zz = vv[Rand() % vv.size()];
+    int zz = vv[rand_xorshift() % vv.size()];
     if (hikaku[zz][z] == 0 || hikaku[zz][z] == -1) {
       z = zz;
     }
@@ -1016,22 +1016,22 @@ int Move1Combo(int& countQ, int combo, int cutLine = 999)
 {
   int x = combo;
   if (x == -1) {
-    x = Rand() % D;
+    x = rand_xorshift() % D;
   }
   while (true) {
     int cnt = countItemsInGroup(x);
     if (cnt >= 2) {
       break;
     }
-    x = Rand() % D;
+    x = rand_xorshift() % D;
   }
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (x == y) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
   }
   vector<int> vv;
   collectItemsFromGroup(x, vv);
-  int z = vv[Rand() % vv.size()];
+  int z = vv[rand_xorshift() % vv.size()];
 
   if (cutLine < 100) {
     int win = 0;
@@ -1072,7 +1072,7 @@ bool selectTwoGroupsWithMinSize(int& x, int& y, int minSize = 2)
     yloop++;
     if (yloop == 30) return false;
 
-    y = Rand() % D;
+    y = rand_xorshift() % D;
     if (x == y) { continue; }
 
     int cnt = countItemsInGroup(y);
@@ -1092,8 +1092,8 @@ void Swap1(int& countQ, int diffLine)
   collectItemsFromGroup(x, vx);
   collectItemsFromGroup(y, vy);
 
-  int lid = vx[Rand() % vx.size()];
-  int rid = vy[Rand() % vy.size()];
+  int lid = vx[rand_xorshift() % vx.size()];
+  int rid = vy[rand_xorshift() % vy.size()];
 
   if (diffLine < 100) {
     if (hikaku[lid][rid] == -1) {
@@ -1158,9 +1158,9 @@ void SwapHalf(int& countQ)
   int x = selectGroupWithMinSize(2);
   if (x == -1) { return; }
 
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (true) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
     if (x == y) {
       continue;
     }
@@ -1221,9 +1221,9 @@ void Method11_1(int& countQ)
   int x = selectGroupWithMinSize(2);
   if (x == -1) { return; }
 
-  int y = Rand() % D;
+  int y = rand_xorshift() % D;
   while (true) {
-    y = Rand() % D;
+    y = rand_xorshift() % D;
     if (x == y) {
       continue;
     }
@@ -1236,10 +1236,10 @@ void Method11_1(int& countQ)
   vector<int> vl, vr;
   collectItemsFromGroup(x, vl);
   collectItemsFromGroup(y, vr);
-  int lid = vl[Rand() % vl.size()];
-  int rid = vr[Rand() % vr.size()];
+  int lid = vl[rand_xorshift() % vl.size()];
+  int rid = vr[rand_xorshift() % vr.size()];
   for (int i = 0; i < 50; ++i) {
-    rid = vr[Rand() % vr.size()];
+    rid = vr[rand_xorshift() % vr.size()];
     if (hikaku[lid][rid] == 1) {
       break;
     }
@@ -1346,10 +1346,10 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
   int loop = 0;
   while (true) {
     loop++;
-    int num = Rand() % (M - 1);
+    int num = rand_xorshift() % (M - 1);
     for (int _ = 0; _ < 30; ++_) {
       if (memory_SwapNeighbor1[num]) {
-        num = Rand() % (M - 1);
+        num = rand_xorshift() % (M - 1);
       }
       else {
         break;
@@ -1366,7 +1366,7 @@ bool SwapNeighbor1(const vector<int>& items, int& countQ, int _m = -1)
       }
       else {
         while (xg == yg) {
-          num = Rand() % (N - 1);
+          num = rand_xorshift() % (N - 1);
           x = items[num];
           y = items[num + 1];
           xg = ans[x];
@@ -1395,7 +1395,7 @@ bool SwapNeighborSmall1(const vector<int>& items, int& countQ, int smallLine)
   while (true) {
     int _N = min(N, smallLine);
     _N = max(2, _N);
-    int num = Rand() % (_N - 1);
+    int num = rand_xorshift() % (_N - 1);
     int x = items[num];
     int y = items[num + 1];
     int xg = ans[x];
@@ -1428,7 +1428,7 @@ void SwapNeighbor1Block(const vector<vector<int>>& blocks, int& countQ)
 {
   int M = blocks.size();
   while (true) {
-    int num = Rand() % (M - 1);
+    int num = rand_xorshift() % (M - 1);
     vector<int> xb = blocks[num];
     vector<int> yb = blocks[num + 1];
     int xg = ans[xb[0]];
@@ -1587,7 +1587,7 @@ void Method13(int diffLine = 999)
 
   int countQ = 0;
   while (countQ < Q) {
-    int qu = Rand() % 100;
+    int qu = rand_xorshift() % 100;
     if (qu < 10) {
       Move1(countQ);
     }
@@ -1612,7 +1612,7 @@ void Method14()
   int countQ = 0;
   while (countQ < Q) {
     if (countQ < 0.75 * Q) {
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       if (qu < 60) {
         Move1(countQ);
       }
@@ -1646,7 +1646,7 @@ void Method15(int hiritu = 60)
       combo = Move1Combo(countQ, combo);
     }
     else {
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       if (qu < hiritu) {
         Move1(countQ);
       }
@@ -1673,10 +1673,10 @@ void Method16(int hiritu = 60)
       ans[i] = i;
     }
     else {
-      int x = Rand() % D;
-      int y = Rand() % D;
+      int x = rand_xorshift() % D;
+      int y = rand_xorshift() % D;
       while (x == y) {
-        y = Rand() % D;
+        y = rand_xorshift() % D;
       }
       for (int j = 0; j < N; ++j) {
         if (ans[j] == x) {
@@ -1720,7 +1720,7 @@ void Method11()
 
   int countQ = 0;
   while (countQ <= Q - 2) {
-    int qu = Rand() % 100;
+    int qu = rand_xorshift() % 100;
     if (qu < 33) {
       Move1(countQ);
     }
@@ -2029,7 +2029,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
   int loop = 0;
   while (true) {
     loop++;
-    int num = Rand() % (M - 1);
+    int num = rand_xorshift() % (M - 1);
     int x1 = items[num];
     int y1 = items[num + 1];
     int xg = ans[x1];
@@ -2037,7 +2037,7 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
     if (xg == yg) {
       if (loop > 100) {
         while (xg == yg) {
-          num = Rand() % (N - 1);
+          num = rand_xorshift() % (N - 1);
           x1 = items[num];
           y1 = items[num + 1];
           xg = ans[x1];
@@ -2109,10 +2109,10 @@ bool Swap2(const vector<int>& items, int& countQ, int minDiff = 10, int _m = -1)
 bool SwapN(const vector<int>& items, int& countQ, int minDiff)
 {
   bool isChange = false;
-  int xg = Rand() % D;
-  int yg = Rand() % D;
+  int xg = rand_xorshift() % D;
+  int yg = rand_xorshift() % D;
   while (xg == yg) {
-    yg = Rand() % D;
+    yg = rand_xorshift() % D;
   }
 
   vector<P> vpx, vpy;
@@ -2166,7 +2166,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
 
     for (int winter = 0; winter < 10; ++winter) {
       if (loop % 2 == 0) {
-        P p = vpx[Rand() % vpx.size()];
+        P p = vpx[rand_xorshift() % vpx.size()];
         int x = p.first;
         int y = p.second;
         if (use.find(x) == use.end() && use.find(y) == use.end()) {
@@ -2178,7 +2178,7 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
         }
       }
       else {
-        P p = vpy[Rand() % vpy.size()];
+        P p = vpy[rand_xorshift() % vpy.size()];
         int x = p.first;
         int y = p.second;
         if (use.find(x) == use.end() && use.find(y) == use.end()) {
@@ -2204,9 +2204,9 @@ bool SwapN(const vector<int>& items, int& countQ, int minDiff)
   std::shuffle(vpx2.begin(), vpx2.end(), engine_mt19937);
   std::shuffle(vpy2.begin(), vpy2.end(), engine_mt19937);
 
-  int lNum = Rand() % 3 + 1;
+  int lNum = rand_xorshift() % 3 + 1;
   lNum = min(lNum, (int)vpx2.size());
-  int rNum = Rand() % 3 + 1;
+  int rNum = rand_xorshift() % 3 + 1;
   rNum = min(rNum, (int)vpy2.size());
 
   vector<int> vQuery1X, vQuery1Y, vQuery2X, vQuery2Y;
@@ -2271,7 +2271,7 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
 {
   int M = blocks.size();
   while (true) {
-    int num = Rand() % (M - 1);
+    int num = rand_xorshift() % (M - 1);
     vector<int> xb1 = blocks[num];
     vector<int> yb1 = blocks[num + 1];
     int xg = ans[xb1[0]];
@@ -2293,8 +2293,8 @@ void Swap2Block(const vector<vector<int>>& blocks, int& countQ)
     if (vx.empty() || vy.empty()) {
       break;
     }
-    int x2 = vx[Rand() % vx.size()];
-    int y2 = vy[Rand() % vy.size()];
+    int x2 = vx[rand_xorshift() % vx.size()];
+    int y2 = vy[rand_xorshift() % vy.size()];
 
     for (int i = 0; i < N; ++i) {
       if (ans[i] == xg && i != num && i != x2) {
@@ -2788,7 +2788,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
       hiritu2 = 66;
       minDiff = 999;
     }
-    int qu = Rand() % 100;
+    int qu = rand_xorshift() % 100;
     if (qu < hiritu1) {
       bool isChange = SwapNeighbor1(items, countQ);
       if (isChange) {
@@ -2879,7 +2879,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
     }
 
     if (isKouhan) {
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       int hiritu = hiritu1;
       if (qu < hiritu) {
         Move1(countQ);
@@ -2897,7 +2897,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -3037,7 +3037,7 @@ void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2
 
     if (isKouhan) {
       if (useMethod216Style) {
-        int qu = Rand() % 100;
+        int qu = rand_xorshift() % 100;
         int hiritu = hiritu1;
         if (qu < hiritu) {
           Move1(countQ);
@@ -3059,7 +3059,7 @@ void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2
       if (hiritu >= 100 && nowTime > TL / 3) {
         hiritu = 90;
       }
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       if (qu < hiritu) {
         SwapNeighbor1Block(blocks, countQ);
       }
@@ -3647,7 +3647,7 @@ void Method246(int hiritu, int totyuu, int small1, int small2)
     if (qu < hiritu) {
       int sma = small1;
       if (hiritu == 100) {
-        if (Rand() % 20 == 0) {
+        if (rand_xorshift() % 20 == 0) {
           sma = 999;
         }
       }
@@ -3756,7 +3756,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
 
   if (isMethod9) {
     while (countQ < Q) {
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       if (qu < 100) {
         SwapNeighbor1(items, countQ);
       }
@@ -3764,7 +3764,7 @@ void Method10(int hiritu = 70, int minDiff = 10, bool isMethod9 = false)
   }
   else {
     while (countQ <= Q - 2) {
-      int qu = Rand() % 100;
+      int qu = rand_xorshift() % 100;
       if (qu < hiritu) {
         SwapNeighbor1(items, countQ);
       }
@@ -4188,20 +4188,20 @@ int main()
         }
 
         newHai = 200916;
-        newHai2 = hai2 % D10 + Rand() % D2 * D10;
-        if (hai == 200916 && Rand() % 2 == 0) {
+        newHai2 = hai2 % D10 + rand_xorshift() % D2 * D10;
+        if (hai == 200916 && rand_xorshift() % 2 == 0) {
           newHai2 = hai2 + D10;
         }
 
         if (false) {
-          if (Rand() % 2 == 0) {
-            int NNN = NN + Rand() % 3 - 1;
+          if (rand_xorshift() % 2 == 0) {
+            int NNN = NN + rand_xorshift() % 3 - 1;
             NNN = max(NNN, 0);
             NNN = min(NNN, 13);
-            int QQQ = QQ + Rand() % 3 - 1;
+            int QQQ = QQ + rand_xorshift() % 3 - 1;
             QQQ = max(QQQ, 0);
             QQQ = min(QQQ, 39);
-            int DDD = DD + Rand() % 3 - 1;
+            int DDD = DD + rand_xorshift() % 3 - 1;
             DDD = max(0, DDD);
             DDD = min(DDD, (int)haipara[NNN][QQQ].size() - 1);
             newHai = haipara[NNN][QQQ][DDD];

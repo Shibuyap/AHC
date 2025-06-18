@@ -110,7 +110,7 @@ int get_direction(int num)
 //------------------------------------------------------------------------------
 // (2) 乱数ライブラリ
 //------------------------------------------------------------------------------
-static uint32_t rand_uint32()
+static uint32_t rand32()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -125,9 +125,9 @@ static uint32_t rand_uint32()
   return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 }
 
-static double rand_double_01()
+static double rand_01()
 {
-  return (rand_uint32() + 0.5) * (1.0 / UINT_MAX);
+  return (rand32() + 0.5) * (1.0 / UINT_MAX);
 }
 
 //------------------------------------------------------------------------------
@@ -529,10 +529,10 @@ bool is_invalid_coord(int x, int y, int z)
 //------------------------------------------------------------------------------
 void method_1(double temperature)
 {
-  int i = rand_uint32() % 2;
-  int x = rand_uint32() % dimension;
-  int y = rand_uint32() % dimension;
-  int z = rand_uint32() % dimension;
+  int i = rand32() % 2;
+  int x = rand32() % dimension;
+  int y = rand32() % dimension;
+  int z = rand32() % dimension;
   if (answer_grid[i][x][y][z] != -1) { return; }
   if (!f_matrix[i][z][x] || !r_matrix[i][z][y]) { return; }
 
@@ -544,7 +544,7 @@ void method_1(double temperature)
   double diff_score = min_score - tmp_score;
   double prob = exp(diff_score / temperature);
 
-  if (prob > rand_double_01()) {
+  if (prob > rand_01()) {
     // 受け入れる
     method_count[1][0]++;
     min_score = tmp_score;
@@ -561,10 +561,10 @@ void method_1(double temperature)
 
 void method_2(double temperature)
 {
-  int i = rand_uint32() % 2;
-  int x = rand_uint32() % dimension;
-  int y = rand_uint32() % dimension;
-  int z = rand_uint32() % dimension;
+  int i = rand32() % 2;
+  int x = rand32() % dimension;
+  int y = rand32() % dimension;
+  int z = rand32() % dimension;
   if (answer_grid[i][x][y][z] != 0) { return; }
   if (!can_delete_block(i, x, y, z)) { return; }
 
@@ -576,7 +576,7 @@ void method_2(double temperature)
   double diff_score = min_score - tmp_score;
   double prob = exp(diff_score / temperature);
 
-  if (prob > rand_double_01()) {
+  if (prob > rand_01()) {
     method_count[2][0]++;
     min_score = tmp_score;
     if (min_score < real_min_score) {
@@ -592,11 +592,11 @@ void method_2(double temperature)
 
 void method_3(double temperature)
 {
-  int i = rand_uint32() % 2;
-  int x = rand_uint32() % dimension;
-  int y = rand_uint32() % dimension;
-  int z = rand_uint32() % dimension;
-  int dir = rand_uint32() % 6;
+  int i = rand32() % 2;
+  int x = rand32() % dimension;
+  int y = rand32() % dimension;
+  int z = rand32() % dimension;
+  int dir = rand32() % 6;
   if (answer_grid[i][x][y][z] != 0) { return; }
   int nx = x + DX[dir];
   int ny = y + DY[dir];
@@ -615,7 +615,7 @@ void method_3(double temperature)
   double diff_score = min_score - tmp_score;
   double prob = exp(diff_score / temperature);
 
-  if (prob > rand_double_01()) {
+  if (prob > rand_01()) {
     method_count[3][0]++;
     min_score = tmp_score;
     if (min_score < real_min_score) {
@@ -633,10 +633,10 @@ void method_3(double temperature)
 
 void method_4(double temperature)
 {
-  int i = rand_uint32() % 2;
-  int x = rand_uint32() % dimension;
-  int y = rand_uint32() % dimension;
-  int z = rand_uint32() % dimension;
+  int i = rand32() % 2;
+  int x = rand32() % dimension;
+  int y = rand32() % dimension;
+  int z = rand32() % dimension;
   if (answer_grid[i][x][y][z] <= 0) { return; }
   int dir = get_direction(answer_grid[i][x][y][z]);
   int nx = x + DX[dir];
@@ -654,7 +654,7 @@ void method_4(double temperature)
   double diff_score = min_score - tmp_score;
   double prob = exp(diff_score / temperature);
 
-  if (prob > rand_double_01()) {
+  if (prob > rand_01()) {
     method_count[4][0]++;
     min_score = tmp_score;
     if (min_score < real_min_score) {
@@ -724,7 +724,7 @@ double solve_problem(int run_mode, int problem_num)
       double temperature =
         start_temperature + (end_temperature - start_temperature) * now_progress;
 
-      int ra = rand_uint32() % 100;
+      int ra = rand32() % 100;
       if (ra < 20) {
         method_1(temperature);
       }
@@ -774,7 +774,7 @@ double solve_problem(int run_mode, int problem_num)
     double temperature =
       start_temperature + (end_temperature - start_temperature) * now_progress;
 
-    int ra = rand_uint32() % 100;
+    int ra = rand32() % 100;
     if (ra < 20) {
       method_1(temperature);
     }

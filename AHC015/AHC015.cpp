@@ -53,7 +53,7 @@ namespace
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t xor_shift32()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -69,9 +69,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double rand_unit()
+  static double rand_01()
   {
-    return (xor_shift32() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -88,7 +88,7 @@ public:
   // コンストラクタ
   Queue2D() : head(0), tail(0) {}
 
-  void clear_queue()
+  void clear()
   {
     head = 0;
     tail = 0;
@@ -208,13 +208,13 @@ public:
     }
   }
 
-  P find_empty_cell(int ite)
+  P find_empty_cell(int index)
   {
     int cnt = 1;
     for (int i = 0; i < H; ++i) {
       for (int j = 0; j < W; ++j) {
         if (board[i][j] == 0) {
-          if (cnt == ite) {
+          if (cnt == index) {
             return P(i, j);
           }
           else {
@@ -239,7 +239,7 @@ public:
   int calculate_score(const Input& input)
   {
     //――― 事前初期化 ―――//
-    que2d.clear_queue();
+    que2d.clear();
     double score_sum = 0.0;
     visited_version++;
 
@@ -260,20 +260,20 @@ public:
 
         //――― BFS で同フレーバ連結成分を数える ―――//
         while (que2d.size()) {
-          int cur_row = que2d.front_x();
-          int cur_col = que2d.front_y();
+          int row = que2d.front_x();
+          int col = que2d.front_y();
           que2d.pop();
 
           for (int dir_idx = 0; dir_idx < 4; ++dir_idx) {
-            int next_row = cur_row + DX[dir_idx];
-            int next_col = cur_col + DY[dir_idx];
+            int nx = row + DX[dir_idx];
+            int ny = col + DY[dir_idx];
 
-            if (is_out_of_board(next_row, next_col)) {
+            if (is_out_of_board(nx, ny)) {
               continue;
             }
-            if (board[next_row][next_col] == board[start_row][start_col] && visited[next_row][next_col] != visited_version) {
-              visited[next_row][next_col] = visited_version;
-              que2d.push(next_row, next_col);
+            if (board[nx][ny] == board[start_row][start_col] && visited[nx][ny] != visited_version) {
+              visited[nx][ny] = visited_version;
+              que2d.push(nx, ny);
               ++component_size;
             }
           }
@@ -362,10 +362,10 @@ public:
 
 const double TL = 1.8;
 
-int exec_mode = 0;
+int mode = 0;
 
 // 解答出力
-void save_answer(int problemNum)
+void save_output(int problemNum)
 {
   string fileNameOfs = "./out/";
   string strNum;
@@ -407,7 +407,7 @@ void init_rule_actions(const Input& input)
 
 inline int generate_random_empty_index(int turn)
 {
-  return xor_shift32() % (N - turn) + 1;
+  return rand32() % (N - turn) + 1;
 }
 
 int simulate_rollout_with_rules(int start_turn, Board& board, const Input& input)
@@ -473,7 +473,7 @@ void monte_carlo(Board& board, Input& input)
       }
     }
 
-    if (exec_mode == 0) {
+    if (mode == 0) {
       std::cout << DC[best_dir] << '¥n';
       std::fflush(stdout);
     }
@@ -485,16 +485,16 @@ void monte_carlo(Board& board, Input& input)
     board.tilt_board(best_dir);
   }
 
-  if (exec_mode != 0) {
+  if (mode != 0) {
     cout << "iter = " << iter << endl;
   }
 }
 
-int run_solver(int case_num)
+int solve(int case_num)
 {
   start_timer();
 
-  Input input(exec_mode, case_num);
+  Input input(mode, case_num);
 
   Board board;
   board.init();
@@ -502,8 +502,8 @@ int run_solver(int case_num)
   monte_carlo(board, input);
 
   int score = 0;
-  if (exec_mode != 0) {
-    save_answer(case_num);
+  if (mode != 0) {
+    save_output(case_num);
     score = board.calculate_score(input);
     std::cout << "Score = " << score << '¥n';
   }
@@ -513,17 +513,17 @@ int run_solver(int case_num)
 
 int main()
 {
-  exec_mode = 2;
+  mode = 2;
 
-  if (exec_mode == 0) {
-    run_solver(0);
+  if (mode == 0) {
+    solve(0);
   }
-  else if (exec_mode <= 2) {
+  else if (mode <= 2) {
     ll sum_score = 0;
     for (int i = 0; i < 15; i++) {
-      ll score = run_solver(i);
+      ll score = solve(i);
       sum_score += score;
-      if (exec_mode == 1) {
+      if (mode == 1) {
         cerr << score << endl;
       }
       else {

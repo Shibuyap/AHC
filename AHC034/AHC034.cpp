@@ -76,9 +76,9 @@ namespace /* 乱数ライブラリ */
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = Rand() % (i + 1);
-      int swa = data[i];
+      int tmp = data[i];
       data[i] = data[j];
-      data[j] = swa;
+      data[j] = tmp;
     }
   }
 }  // namespace
@@ -104,9 +104,9 @@ int h[20][20];
 int ans[100000][2];
 int ansSize;
 
-int real_ans[100000][2];
-int real_ansSize;
-int real_ansScore;
+int best_ans[100000][2];
+int best_ansSize;
+int best_ansScore;
 
 void InitH()
 {
@@ -117,17 +117,17 @@ void InitH()
 
 void CopyToAns()
 {
-  ansSize = real_ansSize;
+  ansSize = best_ansSize;
   for (int i = 0; i < ansSize; ++i) {
-    for (int j = 0; j < 2; ++j) { ans[i][j] = real_ans[i][j]; }
+    for (int j = 0; j < 2; ++j) { ans[i][j] = best_ans[i][j]; }
   }
 }
 
-void CopyToReal()
+void CopyToBest()
 {
-  real_ansSize = ansSize;
+  best_ansSize = ansSize;
   for (int i = 0; i < ansSize; ++i) {
-    for (int j = 0; j < 2; ++j) { real_ans[i][j] = ans[i][j]; }
+    for (int j = 0; j < 2; ++j) { best_ans[i][j] = ans[i][j]; }
   }
 }
 
@@ -143,16 +143,16 @@ void Input(int problemNum)
 
   // 標準入力する
   if (!ifs.is_open()) {
-    int nn;
-    cin >> nn;
+    int _n;
+    cin >> _n;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) { cin >> h[i][j]; }
     }
   }
   // ファイル入力する
   else {
-    int nn;
-    ifs >> nn;
+    int _n;
+    ifs >> _n;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) { ifs >> h[i][j]; }
     }
@@ -203,11 +203,11 @@ ll CalcScore()
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) { base += abs(baseH[i][j]); }
   }
-  ll res = round(1e9 * base / CalcCost());
-  return res;
+  ll result = round(1e9 * base / CalcCost());
+  return result;
 }
 
-bool IsOK(int x)
+bool IsRowEmpty(int x)
 {
   for (int j = 0; j < n; ++j) {
     if (h[x][j] != 0) {
@@ -287,7 +287,7 @@ void Initialize()
   if (y == n - 1) dir = -1;
 
   while (x >= 0) {
-    if (IsOK(x)) {
+    if (IsRowEmpty(x)) {
       if (x == 0) { break; }
       ans[ansSize][0] = 0;
       ansSize++;
@@ -319,7 +319,7 @@ void Initialize()
 
     if (dir == 1) {
       if (y == n - 1) {
-        if (!IsOK(x)) {
+        if (!IsRowEmpty(x)) {
           dir *= -1;
           continue;
         }
@@ -337,7 +337,7 @@ void Initialize()
     }
     else {
       if (y == 0) {
-        if (!IsOK(x)) {
+        if (!IsRowEmpty(x)) {
           dir *= -1;
           continue;
         }
@@ -355,8 +355,8 @@ void Initialize()
     }
   }
 
-  CopyToReal();
-  real_ansScore = CalcScore();
+  CopyToBest();
+  best_ansScore = CalcScore();
 }
 
 void GetLoad(int x, int y, int diff, int& d)
@@ -474,14 +474,14 @@ void GenerateSpiralRoute(int& x, int& y, int a[n][n], int spiralDepth)
 void InitRoute3()
 {
   route.clear();
-  int ra = Rand() % 9 + 1;
+  int spiralDepthRand = Rand() % 9 + 1;
   int a[n][n];
   for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) a[i][j] = 0;
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
 
-  GenerateSpiralRoute(x, y, a, ra);
+  GenerateSpiralRoute(x, y, a, spiralDepthRand);
 
   int dir = 1;
   while (true) {
@@ -527,14 +527,14 @@ void InitRoute3()
 void InitRoute4()
 {
   route.clear();
-  int ra = Rand() % 9 + 1;
+  int spiralDepthRand = Rand() % 9 + 1;
   int a[n][n];
   for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) a[i][j] = 0;
   int x = 0, y = 0;
   a[x][y] = 1;
   route.emplace_back(x, y);
 
-  GenerateSpiralRoute(x, y, a, ra);
+  GenerateSpiralRoute(x, y, a, spiralDepthRand);
 
   int dir = 1;
   if (a[x][y + 1] == 0) {
@@ -589,7 +589,7 @@ struct Amount
 };
 
 vector<Amount> spot[n][n];
-void Method1(int ikichi1 = 300, int ikichi2 = 300)
+void Method1(int threshold1 = 300, int threshold2 = 300)
 {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) { spot[i][j].clear(); }
@@ -601,33 +601,33 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     int now = 0;
     int nowX = route[now].first;
     int nowY = route[now].second;
-    int nokori = max(0, -h[nowX][nowY]);
+    int remain = max(0, -h[nowX][nowY]);
     for (auto p : route) {
       int i = p.first;
       int j = p.second;
       if (h[i][j] > 0) {
-        int hh = h[i][j];
-        while (hh > 0) {
-          if (nokori >= hh) {
+        int height = h[i][j];
+        while (height > 0) {
+          if (remain >= height) {
             a.idx = now;
-            a.d = hh;
+            a.d = height;
             spot[i][j].emplace_back(a);
-            nokori -= hh;
-            hh = 0;
+            remain -= height;
+            height = 0;
           }
           else {
-            if (nokori > 0) {
+            if (remain > 0) {
               a.idx = now;
-              a.d = nokori;
+              a.d = remain;
               spot[i][j].emplace_back(a);
-              hh -= nokori;
-              nokori = 0;
+              height -= remain;
+              remain = 0;
             }
 
             now++;
             nowX = route[now].first;
             nowY = route[now].second;
-            nokori = max(0, -h[nowX][nowY]);
+            remain = max(0, -h[nowX][nowY]);
           }
         }
       }
@@ -639,9 +639,9 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     int x = route[i].first;
     int y = route[i].second;
     if (spot[x][y].size() > 0) {
-      for (auto am : spot[x][y]) {
-        if (am.idx > i) {
-          GetLoad(x, y, am.d, d);
+      for (auto amt : spot[x][y]) {
+        if (amt.idx > i) {
+          GetLoad(x, y, amt.d, d);
         }
       }
     }
@@ -654,14 +654,14 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
       }
     }
 
-    if (d >= ikichi1) {
-      int iii = i;
+    if (d >= threshold1) {
+      int currentIdx = i;
       while (d > 0) {
-        int nidx = iii + 1;
+        int nidx = currentIdx + 1;
         while (nidx <= route.size() - 1) {
-          int xx = route[nidx].first;
-          int yy = route[nidx].second;
-          if (h[xx][yy] < 0 && d > 0) {
+          int checkX = route[nidx].first;
+          int checkY = route[nidx].second;
+          if (h[checkX][checkY] < 0 && d > 0) {
             break;
           }
           nidx++;
@@ -687,16 +687,16 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
       while (nidx < route.size() - 1) {
         int skip = 1;
         int ii = nidx;
-        int xx = route[ii].first;
-        int yy = route[ii].second;
-        if (spot[xx][yy].size() > 0) {
-          for (auto am : spot[xx][yy]) {
-            if (am.idx > ii) {
+        int checkX = route[ii].first;
+        int checkY = route[ii].second;
+        if (spot[checkX][checkY].size() > 0) {
+          for (auto amt : spot[checkX][checkY]) {
+            if (amt.idx > ii) {
               skip = 0;
             }
           }
         }
-        if (h[xx][yy] < 0 && d > 0) {
+        if (h[checkX][checkY] < 0 && d > 0) {
           skip = 0;
         }
         if (skip) {
@@ -720,9 +720,9 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
     int x = route[i].first;
     int y = route[i].second;
     if (spot[x][y].size() > 0) {
-      for (auto am : spot[x][y]) {
-        if (am.idx < i) {
-          GetLoad(x, y, am.d, d);
+      for (auto amt : spot[x][y]) {
+        if (amt.idx < i) {
+          GetLoad(x, y, amt.d, d);
         }
       }
     }
@@ -735,14 +735,14 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
       }
     }
 
-    if (d >= ikichi1) {
-      int iii = i;
+    if (d >= threshold1) {
+      int currentIdx = i;
       while (d > 0) {
-        int nidx = iii - 1;
+        int nidx = currentIdx - 1;
         while (nidx >= 0) {
-          int xx = route[nidx].first;
-          int yy = route[nidx].second;
-          if (h[xx][yy] < 0 && d > 0) {
+          int checkX = route[nidx].first;
+          int checkY = route[nidx].second;
+          if (h[checkX][checkY] < 0 && d > 0) {
             break;
           }
           nidx--;
@@ -784,16 +784,16 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
       while (nidx > 0) {
         int skip = 1;
         int ii = nidx;
-        int xx = route[ii].first;
-        int yy = route[ii].second;
-        if (spot[xx][yy].size() > 0) {
-          for (auto am : spot[xx][yy]) {
-            if (am.idx < ii) {
+        int checkX = route[ii].first;
+        int checkY = route[ii].second;
+        if (spot[checkX][checkY].size() > 0) {
+          for (auto amt : spot[checkX][checkY]) {
+            if (amt.idx < ii) {
               skip = 0;
             }
           }
         }
-        if (h[xx][yy] < 0 && d > 0) {
+        if (h[checkX][checkY] < 0 && d > 0) {
           skip = 0;
         }
         if (skip) {
@@ -813,9 +813,9 @@ void Method1(int ikichi1 = 300, int ikichi2 = 300)
   }
 
   int score = CalcScore();
-  if (score > real_ansScore) {
-    CopyToReal();
-    real_ansScore = score;
+  if (score > best_ansScore) {
+    CopyToBest();
+    best_ansScore = score;
   }
 }
 
@@ -870,22 +870,22 @@ ll Solve(int probNum)
   Method1();
 
   for (int loop = 0; loop < 100000; ++loop) {
-    int ra1 = Rand() % 1000;
-    int ra2 = Rand() % 1000;
-    int ra3 = Rand() % 100;
-    if (ra3 < 10) {
+    int randThreshold1 = Rand() % 1000;
+    int randThreshold2 = Rand() % 1000;
+    int routeType = Rand() % 100;
+    if (routeType < 10) {
       InitRoute1();
     }
-    else if (ra3 < 20) {
+    else if (routeType < 20) {
       InitRoute2();
     }
-    else if (ra3 < 60) {
+    else if (routeType < 60) {
       InitRoute3();
     }
     else {
       InitRoute4();
     }
-    Method1(ra1, ra2);
+    Method1(randThreshold1, randThreshold2);
   }
   CopyToAns();
 

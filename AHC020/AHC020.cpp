@@ -3,8 +3,10 @@
 #include <climits>
 #include <cstdint>
 #include <fstream>
+#include <iomanip>
 #include <iosfwd>
 #include <iostream>
+#include <sstream>
 #include <math.h>
 #include <string>
 #include <utility>
@@ -14,7 +16,7 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-int run_mode;
+int mode;
 
 // タイマー
 namespace
@@ -35,7 +37,7 @@ namespace
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t rand_u32()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -50,9 +52,9 @@ namespace /* 乱数ライブラリ */
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  static double rand_unit()
+  static double rand_01()
   {
-    return (rand_u32() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -220,7 +222,7 @@ ll outer_kruskal_lns()
     }
 
     /* ランダム頂点をトグル */
-    int node_id = rand_u32() % (n - 1) + 1;
+    int node_id = rand32() % (n - 1) + 1;
     if (power_rad[node_id] != 0) {
       continue;
     }
@@ -525,10 +527,10 @@ void snapshot_best()
 // ランダムに1つ拡大縮小する
 void sa_single_power_perturb(double temperature)
 {
-  int num = rand_u32() % n;
+  int num = rand32() % n;
   int pre = power_rad[num];
 
-  power_rad[num] += rand_u32() % 51 - 25;
+  power_rad[num] += rand32() % 51 - 25;
   power_rad[num] = max(0LL, power_rad[num]);
   power_rad[num] = min(5000LL, power_rad[num]);
 
@@ -537,7 +539,7 @@ void sa_single_power_perturb(double temperature)
   ll diffScore = tmpScore - best_score_cur;
 
   double prob = exp((double)diffScore / temperature);
-  if (prob > rand_unit()) {
+  if (prob > rand_01()) {
     best_score_cur += diffScore;
     if (best_score_cur > best_score) {
       snapshot_best();
@@ -629,19 +631,19 @@ void solve_layered_sa()
       }
 
       /*----- ランダムに power_cap をいじる -----*/
-      int pick_node = rand_u32() % n;
+      int pick_node = rand32() % n;
       auto mutate_cap = [&](int id) {
-        power_cap[id] += rand_u32() % 101 - 50;
-        if (rand_u32() % 10 == 0) {
-          power_cap[id] += rand_u32() % 1001 - 500;
+        power_cap[id] += rand32() % 101 - 50;
+        if (rand32() % 10 == 0) {
+          power_cap[id] += rand32() % 1001 - 500;
         }
-        if (rand_u32() % 100 == 0) {
-          power_cap[id] += rand_u32() % 10001 - 5000;
+        if (rand32() % 100 == 0) {
+          power_cap[id] += rand32() % 10001 - 5000;
         }
         power_cap[id] = clamp(power_cap[id], 0, 5000);
         };
       mutate_cap(pick_node);
-      if (rand_u32() % 10 == 0) mutate_cap(rand_u32() % n);
+      if (rand32() % 10 == 0) mutate_cap(rand32() % n);
 
       /*----- 新しい半径割り当て -----*/
       for (int res_idx = 0; res_idx < k; ++res_idx) {
@@ -681,7 +683,7 @@ void solve_layered_sa()
       ll delta_score = new_score - best_score_cur;
       double prob = exp(static_cast<double>(delta_score) / temperature);
 
-      if (prob > rand_unit()) {
+      if (prob > rand_01()) {
         best_score_cur += delta_score;
         if (best_score_cur > best_score) {
           snapshot_best();
@@ -694,7 +696,7 @@ void solve_layered_sa()
       }
     }
 
-    if (run_mode != 0) cout << iter_cnt << '\n';
+    if (mode != 0) cout << iter_cnt << '\n';
 
     /* ステージ終了：状態をリセット */
     best_score_cur = best_score;
@@ -741,19 +743,19 @@ double run_with_io(int mode, int problemNum = 0)
 
 int main()
 {
-  run_mode = 2;
+  mode = 2;
 
   // 提出用
-  if (run_mode == 0) {
-    run_with_io(run_mode);
+  if (mode == 0) {
+    run_with_io(mode);
   }
   // 1ケース試す
-  else if (run_mode == 1) {
-    run_with_io(run_mode, 9);
+  else if (mode == 1) {
+    run_with_io(mode, 9);
   }
   // 複数ケース試す
-  else if (run_mode == 2) {
-    for (int i = 0; i < 10; ++i) { run_with_io(run_mode, i); }
+  else if (mode == 2) {
+    for (int i = 0; i < 10; ++i) { run_with_io(mode, i); }
   }
 
   return 0;

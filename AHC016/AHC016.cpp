@@ -55,7 +55,7 @@ const double MISMATCH_PENALTY = 0.9;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -71,9 +71,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -83,7 +83,7 @@ namespace
   std::array<std::array<double, 105>, 105> com;
   int MODE = 0;
   const int TURN = 100;
-  int m, iEps;  // m: 符号化するグラフの数(10-100), iEps: エラー率(整数%, 0-40)
+  int m, i_eps;  // m: 符号化するグラフの数(10-100), i_eps: エラー率(整数%, 0-40)
   double eps;    // eps: エラー率(0.00-0.40)
 
   int n;  // n: グラフの頂点数(4-100)
@@ -149,7 +149,7 @@ namespace
   }
 }
 
-// Input（m, eps, iEpsの設定）
+// Input（m, eps, i_epsの設定）
 namespace
 {
   std::array<int, 100> judgeArr;
@@ -159,8 +159,8 @@ namespace
       cin >> m;
       string sEps;
       cin >> sEps;
-      iEps = parseEpsilon(sEps);
-      eps = (double)iEps / 100.0;
+      i_eps = parseEpsilon(sEps);
+      eps = (double)i_eps / 100.0;
     }
     else if (mode == SPECIAL_MODE) {
       string fileNameIfs = "./in/";
@@ -171,22 +171,22 @@ namespace
       ifs >> m;
       string sEps;
       ifs >> sEps;
-      iEps = parseEpsilon(sEps);
-      eps = (double)iEps / 100.0;
+      i_eps = parseEpsilon(sEps);
+      eps = (double)i_eps / 100.0;
 
       for (int i = 0; i < (100); ++i) ifs >> judgeArr[i];
     }
     else if (mode == 100 || mode == 110) {
-      m = Rand() % 91 + 10;
-      iEps = Rand() % 41;
-      eps = iEps / 100.0;
-      for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
+      m = rand32() % 91 + 10;
+      i_eps = rand32() % 41;
+      eps = i_eps / 100.0;
+      for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
     }
     else if (mode == 333) {
       m = problemNum * 10;
-      iEps = 40;
-      eps = iEps / 100.0;
-      for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
+      i_eps = 40;
+      eps = i_eps / 100.0;
+      for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
     }
   }
 }  // namespace
@@ -202,9 +202,9 @@ namespace
     ofs1000Out.open(fileNameOfs);
   }
 
-  void CloseOfs1000Out() { ofs1000Out.close(); }
+  void close_ofs_1000_out() { ofs1000Out.close(); }
 
-  void OutputArrayAsString(int mode)
+  void output_array_as_string(int mode)
   {
     if (mode == 0) {
       cout << n << endl;
@@ -237,7 +237,7 @@ namespace
   }
 
   std::array<int, TURN> answersFor1000Out;
-  void OutputAnsToOfs1000Out()
+  void output_ans_to_ofs_1000_out()
   {
     for (int i = 0; i < (100); ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
   }
@@ -266,7 +266,7 @@ namespace
     ofs << endl;
   }
 
-  void OutputHaipara()
+  void output_hyper_params()
   {
     for (int i = 0; i < (101); ++i) {
       for (int j = 0; j < (41); ++j) {
@@ -303,12 +303,12 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
   int& score, int& res1, int& res2, int flipLoop);
 
 // グラフにノイズを適用（確率epsで各辺を反転）
-void ApplyNoiseToGraph(int x)
+void apply_noise_to_graph(int x)
 {
   for (int j = 0; j < n; ++j) {
     for (int k = j + 1; k < n; ++k) {
       b[j][k] = a[x][j][k];
-      if (Rand01() < eps) {
+      if (rand_01() < eps) {
         b[j][k] = 1 - b[j][k];
       }
       b[k][j] = b[j][k];
@@ -318,7 +318,7 @@ void ApplyNoiseToGraph(int x)
 
 int judgeNum;
 // ノイズ付きグラフを受信してb配列に格納
-void ReceiveNoisyGraph(int mode, int turn = 0)
+void receive_noisy_graph(int mode, int turn = 0)
 {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
@@ -340,7 +340,7 @@ void ReceiveNoisyGraph(int mode, int turn = 0)
   else {
     int judge = judgeArr[turn];
     judgeNum = judge;
-    ApplyNoiseToGraph(judge);
+    apply_noise_to_graph(judge);
   }
 }
 
@@ -350,7 +350,7 @@ namespace
   std::array<int, 100> numArr;
 
   // 共通のグラフ初期化関数（完全グラフのサイズで符号化）
-  void SetGraphFromNumArray(int arraySize = 100)
+  void set_graph_from_num_array(int arraySize = 100)
   {
     for (int i = 0; i < m; ++i) {
       int num = numArr[i];
@@ -363,7 +363,7 @@ namespace
   }
 
   // 条件付きグラフ初期化関数（2つのクリークで符号化）
-  void SetGraphFromPairArray()
+  void set_graph_from_pair_array()
   {
     for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
@@ -388,7 +388,7 @@ namespace
   }
 
   // 条件付きグラフ初期化関数（3つのクリークで符号化）
-  void SetGraphFromThreeArray()
+  void set_graph_from_three_array()
   {
     for (int i = 0; i < m; ++i) {
       int num1 = numThreeArr[i][0];
@@ -475,28 +475,28 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray2()
   {
     for (int i = 0; i < (100); ++i) { numArr[i] = maxNumArray[i]; }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray3()
   {
     for (int i = 0; i < (100); ++i) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray4()
   {
     for (int i = 0; i < (100); ++i) numArr[i] = 0;
     for (int i = 0; i < (20); ++i) { numArr[i] = (i + 1) * 5; }
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray5()
@@ -538,7 +538,7 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray6()
@@ -570,7 +570,7 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray7()
@@ -629,7 +629,7 @@ namespace
       cnt++;
     }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray9()
@@ -643,7 +643,7 @@ namespace
       }
     }
 
-    SetGraphFromNumArray();
+    set_graph_from_num_array();
   }
 
   void InitNumArray10()
@@ -664,7 +664,7 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
-    SetGraphFromPairArray();
+    set_graph_from_pair_array();
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -686,7 +686,7 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
-    SetGraphFromPairArray();
+    set_graph_from_pair_array();
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -712,7 +712,7 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
-    SetGraphFromPairArray();
+    set_graph_from_pair_array();
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -738,7 +738,7 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
-    SetGraphFromPairArray();
+    set_graph_from_pair_array();
     if (cnt < m) numPairArrOK = 0;
   }
 
@@ -864,7 +864,7 @@ namespace
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
     }
 
-    SetGraphFromThreeArray();
+    set_graph_from_three_array();
   }
 
   void InitNumArray16()
@@ -937,7 +937,7 @@ namespace
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
     }
 
-    SetGraphFromThreeArray();
+    set_graph_from_three_array();
   }
 
   // 4コア
@@ -1498,7 +1498,7 @@ void performBitsetOptimization(std::array<int, 100>& f, int& res1, int& res2)
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 }
 
-int Solver1()
+int solver_1()
 {
   std::array<vector<int>, 100> keep;
 
@@ -1535,7 +1535,7 @@ int Solver1()
   return res;
 }
 
-int Solver2()
+int solver_2()
 {
   std::array<int, 100> cnt, f;
   int res;
@@ -1550,7 +1550,7 @@ int Solver2()
   return findBestMatchingSingleCore(res, numArr);
 }
 
-int Solver3()
+int solver_3()
 {
   std::array<vector<int>, 2> vec;
   std::array<int, 100> f = {};
@@ -1614,7 +1614,7 @@ int Solver3()
   return argRes;
 }
 
-int Solver4()
+int solver_4()
 {
   std::array<int, 100> cnt, f;
   int res;
@@ -1661,7 +1661,7 @@ int Solver4()
   return findBestMatchingSingleCore(res, numArr);
 }
 
-int Solver5()
+int solver_5()
 {
   std::array<int, 100> cnt, f, ff = {};
   int res;
@@ -1683,7 +1683,7 @@ int Solver5()
   return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
-int Solver6()
+int solver_6()
 {
   std::array<int, 100> cnt, f;
   std::array<int, 100> ff = {};
@@ -1718,7 +1718,7 @@ int Solver6()
   return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
-int Solver7()
+int solver_7()
 {
   std::array<int, 100> cnt = {};
   std::array<int, 100> f = {};
@@ -1782,7 +1782,7 @@ int Solver7()
   return argRes;
 }
 
-int Solver8()
+int solver_8()
 {
   int cnt = 0;
   for (int i = 0; i < n; ++i) {
@@ -1792,7 +1792,7 @@ int Solver8()
   return cnt;
 }
 
-int Solver9()
+int solver_9()
 {
   map<P, int> mp;
   int fff[10][100];
@@ -1891,7 +1891,7 @@ int Solver9()
   return argRes;
 }
 
-int Solver10()
+int solver_10()
 {
   map<P, int> mp;
   int fff[31][100];
@@ -1986,7 +1986,7 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
     vector<int> core(cliqueSize);
     for (int i = 0; i < cliqueSize; ++i) {
       while (true) {
-        core[i] = kouho[Rand() % kouho.size()];
+        core[i] = kouho[rand32() % kouho.size()];
         bool duplicate = false;
         for (int j = 0; j < i; ++j) {
           if (core[j] == core[i]) {
@@ -2127,7 +2127,7 @@ int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 
     if (arv.empty()) { break; }
 
     // ランダムに選択
-    int arg = arv[Rand() % arv.size()];
+    int arg = arv[rand32() % arv.size()];
 
     // 隣接頂点の次数を更新
     for (int i = 0; i < n; ++i) {
@@ -2238,10 +2238,10 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
   int& score, int& res1, int& res2, int flipLoop)
 {
   for (int _ = 0; _ < (flipLoop); ++_) {
-    int x = Rand() % n;
-    int ra = Rand() % 3;
+    int x = rand32() % n;
+    int ra = rand32() % 3;
     while (ra == f[x]) {
-      ra = Rand() % 3;
+      ra = rand32() % 3;
     }
     if (res2 == 0) {
       ra = 1 - f[x];
@@ -2289,7 +2289,7 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
   }
 }
 
-int Solver11()
+int solver_11()
 {
   std::array<int, 100> f = {};
 
@@ -2337,7 +2337,7 @@ int Solver11()
   return argRes;
 }
 
-int Solver12()
+int solver_12()
 {
   std::array<int, 100> f = {};
 
@@ -2417,7 +2417,7 @@ int Solver12()
 }
 
 // 4コア
-int Solver13()
+int solver_13()
 {
   std::array<int, 100> f = {};
 
@@ -2516,7 +2516,7 @@ int Solver13()
   return argRes;
 }
 
-int Solver14()
+int solver_14()
 {
   int real_argRes = 0;
   int real_minDiff = 1000;
@@ -2584,7 +2584,7 @@ int Solver14()
   return real_argRes;
 }
 
-int Solver15()
+int solver_15()
 {
   map<int, int> argMap;
 
@@ -2657,7 +2657,7 @@ int Solver15()
 }
 
 // 11表裏
-int Solver16()
+int solver_16()
 {
   int real_argRes = 0;
   int real_score = 0;
@@ -2759,7 +2759,7 @@ int Solver16()
 }
 
 // 11表裏5セット
-int Solver17()
+int solver_17()
 {
   int real_argRes = 0;
   int real_score = 0;
@@ -2861,7 +2861,7 @@ int Solver17()
 }
 
 // 0.0用
-int Solver18()
+int solver_18()
 {
   int visit[100] = {};
   int bb[100][100];
@@ -2914,7 +2914,7 @@ int Solver18()
 }
 
 // 14表裏
-int Solver19()
+int solver_19()
 {
   int real_argRes[2] = {};
   int real_minDiff[2] = { 1000,1000 };
@@ -3008,7 +3008,7 @@ int Solver19()
 }
 
 // 21表裏5セット
-int Solver20()
+int solver_20()
 {
   int real_argRes = 0;
   int real_score = 0;
@@ -3087,7 +3087,7 @@ int Solver20()
 }
 
 // 14亜種
-int Solver21()
+int solver_21()
 {
   int real_argRes = 0;
   int real_minDiff = 1000;
@@ -3113,7 +3113,7 @@ int Solver21()
         int core[5] = {};
         for (int i = 0; i < (5); ++i) {
           while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
+            core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
@@ -3176,7 +3176,7 @@ int Solver21()
 }
 
 // 14亜種
-int Solver22()
+int solver_22()
 {
   int real_argRes = 0;
   int real_minDiff = 1000;
@@ -3212,7 +3212,7 @@ int Solver22()
         int core[5] = {};
         for (int i = 0; i < (3); ++i) {
           while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
+            core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
@@ -3275,7 +3275,7 @@ int Solver22()
 }
 
 // 16亜種
-int Solver23()
+int solver_23()
 {
   int real_argRes = 0;
   int real_score = 0;
@@ -3313,7 +3313,7 @@ int Solver23()
       int core[4] = {};
       for (int i = 0; i < (3); ++i) {
         while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
+          core[i] = kouho[rand32() % kouho.size()];
           for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
@@ -3357,7 +3357,7 @@ int Solver23()
         int core[3] = {};
         for (int i = 0; i < (3); ++i) {
           while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
+            core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
@@ -3432,7 +3432,7 @@ int Solver23()
 }
 
 // 16亜種
-int Solver24()
+int solver_24()
 {
   int real_argRes = 0;
   int real_score = 0;
@@ -3470,7 +3470,7 @@ int Solver24()
       int core[5] = {};
       for (int i = 0; i < (5); ++i) {
         while (true) {
-          core[i] = kouho[Rand() % kouho.size()];
+          core[i] = kouho[rand32() % kouho.size()];
           for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
@@ -3504,7 +3504,7 @@ int Solver24()
         int core[5] = {};
         for (int i = 0; i < (5); ++i) {
           while (true) {
-            core[i] = kouho[Rand() % kouho.size()];
+            core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
@@ -3584,11 +3584,11 @@ typedef int (*SolverFunction)();
 // Solver関数ポインタ配列
 const SolverFunction solverFunctions[] = {
     nullptr,  // index 0 (not used)
-    Solver1, Solver2, Solver3, Solver4, Solver5,
-    Solver6, Solver7, Solver8, Solver9, Solver10,
-    Solver11, Solver12, Solver13, Solver14, Solver15,
-    Solver16, Solver17, Solver18, Solver19, Solver20,
-    Solver21, Solver22, Solver23, Solver24
+    solver_1, solver_2, solver_3, solver_4, solver_5,
+    solver_6, solver_7, solver_8, solver_9, solver_10,
+    solver_11, solver_12, solver_13, solver_14, solver_15,
+    solver_16, solver_17, solver_18, solver_19, solver_20,
+    solver_21, solver_22, solver_23, solver_24
 };
 
 // 受信したノイズ付きグラフから元のグラフ番号を推定
@@ -3609,7 +3609,7 @@ double Simulate(int mode)
 {
   double res = 1e9 / n;
   for (int turn = 0; turn < (100); ++turn) {
-    ReceiveNoisyGraph(mode, turn);
+    receive_noisy_graph(mode, turn);
     int ans = DecodeGraphIndex(mode, turn);
     answersFor1000Out[turn] = ans;
     int judge = judgeArr[turn];
@@ -3633,16 +3633,16 @@ void solve(int mode)
   if (mode == 0) {
     Input(mode);
 
-    n = hyperN[m][iEps];
-    hyperSolverNum = hyperSolver[m][iEps];
-    hyperMinDiff = hyperMinDiffArr[m][iEps];
-    hyperMaxRound = hyperMaxRoundArr[m][iEps];
-    hyperStep1 = hyperStep1Arr[m][iEps];
-    hyperStep2 = hyperStep2Arr[m][iEps];
+    n = hyperN[m][i_eps];
+    hyperSolverNum = hyperSolver[m][i_eps];
+    hyperMinDiff = hyperMinDiffArr[m][i_eps];
+    hyperMaxRound = hyperMaxRoundArr[m][i_eps];
+    hyperStep1 = hyperStep1Arr[m][i_eps];
+    hyperStep2 = hyperStep2Arr[m][i_eps];
 
     InitNumArray(mode);
 
-    OutputArrayAsString(mode);
+    output_array_as_string(mode);
 
     Simulate(mode);
   }
@@ -3667,7 +3667,7 @@ void solve(int mode)
       }
 
       if (loop % 200 == 77) {
-        OutputHaipara();
+        output_hyper_params();
         cout << "Updated" << endl;
       }
 
@@ -3684,31 +3684,31 @@ void solve(int mode)
           }
 
           Input(mode, _);
-          n = hyperN[m][iEps];
-          hyperSolverNum = hyperSolver[m][iEps];
-          hyperMinDiff = hyperMinDiffArr[m][iEps];
-          hyperMaxRound = hyperMaxRoundArr[m][iEps];
-          hyperStep1 = hyperStep1Arr[m][iEps];
-          hyperStep2 = hyperStep2Arr[m][iEps];
+          n = hyperN[m][i_eps];
+          hyperSolverNum = hyperSolver[m][i_eps];
+          hyperMinDiff = hyperMinDiffArr[m][i_eps];
+          hyperMaxRound = hyperMaxRoundArr[m][i_eps];
+          hyperStep1 = hyperStep1Arr[m][i_eps];
+          hyperStep2 = hyperStep2Arr[m][i_eps];
 
           InitNumArray(mode);
           if (!numPairArrOK) { continue; }
 
           if (_ < 100) {
-            OutputArrayAsString(mode);
+            output_array_as_string(mode);
           }
 
           double score = Simulate(mode);
           sumScore += score;
 
           if (_ < 100) {
-            OutputAnsToOfs1000Out();
-            CloseOfs1000Out();
+            output_ans_to_ofs_1000_out();
+            close_ofs_1000_out();
           }
 
-          hi += score / hyperMaxScore[m][iEps];
-          ofsScore << score / hyperMaxScore[m][iEps] << ' ' << fixed
-            << setprecision(6) << score << ' ' << hyperMaxScore[m][iEps]
+          hi += score / hyperMaxScore[m][i_eps];
+          ofsScore << score / hyperMaxScore[m][i_eps] << ' ' << fixed
+            << setprecision(6) << score << ' ' << hyperMaxScore[m][i_eps]
             << endl;
         }
         changeOfs << hi << endl;
@@ -3720,118 +3720,118 @@ void solve(int mode)
       }
 
       Input(mode);
-      m = Rand() % 91 + 10;
-      iEps = Rand() % 41;
-      eps = iEps / 100.0;
-      for (int i = 0; i < (100); ++i) judgeArr[i] = Rand() % m;
+      m = rand32() % 91 + 10;
+      i_eps = rand32() % 41;
+      eps = i_eps / 100.0;
+      for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
 
       int initMode = loop % 2;
 
       if (initMode == 1 || !winners.empty()) {
         // 上下左右の丸コピー
         int nm = m;
-        int niEps = iEps;
+        int ni_eps = i_eps;
         while (true) {
-          int ra = Rand() % 4;
+          int ra = rand32() % 4;
           nm = m + dx[ra];
-          niEps = iEps + dy[ra];
-          if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) { break; }
+          ni_eps = i_eps + dy[ra];
+          if (10 <= nm && nm <= 100 && 0 <= ni_eps && ni_eps <= 40) { break; }
         }
         if (!winners.empty()) {
           winners.top().winLife--;
           m = winners.top().winM;
-          iEps = winners.top().winEps;
+          i_eps = winners.top().winEps;
           if (winners.top().winLife == 0) winners.pop();
           nm = m;
-          niEps = iEps;
+          ni_eps = i_eps;
           while (true) {
-            int ra = Rand() % 4;
+            int ra = rand32() % 4;
             nm = m + dx[ra];
-            niEps = iEps + dy[ra];
-            if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) { break; }
+            ni_eps = i_eps + dy[ra];
+            if (10 <= nm && nm <= 100 && 0 <= ni_eps && ni_eps <= 40) { break; }
           }
           swap(m, nm);
-          swap(iEps, niEps);
-          eps = (double)iEps / 100.0;
+          swap(i_eps, ni_eps);
+          eps = (double)i_eps / 100.0;
         }
-        n = hyperN[nm][niEps];
-        hyperSolverNum = hyperSolver[nm][niEps];
-        hyperMinDiff = hyperMinDiffArr[nm][niEps];
-        hyperMaxRound = hyperMaxRoundArr[nm][niEps];
-        hyperStep1 = hyperStep1Arr[nm][niEps];
-        hyperStep2 = hyperStep2Arr[nm][niEps];
+        n = hyperN[nm][ni_eps];
+        hyperSolverNum = hyperSolver[nm][ni_eps];
+        hyperMinDiff = hyperMinDiffArr[nm][ni_eps];
+        hyperMaxRound = hyperMaxRoundArr[nm][ni_eps];
+        hyperStep1 = hyperStep1Arr[nm][ni_eps];
+        hyperStep2 = hyperStep2Arr[nm][ni_eps];
 
         // 隣を改変
-        if (winners.empty() && Rand() % 2 == 0) {
+        if (winners.empty() && rand32() % 2 == 0) {
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
-          hyperSolverNum = selection[Rand() % selection.size()];
+          hyperSolverNum = selection[rand32() % selection.size()];
 
-          n = n + Rand() % 5 - 2;
+          n = n + rand32() % 5 - 2;
           n = max(n, 4);
           n = min(n, 100);
-          hyperStep1 = hyperStep1 + Rand() % 3 - 1;
+          hyperStep1 = hyperStep1 + rand32() % 3 - 1;
           hyperStep1 = max(1, hyperStep1);
-          hyperStep2 = hyperStep2 + Rand() % 3 - 1;
+          hyperStep2 = hyperStep2 + rand32() % 3 - 1;
           hyperStep2 = max(1, hyperStep2);
-          if (Rand() % 2 == 0) {
+          if (rand32() % 2 == 0) {
             hyperStep2 = hyperStep1;
           }
 
-          if (Rand() % 2 == 0) {
-            hyperMinDiff = hyperMinDiff + Rand() % 3 - 1;
+          if (rand32() % 2 == 0) {
+            hyperMinDiff = hyperMinDiff + rand32() % 3 - 1;
             hyperMinDiff = max(0, hyperMinDiff);
           }
-          if (Rand() % 2 == 0) {
+          if (rand32() % 2 == 0) {
             hyperMinDiff = 0;
           }
-          hyperMaxRound = hyperMaxRound + Rand() % 3 - 1;
+          hyperMaxRound = hyperMaxRound + rand32() % 3 - 1;
           hyperMaxRound = max(1, hyperMaxRound);
         }
       }
       // ランダム生成
       else {
-        n = hyperN[m][iEps];
-        hyperSolverNum = hyperSolver[m][iEps];
-        hyperMinDiff = hyperMinDiffArr[m][iEps];
-        hyperMaxRound = hyperMaxRoundArr[m][iEps];
-        hyperStep1 = hyperStep1Arr[m][iEps];
-        hyperStep2 = hyperStep2Arr[m][iEps];
+        n = hyperN[m][i_eps];
+        hyperSolverNum = hyperSolver[m][i_eps];
+        hyperMinDiff = hyperMinDiffArr[m][i_eps];
+        hyperMaxRound = hyperMaxRoundArr[m][i_eps];
+        hyperStep1 = hyperStep1Arr[m][i_eps];
+        hyperStep2 = hyperStep2Arr[m][i_eps];
 
-        if (false && Rand() % 2 == 0) {
+        if (false && rand32() % 2 == 0) {
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
-          hyperSolverNum = selection[Rand() % selection.size()];
+          hyperSolverNum = selection[rand32() % selection.size()];
         }
         else {
           vector<int> selection = { 2183, 2184, 2193,2194,1186,1196 ,1187,1197,1134, 2131, 2132,1134, 2131, 2132 };
 
-          hyperSolverNum = selection[Rand() % selection.size()];
+          hyperSolverNum = selection[rand32() % selection.size()];
 
-          n = hyperN[m][iEps] + Rand() % 21 - 10;
-          if (Rand() % 2 == 0) {
-            n = hyperN[m][iEps] - 1;
+          n = hyperN[m][i_eps] + rand32() % 21 - 10;
+          if (rand32() % 2 == 0) {
+            n = hyperN[m][i_eps] - 1;
           }
           n = max(n, 4);
           n = min(n, 100);
-          if (Rand() % 2 == 0) {
-            hyperStep1 = hyperStep1Arr[m][iEps] + Rand() % 3 - 1;
+          if (rand32() % 2 == 0) {
+            hyperStep1 = hyperStep1Arr[m][i_eps] + rand32() % 3 - 1;
             hyperStep1 = max(1, hyperStep1);
-            hyperStep2 = hyperStep2Arr[m][iEps] + Rand() % 3 - 1;
+            hyperStep2 = hyperStep2Arr[m][i_eps] + rand32() % 3 - 1;
             hyperStep2 = max(1, hyperStep2);
-            if (Rand() % 2 == 0) {
+            if (rand32() % 2 == 0) {
               hyperStep2 = hyperStep1;
             }
           }
 
 
-          if (Rand() % 2 == 0) {
-            hyperMinDiff = hyperMinDiffArr[m][iEps] + Rand() % 15 - 7;
+          if (rand32() % 2 == 0) {
+            hyperMinDiff = hyperMinDiffArr[m][i_eps] + rand32() % 15 - 7;
             hyperMinDiff = max(0, hyperMinDiff);
           }
-          if (Rand() % 2 == 0) {
+          if (rand32() % 2 == 0) {
             hyperMinDiff = 0;
           }
-          if (Rand() % 2 == 0) {
-            hyperMaxRound = hyperMaxRoundArr[m][iEps] + Rand() % 5 - 2;
+          if (rand32() % 2 == 0) {
+            hyperMaxRound = hyperMaxRoundArr[m][i_eps] + rand32() % 5 - 2;
             hyperMaxRound = max(1, hyperMaxRound);
           }
 
@@ -3841,12 +3841,12 @@ void solve(int mode)
       InitNumArray(mode);
       if (!numPairArrOK) { continue; }
 
-      int nown = hyperN[m][iEps];
-      int nowhyperSolverNum = hyperSolver[m][iEps];
-      int nowhyperMinDiff = hyperMinDiffArr[m][iEps];
-      int nowhyperMaxRound = hyperMaxRoundArr[m][iEps];
-      int nowhyperStep1 = hyperStep1Arr[m][iEps];
-      int nowhyperStep2 = hyperStep2Arr[m][iEps];
+      int nown = hyperN[m][i_eps];
+      int nowhyperSolverNum = hyperSolver[m][i_eps];
+      int nowhyperMinDiff = hyperMinDiffArr[m][i_eps];
+      int nowhyperMaxRound = hyperMaxRoundArr[m][i_eps];
+      int nowhyperStep1 = hyperStep1Arr[m][i_eps];
+      int nowhyperStep2 = hyperStep2Arr[m][i_eps];
 
       int chan = n;
       int chahyperSolverNum = hyperSolverNum;
@@ -3872,7 +3872,7 @@ void solve(int mode)
       int loseCount = 0;
       for (int i = 0; i < (CHAMP + LOSE + 100); ++i) {
         matchCount++;
-        for (int j = 0; j < (100); ++j) judgeArr[j] = Rand() % m;
+        for (int j = 0; j < (100); ++j) judgeArr[j] = rand32() % m;
 
         n = nown;
         hyperSolverNum = nowhyperSolverNum;
@@ -3907,27 +3907,27 @@ void solve(int mode)
       }
       score /= matchCount;
 
-      if (winCount == CHAMP && (hyperMaxScore[m][iEps] < score)) {
-        changeOfs << loop << ' ' << hyperSolver[m][iEps] << ' '
+      if (winCount == CHAMP && (hyperMaxScore[m][i_eps] < score)) {
+        changeOfs << loop << ' ' << hyperSolver[m][i_eps] << ' '
           << hyperSolverNum << ' ' << m << ' ' << eps << ' '
-          << hyperN[m][iEps] << ' ' << n << ' '
-          << hyperMaxScore[m][iEps] << ' ' << score << ' ' << score * n
+          << hyperN[m][i_eps] << ' ' << n << ' '
+          << hyperMaxScore[m][i_eps] << ' ' << score << ' ' << score * n
           << ' ' << matchCount << endl;
-        cout << loop << ' ' << hyperSolver[m][iEps] << ' ' << hyperSolverNum
-          << ' ' << m << ' ' << eps << ' ' << hyperN[m][iEps] << ' ' << n
-          << ' ' << hyperMaxScore[m][iEps] << ' ' << score << ' '
+        cout << loop << ' ' << hyperSolver[m][i_eps] << ' ' << hyperSolverNum
+          << ' ' << m << ' ' << eps << ' ' << hyperN[m][i_eps] << ' ' << n
+          << ' ' << hyperMaxScore[m][i_eps] << ' ' << score << ' '
           << score * n << ' ' << matchCount << endl;
-        hyperMaxScore[m][iEps] = score;
-        hyperN[m][iEps] = n;
-        hyperSolver[m][iEps] = hyperSolverNum;
-        hyperMinDiffArr[m][iEps] = hyperMinDiff;
-        hyperMaxRoundArr[m][iEps] = hyperMaxRound;
-        hyperStep1Arr[m][iEps] = hyperStep1;
-        hyperStep2Arr[m][iEps] = hyperStep2;
+        hyperMaxScore[m][i_eps] = score;
+        hyperN[m][i_eps] = n;
+        hyperSolver[m][i_eps] = hyperSolverNum;
+        hyperMinDiffArr[m][i_eps] = hyperMinDiff;
+        hyperMaxRoundArr[m][i_eps] = hyperMaxRound;
+        hyperStep1Arr[m][i_eps] = hyperStep1;
+        hyperStep2Arr[m][i_eps] = hyperStep2;
 
         winner er;
         er.winM = m;
-        er.winEps = iEps;
+        er.winEps = i_eps;
         er.winLife = 10;
         winners.push(er);
       }
@@ -3935,7 +3935,7 @@ void solve(int mode)
 
     cout << "loop = " << loop << endl;
 
-    OutputHaipara();
+    output_hyper_params();
   }
 
   // 1000ケース実行
@@ -3952,31 +3952,31 @@ void solve(int mode)
       }
 
       Input(mode, _);
-      n = hyperN[m][iEps];
-      hyperSolverNum = hyperSolver[m][iEps];
-      hyperMinDiff = hyperMinDiffArr[m][iEps];
-      hyperMaxRound = hyperMaxRoundArr[m][iEps];
-      hyperStep1 = hyperStep1Arr[m][iEps];
-      hyperStep2 = hyperStep2Arr[m][iEps];
+      n = hyperN[m][i_eps];
+      hyperSolverNum = hyperSolver[m][i_eps];
+      hyperMinDiff = hyperMinDiffArr[m][i_eps];
+      hyperMaxRound = hyperMaxRoundArr[m][i_eps];
+      hyperStep1 = hyperStep1Arr[m][i_eps];
+      hyperStep2 = hyperStep2Arr[m][i_eps];
 
       InitNumArray(mode);
       if (!numPairArrOK) { continue; }
 
       if (_ < 100) {
-        OutputArrayAsString(mode);
+        output_array_as_string(mode);
       }
 
       double score = Simulate(mode);
       sumScore += score;
 
       if (_ < 100) {
-        OutputAnsToOfs1000Out();
-        CloseOfs1000Out();
+        output_ans_to_ofs_1000_out();
+        close_ofs_1000_out();
       }
 
-      hi += score / hyperMaxScore[m][iEps];
-      ofsScore << score / hyperMaxScore[m][iEps] << ' ' << fixed
-        << setprecision(6) << score << ' ' << hyperMaxScore[m][iEps]
+      hi += score / hyperMaxScore[m][i_eps];
+      ofsScore << score / hyperMaxScore[m][i_eps] << ' ' << fixed
+        << setprecision(6) << score << ' ' << hyperMaxScore[m][i_eps]
         << endl;
     }
     cout << hi << endl;
@@ -4002,30 +4002,30 @@ void solve(int mode)
         }
 
         Input(mode, _);
-        n = hyperN[m][iEps];
-        hyperSolverNum = hyperSolver[m][iEps];
-        hyperMinDiff = hyperMinDiffArr[m][iEps];
-        hyperMaxRound = hyperMaxRoundArr[m][iEps];
-        hyperStep1 = hyperStep1Arr[m][iEps];
-        hyperStep2 = hyperStep2Arr[m][iEps];
+        n = hyperN[m][i_eps];
+        hyperSolverNum = hyperSolver[m][i_eps];
+        hyperMinDiff = hyperMinDiffArr[m][i_eps];
+        hyperMaxRound = hyperMaxRoundArr[m][i_eps];
+        hyperStep1 = hyperStep1Arr[m][i_eps];
+        hyperStep2 = hyperStep2Arr[m][i_eps];
         hyperSolverNum = 1154;
 
         InitNumArray(mode);
         if (!numPairArrOK) { continue; }
 
         if (_ < 100) {
-          OutputArrayAsString(mode);
+          output_array_as_string(mode);
         }
 
         double score = Simulate(mode);
         sumScore += score;
 
         if (_ < 100) {
-          OutputAnsToOfs1000Out();
-          CloseOfs1000Out();
+          output_ans_to_ofs_1000_out();
+          close_ofs_1000_out();
         }
 
-        hi += score / hyperMaxScore[m][iEps];
+        hi += score / hyperMaxScore[m][i_eps];
         cout << hyperSolverNum << ' ' << score << endl;
       }
     }

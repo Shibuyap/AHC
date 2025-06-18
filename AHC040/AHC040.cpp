@@ -61,9 +61,9 @@ void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
-    int swa = data[i];
+    int tmp = data[i];
     data[i] = data[j];
-    data[j] = swa;
+    data[j] = tmp;
   }
 }
 
@@ -1077,27 +1077,27 @@ void RefineAndPrintSolutions(ofstream& ofs)
       keep = layouts[layoutNum];
       int beforeScore = keep.score();
 
-      int raMode = Rand() % 4;
+      int mode = Rand() % 4;
       tmp.clear();
 
-      int raNum1 = Rand() % n;
-      int raNum2 = Rand() % n;
-      while (raNum1 == raNum2) {
-        raNum2 = Rand() % n;
+      int num1 = Rand() % n;
+      int num2 = Rand() % n;
+      while (num1 == num2) {
+        num2 = Rand() % n;
       }
-      if (raNum1 > raNum2) {
-        swap(raNum1, raNum2);
+      if (num1 > num2) {
+        swap(num1, num2);
       }
 
       int sz = 0;
       int ng = 1;
-      if (raMode == 0) {
+      if (mode == 0) {
         for (int i = 0; i < keep.sz; ++i)
         {
           for (int j = 0; j < keep.shelves[i].sz; ++j)
           {
             int num = keep.shelves[i].blocks[j].piece1.num;
-            if (num == raNum1) {
+            if (num == num1) {
               if (i == 0) {
                 ng = 2;
                 break;
@@ -1119,7 +1119,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
           }
         }
       }
-      else if (raMode == 1) {
+      else if (mode == 1) {
         for (int i = 0; i < keep.sz; ++i)
         {
           for (int j = 0; j < keep.shelves[i].sz; ++j)
@@ -1128,7 +1128,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
             if (sz <= i) {
               tmp.shelves[i].clear();
             }
-            if (num == raNum1) {
+            if (num == num1) {
               if (sz <= i + 1) {
                 tmp.shelves[i + 1].clear();
               }
@@ -1143,7 +1143,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
           }
         }
       }
-      else if (raMode == 2) {
+      else if (mode == 2) {
         for (int i = 0; i < keep.sz; ++i)
         {
           for (int j = 0; j < keep.shelves[i].sz; ++j)
@@ -1155,14 +1155,14 @@ void RefineAndPrintSolutions(ofstream& ofs)
             sz = max(sz, i + 1);
 
             int num = keep.shelves[i].blocks[j].piece1.num;
-            if (num == raNum1) {
+            if (num == num1) {
               tmp.shelves[i].blocks[tmp.shelves[i].sz - 1].piece1.rot = 1 - tmp.shelves[i].blocks[tmp.shelves[i].sz - 1].piece1.rot;
               ng = 0;
             }
           }
         }
       }
-      else if (raMode == 3) {
+      else if (mode == 3) {
         int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1;
 
         for (int i = 0; i < keep.sz; ++i)
@@ -1175,11 +1175,11 @@ void RefineAndPrintSolutions(ofstream& ofs)
             tmp.shelves[i].add(keep.shelves[i].blocks[j]);
             sz = max(sz, i + 1);
 
-            if (keep.shelves[i].blocks[j].piece1.num == raNum1) {
+            if (keep.shelves[i].blocks[j].piece1.num == num1) {
               ii1 = i;
               jj1 = j;
             }
-            if (keep.shelves[i].blocks[j].piece1.num == raNum2) {
+            if (keep.shelves[i].blocks[j].piece1.num == num2) {
               ii2 = i;
               jj2 = j;
             }
@@ -1205,11 +1205,11 @@ void RefineAndPrintSolutions(ofstream& ofs)
 
       int maxWidth = 0;
       int sumHeight = 0;
-      bool res = CheckLayout(tmp, maxWidth, sumHeight);
-      if (res) {
+      bool isValid = CheckLayout(tmp, maxWidth, sumHeight);
+      if (isValid) {
         if (maxWidth + sumHeight <= keep.score()) {
           //if (maxWidth + sumHeight < keep.score()) {
-          //  cout << "OK " << raMode << " " << maxWidth << ' ' << sumHeight << endl;
+          //  cout << "OK " << mode << " " << maxWidth << ' ' << sumHeight << endl;
           //}
           tmp.maxWidth = maxWidth;
           tmp.sumHeight = sumHeight;

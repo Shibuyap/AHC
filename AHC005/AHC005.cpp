@@ -91,7 +91,7 @@ namespace Random
   }
 }
 
-int exec_mode;
+int mode;
 
 // 座標変換ヘルパー関数
 inline int to_index(int x, int y, int n)
@@ -356,10 +356,10 @@ public:
   }
 };
 
-Board input_data(int case_num)
+Board input_data(int cn)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << cn << ".txt";
   ifstream ifs(oss.str());
 
   Board board;
@@ -435,19 +435,19 @@ Path build_complete_path(const Board& board, const Answer& ans)
   return path;
 }
 
-void output_data(int case_num, const Board& board, const Answer& ans)
+void output_data(int cn, const Board& board, const Answer& ans)
 {
   Path path = build_complete_path(board, ans);
   string directions = path_to_directions(path, board.n);
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
     cout << directions << endl;
   }
   else {
     // ファイル出力
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << cn << ".txt";
     ofstream ofs(oss.str());
 
     ofs << directions << endl;
@@ -583,38 +583,38 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
   while (loop < Constants::MAX_ITERATIONS) {
     loop++;
 
-    double progress_ratio = (double)loop / Constants::MAX_ITERATIONS;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+    double progress = (double)loop / Constants::MAX_ITERATIONS;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress;
 
     // 近傍解作成
-    NeighborInfo neighbor_info = generate_neighbor(ans);
+    NeighborInfo nb_info = generate_neighbor(ans);
 
     // スコア計算
-    double current_score = ans.score;
-    ans.recalc_points(board, neighbor_info.start_index, neighbor_info.end_index);
-    double tmp_score = ans.calc_score(board);
+    double cur_score = ans.score;
+    ans.recalc_points(board, nb_info.start_index, nb_info.end_index);
+    double new_score = ans.calc_score(board);
 
     // 焼きなましで採用判定
-    double diff_score = (tmp_score - current_score) * Constants::SCORE_MULTIPLIER;
-    double prob = exp(diff_score / temp);
+    double diff = (new_score - cur_score) * Constants::SCORE_MULTIPLIER;
+    double prob = exp(diff / temp);
     if (prob > Random::rand_01() || Random::rand_xorshift() % 10000 == 0) {
       // 採用
-      current_score = tmp_score;
+      cur_score = new_score;
 
       // ベスト更新
-      if (current_score > best_ans.score) {
+      if (cur_score > best_ans.score) {
         best_ans = ans;
       }
     }
     else {
       // 元に戻す
-      revert_neighbor(ans, neighbor_info);
-      ans.recalc_points(board, neighbor_info.start_index, neighbor_info.end_index);
-      ans.score = current_score;
+      revert_neighbor(ans, nb_info);
+      ans.recalc_points(board, nb_info.start_index, nb_info.end_index);
+      ans.score = cur_score;
     }
   }
 
-  if (exec_mode != 3) {
+  if (mode != 3) {
     cerr << loop << endl;
   }
 
@@ -622,12 +622,12 @@ void run_simulated_annealing(double time_limit, const Board& board, Answer& ans)
 }
 
 
-ll solve_case(int case_num)
+ll solve_case(int cn)
 {
   const double TIME_LIMIT = Constants::TIME_LIMIT;
   Timer::start_timer();
 
-  Board board = input_data(case_num);
+  Board board = input_data(cn);
 
   Answer ans;
   build_initial_path(board, ans);
@@ -647,10 +647,10 @@ ll solve_case(int case_num)
   }
   ans = best_ans;
 
-  output_data(case_num, board, ans);
+  output_data(cn, board, ans);
 
   ll score = 0;
-  if (exec_mode != 0) {
+  if (mode != 0) {
     score = ans.calc_score(board);
   }
   return score;
@@ -658,23 +658,23 @@ ll solve_case(int case_num)
 
 int main()
 {
-  exec_mode = 2;
+  mode = 2;
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     solve_case(0);
   }
-  else if (exec_mode <= 2) {
-    ll sum_score = 0;
+  else if (mode <= 2) {
+    ll sum = 0;
     for (int i = 0; i < 5; i++) {
       ll score = solve_case(i);
-      sum_score += score;
-      if (exec_mode == 1) {
+      sum += score;
+      if (mode == 1) {
         cerr << score << endl;
       }
       else {
         cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
-          << "sum = " << setw(5) << sum_score << ", "
+          << "sum = " << setw(5) << sum << ", "
           << "time = " << setw(5) << Timer::get_elapsed_time() << ", "
           << endl;
       }

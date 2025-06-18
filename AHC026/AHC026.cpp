@@ -37,7 +37,7 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 
-static uint32_t Rand()
+static uint32_t rand_xorshift()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -53,19 +53,19 @@ static uint32_t Rand()
 }
 
 
-static double Rand01()
+static double rand_01()
 {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
 }
 
 
 void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = Rand() % (i + 1);
-    int swa = data[i];
+    int j = rand_xorshift() % (i + 1);
+    int tmp = data[i];
     data[i] = data[j];
-    data[j] = swa;
+    data[j] = tmp;
   }
 }
 
@@ -84,16 +84,16 @@ const int dy[4] = { 0, -1, 0, 1 };
 double TL = 1.8;
 int mode;
 
-std::chrono::steady_clock::time_point startTimeClock;
+std::chrono::steady_clock::time_point start_time_clock;
 
-void ResetTime()
+void start_timer()
 {
-  startTimeClock = std::chrono::steady_clock::now();
+  start_time_clock = std::chrono::steady_clock::now();
 }
 
-double GetNowTime()
+double get_elapsed_time()
 {
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
   return elapsed.count();
 }
 
@@ -131,10 +131,10 @@ void set_up()
 }
 
 // 入力を受け取る関数
-void input(int problem_num)
+void input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   for (int i = 0; i < m; ++i)
@@ -182,11 +182,11 @@ void input(int problem_num)
 }
 
 // 出力ファイルストリームを開く関数
-void open_ofs(int problem_num, ofstream& ofs)
+void open_ofs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }
@@ -383,15 +383,15 @@ Problem greedy_solution()
     int score = simulate_remaining_moves(problem, current_box, problem.stacks[from_stack].size() - 1, move_targets, min_box_per_stack, from_stack);
 
     // ランダムに移動先を変更して探索（焼きなまし的な手法）
-    if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && GetNowTime() < TL) {
+    if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && get_elapsed_time() < TL) {
       for (int iteration = 0; iteration < 500; ++iteration)
       {
-        int random_position = Rand() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
+        int random_position = rand_xorshift() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
         int keep = move_targets[random_position];
 
-        if (Rand() % 2 == 0) {
+        if (rand_xorshift() % 2 == 0) {
           // ランダムに移動先を変更
-          int random_idx = Rand() % (m - 1) + 1;
+          int random_idx = rand_xorshift() % (m - 1) + 1;
           move_targets[random_position] = min_box_per_stack[random_idx].second;
         }
         else {
@@ -401,7 +401,7 @@ Problem greedy_solution()
             random_dir = 1;
           }
           else if (random_position != current_y + 1 && random_position != problem.stacks[from_stack].size() - 1) {
-            if (Rand() % 2 == 0) {
+            if (rand_xorshift() % 2 == 0) {
               random_dir = 1;
             }
           }
@@ -426,19 +426,19 @@ Problem greedy_solution()
 }
 
 // 問題を解く関数
-ll solve(int problem_num)
+ll solve(int case_num)
 {
-  ResetTime(); // 時間計測をリセット
+  start_timer(); // 時間計測をリセット
 
   // 内部状態を初期化
   set_up();
 
   // 入力を受け取る
-  input(problem_num);
+  input(case_num);
 
   // 出力ファイルストリームを開く
   ofstream ofs;
-  open_ofs(problem_num, ofs);
+  open_ofs(case_num, ofs);
 
   // 初期解を生成
   auto problem = greedy_solution();

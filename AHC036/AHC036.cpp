@@ -62,9 +62,9 @@ namespace /* 乱数ライブラリ */
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = Rand() % (i + 1);
-      int swa = data[i];
+      int tmp = data[i];
       data[i] = data[j];
-      data[j] = swa;
+      data[j] = tmp;
     }
   }
 }  // namespace
@@ -95,32 +95,32 @@ vector<int> routes[610][610];
 int ans[110000][4];
 int ansCount;
 int cCount;
-int real_ans[110000][4];
-int real_ansCount;
-int real_cCount;
+int best_ans[110000][4];
+int best_ansCount;
+int best_cCount;
 
-void CopyToReal()
+void CopyToBest()
 {
-  real_ansCount = ansCount;
-  real_cCount = cCount;
+  best_ansCount = ansCount;
+  best_cCount = cCount;
   for (int i = 0; i < ansCount; ++i)
   {
     for (int j = 0; j < 4; ++j)
     {
-      real_ans[i][j] = ans[i][j];
+      best_ans[i][j] = ans[i][j];
     }
   }
 }
 
 void CopyToAns()
 {
-  ansCount = real_ansCount;
-  cCount = real_cCount;
+  ansCount = best_ansCount;
+  cCount = best_cCount;
   for (int i = 0; i < ansCount; ++i)
   {
     for (int j = 0; j < 4; ++j)
     {
-      ans[i][j] = real_ans[i][j];
+      ans[i][j] = best_ans[i][j];
     }
   }
 }
@@ -256,8 +256,8 @@ void OpenOfs(int probNum, ofstream& ofs)
 // スコア計算
 ll CalcScore()
 {
-  ll res = cCount;
-  return res;
+  ll result = cCount;
+  return result;
 }
 
 void MakeA2(const vector<int>& route)
@@ -402,9 +402,9 @@ void Method2(const vector<int>& route)
     }
 
     if (exists == 0) {
-      int ma = -1;
-      int pos2 = -1;
-      int len2 = -1;
+      int maxIdx = -1;
+      int bestPos = -1;
+      int bestLen = -1;
       {
         int pos = argN[r][0];
         while (LA - pos < LB) {
@@ -430,9 +430,9 @@ void Method2(const vector<int>& route)
             break;
           }
         }
-        pos2 = pos;
-        len2 = len;
-        ma = now;
+        bestPos = pos;
+        bestLen = len;
+        maxIdx = now;
       }
 
       {
@@ -458,20 +458,20 @@ void Method2(const vector<int>& route)
             break;
           }
         }
-        if (ma < now) {
-          pos2 = pos;
-          len2 = len;
-          ma = now;
+        if (maxIdx < now) {
+          bestPos = pos;
+          bestLen = len;
+          maxIdx = now;
         }
       }
 
-      for (int j = 0; j < len2; ++j)
+      for (int j = 0; j < bestLen; ++j)
       {
-        b[j] = a[pos2 + j];
+        b[j] = a[bestPos + j];
       }
       ans[ansCount][0] = 0;
-      ans[ansCount][1] = len2;
-      ans[ansCount][2] = pos2;
+      ans[ansCount][1] = bestLen;
+      ans[ansCount][2] = bestPos;
       ans[ansCount][3] = 0;
       ansCount++;
       cCount++;
@@ -523,15 +523,15 @@ void Output(ofstream& ofs)
 vector<int> GetRoute()
 {
   int now = 0;
-  vector<int> res;
+  vector<int> result;
   for (int i = 0; i < T; ++i)
   {
     for (auto x : routes[now][t[i]]) {
-      res.push_back(x);
+      result.push_back(x);
     }
     now = t[i];
   }
-  return res;
+  return result;
 }
 
 void MakeA1DFS(int x, vector<int>& route, vector<int>& visited, int order = 0)
@@ -556,13 +556,13 @@ void MakeA1DFS(int x, vector<int>& route, vector<int>& visited, int order = 0)
 void MakeA1()
 {
   int center = -1;
-  int mi = INF;
+  int minDist = INF;
   for (int i = 0; i < N; ++i)
   {
     int tmp = abs(500 - X[i]) + abs(500 - Y[i]);
-    if (tmp < mi) {
+    if (tmp < minDist) {
       center = i;
-      mi = tmp;
+      minDist = tmp;
     }
   }
 
@@ -619,23 +619,23 @@ ll Solve(int probNum)
   // 初期解生成
   Initialize(route);
 
-  CopyToReal();
+  CopyToBest();
 
-  int loop = 0;
-  int loop2 = 0;
+  int iterCount = 0;
+  int acceptCount = 0;
   while (GetNowTime() < TL) {
-    loop++;
-    int raMode = Rand() % 2;
-    int ra1 = Rand() % LA;
-    int ra2 = Rand() % LA;
-    int raLen = Rand() % 10 + 2;
+    iterCount++;
+    int mode = Rand() % 2;
+    int idx1 = Rand() % LA;
+    int idx2 = Rand() % LA;
+    int len = Rand() % 10 + 2;
 
-    if (raMode == 0) {
-      swap(a[ra1], a[ra2]);
+    if (mode == 0) {
+      swap(a[idx1], a[idx2]);
     }
     else {
-      if (ra1 + raLen > LA) { continue; }
-      reverse(a + ra1, a + ra1 + raLen);
+      if (idx1 + len > LA) { continue; }
+      reverse(a + idx1, a + idx1 + len);
     }
 
     for (int i = 0; i < N; ++i) argN[i].clear();
@@ -648,19 +648,19 @@ ll Solve(int probNum)
     Method2(route);
 
     int tmpScore = CalcScore();
-    if (tmpScore <= real_cCount) {
-      if (tmpScore < real_cCount) {
+    if (tmpScore <= best_cCount) {
+      if (tmpScore < best_cCount) {
         // cout << tmpScore << endl;
       }
-      loop2++;
-      CopyToReal();
+      acceptCount++;
+      CopyToBest();
     }
     else {
-      if (raMode == 0) {
-        swap(a[ra1], a[ra2]);
+      if (mode == 0) {
+        swap(a[idx1], a[idx2]);
       }
       else {
-        reverse(a + ra1, a + ra1 + raLen);
+        reverse(a + idx1, a + idx1 + len);
       }
     }
   }
@@ -677,7 +677,7 @@ ll Solve(int probNum)
   ll score = 0;
   if (mode != 0) {
     score = CalcScore();
-    cout << "loop = " << loop << ", loop2 = " << loop2;
+    cout << "loop = " << iterCount << ", loop2 = " << acceptCount;
     cout << endl;
   }
   return score;

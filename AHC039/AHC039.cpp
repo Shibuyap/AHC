@@ -70,9 +70,9 @@ void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
-    int swa = data[i];
+    int tmp = data[i];
     data[i] = data[j];
-    data[j] = swa;
+    data[j] = tmp;
   }
 }
 
@@ -205,8 +205,8 @@ void OpenOfs(int probNum, ofstream& ofs)
 // スコアを計算する関数
 ll CalcScore()
 {
-  ll res = ansScore + 1;  // 問題文の得点計算式に基づく（max(0, a - b + 1)）
-  return res;             // スコアを返す
+  ll result = ansScore + 1;  // 問題文の得点計算式に基づく（max(0, a - b + 1)）
+  return result;             // スコアを返す
 }
 
 // 解答を出力する関数
@@ -297,26 +297,26 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     }
     loop2++;
 
-    int rax = Rand() % blockSize;  // ランダムなセルのxインデックス
-    int ray = Rand() % blockSize;  // ランダムなセルのyインデックス
+    int randX = Rand() % blockSize;  // ランダムなセルのxインデックス
+    int randY = Rand() % blockSize;  // ランダムなセルのyインデックス
 
     int ng = 1;  // 変更が可能かどうかのフラグ
     for (int i = 0; i < 4; ++i)
     {
-      int nx = rax + dx[i];
-      int ny = ray + dy[i];
+      int nx = randX + dx[i];
+      int ny = randY + dy[i];
       if (IsNG(nx, ny, blockSize)) { continue; }  // 範囲外は無視
-      if (f[nx + 1][ny + 1] != f[rax + 1][ray + 1]) ng = 0;  // 隣接セルが異なる状態なら変更可能
+      if (f[nx + 1][ny + 1] != f[randX + 1][randY + 1]) ng = 0;  // 隣接セルが異なる状態なら変更可能
     }
 
     if (ng) { continue; }  // 変更不可なら次のループへ
 
     int tmpScore = ansScore;
-    if (f[rax + 1][ray + 1] == 0) {
-      tmpScore += block[rax][ray];  // セルを追加した場合のスコア
+    if (f[randX + 1][randY + 1] == 0) {
+      tmpScore += block[randX][randY];  // セルを追加した場合のスコア
     }
     else {
-      tmpScore += -block[rax][ray];  // セルを削除した場合のスコア
+      tmpScore += -block[randX][randY];  // セルを削除した場合のスコア
     }
 
     const double progressRatio = nowTime / TL;  // 進捗率（0.0〜1.0）
@@ -324,7 +324,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
 
     double diff = tmpScore - ansScore;  // スコアの差分
     double prob = exp(diff / temp);     // 焼きなまし法の採用確率
-    f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // 状態を反転
+    f[randX + 1][randY + 1] = 1 - f[randX + 1][randY + 1];  // 状態を反転
     int upd = 0;  // 解答を更新するかどうかのフラグ
     if (prob > Rand01()) {
       // 解答を更新する場合の処理
@@ -488,7 +488,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       }
     }
     else {
-      f[rax + 1][ray + 1] = 1 - f[rax + 1][ray + 1];  // 状態を元に戻す
+      f[randX + 1][randY + 1] = 1 - f[randX + 1][randY + 1];  // 状態を元に戻す
     }
   }
 

@@ -33,7 +33,7 @@ typedef pair<int, int> P;
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand_xorshift()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -49,9 +49,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -208,12 +208,12 @@ void resetGlobalState()
 }
 
 // 数値をゼロ埋め4桁の文字列に変換
-string formatProblemNumber(int problemNum)
+string formatProblemNumber(int case_num)
 {
   string strNum;
   for (int i = 0; i < 4; ++i) {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
+    strNum += (char)(case_num % 10 + '0');
+    case_num /= 10;
   }
   reverse(strNum.begin(), strNum.end());
   return strNum;
@@ -249,10 +249,10 @@ void readInputData(Stream& stream)
 }
 
 // 入力受け取り
-void readInput(int problemNum)
+void readInput(int case_num)
 {
-  string fileNameIfs = "./in/" + formatProblemNumber(problemNum) + ".txt";
-  ifstream ifs(fileNameIfs);
+  string filename = "./in/" + formatProblemNumber(case_num) + ".txt";
+  ifstream ifs(filename);
 
   if (!ifs.is_open()) {
     readInputData(cin);
@@ -303,11 +303,11 @@ void readInput(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void openOutputFile(int probNum, ofstream& ofs)
+void openOutputFile(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/" + formatProblemNumber(probNum) + ".txt";
-    ofs.open(fileNameOfs);
+    string filename = "./out/" + formatProblemNumber(case_num) + ".txt";
+    ofs.open(filename);
   }
 }
 
@@ -552,7 +552,7 @@ vector<P> getNonArticulationBlanks(const vector<vector<int>>& fieldStatus)
 {
   LowLinkGraph Graph;
   map<int, P> mp;     // {頂点番号,座標}
-  map<P, int> mpInv;  // {座標,頂点番号}
+  map<P, int> mp_inv;  // {座標,頂点番号}
 
   // 空のグラフ作成
   for (int i = 0; i < HW; ++i) {
@@ -560,7 +560,7 @@ vector<P> getNonArticulationBlanks(const vector<vector<int>>& fieldStatus)
     if (fieldStatus[x][y] == -1) {
       int num = mp.size();
       mp[num] = P(x, y);
-      mpInv[P(x, y)] = num;
+      mp_inv[P(x, y)] = num;
       Graph.push_back(vector<LowLinkEdge>());
     }
   }
@@ -577,7 +577,7 @@ vector<P> getNonArticulationBlanks(const vector<vector<int>>& fieldStatus)
       int ny = y + dy[j];
       if (fieldStatus[nx][ny] == -1) {
         LowLinkEdge e;
-        e.to = mpInv[P(nx, ny)];
+        e.to = mp_inv[P(nx, ny)];
         Graph[num].push_back(e);
       }
     }
@@ -756,17 +756,17 @@ void outputSolution(ofstream& ofs)
   }
 }
 
-ll solveProblem(int probNum)
+ll solveProblem(int case_num)
 {
   // 複数ケース回すときに内部状態を初期値に戻す
   resetGlobalState();
 
   // 入力受け取り
-  readInput(probNum);
+  readInput(case_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  openOutputFile(probNum, ofs);
+  openOutputFile(case_num, ofs);
 
   // 初期解生成
   initializeSolution();

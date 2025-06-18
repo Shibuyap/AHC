@@ -89,9 +89,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -217,13 +217,13 @@ void open_output_file(int probNum, ofstream& ofs)
 // スコア計算
 ll calc_final_score()
 {
-  ll sumX = 0;
+  ll totalMaxValue = 0;
   for (int j = 0; j < ITEM_KIND; ++j)
   {
-    sumX += item_value_max[j];
+    totalMaxValue += item_value_max[j];
   }
 
-  int ma = 0;
+  int maxSum = 0;
   for (int i = 0; i < EDGE_COUNT; ++i)
   {
     int tmp = 0;
@@ -231,11 +231,11 @@ ll calc_final_score()
     {
       tmp += item_value[i][j];
     }
-    ma = max(ma, tmp);
+    maxSum = max(maxSum, tmp);
   }
 
-  ll res = round(1000000.0 * ma / sumX);
-  return res;
+  ll result = round(1000000.0 * maxSum / totalMaxValue);
+  return result;
 }
 
 void apply_feedback(int turn)
@@ -362,7 +362,7 @@ void init_spiral_order()
 
 ll local_neighbor_score(int x, int y)
 {
-  ll res = 0;
+  ll score = 0;
   int id = placement[x][y];
   for (int i = 0; i < 4; ++i)
   {
@@ -374,10 +374,10 @@ ll local_neighbor_score(int x, int y)
     int nd = placement[nx][ny];
     for (int j = 0; j < ITEM_KIND; ++j)
     {
-      res += 10 * item_value[id][j] + 2 * abs(item_value[id][j] - item_value[nd][j]);
+      score += 10 * item_value[id][j] + 2 * abs(item_value[id][j] - item_value[nd][j]);
     }
   }
-  return res;
+  return score;
 }
 
 void anneal_spiral_placement()
@@ -392,20 +392,20 @@ void anneal_spiral_placement()
   const int LOOP_COUNT = 500000;
   for (int _ = 0; _ < LOOP_COUNT; ++_)
   {
-    int ra1 = rand_xorshift() % 6;
-    int ra2 = rand_xorshift() % 6;
-    int ra3 = rand_xorshift() % 6;
-    int ra4 = rand_xorshift() % 6;
+    int x1 = rand_xorshift() % 6;
+    int y1 = rand_xorshift() % 6;
+    int x2 = rand_xorshift() % 6;
+    int y2 = rand_xorshift() % 6;
 
     int before = 0;
-    before += local_neighbor_score(ra1, ra2);
-    before += local_neighbor_score(ra3, ra4);
+    before += local_neighbor_score(x1, y1);
+    before += local_neighbor_score(x2, y2);
 
-    swap(placement[ra1][ra2], placement[ra3][ra4]);
+    swap(placement[x1][y1], placement[x2][y2]);
 
     int after = 0;
-    after += local_neighbor_score(ra1, ra2);
-    after += local_neighbor_score(ra3, ra4);
+    after += local_neighbor_score(x1, y1);
+    after += local_neighbor_score(x2, y2);
 
     double temp = (double)(LOOP_COUNT - _) / LOOP_COUNT * 500000;
     const double prob = exp((double)(after - before) / temp);
@@ -413,7 +413,7 @@ void anneal_spiral_placement()
     if (prob > rand_01()) {
     }
     else {
-      swap(placement[ra1][ra2], placement[ra3][ra4]);
+      swap(placement[x1][y1], placement[x2][y2]);
     }
   }
 }

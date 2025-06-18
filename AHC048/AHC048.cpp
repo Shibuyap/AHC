@@ -86,9 +86,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -185,7 +185,7 @@ public:
   vector<vector<double>> volumes; // セルが含まれるウェルの絵具の量
   vector<vector<vector<double>>> colors; // セルが含まれるウェルの色(CMY)
 
-  bool is_ng(int x, int y, int dir)
+  bool is_blocked(int x, int y, int dir)
   {
     int nx = x + DX[dir];
     int ny = y + DY[dir];
@@ -229,7 +229,7 @@ public:
           int y = queue2d.front_y();
           queue2d.pop();
           for (int d = 0; d < 4; d++) {
-            if (is_ng(x, y, d)) {
+            if (is_blocked(x, y, d)) {
               continue;
             }
             int nx = x + DX[d];
@@ -325,7 +325,7 @@ public:
       int cy = queue2d.front_y();
       queue2d.pop();
       for (int d = 0; d < 4; d++) {
-        if (is_ng(cx, cy, d)) {
+        if (is_blocked(cx, cy, d)) {
           continue;
         }
         int nx = cx + DX[d];
@@ -717,12 +717,12 @@ struct Score
 {
   int score;
   int d_score;
-  int e_scrore;
+  int e_score;
   double max_e_score;
 
   vector<double> e_score_list; // 各ターンの誤差を格納するリスト
 
-  Score() : score(0), d_score(0), e_scrore(0), max_e_score(0.0) {}
+  Score() : score(0), d_score(0), e_score(0), max_e_score(0.0) {}
 };
 
 Score calculate_score(Answer& ans, const Input& input)
@@ -782,8 +782,8 @@ Score calculate_score(Answer& ans, const Input& input)
   }
 
   score.d_score = input.d * (count_add_1 - input.h);
-  score.e_scrore = round(sum_e_score * 1e4);
-  score.score = 1 + score.d_score + score.e_scrore;
+  score.e_score = round(sum_e_score * 1e4);
+  score.score = 1 + score.d_score + score.e_score;
 
   sort(score.e_score_list.begin(), score.e_score_list.end());
 
@@ -2713,7 +2713,7 @@ ll solve_case(int case_num)
         << setw(4) << input.d << ", "
         << setw(7) << best_score.score << ", "
         << setw(7) << best_score.d_score << ", "
-        << setw(7) << best_score.e_scrore << ", "
+        << setw(7) << best_score.e_score << ", "
         << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
         << setw(3) << best_solver << ", "
         << setw(5) << get_elapsed_time() << ", "
@@ -2729,7 +2729,7 @@ ll solve_case(int case_num)
       << "d = " << setw(4) << input.d << ", "
       << "score = " << setw(7) << best_score.score << ", "
       << "d_score = " << setw(7) << best_score.d_score << ", "
-      << "e_score = " << setw(7) << best_score.e_scrore << ", "
+      << "e_score = " << setw(7) << best_score.e_score << ", "
       << "max_e_score = " << setw(7) << fixed << setprecision(7) << best_score.max_e_score << ", "
       << "solver = " << setw(3) << best_solver << ", "
       << "time = " << setw(5) << get_elapsed_time() << " ms"

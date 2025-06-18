@@ -89,9 +89,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -367,9 +367,9 @@ void build_seed_solution(double time_limit)
   int selected_indices[n];
   int state_sequence[20];
 
-  vector<double> cnt_sum[12];
+  vector<double> transition_weights[12];
   for (int i = 0; i < 12; ++i) {
-    cnt_sum[i] = vector<double>(12);
+    transition_weights[i] = vector<double>(12);
   }
 
   for (int i = 0; i < m; ++i) {
@@ -407,17 +407,17 @@ void build_seed_solution(double time_limit)
       for (int i = 0; i < target_sequences[string_index].size() - 1; ++i) {
         int x = state_sequence[i];
         int y = state_sequence[i + 1];
-        cnt_sum[x][y] += preferences[string_index];
+        transition_weights[x][y] += preferences[string_index];
       }
     }
 
     for (int i = 0; i < 12; ++i) {
-      auto v = normalize_to_100(cnt_sum[i]);
+      auto v = normalize_to_100(transition_weights[i]);
       for (int j = 0; j < 12; ++j) {
         transition_probs[i][j] = v[j];
       }
       for (int j = 0; j < 12; ++j) {
-        cnt_sum[i][j] = 0;
+        transition_weights[i][j] = 0;
       }
     }
 
@@ -478,64 +478,64 @@ void run_simulated_annealing(AnnealingParams params, int mode, double time_limit
 
     // 近傍解作成
     int operation_type = rand_xorshift() % params.operation_thresholds[2];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
+    int shift, from_state, to_state, alt_state, delta;
+    int tmp1, tmp2, tmp3, tmp4, tmp5;
 
     if (operation_type < params.operation_thresholds[0]) {
       // 近傍操作1
-      ra5 = rand_xorshift() % 15 + 1;
-      ra1 = rand_xorshift() % 2;
-      ra2 = rand_xorshift() % 6;
-      ra3 = rand_xorshift() % 6;
-      int ng = 0;
-      while (transition_probs[ra2 + ra1 * 6][ra3 + ra1 * 6] < ra5) {
-        ra2 = rand_xorshift() % 6;
-        ra3 = rand_xorshift() % 6;
-        ng++;
-        if (ng > 100)break;
+      delta = rand_xorshift() % 15 + 1;
+      shift = rand_xorshift() % 2;
+      from_state = rand_xorshift() % 6;
+      to_state = rand_xorshift() % 6;
+      int attempts = 0;
+      while (transition_probs[from_state + shift * 6][to_state + shift * 6] < delta) {
+        from_state = rand_xorshift() % 6;
+        to_state = rand_xorshift() % 6;
+        attempts++;
+        if (attempts > 100)break;
       }
-      if (ng > 100)continue;
-      ra4 = rand_xorshift() % 6;
-      while (ra3 == ra4) {
-        ra4 = rand_xorshift() % 6;
+      if (attempts > 100)continue;
+      alt_state = rand_xorshift() % 6;
+      while (to_state == alt_state) {
+        alt_state = rand_xorshift() % 6;
       }
 
-      transition_probs[ra2 + ra1 * 6][ra3 + ra1 * 6] -= ra5;
-      transition_probs[ra2 + ra1 * 6][ra4 + ra1 * 6] += ra5;
+      transition_probs[from_state + shift * 6][to_state + shift * 6] -= delta;
+      transition_probs[from_state + shift * 6][alt_state + shift * 6] += delta;
     }
     else if (operation_type < params.operation_thresholds[1]) {
       // 近傍操作2
-      ra1 = 0;
-      ra5 = rand_xorshift() % 15 + 1;
-      ra2 = rand_xorshift() % 12;
-      ra3 = rand_xorshift() % 12;
-      int ng = 0;
-      while (transition_probs[ra2][ra3] < ra5) {
-        ra2 = rand_xorshift() % 12;
-        ra3 = rand_xorshift() % 12;
-        ng++;
-        if (ng > 100)break;
+      shift = 0;
+      delta = rand_xorshift() % 15 + 1;
+      from_state = rand_xorshift() % 12;
+      to_state = rand_xorshift() % 12;
+      int attempts = 0;
+      while (transition_probs[from_state][to_state] < delta) {
+        from_state = rand_xorshift() % 12;
+        to_state = rand_xorshift() % 12;
+        attempts++;
+        if (attempts > 100)break;
       }
-      if (ng > 100)continue;
-      ra4 = rand_xorshift() % 12;
-      while (ra3 == ra4) {
-        ra4 = rand_xorshift() % 12;
+      if (attempts > 100)continue;
+      alt_state = rand_xorshift() % 12;
+      while (to_state == alt_state) {
+        alt_state = rand_xorshift() % 12;
       }
 
-      transition_probs[ra2][ra3] -= ra5;
-      transition_probs[ra2][ra4] += ra5;
+      transition_probs[from_state][to_state] -= delta;
+      transition_probs[from_state][alt_state] += delta;
     }
     else if (operation_type < params.operation_thresholds[2]) {
       // 近傍操作2
-      ra1 = rand_xorshift() % 6;
-      ra2 = rand_xorshift() % 6;
-      swap(transition_probs[ra1][ra2], transition_probs[ra1][ra2 + 6]);
+      shift = rand_xorshift() % 6;
+      from_state = rand_xorshift() % 6;
+      swap(transition_probs[shift][from_state], transition_probs[shift][from_state + 6]);
     }
     else if (operation_type < params.operation_thresholds[3]) {
       // 近傍操作2
-      ra1 = rand_xorshift() % 6;
+      shift = rand_xorshift() % 6;
       for (int j = 0; j < 12; ++j) {
-        swap(transition_probs[ra1][j], transition_probs[ra1 + 6][j]);
+        swap(transition_probs[shift][j], transition_probs[shift + 6][j]);
       }
     }
 
@@ -558,22 +558,22 @@ void run_simulated_annealing(AnnealingParams params, int mode, double time_limit
       // 元に戻す
       if (operation_type < params.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
-        transition_probs[ra2 + ra1 * 6][ra3 + ra1 * 6] += ra5;
-        transition_probs[ra2 + ra1 * 6][ra4 + ra1 * 6] -= ra5;
+        transition_probs[from_state + shift * 6][to_state + shift * 6] += delta;
+        transition_probs[from_state + shift * 6][alt_state + shift * 6] -= delta;
       }
       else if (operation_type < params.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
-        transition_probs[ra2][ra3] += ra5;
-        transition_probs[ra2][ra4] -= ra5;
+        transition_probs[from_state][to_state] += delta;
+        transition_probs[from_state][alt_state] -= delta;
       }
       else if (operation_type < params.operation_thresholds[2]) {
-        // 近傍操作2 の巻き戻し
-        swap(transition_probs[ra1][ra2], transition_probs[ra1][ra2 + 6]);
+        // 近傍操作3 の巻き戻し
+        swap(transition_probs[shift][from_state], transition_probs[shift][from_state + 6]);
       }
       else if (operation_type < params.operation_thresholds[3]) {
-        // 近傍操作2 の巻き戻し
+        // 近傍操作4 の巻き戻し
         for (int j = 0; j < 12; ++j) {
-          swap(transition_probs[ra1][j], transition_probs[ra1 + 6][j]);
+          swap(transition_probs[shift][j], transition_probs[shift + 6][j]);
         }
       }
     }

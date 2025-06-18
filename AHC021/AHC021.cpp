@@ -86,9 +86,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -215,7 +215,7 @@ void output_data(int case_num, const State& state)
   }
 }
 
-State greedy_swap_max_delta_with_tie(const State& initial_state, bool with_tie)
+State greedy_swap(const State& initial_state, bool with_tie)
 {
   State state = initial_state;
 
@@ -258,9 +258,9 @@ ll solve_case(int case_num)
   State initial_state = input_data(case_num);
   State best_state;
 
-  State greedy1_state = greedy_swap_max_delta_with_tie(initial_state, false);
+  State greedy1_state = greedy_swap(initial_state, false);
   best_state = greedy1_state;
-  State greedy2_state = greedy_swap_max_delta_with_tie(initial_state, true);
+  State greedy2_state = greedy_swap(initial_state, true);
   if (greedy2_state.get_score() > best_state.get_score()) {
     best_state = greedy2_state;
   }

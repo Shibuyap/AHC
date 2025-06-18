@@ -68,9 +68,9 @@ void FisherYates(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
-    int swa = data[i];
+    int tmp = data[i];
     data[i] = data[j];
-    data[j] = swa;
+    data[j] = tmp;
   }
 }
 
@@ -110,7 +110,7 @@ const int MAX_N = 30;
 const int n = 20;
 
 int a[n + 2][n + 2];
-int init_a[n + 2][n + 2];
+int original_a[n + 2][n + 2];
 
 int ansScore;
 vector<P> ans;
@@ -191,13 +191,13 @@ void Input(int problemNum)
 
   for (int i = 0; i < n + 2; ++i) {
     for (int j = 0; j < n + 2; ++j) {
-      init_a[i][j] = a[i][j];
+      original_a[i][j] = a[i][j];
     }
   }
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOutput(int probNum, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
@@ -286,18 +286,18 @@ void MoveR(int i, bool isClean)
   a[i][0] = 0;
 }
 
-int Method2_CalcScore(int dir, int num)
+int CalcMoveScore(int dir, int num)
 {
   int score = 0;
-  queue<P> que;
+  queue<P> q;
   int f[n + 2][n + 2];
   for (int i = 1; i < n + 1; ++i)
   {
     for (int j = 1; j < n + 1; ++j)
     {
       if (a[i][j] == 1) {
-        while (que.size()) {
-          que.pop();
+        while (q.size()) {
+          q.pop();
         }
         for (int k = 0; k < n + 2; ++k) {
           for (int l = 0; l < n + 2; ++l) {
@@ -306,11 +306,11 @@ int Method2_CalcScore(int dir, int num)
         }
         int dist = 99999;
         f[i][j] = 0;
-        que.push(P(i, j));
-        while (que.size()) {
-          int x = que.front().first;
-          int y = que.front().second;
-          que.pop();
+        q.push(P(i, j));
+        while (q.size()) {
+          int x = q.front().first;
+          int y = q.front().second;
+          q.pop();
           if (x == 1 || x == n || y == 1 || y == n) {
             dist = f[x][y] + 1;
             break;
@@ -322,7 +322,7 @@ int Method2_CalcScore(int dir, int num)
             if (a[nx][ny] == 2)continue;
             if (f[nx][ny] > f[x][y] + 1) {
               f[nx][ny] = f[x][y] + 1;
-              que.push(P(nx, ny));
+              q.push(P(nx, ny));
             }
           }
         }
@@ -341,23 +341,23 @@ int Method2_CalcScore(int dir, int num)
 }
 
 // BFS
-void Method2()
+void InitialSolve()
 {
-  int outerLoop = 0;
+  int trial = 0;
 
-  while (outerLoop == 0) {
+  while (trial == 0) {
 
     if (GetNowTime() > TL) {
       break;
     }
-    outerLoop++;
+    trial++;
 
     ans.clear();
     int cnt = 0;
     int loop = 0;
 
-    int befDir = -1;
-    int befNum = -1;
+    int prev_dir = -1;
+    int prev_num = -1;
 
     while (cnt < n * 2 && loop < 500) {
 
@@ -374,9 +374,9 @@ void Method2()
         if (a[1][j] == 2) {
           continue;
         }
-        if (befDir == 2 && befNum == j)continue;
+        if (prev_dir == 2 && prev_num == j)continue;
         MoveU(j, true);
-        int score = Method2_CalcScore(0, j);
+        int score = CalcMoveScore(0, j);
         if (score < cost) {
           dir = 0;
           num = j;
@@ -391,9 +391,9 @@ void Method2()
         if (a[i][1] == 2) {
           continue;
         }
-        if (befDir == 3 && befNum == i)continue;
+        if (prev_dir == 3 && prev_num == i)continue;
         MoveL(i, true);
-        int score = Method2_CalcScore(1, i);
+        int score = CalcMoveScore(1, i);
         if (score < cost) {
           dir = 1;
           num = i;
@@ -408,9 +408,9 @@ void Method2()
         if (a[n][j] == 2) {
           continue;
         }
-        if (befDir == 0 && befNum == j)continue;
+        if (prev_dir == 0 && prev_num == j)continue;
         MoveD(j, true);
-        int score = Method2_CalcScore(2, j);
+        int score = CalcMoveScore(2, j);
         if (score < cost) {
           dir = 2;
           num = j;
@@ -425,9 +425,9 @@ void Method2()
         if (a[i][n] == 2) {
           continue;
         }
-        if (befDir == 1 && befNum == i)continue;
+        if (prev_dir == 1 && prev_num == i)continue;
         MoveR(i, true);
-        int score = Method2_CalcScore(3, i);
+        int score = CalcMoveScore(3, i);
         if (score < cost) {
           dir = 3;
           num = i;
@@ -454,8 +454,8 @@ void Method2()
         MoveR(num, true);
       }
 
-      befDir = dir;
-      befNum = num;
+      prev_dir = dir;
+      prev_num = num;
     }
 
     ansScore = CalcScore();
@@ -468,18 +468,18 @@ void Method2()
   CopyToAns();
 }
 
-void InitA()
+void ResetBoard()
 {
   for (int i = 0; i < n + 2; ++i) {
     for (int j = 0; j < n + 2; ++j) {
-      a[i][j] = init_a[i][j];
+      a[i][j] = original_a[i][j];
     }
   }
 }
 
 int Sim()
 {
-  InitA();
+  ResetBoard();
   int cnt = 0;
   for (int i = 0; i < ans.size(); ++i) {
     int dir = ans[i].first;
@@ -532,10 +532,10 @@ int Sim()
   return ans.size();
 }
 
-int Sim2(vector<P>& ans2, bool oniCheck)
+int Sim2(vector<P>& ans2, bool check_x)
 {
   ans2.clear();
-  InitA();
+  ResetBoard();
   int cnt = 0;
   for (int i = 0; i < ans.size(); ++i) {
     int dir = ans[i].first;
@@ -548,16 +548,16 @@ int Sim2(vector<P>& ans2, bool oniCheck)
         return -1;
       }
 
-      if (oniCheck) {
-        int oni = 0;
+      if (check_x) {
+        int has_x = 0;
         for (int i = 1; i < n + 1; ++i)
         {
           if (a[i][num] == 1) {
-            oni = 1;
+            has_x = 1;
             break;
           }
         }
-        if (oni == 0)continue;
+        if (has_x == 0)continue;
       }
 
       MoveU(num, true);
@@ -571,16 +571,16 @@ int Sim2(vector<P>& ans2, bool oniCheck)
         return -1;
       }
 
-      if (oniCheck) {
-        int oni = 0;
+      if (check_x) {
+        int has_x = 0;
         for (int j = 1; j < n + 1; ++j)
         {
           if (a[num][j] == 1) {
-            oni = 1;
+            has_x = 1;
             break;
           }
         }
-        if (oni == 0)continue;
+        if (has_x == 0)continue;
       }
 
       MoveL(num, true);
@@ -594,16 +594,16 @@ int Sim2(vector<P>& ans2, bool oniCheck)
         return -1;
       }
 
-      if (oniCheck) {
-        int oni = 0;
+      if (check_x) {
+        int has_x = 0;
         for (int i = 1; i < n + 1; ++i)
         {
           if (a[i][num] == 1) {
-            oni = 1;
+            has_x = 1;
             break;
           }
         }
-        if (oni == 0)continue;
+        if (has_x == 0)continue;
       }
 
       MoveD(num, true);
@@ -617,16 +617,16 @@ int Sim2(vector<P>& ans2, bool oniCheck)
         return -1;
       }
 
-      if (oniCheck) {
-        int oni = 0;
+      if (check_x) {
+        int has_x = 0;
         for (int j = 1; j < n + 1; ++j)
         {
           if (a[num][j] == 1) {
-            oni = 1;
+            has_x = 1;
             break;
           }
         }
-        if (oni == 0)continue;
+        if (has_x == 0)continue;
       }
 
       MoveR(num, true);
@@ -753,7 +753,7 @@ int Sim2(vector<P>& ans2, bool oniCheck)
   return ans2.size();
 }
 
-struct Haiparas
+struct Params
 {
   double StartTemp;
   double EndTemp;
@@ -762,13 +762,13 @@ struct Haiparas
   double SimPartition;
 };
 
-void Mountain(Haiparas haiparas)
+void HillClimb(Params params)
 {
   CopyToBest();
 
   double nowTime = GetNowTime();
-  const double START_TEMP = haiparas.StartTemp;
-  const double END_TEMP = haiparas.EndTemp;
+  const double START_TEMP = params.StartTemp;
+  const double END_TEMP = params.EndTemp;
 
   int loop = 0;
   int loop2 = 0;
@@ -788,20 +788,20 @@ void Mountain(Haiparas haiparas)
     double progressRatio = nowTime / TL;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progressRatio;
 
-    int raMode = Rand() % 100;
-    if (raMode < haiparas.Partition1) {
+    int r_mode = Rand() % 100;
+    if (r_mode < params.Partition1) {
       // swap
-      int ra1 = Rand() % ans.size();
-      int ra2 = Rand() % ans.size();
-      while (ans[ra1] == ans[ra2]) {
-        ra2 = Rand() % ans.size();
+      int r1 = Rand() % ans.size();
+      int r2 = Rand() % ans.size();
+      while (ans[r1] == ans[r2]) {
+        r2 = Rand() % ans.size();
       }
-      swap(ans[ra1], ans[ra2]);
+      swap(ans[r1], ans[r2]);
 
-      if (Rand01() < haiparas.SimPartition) {
+      if (Rand01() < params.SimPartition) {
         int res = Sim();
         if (res == -1) {
-          swap(ans[ra1], ans[ra2]);
+          swap(ans[r1], ans[r2]);
         }
         else {
           loop2++;
@@ -815,13 +815,13 @@ void Mountain(Haiparas haiparas)
         }
       }
       else {
-        bool oniCheck = !(Rand01() < haiparas.SimPartition);
-        int res = Sim2(ans2, true);
+        bool check_x = !(Rand01() < params.SimPartition);
+        int res = Sim2(ans2, check_x);
         if (res == -1) {
-          swap(ans[ra1], ans[ra2]);
+          swap(ans[r1], ans[r2]);
         }
         else {
-          double diffScore = ((double)ans.size() - ans2.size()) * haiparas.MultipleValue;
+          double diffScore = ((double)ans.size() - ans2.size()) * params.MultipleValue;
           double prob = exp(diffScore / temp);
 
           if (prob > Rand01()) {
@@ -835,23 +835,23 @@ void Mountain(Haiparas haiparas)
           }
           else {
             // 元に戻す
-            swap(ans[ra1], ans[ra2]);
+            swap(ans[r1], ans[r2]);
           }
         }
       }
     }
     else {
-      int ra1 = Rand() % (ans.size() - 1);
-      int raDir = Rand() % 4;
-      int raNum = Rand() % n + 1;
-      P keep = ans[ra1];
-      ans[ra1] = P(raDir, raNum);
+      int r1 = Rand() % (ans.size() - 1);
+      int r_dir = Rand() % 4;
+      int r_num = Rand() % n + 1;
+      P keep = ans[r1];
+      ans[r1] = P(r_dir, r_num);
 
 
-      if (Rand01() < haiparas.SimPartition) {
+      if (Rand01() < params.SimPartition) {
         int res = Sim();
         if (res == -1) {
-          ans[ra1] = keep;
+          ans[r1] = keep;
         }
         else {
           loop2++;
@@ -865,13 +865,13 @@ void Mountain(Haiparas haiparas)
         }
       }
       else {
-        bool oniCheck = !(Rand01() < haiparas.SimPartition);
-        int res = Sim2(ans2, true);
+        bool check_x = !(Rand01() < params.SimPartition);
+        int res = Sim2(ans2, check_x);
         if (res == -1) {
-          ans[ra1] = keep;
+          ans[r1] = keep;
         }
         else {
-          double diffScore = ((double)ans.size() - ans2.size()) * haiparas.MultipleValue;
+          double diffScore = ((double)ans.size() - ans2.size()) * params.MultipleValue;
           double prob = exp(diffScore / temp);
 
           if (prob > Rand01()) {
@@ -885,7 +885,7 @@ void Mountain(Haiparas haiparas)
           }
           else {
             // 元に戻す
-            ans[ra1] = keep;
+            ans[r1] = keep;
           }
         }
       }
@@ -900,7 +900,7 @@ void Mountain(Haiparas haiparas)
 }
 
 // 問題を解く関数
-ll Solve(int problem_num, Haiparas haiparas)
+ll Solve(int problem_num, Params params)
 {
   ResetTime();
 
@@ -912,12 +912,12 @@ ll Solve(int problem_num, Haiparas haiparas)
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(problem_num, ofs);
+  OpenOutput(problem_num, ofs);
 
   // 初期解生成
-  Method2();
+  InitialSolve();
 
-  Mountain(haiparas);
+  HillClimb(params);
 
   // 解答を出力
   Output(ofs);
@@ -937,21 +937,21 @@ int main()
 {
   mode = 2;
 
-  Haiparas HAIPARAS;
-  HAIPARAS.StartTemp = 302.535;
-  HAIPARAS.EndTemp = 0.0;
-  HAIPARAS.MultipleValue = 826.94;
-  HAIPARAS.Partition1 = 94;
-  HAIPARAS.SimPartition = 0.540721;
+  Params PARAMS;
+  PARAMS.StartTemp = 302.535;
+  PARAMS.EndTemp = 0.0;
+  PARAMS.MultipleValue = 826.94;
+  PARAMS.Partition1 = 94;
+  PARAMS.SimPartition = 0.540721;
 
   if (mode == 0) {
-    Solve(0, HAIPARAS);
+    Solve(0, PARAMS);
   }
   else if (mode <= 2) {
     ll sum = 0;
     for (int i = 0; i < 15; ++i)
     {
-      ll score = Solve(i, HAIPARAS);
+      ll score = Solve(i, PARAMS);
       sum += score;
       if (mode == 1) {
         cout << score << endl;
@@ -967,21 +967,21 @@ int main()
   }
   else if (mode == 3) {
     int loop = 0;
-    Haiparas bestHaiparas;
+    Params bestParams;
     ll bestSumScore = 0;
 
     while (true) {
-      Haiparas haiparas;
-      haiparas.StartTemp = pow(2.0, Rand01() * 10);
-      haiparas.EndTemp = 0.0;
-      haiparas.MultipleValue = pow(2.0, Rand01() * 10);
-      haiparas.Partition1 = Rand() % 101;
-      haiparas.SimPartition = Rand01();
+      Params params;
+      params.StartTemp = pow(2.0, Rand01() * 10);
+      params.EndTemp = 0.0;
+      params.MultipleValue = pow(2.0, Rand01() * 10);
+      params.Partition1 = Rand() % 101;
+      params.SimPartition = Rand01();
 
       ll sum = 0;
       for (int i = 0; i < 15; ++i)
       {
-        ll score = Solve(i, haiparas);
+        ll score = Solve(i, params);
         sum += score;
         if (i == 0 && score < 3120) {
           break;
@@ -991,16 +991,16 @@ int main()
       cout
         << "Loop = " << loop
         << ", Sum = " << sum
-        << ", StartTemp = " << haiparas.StartTemp
-        << ", EndTemp = " << haiparas.EndTemp
-        << ", MultipleValue = " << haiparas.MultipleValue
-        << ", Partition1 = " << haiparas.Partition1
-        << ", SimPartition = " << haiparas.SimPartition
+        << ", StartTemp = " << params.StartTemp
+        << ", EndTemp = " << params.EndTemp
+        << ", MultipleValue = " << params.MultipleValue
+        << ", Partition1 = " << params.Partition1
+        << ", SimPartition = " << params.SimPartition
         << endl;
 
       if (sum > bestSumScore) {
         bestSumScore = sum;
-        bestHaiparas = haiparas;
+        bestParams = params;
       }
 
       loop++;

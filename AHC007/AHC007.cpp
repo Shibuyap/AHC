@@ -20,69 +20,69 @@ typedef long long int ll;
 typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
-class UnionFind
+class Unionfind
 {
 public:
   const int MAX_UF = 1000006;
 
   int N;                // 頂点数
-  vector<int> Par;      // 親
-  vector<int> Rank;     // 木の深さ
+  vector<int> par;      // 親
+  vector<int> rank;     // 木の深さ
 
   // 初期化
-  void Initialize()
+  void init()
   {
     for (int i = 0; i < N; i++) {
-      Par[i] = i;
-      Rank[i] = 0;
+      par[i] = i;
+      rank[i] = 0;
     }
   }
 
-  UnionFind(int n)
+  Unionfind(int n)
   {
     N = n;
-    Par.resize(N);
-    Rank.resize(N);
+    par.resize(N);
+    rank.resize(N);
 
-    Initialize();
+    init();
   }
 
-  UnionFind()
+  Unionfind()
   {
-    UnionFind(MAX_UF);
+    Unionfind(MAX_UF);
   }
 
   // 木の根を求める
-  int Find(int x)
+  int find(int x)
   {
-    if (Par[x] == x) {
+    if (par[x] == x) {
       return x;
     }
     else {
-      return Par[x] = Find(Par[x]);
+      return par[x] = find(par[x]);
     }
   }
 
   // xとyの属する集合を併合
-  void Unite(int x, int y)
+  void unite(int x, int y)
   {
-    x = Find(x);
-    y = Find(y);
+    x = find(x);
+    y = find(y);
     if (x == y) { return; }
 
-    if (Rank[x] < Rank[y]) {
-      Par[x] = y;
+    if (rank[x] < rank[y]) {
+      par[x] = y;
     }
     else {
-      Par[y] = x;
-      if (Rank[x] == Rank[y]) Rank[x]++;
+      par[y] = x;
+      if (rank[x] == rank[y]) rank[x]++;
     }
   }
 
   // xとyが同じ集合に属するか否か
-  bool IsSame(int x, int y)
+  bool same(int x, int y)
   {
-    return Find(x) == Find(y);
+    return find(x) == find(y);
   }
 };
 
@@ -106,18 +106,18 @@ static double Rand01()
   return (Rand() + 0.5) * (1.0 / UINT_MAX);
 }
 
-static double RandRange(double l, double r)
+static double rand_range(double l, double r)
 {
   return l + (r - l) * Rand01();
 }
 
-void FisherYates(int* data, int n)
+void shuffle(int* data, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
     int j = Rand() % (i + 1);
-    int swa = data[i];
+    int tmp = data[i];
     data[i] = data[j];
-    data[j] = swa;
+    data[j] = tmp;
   }
 }
 
@@ -135,21 +135,21 @@ const int dy[4] = { 0, -1, 0, 1 };
 double TL = 1.8;
 int mode;
 
-std::chrono::steady_clock::time_point startTimeClock;
+std::chrono::steady_clock::time_point start_time;
 
-void ResetTime()
+void reset_time()
 {
-  startTimeClock = std::chrono::steady_clock::now();
+  start_time = std::chrono::steady_clock::now();
 }
 
-double GetNowTime()
+double get_time()
 {
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - startTimeClock;
+  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time;
   return elapsed.count();
 }
 
-double minCostRatio = 1.1;
-double maxCostRatio = 2.9;
+double min_ratio = 1.1;
+double max_ratio = 2.9;
 int repeat = 50;
 
 const int n = 400;
@@ -157,31 +157,31 @@ const int m = 1995;
 int x[n], y[n];
 int u[m], v[m];
 int distances[m];
-vector<vector<P>> randomDistances;
+vector<vector<P>> rand_dist;
 
 // 複数ケース回すときに内部状態を初期値に戻す
-void SetUp()
+void setup()
 {
-  randomDistances.clear();
+  rand_dist.clear();
 }
 
-int GetDistance(int i, int j)
+int get_dist(int i, int j)
 {
   return round(sqrt((x[i] - x[j]) * (x[i] - x[j]) + (y[i] - y[j]) * (y[i] - y[j])));
 }
 
 // 入力ファイルストリームオープン
-void OpenIfs(int problemNum, ifstream& ifs)
+void open_ifs(int pn, ifstream& ifs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+    oss << "./in/" << std::setw(4) << std::setfill('0') << pn << ".txt";
     ifs.open(oss.str());
   }
 }
 
 // 入力受け取り
-void Input(int problemNum, ifstream& ifs)
+void input(int pn, ifstream& ifs)
 {
   if (!ifs.is_open()) {
     // 標準入力
@@ -195,29 +195,29 @@ void Input(int problemNum, ifstream& ifs)
   }
 
   for (int i = 0; i < m; ++i) {
-    distances[i] = GetDistance(u[i], v[i]);
+    distances[i] = get_dist(u[i], v[i]);
   }
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void open_ofs(int pn, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << pn << ".txt";
     ofs.open(oss.str());
   }
 }
 
 // スコア計算
-ll CalcScore()
+ll calc_score()
 {
   ll res = 0;
   return res;
 }
 
 // 解答出力
-void Output(ofstream& ofs)
+void output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
@@ -227,28 +227,28 @@ void Output(ofstream& ofs)
   }
 }
 
-void Prepare()
+void prepare()
 {
   for (int _ = 0; _ < repeat; ++_) {
-    vector<P> tmpVec(m);
+    vector<P> tmp(m);
     for (int i = 0; i < m; ++i) {
-      tmpVec[i] = make_pair(round(RandRange(minCostRatio, maxCostRatio) * distances[i]), i);
+      tmp[i] = make_pair(round(rand_range(min_ratio, max_ratio) * distances[i]), i);
     }
-    sort(tmpVec.begin(), tmpVec.end());
-    randomDistances.emplace_back(tmpVec);
+    sort(tmp.begin(), tmp.end());
+    rand_dist.emplace_back(tmp);
   }
 }
 
-int Kruskal(UnionFind uf, int start, int caseNumber)
+int Kruskal(Unionfind uf, int start, int cn)
 {
   // ここの時点ではu[start]とv[start]は繋がっていない
 
-  for (auto p : randomDistances[caseNumber]) {
+  for (auto p : rand_dist[cn]) {
     int cost = p.first;
     int idx = p.second;
     if (start < idx) {
-      uf.Unite(u[idx], v[idx]);
-      if (uf.IsSame(u[start], v[start])) {
+      uf.unite(u[idx], v[idx]);
+      if (uf.same(u[start], v[start])) {
         return cost;
       }
     }
@@ -258,27 +258,27 @@ int Kruskal(UnionFind uf, int start, int caseNumber)
   return -1;
 }
 
-bool MonteCarlo(UnionFind uf, int start)
+bool monte_carlo(Unionfind uf, int start)
 {
   // ここに来た時点でu[start]とv[start]は繋がっていない
 
-  int sum_costs = 0;
+  int sum = 0;
   for (int i = 0; i < repeat; ++i) {
-    sum_costs += Kruskal(uf, start, i);
-    if (i == 0 && sum_costs == -1) {
+    sum += Kruskal(uf, start, i);
+    if (i == 0 && sum == -1) {
       // 辺startを採用しないと連結にならない
       return true;
     }
   }
-  return repeat * distances[start] < sum_costs;
+  return repeat * distances[start] < sum;
 }
 
 // ナイーブな解法
 void Method1(ifstream& ifs, ofstream& ofs)
 {
-  Prepare();
+  prepare();
 
-  UnionFind uf(n);
+  Unionfind uf(n);
 
   for (int i = 0; i < m; ++i) {
     if (mode == 0) {
@@ -288,8 +288,8 @@ void Method1(ifstream& ifs, ofstream& ofs)
       ifs >> distances[i];
     }
 
-    if (!uf.IsSame(u[i], v[i]) && MonteCarlo(uf, i)) {
-      uf.Unite(u[i], v[i]);
+    if (!uf.same(u[i], v[i]) && monte_carlo(uf, i)) {
+      uf.unite(u[i], v[i]);
       if (mode == 0) {
         cout << 1 << endl << flush;
       }
@@ -308,23 +308,23 @@ void Method1(ifstream& ifs, ofstream& ofs)
   }
 }
 
-ll Solve(int probNum)
+ll Solve(int pn)
 {
-  ResetTime();
+  reset_time();
 
-  SetUp();
+  setup();
 
   ifstream ifs;
-  OpenIfs(probNum, ifs);
+  open_ifs(pn, ifs);
 
-  Input(probNum, ifs);
+  input(pn, ifs);
 
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  open_ofs(pn, ofs);
 
   Method1(ifs, ofs);
 
-  Output(ofs);
+  output(ofs);
 
   if (ifs.is_open()) {
     ifs.close();
@@ -336,7 +336,7 @@ ll Solve(int probNum)
 
   ll score = 0;
   if (mode != 0) {
-    score = CalcScore();
+    score = calc_score();
   }
   return score;
 }

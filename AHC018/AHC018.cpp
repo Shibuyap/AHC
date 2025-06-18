@@ -112,7 +112,7 @@ namespace
 //------------------------------------------------------------------------------
 namespace
 {
-  static uint32_t rand_uint32()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -127,9 +127,9 @@ namespace
     return w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
   }
 
-  static double rand_double_01()
+  static double rand_01()
   {
-    return (rand_uint32() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }
 
@@ -146,13 +146,13 @@ namespace
   const int C_OPTIONS[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
   // 実行モード (0: 提出用 / それ以外: ローカル)
-  int execution_mode = 0;
-  ofstream output_file_stream;
+  int mode = 0;
+  ofstream ofs;
 
   // 入力関連 (旧N, W, K, C)
-  int n_size;          // N
-  int w_count;         // W
-  int k_count;         // K
+  int n;          // N
+  int w;         // W
+  int k;         // K
   int attack_cost;     // C
 
   // 水源の座標 (旧: a[i], b[i])
@@ -190,15 +190,15 @@ namespace
 //------------------------------------------------------------------------------
 inline bool is_out_of_bounds(int x, int y)
 {
-  return (x < 0 || x >= n_size || y < 0 || y >= n_size);
+  return (x < 0 || x >= n || y < 0 || y >= n);
 }
 
 // x,yが水とつながっているか (旧: IsUniteWater)
 inline bool is_united_with_water(int x, int y)
 {
   // UF_MAX - 1 = UNION_FIND_MAX - 1
-  // x * n_size + y が UNION_FIND_MAX - 1 と同じ連結成分か
-  return uf_same(x * n_size + y, UNION_FIND_MAX - 1);
+  // x * n + y が UNION_FIND_MAX - 1 と同じ連結成分か
+  return uf_same(x * n + y, UNION_FIND_MAX - 1);
 }
 
 // マンハッタン距離 (旧: Manhattan)
@@ -228,7 +228,7 @@ int attack_cell(int x, int y, int power)
   health_points += attack_cost + power;
 
   int res = 0;
-  if (execution_mode == 0) {
+  if (mode == 0) {
     // 提出用: 標準出力に攻撃内容を出し、結果(壊れたかどうか)を受け取る
     cout << x << ' ' << y << ' ' << power << endl;
     fflush(stdout);
@@ -236,7 +236,7 @@ int attack_cell(int x, int y, int power)
   }
   else {
     // ローカル実行: rock_strengthを減らして壊れたか判定
-    output_file_stream << x << ' ' << y << ' ' << power << endl;
+    ofs << x << ' ' << y << ' ' << power << endl;
     rock_strength[x][y] -= power;
     if (rock_strength[x][y] <= 0) {
       res = 1; // 壊れた
@@ -254,21 +254,21 @@ int attack_cell(int x, int y, int power)
       int ny = y + DELTA_Y[i];
       if (is_out_of_bounds(nx, ny)) { continue; }
       if (is_broken[nx][ny] != 0) {
-        uf_unite(x * n_size + y, nx * n_size + ny);
+        uf_unite(x * n + y, nx * n + ny);
       }
     }
 
     // もし水源マスだったら、UF_MAX-1 とつなぐ
-    for (int i = 0; i < w_count; ++i)
+    for (int i = 0; i < w; ++i)
     {
       if (x == water_x[i] && y == water_y[i]) {
-        uf_unite(x * n_size + y, UNION_FIND_MAX - 1);
+        uf_unite(x * n + y, UNION_FIND_MAX - 1);
       }
     }
 
     // ここで再度「全ての家が繋がったかどうか」を判定しているらしい
     res = 2;
-    for (int i = 0; i < k_count; ++i)
+    for (int i = 0; i < k; ++i)
     {
       if (!is_united_with_water(house_x[i], house_y[i])) {
         res = 1; // まだ未接続の家がある
@@ -308,9 +308,9 @@ void init(int problem_num)
   health_points = 0;
 
   // 状態クリア
-  for (int i = 0; i < n_size; ++i)
+  for (int i = 0; i < n; ++i)
   {
-    for (int j = 0; j < n_size; ++j)
+    for (int j = 0; j < n; ++j)
     {
       is_broken[i][j] = 0;
       min_strength[i][j] = 0;
@@ -327,7 +327,7 @@ void init(int problem_num)
   }
 
   // ローカル実行時はファイル出力をオープン
-  if (execution_mode != 0) {
+  if (mode != 0) {
     string file_name_ofs = "./out/";
     {
       // problem_numを4桁化してファイル名を作る
@@ -342,7 +342,7 @@ void init(int problem_num)
       file_name_ofs += str_num + ".txt";
     }
 
-    output_file_stream.open(file_name_ofs);
+    ofs.open(file_name_ofs);
   }
 }
 
@@ -356,32 +356,32 @@ void read_input(int problem_num)
   ifstream ifs(oss.str());
 
   // 実行モード=0またはファイルが開けなかったら標準入力から読む
-  if (execution_mode == 0 || !ifs.is_open()) {
-    cin >> n_size >> w_count >> k_count >> attack_cost;
-    for (int i = 0; i < w_count; ++i)
+  if (mode == 0 || !ifs.is_open()) {
+    cin >> n >> w >> k >> attack_cost;
+    for (int i = 0; i < w; ++i)
     {
       cin >> water_x[i] >> water_y[i];
     }
-    for (int i = 0; i < k_count; ++i)
+    for (int i = 0; i < k; ++i)
     {
       cin >> house_x[i] >> house_y[i];
     }
   }
   else {
     // ローカル時はファイル入力
-    ifs >> n_size >> w_count >> k_count >> attack_cost;
-    for (int i = 0; i < n_size; ++i)
+    ifs >> n >> w >> k >> attack_cost;
+    for (int i = 0; i < n; ++i)
     {
-      for (int j = 0; j < n_size; ++j)
+      for (int j = 0; j < n; ++j)
       {
         ifs >> rock_strength[i][j];
       }
     }
-    for (int i = 0; i < w_count; ++i)
+    for (int i = 0; i < w; ++i)
     {
       ifs >> water_x[i] >> water_y[i];
     }
-    for (int i = 0; i < k_count; ++i)
+    for (int i = 0; i < k; ++i)
     {
       ifs >> house_x[i] >> house_y[i];
     }
@@ -394,8 +394,8 @@ void read_input(int problem_num)
 void write_output(int /*problem_num*/)
 {
   // ローカル実行時はファイル出力クローズ
-  if (execution_mode != 0) {
-    output_file_stream.close();
+  if (mode != 0) {
+    ofs.close();
   }
 }
 
@@ -413,10 +413,10 @@ int solve_problem(int problem_num = 0)
   init(problem_num);
 
   // 各家の一番近い水源を探す
-  for (int i = 0; i < k_count; ++i)
+  for (int i = 0; i < k; ++i)
   {
     int dist = INF;
-    for (int j = 0; j < w_count; ++j)
+    for (int j = 0; j < w; ++j)
     {
       int mdist = manhattan_distance(house_x[i], house_y[i], water_x[j], water_y[j]);
       if (mdist < dist) {
@@ -428,7 +428,7 @@ int solve_problem(int problem_num = 0)
   }
 
   // 家を水源につなげる
-  for (int i = 0; i < k_count; ++i)
+  for (int i = 0; i < k; ++i)
   {
     int phase = 0;
     int now_x = house_x[i], now_y = house_y[i];
@@ -551,7 +551,7 @@ int solve_problem(int problem_num = 0)
   }
 
   // ローカル実行時はデバッグ出力
-  if (execution_mode != 0) {
+  if (mode != 0) {
     cerr << "problem_num = " << problem_num
       << ", health_points = " << health_points << endl;
   }
@@ -581,18 +581,18 @@ int solve_outer(int problem_num = 0)
 //------------------------------------------------------------------------------
 int main()
 {
-  // execution_mode = 0 => 提出用
-  execution_mode = 2;
+  // mode = 0 => 提出用
+  mode = 2;
 
-  if (execution_mode == 0) {
+  if (mode == 0) {
     // 提出用: 単一ケース
     solve_outer();
   }
-  else if (execution_mode == 1) {
+  else if (mode == 1) {
     // 1ケースのみファイル読み・書き
     solve_outer(0);
   }
-  else if (execution_mode == 2) {
+  else if (mode == 2) {
     // 複数ケース
     ll score_sum = 0;
     for (int i = 0; i < 100; ++i)

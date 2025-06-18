@@ -86,9 +86,9 @@ namespace
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
+      int tmp = arr[i];
       arr[i] = arr[j];
-      arr[j] = swa;
+      arr[j] = tmp;
     }
   }
 }
@@ -129,8 +129,8 @@ void output_data(int case_num)
 
 ll calculate_score()
 {
-  ll res = 0;
-  return res;
+  ll result = 0;
+  return result;
 }
 
 ll solve_case(int case_num)

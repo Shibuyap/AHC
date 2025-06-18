@@ -50,7 +50,7 @@ const array<char, 4> DIR_CHARS = { 'U', 'L', 'D', 'R' };
 
 namespace /* 乱数ライブラリ */
 {
-  static uint32_t Rand()
+  static uint32_t rand32()
   {
     static uint32_t x = 123456789;
     static uint32_t y = 362436069;
@@ -66,9 +66,9 @@ namespace /* 乱数ライブラリ */
   }
 
 
-  static double Rand01()
+  static double rand_01()
   {
-    return (Rand() + 0.5) * (1.0 / UINT_MAX);
+    return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
 
@@ -176,12 +176,12 @@ namespace /* 変数 */
 
 }  // namespace
 
-inline bool IsNG(int xx, int yy)
+inline bool is_out_of_bounds(int xx, int yy)
 {
   return !isInBounds(xx, yy, n);
 }
 
-inline bool HasServer(int xx, int yy)
+inline bool has_server(int xx, int yy)
 {
   if (0 <= gameState.a[xx][yy] && gameState.a[xx][yy] < K100) {
     return true;
@@ -189,22 +189,22 @@ inline bool HasServer(int xx, int yy)
   return false;
 }
 
-inline int MakeAValue(int ite1, int ite2)
+inline int make_edge_value(int server1, int server2)
 {
-  int num = -1 * (ite1 * ENCODING_MULTIPLIER + ite2);
-  if (ite2 < ite1) {
-    num = -1 * (ite2 * ENCODING_MULTIPLIER + ite1);
+  int num = -1 * (server1 * ENCODING_MULTIPLIER + server2);
+  if (server2 < server1) {
+    num = -1 * (server2 * ENCODING_MULTIPLIER + server1);
   }
   return num;
 }
 
 // Helper function to find server in a direction
-int GetIteHelper(int xx, int yy, int deltaX, int deltaY, bool checkINF = false)
+int find_server_in_direction(int xx, int yy, int deltaX, int deltaY, bool checkINF = false)
 {
   xx += deltaX;
   yy += deltaY;
 
-  while (isInBounds(xx, yy, n) && !HasServer(xx, yy)) {
+  while (isInBounds(xx, yy, n) && !has_server(xx, yy)) {
     if (checkINF && gameState.a[xx][yy] != INF) {
       return -1;
     }
@@ -219,20 +219,20 @@ int GetIteHelper(int xx, int yy, int deltaX, int deltaY, bool checkINF = false)
   return gameState.a[xx][yy];
 }
 
-int GetIte(int xx, int yy, char cc)
+int get_server(int xx, int yy, char cc)
 {
   Direction dir = charToDir(cc);
-  return GetIteHelper(xx, yy, dx[dir], dy[dir], false);
+  return find_server_in_direction(xx, yy, dx[dir], dy[dir], false);
 }
 
 // サーバーまでたどり着けるか
-int GetIte2(int xx, int yy, char cc)
+int get_server_through_inf(int xx, int yy, char cc)
 {
   Direction dir = charToDir(cc);
-  return GetIteHelper(xx, yy, dx[dir], dy[dir], true);
+  return find_server_in_direction(xx, yy, dx[dir], dy[dir], true);
 }
 
-void MethodCountReset()
+void reset_method_count()
 {
   for (int i = 0; i < 20; ++i)
   {
@@ -244,7 +244,7 @@ void MethodCountReset()
 
 
 // Forward declaration
-bool HasServer(int xx, int yy);
+bool has_server(int xx, int yy);
 
 // GameState member function implementations
 void GameState::clear()
@@ -327,7 +327,7 @@ void GameState::updateSingleR(int i)
   int xx = x[i];
   int yy = y[i];
   yy++;
-  while (yy < n && !HasServer(xx, yy)) {
+  while (yy < n && !has_server(xx, yy)) {
     yy++;
   }
   if (yy < n) {
@@ -343,7 +343,7 @@ void GameState::updateSingleD(int j)
   int xx = x[j];
   int yy = y[j];
   xx++;
-  while (xx < n && !HasServer(xx, yy)) {
+  while (xx < n && !has_server(xx, yy)) {
     xx++;
   }
   if (xx < n) {
@@ -464,7 +464,7 @@ int GameState::calcScore(int times, bool makeAns)
   return res;
 }
 
-void Init()
+void init()
 {
   visitedCnt = 0;
 
@@ -534,7 +534,7 @@ void Init()
       if (getServerType(i) == gameState.R[i] / 100) {
         gameState.udlr[i][3] = gameState.R[i];
         gameState.udlr[gameState.R[i]][2] = i;
-        int aVal = MakeAValue(i, gameState.R[i]);
+        int aVal = make_edge_value(i, gameState.R[i]);
         for (int k = gameState.y[i] + 1; k < gameState.y[gameState.R[i]]; ++k) { gameState.a[gameState.x[i]][k] = aVal; }
       }
     }
@@ -556,7 +556,7 @@ void Init()
         if (ok) {
           gameState.udlr[i][1] = gameState.D[i];
           gameState.udlr[gameState.D[i]][0] = i;
-          int aVal = MakeAValue(i, gameState.D[i]);
+          int aVal = make_edge_value(i, gameState.D[i]);
           for (int k = gameState.x[i] + 1; k < gameState.x[gameState.D[i]]; ++k) { gameState.a[k][gameState.y[i]] = aVal; }
         }
       }
@@ -572,7 +572,7 @@ void Init()
       if (getServerType(i) == gameState.D[i] / 100) {
         gameState.udlr[i][1] = gameState.D[i];
         gameState.udlr[gameState.D[i]][0] = i;
-        int aVal = MakeAValue(i, gameState.D[i]);
+        int aVal = make_edge_value(i, gameState.D[i]);
         for (int k = gameState.x[i] + 1; k < gameState.x[gameState.D[i]]; ++k) { gameState.a[k][gameState.y[i]] = aVal; }
       }
     }
@@ -594,7 +594,7 @@ void Init()
         if (ok) {
           gameState.udlr[i][3] = gameState.R[i];
           gameState.udlr[gameState.R[i]][2] = i;
-          int aVal = MakeAValue(i, gameState.R[i]);
+          int aVal = make_edge_value(i, gameState.R[i]);
           for (int k = gameState.y[i] + 1; k < gameState.y[gameState.R[i]]; ++k) { gameState.a[gameState.x[i]][k] = aVal; }
         }
       }
@@ -649,7 +649,7 @@ void Init()
   }
 }
 
-void Input(int problemNum)
+void input_data(int problemNum)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
@@ -666,10 +666,10 @@ void Input(int problemNum)
 
   K100 = K * 100;
 
-  Init();
+  init();
 }
 
-void Output(int mode, int problemNum)
+void output_data(int mode, int problemNum)
 {
   if (mode == 0) {
     cout << gameState.ope1 << endl;
@@ -747,28 +747,28 @@ void Output(int mode, int problemNum)
 
 
 // maxとreal_maxを初期化
-void AllClear()
+void clear_all()
 {
   gameState.clear();
   real_GameState.clear();
-  MethodCountReset();
+  reset_method_count();
 }
 
-void AllClear_seed()
+void clear_seed_all()
 {
   gameState.clear();
   real_GameState.clear();
   seed_GameState.clear();
-  MethodCountReset();
+  reset_method_count();
 }
 
-void AllClear_outer()
+void clear_outer_all()
 {
   gameState.clear();
   real_GameState.clear();
   seed_GameState.clear();
   outer_GameState.clear();
-  MethodCountReset();
+  reset_method_count();
 }
 
 // コンピュータをランダムに1マス移動
@@ -913,7 +913,7 @@ void ConnectServers(int server1, int server2, int udlr_idx1, int udlr_idx2, int 
   EraseUnion(server2);
   se.insert(server1);
   
-  int aVal = MakeAValue(server1, server2);
+  int aVal = make_edge_value(server1, server2);
   vector<P> dummy; // ConnectServersではbeamを使わない
   SetServerPath(server1, server2, coord, aVal, isVertical, false, dummy);
 }
@@ -932,7 +932,7 @@ void ReconnectServers(int server1, int server2, int middle, int udlr_idx1, int u
   se.insert(server1);
   se.insert(middle);
   
-  int aVal = MakeAValue(server1, server2);
+  int aVal = make_edge_value(server1, server2);
   vector<P> dummy;
   SetServerPath(server1, server2, coord, aVal, isVertical, false, dummy);
 }
@@ -952,8 +952,8 @@ void ReconnectServersWithCut(int serverU, int serverD, int newServer, int udlr_U
   
   se.insert(newServer);
   
-  int aVal1 = MakeAValue(serverU, newServer);
-  int aVal2 = MakeAValue(newServer, serverD);
+  int aVal1 = make_edge_value(serverU, newServer);
+  int aVal2 = make_edge_value(newServer, serverD);
   vector<P> dummy;
   SetServerPath(serverU, newServer, coord, aVal1, isVertical, false, dummy);
   SetServerPath(newServer, serverD, coord, aVal2, isVertical, false, dummy);
@@ -1006,18 +1006,18 @@ void DisconnectWithPath(int movingServer, int connectedServer, int udlr_idx_movi
 }
 
 // 戻り値：更新したかどうか
-int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int MethodeMode = 0)
+int apply_move(double temp, int server_id, int dir, bool forceDo = false, int MethodeMode = 0)
 {
   acnt = 0;
   udlrcnt = 0;
   parentcnt = 0;
   vpcnt = 0;
 
-  int nx = gameState.x[ite] + dx[dir];
-  int ny = gameState.y[ite] + dy[dir];
+  int nx = gameState.x[server_id] + dx[dir];
+  int ny = gameState.y[server_id] + dy[dir];
 
-  int xx = gameState.x[ite];
-  int yy = gameState.y[ite];
+  int xx = gameState.x[server_id];
+  int yy = gameState.y[server_id];
 
   int na = gameState.a[nx][ny];
 
@@ -1037,9 +1037,9 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     if (ny == yy + 1) {
       // 元のマスの左のつながり
       // 繋がっている
-      if (gameState.udlr[ite][2] != -1) {
-        if (HasServer(xx, yy - 1)) {
-          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx][yy - 1]);
+      if (gameState.udlr[server_id][2] != -1) {
+        if (has_server(xx, yy - 1)) {
+          gameState.a[xx][yy] = make_edge_value(server_id, gameState.a[xx][yy - 1]);
         }
         else {
           gameState.a[xx][yy] = gameState.a[xx][yy - 1];
@@ -1050,52 +1050,52 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
       }
 
       // 元のマスの右のつながり
-      gameState.a[xx][ny] = ite;
+      gameState.a[xx][ny] = server_id;
 
       // 元のマスの上下のつながり
       // 左と繋がっている場合、切る
-      if (gameState.udlr[ite][2] != -1) {
-        if (gameState.udlr[ite][0] != -1) {
-          int iteU = gameState.udlr[ite][0];
-          DisconnectWithPath(ite, iteU, 0, 1, yy, true, se, beam);
+      if (gameState.udlr[server_id][2] != -1) {
+        if (gameState.udlr[server_id][0] != -1) {
+          int iteU = gameState.udlr[server_id][0];
+          DisconnectWithPath(server_id, iteU, 0, 1, yy, true, se, beam);
         }
 
-        if (gameState.udlr[ite][1] != -1) {
-          int iteD = gameState.udlr[ite][1];
-          DisconnectWithPath(ite, iteD, 1, 0, yy, true, se, beam);
+        if (gameState.udlr[server_id][1] != -1) {
+          int iteD = gameState.udlr[server_id][1];
+          DisconnectWithPath(server_id, iteD, 1, 0, yy, true, se, beam);
         }
       }
       else {
         // 上下繋がっていた
-        if (gameState.udlr[ite][0] != -1 && gameState.udlr[ite][1] != -1) {
+        if (gameState.udlr[server_id][0] != -1 && gameState.udlr[server_id][1] != -1) {
           // 繋ぎなおす
-          int iteU = gameState.udlr[ite][0];
-          int iteD = gameState.udlr[ite][1];
-          ReconnectServers(iteU, iteD, ite, 1, 0, 0, 1, yy, true, se);
+          int iteU = gameState.udlr[server_id][0];
+          int iteD = gameState.udlr[server_id][1];
+          ReconnectServers(iteU, iteD, server_id, 1, 0, 0, 1, yy, true, se);
         }
         // 上繋がっていた
-        else if (gameState.udlr[ite][0] != -1) {
+        else if (gameState.udlr[server_id][0] != -1) {
           // 切る
-          int iteU = gameState.udlr[ite][0];
-          DisconnectServers(ite, iteU, 0, 1, se);
-          se.insert(ite);
+          int iteU = gameState.udlr[server_id][0];
+          DisconnectServers(server_id, iteU, 0, 1, se);
+          se.insert(server_id);
 
-          SetServerPath(iteU, ite, yy, INF, true, true, beam);
+          SetServerPath(iteU, server_id, yy, INF, true, true, beam);
         }
         // 下繋がっていた
-        else if (gameState.udlr[ite][1] != -1) {
+        else if (gameState.udlr[server_id][1] != -1) {
           // 切る
-          int iteD = gameState.udlr[ite][1];
-          DisconnectServers(ite, iteD, 1, 0, se);
-          se.insert(ite);
+          int iteD = gameState.udlr[server_id][1];
+          DisconnectServers(server_id, iteD, 1, 0, se);
+          se.insert(server_id);
 
-          SetServerPath(ite, iteD, yy, INF, true, true, beam);
+          SetServerPath(server_id, iteD, yy, INF, true, true, beam);
         }
         // 繋がりなし
         else {
           // 上と下が同じ色の場合
-          int iteU = GetIte2(xx, yy, 'U');
-          int iteD = GetIte2(xx, yy, 'D');
+          int iteU = get_server_through_inf(xx, yy, 'U');
+          int iteD = get_server_through_inf(xx, yy, 'D');
           if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
             // 繋ぐ
             ConnectServers(iteU, iteD, 1, 0, yy, true, se);
@@ -1105,7 +1105,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
 
       // 先のマスの上下のつながり
       // 元々繋がっている
-      if (na != INF && gameState.udlr[ite][3] == -1) {
+      if (na != INF && gameState.udlr[server_id][3] == -1) {
         int iteU = -na / ENCODING_MULTIPLIER;
         int iteD = -na % ENCODING_MULTIPLIER;
         if (gameState.x[iteU] > gameState.x[iteD]) {
@@ -1113,30 +1113,30 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
         }
 
         // 同じ色
-        if (getServerType(iteU) == getServerType(ite)) {
+        if (getServerType(iteU) == getServerType(server_id)) {
           // 繋ぎなおす
-          ReconnectServersWithCut(iteU, iteD, ite, 1, 0, 0, 1, ny, true, se);
+          ReconnectServersWithCut(iteU, iteD, server_id, 1, 0, 0, 1, ny, true, se);
         }
         // 違う色
         else {
           // 切る
-          DisconnectAndInsertServer(iteU, iteD, ite, 1, 0, ny, true, se, beam);
+          DisconnectAndInsertServer(iteU, iteD, server_id, 1, 0, ny, true, se, beam);
         }
       }
       // 繋がっていない
       else {
         // 上と繋げられるかどうか
-        int iteU = GetIte2(xx, ny, 'U');
-        if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
+        int iteU = get_server_through_inf(xx, ny, 'U');
+        if (iteU != -1 && getServerType(iteU) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(iteU, ite, 1, 0, ny, true, se);
+          ConnectServers(iteU, server_id, 1, 0, ny, true, se);
         }
 
         // 下と繋げられるかどうか
-        int iteD = GetIte2(xx, ny, 'D');
-        if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
+        int iteD = get_server_through_inf(xx, ny, 'D');
+        if (iteD != -1 && getServerType(iteD) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(ite, iteD, 1, 0, ny, true, se);
+          ConnectServers(server_id, iteD, 1, 0, ny, true, se);
         }
       }
     }
@@ -1144,9 +1144,9 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     else {
       // 元のマスの右のつながり
       // 繋がっている
-      if (gameState.udlr[ite][3] != -1) {
-        if (HasServer(xx, yy + 1)) {
-          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx][yy + 1]);
+      if (gameState.udlr[server_id][3] != -1) {
+        if (has_server(xx, yy + 1)) {
+          gameState.a[xx][yy] = make_edge_value(server_id, gameState.a[xx][yy + 1]);
         }
         else {
           gameState.a[xx][yy] = gameState.a[xx][yy + 1];
@@ -1157,50 +1157,50 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
       }
 
       // 元のマスの左のつながり
-      gameState.a[xx][ny] = ite;
+      gameState.a[xx][ny] = server_id;
 
       // 元のマスの上下のつながり
       // 右と繋がっている場合、切る
-      if (gameState.udlr[ite][3] != -1) {
-        if (gameState.udlr[ite][0] != -1) {
-          int iteU = gameState.udlr[ite][0];
-          DisconnectWithPath(ite, iteU, 0, 1, yy, true, se, beam);
+      if (gameState.udlr[server_id][3] != -1) {
+        if (gameState.udlr[server_id][0] != -1) {
+          int iteU = gameState.udlr[server_id][0];
+          DisconnectWithPath(server_id, iteU, 0, 1, yy, true, se, beam);
         }
 
-        if (gameState.udlr[ite][1] != -1) {
-          int iteD = gameState.udlr[ite][1];
-          DisconnectWithPath(ite, iteD, 1, 0, yy, true, se, beam);
+        if (gameState.udlr[server_id][1] != -1) {
+          int iteD = gameState.udlr[server_id][1];
+          DisconnectWithPath(server_id, iteD, 1, 0, yy, true, se, beam);
         }
       }
       else {
         // 上下繋がっていた
-        if (gameState.udlr[ite][0] != -1 && gameState.udlr[ite][1] != -1) {
+        if (gameState.udlr[server_id][0] != -1 && gameState.udlr[server_id][1] != -1) {
           // 繋ぎなおす
-          int iteU = gameState.udlr[ite][0];
-          int iteD = gameState.udlr[ite][1];
-          ReconnectServers(iteU, iteD, ite, 1, 0, 0, 1, yy, true, se);
+          int iteU = gameState.udlr[server_id][0];
+          int iteD = gameState.udlr[server_id][1];
+          ReconnectServers(iteU, iteD, server_id, 1, 0, 0, 1, yy, true, se);
         }
         // 上繋がっていた
-        else if (gameState.udlr[ite][0] != -1) {
+        else if (gameState.udlr[server_id][0] != -1) {
           // 切る
-          int iteU = gameState.udlr[ite][0];
-          DisconnectServersBoth(iteU, ite, 1, 0, se);
+          int iteU = gameState.udlr[server_id][0];
+          DisconnectServersBoth(iteU, server_id, 1, 0, se);
 
-          SetServerPath(iteU, ite, yy, INF, true, true, beam);
+          SetServerPath(iteU, server_id, yy, INF, true, true, beam);
         }
         // 下繋がっていた
-        else if (gameState.udlr[ite][1] != -1) {
+        else if (gameState.udlr[server_id][1] != -1) {
           // 切る
-          int iteD = gameState.udlr[ite][1];
-          DisconnectServersBoth(iteD, ite, 0, 1, se);
+          int iteD = gameState.udlr[server_id][1];
+          DisconnectServersBoth(iteD, server_id, 0, 1, se);
 
-          SetServerPath(ite, iteD, yy, INF, true, true, beam);
+          SetServerPath(server_id, iteD, yy, INF, true, true, beam);
         }
         // 繋がりなし
         else {
           // 上と下が同じ色の場合
-          int iteU = GetIte2(xx, yy, 'U');
-          int iteD = GetIte2(xx, yy, 'D');
+          int iteU = get_server_through_inf(xx, yy, 'U');
+          int iteD = get_server_through_inf(xx, yy, 'D');
           if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
             // 繋ぐ
             ConnectServers(iteU, iteD, 1, 0, yy, true, se);
@@ -1210,7 +1210,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
 
       // 先のマスの上下のつながり
       // 元々繋がっている
-      if (na != INF && gameState.udlr[ite][2] == -1) {
+      if (na != INF && gameState.udlr[server_id][2] == -1) {
         int iteU = -na / ENCODING_MULTIPLIER;
         int iteD = -na % ENCODING_MULTIPLIER;
         if (gameState.x[iteU] > gameState.x[iteD]) {
@@ -1218,30 +1218,30 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
         }
 
         // 同じ色
-        if (getServerType(iteU) == getServerType(ite)) {
+        if (getServerType(iteU) == getServerType(server_id)) {
           // 繋ぎなおす
-          ReconnectServersWithCut(iteU, iteD, ite, 1, 0, 0, 1, ny, true, se);
+          ReconnectServersWithCut(iteU, iteD, server_id, 1, 0, 0, 1, ny, true, se);
         }
         // 違う色
         else {
           // 切る
-          DisconnectAndInsertServer(iteU, iteD, ite, 1, 0, ny, true, se, beam);
+          DisconnectAndInsertServer(iteU, iteD, server_id, 1, 0, ny, true, se, beam);
         }
       }
       // 繋がっていない
       else {
         // 上と繋げられるかどうか
-        int iteU = GetIte2(xx, ny, 'U');
-        if (iteU != -1 && getServerType(iteU) == getServerType(ite)) {
+        int iteU = get_server_through_inf(xx, ny, 'U');
+        if (iteU != -1 && getServerType(iteU) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(iteU, ite, 1, 0, ny, true, se);
+          ConnectServers(iteU, server_id, 1, 0, ny, true, se);
         }
 
         // 下と繋げられるかどうか
-        int iteD = GetIte2(xx, ny, 'D');
-        if (iteD != -1 && getServerType(iteD) == getServerType(ite)) {
+        int iteD = get_server_through_inf(xx, ny, 'D');
+        if (iteD != -1 && getServerType(iteD) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(ite, iteD, 1, 0, ny, true, se);
+          ConnectServers(server_id, iteD, 1, 0, ny, true, se);
         }
       }
     }
@@ -1251,9 +1251,9 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     if (nx == xx + 1) {
       // 元のマスの上のつながり
       // 繋がっている
-      if (gameState.udlr[ite][0] != -1) {
-        if (HasServer(xx - 1, yy)) {
-          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx - 1][yy]);
+      if (gameState.udlr[server_id][0] != -1) {
+        if (has_server(xx - 1, yy)) {
+          gameState.a[xx][yy] = make_edge_value(server_id, gameState.a[xx - 1][yy]);
         }
         else {
           gameState.a[xx][yy] = gameState.a[xx - 1][yy];
@@ -1264,50 +1264,50 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
       }
 
       // 元のマスの下のつながり
-      gameState.a[nx][yy] = ite;
+      gameState.a[nx][yy] = server_id;
 
       // 元のマスの左右のつながり
       // 上と繋がっている場合、切る
-      if (gameState.udlr[ite][0] != -1) {
-        if (gameState.udlr[ite][2] != -1) {
-          int iteL = gameState.udlr[ite][2];
-          DisconnectWithPath(ite, iteL, 2, 3, xx, false, se, beam);
+      if (gameState.udlr[server_id][0] != -1) {
+        if (gameState.udlr[server_id][2] != -1) {
+          int iteL = gameState.udlr[server_id][2];
+          DisconnectWithPath(server_id, iteL, 2, 3, xx, false, se, beam);
         }
 
-        if (gameState.udlr[ite][3] != -1) {
-          int iteR = gameState.udlr[ite][3];
-          DisconnectWithPath(ite, iteR, 3, 2, xx, false, se, beam);
+        if (gameState.udlr[server_id][3] != -1) {
+          int iteR = gameState.udlr[server_id][3];
+          DisconnectWithPath(server_id, iteR, 3, 2, xx, false, se, beam);
         }
       }
       else {
         // 左右繋がっていた
-        if (gameState.udlr[ite][2] != -1 && gameState.udlr[ite][3] != -1) {
+        if (gameState.udlr[server_id][2] != -1 && gameState.udlr[server_id][3] != -1) {
           // 繋ぎなおす
-          int iteL = gameState.udlr[ite][2];
-          int iteR = gameState.udlr[ite][3];
-          ReconnectServers(iteL, iteR, ite, 3, 2, 2, 3, xx, false, se);
+          int iteL = gameState.udlr[server_id][2];
+          int iteR = gameState.udlr[server_id][3];
+          ReconnectServers(iteL, iteR, server_id, 3, 2, 2, 3, xx, false, se);
         }
         // 左繋がっていた
-        else if (gameState.udlr[ite][2] != -1) {
+        else if (gameState.udlr[server_id][2] != -1) {
           // 切る
-          int iteL = gameState.udlr[ite][2];
-          DisconnectServersBoth(iteL, ite, 3, 2, se);
+          int iteL = gameState.udlr[server_id][2];
+          DisconnectServersBoth(iteL, server_id, 3, 2, se);
 
-          SetServerPath(iteL, ite, xx, INF, false, true, beam);
+          SetServerPath(iteL, server_id, xx, INF, false, true, beam);
         }
         // 右繋がっていた
-        else if (gameState.udlr[ite][3] != -1) {
+        else if (gameState.udlr[server_id][3] != -1) {
           // 切る
-          int iteR = gameState.udlr[ite][3];
-          DisconnectServersBoth(iteR, ite, 2, 3, se);
+          int iteR = gameState.udlr[server_id][3];
+          DisconnectServersBoth(iteR, server_id, 2, 3, se);
 
-          SetServerPath(ite, iteR, xx, INF, false, true, beam);
+          SetServerPath(server_id, iteR, xx, INF, false, true, beam);
         }
         // 繋がりなし
         else {
           // 左と右が同じ色の場合
-          int iteL = GetIte2(xx, yy, 'L');
-          int iteR = GetIte2(xx, yy, 'R');
+          int iteL = get_server_through_inf(xx, yy, 'L');
+          int iteR = get_server_through_inf(xx, yy, 'R');
           if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
             // 繋ぐ
             ConnectServers(iteL, iteR, 3, 2, xx, false, se);
@@ -1317,7 +1317,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
 
       // 先のマスの左右のつながり
       // 元々繋がっている
-      if (na != INF && gameState.udlr[ite][1] == -1) {
+      if (na != INF && gameState.udlr[server_id][1] == -1) {
         int iteL = -na / ENCODING_MULTIPLIER;
         int iteR = -na % ENCODING_MULTIPLIER;
         if (gameState.y[iteL] > gameState.y[iteR]) {
@@ -1325,30 +1325,30 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
         }
 
         // 同じ色
-        if (getServerType(iteL) == getServerType(ite)) {
+        if (getServerType(iteL) == getServerType(server_id)) {
           // 繋ぎなおす
-          ReconnectServersWithCut(iteL, iteR, ite, 3, 2, 2, 3, nx, false, se);
+          ReconnectServersWithCut(iteL, iteR, server_id, 3, 2, 2, 3, nx, false, se);
         }
         // 違う色
         else {
           // 切る
-          DisconnectAndInsertServer(iteL, iteR, ite, 3, 2, nx, false, se, beam);
+          DisconnectAndInsertServer(iteL, iteR, server_id, 3, 2, nx, false, se, beam);
         }
       }
       // 繋がっていない
       else {
         // 左と繋げられるかどうか
-        int iteL = GetIte2(nx, yy, 'L');
-        if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
+        int iteL = get_server_through_inf(nx, yy, 'L');
+        if (iteL != -1 && getServerType(iteL) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(iteL, ite, 3, 2, nx, false, se);
+          ConnectServers(iteL, server_id, 3, 2, nx, false, se);
         }
 
         // 右と繋げられるかどうか
-        int iteR = GetIte2(nx, yy, 'R');
-        if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
+        int iteR = get_server_through_inf(nx, yy, 'R');
+        if (iteR != -1 && getServerType(iteR) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(ite, iteR, 3, 2, nx, false, se);
+          ConnectServers(server_id, iteR, 3, 2, nx, false, se);
         }
       }
     }
@@ -1356,9 +1356,9 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     else {
       // 元のマスの下のつながり
       // 繋がっている
-      if (gameState.udlr[ite][1] != -1) {
-        if (HasServer(xx + 1, yy)) {
-          gameState.a[xx][yy] = MakeAValue(ite, gameState.a[xx + 1][yy]);
+      if (gameState.udlr[server_id][1] != -1) {
+        if (has_server(xx + 1, yy)) {
+          gameState.a[xx][yy] = make_edge_value(server_id, gameState.a[xx + 1][yy]);
         }
         else {
           gameState.a[xx][yy] = gameState.a[xx + 1][yy];
@@ -1369,50 +1369,50 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
       }
 
       // 元のマスの上のつながり
-      gameState.a[nx][yy] = ite;
+      gameState.a[nx][yy] = server_id;
 
       // 元のマスの左右のつながり
       // 下と繋がっている場合、切る
-      if (gameState.udlr[ite][1] != -1) {
-        if (gameState.udlr[ite][2] != -1) {
-          int iteL = gameState.udlr[ite][2];
-          DisconnectWithPath(ite, iteL, 2, 3, xx, false, se, beam);
+      if (gameState.udlr[server_id][1] != -1) {
+        if (gameState.udlr[server_id][2] != -1) {
+          int iteL = gameState.udlr[server_id][2];
+          DisconnectWithPath(server_id, iteL, 2, 3, xx, false, se, beam);
         }
 
-        if (gameState.udlr[ite][3] != -1) {
-          int iteR = gameState.udlr[ite][3];
-          DisconnectWithPath(ite, iteR, 3, 2, xx, false, se, beam);
+        if (gameState.udlr[server_id][3] != -1) {
+          int iteR = gameState.udlr[server_id][3];
+          DisconnectWithPath(server_id, iteR, 3, 2, xx, false, se, beam);
         }
       }
       else {
         // 左右繋がっていた
-        if (gameState.udlr[ite][2] != -1 && gameState.udlr[ite][3] != -1) {
+        if (gameState.udlr[server_id][2] != -1 && gameState.udlr[server_id][3] != -1) {
           // 繋ぎなおす
-          int iteL = gameState.udlr[ite][2];
-          int iteR = gameState.udlr[ite][3];
-          ReconnectServers(iteL, iteR, ite, 3, 2, 2, 3, xx, false, se);
+          int iteL = gameState.udlr[server_id][2];
+          int iteR = gameState.udlr[server_id][3];
+          ReconnectServers(iteL, iteR, server_id, 3, 2, 2, 3, xx, false, se);
         }
         // 左繋がっていた
-        else if (gameState.udlr[ite][2] != -1) {
+        else if (gameState.udlr[server_id][2] != -1) {
           // 切る
-          int iteL = gameState.udlr[ite][2];
-          DisconnectServersBoth(iteL, ite, 3, 2, se);
+          int iteL = gameState.udlr[server_id][2];
+          DisconnectServersBoth(iteL, server_id, 3, 2, se);
 
-          SetServerPath(iteL, ite, xx, INF, false, true, beam);
+          SetServerPath(iteL, server_id, xx, INF, false, true, beam);
         }
         // 右繋がっていた
-        else if (gameState.udlr[ite][3] != -1) {
+        else if (gameState.udlr[server_id][3] != -1) {
           // 切る
-          int iteR = gameState.udlr[ite][3];
-          DisconnectServersBoth(iteR, ite, 2, 3, se);
+          int iteR = gameState.udlr[server_id][3];
+          DisconnectServersBoth(iteR, server_id, 2, 3, se);
 
-          SetServerPath(ite, iteR, xx, INF, false, true, beam);
+          SetServerPath(server_id, iteR, xx, INF, false, true, beam);
         }
         // 繋がりなし
         else {
           // 左と右が同じ色の場合
-          int iteL = GetIte2(xx, yy, 'L');
-          int iteR = GetIte2(xx, yy, 'R');
+          int iteL = get_server_through_inf(xx, yy, 'L');
+          int iteR = get_server_through_inf(xx, yy, 'R');
           if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
             // 繋ぐ
             ConnectServers(iteL, iteR, 3, 2, xx, false, se);
@@ -1422,7 +1422,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
 
       // 先のマスの左右のつながり
       // 元々繋がっている
-      if (na != INF && gameState.udlr[ite][0] == -1) {
+      if (na != INF && gameState.udlr[server_id][0] == -1) {
         int iteL = -na / ENCODING_MULTIPLIER;
         int iteR = -na % ENCODING_MULTIPLIER;
         if (gameState.y[iteL] > gameState.y[iteR]) {
@@ -1430,30 +1430,30 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
         }
 
         // 同じ色
-        if (getServerType(iteL) == getServerType(ite)) {
+        if (getServerType(iteL) == getServerType(server_id)) {
           // 繋ぎなおす
-          ReconnectServersWithCut(iteL, iteR, ite, 3, 2, 2, 3, nx, false, se);
+          ReconnectServersWithCut(iteL, iteR, server_id, 3, 2, 2, 3, nx, false, se);
         }
         // 違う色
         else {
           // 切る
-          DisconnectAndInsertServer(iteL, iteR, ite, 3, 2, nx, false, se, beam);
+          DisconnectAndInsertServer(iteL, iteR, server_id, 3, 2, nx, false, se, beam);
         }
       }
       // 繋がっていない
       else {
         // 左と繋げられるかどうか
-        int iteL = GetIte2(nx, yy, 'L');
-        if (iteL != -1 && getServerType(iteL) == getServerType(ite)) {
+        int iteL = get_server_through_inf(nx, yy, 'L');
+        if (iteL != -1 && getServerType(iteL) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(iteL, ite, 3, 2, nx, false, se);
+          ConnectServers(iteL, server_id, 3, 2, nx, false, se);
         }
 
         // 右と繋げられるかどうか
-        int iteR = GetIte2(nx, yy, 'R');
-        if (iteR != -1 && getServerType(iteR) == getServerType(ite)) {
+        int iteR = get_server_through_inf(nx, yy, 'R');
+        if (iteR != -1 && getServerType(iteR) == getServerType(server_id)) {
           // 繋ぐ
-          ConnectServers(ite, iteR, 3, 2, nx, false, se);
+          ConnectServers(server_id, iteR, 3, 2, nx, false, se);
         }
       }
     }
@@ -1466,8 +1466,8 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
       int px = p.first;
       int py = p.second;
       if (gameState.a[px][py] != INF) { continue; }
-      int iteL = GetIte2(px, py, 'L');
-      int iteR = GetIte2(px, py, 'R');
+      int iteL = get_server_through_inf(px, py, 'L');
+      int iteR = get_server_through_inf(px, py, 'R');
       if (iteL != -1 && iteR != -1 && getServerType(iteL) == getServerType(iteR)) {
         ConnectServers(iteL, iteR, 3, 2, px, false, se);
       }
@@ -1479,16 +1479,16 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
       int px = p.first;
       int py = p.second;
       if (gameState.a[px][py] != INF) { continue; }
-      int iteU = GetIte2(px, py, 'U');
-      int iteD = GetIte2(px, py, 'D');
+      int iteU = get_server_through_inf(px, py, 'U');
+      int iteD = get_server_through_inf(px, py, 'D');
       if (iteU != -1 && iteD != -1 && getServerType(iteU) == getServerType(iteD)) {
         ConnectServers(iteU, iteD, 1, 0, py, true, se);
       }
     }
   }
 
-  gameState.x[ite] = nx;
-  gameState.y[ite] = ny;
+  gameState.x[server_id] = nx;
+  gameState.y[server_id] = ny;
 
 
 
@@ -1560,7 +1560,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
 
   double prob = exp((double)diffScore / temp);
   int isDo = 0;
-  if (forceDo || prob > Rand01()) {
+  if (forceDo || prob > rand_01()) {
     isDo = 1;
     gameState.maxScore += diffScore;
 
@@ -1571,7 +1571,7 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
     gameState.ans1[gameState.ope1][1] = yy;
     gameState.ans1[gameState.ope1][2] = nx;
     gameState.ans1[gameState.ope1][3] = ny;
-    gameState.ans1[gameState.ope1][4] = ite;
+    gameState.ans1[gameState.ope1][4] = server_id;
     gameState.ope1++;
 
     if (gameState.maxScore > real_GameState.maxScore) {
@@ -1583,8 +1583,8 @@ int InnerMethod(double temp, int ite, int dir, bool forceDo = false, int Methode
   }
   else {
     // 元に戻す
-    gameState.x[ite] = xx;
-    gameState.y[ite] = yy;
+    gameState.x[server_id] = xx;
+    gameState.y[server_id] = yy;
 
     BackA();
     Back_udlr();
@@ -1615,19 +1615,19 @@ void Method1(double start_temp, double end_temp, double now_progress)
     if (randCnt == 100) {
       return;
     }
-    ite = Rand() % K100;  // 1マス動かすコンピュータ
-    dir = Rand() % 4;
+    ite = rand32() % K100;  // 1マス動かすコンピュータ
+    dir = rand32() % 4;
 
     nx = gameState.x[ite] + dx[dir];
     ny = gameState.y[ite] + dy[dir];
     int ok = 0;
-    if (0 <= nx && nx < n && 0 <= ny && ny < n && !HasServer(nx, ny)) {
+    if (0 <= nx && nx < n && 0 <= ny && ny < n && !has_server(nx, ny)) {
       break;
     }
   }
 
   double temp = start_temp + (end_temp - start_temp) * now_progress;
-  InnerMethod(temp, ite, dir);
+  apply_move(temp, ite, dir);
 }
 
 
@@ -1636,15 +1636,15 @@ void Method3(double start_temp, double end_temp, double now_progress)
 {
   int xx, yy, dir1, dir2;
   while (true) {
-    xx = Rand() % n;
-    yy = Rand() % n;
+    xx = rand32() % n;
+    yy = rand32() % n;
     if (gameState.a[xx][yy] == -1) {
       break;
     }
   }
 
-  dir1 = Rand() % 4;
-  dir2 = Rand() % 4;
+  dir1 = rand32() % 4;
+  dir2 = rand32() % 4;
   int nx1 = xx + dx[dir1];
   int ny1 = yy + dy[dir1];
   int nx2 = nx1 + dx[dir2];
@@ -1681,7 +1681,7 @@ void Method3(double start_temp, double end_temp, double now_progress)
 
   double temp = start_temp + (end_temp - start_temp) * now_progress;
   double prob = exp((double)diffScore / temp);
-  if (prob > Rand01()) {
+  if (prob > rand_01()) {
     gameState.maxScore += diffScore;
 
     methodCount[3][0]++;
@@ -1727,9 +1727,9 @@ void Method3(double start_temp, double end_temp, double now_progress)
 // コンピュータをランダムに2マス移動
 void Method4(double start_temp, double end_temp, double now_progress)
 {
-  int ite = Rand() % K100;  // 1マス動かすコンピュータ
-  int dir1 = Rand() % 4;
-  int dir2 = Rand() % 4;
+  int ite = rand32() % K100;  // 1マス動かすコンピュータ
+  int dir1 = rand32() % 4;
+  int dir2 = rand32() % 4;
 
   int xx = gameState.x[ite];
   int yy = gameState.y[ite];
@@ -1739,7 +1739,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
   int nx2 = nx1 + dx[dir2];
   int ny2 = ny1 + dy[dir2];
 
-  if (IsNG(nx1, ny1) || IsNG(nx2, ny2) || gameState.a[nx1][ny1] != -1 ||
+  if (is_out_of_bounds(nx1, ny1) || is_out_of_bounds(nx2, ny2) || gameState.a[nx1][ny1] != -1 ||
     gameState.a[nx2][ny2] != -1) {
     return;
   }
@@ -1763,7 +1763,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
 
   double temp = start_temp + (end_temp - start_temp) * now_progress;
   double prob = exp((double)diffScore / temp);
-  if (prob > Rand01()) {
+  if (prob > rand_01()) {
     gameState.maxScore += diffScore;
 
     methodCount[4][0]++;
@@ -1806,7 +1806,7 @@ void Method4(double start_temp, double end_temp, double now_progress)
 void Method5(double start_temp, double end_temp, double now_progress)
 {
   if (gameState.ope1 == 0) { return; }
-  int ite = Rand() % gameState.ope1;
+  int ite = rand32() % gameState.ope1;
 
   // NGチェック
   // ite以降の操作で、操作元が移動後のマス、操作後が移動前のマス、の操作が出てこなければOK
@@ -1835,7 +1835,7 @@ void Method5(double start_temp, double end_temp, double now_progress)
   }
 
   double temp = start_temp + (end_temp - start_temp) * now_progress;
-  int isDo = InnerMethod(temp, gameState.ans1[ite][4], reverseDir, false, 5);
+  int isDo = apply_move(temp, gameState.ans1[ite][4], reverseDir, false, 5);
 
   // 実行した場合、2つ消す
   if (isDo) {
@@ -1984,13 +1984,13 @@ void Method7(double start_temp, double end_temp, double now_progress)
   }
 }
 
-int Solve(int mode, int problemNum = 0)
+int solve(int mode, int problemNum = 0)
 {
   clock_t start_time, end_time;
   start_time = clock();
   end_time = clock();
 
-  Init();
+  init();
 
   // 愚直解
   gameState.maxScore = gameState.calcScore(K100, true);
@@ -2003,7 +2003,7 @@ int Solve(int mode, int problemNum = 0)
   {
     start_time = clock();
 
-    Init();
+    init();
     gameState.viewOrder = tei % 2;
     gameState.maxScore = gameState.calcScore(K100, true);
 
@@ -2026,18 +2026,18 @@ int Solve(int mode, int problemNum = 0)
       if (now_progress > 1.0) { break; }
 
       // 現在のスコアが悪いときは元に戻す
-      if (gameState.maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
+      if (gameState.maxScore * 1.2 < real_GameState.maxScore || rand32() % 123456 == 0) {
         gameState.copyFrom(real_GameState);
         rollbackCount++;
       }
 
       int me = 1;
 
-      if (Rand() % 2 == 0) {
+      if (rand32() % 2 == 0) {
         me = 5;
       }
 
-      if (Rand() % 203 == 0) {
+      if (rand32() % 203 == 0) {
         me = 6;
       }
 
@@ -2085,7 +2085,7 @@ int Solve(int mode, int problemNum = 0)
       gameState.copyTo(seed_GameState);
     }
 
-    AllClear();
+    clear_all();
   }
 
   // シードから戻す
@@ -2112,22 +2112,22 @@ int Solve(int mode, int problemNum = 0)
     if (now_progress > 1.0) { break; }
 
     // 現在のスコアが悪いときは元に戻す
-    if (gameState.maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
+    if (gameState.maxScore * 1.2 < real_GameState.maxScore || rand32() % 123456 == 0) {
       gameState.copyFrom(real_GameState);
       rollbackCount++;
     }
 
     int me = 1;
 
-    if (Rand() % 2 == 0) {
+    if (rand32() % 2 == 0) {
       me = 5;
     }
 
-    if (Rand() % 203 == 0) {
+    if (rand32() % 203 == 0) {
       me = 6;
     }
 
-    if (Rand() % 1011 == 0) {
+    if (rand32() % 1011 == 0) {
       me = 7;
     }
 
@@ -2197,24 +2197,24 @@ int Solve(int mode, int problemNum = 0)
   return gameState.maxScore;
 }
 
-int SolveOuter(int mode, int problemNum)
+int solve_outer(int mode, int problemNum)
 {
   // 入力部
-  Input(problemNum);
+  input_data(problemNum);
 
   for (int _ = 0; _ < outer_Split; ++_)
   {
     gameState.viewOrder = _ % 2;
-    int score = Solve(mode, problemNum);
+    int score = solve(mode, problemNum);
     if (score >= outer_GameState.maxScore) {
       gameState.copyTo(outer_GameState);
     }
-    AllClear();
+    clear_all();
   }
   gameState.copyFrom(outer_GameState);
 
   // 解の出力
-  Output(mode, problemNum);
+  output_data(mode, problemNum);
 
   return gameState.maxScore;
 }
@@ -2224,24 +2224,24 @@ int main()
   int mode = 2;
 
   if (mode == 0) {
-    SolveOuter(mode, 0);
+    solve_outer(mode, 0);
   }
   else if (mode == 1) {
-    SolveOuter(mode, 1);
+    solve_outer(mode, 1);
   }
   else if (mode == 2) {
     int sum = 0;
     for (int i = 0; i < 10; ++i)
     {
-      sum += SolveOuter(mode, i);
-      AllClear_outer();
+      sum += solve_outer(mode, i);
+      clear_outer_all();
     }
     cout << "sum = " << sum << endl;
   }
   else if (mode == 3) {
     int problemNum = 0;
     cin >> problemNum;
-    SolveOuter(mode, problemNum);
+    solve_outer(mode, problemNum);
   }
 
   return 0;

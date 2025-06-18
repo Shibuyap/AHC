@@ -61,9 +61,9 @@ namespace /* 乱数ライブラリ */
   {
     for (int i = n - 1; i >= 0; i--) {
       int j = Rand() % (i + 1);
-      int swa = data[i];
+      int tmp = data[i];
       data[i] = data[j];
-      data[j] = swa;
+      data[j] = tmp;
     }
   }
 }  // namespace
@@ -106,34 +106,34 @@ ll ans[5500][4];
 int ansCount;
 ll ansCost;
 
-ll real_ans[5500][4];
-int real_ansCount;
-ll real_ansCost;
+ll best_ans[5500][4];
+int best_ansCount;
+ll best_ansCost;
 
-void CopyToReal()
+void CopyToBest()
 {
-  real_ansCount = ansCount;
-  real_ansCost = ansCost;
+  best_ansCount = ansCount;
+  best_ansCost = ansCost;
 
   for (int i = 0; i < ansCount; ++i)
   {
     for (int j = 0; j < 4; ++j)
     {
-      real_ans[i][j] = ans[i][j];
+      best_ans[i][j] = ans[i][j];
     }
   }
 }
 
 void CopyToAns()
 {
-  ansCount = real_ansCount;
-  ansCost = real_ansCost;
+  ansCount = best_ansCount;
+  ansCost = best_ansCost;
 
   for (int i = 0; i < ansCount; ++i)
   {
     for (int j = 0; j < 4; ++j)
     {
-      ans[i][j] = real_ans[i][j];
+      ans[i][j] = best_ans[i][j];
     }
   }
 }
@@ -204,8 +204,8 @@ void OpenOfs(int probNum, ofstream& ofs)
 // スコア計算
 ll CalcScore()
 {
-  ll res = round(1.0 * n * L / (ansCost + 1) * 1000000.0);
-  return res;
+  ll result = round(1.0 * n * L / (ansCost + 1) * 1000000.0);
+  return result;
 }
 
 // 解答出力
@@ -260,12 +260,12 @@ void Method23()
   {
     for (int j = i + 1; j < n; ++j)
     {
-      PP pp;
-      pp.first.first = points[i].first + points[i].second + points[j].first + points[j].second
+      PP edge;
+      edge.first.first = points[i].first + points[i].second + points[j].first + points[j].second
         - abs(points[i].first - points[j].first) - abs(points[i].second - points[j].second);
-      pp.second.first = i;
-      pp.second.second = j;
-      que.push(pp);
+      edge.second.first = i;
+      edge.second.second = j;
+      que.push(edge);
     }
   }
 
@@ -273,11 +273,11 @@ void Method23()
   ansCost = 0;
 
   while (que.size()) {
-    PP pp = que.top();
+    PP edge = que.top();
     que.pop();
 
-    int idx1 = pp.second.first;
-    int idx2 = pp.second.second;
+    int idx1 = edge.second.first;
+    int idx2 = edge.second.second;
     if (used[idx1] || used[idx2]) { continue; }
 
     int newX = min(points[idx1].first, points[idx2].first);
@@ -292,12 +292,12 @@ void Method23()
     {
       if (used[i])continue;
 
-      PP ppp;
-      ppp.first.first = points[i].first + points[i].second + newX + newY
+      PP newEdge;
+      newEdge.first.first = points[i].first + points[i].second + newX + newY
         - abs(points[i].first - newX) - abs(points[i].second - newY);
-      ppp.second.first = i;
-      ppp.second.second = points.size();
-      que.push(ppp);
+      newEdge.second.first = i;
+      newEdge.second.second = points.size();
+      que.push(newEdge);
     }
 
     points.emplace_back(newX, newY);

@@ -8,6 +8,7 @@
 #include <utility>
 #include <iomanip>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 typedef long long int ll;
@@ -268,18 +269,18 @@ int best_pattern_count = 0;
 
 ll work_grid[3][3];
 ll pattern_ids[10];
-void search_best_patterns_dfs(int mm, int cnt, int lim)
+void search_best_patterns_dfs(int startIdx, int depth, int maxDepth)
 {
-  if (cnt == lim) { return; }
+  if (depth == maxDepth) { return; }
   ll keep[3][3];
   for (int p = 0; p < 3; ++p) {
     for (int q = 0; q < 3; ++q) {
       keep[p][q] = work_grid[p][q];
     }
   }
-  for (int i = mm; i < m; ++i) {
-    pattern_ids[cnt] = i;
-    cnt++;
+  for (int i = startIdx; i < m; ++i) {
+    pattern_ids[depth] = i;
+    depth++;
     ll tmp_sum = 0;
     for (int p = 0; p < 3; ++p) {
       for (int q = 0; q < 3; ++q) {
@@ -294,13 +295,13 @@ void search_best_patterns_dfs(int mm, int cnt, int lim)
           best_sum_grid[p][q] = work_grid[p][q];
         }
       }
-      for (int j = 0; j < cnt; ++j) best_pattern_ids[j] = pattern_ids[j];
-      best_pattern_count = cnt;
+      for (int j = 0; j < depth; ++j) best_pattern_ids[j] = pattern_ids[j];
+      best_pattern_count = depth;
     }
 
-    search_best_patterns_dfs(i, cnt, lim);
+    search_best_patterns_dfs(i, depth, maxDepth);
 
-    cnt--;
+    depth--;
     for (int p = 0; p < 3; ++p) {
       for (int q = 0; q < 3; ++q) {
         work_grid[p][q] = keep[p][q];
@@ -334,28 +335,28 @@ void heuristicSweep(double timeLimit, State& current)
     int dir2 = Rand() % 2;
     // dir1     = 0;
     dir2 = 0;
-    for (int ii = 0; ii < n - 2; ++ii) {
-      int i = ii;
-      if (dir1) i = n - 3 - ii;
-      if (ii == n - 3 && turnCount + 3 * 6 + 4 > T) {
+    for (int rowIdx = 0; rowIdx < n - 2; ++rowIdx) {
+      int i = rowIdx;
+      if (dir1) i = n - 3 - rowIdx;
+      if (rowIdx == n - 3 && turnCount + 3 * 6 + 4 > T) {
         abortFlag = 1;
         break;
       }
 
       int nowCnt = turnCount;
-      ll maPosSum = 0;
-      int maCntTail = 0;
+      ll maxPosSum = 0;
+      int maxCntTail = 0;
       for (int p = 0; p < n; ++p) {
         for (int q = 0; q < n; ++q) {
           originalBoard[p][q] = current.board[p][q];
         }
       }
 
-      for (int jjj = 0; jjj < n - 2; ++jjj) {
-        for (int jj = 0; jj < jjj; ++jj) {
-          int j = jj;
+      for (int colBoundary = 0; colBoundary < n - 2; ++colBoundary) {
+        for (int colIdx = 0; colIdx < colBoundary; ++colIdx) {
+          int j = colIdx;
           dir2 = 0;
-          if (dir2) j = n - 3 - jj;
+          if (dir2) j = n - 3 - colIdx;
           best_pattern_count = 0;
           best_sum = 0;
           for (int k = 0; k < 3; ++k) {
@@ -418,8 +419,8 @@ void heuristicSweep(double timeLimit, State& current)
         }
         if (abortFlag) { break; }
 
-        for (int jj = n - 3; jj > jjj; jj--) {
-          int j = jj;
+        for (int colIdx = n - 3; colIdx > colBoundary; colIdx--) {
+          int j = colIdx;
           dir2 = 1;
           best_pattern_count = 0;
           best_sum = 0;
@@ -483,7 +484,7 @@ void heuristicSweep(double timeLimit, State& current)
         }
 
         {
-          int j = jjj;
+          int j = colBoundary;
           best_pattern_count = 0;
           best_sum = 0;
           for (int k = 0; k < 3; ++k) {
@@ -573,8 +574,8 @@ void heuristicSweep(double timeLimit, State& current)
             }
           }
         }
-        if (tmpPosSum > maPosSum) {
-          maPosSum = tmpPosSum;
+        if (tmpPosSum > maxPosSum) {
+          maxPosSum = tmpPosSum;
           for (int t = nowCnt; t < turnCount; ++t) {
             for (int k = 0; k < 3; ++k) keepAns[t][k] = current.turns[t][k];
           }
@@ -583,7 +584,7 @@ void heuristicSweep(double timeLimit, State& current)
               backupBoard[p][q] = current.board[p][q];
             }
           }
-          maCntTail = turnCount;
+          maxCntTail = turnCount;
         }
 
         turnCount = nowCnt;
@@ -596,12 +597,12 @@ void heuristicSweep(double timeLimit, State& current)
 
       if (abortFlag) { break; }
 
-      for (int t = nowCnt; t < maCntTail; ++t) {
+      for (int t = nowCnt; t < maxCntTail; ++t) {
         for (int k = 0; k < 3; ++k) {
           current.turns[t][k] = keepAns[t][k];
         }
       }
-      turnCount = maCntTail;
+      turnCount = maxCntTail;
       for (int p = 0; p < n; ++p) {
         for (int q = 0; q < n; ++q) {
           current.board[p][q] = backupBoard[p][q];

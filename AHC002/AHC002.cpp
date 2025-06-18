@@ -54,9 +54,9 @@ void shuffle_array(int* arr, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
     int j = rand_xorshift32() % (i + 1);
-    int swa = arr[i];
+    int tmp = arr[i];
     arr[i] = arr[j];
-    arr[j] = swa;
+    arr[j] = tmp;
   }
 }
 
@@ -69,12 +69,12 @@ int dx[4] = { -1, 0, 1, 0 };
 int dy[4] = { 0, -1, 0, 1 };
 char next_char[4] = { 'U','L','D','R' };
 
-int exec_mode = 0;
+int mode = 0;
 bool show_log = true;
 
 const int GRID_SIZE = 50;
 const int MAX_PATH_LENGTH = GRID_SIZE * GRID_SIZE;
-int si, sj;
+int sx, sy;
 int tile_id[GRID_SIZE][GRID_SIZE];
 int cell_value[GRID_SIZE][GRID_SIZE];
 
@@ -178,14 +178,14 @@ bool is_out_of_bounds(int x, int y)
   return false;
 }
 
-static void read_case_input(int case_num)
+static void read_input(int case_num)
 {
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) { // 標準入力する
-    cin >> si >> sj;
+    cin >> sx >> sy;
     for (int i = 0; i < (GRID_SIZE); ++i) {
       for (int j = 0; j < (GRID_SIZE); ++j) {
         cin >> tile_id[i][j];
@@ -198,7 +198,7 @@ static void read_case_input(int case_num)
     }
   }
   else { // ファイル入力する
-    ifs >> si >> sj;
+    ifs >> sx >> sy;
     for (int i = 0; i < (GRID_SIZE); ++i) {
       for (int j = 0; j < (GRID_SIZE); ++j) {
         ifs >> tile_id[i][j];
@@ -212,14 +212,14 @@ static void read_case_input(int case_num)
   }
 }
 
-void write_case_output(int case_num)
+void write_output(int case_num)
 {
   string best_string;
   for (int i = 0; i < (best_path.length - 1); ++i) {
     best_string += next_char[best_path.direction[i]];
   }
 
-  if (exec_mode == 0) {
+  if (mode == 0) {
     // 標準出力
     cout << best_string << endl;
   }
@@ -237,10 +237,10 @@ void write_case_output(int case_num)
   }
 }
 
-void reset_visited_all()
+void reset_visited()
 {
   visited_version++;
-  visited[tile_id[si][sj]] = visited_version;
+  visited[tile_id[sx][sy]] = visited_version;
 }
 
 void mark_path_as_visited(const Path& path)
@@ -256,14 +256,14 @@ void extend_path_randomly(Path& path)
   int x = path.x[path.length - 1];
   int y = path.y[path.length - 1];
   while (true) {
-    int ra = rand_xorshift32() % 24;
+    int rand = rand_xorshift32() % 24;
     bool ok = false;
     for (int i = 0; i < (4); ++i) {
-      int nx = x + dx[next_directions[ra][i]];
-      int ny = y + dy[next_directions[ra][i]];
+      int nx = x + dx[next_directions[rand][i]];
+      int ny = y + dy[next_directions[rand][i]];
       if (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
         visited[tile_id[nx][ny]] = visited_version;
-        path.add(next_directions[ra][i]);
+        path.add(next_directions[rand][i]);
         x = nx;
         y = ny;
         ok = true;
@@ -280,15 +280,15 @@ bool try_connect_path(Path& path, int sx, int sy, int gx, int gy)
   int x = sx;
   int y = sy;
   while (x != gx || y != gy) {
-    int ra = rand_xorshift32() % 24;
+    int rand = rand_xorshift32() % 24;
     bool ok = false;
     for (int i = 0; i < (4); ++i) {
-      int nx = x + dx[next_directions[ra][i]];
-      int ny = y + dy[next_directions[ra][i]];
+      int nx = x + dx[next_directions[rand][i]];
+      int ny = y + dy[next_directions[rand][i]];
       if ((nx == gx && ny == gy) || (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version)) {
         x = nx;
         y = ny;
-        path.add(next_directions[ra][i]);
+        path.add(next_directions[rand][i]);
         visited[tile_id[x][y]] = visited_version;
         ok = true;
         break;
@@ -306,8 +306,8 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2)
   int iter = 0;
   while (true) {
     iter++;
-    reset_visited_all();
-    current_path.init(si, sj);
+    reset_visited();
+    current_path.init(sx, sy);
 
     if (iter > 100000 || get_elapsed_time() > time_limit_1) {
       int prefix_len = rand_xorshift32() % best_path.length;
@@ -403,11 +403,11 @@ public:
   }
 };
 
-bool search_best_path_2(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param)
+bool search_best_path(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param)
 {
   DfsSolver dfsSolver;
-  int ra = rand_xorshift32() % 2;
-  if (ra == 0) {
+  int rand = rand_xorshift32() % 2;
+  if (rand == 0) {
     dfsSolver.start(seg_start_x, seg_start_y, seg_goal_x, seg_goal_y);
   }
   else {
@@ -416,7 +416,7 @@ bool search_best_path_2(int seg_start_x, int seg_start_y, int seg_goal_x, int se
 
   if (dfsSolver.connected) {
     keep_path.copy(dfsSolver.best_path);
-    if (ra == 1) {
+    if (rand == 1) {
       keep_path.reverse();
     }
     return true;
@@ -440,7 +440,7 @@ void anneal_path_segment(const AnnealParam& param)
   while (true) {
     ++iteration_cnt;
 
-    reset_visited_all();
+    reset_visited();
 
     int path_len = current_path.length;
     int segment_len = rand_xorshift32() % param.range_segment_len + param.min_segment_len;
@@ -453,12 +453,12 @@ void anneal_path_segment(const AnnealParam& param)
     int seg_goal_y = current_path.y[seg_right];
 
     /* ─ before_keep_path ─ */
-    before_keep_path.init(si, sj);
+    before_keep_path.init(sx, sy);
     for (int i = 0; i < (seg_left); ++i) {
       before_keep_path.add(current_path.direction[i]);
-      int cx = before_keep_path.x[before_keep_path.length - 1];
-      int cy = before_keep_path.y[before_keep_path.length - 1];
-      visited[tile_id[cx][cy]] = visited_version;
+      int x = before_keep_path.x[before_keep_path.length - 1];
+      int y = before_keep_path.y[before_keep_path.length - 1];
+      visited[tile_id[x][y]] = visited_version;
     }
 
     /* ─ keep_path (旧区間) ─ */
@@ -466,9 +466,9 @@ void anneal_path_segment(const AnnealParam& param)
     for (int i = seg_left; i < seg_right; ++i)
     {
       keep_path.add(current_path.direction[i]);
-      int cx = keep_path.x[keep_path.length - 1];
-      int cy = keep_path.y[keep_path.length - 1];
-      visited[tile_id[cx][cy]] = -1;
+      int x = keep_path.x[keep_path.length - 1];
+      int y = keep_path.y[keep_path.length - 1];
+      visited[tile_id[x][y]] = -1;
     }
 
     visited[tile_id[seg_goal_x][seg_goal_y]] = visited_version;
@@ -478,12 +478,12 @@ void anneal_path_segment(const AnnealParam& param)
     for (int i = seg_right; i < path_len - 1; ++i)
     {
       after_keep_path.add(current_path.direction[i]);
-      int cx = after_keep_path.x[after_keep_path.length - 1];
-      int cy = after_keep_path.y[after_keep_path.length - 1];
-      visited[tile_id[cx][cy]] = visited_version;
+      int x = after_keep_path.x[after_keep_path.length - 1];
+      int y = after_keep_path.y[after_keep_path.length - 1];
+      visited[tile_id[x][y]] = visited_version;
     }
 
-    bool res = search_best_path_2(seg_start_x, seg_start_y, seg_goal_x, seg_goal_y, keep_path, param);
+    bool res = search_best_path(seg_start_x, seg_start_y, seg_goal_x, seg_goal_y, keep_path, param);
     if (!res) {
       continue;
     }
@@ -523,13 +523,13 @@ void anneal_path_segment(const AnnealParam& param)
   }
 }
 
-int solve_case(int case_num, const AnnealParam& param)
+int solve(int case_num, const AnnealParam& param)
 {
   start_timer();
 
-  read_case_input(case_num);
+  read_input(case_num);
 
-  best_path.init(si, sj);
+  best_path.init(sx, sy);
 
   const double TIME_LIMIT_STAGE1 = 0.05;
   const double TIME_LIMIT_STAGE2 = 0.1;
@@ -543,14 +543,14 @@ int solve_case(int case_num, const AnnealParam& param)
     cerr << "best_score = " << best_path.score << ", time = " << get_elapsed_time() << "sec." << endl;
   }
 
-  write_case_output(case_num);
+  write_output(case_num);
 
   return best_path.score;
 }
 
 int main()
 {
-  exec_mode = 1;
+  mode = 1;
   show_log = true;
 
   AnnealParam param;
@@ -561,18 +561,18 @@ int main()
   param.range_segment_len = 50;
   param.min_segment_len = 3;
 
-  if (exec_mode == 0) {
-    solve_case(0, param);
+  if (mode == 0) {
+    solve(0, param);
   }
-  else if (exec_mode == 1) {
+  else if (mode == 1) {
     int sum = 0;
     for (int i = 0; i < (10); ++i) {
-      sum += solve_case(i, param);
+      sum += solve(i, param);
       cout << i << ' ' << sum << endl;
     }
     cout << "sum = " << sum << endl;
   }
-  else if (exec_mode == 2) {
+  else if (mode == 2) {
     show_log = false;
 
     int best_score = 0;
@@ -585,8 +585,8 @@ int main()
       AnnealParam new_param = best_param;
 
       if (iter > 10) {
-        int ra = rand_xorshift32() % 5;
-        switch (ra) {
+        int rand = rand_xorshift32() % 5;
+        switch (rand) {
           case 0:
             new_param.start_temp *= rand_unit_double() * 2;
             break;
@@ -605,7 +605,7 @@ int main()
       }
 
       for (int i = 0; i < (1); ++i) {
-        new_score += solve_case(i, new_param);
+        new_score += solve(i, new_param);
       }
 
       if (new_score >= best_score) {
