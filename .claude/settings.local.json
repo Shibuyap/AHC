@@ -47,7 +47,8 @@
       "Bash(timeout:*)",
       "Bash(gdb:*)",
       "Bash(mv:*)",
-      "Bash(./AHC014)"
+      "Bash(./AHC014)",
+      "Bash(/dev/null)"
     ],
     "deny": []
   }

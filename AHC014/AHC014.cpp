@@ -94,28 +94,28 @@ namespace /* 変数 */
     double maxScore;
     int ansSize;
     int ans[ANS_SIZE][4][2];
-    int ansDelete[ANS_SIZE];
-    int ansDeleteCount;
+    int deleted[ANS_SIZE];
+    int delCnt;
     int f[64][64];
-    int line[64][64][8];
-    int use[64][64];
-    int cntH[64], cntW[64];
+    int edge[64][64][8];
+    int deg[64][64];
+    int rowCnt[64], colCnt[64];
 
     // クリア関数
     void clear()
     {
       maxScore = 0;
       ansSize = 0;
-      ansDeleteCount = 0;
-      for (int i = 0; i < ANS_SIZE; ++i) ansDelete[i] = 0;
+      delCnt = 0;
+      for (int i = 0; i < ANS_SIZE; ++i) deleted[i] = 0;
       for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
         f[i][j] = false;
-        for (int k = 0; k < 8; ++k) line[i][j][k] = 0;
-        use[i][j] = 0;
+        for (int k = 0; k < 8; ++k) edge[i][j][k] = 0;
+        deg[i][j] = 0;
       }
       for (int i = 0; i < 64; ++i) {
-        cntH[i] = 0;
-        cntW[i] = 0;
+        rowCnt[i] = 0;
+        colCnt[i] = 0;
       }
     }
 
@@ -124,25 +124,25 @@ namespace /* 変数 */
     {
       maxScore = other.maxScore;
       ansSize = other.ansSize;
-      ansDeleteCount = other.ansDeleteCount;
+      delCnt = other.delCnt;
 
       for (int i = 0; i < ansSize; ++i) {
         for (int j = 0; j < 4; ++j) {
           ans[i][j][0] = other.ans[i][j][0];
           ans[i][j][1] = other.ans[i][j][1];
         }
-        ansDelete[i] = other.ansDelete[i];
+        deleted[i] = other.deleted[i];
       }
 
       for (int i = 0; i < 64; ++i) for (int j = 0; j < 64; ++j) {
         f[i][j] = other.f[i][j];
-        for (int k = 0; k < 8; ++k) line[i][j][k] = other.line[i][j][k];
-        use[i][j] = other.use[i][j];
+        for (int k = 0; k < 8; ++k) edge[i][j][k] = other.edge[i][j][k];
+        deg[i][j] = other.deg[i][j];
       }
 
       for (int i = 0; i < 64; ++i) {
-        cntH[i] = other.cntH[i];
-        cntW[i] = other.cntW[i];
+        rowCnt[i] = other.rowCnt[i];
+        colCnt[i] = other.colCnt[i];
       }
     }
 
@@ -167,20 +167,20 @@ namespace /* 変数 */
   State best_state;     // 最良解の保存
 
   // その他
-  int methodCount[20][2];
+  int stats[20][2];
 
 }  // namespace
 
-void MethodCountReset()
+void resetStats()
 {
   for (int i = 0; i < 20; ++i) {
     for (int j = 0; j < 2; ++j) {
-      methodCount[i][j] = 0;
+      stats[i][j] = 0;
     }
   }
 }
 
-bool IsNGXY(int x, int y)
+bool outOfBounds(int x, int y)
 {
   if (x < 0 || N <= x || y < 0 || N <= y) {
     return true;
@@ -191,7 +191,7 @@ bool IsNGXY(int x, int y)
 // State::calcScoreの実装
 double State::calcScore() const
 {
-  double resd = 1000000.0 * N * N / M;
+  double score = 1000000.0 * N * N / M;
 
   int sum = 0;
 
@@ -203,9 +203,9 @@ double State::calcScore() const
     }
   }
 
-  resd = resd * sum / S;
+  score = score * sum / S;
 
-  return resd;
+  return score;
 }
 
 // 旧関数（互換性のため残す）
@@ -214,24 +214,24 @@ double CalcScore()
   return current_state.calcScore();
 }
 
-void RefleshAns()
+void compact()
 {
   int tmpCount = 0;
   for (int i = 0; i < current_state.ansSize; ++i) {
-    if (current_state.ansDelete[i]) {
+    if (current_state.deleted[i]) {
       tmpCount++;
-      current_state.ansDelete[i] = 0;
+      current_state.deleted[i] = 0;
     }
     else {
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) current_state.ans[i - tmpCount][j][k] = current_state.ans[i][j][k];
     }
   }
-  if (tmpCount != current_state.ansDeleteCount) {
+  if (tmpCount != current_state.delCnt) {
     cerr << "error" << endl;
-    cerr << tmpCount << ' ' << current_state.ansDeleteCount << endl;
+    cerr << tmpCount << ' ' << current_state.delCnt << endl;
   }
   current_state.ansSize -= tmpCount;
-  current_state.ansDeleteCount = 0;
+  current_state.delCnt = 0;
 }
 
 // ローカルで複数ケース試すための全て消す関数
@@ -240,7 +240,7 @@ void AllClear_MultiCase()
   current_state.clear();
   best_state.clear();
   seed_state.clear();
-  MethodCountReset();
+  resetStats();
 }
 
 // 初期状態作成（これを呼べばスタート位置に戻れることを想定、real_maxScore等は戻さない）
@@ -250,9 +250,9 @@ void State::init()
   clear();
   for (int i = 0; i < M; ++i) {
     f[X[i]][Y[i]] = true;
-    use[X[i]][Y[i]] = 100;
-    cntH[Y[i]]++;
-    cntW[X[i]]++;
+    deg[X[i]][Y[i]] = 100;
+    rowCnt[Y[i]]++;
+    colCnt[X[i]]++;
   }
 }
 
@@ -290,9 +290,9 @@ void Input(int problemNum)
 void Output(int mode, int problemNum)
 {
   if (mode == 0) {
-    cout << current_state.ansSize - current_state.ansDeleteCount << endl;
+    cout << current_state.ansSize - current_state.delCnt << endl;
     for (int i = 0; i < current_state.ansSize; ++i) {
-      if (current_state.ansDelete[i]) { continue; }
+      if (current_state.deleted[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { cout << current_state.ans[i][j][k] << ' '; }
       cout << endl;
     }
@@ -311,9 +311,9 @@ void Output(int mode, int problemNum)
 
     ofstream ofs(fileNameOfs);
 
-    ofs << current_state.ansSize - current_state.ansDeleteCount << endl;
+    ofs << current_state.ansSize - current_state.delCnt << endl;
     for (int i = 0; i < current_state.ansSize; ++i) {
-      if (current_state.ansDelete[i]) { continue; }
+      if (current_state.deleted[i]) { continue; }
       for (int j = 0; j < 4; ++j) for (int k = 0; k < 2; ++k) { ofs << current_state.ans[i][j][k] << ' '; }
       ofs << endl;
     }
@@ -336,7 +336,7 @@ void Output(int mode, int problemNum)
 
 // 直線方向の隣接点を探索する共通関数
 // 戻り値：距離（見つからない場合は-1、既に線がある場合は-2）
-inline int FindNeighborStraight(int x, int y, int dir, int start, int end, int step, bool isVertical)
+inline int findStr(int x, int y, int dir, int start, int end, int step, bool isVertical)
 {
   for (int i = start; step > 0 ? i < end : i >= end; i += step) {
     int nx = isVertical ? i : x;
@@ -344,7 +344,7 @@ inline int FindNeighborStraight(int x, int y, int dir, int start, int end, int s
 
     if (current_state.f[nx][ny]) {
       int oppositeDir = (dir + 2) % 4; // 反対方向
-      if (current_state.line[nx][ny][oppositeDir]) return -2;
+      if (current_state.edge[nx][ny][oppositeDir]) return -2;
       return abs(isVertical ? nx - x : ny - y);
     }
   }
@@ -353,7 +353,7 @@ inline int FindNeighborStraight(int x, int y, int dir, int start, int end, int s
 
 // 斜め方向の隣接点を探索する共通関数
 // 戻り値：距離（見つからない場合は-1、既に線がある場合は-2）
-inline int FindNeighborDiagonal(int x, int y, int dir, int limit, int dx, int dy)
+inline int findDiag(int x, int y, int dir, int limit, int dx, int dy)
 {
   // 斜め方向の反対方向の対応表
   // 4(UL) <-> 6(DR), 5(LD) <-> 7(RU)
@@ -365,7 +365,7 @@ inline int FindNeighborDiagonal(int x, int y, int dir, int limit, int dx, int dy
 
     if (current_state.f[nx][ny]) {
       int oppositeDir = diagonalOpposite[dir];
-      if (current_state.line[nx][ny][oppositeDir]) return -2;
+      if (current_state.edge[nx][ny][oppositeDir]) return -2;
       return i;
     }
   }
@@ -375,53 +375,53 @@ inline int FindNeighborDiagonal(int x, int y, int dir, int limit, int dx, int dy
 // 各方向の1番近い点が使えるかどうか
 // 入力 z：方向
 // 戻り値：距離
-inline int FindNeighborPoint(int x, int y, int z)
+inline int find(int x, int y, int z)
 {
   // 上
   if (z == 0) {
-    return FindNeighborStraight(x, y, 0, x - 1, -1, -1, true);
+    return findStr(x, y, 0, x - 1, -1, -1, true);
   }
 
   // 左
   if (z == 1) {
-    return FindNeighborStraight(x, y, 1, y - 1, -1, -1, false);
+    return findStr(x, y, 1, y - 1, -1, -1, false);
   }
 
   // 下
   if (z == 2) {
-    return FindNeighborStraight(x, y, 2, x + 1, N, 1, true);
+    return findStr(x, y, 2, x + 1, N, 1, true);
   }
 
   // 右
   if (z == 3) {
-    return FindNeighborStraight(x, y, 3, y + 1, N, 1, false);
+    return findStr(x, y, 3, y + 1, N, 1, false);
   }
 
   // 左上
   if (z == 4) {
     int ma = min(x, y);
-    return FindNeighborDiagonal(x, y, 4, ma, -1, -1);
+    return findDiag(x, y, 4, ma, -1, -1);
   }
 
   // 左下
   if (z == 5) {
     int ma = min(N - 1 - x, y);
-    return FindNeighborDiagonal(x, y, 5, ma, 1, -1);
+    return findDiag(x, y, 5, ma, 1, -1);
   }
 
   // 右下
   if (z == 6) {
     int ma = min(N - 1 - x, N - 1 - y);
-    return FindNeighborDiagonal(x, y, 6, ma, 1, 1);
+    return findDiag(x, y, 6, ma, 1, 1);
   }
 
   // 右上
   if (z == 7) {
     int ma = min(x, N - 1 - y);
-    return FindNeighborDiagonal(x, y, 7, ma, -1, 1);
+    return findDiag(x, y, 7, ma, -1, 1);
   }
 
-  cerr << "ERROR FindNeighborPoint" << endl;
+  cerr << "ERROR find" << endl;
   return -2;
 }
 
@@ -475,13 +475,13 @@ inline bool CheckRectangleStraight(int x, int y, int diff1, int diff2, const Rec
   int yy = y + params.dy1 * diff1 + params.dy2 * diff2;
 
   // その点がグリッド内か
-  if (IsNGXY(xx, yy)) return false;
+  if (outOfBounds(xx, yy)) return false;
 
   // そこに点が存在しているか
   if (!current_state.f[xx][yy]) return false;
 
   // 辺が既に存在していないか
-  if (current_state.line[xx][yy][params.line1] || current_state.line[xx][yy][params.line2]) return false;
+  if (current_state.edge[xx][yy][params.line1] || current_state.edge[xx][yy][params.line2]) return false;
 
   // 間に邪魔な頂点がないか
   int p1_x = params.path1_vertical ? 0 : xx;
@@ -507,13 +507,13 @@ inline bool CheckRectangleDiagonal(int x, int y, int diff1, int diff2, const Rec
   int yy = y + params.dy1 * diff1 + params.dy2 * diff2;
 
   // その点がグリッド内か
-  if (IsNGXY(xx, yy)) return false;
+  if (outOfBounds(xx, yy)) return false;
 
   // そこに点が存在しているか
   if (!current_state.f[xx][yy]) return false;
 
   // 辺が既に存在していないか
-  if (current_state.line[xx][yy][params.line1] || current_state.line[xx][yy][params.line2]) return false;
+  if (current_state.edge[xx][yy][params.line1] || current_state.edge[xx][yy][params.line2]) return false;
 
   // 間に邪魔な頂点がないか (path1_limit, path2_limitは実際の値に置き換える必要がある)
   int limit1 = (params.path1_limit == -1) ? diff2 : diff1;
@@ -526,7 +526,7 @@ inline bool CheckRectangleDiagonal(int x, int y, int diff1, int diff2, const Rec
 }
 
 // 4点目の確認
-inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
+inline bool canMake(int x, int y, int z, int diff1, int diff2)
 {
   // 必ず反時計回り
 
@@ -562,7 +562,7 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
     return CheckRectangleDiagonal(x, y, diff1, diff2, diagonalParams[z - 4]);
   }
 
-  cerr << "ERROR CanMakeRectangle" << endl;
+  cerr << "ERROR canMake" << endl;
   return false;
 }
 
@@ -600,14 +600,14 @@ void State::setRectangleLines(int x[4], int y[4], int rectDir, bool setValue)
 {
   const RectLineSettings& settings = rectLineSettings[rectDir];
 
-  line[x[0]][y[0]][settings.line1_1] = setValue;
-  line[x[0]][y[0]][settings.line1_2] = setValue;
-  line[x[1]][y[1]][settings.line2_1] = setValue;
-  line[x[1]][y[1]][settings.line2_2] = setValue;
-  line[x[2]][y[2]][settings.line3_1] = setValue;
-  line[x[2]][y[2]][settings.line3_2] = setValue;
-  line[x[3]][y[3]][settings.line4_1] = setValue;
-  line[x[3]][y[3]][settings.line4_2] = setValue;
+  edge[x[0]][y[0]][settings.line1_1] = setValue;
+  edge[x[0]][y[0]][settings.line1_2] = setValue;
+  edge[x[1]][y[1]][settings.line2_1] = setValue;
+  edge[x[1]][y[1]][settings.line2_2] = setValue;
+  edge[x[2]][y[2]][settings.line3_1] = setValue;
+  edge[x[2]][y[2]][settings.line3_2] = setValue;
+  edge[x[3]][y[3]][settings.line4_1] = setValue;
+  edge[x[3]][y[3]][settings.line4_2] = setValue;
 }
 
 // State::addRectangleの実装
@@ -617,15 +617,15 @@ void State::addRectangle(int x[4], int y[4], int rectDir)
   ans[ansSize][1][0] = x[1]; ans[ansSize][1][1] = y[1];
   ans[ansSize][2][0] = x[2]; ans[ansSize][2][1] = y[2];
   ans[ansSize][3][0] = x[3]; ans[ansSize][3][1] = y[3];
-  ansDelete[ansSize] = 0;
+  deleted[ansSize] = 0;
   ansSize++;
 
   f[x[0]][y[0]] = 1;
-  cntW[x[0]]++;
-  cntH[y[0]]++;
+  colCnt[x[0]]++;
+  rowCnt[y[0]]++;
 
   for (int i = 0; i < 4; ++i) {
-    use[x[i]][y[i]]++;
+    deg[x[i]][y[i]]++;
   }
 
   setRectangleLines(x, y, rectDir, true);
@@ -635,11 +635,11 @@ void State::addRectangle(int x[4], int y[4], int rectDir)
 void State::removeRectangle(int x[4], int y[4], int rectDir)
 {
   f[x[0]][y[0]] = 0;
-  cntW[x[0]]--;
-  cntH[y[0]]--;
+  colCnt[x[0]]--;
+  rowCnt[y[0]]--;
 
   for (int i = 0; i < 4; ++i) {
-    use[x[i]][y[i]]--;
+    deg[x[i]][y[i]]--;
   }
 
   setRectangleLines(x, y, rectDir, false);
@@ -652,53 +652,53 @@ void State::removeRectangle(int x[4], int y[4], int rectDir)
 */
 
 // ランダムに1点が足せるかどうか
-void Method1(double temperature)
+void tryAdd(double temperature)
 {
   int x = Rand() % N;
   int y = Rand() % N;
 
   if (current_state.f[x][y]) { return; }
 
-  methodCount[1][1]++;
+  stats[1][1]++;
 
   int u = -1;
-  if (current_state.cntH[y] != 0) {
-    u = FindNeighborPoint(x, y, 0);
+  if (current_state.rowCnt[y] != 0) {
+    u = find(x, y, 0);
     if (u == -2) { return; }
   }
   int l = -1;
-  if (current_state.cntW[x] != 0) {
-    l = FindNeighborPoint(x, y, 1);
+  if (current_state.colCnt[x] != 0) {
+    l = find(x, y, 1);
     if (l == -2) { return; }
   }
   int d = -1;
-  if (current_state.cntH[y] != 0) {
-    d = FindNeighborPoint(x, y, 2);
+  if (current_state.rowCnt[y] != 0) {
+    d = find(x, y, 2);
     if (d == -2) { return; }
   }
   int r = -1;
-  if (current_state.cntW[x] != 0) {
-    r = FindNeighborPoint(x, y, 3);
+  if (current_state.colCnt[x] != 0) {
+    r = find(x, y, 3);
     if (r == -2) { return; }
   }
-  int ul = FindNeighborPoint(x, y, 4);
+  int ul = find(x, y, 4);
   if (ul == -2) { return; }
-  int ld = FindNeighborPoint(x, y, 5);
+  int ld = find(x, y, 5);
   if (ld == -2) { return; }
-  int dr = FindNeighborPoint(x, y, 6);
+  int dr = find(x, y, 6);
   if (dr == -2) { return; }
-  int ru = FindNeighborPoint(x, y, 7);
+  int ru = find(x, y, 7);
   if (ru == -2) { return; }
 
   // 8種類の長方形
-  int RectDir = -1;
+  int dir = -1;
   int xx = -1, yy = -1;
   int x1 = -1, y1 = -1;
   int x3 = -1, y3 = -1;
 
   // 上左
-  if (RectDir == -1 && u != -1 && l != -1 && CanMakeRectangle(x, y, 0, u, l)) {
-    RectDir = 0;
+  if (dir == -1 && u != -1 && l != -1 && canMake(x, y, 0, u, l)) {
+    dir = 0;
     xx = x - u;
     yy = y - l;
     x1 = x - u;
@@ -707,8 +707,8 @@ void Method1(double temperature)
     y3 = y - l;
   }
   // 左下
-  if (RectDir == -1 && l != -1 && d != -1 && CanMakeRectangle(x, y, 1, l, d)) {
-    RectDir = 1;
+  if (dir == -1 && l != -1 && d != -1 && canMake(x, y, 1, l, d)) {
+    dir = 1;
     xx = x + d;
     yy = y - l;
     x1 = x;
@@ -717,8 +717,8 @@ void Method1(double temperature)
     y3 = y;
   }
   // 下右
-  if (RectDir == -1 && d != -1 && r != -1 && CanMakeRectangle(x, y, 2, d, r)) {
-    RectDir = 2;
+  if (dir == -1 && d != -1 && r != -1 && canMake(x, y, 2, d, r)) {
+    dir = 2;
     xx = x + d;
     yy = y + r;
     x1 = x + d;
@@ -727,8 +727,8 @@ void Method1(double temperature)
     y3 = y + r;
   }
   // 右上
-  if (RectDir == -1 && r != -1 && u != -1 && CanMakeRectangle(x, y, 3, r, u)) {
-    RectDir = 3;
+  if (dir == -1 && r != -1 && u != -1 && canMake(x, y, 3, r, u)) {
+    dir = 3;
     xx = x - u;
     yy = y + r;
     x1 = x;
@@ -738,9 +738,9 @@ void Method1(double temperature)
   }
 
   // 左上・左下
-  if (RectDir == -1 && ul != -1 && ld != -1 &&
-    CanMakeRectangle(x, y, 4, ul, ld)) {
-    RectDir = 4;
+  if (dir == -1 && ul != -1 && ld != -1 &&
+    canMake(x, y, 4, ul, ld)) {
+    dir = 4;
     xx = x - ul + ld;
     yy = y - ul - ld;
     x1 = x - ul;
@@ -749,9 +749,9 @@ void Method1(double temperature)
     y3 = y - ld;
   }
   // 左下・右下
-  if (RectDir == -1 && ld != -1 && dr != -1 &&
-    CanMakeRectangle(x, y, 5, ld, dr)) {
-    RectDir = 5;
+  if (dir == -1 && ld != -1 && dr != -1 &&
+    canMake(x, y, 5, ld, dr)) {
+    dir = 5;
     xx = x + ld + dr;
     yy = y - ld + dr;
     x1 = x + ld;
@@ -760,9 +760,9 @@ void Method1(double temperature)
     y3 = y + dr;
   }
   // 右下・右上
-  if (RectDir == -1 && dr != -1 && ru != -1 &&
-    CanMakeRectangle(x, y, 6, dr, ru)) {
-    RectDir = 6;
+  if (dir == -1 && dr != -1 && ru != -1 &&
+    canMake(x, y, 6, dr, ru)) {
+    dir = 6;
     xx = x + dr - ru;
     yy = y + dr + ru;
     x1 = x + dr;
@@ -771,9 +771,9 @@ void Method1(double temperature)
     y3 = y + ru;
   }
   // 右上・左上
-  if (RectDir == -1 && ru != -1 && ul != -1 &&
-    CanMakeRectangle(x, y, 7, ru, ul)) {
-    RectDir = 7;
+  if (dir == -1 && ru != -1 && ul != -1 &&
+    canMake(x, y, 7, ru, ul)) {
+    dir = 7;
     xx = x - ru - ul;
     yy = y + ru - ul;
     x1 = x - ru;
@@ -782,20 +782,20 @@ void Method1(double temperature)
     y3 = y - ul;
   }
 
-  if (RectDir == -1) { return; }
+  if (dir == -1) { return; }
 
   double diffScore = 1000000.0 * N * N / M * W[x][y] / S;
 
   double prob = exp(diffScore / temperature);
   if (prob > Rand01()) {
-    methodCount[1][0]++;
+    stats[1][0]++;
 
     current_state.maxScore += diffScore;
 
     // 長方形を追加
     int rectX[4] = { x, x1, xx, x3 };
     int rectY[4] = { y, y1, yy, y3 };
-    current_state.addRectangle(rectX, rectY, RectDir);
+    current_state.addRectangle(rectX, rectY, dir);
 
     if (current_state.maxScore > best_state.maxScore) {
       best_state.copyFrom(current_state);
@@ -817,14 +817,14 @@ inline int GetDir(int x1, int y1, int x2, int y2)
 }
 
 // ランダムに1点選びほかに影響ないなら削除
-void Method2(double temperature)
+void tryDel(double temperature)
 {
   if (current_state.ansSize == 0) { return; }
   int ite = Rand() % current_state.ansSize;
-  if (current_state.ansDelete[ite]) { return; }
-  if (current_state.use[current_state.ans[ite][0][0]][current_state.ans[ite][0][1]] > 1) { return; }
+  if (current_state.deleted[ite]) { return; }
+  if (current_state.deg[current_state.ans[ite][0][0]][current_state.ans[ite][0][1]] > 1) { return; }
 
-  methodCount[2][1]++;
+  stats[2][1]++;
 
   int x[4], y[4];
   for (int i = 0; i < 4; ++i) {
@@ -836,16 +836,16 @@ void Method2(double temperature)
 
   double prob = exp(diffScore / temperature);
   if (prob > Rand01()) {
-    methodCount[2][0]++;
+    stats[2][0]++;
 
     current_state.maxScore += diffScore;
 
     // 長方形を削除
-    int RectDir = GetDir(x[0], y[0], x[1], y[1]);
-    current_state.removeRectangle(x, y, RectDir);
+    int dir = GetDir(x[0], y[0], x[1], y[1]);
+    current_state.removeRectangle(x, y, dir);
 
-    current_state.ansDelete[ite] = 1;
-    current_state.ansDeleteCount++;
+    current_state.deleted[ite] = 1;
+    current_state.delCnt++;
   }
 }
 
@@ -874,17 +874,17 @@ pair<int, int> SimulatedAnnealing(double timeLimit, double startTemp, double end
       rollbackCount++;
     }
 
-    if (current_state.ansDeleteCount >= 10000) {
-      RefleshAns();
+    if (current_state.delCnt >= 10000) {
+      compact();
     }
 
     double temperature = startTemp + (endTemp - startTemp) * nowProgress;
 
     if (Rand() % 2 == 0) {
-      Method1(temperature);
+      tryAdd(temperature);
     }
     else {
-      Method2(temperature);
+      tryDel(temperature);
     }
   }
 
@@ -909,7 +909,7 @@ int Solve(int mode, int problemNum = 0)
 
   // シード作り
   int seedCount = 20;  // 0にするとシード作成を行わない
-  for (int tei = 0; tei < seedCount; ++tei) {
+  for (int seed = 0; seed < seedCount; ++seed) {
     start_timer();
 
     // 初期状態に戻す
@@ -938,18 +938,18 @@ int Solve(int mode, int problemNum = 0)
   // 一番スコアの良い解
   current_state.copyFrom(best_state);
 
-  RefleshAns();
+  compact();
 
   CalcScore();
 
   // デバッグログ
   if (mode != 0) {
     cout << "problemNum = " << problemNum << ", N = " << N << endl;
-    cout << "ansSize = " << current_state.ansSize << ", ansDeleteCount = " << current_state.ansDeleteCount << endl;
+    cout << "ansSize = " << current_state.ansSize << ", delCnt = " << current_state.delCnt << endl;
     cout << "maxScore = " << current_state.maxScore << endl;
     cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
     for (int i = 1; i < 5; ++i) {
-      cout << "Method" << i << " = " << methodCount[i][0] << " / " << methodCount[i][1] << endl;
+      cout << "Method" << i << " = " << stats[i][0] << " / " << stats[i][1] << endl;
     }
     cout << endl;
   }
