@@ -32,6 +32,23 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+// タイマー
+namespace
+{
+  std::chrono::steady_clock::time_point start_time_clock;
+
+  void start_timer()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+}
+
 // U, L, D, R, UL, LD, DR, RU
 const int dx[8] = { -1, 0, 1, 0, -1, 1, 1, -1 };
 const int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
@@ -299,26 +316,6 @@ void Output(int mode, int problemNum)
 
     ofs.close();
   }
-}
-
-void CopyToReal()
-{
-  best_state.copyFrom(current_state);
-}
-
-void CopyToSeed()
-{
-  seed_state.copyFrom(current_state);
-}
-
-void RollBackFromReal()
-{
-  current_state.copyFrom(best_state);
-}
-
-void RollBackFromSeed()
-{
-  current_state.copyFrom(seed_state);
 }
 
 /*
@@ -797,12 +794,8 @@ void Method1(double temperature)
     current_state.addRectangle(rectX, rectY, RectDir);
 
     if (current_state.maxScore > best_state.maxScore) {
-      // RefleshAns();
-      CopyToReal();
+      best_state.copyFrom(current_state);
     }
-  }
-  else {
-    // 元に戻す
   }
 }
 
@@ -850,37 +843,31 @@ void Method2(double temperature)
     current_state.ansDelete[ite] = 1;
     current_state.ansDeleteCount++;
   }
-  else {
-    // 元に戻す
-  }
 }
 
 int Solve(int mode, int problemNum = 0)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  start_timer();
 
   // 初期状態作成
   current_state.init();
 
   // 愚直解作成
   current_state.maxScore = CalcScore();
-  CopyToReal();
-  CopyToSeed();
+  best_state.copyFrom(current_state);
+  seed_state.copyFrom(current_state);
 
   // シード作り
   int seedCount = 20;  // 0にするとシード作成を行わない
   for (int tei = 0; tei < seedCount; ++tei) {
-    startTime = clock();
+    start_timer();
 
     // 初期状態に戻す
     current_state.init();
     current_state.maxScore = CalcScore();
 
     // 焼きなまし
-    endTime = clock();
-    double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+    double nowTime = get_elapsed_time();
 
     double TL = 4.2 / seedCount;
     double nowProgress = nowTime / TL;
@@ -891,15 +878,16 @@ int Solve(int mode, int problemNum = 0)
     while (true) {
       loop++;
       if (loop % 100 == 1) {
-        endTime = clock();
-        nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+        nowTime = get_elapsed_time();
         nowProgress = nowTime / TL;
       }
-      if (nowProgress > 1.0) { break; }
+      if (nowProgress > 1.0) {
+        break;
+      }
 
       // 現在のスコアが悪いときは元に戻す
       if (current_state.maxScore * 1.2 < best_state.maxScore) {
-        RollBackFromReal();
+        current_state.copyFrom(best_state);
         rollbackCount++;
       }
 
@@ -907,45 +895,32 @@ int Solve(int mode, int problemNum = 0)
         RefleshAns();
       }
 
-      double temperature =
-        startTemperature + (endTemperature - startTemperature) * nowProgress;
+      double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-      // メソッド選択
-      int me = 1;
       if (Rand() % 2 == 0) {
-        me = 2;
-      }
-
-      // 各メソッド処理
-
-      if (me == 1) {
         Method1(temperature);
       }
-
-      if (me == 2) {
+      else {
         Method2(temperature);
       }
-    }  // while文ここまで（シード作成）
+    }
 
     cerr << "seed loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
 
     // スコアが良ければシードを更新
-    RollBackFromReal();
+    current_state.copyFrom(best_state);
     if (current_state.maxScore > seed_state.maxScore) {
-      CopyToSeed();
+      seed_state.copyFrom(current_state);
     }
-
-    // ここで消去するものがあれば消去する
   }
 
   // シードから戻す
-  RollBackFromSeed();
-  CopyToReal();
+  current_state.copyFrom(seed_state);
+  best_state.copyFrom(current_state);
 
   // 焼きなまし
-  startTime = clock();
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+  start_timer();
+  double nowTime = get_elapsed_time();
   double TL = 0.5;
   double nowProgress = nowTime / TL;
   double startTemperature = 20048;
@@ -955,15 +930,16 @@ int Solve(int mode, int problemNum = 0)
   while (true) {
     loop++;
     if (loop % 100 == 1) {
-      endTime = clock();
-      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+      nowTime = get_elapsed_time();
       nowProgress = nowTime / TL;
     }
-    if (nowProgress > 1.0) { break; }
+    if (nowProgress > 1.0) {
+      break;
+    }
 
     // 現在のスコアが悪いときは元に戻す
     if (current_state.maxScore * 1.2 < best_state.maxScore) {
-      RollBackFromReal();
+      current_state.copyFrom(best_state);
       rollbackCount++;
     }
 
@@ -971,30 +947,20 @@ int Solve(int mode, int problemNum = 0)
       RefleshAns();
     }
 
-    double temperature =
-      startTemperature + (endTemperature - startTemperature) * nowProgress;
+    double temperature = startTemperature + (endTemperature - startTemperature) * nowProgress;
 
-    // メソッド選択
-    int me = 1;
     if (Rand() % 2 == 0) {
-      me = 2;
-    }
-
-    // 各メソッド処理
-
-    if (me == 1) {
       Method1(temperature);
     }
-
-    if (me == 2) {
+    else {
       Method2(temperature);
     }
-  }  // while文ここまで（メインループ）
+  }
 
   cerr << "main loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
 
   // 一番スコアの良い解
-  RollBackFromReal();
+  current_state.copyFrom(best_state);
 
   RefleshAns();
 
@@ -1003,13 +969,11 @@ int Solve(int mode, int problemNum = 0)
   // デバッグログ
   if (mode != 0) {
     cout << "problemNum = " << problemNum << ", N = " << N << endl;
-    cout << "ansSize = " << current_state.ansSize << ", ansDeleteCount = " << current_state.ansDeleteCount
-      << endl;
+    cout << "ansSize = " << current_state.ansSize << ", ansDeleteCount = " << current_state.ansDeleteCount << endl;
     cout << "maxScore = " << current_state.maxScore << endl;
     cout << "loop = " << loop << ", rollbackCount = " << rollbackCount << endl;
     for (int i = 1; i < 5; ++i) {
-      cout << "Method" << i << " = " << methodCount[i][0] << " / "
-        << methodCount[i][1] << endl;
+      cout << "Method" << i << " = " << methodCount[i][0] << " / " << methodCount[i][1] << endl;
     }
     cout << endl;
   }
