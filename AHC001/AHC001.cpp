@@ -1,7 +1,4 @@
-﻿#pragma GCC target("avx2")
-#pragma GCC optimize("O3")
-#pragma GCC optimize("unroll-loops")
-#include <algorithm>
+﻿#include <algorithm>
 #include <chrono>
 #include <climits>
 #include <cmath>
@@ -17,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-// Removed macro definitions - using standard for loops instead
 using namespace std;
 using namespace chrono;
 typedef long long int ll;
@@ -98,16 +94,20 @@ inline void nyuuryokuInit(int fileNum)
   }
 }
 
-inline void FileKakikomi(int fileNum)
+// ファイル出力
+void output_data(int case_num)
 {
-  string fileName = to_string(fileNum);
-  fileName += "_out.txt";
-  const char* cstr = fileName.c_str();
-  ofstream ofs(cstr);
-  for (int i = 0; i < n; ++i) {
-    ofs << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
+  std::ostringstream oss;
+  oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ofstream ofs(oss.str());
+
+  if (ofs.is_open()) {
+    for (int i = 0; i < n; ++i) {
+      ofs << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
+    }
+
+    ofs.close();
   }
-  ofs.close();
 }
 
 inline void FileKakikomiERROR(int fileNum)
@@ -1688,8 +1688,9 @@ int solve(int teisyutu, int fileNum)
       cout << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
     }
   }
-
-  FileKakikomi(fileNum);
+  else {
+    output_data(fileNum);
+  }
 
   // 提出時以下は消す
   if (teisyutu == 0) {
@@ -1737,66 +1738,21 @@ inline void AllClear()
 
 int main()
 {
-  int teisyutu = 0;
-
-  if (teisyutu) {
-    solve(teisyutu, 0);
+  int mode = 2;
+  if (mode == 0) {
+    solve(1, 0);
   }
-  else {
-    int mode = 0;
-    if (mode == 0) { // コードテスト用
-      solve(teisyutu, 0);
+  else if (mode == 1) {
+    // コードテスト用
+    solve(0, 0);
+  }
+  else if (mode == 2) {
+    // スコア確認用
+    for (int i = 0; i < 10; ++i) {
+      AllClear();
+      solve(0, i);
     }
-
-    if (mode == 1) { // スコア確認用
-      for (int i = 0; i < (1000); ++i) {
-        for (int i = 0; i < 50; ++i) {
-          for (int j = 0; j < (10); ++j) {
-            AllClear();
-            solve(teisyutu, i);
-          }
-        }
-      }
-    }
-
-    if (mode == 2) { // ハイパラいじり用
-      string fileName = "haipara_hoge.txt";
-      const char* cstr = fileName.c_str();
-      ofstream ofs(cstr);
-
-      vector<int> arrHaiparaOya = { 1,2,4,8 };
-      int m = arrHaiparaOya.size();
-
-      for (int k = 0; k < (m); ++k) {
-        for (int l = 0; l < (4); ++l) {
-          haipara_oya = arrHaiparaOya[k];
-          if (l == 0) haipara_TT = haipara_oya;
-          if (l == 1) haipara_TT = haipara_oya + 1;
-          if (l == 2) haipara_TT = haipara_oya * 2;
-          if (l == 3) haipara_TT = haipara_oya * 4;
-
-          ll sum = 0;
-          for (int i = 0; i < 50; ++i) {
-            for (int j = 0; j < (1); ++j) {
-              AllClear();
-              sum += solve(teisyutu, i);
-            }
-          }
-          cout << "haipara_oya = " << haipara_oya;
-          cout << ", haipara_TT = " << haipara_TT;
-          cout << ", sum = " << sum << endl;
-          ofs << "haipara_oya = " << haipara_oya;
-          ofs << ", haipara_TT = " << haipara_TT;
-          ofs << ", sum = " << sum << endl;
-        }
-      }
-
-      ofs.close();
-    }
-
   }
 
   return 0;
 }
-
-
