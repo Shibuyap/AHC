@@ -432,177 +432,116 @@ inline bool CheckStraightPath(int x, int y, int start, int end, bool isVertical)
   return true;
 }
 
+// 直線方向の長方形チェック用構造体
+struct RectCheckParamsStraight
+{
+  int dx1, dy1, dx2, dy2;  // 座標計算用
+  int line1, line2;         // チェックする辺の方向
+  int path1_start, path1_end, path1_vertical;
+  int path2_start, path2_end, path2_vertical;
+};
+
+// 斜め方向の長方形チェック用構造体
+struct RectCheckParamsDiagonal
+{
+  int dx1, dy1, dx2, dy2;  // 座標計算用
+  int line1, line2;         // チェックする辺の方向
+  int path1_dx, path1_dy, path1_limit;
+  int path2_dx, path2_dy, path2_limit;
+};
+
+// 直線方向の長方形チェック共通関数
+inline bool CheckRectangleStraight(int x, int y, int diff1, int diff2, const RectCheckParamsStraight& params)
+{
+  int xx = x + params.dx1 * diff1 + params.dx2 * diff2;
+  int yy = y + params.dy1 * diff1 + params.dy2 * diff2;
+
+  // その点がグリッド内か
+  if (IsNGXY(xx, yy)) return false;
+
+  // そこに点が存在しているか
+  if (!current_state.f[xx][yy]) return false;
+
+  // 辺が既に存在していないか
+  if (current_state.line[xx][yy][params.line1] || current_state.line[xx][yy][params.line2]) return false;
+
+  // 間に邪魔な頂点がないか
+  int p1_x = params.path1_vertical ? 0 : xx;
+  int p1_y = params.path1_vertical ? yy : 0;
+  int p1_start = params.path1_vertical ? (xx + params.path1_start) : (yy + params.path1_start);
+  int p1_end = params.path1_vertical ? (x + params.path1_end) : (y + params.path1_end);
+
+  int p2_x = params.path2_vertical ? 0 : xx;
+  int p2_y = params.path2_vertical ? yy : 0;
+  int p2_start = params.path2_vertical ? (xx + params.path2_start) : (yy + params.path2_start);
+  int p2_end = params.path2_vertical ? (x + params.path2_end) : (y + params.path2_end);
+
+  if (!CheckStraightPath(p1_x, p1_y, p1_start, p1_end, params.path1_vertical)) return false;
+  if (!CheckStraightPath(p2_x, p2_y, p2_start, p2_end, params.path2_vertical)) return false;
+
+  return true;
+}
+
+// 斜め方向の長方形チェック共通関数
+inline bool CheckRectangleDiagonal(int x, int y, int diff1, int diff2, const RectCheckParamsDiagonal& params)
+{
+  int xx = x + params.dx1 * diff1 + params.dx2 * diff2;
+  int yy = y + params.dy1 * diff1 + params.dy2 * diff2;
+
+  // その点がグリッド内か
+  if (IsNGXY(xx, yy)) return false;
+
+  // そこに点が存在しているか
+  if (!current_state.f[xx][yy]) return false;
+
+  // 辺が既に存在していないか
+  if (current_state.line[xx][yy][params.line1] || current_state.line[xx][yy][params.line2]) return false;
+
+  // 間に邪魔な頂点がないか (path1_limit, path2_limitは実際の値に置き換える必要がある)
+  int limit1 = (params.path1_limit == -1) ? diff2 : diff1;
+  int limit2 = (params.path2_limit == -1) ? diff2 : diff1;
+
+  if (!CheckDiagonalPath(xx, yy, 1, limit1, params.path1_dx, params.path1_dy)) return false;
+  if (!CheckDiagonalPath(xx, yy, 1, limit2, params.path2_dx, params.path2_dy)) return false;
+
+  return true;
+}
+
 // 4点目の確認
 inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
 {
   // 必ず反時計回り
 
-  // 上左
-  if (z == 0) {
-    int xx = x - diff1;
-    int yy = y - diff2;
+  // 直線方向のパラメータ設定
+  static const RectCheckParamsStraight straightParams[4] = {
+    // 上左 (z=0)
+    { -1, 0, 0, -1, 3, 2, 1, 0, false, 1, 0, true },
+    // 左下 (z=1)
+    { 0, -1, 1, 0, 0, 3, -1, 0, true, 1, 0, false },
+    // 下右 (z=2)
+    { 1, 0, 0, 1, 1, 0, -1, 0, false, -1, 0, true },
+    // 右上 (z=3)
+    { 0, 1, -1, 0, 2, 1, 1, 0, true, -1, 0, false }
+  };
 
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][3] || current_state.line[xx][yy][2]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckStraightPath(xx, 0, yy + 1, y, false)) return false;
-    if (!CheckStraightPath(0, yy, xx + 1, x, true)) return false;
-
-    return true;
+  if (z >= 0 && z <= 3) {
+    return CheckRectangleStraight(x, y, diff1, diff2, straightParams[z]);
   }
 
-  // 左下
-  if (z == 1) {
-    int xx = x + diff2;
-    int yy = y - diff1;
+  // 斜め方向のパラメータ設定
+  static const RectCheckParamsDiagonal diagonalParams[4] = {
+    // 左上・左下 (z=4) path1_limit=-1 は diff2を使う、path2_limit=1 は diff1を使う
+    { -1, -1, 1, -1, 7, 6, -1, 1, -1, 1, 1, 1 },
+    // 左下・右下 (z=5)
+    { 1, -1, 1, 1, 4, 7, -1, -1, -1, -1, 1, 1 },
+    // 右下・右上 (z=6)
+    { 1, 1, -1, 1, 5, 4, 1, -1, -1, -1, -1, 1 },
+    // 右上・左上 (z=7)
+    { -1, 1, -1, -1, 6, 5, 1, 1, -1, 1, -1, 1 }
+  };
 
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][0] || current_state.line[xx][yy][3]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckStraightPath(0, yy, xx - 1, x, true)) return false;
-    if (!CheckStraightPath(xx, 0, yy + 1, y, false)) return false;
-
-    return true;
-  }
-
-  // 下右
-  if (z == 2) {
-    int xx = x + diff1;
-    int yy = y + diff2;
-
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][1] || current_state.line[xx][yy][0]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckStraightPath(xx, 0, yy - 1, y, false)) return false;
-    if (!CheckStraightPath(0, yy, xx - 1, x, true)) return false;
-
-    return true;
-  }
-
-  // 右上
-  if (z == 3) {
-    int xx = x - diff2;
-    int yy = y + diff1;
-
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][2] || current_state.line[xx][yy][1]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckStraightPath(0, yy, xx + 1, x, true)) return false;
-    if (!CheckStraightPath(xx, 0, yy - 1, y, false)) return false;
-
-    return true;
-  }
-
-  // 左上・左下
-  if (z == 4) {
-    int xx = x - diff1 + diff2;
-    int yy = y - diff1 - diff2;
-
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][7] || current_state.line[xx][yy][6]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckDiagonalPath(xx, yy, 1, diff2, -1, 1)) return false;
-    if (!CheckDiagonalPath(xx, yy, 1, diff1, 1, 1)) return false;
-
-    return true;
-  }
-
-  // 左下・右下
-  if (z == 5) {
-    int xx = x + diff1 + diff2;
-    int yy = y - diff1 + diff2;
-
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][4] || current_state.line[xx][yy][7]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckDiagonalPath(xx, yy, 1, diff2, -1, -1)) return false;
-    if (!CheckDiagonalPath(xx, yy, 1, diff1, -1, 1)) return false;
-
-    return true;
-  }
-
-  // 右下・右上
-  if (z == 6) {
-    int xx = x + diff1 - diff2;
-    int yy = y + diff1 + diff2;
-
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][5] || current_state.line[xx][yy][4]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckDiagonalPath(xx, yy, 1, diff2, 1, -1)) return false;
-    if (!CheckDiagonalPath(xx, yy, 1, diff1, -1, -1)) return false;
-
-    return true;
-  }
-
-  // 右上・左上
-  if (z == 7) {
-    int xx = x - diff1 - diff2;
-    int yy = y + diff1 - diff2;
-
-    // その点がグリッド内か
-    if (IsNGXY(xx, yy)) return false;
-
-    // そこに点が存在しているか
-    if (!current_state.f[xx][yy]) return false;
-
-    // 辺が既に存在していないか
-    if (current_state.line[xx][yy][6] || current_state.line[xx][yy][5]) return false;
-
-    // 間に邪魔な頂点がないか
-    if (!CheckDiagonalPath(xx, yy, 1, diff2, 1, 1)) return false;
-    if (!CheckDiagonalPath(xx, yy, 1, diff1, 1, -1)) return false;
-
-    return true;
+  if (z >= 4 && z <= 7) {
+    return CheckRectangleDiagonal(x, y, diff1, diff2, diagonalParams[z - 4]);
   }
 
   cerr << "ERROR CanMakeRectangle" << endl;
