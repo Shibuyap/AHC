@@ -816,7 +816,7 @@ void Method1(Hypers hypers)
     while (true) {
       if (loop % 100 == 0) {
         nowTime = GetNowTime();
-        if (nowTime > TL / 3) break;
+        if (nowTime > TL / 3) { break; }
       }
       loop++;
 
@@ -1038,7 +1038,7 @@ void Method1(Hypers hypers)
     while (true) {
       if (loop % 100 == 0) {
         nowTime = GetNowTime();
-        if (nowTime > TL) break;
+        if (nowTime > TL) { break; }
       }
       loop++;
       double progressRatio = (nowTime - startTime) / (TL - startTime);
@@ -1119,7 +1119,7 @@ void SimulatedAnnealing(Hypers hypers)
 
     if (loop % 100 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > TL) break;
+      if (nowTime > TL) { break; }
     }
 
     double progressRatio = nowTime / TL;

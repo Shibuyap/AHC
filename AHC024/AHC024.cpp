@@ -188,10 +188,8 @@ void Input(int problemNum)
     // 標準入力
     int nn, mm;
     cin >> nn >> mm;
-    for (int i = 1; i < n + 1; ++i)
-    {
-      for (int j = 1; j < n + 1; ++j)
-      {
+    for (int i = 1; i < n + 1; ++i) {
+      for (int j = 1; j < n + 1; ++j) {
         cin >> c[i][j];
       }
     }
@@ -200,10 +198,8 @@ void Input(int problemNum)
     // ファイル入力
     int nn, mm;
     ifs >> nn >> mm;
-    for (int i = 1; i < n + 1; ++i)
-    {
-      for (int j = 1; j < n + 1; ++j)
-      {
+    for (int i = 1; i < n + 1; ++i) {
+      for (int j = 1; j < n + 1; ++j) {
         ifs >> c[i][j];
       }
     }
@@ -248,10 +244,8 @@ void OpenOfs(int probNum, ofstream& ofs)
 int CalcScore()
 {
   int res = 1;
-  for (int i = 1; i < n + 1; ++i)
-  {
-    for (int j = 1; j < n + 1; ++j)
-    {
+  for (int i = 1; i < n + 1; ++i) {
+    for (int j = 1; j < n + 1; ++j) {
       if (d[i][j] == 0) {
         res++;
       }
@@ -265,10 +259,8 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
-    for (int i = 1; i < n + 1; ++i)
-    {
-      for (int j = 1; j < n + 1; ++j)
-      {
+    for (int i = 1; i < n + 1; ++i) {
+      for (int j = 1; j < n + 1; ++j) {
         cout << d[i][j] << ' ';
       }
       cout << endl;
@@ -276,10 +268,8 @@ void Output(ofstream& ofs)
   }
   else {
     // ファイル出力
-    for (int i = 1; i < n + 1; ++i)
-    {
-      for (int j = 1; j < n + 1; ++j)
-      {
+    for (int i = 1; i < n + 1; ++i) {
+      for (int j = 1; j < n + 1; ++j) {
         ofs << std::setw(3) << d[i][j] << ' ';
       }
       ofs << endl;
@@ -318,8 +308,7 @@ bool Check()
   }
 
   for (int i = 0; i < (m + 1); ++i) {
-    for (int j = i + 1; j < m + 1; ++j)
-    {
+    for (int j = i + 1; j < m + 1; ++j) {
       if (checkG[i][j] != g[i][j])return false;
     }
   }
@@ -333,10 +322,8 @@ bool Check()
     checkVisited2[i] = 0;
   }
   ClearQueue();
-  for (int i = 1; i < n + 1; ++i)
-  {
-    for (int j = 1; j < n + 1; ++j)
-    {
+  for (int i = 1; i < n + 1; ++i) {
+    for (int j = 1; j < n + 1; ++j) {
       if (d[i][j] == 0 || checkVisited[i][j] == 1)continue;
       int num = d[i][j];
       if (checkVisited2[num] == 1)return false;
@@ -374,10 +361,8 @@ struct Hypers
 int keep[n + 2][n + 2];
 void KeepD()
 {
-  for (int i = 1; i < n + 1; ++i)
-  {
-    for (int j = 1; j < n + 1; ++j)
-    {
+  for (int i = 1; i < n + 1; ++i) {
+    for (int j = 1; j < n + 1; ++j) {
       keep[i][j] = d[i][j];
     }
   }
@@ -400,7 +385,7 @@ void SimulatedAnnealing(Hypers hypers)
 
     if (loop % 100 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > TL) break;
+      if (nowTime > TL) { break; }
     }
 
     double progressRatio = nowTime / TL;
@@ -418,30 +403,26 @@ void SimulatedAnnealing(Hypers hypers)
         raDir = Rand() % 2;
         ra1 = Rand() % n + 1;
         if (raDir == 0) {
-          for (int j = 1; j < n + 1; ++j)
-          {
+          for (int j = 1; j < n + 1; ++j) {
             if (d[ra1][j] != 0)ok = 1;
           }
         }
         else {
-          for (int i = 1; i < n + 1; ++i)
-          {
+          for (int i = 1; i < n + 1; ++i) {
             if (d[i][ra1] != 0)ok = 1;
           }
         }
       }
 
       if (raDir == 0) {
-        for (int j = 1; j < n + 1; ++j)
-        {
+        for (int j = 1; j < n + 1; ++j) {
           if (g[d[ra1 - 1][j]][d[ra1 + 1][j]] == 0) {
             ok = 0;
           }
         }
       }
       else {
-        for (int i = 1; i < n + 1; ++i)
-        {
+        for (int i = 1; i < n + 1; ++i) {
           if (g[d[i][ra1 - 1]][d[i][ra1 + 1]] == 0) {
             ok = 0;
           }
@@ -452,19 +433,15 @@ void SimulatedAnnealing(Hypers hypers)
       KeepD();
 
       if (raDir == 0) {
-        for (int i = ra1; i < n + 1; ++i)
-        {
-          for (int j = 1; j < n + 1; ++j)
-          {
+        for (int i = ra1; i < n + 1; ++i) {
+          for (int j = 1; j < n + 1; ++j) {
             d[i][j] = d[i + 1][j];
           }
         }
       }
       else {
-        for (int j = ra1; j < n + 1; ++j)
-        {
-          for (int i = 1; i < n + 1; ++i)
-          {
+        for (int j = ra1; j < n + 1; ++j) {
+          for (int i = 1; i < n + 1; ++i) {
             d[i][j] = d[i][j + 1];
           }
         }
@@ -537,10 +514,8 @@ void SimulatedAnnealing(Hypers hypers)
     else {
       // 元に戻す
       if (raMode < hypers.Partition[0]) {
-        for (int i = 1; i < n + 1; ++i)
-        {
-          for (int j = 1; j < n + 1; ++j)
-          {
+        for (int i = 1; i < n + 1; ++i) {
+          for (int j = 1; j < n + 1; ++j) {
             d[i][j] = keep[i][j];
           }
         }
@@ -620,8 +595,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    for (int i = 0; i < 15; ++i)
-    {
+    for (int i = 0; i < 15; ++i) {
       ll score = Solve(i, HYPERS);
       sum += score;
       if (mode == 1) {
@@ -649,8 +623,7 @@ int main()
       hypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
-      for (int i = 0; i < 15; ++i)
-      {
+      for (int i = 0; i < 15; ++i) {
         ll score = Solve(i, hypers);
         sum += score;
 

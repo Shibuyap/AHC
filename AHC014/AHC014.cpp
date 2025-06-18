@@ -1048,7 +1048,7 @@ int Solve(int mode, int problemNum = 0)
         nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
         nowProgress = nowTime / TL;
       }
-      if (nowProgress > 1.0) break;
+      if (nowProgress > 1.0) { break; }
 
       // 現在のスコアが悪いときは元に戻す
       if (current_state.maxScore * 1.2 < best_state.maxScore) {
@@ -1112,7 +1112,7 @@ int Solve(int mode, int problemNum = 0)
       nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       nowProgress = nowTime / TL;
     }
-    if (nowProgress > 1.0) break;
+    if (nowProgress > 1.0) { break; }
 
     // 現在のスコアが悪いときは元に戻す
     if (current_state.maxScore * 1.2 < best_state.maxScore) {

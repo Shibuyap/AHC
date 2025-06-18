@@ -2023,7 +2023,7 @@ int Solve(int mode, int problemNum = 0)
         now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
         now_progress = now_time / TL;
       }
-      if (now_progress > 1.0) break;
+      if (now_progress > 1.0) { break; }
 
       // 現在のスコアが悪いときは元に戻す
       if (gameState.maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {
@@ -2109,7 +2109,7 @@ int Solve(int mode, int problemNum = 0)
       now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
       now_progress = now_time / TL;
     }
-    if (now_progress > 1.0) break;
+    if (now_progress > 1.0) { break; }
 
     // 現在のスコアが悪いときは元に戻す
     if (gameState.maxScore * 1.2 < real_GameState.maxScore || Rand() % 123456 == 0) {

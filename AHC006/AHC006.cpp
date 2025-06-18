@@ -230,7 +230,7 @@ void filter_input_points(double time_limit)
   // --- 改善ループ ---
   while (true) {
     ++iter_count;
-    if (iter_count % 100 == 1 && get_elapsed_time() > time_limit) break;
+    if (iter_count % 100 == 1 && get_elapsed_time() > time_limit) { break; }
 
     // 候補データを一時的に保持
     vector<Point> cand_start_points, cand_goal_points;
@@ -490,7 +490,7 @@ void sa_path_pruning(Answer& answer, double time_limit)
     if (loop % 100 == 1) {
       now_time = get_elapsed_time();
     }
-    if (now_time > time_limit) break;
+    if (now_time > time_limit) { break; }
 
     std::shuffle(rand_order.begin(), rand_order.end(), engine);
     vector<int> pick_order;

@@ -270,7 +270,7 @@ void extend_path_randomly(Path& path)
         break;
       }
     }
-    if (!ok) break;
+    if (!ok) { break; }
   }
 }
 
@@ -294,7 +294,7 @@ bool try_connect_path(Path& path, int sx, int sy, int gx, int gy)
         break;
       }
     }
-    if (!ok) break;
+    if (!ok) { break; }
   }
   return x == gx && y == gy;
 }
@@ -516,7 +516,7 @@ void anneal_path_segment(const AnnealParam& param)
       }
     }
 
-    if (now_time > param.time_limit) break;
+    if (now_time > param.time_limit) { break; }
   }
   if (show_log) {
     cerr << "anneal_path_segment : iter = " << iteration_cnt << endl;

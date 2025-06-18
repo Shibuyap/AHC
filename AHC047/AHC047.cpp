@@ -221,7 +221,7 @@ inline void stationary_dist(const double P[12][12],
     // 収束判定 (L1 ノルム)
     double diff = 0.0;
     for (int j = 0; j < 12; ++j) diff += fabs(nv[j] - v[j]);
-    if (diff < 1e-12) break;
+    if (diff < 1e-12) { break; }
     memcpy(v, nv, sizeof(v));
   }
   memcpy(pi, v, sizeof(double) * 12);
@@ -465,7 +465,7 @@ void run_simulated_annealing(AnnealingParams params, int mode, double time_limit
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > time_limit) break;
+      if (now_time > time_limit) { break; }
     }
 
     //if (current_score * 1.2 < best_score) {

@@ -416,7 +416,7 @@ void heuristicSweep(double timeLimit, State& current)
             }
           }
         }
-        if (abortFlag) break;
+        if (abortFlag) { break; }
 
         for (int jj = n - 3; jj > jjj; jj--) {
           int j = jj;
@@ -547,7 +547,7 @@ void heuristicSweep(double timeLimit, State& current)
           }
         }
 
-        if (abortFlag) break;
+        if (abortFlag) { break; }
 
         ll tmpPosSum = 0;
 
@@ -594,7 +594,7 @@ void heuristicSweep(double timeLimit, State& current)
         }
       }
 
-      if (abortFlag) break;
+      if (abortFlag) { break; }
 
       for (int t = nowCnt; t < maCntTail; ++t) {
         for (int k = 0; k < 3; ++k) {

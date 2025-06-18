@@ -778,7 +778,7 @@ void Mountain(Haiparas haiparas)
 
     if (loop % 100 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > TL) break;
+      if (nowTime > TL) { break; }
     }
 
     if (ans.size() >= best_ans.size() + 4) {

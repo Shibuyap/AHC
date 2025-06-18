@@ -293,7 +293,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
   while (true) {
     if (loop2 % 1 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;  // 時間制限を過ぎたらループを抜ける
+      if (nowTime > timeLimit) { break; }  // 時間制限を過ぎたらループを抜ける
     }
     loop2++;
 
@@ -362,7 +362,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
 
           now++;
         }
-        if (upd == 0) break;
+        if (upd == 0) { break; }
       }
       if (now > 3) upd = 0;  // 連結成分が3つ以上なら更新不可
     }
@@ -442,7 +442,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
           }
         }
 
-        if (x == vp[0].first && y == vp[0].second) break;  // 始点に戻ったらループ終了
+        if (x == vp[0].first && y == vp[0].second) { break; }  // 始点に戻ったらループ終了
 
         if (x == -1) {
           assert(false);  // 次の点が見つからない場合はエラー
@@ -509,7 +509,7 @@ void Method3()
   int loop1 = 0;  // ループ回数のカウンタ
   while (true) {
     if (loop1 % 100 == 0) {
-      if (GetNowTime() > TL * 0.1) break;  // 時間制限の半分を過ぎたらループを抜ける
+      if (GetNowTime() > TL * 0.1) { break; }  // 時間制限の半分を過ぎたらループを抜ける
     }
     loop1++;
     // ランダムに矩形領域を選択

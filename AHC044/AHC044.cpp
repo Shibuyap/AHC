@@ -329,7 +329,7 @@ static void build_initial_solution(SolverState& st)
 
     if (loop_cnt_init % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT / 10) break;
+      if (now_time > TIME_LIMIT / 10) { break; }
     }
 
     if (rand_u32() % 2 == 0) {
@@ -417,7 +417,7 @@ static void simulated_annealing(const AnnealingParams& params, SolverState& st)
 
     if (anneal_iter % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT) break;
+      if (now_time > TIME_LIMIT) { break; }
     }
 
     int accept_move = 1;

@@ -1527,7 +1527,7 @@ void Method8_Two(int hiritu = 60)
     }
     else {
       if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
+        if (hiritu < 10) { break; }
         continue;
       }
       Swap1(countQ);
@@ -1549,7 +1549,7 @@ void Method19(int hiritu = 60)
     }
     else {
       if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
+        if (hiritu < 10) { break; }
         continue;
       }
       SwapHalf(countQ);
@@ -1571,7 +1571,7 @@ void Method18(int hiritu = 60)
     }
     else {
       if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
+        if (hiritu < 10) { break; }
         continue;
       }
       Swap1(countQ);
@@ -1652,7 +1652,7 @@ void Method15(int hiritu = 60)
       }
       else {
         if (Q - 1 <= countQ) {
-          if (hiritu < 10) break;
+          if (hiritu < 10) { break; }
           continue;
         }
         Swap1(countQ);
@@ -1704,7 +1704,7 @@ void Method16(int hiritu = 60)
     }
     else {
       if (Q - 1 <= countQ) {
-        if (hiritu < 10) break;
+        if (hiritu < 10) { break; }
         continue;
       }
       Swap1(countQ);
@@ -2886,7 +2886,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
       }
       else {
         if (Q - 1 <= countQ) {
-          if (hiritu < 10) break;
+          if (hiritu < 10) { break; }
           continue;
         }
         Swap1(countQ);
@@ -3044,7 +3044,7 @@ void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2
         }
         else {
           if (Q - 1 <= countQ) {
-            if (hiritu < 10) break;
+            if (hiritu < 10) { break; }
             continue;
           }
           Swap1(countQ);
@@ -3482,7 +3482,7 @@ void Method806(int hiritu, int minDiff, int _m)
   // 1回だけ比べる
   for (int i = 0; i < M; ++i) {
     int j = N - 1 - i;
-    if (j <= i) break;
+    if (j <= i) { break; }
     char c = Query1(countQ, i, j);
     if (c == '>') {
       swap(items[i], items[j]);
@@ -4241,13 +4241,13 @@ int main()
             else {
               lose++;
             }
-            if (win - lose <= -10) break;
-            if (win >= 120) break;
-            if (win >= 60 && lose <= 30) break;
-            if (lose >= 80) break;
-            if (lose >= 20 && win <= lose) break;
-            if (win >= 20 && lose * 11 / 10 >= win) break;
-            if (win - lose >= 40) break;
+            if (win - lose <= -10) { break; }
+            if (win >= 120) { break; }
+            if (win >= 60 && lose <= 30) { break; }
+            if (lose >= 80) { break; }
+            if (lose >= 20 && win <= lose) { break; }
+            if (win >= 20 && lose * 11 / 10 >= win) { break; }
+            if (win - lose >= 40) { break; }
           }
           winSum += win;
           loseSum += lose;
@@ -4275,10 +4275,10 @@ int main()
             else {
               lose++;
             }
-            if (win - lose <= -10) break;
-            if (win >= 550) break;
-            if (lose >= 20 && win <= lose) break;
-            if (win - lose >= 100) break;
+            if (win - lose <= -10) { break; }
+            if (win >= 550) { break; }
+            if (lose >= 20 && win <= lose) { break; }
+            if (win - lose >= 100) { break; }
           }
           winSum += win;
           loseSum += lose;

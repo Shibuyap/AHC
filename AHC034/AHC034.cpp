@@ -255,7 +255,7 @@ void Initialize()
 
     if (dir == 1) {
       if (y == n - 1) {
-        if (x == n - 1) break;
+        if (x == n - 1) { break; }
         ans[ansSize][0] = 2;
         ansSize++;
         x++;
@@ -269,7 +269,7 @@ void Initialize()
     }
     else {
       if (y == 0) {
-        if (x == n - 1) break;
+        if (x == n - 1) { break; }
         x++;
         ans[ansSize][0] = 2;
         ansSize++;
@@ -288,7 +288,7 @@ void Initialize()
 
   while (x >= 0) {
     if (IsOK(x)) {
-      if (x == 0) break;
+      if (x == 0) { break; }
       ans[ansSize][0] = 0;
       ansSize++;
       x--;
@@ -323,7 +323,7 @@ void Initialize()
           dir *= -1;
           continue;
         }
-        if (x == 0) break;
+        if (x == 0) { break; }
         x--;
         ans[ansSize][0] = 0;
         ansSize++;
@@ -341,7 +341,7 @@ void Initialize()
           dir *= -1;
           continue;
         }
-        if (x == 0) break;
+        if (x == 0) { break; }
         x--;
         ans[ansSize][0] = 0;
         ansSize++;

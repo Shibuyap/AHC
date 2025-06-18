@@ -1074,7 +1074,7 @@ void Method1(Hypers hypers)
 
     if (loop % 100 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > TL) break;
+      if (nowTime > TL) { break; }
     }
 
     // 戻す

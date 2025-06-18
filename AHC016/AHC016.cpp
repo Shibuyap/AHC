@@ -661,7 +661,7 @@ namespace
         cnt++;
         j -= hyperStep1;
       }
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     SetGraphFromPairArray();
@@ -683,7 +683,7 @@ namespace
         cnt++;
         j -= hyperStep2;
       }
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     SetGraphFromPairArray();
@@ -709,7 +709,7 @@ namespace
         numPairArr[cnt][1] = 0;
         cnt++;
       }
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     SetGraphFromPairArray();
@@ -735,7 +735,7 @@ namespace
         numPairArr[cnt][1] = 0;
         cnt++;
       }
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     SetGraphFromPairArray();
@@ -799,7 +799,7 @@ namespace
           j += hyperStep2;
         }
         k += hyperStep2;
-        if (cnt >= m) break;
+        if (cnt >= m) { break; }
       }
       iset.clear();
       jset.clear();
@@ -848,13 +848,13 @@ namespace
               cnt++;
             }
             i += hyperStep1;
-            if (cnt >= 500) break;
+            if (cnt >= 500) { break; }
           }
           j += hyperStep2;
-          if (cnt >= 500) break;
+          if (cnt >= 500) { break; }
         }
         k += hyperStep2;
-        if (cnt >= 500) break;
+        if (cnt >= 500) { break; }
       }
     }
 
@@ -891,7 +891,7 @@ namespace
           j += hyperStep2;
         }
         k += hyperStep2;
-        if (cnt >= m) break;
+        if (cnt >= m) { break; }
       }
       iset.clear();
       jset.clear();
@@ -921,13 +921,13 @@ namespace
               cnt++;
             }
             i += hyperStep1;
-            if (cnt >= 500) break;
+            if (cnt >= 500) { break; }
           }
           j += hyperStep2;
-          if (cnt >= 500) break;
+          if (cnt >= 500) { break; }
         }
         k += hyperStep2;
-        if (cnt >= 500) break;
+        if (cnt >= 500) { break; }
       }
     }
 
@@ -993,10 +993,10 @@ namespace
             j += hyperStep1;
           }
           k += hyperStep2;
-          if (cnt >= m) break;
+          if (cnt >= m) { break; }
         }
         l += hyperStep2;
-        if (cnt >= m) break;
+        if (cnt >= m) { break; }
       }
 
       iset.clear();
@@ -1069,16 +1069,16 @@ namespace
                 cnt++;
               }
               i += hyperStep1;
-              if (cnt >= 500) break;
+              if (cnt >= 500) { break; }
             }
             j += hyperStep1;
-            if (cnt >= 500) break;
+            if (cnt >= 500) { break; }
           }
           k += hyperStep2;
-          if (cnt >= 500) break;
+          if (cnt >= 500) { break; }
         }
         l += hyperStep2;
-        if (cnt >= 500) break;
+        if (cnt >= 500) { break; }
       }
     }
 
@@ -1124,7 +1124,7 @@ namespace
         omoteArr[cnt] = 1;
         cnt++;
       }
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     for (int i = 0; i < m; ++i) {
@@ -1182,7 +1182,7 @@ namespace
         cnt++;
         j -= hyperStep1;
       }
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     for (int i = 0; i < m; ++i) {
@@ -1300,7 +1300,7 @@ namespace
       numSingleArr[cnt] = i;
       omoteArr[cnt] = 1;
       cnt++;
-      if (cnt > MAX_KOUHO_LIMIT) break;
+      if (cnt > MAX_KOUHO_LIMIT) { break; }
     }
 
     for (int i = 0; i < m; ++i) {
@@ -1571,7 +1571,7 @@ int Solver3()
     }
   }
   for (int _ = 0; _ < (100); ++_) {
-    if (vec[0].empty() || vec[1].empty()) break;
+    if (vec[0].empty() || vec[1].empty()) { break; }
     std::array<std::array<double, 2>, 100> cnt;
     for (int i = 0; i < n; ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
     std::array<vector<int>, 2> nxt;
@@ -1994,7 +1994,7 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
             break;
           }
         }
-        if (!duplicate) break;
+        if (!duplicate) { break; }
       }
     }
 
@@ -2006,7 +2006,7 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
           break;
         }
       }
-      if (!isClique) break;
+      if (!isClique) { break; }
     }
 
     if (isClique) {
@@ -2044,7 +2044,7 @@ void expandCore(vector<int>& cores, std::array<int, 100>& f, int markValue)
         arg = i;
       }
     }
-    if (arg == -1) break;
+    if (arg == -1) { break; }
     f[arg] = markValue;
     cores.push_back(arg);
   }
@@ -2084,7 +2084,7 @@ int performGreedyElimination(std::array<int, 100>& f, std::array<int, 100>& cnt,
         arg = i;
       }
     }
-    if (arg == -1) break;
+    if (arg == -1) { break; }
 
     for (int i = 0; i < n; ++i) {
       if (i == arg) { continue; }
@@ -2124,7 +2124,7 @@ int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 
       }
     }
 
-    if (arv.empty()) break;
+    if (arv.empty()) { break; }
 
     // ランダムに選択
     int arg = arv[Rand() % arv.size()];
@@ -2577,7 +2577,7 @@ int Solver14()
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
-      if (real_minDiff == 0) break;
+      if (real_minDiff == 0) { break; }
     }
   }
 
@@ -3117,7 +3117,7 @@ int Solver21()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) break;
+            if (core[i] != -1) { break; }
           }
         }
         int mitu = 1;
@@ -3168,7 +3168,7 @@ int Solver21()
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
-      if (real_minDiff == 0) break;
+      if (real_minDiff == 0) { break; }
     }
   }
 
@@ -3216,7 +3216,7 @@ int Solver22()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) break;
+            if (core[i] != -1) { break; }
           }
         }
         int mitu = 1;
@@ -3267,7 +3267,7 @@ int Solver22()
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
-      if (real_minDiff == 0) break;
+      if (real_minDiff == 0) { break; }
     }
   }
 
@@ -3317,7 +3317,7 @@ int Solver23()
           for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
-          if (core[i] != -1) break;
+          if (core[i] != -1) { break; }
         }
       }
       int mitu = 1;
@@ -3361,7 +3361,7 @@ int Solver23()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) break;
+            if (core[i] != -1) { break; }
           }
         }
         int mitu = 1;
@@ -3474,7 +3474,7 @@ int Solver24()
           for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
-          if (core[i] != -1) break;
+          if (core[i] != -1) { break; }
         }
       }
       int mitu = 1;
@@ -3508,7 +3508,7 @@ int Solver24()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) break;
+            if (core[i] != -1) { break; }
           }
         }
         int mitu = 1;
@@ -3663,7 +3663,7 @@ void solve(int mode)
       if (loop % 10 == 1) {
         endTime = clock();
         double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-        if (nowTime > TIME_LIMIT_MS) break;
+        if (nowTime > TIME_LIMIT_MS) { break; }
       }
 
       if (loop % 200 == 77) {
@@ -3735,7 +3735,7 @@ void solve(int mode)
           int ra = Rand() % 4;
           nm = m + dx[ra];
           niEps = iEps + dy[ra];
-          if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) break;
+          if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) { break; }
         }
         if (!winners.empty()) {
           winners.top().winLife--;
@@ -3748,7 +3748,7 @@ void solve(int mode)
             int ra = Rand() % 4;
             nm = m + dx[ra];
             niEps = iEps + dy[ra];
-            if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) break;
+            if (10 <= nm && nm <= 100 && 0 <= niEps && niEps <= 40) { break; }
           }
           swap(m, nm);
           swap(iEps, niEps);
@@ -3903,7 +3903,7 @@ void solve(int mode)
           winCount = 0;
           break;
         }
-        if (winCount == CHAMP) break;
+        if (winCount == CHAMP) { break; }
       }
       score /= matchCount;
 

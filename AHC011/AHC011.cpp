@@ -475,7 +475,7 @@ bool anneal_find_tree(bool isReset = false)
     if (loopAni % 100 == 1) {
       endAniTime = clock();
       nowAniTime = (double)(endAniTime - startAniTime) / CLOCKS_PER_SEC;
-      if (nowAniTime > AniTL) break;
+      if (nowAniTime > AniTL) { break; }
     }
 
     int x1 = rand32() % board_size;
@@ -1287,7 +1287,7 @@ int solve_case(int mode, int problemNum = 0)
     while (true) {
       if (loop % 10 == 1) {
         now_time = get_elapsed_time();
-        if (now_time > TL) break;
+        if (now_time > TL) { break; }
       }
       pair<P, P> pp[2];
       for (int i = 0; i < 2; ++i) {
@@ -1346,7 +1346,7 @@ int solve_case(int mode, int problemNum = 0)
     while (true) {
       if (loop % 100 == 1) {
         now_time = get_elapsed_time();
-        if (now_time > TL) break;
+        if (now_time > TL) { break; }
       }
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TL;

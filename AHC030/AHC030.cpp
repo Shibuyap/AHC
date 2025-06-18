@@ -158,7 +158,7 @@ void TestCaseGenerator(bool isMakeN, bool isMakeM, bool isMakeEps)
     while (true) {
       n = Rand() % (20 - 10 + 1) + 10;
       int ma = n * n / 20;
-      if (m <= ma) break;
+      if (m <= ma) { break; }
     }
   }
   else if (!isMakeN && !isMakeM) {
@@ -1666,7 +1666,7 @@ void Battle()
         }
 
         // 時間短縮(結果が明らかなときはbreak)
-        if (lose >= 3) break;
+        if (lose >= 3) { break; }
       }
 
       if (win >= 3 && (double)win / (win + lose) >= 0.9) {  // 1勝0敗19分などは避ける
@@ -1695,11 +1695,11 @@ void Battle()
         }
 
         // 時間短縮(結果が明らかなときはbreak)
-        if (win >= 120) break;
-        if (lose >= 80) break;
-        if (win <= lose - 10) break;
-        if (lose >= 20 && win <= lose) break;
-        if (win - lose >= 40) break;
+        if (win >= 120) { break; }
+        if (lose >= 80) { break; }
+        if (win <= lose - 10) { break; }
+        if (lose >= 20 && win <= lose) { break; }
+        if (win - lose >= 40) { break; }
       }
 
       if (win >= 10 && (double)win / (win + lose) >= 0.6) {  // 3勝1敗116分などは避ける
@@ -1728,11 +1728,11 @@ void Battle()
         }
 
         // 時間短縮(結果が明らかなときはbreak)
-        if (win >= 550) break;
-        if (lose >= 450) break;
-        if (win - lose >= 100) break;
-        if (win <= lose - 10) break;
-        if (lose >= 20 && win <= lose) break;
+        if (win >= 550) { break; }
+        if (lose >= 450) { break; }
+        if (win - lose >= 100) { break; }
+        if (win <= lose - 10) { break; }
+        if (lose >= 20 && win <= lose) { break; }
       }
 
       if (win >= 30 && (double)win / (win + lose) >= 0.55) { isWin = true; }

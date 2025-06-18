@@ -198,7 +198,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT) break;
+      if (now_time > TIME_LIMIT) { break; }
     }
 
     double progress_ratio = now_time / TIME_LIMIT;

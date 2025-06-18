@@ -699,7 +699,7 @@ private:
     while (true) {
       ++loop;
       if ((loop & 0xFF) == 0) {       // update every 256 iters
-        if (get_elapsed_time() > TIME_LIMIT) break;
+        if (get_elapsed_time() > TIME_LIMIT) { break; }
       }
 
       const double progress = get_elapsed_time() / TIME_LIMIT;

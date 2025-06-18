@@ -713,7 +713,7 @@ double solve_problem(int run_mode, int problem_num)
         now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
         now_progress = now_time / time_limit;
       }
-      if (now_progress > 1.0) break;
+      if (now_progress > 1.0) { break; }
 
       // もしスコアが大きく悪化していればロールバック (コメントアウト原文通り)
       if (min_score > real_min_score * 10) {
@@ -769,7 +769,7 @@ double solve_problem(int run_mode, int problem_num)
       now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
       now_progress = now_time / time_limit;
     }
-    if (now_progress > 1.0) break;
+    if (now_progress > 1.0) { break; }
 
     double temperature =
       start_temperature + (end_temperature - start_temperature) * now_progress;

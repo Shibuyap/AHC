@@ -410,7 +410,7 @@ void InitMostVariableAs()
       int n2Need = calculateRequiredSize(elementSizes[i][n2], j);
       if (n2Need > w) { continue; }
       for (int n1 = elementCount - 1; n1 >= 0; --n1) {
-        if (n2 == elementCount) break;
+        if (n2 == elementCount) { break; }
         int val = elementSizes[i][n1];
         int n1Need = (val - 1) / j + 1;
         if (n1Need + n2Need > w) { continue; }
@@ -425,7 +425,7 @@ void InitMostVariableAs()
           }
         }
         for (int k = 0; k < 10; ++k) {
-          if (n2 - k < 0) break;
+          if (n2 - k < 0) { break; }
           if (n2 - k == n1) { continue; }
           int valSum = val + elementSizes[i][n2 - k];
           int junni = mostVariableAsCount[i][j];
@@ -437,7 +437,7 @@ void InitMostVariableAs()
               junni = 9;
             }
           }
-          if (junni == 10) break;
+          if (junni == 10) { break; }
           while (junni > 0) {
             if (mostVariableAsValue[i][j][junni] > mostVariableAsValue[i][j][junni - 1]) {
               int swa = mostVariableAsValue[i][j][junni - 1];
@@ -1109,7 +1109,7 @@ inline PlacementResult findBestPlacement(int day, int element, const std::array<
 
   for (int k = endLine - 1; k >= startLine; k--) {
     int width = ans.ansLinePos[day][k + 1] - ans.ansLinePos[day][k];
-    if (!canFitInColumn(day, element, width)) break;
+    if (!canFitInColumn(day, element, width)) { break; }
 
     int need = calculateRequiredSize(elementSizes[day][element], width);
     int over = 0;
@@ -1910,9 +1910,9 @@ void Method4_3_1()
       }
       int diffScore3 = -INT_INF;
       for (int winter = 0; winter < 10; ++winter) {
-        if (M43_nonKouhos.size() == 1 && winter >= 1) break;
-        if (M43_nonKouhos.size() == 2 && winter >= 2) break;
-        if (M43_nonKouhos.size() == 3 && winter >= 6) break;
+        if (M43_nonKouhos.size() == 1 && winter >= 1) { break; }
+        if (M43_nonKouhos.size() == 2 && winter >= 2) { break; }
+        if (M43_nonKouhos.size() == 3 && winter >= 6) { break; }
         int tmpDiffScore3 = CalcDiffScore3(winter, M43_nonKouhos.size(), M43_neighborPosCount, raD, nextLine, margin);
         if (tmpDiffScore3 > diffScore3) {
           diffScore3 = tmpDiffScore3;
@@ -1969,7 +1969,7 @@ void Method4_3_1()
       }
       int diffScore4 = -INT_INF;
       for (int winter = 0; winter < 10; ++winter) {
-        if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
+        if (shouldBreakShuffle(M43_kouhos.size(), winter)) { break; }
         int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, lineNum, margin);
         if (tmpDiffScore4 > diffScore4) {
           diffScore4 = tmpDiffScore4;
@@ -2128,9 +2128,9 @@ void Method4_3_2()
       }
       int diffScore3 = -INT_INF;
       for (int winter = 0; winter < 10; ++winter) {
-        if (M43_nonKouhos.size() == 1 && winter >= 1) break;
-        if (M43_nonKouhos.size() == 2 && winter >= 2) break;
-        if (M43_nonKouhos.size() == 3 && winter >= 6) break;
+        if (M43_nonKouhos.size() == 1 && winter >= 1) { break; }
+        if (M43_nonKouhos.size() == 2 && winter >= 2) { break; }
+        if (M43_nonKouhos.size() == 3 && winter >= 6) { break; }
         int tmpDiffScore3 = CalcDiffScore3_2(winter, M43_nonKouhos.size(), raD, nextLine, 0);
         if (tmpDiffScore3 > diffScore3) {
           diffScore3 = tmpDiffScore3;
@@ -2186,7 +2186,7 @@ void Method4_3_2()
       }
       int diffScore4 = -INT_INF;
       for (int winter = 0; winter < 10; ++winter) {
-        if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
+        if (shouldBreakShuffle(M43_kouhos.size(), winter)) { break; }
         int tmpDiffScore4 = CalcDiffScore3_2(winter, M43_kouhos.size(), raD, lineNum, 0);
         if (tmpDiffScore4 > diffScore4) {
           diffScore4 = tmpDiffScore4;
@@ -2342,7 +2342,7 @@ void Method4_3_3()
 
   int diffScore3 = -1;
   for (int winter = 0; winter < 10; ++winter) {
-    if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
+    if (shouldBreakShuffle(M43_kouhos.size(), winter)) { break; }
     int tmpDiffScore3 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, line2, margin);
     if (tmpDiffScore3 > diffScore3) {
       diffScore3 = tmpDiffScore3;
@@ -2384,7 +2384,7 @@ void Method4_3_3()
 
   int diffScore4 = -1;
   for (int winter = 0; winter < 10; ++winter) {
-    if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
+    if (shouldBreakShuffle(M43_kouhos.size(), winter)) { break; }
     int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, line1, margin);
     if (tmpDiffScore4 > diffScore4) {
       diffScore4 = tmpDiffScore4;
@@ -2455,7 +2455,7 @@ void Method4_3_4_2()
         break;
       }
     }
-    if (lineIndex == -1) break;
+    if (lineIndex == -1) { break; }
     startDay = i;
     if (raDir == 0) {
       int raN = columnSchedule.schedules[i][lineNum][lineIndex];
@@ -2475,7 +2475,7 @@ void Method4_3_4_2()
         break;
       }
     }
-    if (lineIndex == -1) break;
+    if (lineIndex == -1) { break; }
     endDay = i;
     if (raDir == 0) {
       int raN = columnSchedule.schedules[i][lineNum][lineIndex];
@@ -2538,7 +2538,7 @@ void Method4_3_5()
       int tmpMargin = widths[lineNum] - ((elementSizes[i][num] - 1) / (columnSchedule.schedulesPosition[i][lineNum][k + 1] - columnSchedule.schedulesPosition[i][lineNum][k]) + 1);
       if (tmpMargin < margin) margin = tmpMargin;
     }
-    if (margin <= 0) break;
+    if (margin <= 0) { break; }
   }
   if (margin == 0) return;
   int moveAmount = Rand() % margin + 1;
@@ -2742,7 +2742,7 @@ void Method4_3_7()
 
   int diffScore4 = -1;
   for (int winter = 0; winter < 10; ++winter) {
-    if (shouldBreakShuffle(M43_kouhos.size(), winter)) break;
+    if (shouldBreakShuffle(M43_kouhos.size(), winter)) { break; }
     int tmpDiffScore4 = CalcDiffScore3(winter, M43_kouhos.size(), M43_neighborPosCount, raD, lineNum, margin);
     if (tmpDiffScore4 > diffScore4) {
       diffScore4 = tmpDiffScore4;
@@ -2800,7 +2800,7 @@ void Method4_3_8()
     if (M438_yokoLineCount[j] < minLineCount) {
       minLineCount = M438_yokoLineCount[j];
       minLineNum = j;
-      if (minLineCount == 0) break;
+      if (minLineCount == 0) { break; }
     }
   }
   if (minLineNum == taisyouLineNum) return;
@@ -2813,7 +2813,7 @@ void Method4_3_8()
       int num = columnSchedule.schedules[i][taisyouLineNum][j];
       int height = columnSchedule.schedulesPosition[i][taisyouLineNum][j + 1] - columnSchedule.schedulesPosition[i][taisyouLineNum][j];
       for (int k = 0; k < elementCount; ++k) {
-        if (k == num) break;
+        if (k == num) { break; }
         if (columnSchedule.columnNum[i][k] == taisyouLineNum) { continue; }
         if (preCalcScheduleSizes[i][k][taisyouLineNum] <= height) {
           int nextLine = columnSchedule.columnNum[i][k];
@@ -3067,7 +3067,7 @@ int Method3_Oshii()
         int tmpNeed = 0;
         for (int k = ans.ansLineCount[i] - 1; k >= M3_alreadyCount; --k) {
           int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-          if (!canFitInColumn(i, j, width)) break;
+          if (!canFitInColumn(i, j, width)) { break; }
           int need = calculateRequiredSize(elementSizes[i][j], width);
           int over = 0;
           int amari = need * width - elementSizes[i][j];
@@ -3350,7 +3350,7 @@ void Method3_Oshii2()
         int tmpNeed = 0;
         for (int k = ans.ansLineCount[i] - 1; k >= 0; --k) {
           int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-          if (!canFitInColumn(i, j, width)) break;
+          if (!canFitInColumn(i, j, width)) { break; }
           int need = calculateRequiredSize(elementSizes[i][j], width);
           int over = 0;
           int amari = need * width - elementSizes[i][j];
@@ -3538,7 +3538,7 @@ int Method3_Normal(int loopCount)
         ans.ansLinePos[0][ans.ansBaseLineCount] = w;
         int maxNeed = (maxElementSize[elementCount - 1] - 1) / w + 1;
         ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
-        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) break;
+        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) { break; }
         int ng = 0;
         for (int i = startLine + 1; i < ans.ansBaseLineCount - 1; ++i) {
           ans.ansLinePos[0][i] = startW + (w - maxNeed - startW) * i / (ans.ansBaseLineCount - 1 - startLine);
@@ -3570,7 +3570,7 @@ int Method3_Normal(int loopCount)
         ans.ansLinePos[0][ans.ansBaseLineCount] = w;
         int maxNeed = (maxElementSize[elementCount - 1] - 1) / w + 1;
         ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
-        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) break;
+        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) { break; }
         int ng = 0;
         for (int i = startLine + 1; i < ans.ansBaseLineCount - 1; ++i) {
           ans.ansLinePos[0][i] = startW + Rand() % (nokoriW - maxNeed);
@@ -3673,7 +3673,7 @@ int Method3_Normal(int loopCount)
       int tmpNeed = 0;
       for (int k = ans.ansLineCount[i] - 1; k >= startLine; --k) {
         int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-        if (!canFitInColumn(i, j, width)) break;
+        if (!canFitInColumn(i, j, width)) { break; }
         int need = (elementSizes[i][j] - 1) / width + 1;
         int over = 0;
         int amari = need * width - elementSizes[i][j];
@@ -4002,7 +4002,7 @@ void Method3_2(double timeLimit)
         int tmpNeed = 0;
         for (int k = ans.ansBaseLineCount - 1; k >= 0; --k) {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
-          if (!canFitInColumn(i, j, width)) break;
+          if (!canFitInColumn(i, j, width)) { break; }
           int need = calculateRequiredSize(elementSizes[i][j], width);
           if (now[k] + need > w) { continue; }
           int amari = need * width - elementSizes[i][j];
@@ -4099,7 +4099,7 @@ void Method6_ColumnShuffle(double timeLimit)
     }
     ans.ansScore = CalcScore();
     if (ans.ansScore < real_ans.ansScore) { CopyToRealAns(); }
-    if (ningning % 10 == 9 && GetNowTime() > timeLimit) break;
+    if (ningning % 10 == 9 && GetNowTime() > timeLimit) { break; }
   }
   CopyFromRealAns();
 }
@@ -4147,7 +4147,7 @@ void Method7()
           int num = columnSchedule.schedules[i][line1][j];
           int height = columnSchedule.schedulesPosition[i][line1][j + 1] - columnSchedule.schedulesPosition[i][line1][j];
           for (int k = 0; k < elementCount; ++k) {
-            if (k == num) break;
+            if (k == num) { break; }
             if (columnSchedule.columnNum[i][k] == line1) { continue; }
             if (preCalcScheduleSizes[i][k][line1] <= height) {
               int nextLine = columnSchedule.columnNum[i][k];
@@ -4315,7 +4315,7 @@ void Method8(double timeLimit)
         int tmpNeed = 0;
         for (int k = ans.ansBaseLineCount - 1; k >= 0; --k) {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
-          if (!canFitInColumn(i, j, width)) break;
+          if (!canFitInColumn(i, j, width)) { break; }
           int need = calculateRequiredSize(elementSizes[i][j], width);
           int amari = need * width - elementSizes[i][j];
           if (now[k] + need > w) {

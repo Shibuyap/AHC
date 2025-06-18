@@ -469,7 +469,7 @@ int solve_problem(int problem_num = 0)
               break;
             }
           }
-          if (found) break;
+          if (found) { break; }
         }
 
         // x方向 or y方向だけの場合

@@ -695,7 +695,7 @@ ll solveSingleCase(int probNum)
           {
             int y = task_colors[i][l];
             tmp.push_back(cells_by_color[y][now]);
-            if (l == 0) break;
+            if (l == 0) { break; }
             now = dp2[l][j][now];
           }
           reverse(tmp.begin(), tmp.end());

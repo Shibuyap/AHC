@@ -472,7 +472,7 @@ void init_box()
   while (true) {
     loop++;
     if (loop % 100 == 0) {
-      if (get_elapsed_time() > 0.5) break;
+      if (get_elapsed_time() > 0.5) { break; }
     }
 
     int up = a[rand_xorshift() % A].x;
@@ -547,7 +547,7 @@ void init_box()
   while (true) {
     loop++;
     if (loop % 100 == 0) {
-      if (get_elapsed_time() > 1.0) break;
+      if (get_elapsed_time() > 1.0) { break; }
     }
 
     int up = a[rand_xorshift() % B].x;
@@ -823,7 +823,7 @@ void run_simulated_annealing(AnnealingParams annealingParams, double tl)
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > tl) break;
+      if (now_time > tl) { break; }
     }
 
     if (rand_xorshift() % 321212 == 0) {
@@ -965,7 +965,7 @@ void run_simulated_annealing_merge(AnnealingParams annealingParams)
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > 1.9) break;
+      if (now_time > 1.9) { break; }
     }
 
     double progress_ratio = now_time / TIME_LIMIT;
@@ -1100,7 +1100,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > 1.9) break;
+      if (now_time > 1.9) { break; }
     }
 
     double progress_ratio = now_time / TIME_LIMIT;
@@ -1221,7 +1221,7 @@ void run_simulated_annealing_B(AnnealingParams annealingParams)
 
     if (loop % 100 == 0) {
       now_time = get_elapsed_time();
-      if (now_time > TIME_LIMIT) break;
+      if (now_time > TIME_LIMIT) { break; }
     }
 
     double progress_ratio = now_time / TIME_LIMIT;
@@ -1342,7 +1342,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
     while (moves_a_count < MAX_T && moves_b_count < MAX_T) {
       loop++;
       if (loop % 100 == 0) {
-        if (get_elapsed_time() > 1.90) break;
+        if (get_elapsed_time() > 1.90) { break; }
       }
 
       int ra = rand_xorshift() % 2;

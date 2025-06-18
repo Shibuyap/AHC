@@ -266,7 +266,7 @@ void MakeA2(const vector<int>& route)
   while (i < LA) {
     int f[N] = {};
     for (auto x : route) {
-      if (i == LA) break;
+      if (i == LA) { break; }
       if (f[x] == 0) {
         a[i] = x;
         f[x] = 1;
@@ -276,7 +276,7 @@ void MakeA2(const vector<int>& route)
     for (int j = 0; j < N; ++j) f[j] = 0;
     for (int j = route.size() - 1; j >= 0; --j)
     {
-      if (i == LA) break;
+      if (i == LA) { break; }
       int x = route[j];
       if (f[x] == 0) {
         a[i] = x;
@@ -582,14 +582,14 @@ void MakeA1()
   MakeA1DFS(center, route, visited, 1);
   for (int j = 1; j < route.size(); ++j)
   {
-    if (i == LA) break;
+    if (i == LA) { break; }
     a[i] = route[j];
     i++;
   }
 
   for (int j = 0; j < route.size(); ++j)
   {
-    if (i == LA) break;
+    if (i == LA) { break; }
     a[i] = route[j];
     i++;
   }

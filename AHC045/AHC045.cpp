@@ -1138,7 +1138,7 @@ void SimulatedAnnealing0(Hypers hypers, double timeLimit)
 
     if (loop % 100 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;
+      if (nowTime > timeLimit) { break; }
     }
 
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
@@ -1255,7 +1255,7 @@ void SimulatedAnnealing1(Hypers hypers, double timeLimit)
 
     if (loop % 100 == 0) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;
+      if (nowTime > timeLimit) { break; }
     }
 
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
@@ -1349,7 +1349,7 @@ void SimulatedAnnealing2(Hypers hypers)
 
     if (loop % 100 == 0 || sort_g[m - 1] >= 100) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;
+      if (nowTime > timeLimit) { break; }
     }
 
     double progressRatio = (nowTime - startTime) / (timeLimit - startTime);
@@ -1468,7 +1468,7 @@ void SimulatedAnnealing3(Hypers hypers, double timeLimit)
 
     if (loop % 100 == 0 || sort_g[m - 1] >= 100) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;
+      if (nowTime > timeLimit) { break; }
     }
 
     // 近傍解作成
@@ -1608,7 +1608,7 @@ void SimulatedAnnealing4(Hypers hypers, double timeLimit)
 
     if (loop % 100 == 0 || sort_g[m - 1] >= 100) {
       nowTime = GetNowTime();
-      if (nowTime > timeLimit) break;
+      if (nowTime > timeLimit) { break; }
     }
 
     // 近傍解作成

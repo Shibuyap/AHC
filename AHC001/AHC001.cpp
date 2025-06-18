@@ -272,7 +272,7 @@ inline int isOK(int ite)
       if (kasanarihantei(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.y);
-        if (nowLeft >= rects[ite].p2.y) break;
+        if (nowLeft >= rects[ite].p2.y) { break; }
       }
     }
     nowLeft = rects[ite].p1.y;
@@ -281,7 +281,7 @@ inline int isOK(int ite)
       if (kasanarihantei(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.y);
-        if (nowLeft >= rects[ite].p2.y) break;
+        if (nowLeft >= rects[ite].p2.y) { break; }
       }
     }
   }
@@ -355,7 +355,7 @@ inline void hukuramashi(int ite)
         }
         if (rects[i].p1.x <= nowLeft) {
           nowLeft = max(nowLeft, rects[i].p2.x);
-          if (vExtend.p2.x <= nowLeft) break;
+          if (vExtend.p2.x <= nowLeft) { break; }
         }
       }
     }
@@ -375,7 +375,7 @@ inline void hukuramashi(int ite)
         }
         if (rects[i].p1.x <= nowLeft) {
           nowLeft = max(nowLeft, rects[i].p2.x);
-          if (vExtend.p2.x <= nowLeft) break;
+          if (vExtend.p2.x <= nowLeft) { break; }
         }
       }
     }
@@ -433,7 +433,7 @@ inline void hukuramashi(int ite)
         }
         if (rects[i].p1.y <= nowLeft) {
           nowLeft = max(nowLeft, rects[i].p2.y);
-          if (vExtend.p2.y <= nowLeft) break;
+          if (vExtend.p2.y <= nowLeft) { break; }
         }
       }
     }
@@ -452,7 +452,7 @@ inline void hukuramashi(int ite)
         }
         if (rects[i].p1.y <= nowLeft) {
           nowLeft = max(nowLeft, rects[i].p2.y);
-          if (vExtend.p2.y <= nowLeft) break;
+          if (vExtend.p2.y <= nowLeft) { break; }
         }
       }
     }
@@ -466,7 +466,7 @@ inline void hukuramashi(int ite)
 
   for (int i = 0; i < (4); ++i) {
     int S = (vExtend.p2.x - vExtend.p1.x) * (vExtend.p2.y - vExtend.p1.y);
-    if (S <= target_sizes[ite]) break;
+    if (S <= target_sizes[ite]) { break; }
     if (shuf[i] == 0) {
       int ma = target_sizes[ite] / (vExtend.p2.y - vExtend.p1.y) + yure;
       int diff = (vExtend.p2.x - vExtend.p1.x) - ma;
@@ -773,7 +773,7 @@ inline void hukuramashiKing(int ite)
 
   for (int i = 0; i < (4); ++i) {
     int S = (vExtendKing.p2.x - vExtendKing.p1.x) * (vExtendKing.p2.y - vExtendKing.p1.y);
-    if (S <= target_sizes[ite]) break;
+    if (S <= target_sizes[ite]) { break; }
     if (shuf[i] == 0) {
       int ma = target_sizes[ite] / (vExtendKing.p2.y - vExtendKing.p1.y) + yure;
       int diff = (vExtendKing.p2.x - vExtendKing.p1.x) - ma;
@@ -1098,11 +1098,11 @@ inline void kasanaritati(int ite, int abcd)
       }
       if (rects[i].p1.y <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.y);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
       if (nowRight <= rects[i].p2.y) {
         nowRight = min(nowRight, rects[i].p1.y);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
     }
   }
@@ -1123,11 +1123,11 @@ inline void kasanaritati(int ite, int abcd)
       }
       if (rects[i].p1.x <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.x);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
       if (nowRight <= rects[i].p2.x) {
         nowRight = min(nowRight, rects[i].p1.x);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
     }
   }
@@ -1148,11 +1148,11 @@ inline void kasanaritati(int ite, int abcd)
       }
       if (rects[i].p1.y <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.y);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
       if (nowRight <= rects[i].p2.y) {
         nowRight = min(nowRight, rects[i].p1.y);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
     }
   }
@@ -1173,11 +1173,11 @@ inline void kasanaritati(int ite, int abcd)
       }
       if (rects[i].p1.x <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.x);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
       if (nowRight <= rects[i].p2.x) {
         nowRight = min(nowRight, rects[i].p1.x);
-        if (nowLeft >= nowRight) break;
+        if (nowLeft >= nowRight) { break; }
       }
     }
   }
@@ -1543,7 +1543,7 @@ int solve(int teisyutu, int fileNum)
           loop++;
           if (loop % 100 == 1) {
             const double time = duration_cast<microseconds>(system_clock::now() - startClock).count() * 1e-6;
-            if (time > TL) break;
+            if (time > TL) { break; }
             const double progressRatio = time / TL;   // 進捗。開始時が0.0、終了時が1.0
             temp = start_temp + (end_temp - start_temp) * progressRatio;
           }
@@ -1634,7 +1634,7 @@ int solve(int teisyutu, int fileNum)
 
       // エスケープ
       end = clock();
-      if (((double)end - real_start) / CLOCKS_PER_SEC > realTL) break;
+      if (((double)end - real_start) / CLOCKS_PER_SEC > realTL) { break; }
     }
 
     // real_real_maxScore戻す

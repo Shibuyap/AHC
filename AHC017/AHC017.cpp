@@ -698,7 +698,7 @@ void InnerMethod7(double temperature)
   {
     newDay = Rand() % D;
     if (dayCount[newDay] + sz > K) newDay = day;
-    if (newDay != day) break;
+    if (newDay != day) { break; }
   }
   if (newDay == day) return;
 
@@ -833,7 +833,7 @@ int Solve(int mode, int problemNum)
       nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
       nowProgress = nowTime / TL;
     }
-    if (nowProgress > 1.0) break;
+    if (nowProgress > 1.0) { break; }
 
 #if 0
     if (Rand() % 2 == 0) {

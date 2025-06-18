@@ -189,7 +189,7 @@ void Dijkstra(int sx, int sy, int gx, int gy)
     int x = p.second.first;
     int y = p.second.second;
     double val = p.first;
-    if (x == gx && y == gy) break;
+    if (x == gx && y == gy) { break; }
     if (val > dp[x][y]) { continue; }
     for (int i = 0; i < 4; ++i) {
       int nx = x + dx[i];
@@ -239,7 +239,7 @@ void Dijkstra2(int sx, int sy, int gx, int gy)
     int x = p.second.first;
     int y = p.second.second;
     double val = p.first;
-    if (x == gx && y == gy) break;
+    if (x == gx && y == gy) { break; }
     if (val > dp[x][y]) { continue; }
     for (int i = 0; i < 4; ++i) {
       int nx = x + dx[i];
