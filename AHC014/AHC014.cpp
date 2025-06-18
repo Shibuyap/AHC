@@ -548,6 +548,50 @@ inline bool CanMakeRectangle(int x, int y, int z, int diff1, int diff2)
   return false;
 }
 
+// 長方形の辺の設定用構造体
+struct RectLineSettings
+{
+  int line1_1, line1_2;  // 1番目の点の辺
+  int line2_1, line2_2;  // 2番目の点の辺
+  int line3_1, line3_2;  // 3番目の点の辺
+  int line4_1, line4_2;  // 4番目の点の辺
+};
+
+// 各方向の辺の設定
+static const RectLineSettings rectLineSettings[8] = {
+  // 上左 (RectDir = 0)
+  { 0, 1, 1, 2, 2, 3, 3, 0 },
+  // 左下 (RectDir = 1)
+  { 1, 2, 2, 3, 3, 0, 0, 1 },
+  // 下右 (RectDir = 2)
+  { 2, 3, 3, 0, 0, 1, 1, 2 },
+  // 右上 (RectDir = 3)
+  { 3, 0, 0, 1, 1, 2, 2, 3 },
+  // 左上・左下 (RectDir = 4)
+  { 4, 5, 5, 6, 6, 7, 7, 4 },
+  // 左下・右下 (RectDir = 5)
+  { 5, 6, 6, 7, 7, 4, 4, 5 },
+  // 右下・右上 (RectDir = 6)
+  { 6, 7, 7, 4, 4, 5, 5, 6 },
+  // 右上・左上 (RectDir = 7)
+  { 7, 4, 4, 5, 5, 6, 6, 7 }
+};
+
+// 長方形の辺を設定/解除する共通関数
+inline void SetRectangleLines(int x[4], int y[4], int rectDir, bool setValue)
+{
+  const RectLineSettings& settings = rectLineSettings[rectDir];
+
+  current_state.line[x[0]][y[0]][settings.line1_1] = setValue;
+  current_state.line[x[0]][y[0]][settings.line1_2] = setValue;
+  current_state.line[x[1]][y[1]][settings.line2_1] = setValue;
+  current_state.line[x[1]][y[1]][settings.line2_2] = setValue;
+  current_state.line[x[2]][y[2]][settings.line3_1] = setValue;
+  current_state.line[x[2]][y[2]][settings.line3_2] = setValue;
+  current_state.line[x[3]][y[3]][settings.line4_1] = setValue;
+  current_state.line[x[3]][y[3]][settings.line4_2] = setValue;
+}
+
 /*
   メモ
   - ある1点を用いて描ける四角形は8種類
@@ -713,86 +757,10 @@ void Method1(double temperature)
     current_state.use[xx][yy]++;
     current_state.use[x3][y3]++;
 
-    if (RectDir == 0) {
-      current_state.line[x][y][0] = true;
-      current_state.line[x][y][1] = true;
-      current_state.line[x1][y1][1] = true;
-      current_state.line[x1][y1][2] = true;
-      current_state.line[xx][yy][2] = true;
-      current_state.line[xx][yy][3] = true;
-      current_state.line[x3][y3][3] = true;
-      current_state.line[x3][y3][0] = true;
-    }
-    else if (RectDir == 1) {
-      current_state.line[x][y][1] = true;
-      current_state.line[x][y][2] = true;
-      current_state.line[x1][y1][2] = true;
-      current_state.line[x1][y1][3] = true;
-      current_state.line[xx][yy][3] = true;
-      current_state.line[xx][yy][0] = true;
-      current_state.line[x3][y3][0] = true;
-      current_state.line[x3][y3][1] = true;
-    }
-    else if (RectDir == 2) {
-      current_state.line[x][y][2] = true;
-      current_state.line[x][y][3] = true;
-      current_state.line[x1][y1][3] = true;
-      current_state.line[x1][y1][0] = true;
-      current_state.line[xx][yy][0] = true;
-      current_state.line[xx][yy][1] = true;
-      current_state.line[x3][y3][1] = true;
-      current_state.line[x3][y3][2] = true;
-    }
-    else if (RectDir == 3) {
-      current_state.line[x][y][3] = true;
-      current_state.line[x][y][0] = true;
-      current_state.line[x1][y1][0] = true;
-      current_state.line[x1][y1][1] = true;
-      current_state.line[xx][yy][1] = true;
-      current_state.line[xx][yy][2] = true;
-      current_state.line[x3][y3][2] = true;
-      current_state.line[x3][y3][3] = true;
-    }
-    else if (RectDir == 4) {
-      current_state.line[x][y][4] = true;
-      current_state.line[x][y][5] = true;
-      current_state.line[x1][y1][5] = true;
-      current_state.line[x1][y1][6] = true;
-      current_state.line[xx][yy][6] = true;
-      current_state.line[xx][yy][7] = true;
-      current_state.line[x3][y3][7] = true;
-      current_state.line[x3][y3][4] = true;
-    }
-    else if (RectDir == 5) {
-      current_state.line[x][y][5] = true;
-      current_state.line[x][y][6] = true;
-      current_state.line[x1][y1][6] = true;
-      current_state.line[x1][y1][7] = true;
-      current_state.line[xx][yy][7] = true;
-      current_state.line[xx][yy][4] = true;
-      current_state.line[x3][y3][4] = true;
-      current_state.line[x3][y3][5] = true;
-    }
-    else if (RectDir == 6) {
-      current_state.line[x][y][6] = true;
-      current_state.line[x][y][7] = true;
-      current_state.line[x1][y1][7] = true;
-      current_state.line[x1][y1][4] = true;
-      current_state.line[xx][yy][4] = true;
-      current_state.line[xx][yy][5] = true;
-      current_state.line[x3][y3][5] = true;
-      current_state.line[x3][y3][6] = true;
-    }
-    else if (RectDir == 7) {
-      current_state.line[x][y][7] = true;
-      current_state.line[x][y][4] = true;
-      current_state.line[x1][y1][4] = true;
-      current_state.line[x1][y1][5] = true;
-      current_state.line[xx][yy][5] = true;
-      current_state.line[xx][yy][6] = true;
-      current_state.line[x3][y3][6] = true;
-      current_state.line[x3][y3][7] = true;
-    }
+    // 長方形の辺を設定
+    int rectX[4] = { x, x1, xx, x3 };
+    int rectY[4] = { y, y1, yy, y3 };
+    SetRectangleLines(rectX, rectY, RectDir, true);
 
     if (current_state.maxScore > best_state.maxScore) {
       // RefleshAns();
@@ -846,87 +814,9 @@ void Method2(double temperature)
     current_state.cntH[y[0]]--;
     for (int i = 0; i < 4; ++i) current_state.use[x[i]][y[i]]--;
 
+    // 長方形の辺を解除
     int RectDir = GetDir(x[0], y[0], x[1], y[1]);
-    if (RectDir == 0) {
-      current_state.line[x[0]][y[0]][0] = false;
-      current_state.line[x[0]][y[0]][1] = false;
-      current_state.line[x[1]][y[1]][1] = false;
-      current_state.line[x[1]][y[1]][2] = false;
-      current_state.line[x[2]][y[2]][2] = false;
-      current_state.line[x[2]][y[2]][3] = false;
-      current_state.line[x[3]][y[3]][3] = false;
-      current_state.line[x[3]][y[3]][0] = false;
-    }
-    else if (RectDir == 1) {
-      current_state.line[x[0]][y[0]][1] = false;
-      current_state.line[x[0]][y[0]][2] = false;
-      current_state.line[x[1]][y[1]][2] = false;
-      current_state.line[x[1]][y[1]][3] = false;
-      current_state.line[x[2]][y[2]][3] = false;
-      current_state.line[x[2]][y[2]][0] = false;
-      current_state.line[x[3]][y[3]][0] = false;
-      current_state.line[x[3]][y[3]][1] = false;
-    }
-    else if (RectDir == 2) {
-      current_state.line[x[0]][y[0]][2] = false;
-      current_state.line[x[0]][y[0]][3] = false;
-      current_state.line[x[1]][y[1]][3] = false;
-      current_state.line[x[1]][y[1]][0] = false;
-      current_state.line[x[2]][y[2]][0] = false;
-      current_state.line[x[2]][y[2]][1] = false;
-      current_state.line[x[3]][y[3]][1] = false;
-      current_state.line[x[3]][y[3]][2] = false;
-    }
-    else if (RectDir == 3) {
-      current_state.line[x[0]][y[0]][3] = false;
-      current_state.line[x[0]][y[0]][0] = false;
-      current_state.line[x[1]][y[1]][0] = false;
-      current_state.line[x[1]][y[1]][1] = false;
-      current_state.line[x[2]][y[2]][1] = false;
-      current_state.line[x[2]][y[2]][2] = false;
-      current_state.line[x[3]][y[3]][2] = false;
-      current_state.line[x[3]][y[3]][3] = false;
-    }
-    else if (RectDir == 4) {
-      current_state.line[x[0]][y[0]][4] = false;
-      current_state.line[x[0]][y[0]][5] = false;
-      current_state.line[x[1]][y[1]][5] = false;
-      current_state.line[x[1]][y[1]][6] = false;
-      current_state.line[x[2]][y[2]][6] = false;
-      current_state.line[x[2]][y[2]][7] = false;
-      current_state.line[x[3]][y[3]][7] = false;
-      current_state.line[x[3]][y[3]][4] = false;
-    }
-    else if (RectDir == 5) {
-      current_state.line[x[0]][y[0]][5] = false;
-      current_state.line[x[0]][y[0]][6] = false;
-      current_state.line[x[1]][y[1]][6] = false;
-      current_state.line[x[1]][y[1]][7] = false;
-      current_state.line[x[2]][y[2]][7] = false;
-      current_state.line[x[2]][y[2]][4] = false;
-      current_state.line[x[3]][y[3]][4] = false;
-      current_state.line[x[3]][y[3]][5] = false;
-    }
-    else if (RectDir == 6) {
-      current_state.line[x[0]][y[0]][6] = false;
-      current_state.line[x[0]][y[0]][7] = false;
-      current_state.line[x[1]][y[1]][7] = false;
-      current_state.line[x[1]][y[1]][4] = false;
-      current_state.line[x[2]][y[2]][4] = false;
-      current_state.line[x[2]][y[2]][5] = false;
-      current_state.line[x[3]][y[3]][5] = false;
-      current_state.line[x[3]][y[3]][6] = false;
-    }
-    else if (RectDir == 7) {
-      current_state.line[x[0]][y[0]][7] = false;
-      current_state.line[x[0]][y[0]][4] = false;
-      current_state.line[x[1]][y[1]][4] = false;
-      current_state.line[x[1]][y[1]][5] = false;
-      current_state.line[x[2]][y[2]][5] = false;
-      current_state.line[x[2]][y[2]][6] = false;
-      current_state.line[x[3]][y[3]][6] = false;
-      current_state.line[x[3]][y[3]][7] = false;
-    }
+    SetRectangleLines(x, y, RectDir, false);
 
     current_state.ansDelete[ite] = 1;
     current_state.ansDeleteCount++;
