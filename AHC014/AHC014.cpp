@@ -137,11 +137,17 @@ namespace /* 変数 */
 
     // 初期化メソッド
     void init();
+
+    // 長方形を追加するメソッド
+    void addRectangle(int x[4], int y[4], int rectDir);
+
+    // 長方形を削除するメソッド
+    void removeRectangle(int x[4], int y[4], int rectDir);
   };
 
-  State current_state;
-  State seed_state;
-  State best_state;
+  State current_state;  // 現在の状態
+  State seed_state;     // シード探索用の一時保存
+  State best_state;     // 最良解の保存
 
   // その他
   int methodCount[20][2];
@@ -187,21 +193,6 @@ double CalcScore()
   return current_state.calcScore();
 }
 
-void NormalClear()
-{
-  current_state.clear();
-}
-
-void RealClear()
-{
-  best_state.clear();
-}
-
-void SeedClear()
-{
-  seed_state.clear();
-}
-
 void RefleshAns()
 {
   int tmpCount = 0;
@@ -225,9 +216,9 @@ void RefleshAns()
 // ローカルで複数ケース試すための全て消す関数
 void AllClear_MultiCase()
 {
-  NormalClear();
-  RealClear();
-  SeedClear();
+  current_state.clear();
+  best_state.clear();
+  seed_state.clear();
   MethodCountReset();
 }
 
@@ -242,11 +233,6 @@ void State::init()
     cntH[Y[i]]++;
     cntW[X[i]]++;
   }
-}
-
-void Init()
-{
-  current_state.init();
 }
 
 // 入力受け取り（実行中一度しか呼ばれないことを想定）
@@ -276,7 +262,7 @@ void Input(int problemNum)
     }
   }
 
-  Init();
+  current_state.init();
 }
 
 // 解答出力
@@ -623,6 +609,41 @@ void State::setRectangleLines(int x[4], int y[4], int rectDir, bool setValue)
   line[x[3]][y[3]][settings.line4_2] = setValue;
 }
 
+// State::addRectangleの実装
+void State::addRectangle(int x[4], int y[4], int rectDir)
+{
+  ans[ansSize][0][0] = x[0]; ans[ansSize][0][1] = y[0];
+  ans[ansSize][1][0] = x[1]; ans[ansSize][1][1] = y[1];
+  ans[ansSize][2][0] = x[2]; ans[ansSize][2][1] = y[2];
+  ans[ansSize][3][0] = x[3]; ans[ansSize][3][1] = y[3];
+  ansDelete[ansSize] = 0;
+  ansSize++;
+
+  f[x[0]][y[0]] = 1;
+  cntW[x[0]]++;
+  cntH[y[0]]++;
+
+  for (int i = 0; i < 4; ++i) {
+    use[x[i]][y[i]]++;
+  }
+
+  setRectangleLines(x, y, rectDir, true);
+}
+
+// State::removeRectangleの実装
+void State::removeRectangle(int x[4], int y[4], int rectDir)
+{
+  f[x[0]][y[0]] = 0;
+  cntW[x[0]]--;
+  cntH[y[0]]--;
+
+  for (int i = 0; i < 4; ++i) {
+    use[x[i]][y[i]]--;
+  }
+
+  setRectangleLines(x, y, rectDir, false);
+}
+
 /*
   メモ
   - ある1点を用いて描ける四角形は8種類
@@ -770,28 +791,10 @@ void Method1(double temperature)
 
     current_state.maxScore += diffScore;
 
-    current_state.ans[current_state.ansSize][0][0] = x;
-    current_state.ans[current_state.ansSize][0][1] = y;
-    current_state.ans[current_state.ansSize][1][0] = x1;
-    current_state.ans[current_state.ansSize][1][1] = y1;
-    current_state.ans[current_state.ansSize][2][0] = xx;
-    current_state.ans[current_state.ansSize][2][1] = yy;
-    current_state.ans[current_state.ansSize][3][0] = x3;
-    current_state.ans[current_state.ansSize][3][1] = y3;
-    current_state.ansDelete[current_state.ansSize] = 0;
-    current_state.ansSize++;
-    current_state.f[x][y] = 1;
-    current_state.cntW[x]++;
-    current_state.cntH[y]++;
-    current_state.use[x][y]++;
-    current_state.use[x1][y1]++;
-    current_state.use[xx][yy]++;
-    current_state.use[x3][y3]++;
-
-    // 長方形の辺を設定
+    // 長方形を追加
     int rectX[4] = { x, x1, xx, x3 };
     int rectY[4] = { y, y1, yy, y3 };
-    current_state.setRectangleLines(rectX, rectY, RectDir, true);
+    current_state.addRectangle(rectX, rectY, RectDir);
 
     if (current_state.maxScore > best_state.maxScore) {
       // RefleshAns();
@@ -840,14 +843,9 @@ void Method2(double temperature)
 
     current_state.maxScore += diffScore;
 
-    current_state.f[x[0]][y[0]] = 0;
-    current_state.cntW[x[0]]--;
-    current_state.cntH[y[0]]--;
-    for (int i = 0; i < 4; ++i) current_state.use[x[i]][y[i]]--;
-
-    // 長方形の辺を解除
+    // 長方形を削除
     int RectDir = GetDir(x[0], y[0], x[1], y[1]);
-    current_state.setRectangleLines(x, y, RectDir, false);
+    current_state.removeRectangle(x, y, RectDir);
 
     current_state.ansDelete[ite] = 1;
     current_state.ansDeleteCount++;
@@ -864,7 +862,7 @@ int Solve(int mode, int problemNum = 0)
   endTime = clock();
 
   // 初期状態作成
-  Init();
+  current_state.init();
 
   // 愚直解作成
   current_state.maxScore = CalcScore();
@@ -877,7 +875,7 @@ int Solve(int mode, int problemNum = 0)
     startTime = clock();
 
     // 初期状態に戻す
-    Init();
+    current_state.init();
     current_state.maxScore = CalcScore();
 
     // 焼きなまし
