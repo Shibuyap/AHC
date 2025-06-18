@@ -172,7 +172,7 @@ public:
   {
     current_score = 0;
     ans_count = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       for (int j = 0; j < (4); ++j) {
         add_flags[i][j] = 0;
       }
@@ -197,7 +197,7 @@ public:
         ans[i][j] = src.ans[i][j];
       }
     }
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       for (int j = 0; j < (4); ++j) {
         add_flags[i][j] = src.add_flags[i][j];
       }
@@ -242,7 +242,7 @@ public:
         }
       }
     }
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       board[X[i]][Y[i]] = i;
     }
     for (int i = 1; i < n + 1; ++i) {
@@ -322,18 +322,18 @@ static Board input_data(int case_num)
   if (!ifs.is_open()) {
     // 標準入力
     cin >> _n >> _m;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       cin >> board.X[i] >> board.Y[i];
     }
   }
   else {
     // ファイル入力
     ifs >> _n >> _m;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       ifs >> board.X[i] >> board.Y[i];
     }
   }
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     board.X[i]++;
     board.Y[i]++;
   }
@@ -497,7 +497,7 @@ private:
     answer.ans_count = 0;
     int x = board.X[0];
     int y = board.Y[0];
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       auto vp = bfs(board, x, y, board.X[i], board.Y[i]);
       for (const auto& p : vp) {
         if (p.first == 0) {

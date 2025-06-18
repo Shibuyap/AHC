@@ -1108,7 +1108,9 @@ vector<P> Method3_GetAllKouhoSpecificPoint1(int xxx, int yyy)
           break;
         }
       }
-      if (!isOk) { continue; }
+      if (!isOk) {
+        continue;
+      }
       result.emplace_back(i, j);
     }
   }
@@ -1149,7 +1151,9 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
         int yyyy = yy - yyy + (shuuiSize / 2);
         if (0 <= xxxx && xxxx < shuuiSize && 0 <= yyyy && yyyy < shuuiSize) { unused[xxxx][yyyy]--; }
       }
-      if (!isOk) { continue; }
+      if (!isOk) {
+        continue;
+      }
 
       // 周囲9マスで使っていないマスのチェック
       vector<P> unusedPoints;
@@ -1182,7 +1186,9 @@ vector<P> Method3_GetAllKouhoSpecificPoint2(int xxx, int yyy)
         }
       }
 
-      if (!isOk) { continue; }
+      if (!isOk) {
+        continue;
+      }
 
       result.emplace_back(i, j);
     }

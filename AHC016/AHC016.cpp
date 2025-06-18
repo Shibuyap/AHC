@@ -208,9 +208,9 @@ namespace
   {
     if (mode == 0) {
       cout << n << endl;
-      for (int i = 0; i < (m); ++i) {
+      for (int i = 0; i < m; ++i) {
         string s;
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           for (int k = j + 1; k < n; ++k) { s += (char)(a[i][j][k] + '0'); }
         }
         cout << s << endl;
@@ -225,9 +225,9 @@ namespace
       ofs1000Out << "# hyperMaxRound = " << hyperMaxRound << endl;
       ofs1000Out << "# hyperStep1 = " << hyperStep1 << endl;
       ofs1000Out << "# hyperStep2 = " << hyperStep2 << endl;
-      for (int i = 0; i < (m); ++i) {
+      for (int i = 0; i < m; ++i) {
         string s;
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           for (int k = j + 1; k < n; ++k) { s += (char)(a[i][j][k] + '0'); }
         }
         ofs1000Out << s << endl;
@@ -305,7 +305,7 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
 // グラフにノイズを適用（確率epsで各辺を反転）
 void ApplyNoiseToGraph(int x)
 {
-  for (int j = 0; j < (n); ++j) {
+  for (int j = 0; j < n; ++j) {
     for (int k = j + 1; k < n; ++k) {
       b[j][k] = a[x][j][k];
       if (Rand01() < eps) {
@@ -321,7 +321,9 @@ int judgeNum;
 void ReceiveNoisyGraph(int mode, int turn = 0)
 {
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { b[i][j] = 0; }
+    for (int j = 0; j < n; ++j) {
+      b[i][j] = 0;
+    }
   }
   if (mode == 0) {
     string s;
@@ -350,9 +352,9 @@ namespace
   // 共通のグラフ初期化関数（完全グラフのサイズで符号化）
   void SetGraphFromNumArray(int arraySize = 100)
   {
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num = numArr[i];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           setSymmetricValue(i, j, k, (k < num) ? 1 : 0);
         }
@@ -363,10 +365,10 @@ namespace
   // 条件付きグラフ初期化関数（2つのクリークで符号化）
   void SetGraphFromPairArray()
   {
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
@@ -388,11 +390,11 @@ namespace
   // 条件付きグラフ初期化関数（3つのクリークで符号化）
   void SetGraphFromThreeArray()
   {
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numThreeArr[i][0];
       int num2 = numThreeArr[i][1];
       int num3 = numThreeArr[i][2];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
@@ -418,12 +420,12 @@ namespace
   // 条件付きグラフ初期化関数（4つのクリークで符号化）
   void SetGraphFromFourArray()
   {
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numFourArr[i][0];
       int num2 = numFourArr[i][1];
       int num3 = numFourArr[i][2];
       int num4 = numFourArr[i][3];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
@@ -598,9 +600,9 @@ namespace
       }
     }
 
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num = numArr[i];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num) {
             a[i][j][k] = 1;
@@ -742,9 +744,9 @@ namespace
 
   void InitNumArray14()
   {
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (cnt < i) {
             a[i][j][k] = 1;
@@ -1125,11 +1127,11 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       int omote = omoteArr[i];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
@@ -1183,11 +1185,11 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       int omote = omoteArr[i];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
@@ -1255,14 +1257,14 @@ namespace
     dfs(0, 1);
     if (zeroPairs.size() >= m) {
       numPairArrOK = 1;
-      for (int i = 0; i < (m); ++i) {
-        for (int j = 0; j < (n); ++j) {
+      for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
           for (int k = 0; k < (n); ++k) {
             a[i][j][k] = 0;
           }
         }
       }
-      for (int i = 0; i < (m); ++i) {
+      for (int i = 0; i < m; ++i) {
         vector<P> vp = zeroPairs[i];
         int sz = vp.size();
         int sum = 0;
@@ -1301,10 +1303,10 @@ namespace
       if (cnt > MAX_KOUHO_LIMIT) break;
     }
 
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numSingleArr[i];
       int omote = omoteArr[i];
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         for (int k = j + 1; k < n; ++k) {
           if (k < num1) {
             a[i][j][k] = 1;
@@ -1502,10 +1504,12 @@ int Solver1()
 
   std::array<int, 100> cnt = {};
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
+    for (int j = 0; j < n; ++j) {
+      cnt[i] += b[i][j];
+    }
   }
 
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num = numArr[i];
     double e0 = ((double)n - 1) * eps;
     double e1 = ((double)num - 1) + ((double)n - num) * eps - ((double)num - 1) * eps;
@@ -1572,7 +1576,7 @@ int Solver3()
     for (int i = 0; i < n; ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
     std::array<vector<int>, 2> nxt;
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (i == j) {
           cnt[i][0]++;
         }
@@ -1599,7 +1603,7 @@ int Solver3()
   int res = min(vec[0].size(), vec[1].size());
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num = numArr[i];
     if (abs(num - res) < diff) {
       diff = abs(num - res);
@@ -1721,7 +1725,9 @@ int Solver7()
   int ff[100] = {};
   int res = n;
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { cnt[i] += b[i][j]; }
+    for (int j = 0; j < n; ++j) {
+      cnt[i] += b[i][j];
+    }
     f[i] = 1;
   }
 
@@ -1735,7 +1741,7 @@ int Solver7()
   }
   for (int i = 0; i < n; ++i) { cnt[i] = 0; }
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       if (f[i] && f[j]) cnt[i] += b[i][j];
     }
   }
@@ -1764,7 +1770,7 @@ int Solver7()
 
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -1794,7 +1800,9 @@ int Solver9()
 
   int kcnt[100] = {};
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { kcnt[i] += b[i][j]; }
+    for (int j = 0; j < n; ++j) {
+      kcnt[i] += b[i][j];
+    }
   }
 
   for (int _ = 0; _ < (10); ++_) {
@@ -1818,7 +1826,7 @@ int Solver9()
     }
     for (int i = 0; i < n; ++i) { cnt[i] = 0; }
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
     }
@@ -1871,7 +1879,7 @@ int Solver9()
 
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -1891,7 +1899,9 @@ int Solver10()
 
   int kcnt[100] = {};
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { kcnt[i] += b[i][j]; }
+    for (int j = 0; j < n; ++j) {
+      kcnt[i] += b[i][j];
+    }
   }
 
   for (int _ = 0; _ < (31); ++_) {
@@ -1915,7 +1925,7 @@ int Solver10()
     }
     for (int i = 0; i < n; ++i) { cnt[i] = 0; }
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[i] && f[j]) cnt[i] += b[i][j];
       }
     }
@@ -1957,7 +1967,7 @@ int Solver10()
 
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2141,7 +2151,7 @@ void collectCandidates(vector<int>& kouho, const std::array<int, 100>& f, int mi
   for (int i = 0; i < n; ++i) {
     if (f[i] != 0) continue;
     int cnt = 0;
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       if (f[j] == 0) cnt += b[i][j];
     }
     if (cnt <= minConnectivity) continue;
@@ -2185,7 +2195,7 @@ void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif,
 
   // bibの初期化
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       bib[i][j] = b[i][j];
     }
   }
@@ -2315,7 +2325,7 @@ int Solver11()
   if (res2 > res1) swap(res1, res2);
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num1 = numPairArr[i][0];
     int num2 = numPairArr[i][1];
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2375,7 +2385,9 @@ int Solver12()
   }
 
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
+    for (int j = 0; j < n; ++j) {
+      bib[i][j] = b[i][j];
+    }
   }
 
   bitset<100> bione(0);
@@ -2391,7 +2403,7 @@ int Solver12()
   sortResultsDescending(res1, res2, res3);
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num1 = numThreeArr[i][0];
     int num2 = numThreeArr[i][1];
     int num3 = numThreeArr[i][2];
@@ -2467,7 +2479,9 @@ int Solver13()
   }
 
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) { bib[i][j] = b[i][j]; }
+    for (int j = 0; j < n; ++j) {
+      bib[i][j] = b[i][j];
+    }
   }
 
   bitset<100> bione(0);
@@ -2485,7 +2499,7 @@ int Solver13()
   sortResultsDescending(res1, res2, res3, res4);
   int diff = INITIAL_DIFF;
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     int num1 = numFourArr[i][0];
     int num2 = numFourArr[i][1];
     int num3 = numFourArr[i][2];
@@ -2520,7 +2534,7 @@ int Solver14()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -2551,7 +2565,7 @@ int Solver14()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2587,7 +2601,7 @@ int Solver15()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -2618,7 +2632,7 @@ int Solver15()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -2649,20 +2663,20 @@ int Solver16()
   int real_score = 0;
   int keepB[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -2682,7 +2696,7 @@ int Solver16()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -2713,7 +2727,7 @@ int Solver16()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -2751,20 +2765,20 @@ int Solver17()
   int real_score = 0;
   int keepB[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (10); ++tei) {
 
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -2784,7 +2798,7 @@ int Solver17()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -2815,7 +2829,7 @@ int Solver17()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -2852,7 +2866,7 @@ int Solver18()
   int visit[100] = {};
   int bb[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       bb[i][j] = b[i][j];
     }
   }
@@ -2870,7 +2884,7 @@ int Solver18()
     while (que.size()) {
       int x = que.front();
       que.pop();
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (bb[x][j]) {
           cnt2++;
           bb[x][j] = 0;
@@ -2883,12 +2897,14 @@ int Solver18()
       }
     }
     cnt2 /= 2;
-    if (cnt1 == 1) { continue; }
+    if (cnt1 == 1) {
+      continue;
+    }
     vp.push_back(P(cnt1, cnt2));
   }
   sort(vp.begin(), vp.end());
   int argRes = 0;
-  for (int i = 0; i < (m); ++i) {
+  for (int i = 0; i < m; ++i) {
     if (zeroPairs[i] == vp) {
       argRes = i;
       break;
@@ -2904,7 +2920,7 @@ int Solver19()
   int real_minDiff[2] = { 1000,1000 };
   int keepB[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       keepB[i][j] = b[i][j];
     }
   }
@@ -2912,13 +2928,13 @@ int Solver19()
 
   for (int wataruoop = 0; wataruoop < (10); ++wataruoop) {
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (wataruoop % 2 == 1) {
       for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -2937,7 +2953,7 @@ int Solver19()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -2968,7 +2984,7 @@ int Solver19()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       if (omoteArr[i] != wataruoop % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -2998,20 +3014,20 @@ int Solver20()
   int real_score = 0;
   int keepB[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -3040,7 +3056,7 @@ int Solver20()
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numSingleArr[i];
       if (abs(num1 - res1) < diff) {
@@ -3140,7 +3156,7 @@ int Solver21()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3184,7 +3200,7 @@ int Solver22()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -3239,7 +3255,7 @@ int Solver22()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3265,20 +3281,20 @@ int Solver23()
   int real_score = 0;
   int keepB[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -3329,7 +3345,7 @@ int Solver23()
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) continue;
       int cnt = 0;
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
@@ -3384,7 +3400,7 @@ int Solver23()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
@@ -3422,20 +3438,20 @@ int Solver24()
   int real_score = 0;
   int keepB[100][100];
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < (n); ++j) {
+    for (int j = 0; j < n; ++j) {
       keepB[i][j] = b[i][j];
     }
   }
   for (int tei = 0; tei < (2); ++tei) {
 
     for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         b[i][j] = keepB[i][j];
       }
     }
     if (tei % 2 == 1) {
       for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           if (i == j) continue;
           b[i][j] = 1 - b[i][j];
         }
@@ -3531,7 +3547,7 @@ int Solver24()
     if (res2 > res1) swap(res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
-    for (int i = 0; i < (m); ++i) {
+    for (int i = 0; i < m; ++i) {
       if (omoteArr[i] != tei % 2) continue;
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];

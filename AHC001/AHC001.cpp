@@ -1494,7 +1494,7 @@ int solve(int teisyutu, int fileNum)
     int oya = 1;
 
     for (int asai = 0; asai < (oya); ++asai) {
-      for (int j = 0; j < (n); ++j) {
+      for (int j = 0; j < n; ++j) {
         a2[asai][j] = rects[j].p1.x;
         b2[asai][j] = rects[j].p1.y;
         c2[asai][j] = rects[j].p2.x;
@@ -1618,7 +1618,7 @@ int solve(int teisyutu, int fileNum)
 
       for (int ii = 0; ii < (oya); ++ii) {
         int i = vBeam[ii].second;
-        for (int j = 0; j < (n); ++j) {
+        for (int j = 0; j < n; ++j) {
           a2[ii][j] = a4[i][j];
           b2[ii][j] = b4[i][j];
           c2[ii][j] = c4[i][j];

@@ -332,7 +332,9 @@ bool isValidPlotForCrop(const int x, const int y, const vector<vector<int>>& fie
   }
   int blankCount = 0;
   for (int i = 0; i < (4); ++i) {
-    if (canalsAround[x][y][i]) { continue; }
+    if (canalsAround[x][y][i]) {
+      continue;
+    }
     int nx = x + dx[i];
     int ny = y + dy[i];
     if (fieldStatus[nx][ny] == -1) {
@@ -524,7 +526,9 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& fie
     for (int j = 0; j < (W); ++j) {
       if (fieldStatus[i][j] != -1) {
         for (int k = 0; k < (4); ++k) {
-          if (canalsAround[i][j][k]) { continue; }
+          if (canalsAround[i][j][k]) {
+            continue;
+          }
           if (fieldStatus[i + dx[k]][j + dy[k]] != -1) {
             if (fieldStatus[i + dx[k]][j + dy[k]] == fieldStatus[i][j]) {
               score += 1e5;
@@ -566,7 +570,9 @@ vector<P> getNonArticulationBlanks(const vector<vector<int>>& fieldStatus)
     int x = mp[num].first;
     int y = mp[num].second;
     for (int j = 0; j < 4; ++j) {
-      if (canalsAround[x][y][j]) { continue; }
+      if (canalsAround[x][y][j]) {
+        continue;
+      }
       int nx = x + dx[j];
       int ny = y + dy[j];
       if (fieldStatus[nx][ny] == -1) {
@@ -608,7 +614,9 @@ vector<vector<int>> calculateWalkCount(const vector<vector<int>>& fieldStatus)
     int y = que.front().second;
     que.pop();
     for (int j = 0; j < 4; ++j) {
-      if (canalsAround[x][y][j]) { continue; }
+      if (canalsAround[x][y][j]) {
+        continue;
+      }
       int nx = x + dx[j];
       int ny = y + dy[j];
       if (fieldStatus[nx][ny] == -1 && walkCount[x][y] + 1 < walkCount[nx][ny]) {
@@ -792,8 +800,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       for (int j = 0; j < (1); ++j) {
         ll score = solveProblem(i);
         sum += score;
