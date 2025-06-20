@@ -58,7 +58,8 @@
       "Bash(./AHC017)",
       "Bash(./AHC018)",
       "Bash(./AHC019)",
-      "Bash(./AHC020)"
+      "Bash(./AHC020)",
+      "Bash(./AHC001)"
     ],
     "deny": []
   }

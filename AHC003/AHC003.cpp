@@ -294,7 +294,6 @@ int Solve(string inputFileNum)
   clock_t start, end;
   start = clock();
 
-
   int inputMode = 1;
   string fileNameIfs = (string)"./in/" + inputFileNum + ".txt";
   const char* cstrIfs = fileNameIfs.c_str();
@@ -376,7 +375,9 @@ int Solve(string inputFileNum)
 
     int length = ans.size();
 
-    if (turn < 0) { continue; }
+    if (turn < 0) {
+      continue;
+    }
     end = clock();
     if ((double)(end - start) / CLOCKS_PER_SEC > 1.8) {
       if (time_over == 0 && ifs) {
@@ -897,7 +898,6 @@ int Solve(string inputFileNum)
 
 
     // スコアが悪化したらロールバック
-
     if (best_diff_sum < diff_sum) {
 
       diff_sum = best_diff_sum;
@@ -981,7 +981,6 @@ int Solve(string inputFileNum)
         diff_sum -= diff;
       }
     }
-
   }
 
   scoreSumGlobal *= 2312311;
@@ -1018,7 +1017,6 @@ int Solve(string inputFileNum)
   return scoreSumGlobal;
 }
 
-
 int main()
 {
   clock_t start, end;
@@ -1052,4 +1050,3 @@ int main()
   end = clock();
   if (mode != 0) cout << (double)(end - start) / CLOCKS_PER_SEC << endl;
 }
-

@@ -41,9 +41,9 @@ static double rand01()
 }
 
 // ハイパラはここにおく
-int haipara_hoge;
-int haipara_oya = 1;
-int haipara_TT = 1;
+int hyperParam1;
+int beamWidth = 1;
+int innerLoops = 1;
 int modeCount[20];
 
 int shuffles[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
@@ -51,7 +51,7 @@ int shuffles[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, 
                    {2, 0, 1, 3}, {2, 0, 3, 1}, {2, 1, 0, 3}, {2, 1, 3, 0}, {2, 3, 0, 1}, {2, 3, 1, 0},
                    {3, 0, 1, 2}, {3, 0, 2, 1}, {3, 1, 0, 2}, {3, 1, 2, 0}, {3, 2, 0, 1}, {3, 2, 1, 0} };
 
-double realTL = 4.8;
+double timeLimit = 4.8;
 
 struct Point
 {
@@ -61,21 +61,21 @@ struct Point
 
 struct Rect
 {
-  Point p1;
-  Point p2;
+  Point topLeft;
+  Point bottomRight;
 };
 
 int allLoopTimes = 1;
-int n;
-Point pt[MAX_N];
-int sz[MAX_N];
-Rect rects[MAX_N];
-int area[MAX_N];
-Rect best_rects[MAX_N];
+int numRects;
+Point points[MAX_N];
+int targetSizes[MAX_N];
+Rect rectangles[MAX_N];
+int rectAreas[MAX_N];
+Rect bestRects[MAX_N];
 
 inline void calcArea(int idx)
 {
-  area[idx] = (rects[idx].p2.x - rects[idx].p1.x) * (rects[idx].p2.y - rects[idx].p1.y);
+  rectAreas[idx] = (rectangles[idx].bottomRight.x - rectangles[idx].topLeft.x) * (rectangles[idx].bottomRight.y - rectangles[idx].topLeft.y);
 }
 
 inline void readInput(int fileNum)
@@ -85,12 +85,12 @@ inline void readInput(int fileNum)
   oss << "./in/" << std::setw(4) << std::setfill('0') << fileNum << ".txt";
   ifstream ifs(oss.str());
   if (!ifs.is_open()) { // 標準入力する
-    cin >> n;
-    for (int i = 0; i < n; ++i) cin >> pt[i].x >> pt[i].y >> sz[i];
+    cin >> numRects;
+    for (int i = 0; i < numRects; ++i) cin >> points[i].x >> points[i].y >> targetSizes[i];
   }
   else { // ファイル入力する
-    ifs >> n;
-    for (int i = 0; i < n; ++i) ifs >> pt[i].x >> pt[i].y >> sz[i];
+    ifs >> numRects;
+    for (int i = 0; i < numRects; ++i) ifs >> points[i].x >> points[i].y >> targetSizes[i];
   }
 }
 
@@ -102,8 +102,8 @@ void writeOutput(int case_num)
   ofstream ofs(oss.str());
 
   if (ofs.is_open()) {
-    for (int i = 0; i < n; ++i) {
-      ofs << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
+    for (int i = 0; i < numRects; ++i) {
+      ofs << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
     }
 
     ofs.close();
@@ -116,39 +116,39 @@ inline void writeErrorLog(int fileNum)
   fileName += "_out_ERROR.txt";
   const char* cstr = fileName.c_str();
   ofstream ofs(cstr);
-  for (int i = 0; i < n; ++i) {
-    ofs << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
+  for (int i = 0; i < numRects; ++i) {
+    ofs << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
   }
   ofs.close();
 }
 
-int maxScore = -1;
-int real_maxScore = -1;
+int currentScore = -1;
+int bestScore = -1;
 
-double p[MAX_N];
-double pSum;
+double rectScores[MAX_N];
+double totalScore;
 inline int calcScore(int ite)
 {
   if (ite == -1) {
     double sum = 0;
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < numRects; ++i) {
       calcArea(i);
-      p[i] = 1.0 - (1.0 - (double)min(sz[i], area[i]) / (double)max(sz[i], area[i])) * (1.0 - (double)min(sz[i], area[i]) / (double)max(sz[i], area[i]));
-      sum += p[i];
+      rectScores[i] = 1.0 - (1.0 - (double)min(targetSizes[i], rectAreas[i]) / (double)max(targetSizes[i], rectAreas[i])) * (1.0 - (double)min(targetSizes[i], rectAreas[i]) / (double)max(targetSizes[i], rectAreas[i]));
+      sum += rectScores[i];
     }
-    pSum = sum;
-    sum /= (double)n;
+    totalScore = sum;
+    sum /= (double)numRects;
     sum *= 1000000000.0;
     return round(sum);
   }
   else {
-    double sum = pSum;
-    sum -= p[ite];
+    double sum = totalScore;
+    sum -= rectScores[ite];
     calcArea(ite);
-    p[ite] = 1.0 - (1.0 - (double)min(sz[ite], area[ite]) / (double)max(sz[ite], area[ite])) * (1.0 - (double)min(sz[ite], area[ite]) / (double)max(sz[ite], area[ite]));
-    sum += p[ite];
-    pSum = sum;
-    sum /= (double)n;
+    rectScores[ite] = 1.0 - (1.0 - (double)min(targetSizes[ite], rectAreas[ite]) / (double)max(targetSizes[ite], rectAreas[ite])) * (1.0 - (double)min(targetSizes[ite], rectAreas[ite]) / (double)max(targetSizes[ite], rectAreas[ite]));
+    sum += rectScores[ite];
+    totalScore = sum;
+    sum /= (double)numRects;
     sum *= 1000000000.0;
     return round(sum);
   }
@@ -157,35 +157,35 @@ inline int calcScore(int ite)
 inline int checkOverlap(int i, int j)
 {
   int cnt = 0;
-  if (rects[i].p1.x <= rects[j].p1.x && rects[j].p1.x < rects[i].p2.x) cnt++;
-  else if (rects[j].p1.x <= rects[i].p1.x && rects[i].p1.x < rects[j].p2.x) cnt++;
-  if (rects[i].p1.y <= rects[j].p1.y && rects[j].p1.y < rects[i].p2.y) cnt++;
-  else if (rects[j].p1.y <= rects[i].p1.y && rects[i].p1.y < rects[j].p2.y) cnt++;
+  if (rectangles[i].topLeft.x <= rectangles[j].topLeft.x && rectangles[j].topLeft.x < rectangles[i].bottomRight.x) cnt++;
+  else if (rectangles[j].topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < rectangles[j].bottomRight.x) cnt++;
+  if (rectangles[i].topLeft.y <= rectangles[j].topLeft.y && rectangles[j].topLeft.y < rectangles[i].bottomRight.y) cnt++;
+  else if (rectangles[j].topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < rectangles[j].bottomRight.y) cnt++;
   return cnt == 2;
 }
 
-int sort_x[MAX_N], sort_y[MAX_N];
-int arg_sort_x[MAX_N], arg_sort_y[MAX_N];
+int sortedByX[MAX_N], sortedByY[MAX_N];
+int indexInSortedX[MAX_N], indexInSortedY[MAX_N];
 inline void initSortArrays()
 {
   vector<P> v;
-  for (int i = 0; i < n; ++i) {
-    v.emplace_back(P(pt[i].x, i));
+  for (int i = 0; i < numRects; ++i) {
+    v.emplace_back(P(points[i].x, i));
   }
   sort(v.begin(), v.end());
-  for (int i = 0; i < n; ++i) {
-    sort_x[i] = v[i].second;
-    arg_sort_x[v[i].second] = i;
+  for (int i = 0; i < numRects; ++i) {
+    sortedByX[i] = v[i].second;
+    indexInSortedX[v[i].second] = i;
   }
 
   v.clear();
-  for (int i = 0; i < n; ++i) {
-    v.emplace_back(P(pt[i].y, i));
+  for (int i = 0; i < numRects; ++i) {
+    v.emplace_back(P(points[i].y, i));
   }
   sort(v.begin(), v.end());
-  for (int i = 0; i < n; ++i) {
-    sort_y[i] = v[i].second;
-    arg_sort_y[v[i].second] = i;
+  for (int i = 0; i < numRects; ++i) {
+    sortedByY[i] = v[i].second;
+    indexInSortedY[v[i].second] = i;
   }
 }
 
@@ -196,36 +196,36 @@ inline void initSortArrays()
 inline int isValid2(int ite)
 {
   if (ite == -1) {
-    for (int i = 0; i < n; ++i) {
-      if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
-      if (rects[i].p1.y < 0 || 10000 < rects[i].p1.y) return 0;
-      if (rects[i].p2.x < 0 || 10000 < rects[i].p2.x) return 0;
-      if (rects[i].p2.y < 0 || 10000 < rects[i].p2.y) return 0;
+    for (int i = 0; i < numRects; ++i) {
+      if (rectangles[i].topLeft.x < 0 || 10000 < rectangles[i].topLeft.x) return 0;
+      if (rectangles[i].topLeft.y < 0 || 10000 < rectangles[i].topLeft.y) return 0;
+      if (rectangles[i].bottomRight.x < 0 || 10000 < rectangles[i].bottomRight.x) return 0;
+      if (rectangles[i].bottomRight.y < 0 || 10000 < rectangles[i].bottomRight.y) return 0;
     }
-    for (int i = 0; i < n; ++i) {
-      if (rects[i].p2.x <= rects[i].p1.x) return 0;
-      if (rects[i].p2.y <= rects[i].p1.y) return 0;
+    for (int i = 0; i < numRects; ++i) {
+      if (rectangles[i].bottomRight.x <= rectangles[i].topLeft.x) return 0;
+      if (rectangles[i].bottomRight.y <= rectangles[i].topLeft.y) return 0;
     }
-    for (int i = 0; i < n; ++i) {
-      if (pt[i].x < rects[i].p1.x || rects[i].p2.x <= pt[i].x) return 0;
-      if (pt[i].y < rects[i].p1.y || rects[i].p2.y <= pt[i].y) return 0;
+    for (int i = 0; i < numRects; ++i) {
+      if (points[i].x < rectangles[i].topLeft.x || rectangles[i].bottomRight.x <= points[i].x) return 0;
+      if (points[i].y < rectangles[i].topLeft.y || rectangles[i].bottomRight.y <= points[i].y) return 0;
     }
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
+    for (int i = 0; i < numRects; ++i) {
+      for (int j = i + 1; j < numRects; ++j) {
         if (checkOverlap(i, j)) return 0;
       }
     }
   }
   else {
-    if (rects[ite].p1.x < 0 || 10000 < rects[ite].p1.x) return 0;
-    if (rects[ite].p1.y < 0 || 10000 < rects[ite].p1.y) return 0;
-    if (rects[ite].p2.x < 0 || 10000 < rects[ite].p2.x) return 0;
-    if (rects[ite].p2.y < 0 || 10000 < rects[ite].p2.y) return 0;
-    if (rects[ite].p2.x <= rects[ite].p1.x) return 0;
-    if (rects[ite].p2.y <= rects[ite].p1.y) return 0;
-    if (pt[ite].x < rects[ite].p1.x || rects[ite].p2.x <= pt[ite].x) return 0;
-    if (pt[ite].y < rects[ite].p1.y || rects[ite].p2.y <= pt[ite].y) return 0;
-    for (int i = 0; i < n; ++i) {
+    if (rectangles[ite].topLeft.x < 0 || 10000 < rectangles[ite].topLeft.x) return 0;
+    if (rectangles[ite].topLeft.y < 0 || 10000 < rectangles[ite].topLeft.y) return 0;
+    if (rectangles[ite].bottomRight.x < 0 || 10000 < rectangles[ite].bottomRight.x) return 0;
+    if (rectangles[ite].bottomRight.y < 0 || 10000 < rectangles[ite].bottomRight.y) return 0;
+    if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 0;
+    if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 0;
+    if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 0;
+    if (points[ite].y < rectangles[ite].topLeft.y || rectangles[ite].bottomRight.y <= points[ite].y) return 0;
+    for (int i = 0; i < numRects; ++i) {
       if (i == ite) { continue; }
       if (checkOverlap(i, ite)) return 0;
     }
@@ -236,52 +236,52 @@ inline int isValid2(int ite)
 inline int isValid(int ite)
 {
   if (ite == -1) {
-    for (int i = 0; i < n; ++i) {
-      if (rects[i].p1.x < 0 || 10000 < rects[i].p1.x) return 0;
-      if (rects[i].p1.y < 0 || 10000 < rects[i].p1.y) return 0;
-      if (rects[i].p2.x < 0 || 10000 < rects[i].p2.x) return 0;
-      if (rects[i].p2.y < 0 || 10000 < rects[i].p2.y) return 0;
+    for (int i = 0; i < numRects; ++i) {
+      if (rectangles[i].topLeft.x < 0 || 10000 < rectangles[i].topLeft.x) return 0;
+      if (rectangles[i].topLeft.y < 0 || 10000 < rectangles[i].topLeft.y) return 0;
+      if (rectangles[i].bottomRight.x < 0 || 10000 < rectangles[i].bottomRight.x) return 0;
+      if (rectangles[i].bottomRight.y < 0 || 10000 < rectangles[i].bottomRight.y) return 0;
     }
-    for (int i = 0; i < n; ++i) {
-      if (rects[i].p2.x <= rects[i].p1.x) return 0;
-      if (rects[i].p2.y <= rects[i].p1.y) return 0;
+    for (int i = 0; i < numRects; ++i) {
+      if (rectangles[i].bottomRight.x <= rectangles[i].topLeft.x) return 0;
+      if (rectangles[i].bottomRight.y <= rectangles[i].topLeft.y) return 0;
     }
-    for (int i = 0; i < n; ++i) {
-      if (pt[i].x < rects[i].p1.x || rects[i].p2.x <= pt[i].x) return 0;
-      if (pt[i].y < rects[i].p1.y || rects[i].p2.y <= pt[i].y) return 0;
+    for (int i = 0; i < numRects; ++i) {
+      if (points[i].x < rectangles[i].topLeft.x || rectangles[i].bottomRight.x <= points[i].x) return 0;
+      if (points[i].y < rectangles[i].topLeft.y || rectangles[i].bottomRight.y <= points[i].y) return 0;
     }
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
+    for (int i = 0; i < numRects; ++i) {
+      for (int j = i + 1; j < numRects; ++j) {
         if (checkOverlap(i, j)) return 0;
       }
     }
   }
   else {
-    if (rects[ite].p1.x < 0 || 10000 < rects[ite].p1.x) return 0;
-    if (rects[ite].p1.y < 0 || 10000 < rects[ite].p1.y) return 0;
-    if (rects[ite].p2.x < 0 || 10000 < rects[ite].p2.x) return 0;
-    if (rects[ite].p2.y < 0 || 10000 < rects[ite].p2.y) return 0;
-    if (rects[ite].p2.x <= rects[ite].p1.x) return 0;
-    if (rects[ite].p2.y <= rects[ite].p1.y) return 0;
-    if (pt[ite].x < rects[ite].p1.x || rects[ite].p2.x <= pt[ite].x) return 0;
-    if (pt[ite].y < rects[ite].p1.y || rects[ite].p2.y <= pt[ite].y) return 0;
-    int argX = arg_sort_x[ite];
-    int nowLeft = rects[ite].p1.y;
+    if (rectangles[ite].topLeft.x < 0 || 10000 < rectangles[ite].topLeft.x) return 0;
+    if (rectangles[ite].topLeft.y < 0 || 10000 < rectangles[ite].topLeft.y) return 0;
+    if (rectangles[ite].bottomRight.x < 0 || 10000 < rectangles[ite].bottomRight.x) return 0;
+    if (rectangles[ite].bottomRight.y < 0 || 10000 < rectangles[ite].bottomRight.y) return 0;
+    if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 0;
+    if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 0;
+    if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 0;
+    if (points[ite].y < rectangles[ite].topLeft.y || rectangles[ite].bottomRight.y <= points[ite].y) return 0;
+    int argX = indexInSortedX[ite];
+    int nowLeft = rectangles[ite].topLeft.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sort_x[ii];
+      int i = sortedByX[ii];
       if (checkOverlap(i, ite)) return 0;
-      if (rects[i].p1.y <= nowLeft) {
-        nowLeft = max(nowLeft, rects[i].p2.y);
-        if (nowLeft >= rects[ite].p2.y) { break; }
+      if (rectangles[i].topLeft.y <= nowLeft) {
+        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
+        if (nowLeft >= rectangles[ite].bottomRight.y) { break; }
       }
     }
-    nowLeft = rects[ite].p1.y;
-    for (int ii = argX + 1; ii < n; ++ii) {
-      int i = sort_x[ii];
+    nowLeft = rectangles[ite].topLeft.y;
+    for (int ii = argX + 1; ii < numRects; ++ii) {
+      int i = sortedByX[ii];
       if (checkOverlap(i, ite)) return 0;
-      if (rects[i].p1.y <= nowLeft) {
-        nowLeft = max(nowLeft, rects[i].p2.y);
-        if (nowLeft >= rects[ite].p2.y) { break; }
+      if (rectangles[i].topLeft.y <= nowLeft) {
+        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
+        if (nowLeft >= rectangles[ite].bottomRight.y) { break; }
       }
     }
   }
@@ -290,169 +290,169 @@ inline int isValid(int ite)
 
 inline void initRect(Rect& rect, Point& point)
 {
-  rect.p1.x = point.x;
-  rect.p1.y = point.y;
-  rect.p2.x = point.x + 1;
-  rect.p2.y = point.y + 1;
+  rect.topLeft.x = point.x;
+  rect.topLeft.y = point.y;
+  rect.bottomRight.x = point.x + 1;
+  rect.bottomRight.y = point.y + 1;
 }
 
-Rect vExtend;
+Rect expandedRect;
 inline void expandRect(int ite)
 {
-  initRect(vExtend, pt[ite]);
+  initRect(expandedRect, points[ite]);
 
   int flagTateYoko = xorshift() % 2;
   if (flagTateYoko == 0) {
-    vExtend.p1.x = 0;
-    vExtend.p2.x = 10000;
-    int argX = arg_sort_x[ite];
+    expandedRect.topLeft.x = 0;
+    expandedRect.bottomRight.x = 10000;
+    int argX = indexInSortedX[ite];
     for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sort_x[ii];
+      int i = sortedByX[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
-      if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
+      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) flagKasanari = 1;
+      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
+        if (points[i].x <= points[ite].x) {
+          expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
         }
         else {
-          vExtend.p2.x = min(vExtend.p2.x, rects[i].p1.x);
+          expandedRect.bottomRight.x = min(expandedRect.bottomRight.x, rectangles[i].topLeft.x);
         }
         break;
       }
     }
-    for (int ii = argX + 1; ii < n; ++ii) {
-      int i = sort_x[ii];
+    for (int ii = argX + 1; ii < numRects; ++ii) {
+      int i = sortedByX[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
-      if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
+      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) flagKasanari = 1;
+      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
+        if (points[i].x <= points[ite].x) {
+          expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
         }
         else {
-          vExtend.p2.x = min(vExtend.p2.x, rects[i].p1.x);
+          expandedRect.bottomRight.x = min(expandedRect.bottomRight.x, rectangles[i].topLeft.x);
         }
         break;
       }
     }
 
-    vExtend.p1.y = 0;
-    vExtend.p2.y = 10000;
-    int argY = arg_sort_y[ite];
-    int nowLeft = vExtend.p1.x;
+    expandedRect.topLeft.y = 0;
+    expandedRect.bottomRight.y = 10000;
+    int argY = indexInSortedY[ite];
+    int nowLeft = expandedRect.topLeft.x;
     for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sort_y[ii];
+      int i = sortedByY[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
-      if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
+      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) flagKasanari = 1;
+      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
+        if (points[i].y <= points[ite].y) {
+          expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
         }
         else {
-          vExtend.p2.y = min(vExtend.p2.y, rects[i].p1.y);
+          expandedRect.bottomRight.y = min(expandedRect.bottomRight.y, rectangles[i].topLeft.y);
         }
-        if (rects[i].p1.x <= nowLeft) {
-          nowLeft = max(nowLeft, rects[i].p2.x);
-          if (vExtend.p2.x <= nowLeft) { break; }
+        if (rectangles[i].topLeft.x <= nowLeft) {
+          nowLeft = max(nowLeft, rectangles[i].bottomRight.x);
+          if (expandedRect.bottomRight.x <= nowLeft) { break; }
         }
       }
     }
 
-    nowLeft = vExtend.p1.x;
-    for (int ii = argY + 1; ii < n; ++ii) {
-      int i = sort_y[ii];
+    nowLeft = expandedRect.topLeft.x;
+    for (int ii = argY + 1; ii < numRects; ++ii) {
+      int i = sortedByY[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
-      if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
+      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) flagKasanari = 1;
+      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
+        if (points[i].y <= points[ite].y) {
+          expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
         }
         else {
-          vExtend.p2.y = min(vExtend.p2.y, rects[i].p1.y);
+          expandedRect.bottomRight.y = min(expandedRect.bottomRight.y, rectangles[i].topLeft.y);
         }
-        if (rects[i].p1.x <= nowLeft) {
-          nowLeft = max(nowLeft, rects[i].p2.x);
-          if (vExtend.p2.x <= nowLeft) { break; }
+        if (rectangles[i].topLeft.x <= nowLeft) {
+          nowLeft = max(nowLeft, rectangles[i].bottomRight.x);
+          if (expandedRect.bottomRight.x <= nowLeft) { break; }
         }
       }
     }
   }
   else {
-    vExtend.p1.y = 0;
-    vExtend.p2.y = 10000;
-    int argY = arg_sort_y[ite];
+    expandedRect.topLeft.y = 0;
+    expandedRect.bottomRight.y = 10000;
+    int argY = indexInSortedY[ite];
     for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sort_y[ii];
+      int i = sortedByY[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
-      if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
+      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) flagKasanari = 1;
+      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
+        if (points[i].y <= points[ite].y) {
+          expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
         }
         else {
-          vExtend.p2.y = min(vExtend.p2.y, rects[i].p1.y);
+          expandedRect.bottomRight.y = min(expandedRect.bottomRight.y, rectangles[i].topLeft.y);
         }
         break;
       }
     }
-    for (int ii = argY + 1; ii < n; ++ii) {
-      int i = sort_y[ii];
+    for (int ii = argY + 1; ii < numRects; ++ii) {
+      int i = sortedByY[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.x <= vExtend.p1.x && vExtend.p1.x < rects[i].p2.x) flagKasanari = 1;
-      if (vExtend.p1.x <= rects[i].p1.x && rects[i].p1.x < vExtend.p2.x) flagKasanari = 1;
+      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) flagKasanari = 1;
+      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtend.p1.y = max(vExtend.p1.y, rects[i].p2.y);
+        if (points[i].y <= points[ite].y) {
+          expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
         }
         else {
-          vExtend.p2.y = min(vExtend.p2.y, rects[i].p1.y);
+          expandedRect.bottomRight.y = min(expandedRect.bottomRight.y, rectangles[i].topLeft.y);
         }
         break;
       }
     }
 
-    vExtend.p1.x = 0;
-    vExtend.p2.x = 10000;
-    int argX = arg_sort_x[ite];
-    int nowLeft = vExtend.p1.y;
+    expandedRect.topLeft.x = 0;
+    expandedRect.bottomRight.x = 10000;
+    int argX = indexInSortedX[ite];
+    int nowLeft = expandedRect.topLeft.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sort_x[ii];
+      int i = sortedByX[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
-      if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
+      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) flagKasanari = 1;
+      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
+        if (points[i].x <= points[ite].x) {
+          expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
         }
         else {
-          vExtend.p2.x = min(vExtend.p2.x, rects[i].p1.x);
+          expandedRect.bottomRight.x = min(expandedRect.bottomRight.x, rectangles[i].topLeft.x);
         }
-        if (rects[i].p1.y <= nowLeft) {
-          nowLeft = max(nowLeft, rects[i].p2.y);
-          if (vExtend.p2.y <= nowLeft) { break; }
+        if (rectangles[i].topLeft.y <= nowLeft) {
+          nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
+          if (expandedRect.bottomRight.y <= nowLeft) { break; }
         }
       }
     }
-    nowLeft = vExtend.p1.y;
-    for (int ii = argX + 1; ii < n; ++ii) {
-      int i = sort_x[ii];
+    nowLeft = expandedRect.topLeft.y;
+    for (int ii = argX + 1; ii < numRects; ++ii) {
+      int i = sortedByX[ii];
       int flagKasanari = 0;
-      if (rects[i].p1.y <= vExtend.p1.y && vExtend.p1.y < rects[i].p2.y) flagKasanari = 1;
-      if (vExtend.p1.y <= rects[i].p1.y && rects[i].p1.y < vExtend.p2.y) flagKasanari = 1;
+      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) flagKasanari = 1;
+      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtend.p1.x = max(vExtend.p1.x, rects[i].p2.x);
+        if (points[i].x <= points[ite].x) {
+          expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
         }
         else {
-          vExtend.p2.x = min(vExtend.p2.x, rects[i].p1.x);
+          expandedRect.bottomRight.x = min(expandedRect.bottomRight.x, rectangles[i].topLeft.x);
         }
-        if (rects[i].p1.y <= nowLeft) {
-          nowLeft = max(nowLeft, rects[i].p2.y);
-          if (vExtend.p2.y <= nowLeft) { break; }
+        if (rectangles[i].topLeft.y <= nowLeft) {
+          nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
+          if (expandedRect.bottomRight.y <= nowLeft) { break; }
         }
       }
     }
@@ -465,99 +465,99 @@ inline void expandRect(int ite)
   int yure = xorshift() % 2;
 
   for (int i = 0; i < (4); ++i) {
-    int S = (vExtend.p2.x - vExtend.p1.x) * (vExtend.p2.y - vExtend.p1.y);
-    if (S <= sz[ite]) { break; }
+    int S = (expandedRect.bottomRight.x - expandedRect.topLeft.x) * (expandedRect.bottomRight.y - expandedRect.topLeft.y);
+    if (S <= targetSizes[ite]) { break; }
     if (shuf[i] == 0) {
-      int ma = sz[ite] / (vExtend.p2.y - vExtend.p1.y) + yure;
-      int diff = (vExtend.p2.x - vExtend.p1.x) - ma;
-      int capa = pt[ite].x - vExtend.p1.x;
+      int ma = targetSizes[ite] / (expandedRect.bottomRight.y - expandedRect.topLeft.y) + yure;
+      int diff = (expandedRect.bottomRight.x - expandedRect.topLeft.x) - ma;
+      int capa = points[ite].x - expandedRect.topLeft.x;
       if (capa >= diff) {
-        vExtend.p1.x += diff;
+        expandedRect.topLeft.x += diff;
       }
       else {
-        vExtend.p1.x += capa;
+        expandedRect.topLeft.x += capa;
       }
     }
     else if (shuf[i] == 1) {
-      int ma = sz[ite] / (vExtend.p2.x - vExtend.p1.x) + yure;
-      int diff = (vExtend.p2.y - vExtend.p1.y) - ma;
-      int capa = pt[ite].y - vExtend.p1.y;
+      int ma = targetSizes[ite] / (expandedRect.bottomRight.x - expandedRect.topLeft.x) + yure;
+      int diff = (expandedRect.bottomRight.y - expandedRect.topLeft.y) - ma;
+      int capa = points[ite].y - expandedRect.topLeft.y;
       if (capa >= diff) {
-        vExtend.p1.y += diff;
+        expandedRect.topLeft.y += diff;
       }
       else {
-        vExtend.p1.y += capa;
+        expandedRect.topLeft.y += capa;
       }
     }
     else if (shuf[i] == 2) {
-      int ma = sz[ite] / (vExtend.p2.y - vExtend.p1.y) + yure;
-      int diff = (vExtend.p2.x - vExtend.p1.x) - ma;
-      int capa = vExtend.p2.x - (pt[ite].x + 1);
+      int ma = targetSizes[ite] / (expandedRect.bottomRight.y - expandedRect.topLeft.y) + yure;
+      int diff = (expandedRect.bottomRight.x - expandedRect.topLeft.x) - ma;
+      int capa = expandedRect.bottomRight.x - (points[ite].x + 1);
       if (capa >= diff) {
-        vExtend.p2.x -= diff;
+        expandedRect.bottomRight.x -= diff;
       }
       else {
-        vExtend.p2.x -= capa;
+        expandedRect.bottomRight.x -= capa;
       }
     }
     else if (shuf[i] == 3) {
-      int ma = sz[ite] / (vExtend.p2.x - vExtend.p1.x) + yure;
-      int diff = (vExtend.p2.y - vExtend.p1.y) - ma;
-      int capa = vExtend.p2.y - (pt[ite].y + 1);
+      int ma = targetSizes[ite] / (expandedRect.bottomRight.x - expandedRect.topLeft.x) + yure;
+      int diff = (expandedRect.bottomRight.y - expandedRect.topLeft.y) - ma;
+      int capa = expandedRect.bottomRight.y - (points[ite].y + 1);
       if (capa >= diff) {
-        vExtend.p2.y -= diff;
+        expandedRect.bottomRight.y -= diff;
       }
       else {
-        vExtend.p2.y -= capa;
+        expandedRect.bottomRight.y -= capa;
       }
     }
   }
 
   int ng = 0;
-  if (vExtend.p1.x < 0 || 10000 < vExtend.p1.x) ng = 1;
-  if (vExtend.p1.y < 0 || 10000 < vExtend.p1.y) ng = 1;
-  if (vExtend.p2.x < 0 || 10000 < vExtend.p2.x) ng = 1;
-  if (vExtend.p2.y < 0 || 10000 < vExtend.p2.y) ng = 1;
-  if (vExtend.p2.x <= vExtend.p1.x) ng = 1;
-  if (vExtend.p2.y <= vExtend.p1.y) ng = 1;
-  if (pt[ite].x < vExtend.p1.x || vExtend.p2.x <= pt[ite].x) ng = 1;
-  if (pt[ite].y < vExtend.p1.y || vExtend.p2.y <= pt[ite].y) ng = 1;
+  if (expandedRect.topLeft.x < 0 || 10000 < expandedRect.topLeft.x) ng = 1;
+  if (expandedRect.topLeft.y < 0 || 10000 < expandedRect.topLeft.y) ng = 1;
+  if (expandedRect.bottomRight.x < 0 || 10000 < expandedRect.bottomRight.x) ng = 1;
+  if (expandedRect.bottomRight.y < 0 || 10000 < expandedRect.bottomRight.y) ng = 1;
+  if (expandedRect.bottomRight.x <= expandedRect.topLeft.x) ng = 1;
+  if (expandedRect.bottomRight.y <= expandedRect.topLeft.y) ng = 1;
+  if (points[ite].x < expandedRect.topLeft.x || expandedRect.bottomRight.x <= points[ite].x) ng = 1;
+  if (points[ite].y < expandedRect.topLeft.y || expandedRect.bottomRight.y <= points[ite].y) ng = 1;
 
   if (ng) {
-    initRect(vExtend, pt[ite]);
+    initRect(expandedRect, points[ite]);
   }
 }
 
 inline void saveBest()
 {
-  real_maxScore = maxScore;
-  for (int i = 0; i < n; ++i) {
-    best_rects[i] = rects[i];
+  bestScore = currentScore;
+  for (int i = 0; i < numRects; ++i) {
+    bestRects[i] = rectangles[i];
   }
 }
 
 inline void extendWithTemp(int ite, double temp)
 {
-  Rect keep = rects[ite];
+  Rect keep = rectangles[ite];
 
   expandRect(ite);
-  rects[ite] = vExtend;
+  rectangles[ite] = expandedRect;
 
   int tmpScore = calcScore(ite);
 
-  int tmp = tmpScore - maxScore;
+  int tmp = tmpScore - currentScore;
   const double prob = exp((double)tmp / temp);
 
   if (prob > rand01()) {
     modeCount[4]++;
-    maxScore = tmpScore;
-    if (maxScore > real_maxScore) {
+    currentScore = tmpScore;
+    if (currentScore > bestScore) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    rects[ite] = keep;
+    rectangles[ite] = keep;
     calcScore(ite);
   }
 }
@@ -569,12 +569,12 @@ inline void resetRects(int n_crush)
 {
   // n_crush個つぶす
   for (int i = 0; i < (n_crush); ++i) {
-    int ite = xorshift() % n;
-    initRect(rects[ite], pt[ite]);
+    int ite = xorshift() % numRects;
+    initRect(rectangles[ite], points[ite]);
   }
 
-  maxScore = calcScore(-1);
-  if (maxScore > real_maxScore) {
+  currentScore = calcScore(-1);
+  if (currentScore > bestScore) {
     saveBest();
   }
 }
@@ -582,181 +582,181 @@ inline void resetRects(int n_crush)
 inline void resetWorstRects(int n_worst)
 {
   vector<pair<double, int>> v;
-  for (int i = 0; i < n; ++i) {
-    v.emplace_back(pair<double, int>(p[i], i));
+  for (int i = 0; i < numRects; ++i) {
+    v.emplace_back(pair<double, int>(rectScores[i], i));
   }
   sort(v.begin(), v.end());
   for (int i = 0; i < (n_worst); ++i) {
     int ite = v[i].second;
-    initRect(rects[ite], pt[ite]);
+    initRect(rectangles[ite], points[ite]);
   }
 
-  maxScore = calcScore(-1);
-  if (maxScore > real_maxScore) {
+  currentScore = calcScore(-1);
+  if (currentScore > bestScore) {
     saveBest();
   }
 }
 
 inline void createHole(int hole = 100)
 {
-  int ite = xorshift() % n;
+  int ite = xorshift() % numRects;
   vector<int> keep;
   keep.emplace_back(ite);
-  rects[ite].p1.x -= hole;
-  rects[ite].p1.y -= hole;
-  rects[ite].p2.x += hole;
-  rects[ite].p2.y += hole;
-  for (int i = 0; i < n; ++i) {
+  rectangles[ite].topLeft.x -= hole;
+  rectangles[ite].topLeft.y -= hole;
+  rectangles[ite].bottomRight.x += hole;
+  rectangles[ite].bottomRight.y += hole;
+  for (int i = 0; i < numRects; ++i) {
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) keep.emplace_back(i);
   }
   int keepSize = keep.size();
   for (int i = 0; i < (keepSize); ++i) {
-    initRect(rects[keep[i]], pt[keep[i]]);
+    initRect(rectangles[keep[i]], points[keep[i]]);
   }
 
-  maxScore = calcScore(-1);
-  if (maxScore > real_maxScore) {
+  currentScore = calcScore(-1);
+  if (currentScore > bestScore) {
     saveBest();
   }
 }
 
-Rect vExtendKing;
+Rect largeExpandedRect;
 inline void expandRectLarge(int ite)
 {
-  vExtendKing.p1.x = max(0, (int)(pt[ite].x - xorshift() % 1000));
-  vExtendKing.p1.y = max(0, (int)(pt[ite].y - xorshift() % 1000));
-  vExtendKing.p2.x = min(10000, (int)(pt[ite].x + 1 + xorshift() % 1000));
-  vExtendKing.p2.y = min(10000, (int)(pt[ite].y + 1 + xorshift() % 1000));
+  largeExpandedRect.topLeft.x = max(0, (int)(points[ite].x - xorshift() % 1000));
+  largeExpandedRect.topLeft.y = max(0, (int)(points[ite].y - xorshift() % 1000));
+  largeExpandedRect.bottomRight.x = min(10000, (int)(points[ite].x + 1 + xorshift() % 1000));
+  largeExpandedRect.bottomRight.y = min(10000, (int)(points[ite].y + 1 + xorshift() % 1000));
 
   int tateyoko = xorshift() % 2;
 
   if (tateyoko == 0) {
-    int argX = arg_sort_x[ite];
+    int argX = indexInSortedX[ite];
     for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sort_x[ii];
-      if (pt[i].x == pt[ite].x) { continue; }
+      int i = sortedByX[ii];
+      if (points[i].x == points[ite].x) { continue; }
       int flagKasanari = 0;
-      if (pt[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < pt[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= pt[i].y && pt[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, pt[i].x + 1);
+        if (points[i].x <= points[ite].x) {
+          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, pt[i].x);
+          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
         }
       }
     }
-    for (int ii = argX + 1; ii < n; ++ii) {
-      int i = sort_x[ii];
-      if (pt[i].x == pt[ite].x) { continue; }
+    for (int ii = argX + 1; ii < numRects; ++ii) {
+      int i = sortedByX[ii];
+      if (points[i].x == points[ite].x) { continue; }
       int flagKasanari = 0;
-      if (pt[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < pt[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= pt[i].y && pt[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, pt[i].x + 1);
+        if (points[i].x <= points[ite].x) {
+          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, pt[i].x);
+          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
         }
       }
     }
 
-    int argY = arg_sort_y[ite];
+    int argY = indexInSortedY[ite];
     for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sort_y[ii];
-      if (pt[i].y == pt[ite].y) { continue; }
+      int i = sortedByY[ii];
+      if (points[i].y == points[ite].y) { continue; }
       int flagKasanari = 0;
-      if (pt[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < pt[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= pt[i].x && pt[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, pt[i].y + 1);
+        if (points[i].y <= points[ite].y) {
+          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, pt[i].y);
+          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
         }
       }
     }
-    for (int ii = argY + 1; ii < n; ++ii) {
-      int i = sort_y[ii];
-      if (pt[i].y == pt[ite].y) { continue; }
+    for (int ii = argY + 1; ii < numRects; ++ii) {
+      int i = sortedByY[ii];
+      if (points[i].y == points[ite].y) { continue; }
       int flagKasanari = 0;
-      if (pt[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < pt[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= pt[i].x && pt[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, pt[i].y + 1);
+        if (points[i].y <= points[ite].y) {
+          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, pt[i].y);
+          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
         }
       }
     }
   }
   else {
-    int argY = arg_sort_y[ite];
+    int argY = indexInSortedY[ite];
     for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sort_y[ii];
-      if (pt[i].y == pt[ite].y) { continue; }
+      int i = sortedByY[ii];
+      if (points[i].y == points[ite].y) { continue; }
       int flagKasanari = 0;
-      if (pt[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < pt[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= pt[i].x && pt[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, pt[i].y + 1);
+        if (points[i].y <= points[ite].y) {
+          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, pt[i].y);
+          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
         }
       }
     }
-    for (int ii = argY + 1; ii < n; ++ii) {
-      int i = sort_y[ii];
-      if (pt[i].y == pt[ite].y) { continue; }
+    for (int ii = argY + 1; ii < numRects; ++ii) {
+      int i = sortedByY[ii];
+      if (points[i].y == points[ite].y) { continue; }
       int flagKasanari = 0;
-      if (pt[i].x <= vExtendKing.p1.x && vExtendKing.p1.x < pt[i].x + 1) flagKasanari = 1;
-      if (vExtendKing.p1.x <= pt[i].x && pt[i].x < vExtendKing.p2.x) flagKasanari = 1;
+      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].y <= pt[ite].y) {
-          vExtendKing.p1.y = max(vExtendKing.p1.y, pt[i].y + 1);
+        if (points[i].y <= points[ite].y) {
+          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
         }
         else {
-          vExtendKing.p2.y = min(vExtendKing.p2.y, pt[i].y);
+          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
         }
       }
     }
 
-    int argX = arg_sort_x[ite];
+    int argX = indexInSortedX[ite];
     for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sort_x[ii];
-      if (pt[i].x == pt[ite].x) { continue; }
+      int i = sortedByX[ii];
+      if (points[i].x == points[ite].x) { continue; }
       int flagKasanari = 0;
-      if (pt[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < pt[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= pt[i].y && pt[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, pt[i].x + 1);
+        if (points[i].x <= points[ite].x) {
+          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, pt[i].x);
+          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
         }
       }
     }
-    for (int ii = argX + 1; ii < n; ++ii) {
-      int i = sort_x[ii];
-      if (pt[i].x == pt[ite].x) { continue; }
+    for (int ii = argX + 1; ii < numRects; ++ii) {
+      int i = sortedByX[ii];
+      if (points[i].x == points[ite].x) { continue; }
       int flagKasanari = 0;
-      if (pt[i].y <= vExtendKing.p1.y && vExtendKing.p1.y < pt[i].y + 1) flagKasanari = 1;
-      if (vExtendKing.p1.y <= pt[i].y && pt[i].y < vExtendKing.p2.y) flagKasanari = 1;
+      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) flagKasanari = 1;
+      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) flagKasanari = 1;
       if (flagKasanari) {
-        if (pt[i].x <= pt[ite].x) {
-          vExtendKing.p1.x = max(vExtendKing.p1.x, pt[i].x + 1);
+        if (points[i].x <= points[ite].x) {
+          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
         }
         else {
-          vExtendKing.p2.x = min(vExtendKing.p2.x, pt[i].x);
+          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
         }
       }
     }
@@ -769,70 +769,70 @@ inline void expandRectLarge(int ite)
   int yure = xorshift() % 2;
 
   for (int i = 0; i < (4); ++i) {
-    int S = (vExtendKing.p2.x - vExtendKing.p1.x) * (vExtendKing.p2.y - vExtendKing.p1.y);
-    if (S <= sz[ite]) { break; }
+    int S = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) * (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y);
+    if (S <= targetSizes[ite]) { break; }
     if (shuf[i] == 0) {
-      int ma = sz[ite] / (vExtendKing.p2.y - vExtendKing.p1.y) + yure;
-      int diff = (vExtendKing.p2.x - vExtendKing.p1.x) - ma;
+      int ma = targetSizes[ite] / (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) + yure;
+      int diff = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) - ma;
       if (diff < 0) diff = 0;
-      int capa = pt[ite].x - vExtendKing.p1.x;
+      int capa = points[ite].x - largeExpandedRect.topLeft.x;
       if (capa >= diff) {
-        vExtendKing.p1.x += diff;
+        largeExpandedRect.topLeft.x += diff;
       }
       else {
-        vExtendKing.p1.x += capa;
+        largeExpandedRect.topLeft.x += capa;
       }
     }
     else if (shuf[i] == 1) {
-      int ma = sz[ite] / (vExtendKing.p2.x - vExtendKing.p1.x) + yure;
-      int diff = (vExtendKing.p2.y - vExtendKing.p1.y) - ma;
+      int ma = targetSizes[ite] / (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) + yure;
+      int diff = (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) - ma;
       if (diff < 0) diff = 0;
-      int capa = pt[ite].y - vExtendKing.p1.y;
+      int capa = points[ite].y - largeExpandedRect.topLeft.y;
       if (capa >= diff) {
-        vExtendKing.p1.y += diff;
+        largeExpandedRect.topLeft.y += diff;
       }
       else {
-        vExtendKing.p1.y += capa;
+        largeExpandedRect.topLeft.y += capa;
       }
     }
     else if (shuf[i] == 2) {
-      int ma = sz[ite] / (vExtendKing.p2.y - vExtendKing.p1.y) + yure;
-      int diff = (vExtendKing.p2.x - vExtendKing.p1.x) - ma;
+      int ma = targetSizes[ite] / (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) + yure;
+      int diff = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) - ma;
       if (diff < 0) diff = 0;
-      int capa = vExtendKing.p2.x - (pt[ite].x + 1);
+      int capa = largeExpandedRect.bottomRight.x - (points[ite].x + 1);
       if (capa >= diff) {
-        vExtendKing.p2.x -= diff;
+        largeExpandedRect.bottomRight.x -= diff;
       }
       else {
-        vExtendKing.p2.x -= capa;
+        largeExpandedRect.bottomRight.x -= capa;
       }
     }
     else if (shuf[i] == 3) {
-      int ma = sz[ite] / (vExtendKing.p2.x - vExtendKing.p1.x) + yure;
-      int diff = (vExtendKing.p2.y - vExtendKing.p1.y) - ma;
+      int ma = targetSizes[ite] / (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) + yure;
+      int diff = (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) - ma;
       if (diff < 0) diff = 0;
-      int capa = vExtendKing.p2.y - (pt[ite].y + 1);
+      int capa = largeExpandedRect.bottomRight.y - (points[ite].y + 1);
       if (capa >= diff) {
-        vExtendKing.p2.y -= diff;
+        largeExpandedRect.bottomRight.y -= diff;
       }
       else {
-        vExtendKing.p2.y -= capa;
+        largeExpandedRect.bottomRight.y -= capa;
       }
     }
   }
 
   int ng = 0;
-  if (vExtendKing.p1.x < 0 || 10000 < vExtendKing.p1.x) ng = 1;
-  if (vExtendKing.p1.y < 0 || 10000 < vExtendKing.p1.y) ng = 1;
-  if (vExtendKing.p2.x < 0 || 10000 < vExtendKing.p2.x) ng = 1;
-  if (vExtendKing.p2.y < 0 || 10000 < vExtendKing.p2.y) ng = 1;
-  if (vExtendKing.p2.x <= vExtendKing.p1.x) ng = 1;
-  if (vExtendKing.p2.y <= vExtendKing.p1.y) ng = 1;
-  if (pt[ite].x < vExtendKing.p1.x || vExtendKing.p2.x <= pt[ite].x) ng = 1;
-  if (pt[ite].y < vExtendKing.p1.y || vExtendKing.p2.y <= pt[ite].y) ng = 1;
+  if (largeExpandedRect.topLeft.x < 0 || 10000 < largeExpandedRect.topLeft.x) ng = 1;
+  if (largeExpandedRect.topLeft.y < 0 || 10000 < largeExpandedRect.topLeft.y) ng = 1;
+  if (largeExpandedRect.bottomRight.x < 0 || 10000 < largeExpandedRect.bottomRight.x) ng = 1;
+  if (largeExpandedRect.bottomRight.y < 0 || 10000 < largeExpandedRect.bottomRight.y) ng = 1;
+  if (largeExpandedRect.bottomRight.x <= largeExpandedRect.topLeft.x) ng = 1;
+  if (largeExpandedRect.bottomRight.y <= largeExpandedRect.topLeft.y) ng = 1;
+  if (points[ite].x < largeExpandedRect.topLeft.x || largeExpandedRect.bottomRight.x <= points[ite].x) ng = 1;
+  if (points[ite].y < largeExpandedRect.topLeft.y || largeExpandedRect.bottomRight.y <= points[ite].y) ng = 1;
 
   if (ng) {
-    initRect(vExtendKing, pt[ite]);
+    initRect(largeExpandedRect, points[ite]);
   }
 
 }
@@ -840,17 +840,17 @@ inline void expandRectLarge(int ite)
 inline void extendLarge(int ite)
 {
   expandRectLarge(ite);
-  rects[ite] = vExtendKing;
+  rectangles[ite] = largeExpandedRect;
 
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < numRects; ++i) {
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) {
-      initRect(rects[i], pt[i]);
+      initRect(rectangles[i], points[i]);
     }
   }
 
-  maxScore = calcScore(-1);
-  if (maxScore > real_maxScore) {
+  currentScore = calcScore(-1);
+  if (currentScore > bestScore) {
     saveBest();
   }
 }
@@ -861,36 +861,36 @@ inline void changeSingleEdge(int ite, double temp)
   while (diff == 0) diff = xorshift() % 101 - 50;
   int abcd = xorshift() % 4;
 
-  if (abcd == 0) rects[ite].p1.x += diff;
-  if (abcd == 1) rects[ite].p1.y += diff;
-  if (abcd == 2) rects[ite].p2.x += diff;
-  if (abcd == 3) rects[ite].p2.y += diff;
+  if (abcd == 0) rectangles[ite].topLeft.x += diff;
+  if (abcd == 1) rectangles[ite].topLeft.y += diff;
+  if (abcd == 2) rectangles[ite].bottomRight.x += diff;
+  if (abcd == 3) rectangles[ite].bottomRight.y += diff;
 
   if (isValid(ite) == 0) {
-    if (abcd == 0) rects[ite].p1.x -= diff;
-    if (abcd == 1) rects[ite].p1.y -= diff;
-    if (abcd == 2) rects[ite].p2.x -= diff;
-    if (abcd == 3) rects[ite].p2.y -= diff;
+    if (abcd == 0) rectangles[ite].topLeft.x -= diff;
+    if (abcd == 1) rectangles[ite].topLeft.y -= diff;
+    if (abcd == 2) rectangles[ite].bottomRight.x -= diff;
+    if (abcd == 3) rectangles[ite].bottomRight.y -= diff;
     return;
   }
 
   int tmpScore = calcScore(ite);
 
-  int tmp = tmpScore - maxScore;
+  int tmp = tmpScore - currentScore;
   const double prob = exp((double)tmp / temp);
   if (prob > rand01()) {
     modeCount[0]++;
-    maxScore = tmpScore;
-    if (maxScore > real_maxScore) {
+    currentScore = tmpScore;
+    if (currentScore > bestScore) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    if (abcd == 0) rects[ite].p1.x -= diff;
-    if (abcd == 1) rects[ite].p1.y -= diff;
-    if (abcd == 2) rects[ite].p2.x -= diff;
-    if (abcd == 3) rects[ite].p2.y -= diff;
+    if (abcd == 0) rectangles[ite].topLeft.x -= diff;
+    if (abcd == 1) rectangles[ite].topLeft.y -= diff;
+    if (abcd == 2) rectangles[ite].bottomRight.x -= diff;
+    if (abcd == 3) rectangles[ite].bottomRight.y -= diff;
     calcScore(ite);
   }
 }
@@ -902,36 +902,36 @@ inline void changeAllEdges(int ite, double temp)
   int diffC = xorshift() % 101 - 50;
   int diffD = xorshift() % 101 - 50;
 
-  rects[ite].p1.x += diffA;
-  rects[ite].p1.y += diffB;
-  rects[ite].p2.x += diffC;
-  rects[ite].p2.y += diffD;
+  rectangles[ite].topLeft.x += diffA;
+  rectangles[ite].topLeft.y += diffB;
+  rectangles[ite].bottomRight.x += diffC;
+  rectangles[ite].bottomRight.y += diffD;
 
   if (isValid(ite) == 0) {
-    rects[ite].p1.x -= diffA;
-    rects[ite].p1.y -= diffB;
-    rects[ite].p2.x -= diffC;
-    rects[ite].p2.y -= diffD;
+    rectangles[ite].topLeft.x -= diffA;
+    rectangles[ite].topLeft.y -= diffB;
+    rectangles[ite].bottomRight.x -= diffC;
+    rectangles[ite].bottomRight.y -= diffD;
     return;
   }
 
   int tmpScore = calcScore(ite);
 
-  int tmp = tmpScore - maxScore;
+  int tmp = tmpScore - currentScore;
   const double prob = exp((double)tmp / temp);
   if (prob > rand01()) {
     modeCount[3]++;
-    maxScore = tmpScore;
-    if (maxScore > real_maxScore) {
+    currentScore = tmpScore;
+    if (currentScore > bestScore) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    rects[ite].p1.x -= diffA;
-    rects[ite].p1.y -= diffB;
-    rects[ite].p2.x -= diffC;
-    rects[ite].p2.y -= diffD;
+    rectangles[ite].topLeft.x -= diffA;
+    rectangles[ite].topLeft.y -= diffB;
+    rectangles[ite].bottomRight.x -= diffC;
+    rectangles[ite].bottomRight.y -= diffD;
     calcScore(ite);
   }
 }
@@ -943,46 +943,46 @@ inline void slideRect(int ite, double temp)
   int ab = xorshift() % 2;
 
   if (ab == 0) {
-    rects[ite].p1.x += diff;
-    rects[ite].p2.x += diff;
+    rectangles[ite].topLeft.x += diff;
+    rectangles[ite].bottomRight.x += diff;
   }
   if (ab == 1) {
-    rects[ite].p1.y += diff;
-    rects[ite].p2.y += diff;
+    rectangles[ite].topLeft.y += diff;
+    rectangles[ite].bottomRight.y += diff;
   }
 
   if (isValid(ite) == 0) {
     if (ab == 0) {
-      rects[ite].p1.x -= diff;
-      rects[ite].p2.x -= diff;
+      rectangles[ite].topLeft.x -= diff;
+      rectangles[ite].bottomRight.x -= diff;
     }
     if (ab == 1) {
-      rects[ite].p1.y -= diff;
-      rects[ite].p2.y -= diff;
+      rectangles[ite].topLeft.y -= diff;
+      rectangles[ite].bottomRight.y -= diff;
     }
     return;
   }
 
   int tmpScore = calcScore(ite);
 
-  int tmp = tmpScore - maxScore;
+  int tmp = tmpScore - currentScore;
   const double prob = exp((double)tmp / temp);
-  if (tmpScore >= maxScore) {
+  if (tmpScore >= currentScore) {
     modeCount[1]++;
-    maxScore = tmpScore;
-    if (maxScore > real_maxScore) {
+    currentScore = tmpScore;
+    if (currentScore > bestScore) {
       saveBest();
     }
   }
   else {
     // 元に戻す
     if (ab == 0) {
-      rects[ite].p1.x -= diff;
-      rects[ite].p2.x -= diff;
+      rectangles[ite].topLeft.x -= diff;
+      rectangles[ite].bottomRight.x -= diff;
     }
     if (ab == 1) {
-      rects[ite].p1.y -= diff;
-      rects[ite].p2.y -= diff;
+      rectangles[ite].topLeft.y -= diff;
+      rectangles[ite].bottomRight.y -= diff;
     }
     calcScore(ite);
   }
@@ -994,74 +994,74 @@ inline void changeAspectRatio(int ite, double temp)
   int tateRatio = 10 - yokoRatio;
 
   int S = yokoRatio * tateRatio;
-  int mul = sqrt(sz[ite] / S);
+  int mul = sqrt(targetSizes[ite] / S);
   if (mul == 0) { return; }
 
   int yoko = yokoRatio * mul;
   int tate = tateRatio * mul;
 
-  Rect keep = rects[ite];
+  Rect keep = rectangles[ite];
 
-  int leftA = max(0, pt[ite].x - (yoko - 1));
-  int rightA = min(pt[ite].x, 10000 - yoko);
+  int leftA = max(0, points[ite].x - (yoko - 1));
+  int rightA = min(points[ite].x, 10000 - yoko);
   int rangeA = rightA - leftA + 1;
   if (rangeA < 1) { return; }
 
-  int leftB = max(0, pt[ite].y - (tate - 1));
-  int rightB = min(pt[ite].y, 10000 - tate);
+  int leftB = max(0, points[ite].y - (tate - 1));
+  int rightB = min(points[ite].y, 10000 - tate);
   int rangeB = rightB - leftB + 1;
   if (rangeB < 1) { return; }
 
-  rects[ite].p1.x = xorshift() % rangeA + leftA;
-  rects[ite].p2.x = rects[ite].p1.x + rangeA;
-  rects[ite].p1.y = xorshift() % rangeB + leftB;
-  rects[ite].p2.y = rects[ite].p1.y + rangeB;
+  rectangles[ite].topLeft.x = xorshift() % rangeA + leftA;
+  rectangles[ite].bottomRight.x = rectangles[ite].topLeft.x + rangeA;
+  rectangles[ite].topLeft.y = xorshift() % rangeB + leftB;
+  rectangles[ite].bottomRight.y = rectangles[ite].topLeft.y + rangeB;
 
   if (isValid(ite) == 0) {
-    rects[ite] = keep;
+    rectangles[ite] = keep;
     return;
   }
 
   int tmpScore = calcScore(ite);
 
-  int tmp = tmpScore - maxScore;
+  int tmp = tmpScore - currentScore;
   const double prob = exp((double)tmp / temp);
-  if (tmpScore >= maxScore) {
+  if (tmpScore >= currentScore) {
     modeCount[2]++;
-    maxScore = tmpScore;
-    if (maxScore > real_maxScore) {
+    currentScore = tmpScore;
+    if (currentScore > bestScore) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    rects[ite] = keep;
+    rectangles[ite] = keep;
     calcScore(ite);
   }
 }
 
 inline int isSelfInvalid(int ite)
 {
-  if (rects[ite].p1.x < 0 || 10000 < rects[ite].p1.x) return 1;
-  if (rects[ite].p1.y < 0 || 10000 < rects[ite].p1.y) return 1;
-  if (rects[ite].p2.x < 0 || 10000 < rects[ite].p2.x) return 1;
-  if (rects[ite].p2.y < 0 || 10000 < rects[ite].p2.y) return 1;
-  if (rects[ite].p2.x <= rects[ite].p1.x) return 1;
-  if (rects[ite].p2.y <= rects[ite].p1.y) return 1;
-  if (pt[ite].x < rects[ite].p1.x || rects[ite].p2.x <= pt[ite].x) return 1;
-  if (pt[ite].y < rects[ite].p1.y || rects[ite].p2.y <= pt[ite].y) return 1;
+  if (rectangles[ite].topLeft.x < 0 || 10000 < rectangles[ite].topLeft.x) return 1;
+  if (rectangles[ite].topLeft.y < 0 || 10000 < rectangles[ite].topLeft.y) return 1;
+  if (rectangles[ite].bottomRight.x < 0 || 10000 < rectangles[ite].bottomRight.x) return 1;
+  if (rectangles[ite].bottomRight.y < 0 || 10000 < rectangles[ite].bottomRight.y) return 1;
+  if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 1;
+  if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 1;
+  if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 1;
+  if (points[ite].y < rectangles[ite].topLeft.y || rectangles[ite].bottomRight.y <= points[ite].y) return 1;
   return 0;
 }
 
 inline int canShiftBoundary(int ite, int abcd)
 {
-  for (int i = 0; i < n; ++i) {
+  for (int i = 0; i < numRects; ++i) {
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) {
-      if (abcd == 0) rects[i].p2.x = rects[ite].p1.x;
-      if (abcd == 1) rects[i].p2.y = rects[ite].p1.y;
-      if (abcd == 2) rects[i].p1.x = rects[ite].p2.x;
-      if (abcd == 3) rects[i].p1.y = rects[ite].p2.y;
+      if (abcd == 0) rectangles[i].bottomRight.x = rectangles[ite].topLeft.x;
+      if (abcd == 1) rectangles[i].bottomRight.y = rectangles[ite].topLeft.y;
+      if (abcd == 2) rectangles[i].topLeft.x = rectangles[ite].bottomRight.x;
+      if (abcd == 3) rectangles[i].topLeft.y = rectangles[ite].bottomRight.y;
 
       if (isSelfInvalid(i)) return 0;
     }
@@ -1069,107 +1069,107 @@ inline int canShiftBoundary(int ite, int abcd)
   return 1;
 }
 
-int arrKasanari[MAX_N];
-int kasanariCount;
+int overlappingRects[MAX_N];
+int overlapCount;
 inline void findOverlaps(int ite, int abcd)
 {
-  kasanariCount = 0;
+  overlapCount = 0;
   if (abcd == 0) {
-    int argX = arg_sort_x[ite];
-    int nowLeft = rects[ite].p1.y;
-    int nowRight = rects[ite].p2.y;
+    int argX = indexInSortedX[ite];
+    int nowLeft = rectangles[ite].topLeft.y;
+    int nowRight = rectangles[ite].bottomRight.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sort_x[ii];
+      int i = sortedByX[ii];
       if (checkOverlap(i, ite)) {
-        if (rects[ite].p1.x <= pt[i].x) {
-          arrKasanari[0] = -1;
-          kasanariCount = 1;
+        if (rectangles[ite].topLeft.x <= points[i].x) {
+          overlappingRects[0] = -1;
+          overlapCount = 1;
           return;
         }
-        arrKasanari[kasanariCount] = i;
-        kasanariCount++;
+        overlappingRects[overlapCount] = i;
+        overlapCount++;
       }
-      if (rects[i].p1.y <= nowLeft) {
-        nowLeft = max(nowLeft, rects[i].p2.y);
+      if (rectangles[i].topLeft.y <= nowLeft) {
+        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
         if (nowLeft >= nowRight) { break; }
       }
-      if (nowRight <= rects[i].p2.y) {
-        nowRight = min(nowRight, rects[i].p1.y);
+      if (nowRight <= rectangles[i].bottomRight.y) {
+        nowRight = min(nowRight, rectangles[i].topLeft.y);
         if (nowLeft >= nowRight) { break; }
       }
     }
   }
   if (abcd == 1) {
-    int argY = arg_sort_y[ite];
-    int nowLeft = rects[ite].p1.x;
-    int nowRight = rects[ite].p2.x;
+    int argY = indexInSortedY[ite];
+    int nowLeft = rectangles[ite].topLeft.x;
+    int nowRight = rectangles[ite].bottomRight.x;
     for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sort_y[ii];
+      int i = sortedByY[ii];
       if (checkOverlap(i, ite)) {
-        if (rects[ite].p1.y <= pt[i].y) {
-          arrKasanari[0] = -1;
-          kasanariCount = 1;
+        if (rectangles[ite].topLeft.y <= points[i].y) {
+          overlappingRects[0] = -1;
+          overlapCount = 1;
           return;
         }
-        arrKasanari[kasanariCount] = i;
-        kasanariCount++;
+        overlappingRects[overlapCount] = i;
+        overlapCount++;
       }
-      if (rects[i].p1.x <= nowLeft) {
-        nowLeft = max(nowLeft, rects[i].p2.x);
+      if (rectangles[i].topLeft.x <= nowLeft) {
+        nowLeft = max(nowLeft, rectangles[i].bottomRight.x);
         if (nowLeft >= nowRight) { break; }
       }
-      if (nowRight <= rects[i].p2.x) {
-        nowRight = min(nowRight, rects[i].p1.x);
+      if (nowRight <= rectangles[i].bottomRight.x) {
+        nowRight = min(nowRight, rectangles[i].topLeft.x);
         if (nowLeft >= nowRight) { break; }
       }
     }
   }
   if (abcd == 2) {
-    int argX = arg_sort_x[ite];
-    int nowLeft = rects[ite].p1.y;
-    int nowRight = rects[ite].p2.y;
-    for (int ii = argX + 1; ii < n; ++ii) {
-      int i = sort_x[ii];
+    int argX = indexInSortedX[ite];
+    int nowLeft = rectangles[ite].topLeft.y;
+    int nowRight = rectangles[ite].bottomRight.y;
+    for (int ii = argX + 1; ii < numRects; ++ii) {
+      int i = sortedByX[ii];
       if (checkOverlap(i, ite)) {
-        if (pt[i].x < rects[ite].p2.x) {
-          arrKasanari[0] = -1;
-          kasanariCount = 1;
+        if (points[i].x < rectangles[ite].bottomRight.x) {
+          overlappingRects[0] = -1;
+          overlapCount = 1;
           return;
         }
-        arrKasanari[kasanariCount] = i;
-        kasanariCount++;
+        overlappingRects[overlapCount] = i;
+        overlapCount++;
       }
-      if (rects[i].p1.y <= nowLeft) {
-        nowLeft = max(nowLeft, rects[i].p2.y);
+      if (rectangles[i].topLeft.y <= nowLeft) {
+        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
         if (nowLeft >= nowRight) { break; }
       }
-      if (nowRight <= rects[i].p2.y) {
-        nowRight = min(nowRight, rects[i].p1.y);
+      if (nowRight <= rectangles[i].bottomRight.y) {
+        nowRight = min(nowRight, rectangles[i].topLeft.y);
         if (nowLeft >= nowRight) { break; }
       }
     }
   }
   if (abcd == 3) {
-    int argY = arg_sort_y[ite];
-    int nowLeft = rects[ite].p1.x;
-    int nowRight = rects[ite].p2.x;
-    for (int ii = argY + 1; ii < n; ++ii) {
-      int i = sort_y[ii];
+    int argY = indexInSortedY[ite];
+    int nowLeft = rectangles[ite].topLeft.x;
+    int nowRight = rectangles[ite].bottomRight.x;
+    for (int ii = argY + 1; ii < numRects; ++ii) {
+      int i = sortedByY[ii];
       if (checkOverlap(i, ite)) {
-        if (pt[i].y < rects[ite].p2.y) {
-          arrKasanari[0] = -1;
-          kasanariCount = 1;
+        if (points[i].y < rectangles[ite].bottomRight.y) {
+          overlappingRects[0] = -1;
+          overlapCount = 1;
           return;
         }
-        arrKasanari[kasanariCount] = i;
-        kasanariCount++;
+        overlappingRects[overlapCount] = i;
+        overlapCount++;
       }
-      if (rects[i].p1.x <= nowLeft) {
-        nowLeft = max(nowLeft, rects[i].p2.x);
+      if (rectangles[i].topLeft.x <= nowLeft) {
+        nowLeft = max(nowLeft, rectangles[i].bottomRight.x);
         if (nowLeft >= nowRight) { break; }
       }
-      if (nowRight <= rects[i].p2.x) {
-        nowRight = min(nowRight, rects[i].p1.x);
+      if (nowRight <= rectangles[i].bottomRight.x) {
+        nowRight = min(nowRight, rectangles[i].topLeft.x);
         if (nowLeft >= nowRight) { break; }
       }
     }
@@ -1185,100 +1185,100 @@ inline void shiftBoundary(int ite, double temp)
 
   if (abcd < 2) diff *= -1;
 
-  if (abcd == 0) rects[ite].p1.x += diff;
-  if (abcd == 1) rects[ite].p1.y += diff;
-  if (abcd == 2) rects[ite].p2.x += diff;
-  if (abcd == 3) rects[ite].p2.y += diff;
+  if (abcd == 0) rectangles[ite].topLeft.x += diff;
+  if (abcd == 1) rectangles[ite].topLeft.y += diff;
+  if (abcd == 2) rectangles[ite].bottomRight.x += diff;
+  if (abcd == 3) rectangles[ite].bottomRight.y += diff;
 
   if (isSelfInvalid(ite)) {
-    if (abcd == 0) rects[ite].p1.x -= diff;
-    if (abcd == 1) rects[ite].p1.y -= diff;
-    if (abcd == 2) rects[ite].p2.x -= diff;
-    if (abcd == 3) rects[ite].p2.y -= diff;
+    if (abcd == 0) rectangles[ite].topLeft.x -= diff;
+    if (abcd == 1) rectangles[ite].topLeft.y -= diff;
+    if (abcd == 2) rectangles[ite].bottomRight.x -= diff;
+    if (abcd == 3) rectangles[ite].bottomRight.y -= diff;
     return;
   }
 
   findOverlaps(ite, abcd);
-  int vn = kasanariCount;
+  int vn = overlapCount;
 
-  if (vn > 0 && arrKasanari[0] == -1) {
-    if (abcd == 0) rects[ite].p1.x -= diff;
-    if (abcd == 1) rects[ite].p1.y -= diff;
-    if (abcd == 2) rects[ite].p2.x -= diff;
-    if (abcd == 3) rects[ite].p2.y -= diff;
+  if (vn > 0 && overlappingRects[0] == -1) {
+    if (abcd == 0) rectangles[ite].topLeft.x -= diff;
+    if (abcd == 1) rectangles[ite].topLeft.y -= diff;
+    if (abcd == 2) rectangles[ite].bottomRight.x -= diff;
+    if (abcd == 3) rectangles[ite].bottomRight.y -= diff;
     return;
   }
 
 
   for (int i = 0; i < (vn); ++i) {
-    keepvA[i] = rects[arrKasanari[i]].p1.x;
-    keepvB[i] = rects[arrKasanari[i]].p1.y;
-    keepvC[i] = rects[arrKasanari[i]].p2.x;
-    keepvD[i] = rects[arrKasanari[i]].p2.y;
+    keepvA[i] = rectangles[overlappingRects[i]].topLeft.x;
+    keepvB[i] = rectangles[overlappingRects[i]].topLeft.y;
+    keepvC[i] = rectangles[overlappingRects[i]].bottomRight.x;
+    keepvD[i] = rectangles[overlappingRects[i]].bottomRight.y;
   }
 
   int ok = 1;
   for (int i = 0; i < (vn); ++i) {
-    if (abcd == 0) rects[arrKasanari[i]].p2.x = rects[ite].p1.x;
-    if (abcd == 1) rects[arrKasanari[i]].p2.y = rects[ite].p1.y;
-    if (abcd == 2) rects[arrKasanari[i]].p1.x = rects[ite].p2.x;
-    if (abcd == 3) rects[arrKasanari[i]].p1.y = rects[ite].p2.y;
-    if (isSelfInvalid(arrKasanari[i])) ok = 0;
+    if (abcd == 0) rectangles[overlappingRects[i]].bottomRight.x = rectangles[ite].topLeft.x;
+    if (abcd == 1) rectangles[overlappingRects[i]].bottomRight.y = rectangles[ite].topLeft.y;
+    if (abcd == 2) rectangles[overlappingRects[i]].topLeft.x = rectangles[ite].bottomRight.x;
+    if (abcd == 3) rectangles[overlappingRects[i]].topLeft.y = rectangles[ite].bottomRight.y;
+    if (isSelfInvalid(overlappingRects[i])) ok = 0;
   }
 
   if (ok == 0) {
     for (int i = 0; i < (vn); ++i) {
-      rects[arrKasanari[i]].p1.x = keepvA[i];
-      rects[arrKasanari[i]].p1.y = keepvB[i];
-      rects[arrKasanari[i]].p2.x = keepvC[i];
-      rects[arrKasanari[i]].p2.y = keepvD[i];
+      rectangles[overlappingRects[i]].topLeft.x = keepvA[i];
+      rectangles[overlappingRects[i]].topLeft.y = keepvB[i];
+      rectangles[overlappingRects[i]].bottomRight.x = keepvC[i];
+      rectangles[overlappingRects[i]].bottomRight.y = keepvD[i];
     }
     // 元に戻す
-    if (abcd == 0) rects[ite].p1.x -= diff;
-    if (abcd == 1) rects[ite].p1.y -= diff;
-    if (abcd == 2) rects[ite].p2.x -= diff;
-    if (abcd == 3) rects[ite].p2.y -= diff;
+    if (abcd == 0) rectangles[ite].topLeft.x -= diff;
+    if (abcd == 1) rectangles[ite].topLeft.y -= diff;
+    if (abcd == 2) rectangles[ite].bottomRight.x -= diff;
+    if (abcd == 3) rectangles[ite].bottomRight.y -= diff;
     return;
   }
 
-  for (int i = 0; i < (vn); ++i) calcScore(arrKasanari[i]);
+  for (int i = 0; i < (vn); ++i) calcScore(overlappingRects[i]);
   int tmpScore = calcScore(ite);
 
-  int tmp = tmpScore - maxScore;
+  int tmp = tmpScore - currentScore;
   double prob = exp((double)tmp / temp);
 
   if (prob > rand01()) {
     modeCount[5]++;
-    maxScore = tmpScore;
-    if (maxScore > real_maxScore) {
+    currentScore = tmpScore;
+    if (currentScore > bestScore) {
       saveBest();
     }
   }
   else {
     for (int i = 0; i < (vn); ++i) {
-      rects[arrKasanari[i]].p1.x = keepvA[i];
-      rects[arrKasanari[i]].p1.y = keepvB[i];
-      rects[arrKasanari[i]].p2.x = keepvC[i];
-      rects[arrKasanari[i]].p2.y = keepvD[i];
-      calcScore(arrKasanari[i]);
+      rectangles[overlappingRects[i]].topLeft.x = keepvA[i];
+      rectangles[overlappingRects[i]].topLeft.y = keepvB[i];
+      rectangles[overlappingRects[i]].bottomRight.x = keepvC[i];
+      rectangles[overlappingRects[i]].bottomRight.y = keepvD[i];
+      calcScore(overlappingRects[i]);
     }
     // 元に戻す
-    if (abcd == 0) rects[ite].p1.x -= diff;
-    if (abcd == 1) rects[ite].p1.y -= diff;
-    if (abcd == 2) rects[ite].p2.x -= diff;
-    if (abcd == 3) rects[ite].p2.y -= diff;
+    if (abcd == 0) rectangles[ite].topLeft.x -= diff;
+    if (abcd == 1) rectangles[ite].topLeft.y -= diff;
+    if (abcd == 2) rectangles[ite].bottomRight.x -= diff;
+    if (abcd == 3) rectangles[ite].bottomRight.y -= diff;
     calcScore(ite);
   }
 }
 
 inline void initSolution()
 {
-  for (int i = 0; i < n; ++i) {
-    initRect(rects[i], pt[i]);
+  for (int i = 0; i < numRects; ++i) {
+    initRect(rectangles[i], points[i]);
   }
 
-  maxScore = calcScore(-1);
-  if (maxScore > real_maxScore) {
+  currentScore = calcScore(-1);
+  if (currentScore > bestScore) {
     saveBest();
   }
 }
@@ -1300,8 +1300,8 @@ inline void multiStartSearch()
 
     // 初期解
     // 左上(x,y)、右下(x+1,y+1)
-    for (int i = 0; i < n; ++i) {
-      initRect(rects[i], pt[i]);
+    for (int i = 0; i < numRects; ++i) {
+      initRect(rectangles[i], points[i]);
     }
 
     int T = 5;
@@ -1309,7 +1309,7 @@ inline void multiStartSearch()
       start = clock();
 
       // 初期スコア計算
-      maxScore = calcScore(-1);
+      currentScore = calcScore(-1);
       saveBest();
 
       // 焼きなまし
@@ -1332,52 +1332,52 @@ inline void multiStartSearch()
 
         int mode = loop % 4;
         if (mode == 0) {
-          int ite = xorshift() % n;
+          int ite = xorshift() % numRects;
           changeSingleEdge(ite, temp);
         }
         else if (mode == 1) {
-          int ite = xorshift() % n;
+          int ite = xorshift() % numRects;
           slideRect(ite, temp);
         }
         else if (now_time > 2.0 / T && mode == 2) {
-          int ite = xorshift() % n;
+          int ite = xorshift() % numRects;
           changeAspectRatio(ite, temp);
         }
         else if (mode == -3) {
-          int ite = xorshift() % n;
+          int ite = xorshift() % numRects;
           changeAllEdges(ite, temp);
         }
       }
 
       // 焼きなまし戻す
-      maxScore = real_maxScore;
-      for (int i = 0; i < n; ++i) {
-        rects[i] = best_rects[i];
+      currentScore = bestScore;
+      for (int i = 0; i < numRects; ++i) {
+        rectangles[i] = bestRects[i];
       }
       calcScore(-1);
 
-      if (maxScore > real_real_maxScore) {
-        real_real_maxScore = maxScore;
-        for (int i = 0; i < n; ++i) {
-          best_best_rects[i] = rects[i];
+      if (currentScore > real_real_maxScore) {
+        real_real_maxScore = currentScore;
+        for (int i = 0; i < numRects; ++i) {
+          best_best_rects[i] = rectangles[i];
         }
       }
     }
 
     // real_real_maxScore戻す
-    maxScore = real_real_maxScore;
+    currentScore = real_real_maxScore;
     real_real_maxScore = 0;
-    for (int i = 0; i < n; ++i) {
-      rects[i] = best_best_rects[i];
+    for (int i = 0; i < numRects; ++i) {
+      rectangles[i] = best_best_rects[i];
     }
     calcScore(-1);
 
     // 初期スコア計算
-    maxScore = calcScore(-1);
-    real_maxScore = maxScore;
+    currentScore = calcScore(-1);
+    bestScore = currentScore;
 
-    for (int i = 0; i < n; ++i) {
-      best_rects[i] = rects[i];
+    for (int i = 0; i < numRects; ++i) {
+      bestRects[i] = rectangles[i];
     }
 
 
@@ -1403,53 +1403,53 @@ inline void multiStartSearch()
 
       int mode = loop % 5;
       if (mode == 0) { // a,b,c,dのうち1つ変更
-        int ite = xorshift() % n;
+        int ite = xorshift() % numRects;
         changeSingleEdge(ite, temp);
       }
       else if (kouhan && mode == 1) { // 位置をスライド
-        int ite = xorshift() % n;
+        int ite = xorshift() % numRects;
         slideRect(ite, temp);
       }
       else if (mode == 2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
-        int ite = xorshift() % n;
+        int ite = xorshift() % numRects;
         changeAspectRatio(ite, temp);
       }
       else if (mode == -3) { // a,b,c,dを4つ同時に変更
-        int ite = xorshift() % n;
+        int ite = xorshift() % numRects;
         changeAllEdges(ite, temp);
       }
       else if (mode == 4) { // 膨らまして縮める
-        int ite = xorshift() % n;
+        int ite = xorshift() % numRects;
         extendWithTemp(ite, temp);
       }
     }
 
     // 焼きなまし戻す
-    maxScore = real_maxScore;
-    for (int i = 0; i < n; ++i) {
-      rects[i] = best_rects[i];
+    currentScore = bestScore;
+    for (int i = 0; i < numRects; ++i) {
+      rectangles[i] = bestRects[i];
     }
     calcScore(-1);
 
-    if (maxScore > ui_tei_maxScore) {
-      ui_tei_maxScore = maxScore;
-      for (int i = 0; i < n; ++i) {
-        ui_tei_a[i] = rects[i].p1.x;
-        ui_tei_b[i] = rects[i].p1.y;
-        ui_tei_c[i] = rects[i].p2.x;
-        ui_tei_d[i] = rects[i].p2.y;
+    if (currentScore > ui_tei_maxScore) {
+      ui_tei_maxScore = currentScore;
+      for (int i = 0; i < numRects; ++i) {
+        ui_tei_a[i] = rectangles[i].topLeft.x;
+        ui_tei_b[i] = rectangles[i].topLeft.y;
+        ui_tei_c[i] = rectangles[i].bottomRight.x;
+        ui_tei_d[i] = rectangles[i].bottomRight.y;
       }
     }
   }
 
   // 元に戻しておく
-  maxScore = 0;
-  real_maxScore = 0;
+  currentScore = 0;
+  bestScore = 0;
   real_real_maxScore = 0;
-  for (int i = 0; i < n; ++i) {
-    initRect(rects[i], pt[i]);
-    best_rects[i] = rects[i];
-    best_best_rects[i] = rects[i];
+  for (int i = 0; i < numRects; ++i) {
+    initRect(rectangles[i], points[i]);
+    bestRects[i] = rectangles[i];
+    best_best_rects[i] = rectangles[i];
   }
 }
 
@@ -1469,32 +1469,32 @@ int solve(int teisyutu, int fileNum)
     multiStartSearch();
 
     // ui_tei_maxScore戻す
-    maxScore = ui_tei_maxScore;
-    for (int i = 0; i < n; ++i) {
-      rects[i].p1.x = ui_tei_a[i];
-      rects[i].p1.y = ui_tei_b[i];
-      rects[i].p2.x = ui_tei_c[i];
-      rects[i].p2.y = ui_tei_d[i];
+    currentScore = ui_tei_maxScore;
+    for (int i = 0; i < numRects; ++i) {
+      rectangles[i].topLeft.x = ui_tei_a[i];
+      rectangles[i].topLeft.y = ui_tei_b[i];
+      rectangles[i].bottomRight.x = ui_tei_c[i];
+      rectangles[i].bottomRight.y = ui_tei_d[i];
     }
     calcScore(-1);
 
     // 初期スコア計算
-    maxScore = calcScore(-1);
-    real_maxScore = maxScore;
+    currentScore = calcScore(-1);
+    bestScore = currentScore;
 
-    for (int i = 0; i < n; ++i) {
-      best_rects[i] = rects[i];
+    for (int i = 0; i < numRects; ++i) {
+      bestRects[i] = rectangles[i];
     }
 
 
     int oya = 1;
 
     for (int asai = 0; asai < (oya); ++asai) {
-      for (int j = 0; j < n; ++j) {
-        a2[asai][j] = rects[j].p1.x;
-        b2[asai][j] = rects[j].p1.y;
-        c2[asai][j] = rects[j].p2.x;
-        d2[asai][j] = rects[j].p2.y;
+      for (int j = 0; j < numRects; ++j) {
+        a2[asai][j] = rectangles[j].topLeft.x;
+        b2[asai][j] = rectangles[j].topLeft.y;
+        c2[asai][j] = rectangles[j].bottomRight.x;
+        d2[asai][j] = rectangles[j].bottomRight.y;
       }
     }
 
@@ -1507,19 +1507,19 @@ int solve(int teisyutu, int fileNum)
       int TT = 1;
       for (int asai = 0; asai < (TT); ++asai) {
         int idx = asai % oya;
-        for (int i = 0; i < n; ++i) {
-          rects[i].p1.x = a2[idx][i];
-          rects[i].p1.y = b2[idx][i];
-          rects[i].p2.x = c2[idx][i];
-          rects[i].p2.y = d2[idx][i];
+        for (int i = 0; i < numRects; ++i) {
+          rectangles[i].topLeft.x = a2[idx][i];
+          rectangles[i].topLeft.y = b2[idx][i];
+          rectangles[i].bottomRight.x = c2[idx][i];
+          rectangles[i].bottomRight.y = d2[idx][i];
         }
 
         // 初期スコア計算
-        maxScore = calcScore(-1);
-        real_maxScore = maxScore;
+        currentScore = calcScore(-1);
+        bestScore = currentScore;
 
-        for (int i = 0; i < n; ++i) {
-          best_rects[i] = rects[i];
+        for (int i = 0; i < numRects; ++i) {
+          bestRects[i] = rectangles[i];
         }
 
         // 焼きなまし(2回目)
@@ -1527,7 +1527,7 @@ int solve(int teisyutu, int fileNum)
         end = clock();
         startClock = system_clock::now();
         double now_time = ((double)end - start) / CLOCKS_PER_SEC;
-        double TL = (((realTL - 0.7) / T) / TT) / allLoopTimes;
+        double TL = (((timeLimit - 0.7) / T) / TT) / allLoopTimes;
         double start_temp = 20048.0;
         double end_temp = 0.1;
         double temp = start_temp + (end_temp - start_temp) * now_time / TL;
@@ -1547,61 +1547,61 @@ int solve(int teisyutu, int fileNum)
           int mode = loop % 6;
 
           if (mode == -1) { // a,b,c,dのうち1つ変更
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             changeSingleEdge(ite, temp);
           }
           else if (mode == 1) { // 位置をスライド
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             slideRect(ite, temp);
           }
           else if (mode == -2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             changeAspectRatio(ite, temp);
           }
           else if (mode == -3) { // a,b,c,dを4つ同時に変更
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             changeAllEdges(ite, temp);
           }
           else if (mode == 4) { // 膨らまして縮める
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             extendWithTemp(ite, temp);
           }
           else if (mode == 5) { // 境界をずらす
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             shiftBoundary(ite, temp);
           }
 
           if (loop % 34567 == 1120) {
-            int ite = xorshift() % n;
+            int ite = xorshift() % numRects;
             extendLarge(ite);
           }
 
           // 計算誤差解消?
           if (loop % 10000 == 1) {
-            maxScore = calcScore(-1);
+            currentScore = calcScore(-1);
           }
         }
 
         // 焼きなまし戻す
-        maxScore = real_maxScore;
-        for (int i = 0; i < n; ++i) {
-          rects[i] = best_rects[i];
+        currentScore = bestScore;
+        for (int i = 0; i < numRects; ++i) {
+          rectangles[i] = bestRects[i];
         }
         calcScore(-1);
-        if (maxScore > real_real_maxScore) {
-          real_real_maxScore = maxScore;
-          for (int i = 0; i < n; ++i) {
-            best_best_rects[i] = rects[i];
+        if (currentScore > real_real_maxScore) {
+          real_real_maxScore = currentScore;
+          for (int i = 0; i < numRects; ++i) {
+            best_best_rects[i] = rectangles[i];
           }
         }
 
         // ビームサーチの次の種にする
-        maxScore4[asai] = maxScore;
-        for (int i = 0; i < n; ++i) {
-          a4[asai][i] = rects[i].p1.x;
-          b4[asai][i] = rects[i].p1.y;
-          c4[asai][i] = rects[i].p2.x;
-          d4[asai][i] = rects[i].p2.y;
+        maxScore4[asai] = currentScore;
+        for (int i = 0; i < numRects; ++i) {
+          a4[asai][i] = rectangles[i].topLeft.x;
+          b4[asai][i] = rectangles[i].topLeft.y;
+          c4[asai][i] = rectangles[i].bottomRight.x;
+          d4[asai][i] = rectangles[i].bottomRight.y;
         }
       }
 
@@ -1613,7 +1613,7 @@ int solve(int teisyutu, int fileNum)
 
       for (int ii = 0; ii < (oya); ++ii) {
         int i = vBeam[ii].second;
-        for (int j = 0; j < n; ++j) {
+        for (int j = 0; j < numRects; ++j) {
           a2[ii][j] = a4[i][j];
           b2[ii][j] = b4[i][j];
           c2[ii][j] = c4[i][j];
@@ -1629,57 +1629,57 @@ int solve(int teisyutu, int fileNum)
 
       // エスケープ
       end = clock();
-      if (((double)end - real_start) / CLOCKS_PER_SEC > realTL) { break; }
+      if (((double)end - real_start) / CLOCKS_PER_SEC > timeLimit) { break; }
     }
 
     // real_real_maxScore戻す
-    maxScore = real_real_maxScore;
-    for (int i = 0; i < n; ++i) {
-      rects[i] = best_best_rects[i];
+    currentScore = real_real_maxScore;
+    for (int i = 0; i < numRects; ++i) {
+      rectangles[i] = best_best_rects[i];
     }
     calcScore(-1);
 
     if (teisyutu == 0) {
-      cout << "maxScore = " << maxScore << endl;
+      cout << "currentScore = " << currentScore << endl;
     }
 
     const int MOD = 1000000007;
-    if (teisyutu == 0 && maxScore > MOD) {
+    if (teisyutu == 0 && currentScore > MOD) {
       cout << "ERROR" << endl;
       writeErrorLog(fileNum);
     }
 
     // real_real_real入れる
-    if (maxScore > real_real_real_maxScore && maxScore < 1000000007) {
-      real_real_real_maxScore = maxScore;
-      for (int i = 0; i < n; ++i) {
-        best_best_best_rects[i] = rects[i];
+    if (currentScore > real_real_real_maxScore && currentScore < 1000000007) {
+      real_real_real_maxScore = currentScore;
+      for (int i = 0; i < numRects; ++i) {
+        best_best_best_rects[i] = rectangles[i];
       }
     }
 
 
     // すべて白紙にリセットする
-    maxScore = 0;
-    real_maxScore = 0;
+    currentScore = 0;
+    bestScore = 0;
     real_real_maxScore = 0;
-    for (int i = 0; i < n; ++i) {
-      initRect(rects[i], pt[i]);
-      best_rects[i] = rects[i];
-      best_best_rects[i] = rects[i];
+    for (int i = 0; i < numRects; ++i) {
+      initRect(rectangles[i], points[i]);
+      bestRects[i] = rectangles[i];
+      best_best_rects[i] = rectangles[i];
     }
   }
 
   // real_real_real_maxScore戻す
-  maxScore = real_real_real_maxScore;
-  for (int i = 0; i < n; ++i) {
-    rects[i] = best_best_best_rects[i];
+  currentScore = real_real_real_maxScore;
+  for (int i = 0; i < numRects; ++i) {
+    rectangles[i] = best_best_best_rects[i];
   }
   calcScore(-1);
 
   // 最終出力
   if (teisyutu) {
-    for (int i = 0; i < n; ++i) {
-      cout << rects[i].p1.x << ' ' << rects[i].p1.y << ' ' << rects[i].p2.x << ' ' << rects[i].p2.y << endl;
+    for (int i = 0; i < numRects; ++i) {
+      cout << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
     }
   }
   else {
@@ -1688,42 +1688,42 @@ int solve(int teisyutu, int fileNum)
 
   // 提出時以下は消す
   if (teisyutu == 0) {
-    cout << "file No. = " << fileNum << ", maxScore = " << maxScore << endl;
+    cout << "file No. = " << fileNum << ", currentScore = " << currentScore << endl;
   }
 
-  if (teisyutu == 0 && maxScore > 1000000007) {
+  if (teisyutu == 0 && currentScore > 1000000007) {
     writeErrorLog(fileNum);
   }
 
-  return maxScore;
+  return currentScore;
 }
 
 inline void clearRect(Rect& r)
 {
-  r.p1.x = 0;
-  r.p1.y = 0;
-  r.p2.x = 0;
-  r.p2.y = 0;
+  r.topLeft.x = 0;
+  r.topLeft.y = 0;
+  r.bottomRight.x = 0;
+  r.bottomRight.y = 0;
 }
 
 inline void clearAll()
 {
-  n = 0;
-  maxScore = -1;
-  real_maxScore = -1;
-  pSum = 0;
+  numRects = 0;
+  currentScore = -1;
+  bestScore = -1;
+  totalScore = 0;
   real_real_maxScore = -1;
   ui_tei_maxScore = -1;
   real_real_real_maxScore = -1;
   for (int i = 0; i < (MAX_N); ++i) {
-    pt[i].x = 0, pt[i].y = 0, sz[i] = 0;
-    rects[i].p1.x = 0, rects[i].p1.y = 0, rects[i].p2.x = 0, rects[i].p2.y = 0;
-    clearRect(rects[i]);
-    area[i] = 0;
-    clearRect(best_rects[i]);
-    p[i] = 0;
-    sort_x[i] = 0, sort_y[i] = 0;
-    arg_sort_x[i] = 0, arg_sort_y[i] = 0;
+    points[i].x = 0, points[i].y = 0, targetSizes[i] = 0;
+    rectangles[i].topLeft.x = 0, rectangles[i].topLeft.y = 0, rectangles[i].bottomRight.x = 0, rectangles[i].bottomRight.y = 0;
+    clearRect(rectangles[i]);
+    rectAreas[i] = 0;
+    clearRect(bestRects[i]);
+    rectScores[i] = 0;
+    sortedByX[i] = 0, sortedByY[i] = 0;
+    indexInSortedX[i] = 0, indexInSortedY[i] = 0;
     clearRect(best_best_rects[i]);
     ui_tei_a[i] = 0, ui_tei_b[i] = 0, ui_tei_c[i] = 0, ui_tei_d[i] = 0;
     clearRect(best_best_best_rects[i]);
