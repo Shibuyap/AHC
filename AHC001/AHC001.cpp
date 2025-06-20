@@ -164,6 +164,38 @@ inline int checkOverlap(int i, int j)
   return overlapCount == 2;
 }
 
+// 矩形のY軸方向の重なりをチェック
+inline int checkYOverlap(const Rect& rect1, const Rect& rect2)
+{
+  if (rect1.topLeft.y <= rect2.topLeft.y && rect2.topLeft.y < rect1.bottomRight.y) return 1;
+  if (rect2.topLeft.y <= rect1.topLeft.y && rect1.topLeft.y < rect2.bottomRight.y) return 1;
+  return 0;
+}
+
+// 矩形のX軸方向の重なりをチェック
+inline int checkXOverlap(const Rect& rect1, const Rect& rect2)
+{
+  if (rect1.topLeft.x <= rect2.topLeft.x && rect2.topLeft.x < rect1.bottomRight.x) return 1;
+  if (rect2.topLeft.x <= rect1.topLeft.x && rect1.topLeft.x < rect2.bottomRight.x) return 1;
+  return 0;
+}
+
+// 点とY範囲の重なりをチェック
+inline int checkPointYOverlap(int y, int topY, int bottomY)
+{
+  if (y <= topY && topY < y + 1) return 1;
+  if (topY <= y && y < bottomY) return 1;
+  return 0;
+}
+
+// 点とX範囲の重なりをチェック
+inline int checkPointXOverlap(int x, int leftX, int rightX)
+{
+  if (x <= leftX && leftX < x + 1) return 1;
+  if (leftX <= x && x < rightX) return 1;
+  return 0;
+}
+
 int sortedByX[MAX_N], sortedByY[MAX_N];
 int indexInSortedX[MAX_N], indexInSortedY[MAX_N];
 inline void initSortArrays()
@@ -308,9 +340,7 @@ inline void expandRect(int ite)
     int argX = indexInSortedX[ite];
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sortedByX[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) hasOverlap = 1;
-      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkYOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
@@ -323,9 +353,7 @@ inline void expandRect(int ite)
     }
     for (int ii = argX + 1; ii < numRects; ++ii) {
       int i = sortedByX[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) hasOverlap = 1;
-      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkYOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
@@ -343,9 +371,7 @@ inline void expandRect(int ite)
     int nowLeft = expandedRect.topLeft.x;
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sortedByY[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) hasOverlap = 1;
-      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkXOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
@@ -363,9 +389,7 @@ inline void expandRect(int ite)
     nowLeft = expandedRect.topLeft.x;
     for (int ii = argY + 1; ii < numRects; ++ii) {
       int i = sortedByY[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) hasOverlap = 1;
-      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkXOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
@@ -386,9 +410,7 @@ inline void expandRect(int ite)
     int argY = indexInSortedY[ite];
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sortedByY[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) hasOverlap = 1;
-      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkXOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
@@ -401,9 +423,7 @@ inline void expandRect(int ite)
     }
     for (int ii = argY + 1; ii < numRects; ++ii) {
       int i = sortedByY[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.x <= expandedRect.topLeft.x && expandedRect.topLeft.x < rectangles[i].bottomRight.x) hasOverlap = 1;
-      if (expandedRect.topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < expandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkXOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           expandedRect.topLeft.y = max(expandedRect.topLeft.y, rectangles[i].bottomRight.y);
@@ -421,9 +441,7 @@ inline void expandRect(int ite)
     int nowLeft = expandedRect.topLeft.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sortedByX[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) hasOverlap = 1;
-      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkYOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
@@ -440,9 +458,7 @@ inline void expandRect(int ite)
     nowLeft = expandedRect.topLeft.y;
     for (int ii = argX + 1; ii < numRects; ++ii) {
       int i = sortedByX[ii];
-      int hasOverlap = 0;
-      if (rectangles[i].topLeft.y <= expandedRect.topLeft.y && expandedRect.topLeft.y < rectangles[i].bottomRight.y) hasOverlap = 1;
-      if (expandedRect.topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < expandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkYOverlap(rectangles[i], expandedRect);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           expandedRect.topLeft.x = max(expandedRect.topLeft.x, rectangles[i].bottomRight.x);
@@ -636,9 +652,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sortedByX[ii];
       if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = 0;
-      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
@@ -651,9 +665,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argX + 1; ii < numRects; ++ii) {
       int i = sortedByX[ii];
       if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = 0;
-      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
@@ -668,9 +680,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sortedByY[ii];
       if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = 0;
-      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
@@ -683,9 +693,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argY + 1; ii < numRects; ++ii) {
       int i = sortedByY[ii];
       if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = 0;
-      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
@@ -701,9 +709,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sortedByY[ii];
       if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = 0;
-      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
@@ -716,9 +722,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argY + 1; ii < numRects; ++ii) {
       int i = sortedByY[ii];
       if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = 0;
-      if (points[i].x <= largeExpandedRect.topLeft.x && largeExpandedRect.topLeft.x < points[i].x + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.x <= points[i].x && points[i].x < largeExpandedRect.bottomRight.x) hasOverlap = 1;
+      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
       if (hasOverlap) {
         if (points[i].y <= points[ite].y) {
           largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
@@ -733,9 +737,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sortedByX[ii];
       if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = 0;
-      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
@@ -748,9 +750,7 @@ inline void expandRectLarge(int ite)
     for (int ii = argX + 1; ii < numRects; ++ii) {
       int i = sortedByX[ii];
       if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = 0;
-      if (points[i].y <= largeExpandedRect.topLeft.y && largeExpandedRect.topLeft.y < points[i].y + 1) hasOverlap = 1;
-      if (largeExpandedRect.topLeft.y <= points[i].y && points[i].y < largeExpandedRect.bottomRight.y) hasOverlap = 1;
+      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
       if (hasOverlap) {
         if (points[i].x <= points[ite].x) {
           largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
@@ -1176,7 +1176,7 @@ inline void findOverlaps(int ite, int edgeType)
   }
 }
 
-int prevTopLeftX[MAX_N], prevTopLeftY[MAX_N], prevBottomRightX[MAX_N], prevBottomRightY[MAX_N];
+Rect prevRects[MAX_N];
 inline void shiftBoundary(int ite, double temp)
 {
   int diff = 0;
@@ -1211,10 +1211,7 @@ inline void shiftBoundary(int ite, double temp)
 
 
   for (int i = 0; i < (numOverlaps); ++i) {
-    prevTopLeftX[i] = rectangles[overlappingRects[i]].topLeft.x;
-    prevTopLeftY[i] = rectangles[overlappingRects[i]].topLeft.y;
-    prevBottomRightX[i] = rectangles[overlappingRects[i]].bottomRight.x;
-    prevBottomRightY[i] = rectangles[overlappingRects[i]].bottomRight.y;
+    prevRects[i] = rectangles[overlappingRects[i]];
   }
 
   int isValidShift = 1;
@@ -1228,10 +1225,7 @@ inline void shiftBoundary(int ite, double temp)
 
   if (isValidShift == 0) {
     for (int i = 0; i < (numOverlaps); ++i) {
-      rectangles[overlappingRects[i]].topLeft.x = prevTopLeftX[i];
-      rectangles[overlappingRects[i]].topLeft.y = prevTopLeftY[i];
-      rectangles[overlappingRects[i]].bottomRight.x = prevBottomRightX[i];
-      rectangles[overlappingRects[i]].bottomRight.y = prevBottomRightY[i];
+      rectangles[overlappingRects[i]] = prevRects[i];
     }
     // 元に戻す
     if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
@@ -1256,10 +1250,7 @@ inline void shiftBoundary(int ite, double temp)
   }
   else {
     for (int i = 0; i < (numOverlaps); ++i) {
-      rectangles[overlappingRects[i]].topLeft.x = prevTopLeftX[i];
-      rectangles[overlappingRects[i]].topLeft.y = prevTopLeftY[i];
-      rectangles[overlappingRects[i]].bottomRight.x = prevBottomRightX[i];
-      rectangles[overlappingRects[i]].bottomRight.y = prevBottomRightY[i];
+      rectangles[overlappingRects[i]] = prevRects[i];
       calcScore(overlappingRects[i]);
     }
     // 元に戻す
@@ -1286,11 +1277,11 @@ inline void initSolution()
 Rect best_best_best_rects[MAX_N];
 int real_real_real_maxScore = -1;
 
-int a2[100][MAX_N], b2[100][MAX_N], c2[100][MAX_N], d2[100][MAX_N];
-int a4[100][MAX_N], b4[100][MAX_N], c4[100][MAX_N], d4[100][MAX_N];
+Rect rects2[100][MAX_N];
+Rect rects4[100][MAX_N];
 int maxScore4[100] = {};
 
-int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
+Rect ui_tei_rects[MAX_N];
 int ui_tei_maxScore = -1;
 
 inline void multiStartSearch()
@@ -1434,10 +1425,7 @@ inline void multiStartSearch()
     if (currentScore > ui_tei_maxScore) {
       ui_tei_maxScore = currentScore;
       for (int i = 0; i < numRects; ++i) {
-        ui_tei_a[i] = rectangles[i].topLeft.x;
-        ui_tei_b[i] = rectangles[i].topLeft.y;
-        ui_tei_c[i] = rectangles[i].bottomRight.x;
-        ui_tei_d[i] = rectangles[i].bottomRight.y;
+        ui_tei_rects[i] = rectangles[i];
       }
     }
   }
@@ -1471,10 +1459,7 @@ int solve(int teisyutu, int fileNum)
     // ui_tei_maxScore戻す
     currentScore = ui_tei_maxScore;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i].topLeft.x = ui_tei_a[i];
-      rectangles[i].topLeft.y = ui_tei_b[i];
-      rectangles[i].bottomRight.x = ui_tei_c[i];
-      rectangles[i].bottomRight.y = ui_tei_d[i];
+      rectangles[i] = ui_tei_rects[i];
     }
     calcScore(-1);
 
@@ -1491,10 +1476,7 @@ int solve(int teisyutu, int fileNum)
 
     for (int asai = 0; asai < (oya); ++asai) {
       for (int j = 0; j < numRects; ++j) {
-        a2[asai][j] = rectangles[j].topLeft.x;
-        b2[asai][j] = rectangles[j].topLeft.y;
-        c2[asai][j] = rectangles[j].bottomRight.x;
-        d2[asai][j] = rectangles[j].bottomRight.y;
+        rects2[asai][j] = rectangles[j];
       }
     }
 
@@ -1508,10 +1490,7 @@ int solve(int teisyutu, int fileNum)
       for (int asai = 0; asai < (TT); ++asai) {
         int idx = asai % oya;
         for (int i = 0; i < numRects; ++i) {
-          rectangles[i].topLeft.x = a2[idx][i];
-          rectangles[i].topLeft.y = b2[idx][i];
-          rectangles[i].bottomRight.x = c2[idx][i];
-          rectangles[i].bottomRight.y = d2[idx][i];
+          rectangles[i] = rects2[idx][i];
         }
 
         // 初期スコア計算
@@ -1598,10 +1577,7 @@ int solve(int teisyutu, int fileNum)
         // ビームサーチの次の種にする
         maxScore4[asai] = currentScore;
         for (int i = 0; i < numRects; ++i) {
-          a4[asai][i] = rectangles[i].topLeft.x;
-          b4[asai][i] = rectangles[i].topLeft.y;
-          c4[asai][i] = rectangles[i].bottomRight.x;
-          d4[asai][i] = rectangles[i].bottomRight.y;
+          rects4[asai][i] = rectangles[i];
         }
       }
 
@@ -1614,10 +1590,7 @@ int solve(int teisyutu, int fileNum)
       for (int ii = 0; ii < (oya); ++ii) {
         int i = vBeam[ii].second;
         for (int j = 0; j < numRects; ++j) {
-          a2[ii][j] = a4[i][j];
-          b2[ii][j] = b4[i][j];
-          c2[ii][j] = c4[i][j];
-          d2[ii][j] = d4[i][j];
+          rects2[ii][j] = rects4[i][j];
         }
       }
 
@@ -1725,7 +1698,7 @@ inline void clearAll()
     sortedByX[i] = 0, sortedByY[i] = 0;
     indexInSortedX[i] = 0, indexInSortedY[i] = 0;
     clearRect(best_best_rects[i]);
-    ui_tei_a[i] = 0, ui_tei_b[i] = 0, ui_tei_c[i] = 0, ui_tei_d[i] = 0;
+    clearRect(ui_tei_rects[i]);
     clearRect(best_best_best_rects[i]);
   }
 }
