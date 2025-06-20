@@ -65,6 +65,8 @@ struct Rect
   Point bottomRight;
 };
 
+enum Direction { HORIZONTAL = 0, VERTICAL = 1 };
+
 int allLoopTimes = 1;
 int numRects;
 Point points[MAX_N];
@@ -328,13 +330,147 @@ inline void initRect(Rect& rect, Point& point)
   rect.bottomRight.y = point.y + 1;
 }
 
+// 方向に応じて座標を取得するヘルパー関数
+inline int getCoord(const Point& p, Direction dir) {
+  return dir == HORIZONTAL ? p.x : p.y;
+}
+
+inline int& getCoordRef(Point& p, Direction dir) {
+  return dir == HORIZONTAL ? p.x : p.y;
+}
+
+// エッジタイプから矩形の座標への参照を取得
+inline int& getRectCoordByEdge(Rect& rect, int edgeType) {
+  switch(edgeType) {
+    case 0: return rect.topLeft.x;
+    case 1: return rect.topLeft.y;
+    case 2: return rect.bottomRight.x;
+    case 3: return rect.bottomRight.y;
+    default: return rect.topLeft.x; // エラー回避
+  }
+}
+
+inline int getSortedIndex(int ite, Direction dir) {
+  return dir == HORIZONTAL ? indexInSortedX[ite] : indexInSortedY[ite];
+}
+
+inline int getSortedRect(int idx, Direction dir) {
+  return dir == HORIZONTAL ? sortedByX[idx] : sortedByY[idx];
+}
+
+// 一方向の拡張処理を共通化（ポイント版）
+inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir) {
+  int argIdx = getSortedIndex(ite, primaryDir);
+  
+  // 後方探索
+  for (int ii = argIdx - 1; ii >= 0; --ii) {
+    int i = getSortedRect(ii, primaryDir);
+    if (getCoord(points[i], primaryDir) == getCoord(points[ite], primaryDir)) continue;
+    
+    int hasOverlap = (primaryDir == HORIZONTAL) ?
+      checkPointYOverlap(points[i].y, rect.topLeft.y, rect.bottomRight.y) :
+      checkPointXOverlap(points[i].x, rect.topLeft.x, rect.bottomRight.x);
+    
+    if (hasOverlap) {
+      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
+        getCoordRef(rect.topLeft, primaryDir) = max(
+          getCoord(rect.topLeft, primaryDir), 
+          getCoord(points[i], primaryDir) + 1);
+      } else {
+        getCoordRef(rect.bottomRight, primaryDir) = min(
+          getCoord(rect.bottomRight, primaryDir), 
+          getCoord(points[i], primaryDir));
+      }
+    }
+  }
+  
+  // 前方探索
+  for (int ii = argIdx + 1; ii < numRects; ++ii) {
+    int i = getSortedRect(ii, primaryDir);
+    if (getCoord(points[i], primaryDir) == getCoord(points[ite], primaryDir)) continue;
+    
+    int hasOverlap = (primaryDir == HORIZONTAL) ?
+      checkPointYOverlap(points[i].y, rect.topLeft.y, rect.bottomRight.y) :
+      checkPointXOverlap(points[i].x, rect.topLeft.x, rect.bottomRight.x);
+    
+    if (hasOverlap) {
+      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
+        getCoordRef(rect.topLeft, primaryDir) = max(
+          getCoord(rect.topLeft, primaryDir), 
+          getCoord(points[i], primaryDir) + 1);
+      } else {
+        getCoordRef(rect.bottomRight, primaryDir) = min(
+          getCoord(rect.bottomRight, primaryDir), 
+          getCoord(points[i], primaryDir));
+      }
+    }
+  }
+}
+
+// 一方向の拡張処理を共通化
+inline void expandInDirection(Rect& rect, int ite, Direction primaryDir) {
+  Direction secondaryDir = (primaryDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
+  
+  // 主方向の初期化
+  getCoordRef(rect.topLeft, primaryDir) = 0;
+  getCoordRef(rect.bottomRight, primaryDir) = 10000;
+  
+  int argIdx = getSortedIndex(ite, primaryDir);
+  
+  // 後方探索
+  for (int ii = argIdx - 1; ii >= 0; --ii) {
+    int i = getSortedRect(ii, primaryDir);
+    int hasOverlap = (primaryDir == HORIZONTAL) ? 
+      checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
+    
+    if (hasOverlap) {
+      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
+        getCoordRef(rect.topLeft, primaryDir) = max(
+          getCoord(rect.topLeft, primaryDir), 
+          getCoord(rectangles[i].bottomRight, primaryDir));
+      } else {
+        getCoordRef(rect.bottomRight, primaryDir) = min(
+          getCoord(rect.bottomRight, primaryDir), 
+          getCoord(rectangles[i].topLeft, primaryDir));
+      }
+      break;
+    }
+  }
+  
+  // 前方探索
+  for (int ii = argIdx + 1; ii < numRects; ++ii) {
+    int i = getSortedRect(ii, primaryDir);
+    int hasOverlap = (primaryDir == HORIZONTAL) ? 
+      checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
+    
+    if (hasOverlap) {
+      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
+        getCoordRef(rect.topLeft, primaryDir) = max(
+          getCoord(rect.topLeft, primaryDir), 
+          getCoord(rectangles[i].bottomRight, primaryDir));
+      } else {
+        getCoordRef(rect.bottomRight, primaryDir) = min(
+          getCoord(rect.bottomRight, primaryDir), 
+          getCoord(rectangles[i].topLeft, primaryDir));
+      }
+      break;
+    }
+  }
+}
+
 Rect expandedRect;
 inline void expandRect(int ite)
 {
   initRect(expandedRect, points[ite]);
 
-  int orientationFlag = xorshift() % 2;
-  if (orientationFlag == 0) {
+  Direction firstDir = (Direction)(xorshift() % 2);
+  Direction secondDir = (firstDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
+  
+  // 第1方向の拡張
+  expandInDirection(expandedRect, ite, firstDir);
+  
+  // 第2方向の拡張（複雑な処理が必要なため、既存のコードを残す）
+  if (firstDir == HORIZONTAL) {
     expandedRect.topLeft.x = 0;
     expandedRect.bottomRight.x = 10000;
     int argX = indexInSortedX[ite];
@@ -645,122 +781,12 @@ inline void expandRectLarge(int ite)
   largeExpandedRect.bottomRight.x = min(10000, (int)(points[ite].x + 1 + xorshift() % 1000));
   largeExpandedRect.bottomRight.y = min(10000, (int)(points[ite].y + 1 + xorshift() % 1000));
 
-  int isVerticalFirst = xorshift() % 2;
-
-  if (isVerticalFirst == 0) {
-    int argX = indexInSortedX[ite];
-    for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sortedByX[ii];
-      if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
-      if (hasOverlap) {
-        if (points[i].x <= points[ite].x) {
-          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
-        }
-      }
-    }
-    for (int ii = argX + 1; ii < numRects; ++ii) {
-      int i = sortedByX[ii];
-      if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
-      if (hasOverlap) {
-        if (points[i].x <= points[ite].x) {
-          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
-        }
-      }
-    }
-
-    int argY = indexInSortedY[ite];
-    for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sortedByY[ii];
-      if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
-      if (hasOverlap) {
-        if (points[i].y <= points[ite].y) {
-          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
-        }
-      }
-    }
-    for (int ii = argY + 1; ii < numRects; ++ii) {
-      int i = sortedByY[ii];
-      if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
-      if (hasOverlap) {
-        if (points[i].y <= points[ite].y) {
-          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
-        }
-      }
-    }
-  }
-  else {
-    int argY = indexInSortedY[ite];
-    for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sortedByY[ii];
-      if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
-      if (hasOverlap) {
-        if (points[i].y <= points[ite].y) {
-          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
-        }
-      }
-    }
-    for (int ii = argY + 1; ii < numRects; ++ii) {
-      int i = sortedByY[ii];
-      if (points[i].y == points[ite].y) { continue; }
-      int hasOverlap = checkPointXOverlap(points[i].x, largeExpandedRect.topLeft.x, largeExpandedRect.bottomRight.x);
-      if (hasOverlap) {
-        if (points[i].y <= points[ite].y) {
-          largeExpandedRect.topLeft.y = max(largeExpandedRect.topLeft.y, points[i].y + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.y = min(largeExpandedRect.bottomRight.y, points[i].y);
-        }
-      }
-    }
-
-    int argX = indexInSortedX[ite];
-    for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sortedByX[ii];
-      if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
-      if (hasOverlap) {
-        if (points[i].x <= points[ite].x) {
-          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
-        }
-      }
-    }
-    for (int ii = argX + 1; ii < numRects; ++ii) {
-      int i = sortedByX[ii];
-      if (points[i].x == points[ite].x) { continue; }
-      int hasOverlap = checkPointYOverlap(points[i].y, largeExpandedRect.topLeft.y, largeExpandedRect.bottomRight.y);
-      if (hasOverlap) {
-        if (points[i].x <= points[ite].x) {
-          largeExpandedRect.topLeft.x = max(largeExpandedRect.topLeft.x, points[i].x + 1);
-        }
-        else {
-          largeExpandedRect.bottomRight.x = min(largeExpandedRect.bottomRight.x, points[i].x);
-        }
-      }
-    }
-  }
+  Direction firstDir = (Direction)(xorshift() % 2);
+  Direction secondDir = (firstDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
+  
+  // 両方向に拡張
+  expandLargeInDirection(largeExpandedRect, ite, firstDir);
+  expandLargeInDirection(largeExpandedRect, ite, secondDir);
 
   int edgeOrder[4] = {};
   int shuffleIndex = xorshift() % 24;
@@ -861,16 +887,11 @@ inline void changeSingleEdge(int ite, double temp)
   while (diff == 0) diff = xorshift() % 101 - 50;
   int edgeType = xorshift() % 4;
 
-  if (edgeType == 0) rectangles[ite].topLeft.x += diff;
-  if (edgeType == 1) rectangles[ite].topLeft.y += diff;
-  if (edgeType == 2) rectangles[ite].bottomRight.x += diff;
-  if (edgeType == 3) rectangles[ite].bottomRight.y += diff;
+  // 座標を変更
+  getRectCoordByEdge(rectangles[ite], edgeType) += diff;
 
   if (isValid(ite) == 0) {
-    if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
-    if (edgeType == 1) rectangles[ite].topLeft.y -= diff;
-    if (edgeType == 2) rectangles[ite].bottomRight.x -= diff;
-    if (edgeType == 3) rectangles[ite].bottomRight.y -= diff;
+    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
     return;
   }
 
@@ -887,31 +908,23 @@ inline void changeSingleEdge(int ite, double temp)
   }
   else {
     // 元に戻す
-    if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
-    if (edgeType == 1) rectangles[ite].topLeft.y -= diff;
-    if (edgeType == 2) rectangles[ite].bottomRight.x -= diff;
-    if (edgeType == 3) rectangles[ite].bottomRight.y -= diff;
+    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
     calcScore(ite);
   }
 }
 
 inline void changeAllEdges(int ite, double temp)
 {
-  int deltaTopX = xorshift() % 101 - 50;
-  int deltaTopY = xorshift() % 101 - 50;
-  int deltaBottomX = xorshift() % 101 - 50;
-  int deltaBottomY = xorshift() % 101 - 50;
-
-  rectangles[ite].topLeft.x += deltaTopX;
-  rectangles[ite].topLeft.y += deltaTopY;
-  rectangles[ite].bottomRight.x += deltaBottomX;
-  rectangles[ite].bottomRight.y += deltaBottomY;
+  int deltas[4];
+  for (int i = 0; i < 4; ++i) {
+    deltas[i] = xorshift() % 101 - 50;
+    getRectCoordByEdge(rectangles[ite], i) += deltas[i];
+  }
 
   if (isValid(ite) == 0) {
-    rectangles[ite].topLeft.x -= deltaTopX;
-    rectangles[ite].topLeft.y -= deltaTopY;
-    rectangles[ite].bottomRight.x -= deltaBottomX;
-    rectangles[ite].bottomRight.y -= deltaBottomY;
+    for (int i = 0; i < 4; ++i) {
+      getRectCoordByEdge(rectangles[ite], i) -= deltas[i];
+    }
     return;
   }
 
@@ -928,10 +941,9 @@ inline void changeAllEdges(int ite, double temp)
   }
   else {
     // 元に戻す
-    rectangles[ite].topLeft.x -= deltaTopX;
-    rectangles[ite].topLeft.y -= deltaTopY;
-    rectangles[ite].bottomRight.x -= deltaBottomX;
-    rectangles[ite].bottomRight.y -= deltaBottomY;
+    for (int i = 0; i < 4; ++i) {
+      getRectCoordByEdge(rectangles[ite], i) -= deltas[i];
+    }
     calcScore(ite);
   }
 }
@@ -940,26 +952,15 @@ inline void slideRect(int ite, double temp)
 {
   int diff = 0;
   while (diff == 0) diff = xorshift() % 101 - 50;
-  int direction = xorshift() % 2;
+  Direction dir = (Direction)(xorshift() % 2);
 
-  if (direction == 0) {
-    rectangles[ite].topLeft.x += diff;
-    rectangles[ite].bottomRight.x += diff;
-  }
-  if (direction == 1) {
-    rectangles[ite].topLeft.y += diff;
-    rectangles[ite].bottomRight.y += diff;
-  }
+  // 両端を同じ方向に移動
+  getCoordRef(rectangles[ite].topLeft, dir) += diff;
+  getCoordRef(rectangles[ite].bottomRight, dir) += diff;
 
   if (isValid(ite) == 0) {
-    if (direction == 0) {
-      rectangles[ite].topLeft.x -= diff;
-      rectangles[ite].bottomRight.x -= diff;
-    }
-    if (direction == 1) {
-      rectangles[ite].topLeft.y -= diff;
-      rectangles[ite].bottomRight.y -= diff;
-    }
+    getCoordRef(rectangles[ite].topLeft, dir) -= diff;
+    getCoordRef(rectangles[ite].bottomRight, dir) -= diff;
     return;
   }
 
@@ -976,14 +977,8 @@ inline void slideRect(int ite, double temp)
   }
   else {
     // 元に戻す
-    if (direction == 0) {
-      rectangles[ite].topLeft.x -= diff;
-      rectangles[ite].bottomRight.x -= diff;
-    }
-    if (direction == 1) {
-      rectangles[ite].topLeft.y -= diff;
-      rectangles[ite].bottomRight.y -= diff;
-    }
+    getCoordRef(rectangles[ite].topLeft, dir) -= diff;
+    getCoordRef(rectangles[ite].bottomRight, dir) -= diff;
     calcScore(ite);
   }
 }
@@ -1185,16 +1180,10 @@ inline void shiftBoundary(int ite, double temp)
 
   if (edgeType < 2) diff *= -1;
 
-  if (edgeType == 0) rectangles[ite].topLeft.x += diff;
-  if (edgeType == 1) rectangles[ite].topLeft.y += diff;
-  if (edgeType == 2) rectangles[ite].bottomRight.x += diff;
-  if (edgeType == 3) rectangles[ite].bottomRight.y += diff;
+  getRectCoordByEdge(rectangles[ite], edgeType) += diff;
 
   if (isSelfInvalid(ite)) {
-    if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
-    if (edgeType == 1) rectangles[ite].topLeft.y -= diff;
-    if (edgeType == 2) rectangles[ite].bottomRight.x -= diff;
-    if (edgeType == 3) rectangles[ite].bottomRight.y -= diff;
+    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
     return;
   }
 
@@ -1202,10 +1191,7 @@ inline void shiftBoundary(int ite, double temp)
   int numOverlaps = overlapCount;
 
   if (numOverlaps > 0 && overlappingRects[0] == -1) {
-    if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
-    if (edgeType == 1) rectangles[ite].topLeft.y -= diff;
-    if (edgeType == 2) rectangles[ite].bottomRight.x -= diff;
-    if (edgeType == 3) rectangles[ite].bottomRight.y -= diff;
+    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
     return;
   }
 
@@ -1216,10 +1202,12 @@ inline void shiftBoundary(int ite, double temp)
 
   int isValidShift = 1;
   for (int i = 0; i < (numOverlaps); ++i) {
-    if (edgeType == 0) rectangles[overlappingRects[i]].bottomRight.x = rectangles[ite].topLeft.x;
-    if (edgeType == 1) rectangles[overlappingRects[i]].bottomRight.y = rectangles[ite].topLeft.y;
-    if (edgeType == 2) rectangles[overlappingRects[i]].topLeft.x = rectangles[ite].bottomRight.x;
-    if (edgeType == 3) rectangles[overlappingRects[i]].topLeft.y = rectangles[ite].bottomRight.y;
+    // 隣接する矩形の境界を調整
+    if (edgeType < 2) {
+      getRectCoordByEdge(rectangles[overlappingRects[i]], edgeType + 2) = getRectCoordByEdge(rectangles[ite], edgeType);
+    } else {
+      getRectCoordByEdge(rectangles[overlappingRects[i]], edgeType - 2) = getRectCoordByEdge(rectangles[ite], edgeType);
+    }
     if (isSelfInvalid(overlappingRects[i])) isValidShift = 0;
   }
 
@@ -1228,10 +1216,7 @@ inline void shiftBoundary(int ite, double temp)
       rectangles[overlappingRects[i]] = prevRects[i];
     }
     // 元に戻す
-    if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
-    if (edgeType == 1) rectangles[ite].topLeft.y -= diff;
-    if (edgeType == 2) rectangles[ite].bottomRight.x -= diff;
-    if (edgeType == 3) rectangles[ite].bottomRight.y -= diff;
+    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
     return;
   }
 
@@ -1254,10 +1239,7 @@ inline void shiftBoundary(int ite, double temp)
       calcScore(overlappingRects[i]);
     }
     // 元に戻す
-    if (edgeType == 0) rectangles[ite].topLeft.x -= diff;
-    if (edgeType == 1) rectangles[ite].topLeft.y -= diff;
-    if (edgeType == 2) rectangles[ite].bottomRight.x -= diff;
-    if (edgeType == 3) rectangles[ite].bottomRight.y -= diff;
+    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
     calcScore(ite);
   }
 }
