@@ -2656,33 +2656,31 @@ int solver_15()
   return real_argRes;
 }
 
+void reverse_b()
+{
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      if (i == j) {
+        continue;
+      }
+      b[i][j] = 1 - b[i][j];
+    }
+  }
+}
+
 // 11表裏
 int solver_16()
 {
   int real_argRes = 0;
   int real_score = 0;
-  int keepB[100][100];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      keepB[i][j] = b[i][j];
-    }
-  }
-  for (int tei = 0; tei < (2); ++tei) {
+  std::array<std::array<int, 100>, 100> keepB = b;
 
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        b[i][j] = keepB[i][j];
-      }
-    }
+  for (int tei = 0; tei < 2; ++tei) {
+    b = keepB;
+
     if (tei % 2 == 1) {
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          if (i == j) { continue; }
-          b[i][j] = 1 - b[i][j];
-        }
-      }
+      reverse_b();
     }
-
 
     std::array<int, 100> f = {};
 
@@ -2763,28 +2761,14 @@ int solver_17()
 {
   int real_argRes = 0;
   int real_score = 0;
-  int keepB[100][100];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      keepB[i][j] = b[i][j];
-    }
-  }
-  for (int tei = 0; tei < (10); ++tei) {
+  std::array<std::array<int, 100>, 100> keepB = b;
 
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        b[i][j] = keepB[i][j];
-      }
-    }
+  for (int tei = 0; tei < 10; ++tei) {
+    b = keepB;
+
     if (tei % 2 == 1) {
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          if (i == j) { continue; }
-          b[i][j] = 1 - b[i][j];
-        }
-      }
+      reverse_b();
     }
-
 
     std::array<int, 100> f = {};
 
@@ -2918,27 +2902,13 @@ int solver_19()
 {
   int real_argRes[2] = {};
   int real_minDiff[2] = { 1000,1000 };
-  int keepB[100][100];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      keepB[i][j] = b[i][j];
-    }
-  }
-
+  std::array<std::array<int, 100>, 100> keepB = b;
 
   for (int wataruoop = 0; wataruoop < (10); ++wataruoop) {
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        b[i][j] = keepB[i][j];
-      }
-    }
+    b = keepB;
+
     if (wataruoop % 2 == 1) {
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          if (i == j) { continue; }
-          b[i][j] = 1 - b[i][j];
-        }
-      }
+      reverse_b();
     }
 
     std::array<int, 100> f = {};
@@ -3012,28 +2982,14 @@ int solver_20()
 {
   int real_argRes = 0;
   int real_score = 0;
-  int keepB[100][100];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      keepB[i][j] = b[i][j];
-    }
-  }
-  for (int tei = 0; tei < (2); ++tei) {
+  std::array<std::array<int, 100>, 100> keepB = b;
 
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        b[i][j] = keepB[i][j];
-      }
-    }
+  for (int tei = 0; tei < 2; ++tei) {
+    b = keepB;
+
     if (tei % 2 == 1) {
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          if (i == j) { continue; }
-          b[i][j] = 1 - b[i][j];
-        }
-      }
+      reverse_b();
     }
-
 
     std::array<int, 100> f = {};
 
@@ -3279,28 +3235,14 @@ int solver_23()
 {
   int real_argRes = 0;
   int real_score = 0;
-  int keepB[100][100];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      keepB[i][j] = b[i][j];
-    }
-  }
-  for (int tei = 0; tei < (2); ++tei) {
+  std::array<std::array<int, 100>, 100> keepB = b;
 
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        b[i][j] = keepB[i][j];
-      }
-    }
+  for (int tei = 0; tei < 2; ++tei) {
+    b = keepB;
+
     if (tei % 2 == 1) {
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          if (i == j) { continue; }
-          b[i][j] = 1 - b[i][j];
-        }
-      }
+      reverse_b();
     }
-
 
     std::array<int, 100> f = {};
 
@@ -3436,28 +3378,14 @@ int solver_24()
 {
   int real_argRes = 0;
   int real_score = 0;
-  int keepB[100][100];
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      keepB[i][j] = b[i][j];
-    }
-  }
-  for (int tei = 0; tei < (2); ++tei) {
+  std::array<std::array<int, 100>, 100> keepB = b;
 
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        b[i][j] = keepB[i][j];
-      }
-    }
+  for (int tei = 0; tei < 2; ++tei) {
+    b = keepB;
+
     if (tei % 2 == 1) {
-      for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-          if (i == j) { continue; }
-          b[i][j] = 1 - b[i][j];
-        }
-      }
+      reverse_b();
     }
-
 
     std::array<int, 100> f = {};
 
@@ -3592,10 +3520,12 @@ const SolverFunction solverFunctions[] = {
 };
 
 // 受信したノイズ付きグラフから元のグラフ番号を推定
+int solver_use_count[25] = { 0 };  // 各Solver関数の使用回数をカウント
 int DecodeGraphIndex(int mode, int turn = 0)
 {
   int res = 0;
   int num = hyperSolverNum % 10 + hyperSolverNum / ARRAY_SIZE * 10;
+  solver_use_count[num]++;  // 使用回数をカウント
 
   // 範囲チェックとSolver関数の呼び出し
   if (num >= 1 && num <= 24) {
@@ -4039,8 +3969,8 @@ void solve(int mode)
 
 int main()
 {
-  for (int i = 0; i < (105); ++i) {
-    for (int j = 0; j < (105); ++j) {
+  for (int i = 0; i < 105; ++i) {
+    for (int j = 0; j < 105; ++j) {
       com[i][j] = 0;
       if (j > i) { continue; }
       for (int k = 0; k < (j); ++k) {
@@ -4075,6 +4005,10 @@ int main()
 
   MODE = 1000;
   solve(MODE);
+
+  for (int i = 0; i < 25; i++) {
+    cout << "solver_use_count[" << i << "] = " << solver_use_count[i] << endl;
+  }
 
   return 0;
 }
