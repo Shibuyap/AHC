@@ -154,28 +154,21 @@ void read_input(int problemNum)
         ifs >> item_value[i][j];
       }
     }
-    for (int i = 0; i < TURN_COUNT; ++i)
-    {
-      for (int j = 0; j < BOARD_SIZE; ++j)
-      {
-        for (int k = 0; k < BOARD_SIZE - 1; ++k)
-        {
+    for (int i = 0; i < TURN_COUNT; ++i) {
+      for (int j = 0; j < BOARD_SIZE; ++j) {
+        for (int k = 0; k < BOARD_SIZE - 1; ++k) {
           string s;
           ifs >> s;
-          for (int l = 0; l < ITEM_KIND; ++l)
-          {
+          for (int l = 0; l < ITEM_KIND; ++l) {
             horizontal_edge_block[i][j][k][l] = s[l] - '0';
           }
         }
       }
-      for (int j = 0; j < BOARD_SIZE - 1; ++j)
-      {
-        for (int k = 0; k < BOARD_SIZE; ++k)
-        {
+      for (int j = 0; j < BOARD_SIZE - 1; ++j) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
           string s;
           ifs >> s;
-          for (int l = 0; l < ITEM_KIND; ++l)
-          {
+          for (int l = 0; l < ITEM_KIND; ++l) {
             vertical_edge_block[i][j][k][l] = s[l] - '0';
           }
         }
@@ -183,14 +176,11 @@ void read_input(int problemNum)
     }
   }
 
-  for (int j = 0; j < ITEM_KIND; ++j)
-  {
+  for (int j = 0; j < ITEM_KIND; ++j) {
     item_value_max[j] = 0;
   }
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       item_value_max[j] = max(item_value_max[j], item_value[i][j]);
     }
   }
@@ -202,8 +192,7 @@ void open_output_file(int probNum, ofstream& ofs)
   if (exec_mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
     }
@@ -218,17 +207,14 @@ void open_output_file(int probNum, ofstream& ofs)
 ll calc_final_score()
 {
   ll totalMaxValue = 0;
-  for (int j = 0; j < ITEM_KIND; ++j)
-  {
+  for (int j = 0; j < ITEM_KIND; ++j) {
     totalMaxValue += item_value_max[j];
   }
 
   int maxSum = 0;
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
     int tmp = 0;
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       tmp += item_value[i][j];
     }
     maxSum = max(maxSum, tmp);
@@ -275,39 +261,30 @@ void apply_feedback(int turn)
 void precompute_values()
 {
   vector<P> v[ITEM_KIND];
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       v[j].push_back(P(item_value[i][j], i));
     }
   }
-  for (int i = 0; i < ITEM_KIND; ++i)
-  {
+  for (int i = 0; i < ITEM_KIND; ++i) {
     sort(v[i].begin(), v[i].end(), greater<P>());
   }
   int val[EDGE_COUNT][ITEM_KIND];
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       val[v[j][i].second][j] = i;
     }
   }
 
   int ma[ITEM_KIND] = {};
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       ma[j] = max(ma[j], item_value[i][j]);
     }
   }
 
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       item_value_pow3[i][j] = item_value[i][j];
       item_value[i][j] = item_value[i][j] * item_value[i][j] * item_value[i][j];
     }
@@ -317,18 +294,15 @@ void precompute_values()
 void sort_by_total_value()
 {
   vector<P> vp;
-  for (int i = 0; i < EDGE_COUNT; ++i)
-  {
+  for (int i = 0; i < EDGE_COUNT; ++i) {
     int sum = 0;
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       sum += item_value[i][j];
     }
     vp.push_back(P(sum, i));
   }
   sort(vp.begin(), vp.end(), greater<P>());
-  for (int i = 0; i < vp.size(); ++i)
-  {
+  for (int i = 0; i < vp.size(); ++i) {
     sorted_order[i] = vp[i].second;
   }
 }
@@ -347,10 +321,8 @@ void init_spiral_order()
 {
   spiral_cells.clear();
   vector<pair<int, P>> vp;
-  for (int i = 0; i < 6; ++i)
-  {
-    for (int j = 0; j < 6; ++j)
-    {
+  for (int i = 0; i < 6; ++i) {
+    for (int j = 0; j < 6; ++j) {
       vp.push_back(make_pair(SPIRAL_RANK[i][j], P(i, j)));
     }
   }
@@ -364,16 +336,14 @@ ll local_neighbor_score(int x, int y)
 {
   ll score = 0;
   int id = placement[x][y];
-  for (int i = 0; i < 4; ++i)
-  {
+  for (int i = 0; i < 4; ++i) {
     int nx = x + DX[i];
     int ny = y + DY[i];
     if (is_out_of_bounds(nx, ny, BOARD_SIZE)) {
       continue;
     }
     int nd = placement[nx][ny];
-    for (int j = 0; j < ITEM_KIND; ++j)
-    {
+    for (int j = 0; j < ITEM_KIND; ++j) {
       score += 10 * item_value[id][j] + 2 * abs(item_value[id][j] - item_value[nd][j]);
     }
   }
@@ -382,16 +352,14 @@ ll local_neighbor_score(int x, int y)
 
 void anneal_spiral_placement()
 {
-  for (int i = 0; i < 36; ++i)
-  {
+  for (int i = 0; i < 36; ++i) {
     int x = spiral_cells[i].first;
     int y = spiral_cells[i].second;
     placement[x][y] = sorted_order[i];
   }
 
   const int LOOP_COUNT = 500000;
-  for (int _ = 0; _ < LOOP_COUNT; ++_)
-  {
+  for (int _ = 0; _ < LOOP_COUNT; ++_) {
     int x1 = rand_xorshift() % 6;
     int y1 = rand_xorshift() % 6;
     int x2 = rand_xorshift() % 6;
@@ -500,8 +468,7 @@ int main()
   }
   else if (exec_mode == 1) {
     ll sum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       ll score = solve_case(i);
       sum += score;
       cout << "num = " << i << ", ";

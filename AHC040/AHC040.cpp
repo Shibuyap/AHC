@@ -310,10 +310,8 @@ public:
   vector<RectanglePiece> CreateQuery() const
   {
     vector<RectanglePiece> pieces;
-    for (int i = 0; i < sz; ++i)
-    {
-      for (int j = 0; j < shelves[i].sz; ++j)
-      {
+    for (int i = 0; i < sz; ++i) {
+      for (int j = 0; j < shelves[i].sz; ++j) {
         if (shelves[i].blocks[j].count() >= 1) {
           pieces.push_back(shelves[i].blocks[j].piece1);
         }
@@ -351,8 +349,7 @@ void LoadInputData(int problemNum)
 {
   if (executionMode == 0) {
     cin >> n >> t >> sigma;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       cin >> w[i] >> h[i];
     }
   }
@@ -361,22 +358,18 @@ void LoadInputData(int problemNum)
     oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
     ifstream ifs(oss.str());
     ifs >> n >> t >> sigma;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       ifs >> w[i] >> h[i];
     }
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       ifs >> W[i] >> H[i];
     }
-    for (int i = 0; i < t; ++i)
-    {
+    for (int i = 0; i < t; ++i) {
       ifs >> dW[i] >> dH[i];
     }
   }
 
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     w[i] = max(MIN_WIDTH, w[i]);
     w[i] = min(MAX_WIDTH, w[i]);
     h[i] = max(MIN_HEIGHT, h[i]);
@@ -384,13 +377,11 @@ void LoadInputData(int problemNum)
   }
 
   if (executionMode == 4) {
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       w[i] = W[i];
       h[i] = H[i];
     }
-    for (int i = 0; i < t; ++i)
-    {
+    for (int i = 0; i < t; ++i) {
       dW[i] = 0;
       dH[i] = 0;
     }
@@ -410,8 +401,7 @@ ScoreStruct FindBestQueryScore()
 {
   ScoreStruct score;
   score.score = INF;
-  for (int i = 0; i < queryCounter; ++i)
-  {
+  for (int i = 0; i < queryCounter; ++i) {
     if (tScores[i].score < score.score) {
       score = tScores[i];
     }
@@ -426,8 +416,7 @@ int cs_max_down[MAX_N], cs_max_right[MAX_N];
 ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
 {
   int sz = (int)pieces.size();
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     cs_use[i] = 0;
     cs_up[i] = -1;
     cs_down[i] = -1;
@@ -438,8 +427,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
   }
 
   RectanglePiece currentRectPiece;
-  for (int i = 0; i < sz; ++i)
-  {
+  for (int i = 0; i < sz; ++i) {
     currentRectPiece = pieces[i];
     int num = currentRectPiece.num;
     int currentWidth = w[num];
@@ -457,8 +445,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
       cs_right[num] = cs_left[num] + currentWidth;
 
       cs_up[num] = 0;
-      for (int j = num - 1; j >= 0; --j)
-      {
+      for (int j = num - 1; j >= 0; --j) {
         if (cs_use[j]) {
           if (isCrossing(cs_left[num], cs_right[num], cs_left[j], cs_right[j])) {
             cs_up[num] = max(cs_up[num], cs_down[j]);
@@ -476,8 +463,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
       cs_down[num] = cs_up[num] + currentHeight;
 
       cs_left[num] = 0;
-      for (int j = num - 1; j >= 0; --j)
-      {
+      for (int j = num - 1; j >= 0; --j) {
         if (cs_use[j]) {
           if (isCrossing(cs_up[num], cs_down[num], cs_up[j], cs_down[j])) {
             cs_left[num] = max(cs_left[num], cs_right[j]);
@@ -492,8 +478,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
     cs_max_right[num] = cs_right[num];
     if (i > 0) {
       int previousNum = pieces[i - 1].num;
-      for (int j = previousNum + 1; j < num + 1; ++j)
-      {
+      for (int j = previousNum + 1; j < num + 1; ++j) {
         cs_max_down[j] = max(cs_max_down[j], cs_max_down[previousNum]);
         cs_max_right[j] = max(cs_max_right[j], cs_max_right[previousNum]);
       }
@@ -503,8 +488,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
   }
 
   int maxDown = 0, maxRight = 0;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     if (cs_use[i]) {
       maxDown = max(maxDown, cs_down[i]);
       maxRight = max(maxRight, cs_right[i]);
@@ -515,8 +499,7 @@ ScoreStruct EvaluateScore(const vector<RectanglePiece>& pieces, bool cheat)
   scoreResult.ww = maxRight;
   scoreResult.hh = maxDown;
   scoreResult.score = maxDown + maxRight;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     if (cs_use[i] == 0) {
       scoreResult.score += w[i] + h[i];
     }
@@ -531,8 +514,7 @@ ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream
 
   if (executionMode == 0) {
     cout << pieces.size() << endl;
-    for (int i = 0; i < pieces.size(); ++i)
-    {
+    for (int i = 0; i < pieces.size(); ++i) {
       cout << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
     fflush(stdout);
@@ -543,14 +525,12 @@ ScoreStruct PrintFinalArrangement(const vector<RectanglePiece>& pieces, ofstream
   }
   else {
     ofs << "# " << pieces.size() << endl;
-    for (int i = 0; i < pieces.size(); ++i)
-    {
+    for (int i = 0; i < pieces.size(); ++i) {
       ofs << "# " << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
 
     ofs << pieces.size() << endl;
-    for (int i = 0; i < pieces.size(); ++i)
-    {
+    for (int i = 0; i < pieces.size(); ++i) {
       ofs << pieces[i].num << ' ' << pieces[i].rot << ' ' << (pieces[i].dir == 0 ? 'U' : 'L') << ' ' << pieces[i].base << endl;
     }
 
@@ -570,8 +550,7 @@ vector<RectanglePiece> basePieces;
 void SetupBasePieces()
 {
   basePieces.resize(n);
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     basePieces[i].num = i;
     basePieces[i].rot = 0;
     if (w[i] > h[i]) basePieces[i].rot = 1;
@@ -585,13 +564,11 @@ int pieceLargestDimension[MAX_N];
 void SetupPieceSizeOrder()
 {
   vector<P> pieceDimensionIndexPairs;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     pieceDimensionIndexPairs.emplace_back(max(w[i], h[i]), i);
   }
   sort(pieceDimensionIndexPairs.begin(), pieceDimensionIndexPairs.end());
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     pieceSizeOrder[pieceDimensionIndexPairs[i].second] = i;
     pieceLargestDimension[pieceDimensionIndexPairs[i].second] = pieceDimensionIndexPairs[i].first;
   }
@@ -615,8 +592,7 @@ void BuildInitialMethod2LayoutsPhase1()
 
   int widthLimit = Rand() % 1000000 + 200000;
 
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     currentStackUnit.piece1 = basePieces[i];
     if (currentShelf.GetSumWidth() + currentStackUnit.piece1.width() <= widthLimit) {
       currentShelf.add(currentStackUnit);
@@ -672,8 +648,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
   int rankThreshold = Rand() % 10 + 5;
   int lyingConditionThreshold = Rand() % 100;
 
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     if (candidateLayoutCount == bestsLimit && currentLayout.score() + currentShelf.maxHeight >= candidateLayouts[candidateLayoutCount - 1].score()) {
       terminateFlag = 1;
       break;
@@ -716,8 +691,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
       {
         int isAdd = 0;
         if (currentShelf.sz >= 2) {
-          for (int j = 0; j < currentShelf.sz - 1; ++j)
-          {
+          for (int j = 0; j < currentShelf.sz - 1; ++j) {
             if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
               isPlacementAllowed = 1;
               if (Rand() % 2 == 0) {
@@ -752,8 +726,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
         int isAdd = 0;
         if (currentLayout.sz >= 1) {
           int accumulatedWidth = 0;
-          for (int j = 0; j < currentLayout.shelves[currentLayout.sz - 1].sz - 1; ++j)
-          {
+          for (int j = 0; j < currentLayout.shelves[currentLayout.sz - 1].sz - 1; ++j) {
             if (accumulatedWidth < currentShelf.sumWidth) {
               accumulatedWidth += currentLayout.shelves[currentLayout.sz - 1].blocks[j].width();
               continue;
@@ -779,8 +752,7 @@ void UpdateMethod2LayoutsPhase(double progressRatio)
 
         if (currentShelf.sz >= 2) {
           isAdd = 0;
-          for (int j = 0; j < currentShelf.sz - 1; ++j)
-          {
+          for (int j = 0; j < currentShelf.sz - 1; ++j) {
             if (currentShelf.blocks[j].count() == 1 && currentShelf.blocks[j].height() + piece.height() < MAX_HEIGHT * heightRatioLimit && piece.width() < currentShelf.blocks[j].width()) {
               isPlacementAllowed = 1;
               if (Rand() % 2 == 0) {
@@ -913,10 +885,8 @@ int c_count[MAX_N + 10];
 bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
 {
 
-  for (int i = 0; i < layout.sz; ++i)
-  {
-    for (int j = 0; j < layout.shelves[i].sz; ++j)
-    {
+  for (int i = 0; i < layout.sz; ++i) {
+    for (int j = 0; j < layout.shelves[i].sz; ++j) {
       if (layout.shelves[i].blocks[j].count() == 1) {
         int num = layout.shelves[i].blocks[j].piece1.num;
         c_i[num] = i;
@@ -942,14 +912,12 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
     }
   }
 
-  for (int i = 0; i < layout.sz + 2; ++i)
-  {
+  for (int i = 0; i < layout.sz + 2; ++i) {
     c_sum[i] = 0;
     c_count[i] = 0;
   }
 
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     int ii = c_i[i];
     int jj = c_j[i];
     int kk = c_k[i];
@@ -995,12 +963,10 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
 
   maxWidth = 0;
   sumHeight = 0;
-  for (int i = 0; i < layout.sz; ++i)
-  {
+  for (int i = 0; i < layout.sz; ++i) {
     maxWidth = max(maxWidth, c_sum[i]);
     int maxHeight = 0;
-    for (int j = 0; j < layout.shelves[i].sz; ++j)
-    {
+    for (int j = 0; j < layout.shelves[i].sz; ++j) {
       maxHeight = max(maxHeight, layout.shelves[i].blocks[j].height());
     }
     sumHeight += maxHeight;
@@ -1011,11 +977,9 @@ bool CheckLayout(const Layout& layout, int& maxWidth, int& sumHeight)
 
 bool SortLayout(Layout& layout)
 {
-  for (int i = 0; i < layout.sz; ++i)
-  {
+  for (int i = 0; i < layout.sz; ++i) {
     sort(layout.shelves[i].blocks, layout.shelves[i].blocks + layout.shelves[i].sz);
-    for (int j = 0; j < layout.shelves[i].sz; ++j)
-    {
+    for (int j = 0; j < layout.shelves[i].sz; ++j) {
       if (j == 0) {
         layout.shelves[i].blocks[j].SetBase(-1);
       }
@@ -1038,8 +1002,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
   BuildInitialMethod2Layouts();
 
   vector<Layout> layouts;
-  for (int i = 0; i < candidateLayoutCount; ++i)
-  {
+  for (int i = 0; i < candidateLayoutCount; ++i) {
     layouts.push_back(candidateLayouts[i]);
   }
 
@@ -1092,10 +1055,8 @@ void RefineAndPrintSolutions(ofstream& ofs)
       int sz = 0;
       int ng = 1;
       if (mode == 0) {
-        for (int i = 0; i < keep.sz; ++i)
-        {
-          for (int j = 0; j < keep.shelves[i].sz; ++j)
-          {
+        for (int i = 0; i < keep.sz; ++i) {
+          for (int j = 0; j < keep.shelves[i].sz; ++j) {
             int num = keep.shelves[i].blocks[j].piece1.num;
             if (num == num1) {
               if (i == 0) {
@@ -1120,10 +1081,8 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
       else if (mode == 1) {
-        for (int i = 0; i < keep.sz; ++i)
-        {
-          for (int j = 0; j < keep.shelves[i].sz; ++j)
-          {
+        for (int i = 0; i < keep.sz; ++i) {
+          for (int j = 0; j < keep.shelves[i].sz; ++j) {
             int num = keep.shelves[i].blocks[j].piece1.num;
             if (sz <= i) {
               tmp.shelves[i].clear();
@@ -1144,10 +1103,8 @@ void RefineAndPrintSolutions(ofstream& ofs)
         }
       }
       else if (mode == 2) {
-        for (int i = 0; i < keep.sz; ++i)
-        {
-          for (int j = 0; j < keep.shelves[i].sz; ++j)
-          {
+        for (int i = 0; i < keep.sz; ++i) {
+          for (int j = 0; j < keep.shelves[i].sz; ++j) {
             if (sz <= i) {
               tmp.shelves[i].clear();
             }
@@ -1165,10 +1122,8 @@ void RefineAndPrintSolutions(ofstream& ofs)
       else if (mode == 3) {
         int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1;
 
-        for (int i = 0; i < keep.sz; ++i)
-        {
-          for (int j = 0; j < keep.shelves[i].sz; ++j)
-          {
+        for (int i = 0; i < keep.sz; ++i) {
+          for (int j = 0; j < keep.shelves[i].sz; ++j) {
             if (sz <= i) {
               tmp.shelves[i].clear();
             }
@@ -1224,15 +1179,13 @@ void RefineAndPrintSolutions(ofstream& ofs)
 
 
   vector<Ans> solutionCandidates;
-  for (int i = 0; i < candidateLayoutCount; ++i)
-  {
+  for (int i = 0; i < candidateLayoutCount; ++i) {
     Ans ans;
     ans.pieces = candidateLayouts[i].CreateQuery();
     ans.score = EvaluateScore(ans.pieces, false).score;
     solutionCandidates.push_back(ans);
   }
-  for (int i = 0; i < layouts.size(); ++i)
-  {
+  for (int i = 0; i < layouts.size(); ++i) {
     Ans ans;
     ans.pieces = layouts[i].CreateQuery();
     ans.score = EvaluateScore(ans.pieces, false).score;
@@ -1297,8 +1250,7 @@ void RefineAndPrintSolutions(ofstream& ofs)
       int base2_1 = randomCandidateIndex;
       int base2_21 = -2;
       int base2_22 = -2;
-      for (int i = randomCandidateIndex + 1; i < randomPieceIndex2; ++i)
-      {
+      for (int i = randomCandidateIndex + 1; i < randomPieceIndex2; ++i) {
         if (solutionCandidates[randomCandidateIndex].pieces[i].base == base2_1) {
           if (base2_21 == -2) {
             base2_21 = i;
@@ -1457,11 +1409,9 @@ int main()
     ExecuteSolution(0);
   }
   else if (executionMode == 3) {
-    for (int _ = 0; _ < 10; ++_)
-    {
+    for (int _ = 0; _ < 10; ++_) {
       ll totalScoreSum = 0;
-      for (int i = 0; i < 100; ++i)
-      {
+      for (int i = 0; i < 100; ++i) {
         ll score = ExecuteSolution(i);
         totalScoreSum += score;
       }
@@ -1470,8 +1420,7 @@ int main()
   }
   else {
     ll totalScoreSum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       ll score = ExecuteSolution(i);
       totalScoreSum += score;
       if (executionMode == 1) {

@@ -141,8 +141,7 @@ void CopyToBest()
   best_ansCount = ansCount;
   best_fallCount = fallCount;
   best_crystalCount = crystalCount;
-  for (int i = 0; i < ansCount; ++i)
-  {
+  for (int i = 0; i < ansCount; ++i) {
     best_ans[i][0] = ans[i][0];
     best_ans[i][1] = ans[i][1];
   }
@@ -155,8 +154,7 @@ void CopyToAns()
   ansCount = best_ansCount;
   fallCount = best_fallCount;
   crystalCount = best_crystalCount;
-  for (int i = 0; i < ansCount; ++i)
-  {
+  for (int i = 0; i < ansCount; ++i) {
     ans[i][0] = best_ans[i][0];
     ans[i][1] = best_ans[i][1];
   }
@@ -173,10 +171,8 @@ bool IsNG(int x, int y)
 void SetUp()
 {
   ansScore = 0;
-  for (int i = 0; i < n + 2; ++i)
-  {
-    for (int j = 0; j < n + 2; ++j)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       a[i][j] = -2;
       a2[i][j] = -1;
     }
@@ -206,12 +202,10 @@ void Input(int problemNum)
     // 標準入力
     int nn;
     cin >> nn >> m;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       string s;
       cin >> s;
-      for (int j = 0; j < n; ++j)
-      {
+      for (int j = 0; j < n; ++j) {
         a[i + 1][j + 1] = -1;
         if (s[j] == '@') {
           a[i + 1][j + 1] = 0;
@@ -241,12 +235,10 @@ void Input(int problemNum)
     // ファイル入力
     int nn;
     ifs >> nn >> m;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       string s;
       ifs >> s;
-      for (int j = 0; j < n; ++j)
-      {
+      for (int j = 0; j < n; ++j) {
         a[i + 1][j + 1] = -1;
         if (s[j] == '@') {
           a[i + 1][j + 1] = 0;
@@ -273,10 +265,8 @@ void Input(int problemNum)
     }
   }
 
-  for (int i = 0; i < n + 2; ++i)
-  {
-    for (int j = 0; j < n + 2; ++j)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       if (1 <= a[i][j] && a[i][j] <= 3) {
         posX.push_back(i);
         posY.push_back(j);
@@ -286,10 +276,8 @@ void Input(int problemNum)
   }
 
 
-  for (int i = 0; i < n + 2; ++i)
-  {
-    for (int j = 0; j < n + 2; ++j)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       init_a[i][j] = a[i][j];
       init_a2[i][j] = a2[i][j];
     }
@@ -297,10 +285,8 @@ void Input(int problemNum)
   init_posX = posX;
   init_posY = posY;
 
-  for (int i = 0; i < n + 2; ++i)
-  {
-    for (int j = 0; j < n + 2; ++j)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       if (a[i][j] >= 11) {
         holeX[a[i][j] - 10] = i;
         holeY[a[i][j] - 10] = j;
@@ -311,10 +297,8 @@ void Input(int problemNum)
 
 void InitA()
 {
-  for (int i = 0; i < n + 2; ++i)
-  {
-    for (int j = 0; j < n + 2; ++j)
-    {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       a[i][j] = init_a[i][j];
       a2[i][j] = init_a2[i][j];
     }
@@ -351,16 +335,14 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
-    for (int i = 0; i < ansCount; ++i)
-    {
+    for (int i = 0; i < ansCount; ++i) {
       cout << ans[i][0] << ' ' << dc[ans[i][1]] << endl;
     }
   }
   else {
     // ファイル出力
     ofs << ansCount << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
+    for (int i = 0; i < ansCount; ++i) {
       ofs << ans[i][0] << ' ' << dc[ans[i][1]] << endl;
     }
   }
@@ -493,8 +475,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     tx = hx;
     ty = nowY;
     if (nowX < hx) {
-      for (int i = nowX + 1; i < hx + 1; ++i)
-      {
+      for (int i = nowX + 1; i < hx + 1; ++i) {
         if (a[i][nowY] != -1) {
           saitan = 0;
           break;
@@ -503,8 +484,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
       }
     }
     else {
-      for (int i = hx; i < nowX; ++i)
-      {
+      for (int i = hx; i < nowX; ++i) {
         if (a[i][nowY] != -1) {
           saitan = 0;
           break;
@@ -517,8 +497,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     tx = nowX;
     ty = hy;
     if (nowY < hy) {
-      for (int i = nowY + 1; i < hy + 1; ++i)
-      {
+      for (int i = nowY + 1; i < hy + 1; ++i) {
         if (a[nowX][i] != -1) {
           saitan = 0;
           break;
@@ -527,8 +506,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
       }
     }
     else {
-      for (int i = hy; i < nowY; ++i)
-      {
+      for (int i = hy; i < nowY; ++i) {
         if (a[nowX][i] != -1) {
           saitan = 0;
           break;
@@ -562,8 +540,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
         break;
       }
 
-      for (int j = 0; j < 4; ++j)
-      {
+      for (int j = 0; j < 4; ++j) {
         int nx = x + dx[j];
         int ny = y + dy[j];
         if (a[nx][ny] != -1)continue;
@@ -592,8 +569,7 @@ void Method1_3_Fall(int hx, int hy, int& nowX, int& nowY, int sx, int sy, int id
     xx = nx;
     yy = ny;
   }
-  for (int j = sousaCount - 1; j >= 0; --j)
-  {
+  for (int j = sousaCount - 1; j >= 0; --j) {
     ans[ansCount][0] = 2;
     ans[ansCount][1] = sousa[j];
     ansCount++;
@@ -674,21 +650,18 @@ void Method1_3()
 
   int isAllConnected = false;
 
-  for (int i = 0; i < order.size(); ++i)
-  {
+  for (int i = 0; i < order.size(); ++i) {
     // 十字に落とせる岩があれば落とす
     while (true) {
       int tx = -1;
       int ty = -1;
       int dir = -1;
       int isCrystal = 0;
-      for (int j = 0; j < m; ++j)
-      {
+      for (int j = 0; j < m; ++j) {
         int hx = holeX[j + 1];
         int hy = holeY[j + 1];
         if (dir == -1) {
-          for (int k = hx - 1; k >= 1; --k)
-          {
+          for (int k = hx - 1; k >= 1; --k) {
             if (a[k][hy] == 0) {
               tx = k;
               ty = hy;
@@ -708,8 +681,7 @@ void Method1_3()
           }
         }
         if (dir == -1) {
-          for (int k = hx + 1; k < n + 1; ++k)
-          {
+          for (int k = hx + 1; k < n + 1; ++k) {
             if (a[k][hy] == 0) {
               tx = k;
               ty = hy;
@@ -729,8 +701,7 @@ void Method1_3()
           }
         }
         if (dir == -1) {
-          for (int k = hy - 1; k >= 1; --k)
-          {
+          for (int k = hy - 1; k >= 1; --k) {
             if (a[hx][k] == 0) {
               tx = hx;
               ty = k;
@@ -750,8 +721,7 @@ void Method1_3()
           }
         }
         if (dir == -1) {
-          for (int k = hy + 1; k < n + 1; ++k)
-          {
+          for (int k = hy + 1; k < n + 1; ++k) {
             if (a[hx][k] == 0) {
               tx = hx;
               ty = k;
@@ -830,8 +800,7 @@ void Method1_3()
             int x = FrontX();
             int y = FrontY();
             Pop();
-            for (int j = 0; j < 4; ++j)
-            {
+            for (int j = 0; j < 4; ++j) {
               int nx = x + dx[j];
               int ny = y + dy[j];
               if (a[nx][ny] == -2 || a[nx][ny] == 0)continue;
@@ -854,8 +823,7 @@ void Method1_3()
         int idx = -1;
         int maxCount = 0;
         // 行
-        for (int k = 1; k < n + 1; ++k)
-        {
+        for (int k = 1; k < n + 1; ++k) {
           int tmpCount = 0;
           int rockCount = 0;
           bfsCount++;
@@ -866,8 +834,7 @@ void Method1_3()
             int x = FrontX();
             int y = FrontY();
             Pop();
-            for (int j = 0; j < 4; ++j)
-            {
+            for (int j = 0; j < 4; ++j) {
               int nx = x + dx[j];
               int ny = y + dy[j];
               if (a[nx][ny] == -2)continue;
@@ -888,8 +855,7 @@ void Method1_3()
           }
         }
         // 列
-        for (int k = 1; k < n + 1; ++k)
-        {
+        for (int k = 1; k < n + 1; ++k) {
           int tmpCount = 0;
           int rockCount = 0;
           bfsCount++;
@@ -900,8 +866,7 @@ void Method1_3()
             int x = FrontX();
             int y = FrontY();
             Pop();
-            for (int j = 0; j < 4; ++j)
-            {
+            for (int j = 0; j < 4; ++j) {
               int nx = x + dx[j];
               int ny = y + dy[j];
               if (a[nx][ny] == -2)continue;
@@ -931,14 +896,11 @@ void Method1_3()
 
         // その行・列を全部落とす
         if (dir == 0) {
-          for (int k = hy - 1; k >= 1; --k)
-          {
+          for (int k = hy - 1; k >= 1; --k) {
             int huyou = 1;
             if (k == 1)huyou = 0;
-            for (int l = k - 1; l >= 1; --l)
-            {
-              for (int z = 0; z < 4; ++z)
-              {
+            for (int l = k - 1; l >= 1; --l) {
+              for (int z = 0; z < 4; ++z) {
                 int nx = idx + dx[z];
                 int ny = l + dy[z];
                 if (a[nx][ny] != 0 && a[nx][ny] != -2) {
@@ -957,14 +919,11 @@ void Method1_3()
               Method1_3_Fall(hx, hy, nowX, nowY, idx, k, a2[idx][k], 5);
             }
           }
-          for (int k = hy + 1; k < n + 1; ++k)
-          {
+          for (int k = hy + 1; k < n + 1; ++k) {
             int huyou = 1;
             if (k == n)huyou = 0;
-            for (int l = k + 1; l < n + 1; ++l)
-            {
-              for (int z = 0; z < 4; ++z)
-              {
+            for (int l = k + 1; l < n + 1; ++l) {
+              for (int z = 0; z < 4; ++z) {
                 int nx = idx + dx[z];
                 int ny = l + dy[z];
                 if (a[nx][ny] != 0 && a[nx][ny] != -2) {
@@ -985,14 +944,11 @@ void Method1_3()
           }
         }
         else {
-          for (int k = hx - 1; k >= 1; --k)
-          {
+          for (int k = hx - 1; k >= 1; --k) {
             int huyou = 1;
             if (k == 1)huyou = 0;
-            for (int l = k - 1; l >= 1; --l)
-            {
-              for (int z = 0; z < 4; ++z)
-              {
+            for (int l = k - 1; l >= 1; --l) {
+              for (int z = 0; z < 4; ++z) {
                 int nx = l + dx[z];
                 int ny = idx + dy[z];
                 if (a[nx][ny] != 0 && a[nx][ny] != -2) {
@@ -1011,14 +967,11 @@ void Method1_3()
               Method1_3_Fall(hx, hy, nowX, nowY, k, idx, a2[k][idx], 5);
             }
           }
-          for (int k = hx + 1; k < n + 1; ++k)
-          {
+          for (int k = hx + 1; k < n + 1; ++k) {
             int huyou = 1;
             if (k == n)huyou = 0;
-            for (int l = k + 1; l < n + 1; ++l)
-            {
-              for (int z = 0; z < 4; ++z)
-              {
+            for (int l = k + 1; l < n + 1; ++l) {
+              for (int z = 0; z < 4; ++z) {
                 int nx = l + dx[z];
                 int ny = idx + dy[z];
                 if (a[nx][ny] != 0 && a[nx][ny] != -2) {
@@ -1102,8 +1055,7 @@ void Method1(Hypers hypers)
     }
     else if (raMode < 100) {
       int eCount = 0;
-      for (int i = 0; i < order.size(); ++i)
-      {
+      for (int i = 0; i < order.size(); ++i) {
         if (order[i].second < 4) {
           ErasePos[eCount] = i;
           eCount++;
@@ -1148,8 +1100,7 @@ void Method1(Hypers hypers)
 
   if (mode != 0 && mode != 3) {
     cout << loop << endl;
-    for (int i = 0; i < order.size(); ++i)
-    {
+    for (int i = 0; i < order.size(); ++i) {
       if (order[i].second < 4) {
         cout << order[i].first << ':' << order[i].second << endl;
       }
@@ -1205,8 +1156,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    for (int i = 0; i < 15; ++i)
-    {
+    for (int i = 0; i < 15; ++i) {
       ll score = Solve(i, HYPERS);
       sum += score;
       if (mode == 1) {
@@ -1234,8 +1184,7 @@ int main()
       hypers.Partition = Rand() % 101;
 
       ll sum = 0;
-      for (int i = 8; i < 15; ++i)
-      {
+      for (int i = 8; i < 15; ++i) {
         ll score = Solve(i, hypers);
         sum += score;
 

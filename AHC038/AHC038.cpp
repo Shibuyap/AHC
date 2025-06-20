@@ -160,18 +160,15 @@ double centerY;
 void CopyToBest()
 {
   best_V = V;
-  for (int i = 0; i < V; ++i)
-  {
+  for (int i = 0; i < V; ++i) {
     best_pa[i] = pa[i];
     best_le[i] = le[i];
   }
 
   best_total_ansCount = ansCount;
-  for (int i = 0; i < ansCount; ++i)
-  {
+  for (int i = 0; i < ansCount; ++i) {
     best_dir[i] = dir[i];
-    for (int j = 0; j < V; ++j)
-    {
+    for (int j = 0; j < V; ++j) {
       best_rot[i][j] = rot[i][j];
       best_tip[i][j] = tip[i][j];
     }
@@ -189,17 +186,14 @@ void CopyToBest()
 void CopyFromBest()
 {
   V = best_V;
-  for (int i = 0; i < V; ++i)
-  {
+  for (int i = 0; i < V; ++i) {
     pa[i] = best_pa[i];
     le[i] = best_le[i];
   }
   ansCount = best_total_ansCount;
-  for (int i = 0; i < ansCount; ++i)
-  {
+  for (int i = 0; i < ansCount; ++i) {
     dir[i] = best_dir[i];
-    for (int j = 0; j < V; ++j)
-    {
+    for (int j = 0; j < V; ++j) {
       rot[i][j] = best_rot[i][j];
       tip[i][j] = best_tip[i][j];
     }
@@ -231,8 +225,7 @@ void SetUp()
 {
   V = 0;
   ansCount = 0;
-  for (int i = 0; i < 100; ++i)
-  {
+  for (int i = 0; i < 100; ++i) {
     PCount[i].clear();
     best_PCount[i].clear();
     best_ansCount[i] = 999;
@@ -249,21 +242,17 @@ void Input(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> n >> m >> v;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       string s;
       cin >> s;
-      for (int j = 0; j < n; ++j)
-      {
+      for (int j = 0; j < n; ++j) {
         init_a[i][j] = s[j] - '0';
       }
     }
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       string t;
       cin >> t;
-      for (int j = 0; j < n; ++j)
-      {
+      for (int j = 0; j < n; ++j) {
         init_b[i][j] = t[j] - '0';
       }
     }
@@ -271,21 +260,17 @@ void Input(int problemNum)
   else {
     // ファイル入力する
     ifs >> n >> m >> v;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       string s;
       ifs >> s;
-      for (int j = 0; j < n; ++j)
-      {
+      for (int j = 0; j < n; ++j) {
         init_a[i][j] = s[j] - '0';
       }
     }
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       string t;
       ifs >> t;
-      for (int j = 0; j < n; ++j)
-      {
+      for (int j = 0; j < n; ++j) {
         init_b[i][j] = t[j] - '0';
       }
     }
@@ -318,10 +303,8 @@ bool IsValidAnswer()
   vector<vector<int>> a, b;
   a.resize(n, vector<int>(n));
   b.resize(n, vector<int>(n));
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       a[i][j] = init_a[i][j];
       b[i][j] = init_b[i][j];
     }
@@ -332,8 +315,7 @@ bool IsValidAnswer()
   int x = sx;
   int y = sy;
 
-  for (int t = 0; t < ansCount; ++t)
-  {
+  for (int t = 0; t < ansCount; ++t) {
     x = x + dx[dir[t]];
     y = y + dy[dir[t]];
     if (IsNG(x, y)) {
@@ -341,13 +323,11 @@ bool IsValidAnswer()
       return false;
     }
 
-    for (int i = 1; i < V; ++i)
-    {
+    for (int i = 1; i < V; ++i) {
       nowRot[i] = (nowRot[i] + rot[t][i]) % 4;
     }
 
-    for (int i = 0; i < V; ++i)
-    {
+    for (int i = 0; i < V; ++i) {
       if (tip[t][i] == 1) {
         // ここでアーム位置を計算
       }
@@ -361,13 +341,11 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     cout << V << endl;
-    for (int i = 1; i < V; ++i)
-    {
+    for (int i = 1; i < V; ++i) {
       cout << pa[i] << ' ' << le[i] << endl;
     }
     cout << sx << ' ' << sy << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
+    for (int i = 0; i < ansCount; ++i) {
       cout << dirChar[dir[i]];
       for (int j = 1; j < v; ++j)cout << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
       for (int j = 0; j < V; ++j)cout << tipChar[tip[i][j]];
@@ -376,13 +354,11 @@ void Output(ofstream& ofs)
   }
   else {
     ofs << V << endl;
-    for (int i = 1; i < V; ++i)
-    {
+    for (int i = 1; i < V; ++i) {
       ofs << pa[i] << ' ' << le[i] << endl;
     }
     ofs << sx << ' ' << sy << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
+    for (int i = 0; i < ansCount; ++i) {
       ofs << dirChar[dir[i]];
       for (int j = 1; j < v; ++j)ofs << rotChar[rot[i][j] + 1]; // rotは-1〜1のため帳尻合わせ
       for (int j = 0; j < V; ++j)ofs << tipChar[tip[i][j]];
@@ -398,17 +374,14 @@ void CopyAB(vector<vector<int>>& a, vector<vector<int>>& b, int& mCount)
   centerY = 0;
   a.resize(n, vector<int>(n));
   b.resize(n, vector<int>(n));
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     aRow[i] = 0;
     aColumn[i] = 0;
     bRow[i] = 0;
     bColumn[i] = 0;
   }
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       a[i][j] = init_a[i][j];
       b[i][j] = init_b[i][j];
       if (a[i][j] == 1 && b[i][j] == 1) {
@@ -461,8 +434,7 @@ public:
 
   void Initialize(const vector<int>& nowRot, const vector<int>& nowTip)
   {
-    for (int i = 0; i < m_V; ++i)
-    {
+    for (int i = 0; i < m_V; ++i) {
       Rot[i] = 0;
       Tip[i] = 0;
       NowRot[i] = nowRot[i];
@@ -472,8 +444,7 @@ public:
 
   void Reflect(vector<int>& nowRot, vector<int>& nowTip, const int _t) const
   {
-    for (int i = 0; i < V; ++i)
-    {
+    for (int i = 0; i < V; ++i) {
       rot[_t][i] = Rot[i];
       tip[_t][i] = Tip[i];
       nowRot[i] = NowRot[i];
@@ -521,18 +492,14 @@ public:
   void Copy(const KeepAB& src)
   {
     KeepACount = src.KeepACount;
-    for (int i = 0; i < KeepACount; ++i)
-    {
-      for (int j = 0; j < 3; ++j)
-      {
+    for (int i = 0; i < KeepACount; ++i) {
+      for (int j = 0; j < 3; ++j) {
         KeepA[i][j] = src.KeepA[i][j];
       }
     }
     KeepBCount = src.KeepBCount;
-    for (int i = 0; i < KeepBCount; ++i)
-    {
-      for (int j = 0; j < 3; ++j)
-      {
+    for (int i = 0; i < KeepBCount; ++i) {
+      for (int j = 0; j < 3; ++j) {
         KeepB[i][j] = src.KeepB[i][j];
       }
     }
@@ -543,8 +510,7 @@ public:
 void RestoreArrayWithCount(vector<vector<int>>& arr, int row[], int column[],
   const int keep[][3], int count)
 {
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     arr[keep[i][0]][keep[i][1]] = keep[i][2];
     row[keep[i][0]]++;
     column[keep[i][1]]++;
@@ -561,8 +527,7 @@ void RollBackFromKeepAB(const KeepAB& keepAB, vector<vector<int>>& a, vector<vec
 void ClearArrayWithCount(vector<vector<int>>& arr, int row[], int column[],
   const int keep[][3], int count)
 {
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     if (arr[keep[i][0]][keep[i][1]] == 0) {
       assert(false);
     }
@@ -583,8 +548,7 @@ void ReflectFromMaxAB(const KeepAB& maxAB, vector<vector<int>>& a, vector<vector
 void SetArrayToOneWithCount(vector<vector<int>>& arr, int row[], int column[],
   const int keep[][3], int count)
 {
-  for (int i = 0; i < count; ++i)
-  {
+  for (int i = 0; i < count; ++i) {
     if (arr[keep[i][0]][keep[i][1]] == 1) {
       assert(false);
     }
@@ -624,10 +588,8 @@ public:
 void CalculatePositionBonus(double& actionScore, int newX, int newY,
   const vector<vector<int>>& arr)
 {
-  for (int k = 0; k < 4; ++k)
-  {
-    for (int l = 1; l < 2; ++l)
-    {
+  for (int k = 0; k < 4; ++k) {
+    for (int l = 1; l < 2; ++l) {
       int nkrx = newX + dx[k] * l;
       int nkry = newY + dy[k] * l;
       if (IsNG(nkrx, nkry)) {
@@ -759,8 +721,7 @@ void SetTreeParents(int* parentRules, int ruleCount)
 // 木構造の長さ設定共通処理
 void SetTreeLengths(int rand, int startIdx, int baseOffset, int range)
 {
-  for (int i = 1; i < V; ++i)
-  {
+  for (int i = 1; i < V; ++i) {
     le[i] = MakeLength(rand);
   }
 
@@ -825,8 +786,7 @@ void MakeTree22()
   int rand = Rand() % 100;
   V = v;
   leafs1 = Rand() % (V - 6) + 1;
-  for (int i = 1; i < V; ++i)
-  {
+  for (int i = 1; i < V; ++i) {
     if (i == 1) {
       pa[i] = 0;
     }
@@ -858,8 +818,7 @@ void MakeTree32()
   int rand = Rand() % 100;
   V = v;
   leafs1 = Rand() % (V - 7) + 1;
-  for (int i = 1; i < V; ++i)
-  {
+  for (int i = 1; i < V; ++i) {
     if (i == 1) {
       pa[i] = 0;
     }
@@ -894,8 +853,7 @@ void MakeTree42()
   int rand = Rand() % 100;
   V = v;
   leafs1 = Rand() % (V - 8) + 1;
-  for (int i = 1; i < V; ++i)
-  {
+  for (int i = 1; i < V; ++i) {
     if (i == 1) {
       pa[i] = 0;
     }
@@ -956,8 +914,7 @@ int CalcNeedLength(const int baseX, const int baseY)
 int CalcMarginCount(const int leafCount, const RotTip& maxRT)
 {
   int marginCount = leafCount;
-  for (int i = 0; i < V; ++i)
-  {
+  for (int i = 0; i < V; ++i) {
     if (maxRT.Tip[i] == 1) {
       marginCount--;
     }
@@ -992,13 +949,11 @@ double DoOneSet(RotTip& tmpRT, KeepAB& keepAB,
   double actionScoreSum = 0;
   keepAB.Clear();
 
-  for (int i = startLeaf; i < V; ++i)
-  {
+  for (int i = startLeaf; i < V; ++i) {
     if (le[i] < needLength)continue;
 
     bool isCatch = false;
-    for (int j = -1; j < 2; ++j)
-    {
+    for (int j = -1; j < 2; ++j) {
       int newRot = (prenRot + nowRot[i] + j + 4) % 4;
       int newX = baseX + le[i] * dx[newRot];
       int newY = baseY + le[i] * dy[newRot];
@@ -1054,13 +1009,11 @@ double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
   double actionScoreSum = 0;
   keepAB.Clear();
 
-  for (int i = startLeaf; i < startLeaf + leafs1; ++i)
-  {
+  for (int i = startLeaf; i < startLeaf + leafs1; ++i) {
     if (le[i] < needLength1)continue;
 
     bool isCatch = false;
-    for (int j = -1; j < 2; ++j)
-    {
+    for (int j = -1; j < 2; ++j) {
       int newRot = (prenRot1 + nowRot[i] + j + 4) % 4;
       int newX = baseX1 + le[i] * dx[newRot];
       int newY = baseY1 + le[i] * dy[newRot];
@@ -1083,8 +1036,7 @@ double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
     }
   }
 
-  for (int i = startLeaf + leafs1; i < V; ++i)
-  {
+  for (int i = startLeaf + leafs1; i < V; ++i) {
     if (margin < 0) {
       doMarginCount++;
       break;
@@ -1093,8 +1045,7 @@ double DoOneSet2(RotTip& tmpRT, KeepAB& keepAB,
     if (le[i] < needLength2)continue;
 
     bool isCatch = false;
-    for (int j = -1; j < 2; ++j)
-    {
+    for (int j = -1; j < 2; ++j) {
       int newRot = (prenRot2 + nowRot[i] + j + 4) % 4;
       int newX = baseX2 + le[i] * dx[newRot];
       int newY = baseY2 + le[i] * dy[newRot];
@@ -1142,8 +1093,7 @@ void DecideBest42(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1182,8 +1132,7 @@ void DecideBest52(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1228,8 +1177,7 @@ void DecideBest62(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1280,8 +1228,7 @@ void DecideBest72(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1338,8 +1285,7 @@ void DecideBest82(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1403,8 +1349,7 @@ void DecideBest53(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1460,8 +1405,7 @@ void DecideBest63(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1523,8 +1467,7 @@ void DecideBest73(const int x, const int y, const vector<int>& nowRot, const vec
   RotTip tmpRT(v);
   KeepAB keepAB;
 
-  for (int ord = 0; ord < 5; ++ord)
-  {
+  for (int ord = 0; ord < 5; ++ord) {
     // dir
     int nx = x + dx[order[ord]];
     int ny = y + dy[order[ord]];
@@ -1636,8 +1579,7 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   }
 
   vector<MaxCandidate> candidates(BEAM_WIDTH);
-  for (int i = 0; i < BEAM_WIDTH; ++i)
-  {
+  for (int i = 0; i < BEAM_WIDTH; ++i) {
     candidates[i].maxRT.Initialize(nowRot, nowTip);
   }
 
@@ -1659,8 +1601,7 @@ MaxCandidate Beam(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& now
   int minFinishTurn = 999;
   double maxActionScore = -1;
   int bestIndex = -1;
-  for (int idx = 0; idx < BEAM_WIDTH; ++idx)
-  {
+  for (int idx = 0; idx < BEAM_WIDTH; ++idx) {
     auto keepNowRot = nowRot;
     auto keepNowTip = nowTip;
     UpdateTurn(candidates[idx], nowRot, nowTip, x, y, _t, a, b, mCount);
@@ -1737,32 +1678,27 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
   int BEAM_WIDTH = 30;
 
   vector<MaxCandidate> candidates(BEAM_WIDTH);
-  for (int i = 0; i < BEAM_WIDTH; ++i)
-  {
+  for (int i = 0; i < BEAM_WIDTH; ++i) {
     candidates[i].maxRT.Initialize(nowRot, nowTip);
   }
 
-  for (int depth = 0; depth < beamDepth; ++depth)
-  {
+  for (int depth = 0; depth < beamDepth; ++depth) {
     if (depth == 0) {
       Beam2_Internal(_t, x, y, nowRot, nowTip, a, b, 0, mCount, BEAM_WIDTH, candidates);
     }
     else {
       vector<MaxCandidate> candidates2(BEAM_WIDTH);
-      for (int i = 0; i < BEAM_WIDTH; ++i)
-      {
+      for (int i = 0; i < BEAM_WIDTH; ++i) {
         candidates2[i].maxRT.Initialize(nowRot, nowTip);
       }
 
-      for (int idx = 0; idx < BEAM_WIDTH; ++idx)
-      {
+      for (int idx = 0; idx < BEAM_WIDTH; ++idx) {
         auto keepNowRot = nowRot;
         auto keepNowTip = nowTip;
         UpdateTurn(candidates[idx], nowRot, nowTip, x, y, _t, a, b, mCount);
 
         vector<MaxCandidate> tmpCand(BEAM_WIDTH);
-        for (int i = 0; i < BEAM_WIDTH; ++i)
-        {
+        for (int i = 0; i < BEAM_WIDTH; ++i) {
           tmpCand[i].maxRT.Initialize(nowRot, nowTip);
         }
 
@@ -1772,8 +1708,7 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
         nowTip = keepNowTip;
         RollBackTurn(candidates[idx], x, y, _t, a, b, mCount);
 
-        for (int i = 0; i < BEAM_WIDTH; ++i)
-        {
+        for (int i = 0; i < BEAM_WIDTH; ++i) {
           if (tmpCand[i].finishTurn < candidates2[BEAM_WIDTH - 1].finishTurn) {
             candidates2[BEAM_WIDTH - 1] = tmpCand[i];
           }
@@ -1781,8 +1716,7 @@ MaxCandidate Beam2(int& _t, int& x, int& y, vector<int>& nowRot, vector<int>& no
             candidates2[BEAM_WIDTH - 1] = tmpCand[i];
           }
 
-          for (int j = BEAM_WIDTH - 1; j >= 1; --j)
-          {
+          for (int j = BEAM_WIDTH - 1; j >= 1; --j) {
             if (candidates2[j].finishTurn < candidates2[j - 1].finishTurn) {
               swap(candidates2[j], candidates2[j - 1]);
             }
@@ -1876,8 +1810,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
     }
 
     if (Rand() % 2 && Method == best_Method && best_ansCount[Method] < 999) {
-      for (int i = 0; i < v; ++i)
-      {
+      for (int i = 0; i < v; ++i) {
         pa[i] = best_pa[i];
         le[i] = best_le[i];
       }
@@ -2137,8 +2070,7 @@ int main()
   }
   else if (mode <= 100) {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       ll score = Solve(i);
       sum += score;
       if (mode == 1) {

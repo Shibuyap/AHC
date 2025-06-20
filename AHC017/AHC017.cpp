@@ -91,8 +91,7 @@ ll dijkstra(int start, int day)
     pque.pop();
     if (p.first != dist[p.second]) { continue; }
     int x = p.second;
-    for (int i = 0; i < G[x].size(); ++i)
-    {
+    for (int i = 0; i < G[x].size(); ++i) {
       int y = G[x][i].to;
       if (ans[G[x][i].id] == day) {
         continue;
@@ -135,8 +134,7 @@ ll dijkstra_limited(int start, int day)
     if (cnt == FINISH_COUNT) {
       break;
     }
-    for (int i = 0; i < G[x].size(); ++i)
-    {
+    for (int i = 0; i < G[x].size(); ++i) {
       int y = G[x][i].to;
       if (ans[G[x][i].id] == day) {
         continue;
@@ -180,8 +178,7 @@ ll dijkstra_bfs(int start, int day)
     if (cnt == FINISH_COUNT) {
       break;
     }
-    for (int i = 0; i < G[x].size(); ++i)
-    {
+    for (int i = 0; i < G[x].size(); ++i) {
       int y = G[x][i].to;
       if (ans[G[x][i].id] == day) {
         continue;
@@ -240,8 +237,7 @@ ll calc_score_real()
 {
   ll sum = 0;
 
-  for (int day = 0; day < D; ++day)
-  {
+  for (int day = 0; day < D; ++day) {
     sum += calc_score_one_day(day);
     sum -= idea;
   }
@@ -269,11 +265,9 @@ ll calc_score()
 void init()
 {
   // dist_rank
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     vector<P> vec;
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
       vec.push_back(
         P((X[j] - X[i]) * (X[j] - X[i]) + (Y[j] - Y[i]) * (Y[j] - Y[i]), j));
     }
@@ -292,8 +286,7 @@ void input_data(int problemNum)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> N >> M >> D >> K;
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       cin >> u[i] >> v[i] >> w[i];
       u[i]--;
       v[i]--;
@@ -303,8 +296,7 @@ void input_data(int problemNum)
   // ファイル入力する
   else {
     ifs >> N >> M >> D >> K;
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       ifs >> u[i] >> v[i] >> w[i];
       u[i]--;
       v[i]--;
@@ -319,8 +311,7 @@ void input_ans(int problemNum)
 {
   string fileNameIfs = "./out/";
   string strNum;
-  for (int i = 0; i < 4; ++i)
-  {
+  for (int i = 0; i < 4; ++i) {
     strNum += (char)(problemNum % 10 + '0');
     problemNum /= 10;
   }
@@ -331,8 +322,7 @@ void input_ans(int problemNum)
 
   // ファイル入力する
   if (ifs.is_open()) {
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       ifs >> ans[i];
       ans[i]--;
     }
@@ -351,8 +341,7 @@ void output_data(int mode, int problemNum)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(problemNum % 10 + '0');
       problemNum /= 10;
     }
@@ -386,23 +375,19 @@ void method3()
   for (int i = 0; i < M; ++i) ans[i] = -1;
 
   vector<int> vec[32];
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     for (int j = 0; j < M; ++j) vec[i].push_back(j);
     std::shuffle(vec[i].begin(), vec[i].end(), mt);
   }
 
   int flag[32][3100];
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     for (int j = 0; j < M; ++j) { flag[i][j] = 0; }
   }
 
   int cnt[32] = {};
-  for (int ii = 0; ii < M; ++ii)
-  {
-    for (int j = 0; j < D; ++j)
-    {
+  for (int ii = 0; ii < M; ++ii) {
+    for (int j = 0; j < D; ++j) {
       if (cnt[j] == K) { continue; }
       int i = vec[j][ii];
       if (ans[i] != -1 || flag[j][i]) { continue; }
@@ -413,8 +398,7 @@ void method3()
       int vv = v[i];
       int uSize = G[uu].size();
       int vSize = G[vv].size();
-      for (int k = 0; k < uSize; ++k)
-      {
+      for (int k = 0; k < uSize; ++k) {
         if (G[uu][k].id == i) {
           int right = G[uu][(k + 1) % uSize].id;
           int left = G[uu][(k + uSize - 1) % uSize].id;
@@ -422,8 +406,7 @@ void method3()
           flag[j][left] = 1;
         }
       }
-      for (int k = 0; k < vSize; ++k)
-      {
+      for (int k = 0; k < vSize; ++k) {
         if (G[vv][k].id == i) {
           int right = G[vv][(k + 1) % vSize].id;
           int left = G[vv][(k + vSize - 1) % vSize].id;
@@ -440,10 +423,8 @@ void method4()
 {
   for (int i = 0; i < M; ++i) ans[i] = -1;
   int now = 0;
-  for (int i = 0; i < N; ++i)
-  {
-    for (int j = 0; j < G[i].size(); ++j)
-    {
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < G[i].size(); ++j) {
       int id = G[i][j].id;
       if (ans[id] != -1) { continue; }
       ans[id] = now;
@@ -694,8 +675,7 @@ void inner_method7(double temperature)
 
   int newDay = day;
   int sz = edges.size();
-  for (int _ = 0; _ < 30; ++_)
-  {
+  for (int _ = 0; _ < 30; ++_) {
     newDay = rand32() % D;
     if (day_count[newDay] + sz > K) newDay = day;
     if (newDay != day) { break; }
@@ -756,12 +736,10 @@ int solve(int mode, int problemNum)
 
   // G作成
   {
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       G[i].clear();
     }
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       edge e;
       e.cost = w[i];
       e.id = i;
@@ -771,12 +749,10 @@ int solve(int mode, int problemNum)
       G[v[i]].push_back(e);
     }
     // 偏角ソートしておく
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       vector<pair<double, int>> GG;
       vector<edge> keepG;
-      for (int j = 0; j < G[i].size(); ++j)
-      {
+      for (int j = 0; j < G[i].size(); ++j) {
         pair<double, int> p;
         p.first = atan2(Y[G[i][j].to] - Y[i], X[G[i][j].to] - X[i]);
         p.second = j;
@@ -808,8 +784,7 @@ int solve(int mode, int problemNum)
 
 #if 0
   min_score = 0;
-  for (int i = 0; i < D; ++i)
-  {
+  for (int i = 0; i < D; ++i) {
     min_score_days[i] = calc_score_one_day(i);
     min_score += min_score_days[i];
   }
@@ -879,8 +854,7 @@ int solve(int mode, int problemNum)
     cout << "loop = " << loop << endl;
     calc_idea();
     min_score = 0;
-    for (int i = 0; i < D; ++i)
-    {
+    for (int i = 0; i < D; ++i) {
       min_score_days[i] = calc_score_one_day(i);
       min_score += min_score_days[i];
     }
@@ -902,8 +876,7 @@ int main()
   }
   else {
     ll sum = 0;
-    for (int _ = 0; _ < 10; ++_)
-    {
+    for (int _ = 0; _ < 10; ++_) {
       sum += solve(1, _);
     }
     cout << "sum = " << sum << endl;

@@ -103,10 +103,8 @@ void CopyToBest()
 {
   best_ansCount = ansCount;
   best_cCount = cCount;
-  for (int i = 0; i < ansCount; ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
+  for (int i = 0; i < ansCount; ++i) {
+    for (int j = 0; j < 4; ++j) {
       best_ans[i][j] = ans[i][j];
     }
   }
@@ -116,10 +114,8 @@ void CopyToAns()
 {
   ansCount = best_ansCount;
   cCount = best_cCount;
-  for (int i = 0; i < ansCount; ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
+  for (int i = 0; i < ansCount; ++i) {
+    for (int j = 0; j < 4; ++j) {
       ans[i][j] = best_ans[i][j];
     }
   }
@@ -135,14 +131,11 @@ double GetNowTime()
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  for (int i = 0; i < 610; ++i)
-  {
+  for (int i = 0; i < 610; ++i) {
     G[i].clear();
   }
-  for (int i = 0; i < 610; ++i)
-  {
-    for (int j = 0; j < 610; ++j)
-    {
+  for (int i = 0; i < 610; ++i) {
+    for (int j = 0; j < 610; ++j) {
       routes[i][j].clear();
     }
   }
@@ -153,10 +146,8 @@ void InitRoutes()
   int visited[610];
   int prev[610];
   queue<int> que;
-  for (int i = 0; i < N; ++i)
-  {
-    for (int j = 0; j < N; ++j)
-    {
+  for (int i = 0; i < N; ++i) {
+    for (int j = 0; j < N; ++j) {
       visited[j] = 0;
       prev[j] = -1;
     }
@@ -174,8 +165,7 @@ void InitRoutes()
       }
     }
 
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
       int x = j;
       while (x != i) {
         routes[i][j].push_back(x);
@@ -197,16 +187,13 @@ void Input(int problemNum)
   if (!ifs.is_open()) {
     int nnn;
     cin >> nnn >> M >> T >> LA >> LB;
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       cin >> U[i] >> V[i];
     }
-    for (int i = 0; i < T; ++i)
-    {
+    for (int i = 0; i < T; ++i) {
       cin >> t[i];
     }
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       cin >> X[i] >> Y[i];
     }
   }
@@ -214,22 +201,18 @@ void Input(int problemNum)
   else {
     int nnn;
     ifs >> nnn >> M >> T >> LA >> LB;
-    for (int i = 0; i < M; ++i)
-    {
+    for (int i = 0; i < M; ++i) {
       ifs >> U[i] >> V[i];
     }
-    for (int i = 0; i < T; ++i)
-    {
+    for (int i = 0; i < T; ++i) {
       ifs >> t[i];
     }
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       ifs >> X[i] >> Y[i];
     }
   }
 
-  for (int i = 0; i < M; ++i)
-  {
+  for (int i = 0; i < M; ++i) {
     G[U[i]].push_back(V[i]);
     G[V[i]].push_back(U[i]);
   }
@@ -241,8 +224,7 @@ void OpenOfs(int probNum, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(probNum % 10 + '0');
       probNum /= 10;
     }
@@ -274,8 +256,7 @@ void MakeA2(const vector<int>& route)
       }
     }
     for (int j = 0; j < N; ++j) f[j] = 0;
-    for (int j = route.size() - 1; j >= 0; --j)
-    {
+    for (int j = route.size() - 1; j >= 0; --j) {
       if (i == LA) { break; }
       int x = route[j];
       if (f[x] == 0) {
@@ -294,17 +275,14 @@ void Initialize(const vector<int>& route)
   cCount = 0;
 
   int b[MAX_LB];
-  for (int i = 0; i < LB; ++i)
-  {
+  for (int i = 0; i < LB; ++i) {
     b[i] = -1;
   }
 
-  for (int i = 0; i < route.size(); ++i)
-  {
+  for (int i = 0; i < route.size(); ++i) {
     int r = route[i];
     int exists = 0;
-    for (int j = 0; j < LB; ++j)
-    {
+    for (int j = 0; j < LB; ++j) {
       if (b[j] == r) {
         exists = 1;
         break;
@@ -312,8 +290,7 @@ void Initialize(const vector<int>& route)
     }
 
     if (exists == 0) {
-      for (int j = 0; j < LA; ++j)
-      {
+      for (int j = 0; j < LA; ++j) {
         if (a[j] == r) {
           int len = min(LB, LA - j);
           ans[ansCount][0] = 0;
@@ -340,17 +317,14 @@ void Method1(const vector<int>& route)
   cCount = 0;
 
   int b[MAX_LB];
-  for (int i = 0; i < LB; ++i)
-  {
+  for (int i = 0; i < LB; ++i) {
     b[i] = -1;
   }
 
-  for (int i = 0; i < route.size(); ++i)
-  {
+  for (int i = 0; i < route.size(); ++i) {
     int r = route[i];
     int exists = 0;
-    for (int j = 0; j < LB; ++j)
-    {
+    for (int j = 0; j < LB; ++j) {
       if (b[j] == r) {
         exists = 1;
         break;
@@ -360,8 +334,7 @@ void Method1(const vector<int>& route)
     if (exists == 0) {
       int pos = argN[r][0];
       int len = min(LB, LA - pos);
-      for (int j = 0; j < len; ++j)
-      {
+      for (int j = 0; j < len; ++j) {
         b[j] = a[pos + j];
       }
       ans[ansCount][0] = 0;
@@ -384,17 +357,14 @@ void Method2(const vector<int>& route)
   cCount = 0;
 
   int b[MAX_LB];
-  for (int i = 0; i < LB; ++i)
-  {
+  for (int i = 0; i < LB; ++i) {
     b[i] = -1;
   }
 
-  for (int i = 0; i < route.size(); ++i)
-  {
+  for (int i = 0; i < route.size(); ++i) {
     int r = route[i];
     int exists = 0;
-    for (int j = 0; j < LB; ++j)
-    {
+    for (int j = 0; j < LB; ++j) {
       if (b[j] == r) {
         exists = 1;
         break;
@@ -416,8 +386,7 @@ void Method2(const vector<int>& route)
         while (now < route.size() - 1) {
           int rr = route[now + 1];
           int exists = 0;
-          for (int j = 0; j < LB; ++j)
-          {
+          for (int j = 0; j < LB; ++j) {
             if (a[pos + j] == rr) {
               exists = 1;
               break;
@@ -444,8 +413,7 @@ void Method2(const vector<int>& route)
         while (now < route.size() - 1) {
           int rr = route[now + 1];
           int exists = 0;
-          for (int j = 0; j < LB; ++j)
-          {
+          for (int j = 0; j < LB; ++j) {
             if (a[pos + j] == rr) {
               exists = 1;
               break;
@@ -465,8 +433,7 @@ void Method2(const vector<int>& route)
         }
       }
 
-      for (int j = 0; j < bestLen; ++j)
-      {
+      for (int j = 0; j < bestLen; ++j) {
         b[j] = a[bestPos + j];
       }
       ans[ansCount][0] = 0;
@@ -487,13 +454,11 @@ void Method2(const vector<int>& route)
 void Output(ofstream& ofs)
 {
   if (mode == 0) {
-    for (int i = 0; i < LA; ++i)
-    {
+    for (int i = 0; i < LA; ++i) {
       cout << a[i] << ' ';
     }
     cout << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
+    for (int i = 0; i < ansCount; ++i) {
       if (ans[i][0] == 0) {
         cout << "s " << ans[i][1] << ' ' << ans[i][2] << ' ' << ans[i][3] << endl;
       }
@@ -503,13 +468,11 @@ void Output(ofstream& ofs)
     }
   }
   else {
-    for (int i = 0; i < LA; ++i)
-    {
+    for (int i = 0; i < LA; ++i) {
       ofs << a[i] << ' ';
     }
     ofs << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
+    for (int i = 0; i < ansCount; ++i) {
       if (ans[i][0] == 0) {
         ofs << "s " << ans[i][1] << ' ' << ans[i][2] << ' ' << ans[i][3] << endl;
       }
@@ -524,8 +487,7 @@ vector<int> GetRoute()
 {
   int now = 0;
   vector<int> result;
-  for (int i = 0; i < T; ++i)
-  {
+  for (int i = 0; i < T; ++i) {
     for (auto x : routes[now][t[i]]) {
       result.push_back(x);
     }
@@ -545,8 +507,7 @@ void MakeA1DFS(int x, vector<int>& route, vector<int>& visited, int order = 0)
     }
   }
   else {
-    for (int i = G[x].size() - 1; i >= 0; --i)
-    {
+    for (int i = G[x].size() - 1; i >= 0; --i) {
       int y = G[x][i];
       MakeA1DFS(y, route, visited);
     }
@@ -557,8 +518,7 @@ void MakeA1()
 {
   int center = -1;
   int minDist = INF;
-  for (int i = 0; i < N; ++i)
-  {
+  for (int i = 0; i < N; ++i) {
     int tmp = abs(500 - X[i]) + abs(500 - Y[i]);
     if (tmp < minDist) {
       center = i;
@@ -580,15 +540,13 @@ void MakeA1()
   route.clear();
   for (int i = 0; i < N; ++i) visited[i] = 0;
   MakeA1DFS(center, route, visited, 1);
-  for (int j = 1; j < route.size(); ++j)
-  {
+  for (int j = 1; j < route.size(); ++j) {
     if (i == LA) { break; }
     a[i] = route[j];
     i++;
   }
 
-  for (int j = 0; j < route.size(); ++j)
-  {
+  for (int j = 0; j < route.size(); ++j) {
     if (i == LA) { break; }
     a[i] = route[j];
     i++;
@@ -639,8 +597,7 @@ ll Solve(int probNum)
     }
 
     for (int i = 0; i < N; ++i) argN[i].clear();
-    for (int i = 0; i < LA; ++i)
-    {
+    for (int i = 0; i < LA; ++i) {
       argN[a[i]].push_back(i);
     }
 
@@ -692,8 +649,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       ll score = Solve(i);
       sum += score;
       cout << "num = " << i << ", ";

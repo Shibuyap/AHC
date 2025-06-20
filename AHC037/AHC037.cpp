@@ -115,10 +115,8 @@ void CopyToBest()
   best_ansCount = ansCount;
   best_ansCost = ansCost;
 
-  for (int i = 0; i < ansCount; ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
+  for (int i = 0; i < ansCount; ++i) {
+    for (int j = 0; j < 4; ++j) {
       best_ans[i][j] = ans[i][j];
     }
   }
@@ -129,10 +127,8 @@ void CopyToAns()
   ansCount = best_ansCount;
   ansCost = best_ansCost;
 
-  for (int i = 0; i < ansCount; ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
+  for (int i = 0; i < ansCount; ++i) {
+    for (int j = 0; j < 4; ++j) {
       ans[i][j] = best_ans[i][j];
     }
   }
@@ -156,8 +152,7 @@ void Input(int problemNum)
   if (!ifs.is_open()) {
     int nnn;
     cin >> nnn;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       cin >> a[i] >> b[i];
     }
   }
@@ -165,27 +160,23 @@ void Input(int problemNum)
   else {
     int nnn;
     ifs >> nnn;
-    for (int i = 0; i < n; ++i)
-    {
+    for (int i = 0; i < n; ++i) {
       ifs >> a[i] >> b[i];
     }
   }
 
   L = 0;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     L = max(L, a[i]);
     L = max(L, b[i]);
   }
 
   vector<P> vp;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     vp.push_back(P(a[i], b[i]));
   }
   sort(vp.begin(), vp.end());
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     a[i] = vp[i].first;
     b[i] = vp[i].second;
   }
@@ -213,10 +204,8 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     cout << ansCount << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
-      for (int j = 0; j < 4; ++j)
-      {
+    for (int i = 0; i < ansCount; ++i) {
+      for (int j = 0; j < 4; ++j) {
         cout << ans[i][j] << ' ';
       }
       cout << endl;
@@ -224,10 +213,8 @@ void Output(ofstream& ofs)
   }
   else {
     ofs << ansCount << endl;
-    for (int i = 0; i < ansCount; ++i)
-    {
-      for (int j = 0; j < 4; ++j)
-      {
+    for (int i = 0; i < ansCount; ++i) {
+      for (int j = 0; j < 4; ++j) {
         ofs << ans[i][j] << ' ';
       }
       ofs << endl;
@@ -251,15 +238,12 @@ void Method23()
   vector<P> points;
   vector<int> used;
   priority_queue<PP> que;
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     points.emplace_back(a[i], b[i]);
     used.push_back(0);
   }
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = i + 1; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 1; j < n; ++j) {
       PP edge;
       edge.first.first = points[i].first + points[i].second + points[j].first + points[j].second
         - abs(points[i].first - points[j].first) - abs(points[i].second - points[j].second);
@@ -288,8 +272,7 @@ void Method23()
     used[idx1] = 1;
     used[idx2] = 1;
 
-    for (int i = 0; i < points.size(); ++i)
-    {
+    for (int i = 0; i < points.size(); ++i) {
       if (used[i])continue;
 
       PP newEdge;
@@ -304,10 +287,8 @@ void Method23()
     used.push_back(0);
   }
 
-  for (int i = 0; i < ansCount / 2; ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
+  for (int i = 0; i < ansCount / 2; ++i) {
+    for (int j = 0; j < 4; ++j) {
       swap(ans[i][j], ans[ansCount - 1 - i][j]);
     }
   }
@@ -352,8 +333,7 @@ int main()
   }
   else {
     ll sum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       ll score = Solve(i);
       sum += score;
       if (mode == 1) {

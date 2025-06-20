@@ -793,8 +793,7 @@ public:
       }
     }
 
-    for (int turn = startTurn; turn < T; ++turn)
-    {
+    for (int turn = startTurn; turn < T; ++turn) {
       // cout << "# Solve2" << endl;
       string out;
       // 人間の行動
@@ -813,8 +812,7 @@ public:
               }
             }
             else {
-              for (int j = N - 1; j >= 0; --j)
-              {
+              for (int j = N - 1; j >= 0; --j) {
                 if (fence[j] == 0) {
                   myFence[i] = j;
                   humanMode[i] = 1;
@@ -938,8 +936,7 @@ public:
         else {
           out += "..";
         }
-        for (int i = 2; i < m; ++i)
-        {
+        for (int i = 2; i < m; ++i) {
           out += ".";
         }
       }
@@ -983,8 +980,7 @@ public:
             }
             else if (i == 1) {
               int gx = -1, gy = -1;
-              for (int j = 15; j < 29; ++j)
-              {
+              for (int j = 15; j < 29; ++j) {
                 if (grid[1][j] == 0) {
                   gx = 1;
                   gy = j + 1;
@@ -1114,8 +1110,7 @@ public:
       }
     }
 
-    for (int turn = startTurn; turn < T; ++turn)
-    {
+    for (int turn = startTurn; turn < T; ++turn) {
       // cout << "# Solve2" << endl;
       string out;
       // 人間の行動
@@ -1140,8 +1135,7 @@ public:
               }
             }
             else {
-              for (int j = N - 1; j >= 0; --j)
-              {
+              for (int j = N - 1; j >= 0; --j) {
                 if (fenceU[j] == 0) {
                   myFence[i] = j;
                   humanMode[i] = 1;
@@ -1309,8 +1303,7 @@ public:
         else {
           out += "..";
         }
-        for (int i = 2; i < m; ++i)
-        {
+        for (int i = 2; i < m; ++i) {
           out += ".";
         }
       }
@@ -1354,8 +1347,7 @@ public:
             }
             else if (i == 1) {
               int gx = -1, gy = -1;
-              for (int j = 15; j < 29; ++j)
-              {
+              for (int j = 15; j < 29; ++j) {
                 if (grid[1][j] == 0) {
                   gx = 1;
                   gy = j + 1;
@@ -1485,8 +1477,7 @@ public:
       }
     }
 
-    for (int turn = startTurn; turn < T; ++turn)
-    {
+    for (int turn = startTurn; turn < T; ++turn) {
       // cout << "# Solve2" << endl;
       string out;
       // 人間の行動
@@ -1511,8 +1502,7 @@ public:
               }
             }
             else {
-              for (int j = N - 1; j >= 0; --j)
-              {
+              for (int j = N - 1; j >= 0; --j) {
                 if (fenceU[j] == 0) {
                   myFence[i] = j;
                   humanMode[i] = 1;
@@ -1680,8 +1670,7 @@ public:
         else {
           out += "..";
         }
-        for (int i = 2; i < m; ++i)
-        {
+        for (int i = 2; i < m; ++i) {
           out += ".";
         }
       }
@@ -1725,8 +1714,7 @@ public:
             }
             else if (i == 1) {
               int gx = -1, gy = -1;
-              for (int j = 15; j < 29; ++j)
-              {
+              for (int j = 15; j < 29; ++j) {
                 if (grid[1][j] == 0) {
                   gx = 1;
                   gy = j + 1;

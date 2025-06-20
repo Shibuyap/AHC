@@ -216,10 +216,8 @@ int money = 0;
 void ClearBoard()
 {
   turn = 0;
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       board[i][j] = -1;
     }
   }
@@ -259,8 +257,7 @@ bool OutOfBounds(int x, int y)
 int CalcRailType(int x1, int y1, int x2, int y2, int x3, int y3)
 {
   int dir1 = 0, dir2 = 0;
-  for (int i = 0; i < 4; ++i)
-  {
+  for (int i = 0; i < 4; ++i) {
     int nx = x2 + dx[i];
     int ny = y2 + dy[i];
     if (nx == x1 && ny == y1) dir1 = i;
@@ -295,10 +292,8 @@ int CalcRailType(int x1, int y1, int x2, int y2, int x3, int y3)
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void SetUp()
 {
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       a[i][j].clear();
       b[i][j].clear();
     }
@@ -312,8 +307,7 @@ void SetUp()
   ans.order.clear();
   ans.score = 0;
   ans.stationCount = 0;
-  for (int i = 0; i < T; ++i)
-  {
+  for (int i = 0; i < T; ++i) {
     ans.turns[i].num = -1;
   }
 
@@ -337,8 +331,7 @@ void Input(int problemNum)
     sy.resize(m);
     tx.resize(m);
     ty.resize(m);
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
       cin >> sx[i] >> sy[i] >> tx[i] >> ty[i];
     }
   }
@@ -350,14 +343,12 @@ void Input(int problemNum)
     sy.resize(m);
     tx.resize(m);
     ty.resize(m);
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
       ifs >> sx[i] >> sy[i] >> tx[i] >> ty[i];
     }
   }
 
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     a[sx[i]][sy[i]].push_back(i);
     b[tx[i]][ty[i]].push_back(i);
   }
@@ -385,8 +376,7 @@ void Output(ofstream& ofs)
 {
   if (mode == 0) {
     // 標準出力
-    for (int i = 0; i < T; ++i)
-    {
+    for (int i = 0; i < T; ++i) {
       if (ans.turns[i].num == -1) {
         cout << ans.turns[i].num << endl;
       }
@@ -397,8 +387,7 @@ void Output(ofstream& ofs)
   }
   else {
     // ファイル出力
-    for (int i = 0; i < T; ++i)
-    {
+    for (int i = 0; i < T; ++i) {
       ofs << "# " << ans.comment[i] << endl;
       if (ans.turns[i].num == -1) {
         ofs << ans.turns[i].num << endl;
@@ -432,8 +421,7 @@ int MoveOneStation(EkiMap& emap, int index, int x, int y)
   int bx = emap.Stations[index][0];
   int by = emap.Stations[index][1];
 
-  for (int i = 0; i < 13; ++i)
-  {
+  for (int i = 0; i < 13; ++i) {
     int nx = bx + station_dx[i];
     int ny = by + station_dy[i];
     if (OutOfBounds(nx, ny))continue;
@@ -454,8 +442,7 @@ int MoveOneStation(EkiMap& emap, int index, int x, int y)
   emap.Stations[index][0] = x;
   emap.Stations[index][1] = y;
 
-  for (int i = 0; i < 13; ++i)
-  {
+  for (int i = 0; i < 13; ++i) {
     int nx = x + station_dx[i];
     int ny = y + station_dy[i];
     if (OutOfBounds(nx, ny))continue;
@@ -496,8 +483,7 @@ Edge ParentEdge[MAX_STATION];
 
 void MakeRootG(int root)
 {
-  for (int i = 0; i < MAX_STATION; ++i)
-  {
+  for (int i = 0; i < MAX_STATION; ++i) {
     RootG[i].clear();
     Parent[i] = -1;
   }
@@ -615,8 +601,7 @@ int Simulate(int simMode, const EkiMap& emap, const vector<int>& people, bool is
           }
 
           // 道作る
-          for (int i = 1; i < ParentEdge[num2].route.size() - 1; ++i)
-          {
+          for (int i = 1; i < ParentEdge[num2].route.size() - 1; ++i) {
             while (money < 100 && turn < TT) {
               Action(-1, 0, 0, income);
               money += income;
@@ -676,8 +661,7 @@ int Simulate(int simMode, const EkiMap& emap, const vector<int>& people, bool is
             money += income;
 
             // 道作る
-            for (int i = 1; i < ParentEdge[num2].route.size() - 1; ++i)
-            {
+            for (int i = 1; i < ParentEdge[num2].route.size() - 1; ++i) {
               while (money < 100 && turn < TT) {
                 Action(-1, 0, 0, income);
                 money += income;
@@ -779,15 +763,13 @@ void StationPlacement(Params params)
   EkiMap best_emap(stationCount);
 
   // 初期解
-  for (int i = 0; i < emap.StationCount; ++i)
-  {
+  for (int i = 0; i < emap.StationCount; ++i) {
     int x = Rand() % n;
     int y = Rand() % n;
     emap.Stations[i][0] = x;
     emap.Stations[i][1] = y;
 
-    for (int j = 0; j < 13; ++j)
-    {
+    for (int j = 0; j < 13; ++j) {
       int nx = x + station_dx[j];
       int ny = y + station_dy[j];
       if (OutOfBounds(nx, ny))continue;
@@ -856,17 +838,14 @@ void StationPlacement(Params params)
   vector<int> people;
   numsA.resize(emap.StationCount);
   numsB.resize(emap.StationCount);
-  for (int i = 0; i < emap.StationCount; ++i)
-  {
+  for (int i = 0; i < emap.StationCount; ++i) {
     numsA[i].clear();
     numsB[i].clear();
   }
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     if (emap.ACount[i] > 0 && emap.BCount[i] > 0) {
       people.push_back(i);
-      for (int j = 0; j < emap.StationCount; ++j)
-      {
+      for (int j = 0; j < emap.StationCount; ++j) {
         int x = emap.Stations[j][0];
         int y = emap.Stations[j][1];
         if (abs(x - sx[i]) + abs(y - sy[i]) <= 2) {
@@ -880,16 +859,13 @@ void StationPlacement(Params params)
   }
 
   // クラスカル法
-  for (int i = 0; i < MAX_STATION; ++i)
-  {
+  for (int i = 0; i < MAX_STATION; ++i) {
     G[i].clear();
   }
   UnionFind uf(emap.StationCount);
   vector<Edge> es;
-  for (int i = 0; i < emap.StationCount; ++i)
-  {
-    for (int j = i + 1; j < emap.StationCount; ++j)
-    {
+  for (int i = 0; i < emap.StationCount; ++i) {
+    for (int j = i + 1; j < emap.StationCount; ++j) {
       Edge e;
       e.from = i;
       e.to = j;
@@ -900,15 +876,12 @@ void StationPlacement(Params params)
   sort(es.begin(), es.end());
 
   int rail_map[n][n];
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       rail_map[i][j] = 0;
     }
   }
-  for (int i = 0; i < emap.StationCount; ++i)
-  {
+  for (int i = 0; i < emap.StationCount; ++i) {
     rail_map[emap.Stations[i][0]][emap.Stations[i][1]] = 2;
   }
 
@@ -922,10 +895,8 @@ void StationPlacement(Params params)
       // BFSで線路つなぐ
       int f[n][n];
       int prev_dir[n][n];
-      for (int i = 0; i < n; ++i)
-      {
-        for (int j = 0; j < n; ++j)
-        {
+      for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
           f[i][j] = INF;
           prev_dir[i][j] = -1;
         }
@@ -939,8 +910,7 @@ void StationPlacement(Params params)
         q.pop();
         if (rail_map[x][y] == 2 && (x != ssx || y != ssy)) {
           int ok = 0;
-          for (int i = 0; i < emap.StationCount; ++i)
-          {
+          for (int i = 0; i < emap.StationCount; ++i) {
             int xx = emap.Stations[i][0];
             int yy = emap.Stations[i][1];
             if (x == xx && y == yy && !uf.IsSame(e.from, i)) {
@@ -956,8 +926,7 @@ void StationPlacement(Params params)
             continue;
           }
         }
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
           int nx = x + dx[i];
           int ny = y + dy[i];
           if (OutOfBounds(nx, ny))continue;
@@ -984,10 +953,8 @@ void StationPlacement(Params params)
         continue;
         rail_map[ssx][ssy] = 3;
         rail_map[ttx][tty] = 4;
-        for (int i = 0; i < n; ++i)
-        {
-          for (int j = 0; j < n; ++j)
-          {
+        for (int i = 0; i < n; ++i) {
+          for (int j = 0; j < n; ++j) {
             cerr << rail_map[i][j];
           }
           cerr << endl;
@@ -1015,8 +982,7 @@ void StationPlacement(Params params)
 
       uf.Unite(e.from, e.to);
 
-      for (int i = 1; i < route.size() - 1; ++i)
-      {
+      for (int i = 1; i < route.size() - 1; ++i) {
         rail_map[route[i].first][route[i].second] = 1;
       }
     }
@@ -1024,8 +990,7 @@ void StationPlacement(Params params)
 
   {
     ans.order.clear();
-    for (int i = 0; i < emap.StationCount; ++i)
-    {
+    for (int i = 0; i < emap.StationCount; ++i) {
       ans.order.push_back(i);
     }
 
@@ -1212,8 +1177,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       ll score = Solve(i, PARAMS);
       sum += score;
       if (mode == 1) {
@@ -1244,8 +1208,7 @@ int main()
       cout << "StationCount = " << params.StationCount << endl;
 
       ll sum = 0;
-      for (int i = 0; i < 10; ++i)
-      {
+      for (int i = 0; i < 10; ++i) {
         ll score = Solve(i, params);
         sum += score;
 

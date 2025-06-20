@@ -691,8 +691,7 @@ ll solveSingleCase(int case_num)
           path.path_cost = dp[4][j][k];
           vector<P> tmp;
           int now = k;
-          for (int l = PATH_LENGTH - 1; l >= 0; --l)
-          {
+          for (int l = PATH_LENGTH - 1; l >= 0; --l) {
             int y = task_colors[i][l];
             tmp.push_back(cells_by_color[y][now]);
             if (l == 0) { break; }
@@ -734,8 +733,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       ll score = solveSingleCase(i);
       sum += score;
       cout << "num = " << i << ", ";

@@ -445,8 +445,7 @@ int main()
     Solve(8);
   }
   else if (mode == 1) {
-    for (int i = 1; i < 10; ++i)
-    {
+    for (int i = 1; i < 10; ++i) {
       cout << i << endl;
       Solve(i);
     }

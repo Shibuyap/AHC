@@ -156,26 +156,26 @@ void SetUp()
 void Input(int num)
 {
   // ファイルパス生成
-  string filePath = "./in/" + to_string(num / 1000) + to_string((num / 100) % 10) + 
-                    to_string((num / 10) % 10) + to_string(num % 10) + ".txt";
-  
+  string filePath = "./in/" + to_string(num / 1000) + to_string((num / 100) % 10) +
+    to_string((num / 10) % 10) + to_string(num % 10) + ".txt";
+
   // 入力ストリーム選択（ファイルか標準入力）
   ifstream ifs(filePath);
   istream& input = ifs.is_open() ? ifs : cin;
-  
+
   // データ読み込み
   int m, _n, _h;
   input >> _n >> m >> _h;
-  
+
   for (int i = 0; i < N; ++i) input >> A[i];
-  
+
   for (int i = 0; i < m; ++i) {
     int u, v;
     input >> u >> v;
     G[u].push_back(v);
     G[v].push_back(u);
   }
-  
+
   for (int i = 0; i < N; ++i) input >> X[i] >> Y[i];
 }
 
@@ -184,14 +184,14 @@ void output(int case_num, const Answer& ans)
   auto output_answer = [&](ostream& out) {
     for (int i = 0; i < N; ++i) out << ans.parent[i] << ' ';
     out << endl;
-  };
-  
+    };
+
   if (mode == 0) {
     output_answer(cout);
   }
   else {
-    ofstream ofs("./out/" + to_string(case_num / 1000) + to_string((case_num / 100) % 10) + 
-                 to_string((case_num / 10) % 10) + to_string(case_num % 10) + ".txt");
+    ofstream ofs("./out/" + to_string(case_num / 1000) + to_string((case_num / 100) % 10) +
+      to_string((case_num / 10) % 10) + to_string(case_num % 10) + ".txt");
     if (ofs.is_open()) {
       output_answer(ofs);
     }

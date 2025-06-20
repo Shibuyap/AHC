@@ -291,10 +291,8 @@ int CalcMoveScore(int dir, int num)
   int score = 0;
   queue<P> q;
   int f[n + 2][n + 2];
-  for (int i = 1; i < n + 1; ++i)
-  {
-    for (int j = 1; j < n + 1; ++j)
-    {
+  for (int i = 1; i < n + 1; ++i) {
+    for (int j = 1; j < n + 1; ++j) {
       if (a[i][j] == 1) {
         while (q.size()) {
           q.pop();
@@ -369,8 +367,7 @@ void InitialSolve()
       int cost = 99999;
 
       // U
-      for (int j = 1; j < n + 1; ++j)
-      {
+      for (int j = 1; j < n + 1; ++j) {
         if (a[1][j] == 2) {
           continue;
         }
@@ -386,8 +383,7 @@ void InitialSolve()
       }
 
       // L
-      for (int i = 1; i < n + 1; ++i)
-      {
+      for (int i = 1; i < n + 1; ++i) {
         if (a[i][1] == 2) {
           continue;
         }
@@ -403,8 +399,7 @@ void InitialSolve()
       }
 
       // D
-      for (int j = 1; j < n + 1; ++j)
-      {
+      for (int j = 1; j < n + 1; ++j) {
         if (a[n][j] == 2) {
           continue;
         }
@@ -420,8 +415,7 @@ void InitialSolve()
       }
 
       // R
-      for (int i = 1; i < n + 1; ++i)
-      {
+      for (int i = 1; i < n + 1; ++i) {
         if (a[i][n] == 2) {
           continue;
         }
@@ -550,8 +544,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
       if (check_x) {
         int has_x = 0;
-        for (int i = 1; i < n + 1; ++i)
-        {
+        for (int i = 1; i < n + 1; ++i) {
           if (a[i][num] == 1) {
             has_x = 1;
             break;
@@ -573,8 +566,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
       if (check_x) {
         int has_x = 0;
-        for (int j = 1; j < n + 1; ++j)
-        {
+        for (int j = 1; j < n + 1; ++j) {
           if (a[num][j] == 1) {
             has_x = 1;
             break;
@@ -596,8 +588,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
       if (check_x) {
         int has_x = 0;
-        for (int i = 1; i < n + 1; ++i)
-        {
+        for (int i = 1; i < n + 1; ++i) {
           if (a[i][num] == 1) {
             has_x = 1;
             break;
@@ -619,8 +610,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
       if (check_x) {
         int has_x = 0;
-        for (int j = 1; j < n + 1; ++j)
-        {
+        for (int j = 1; j < n + 1; ++j) {
           if (a[num][j] == 1) {
             has_x = 1;
             break;
@@ -637,11 +627,9 @@ int Sim2(vector<P>& ans2, bool check_x)
     }
   }
 
-  for (int i = 1; i < n + 1; ++i)
-  {
+  for (int i = 1; i < n + 1; ++i) {
     //if (ans2.size() >= ansScore + 5)break;
-    for (int j = 1; j < n + 1; ++j)
-    {
+    for (int j = 1; j < n + 1; ++j) {
       //if (ans2.size() >= ansScore + 5)break;
 
       if (a[i][j] == 1) {
@@ -650,8 +638,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
         // U
         int ok = 1;
-        for (int k = 1; k < i; ++k)
-        {
+        for (int k = 1; k < i; ++k) {
           if (a[k][j] != 0) {
             ok = 0;
             break;
@@ -666,8 +653,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
         // L
         ok = 1;
-        for (int k = 1; k < j; ++k)
-        {
+        for (int k = 1; k < j; ++k) {
           if (a[i][k] != 0) {
             ok = 0;
             break;
@@ -682,8 +668,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
         // D
         ok = 1;
-        for (int k = i + 1; k < n + 1; ++k)
-        {
+        for (int k = i + 1; k < n + 1; ++k) {
           if (a[k][j] != 0) {
             ok = 0;
             break;
@@ -698,8 +683,7 @@ int Sim2(vector<P>& ans2, bool check_x)
 
         // R
         ok = 1;
-        for (int k = j + 1; k < n + 1; ++k)
-        {
+        for (int k = j + 1; k < n + 1; ++k) {
           if (a[i][k] != 0) {
             ok = 0;
             break;
@@ -949,8 +933,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    for (int i = 0; i < 15; ++i)
-    {
+    for (int i = 0; i < 15; ++i) {
       ll score = Solve(i, PARAMS);
       sum += score;
       if (mode == 1) {
@@ -979,8 +962,7 @@ int main()
       params.SimPartition = Rand01();
 
       ll sum = 0;
-      for (int i = 0; i < 15; ++i)
-      {
+      for (int i = 0; i < 15; ++i) {
         ll score = Solve(i, params);
         sum += score;
         if (i == 0 && score < 3120) {

@@ -565,9 +565,6 @@ inline void Extend(int ite, double temp)
 Rect best_best_rects[MAX_N];
 int real_real_maxScore = -1;
 
-int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
-int ui_tei_maxScore = -1;
-
 inline void crush(int n_crush)
 {
   // n_crush個つぶす
@@ -881,7 +878,6 @@ inline void oneChange(int ite, double temp)
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-  //if (tmpScore >= maxScore) {
   if (prob > Rand01()) {
     modeCount[0]++;
     maxScore = tmpScore;
@@ -923,7 +919,6 @@ inline void fourChange(int ite, double temp)
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-  //if (tmpScore >= maxScore) {
   if (prob > Rand01()) {
     modeCount[3]++;
     maxScore = tmpScore;
@@ -973,7 +968,6 @@ inline void Slide(int ite, double temp)
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
   if (tmpScore >= maxScore) {
-    //if (prob > Rand01()) {
     modeCount[1]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -1033,7 +1027,6 @@ inline void aspectChange(int ite, double temp)
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
   if (tmpScore >= maxScore) {
-    //if (prob > Rand01()) {
     modeCount[2]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
@@ -1296,6 +1289,9 @@ int real_real_real_maxScore = -1;
 int a2[100][MAX_N], b2[100][MAX_N], c2[100][MAX_N], d2[100][MAX_N];
 int a4[100][MAX_N], b4[100][MAX_N], c4[100][MAX_N], d4[100][MAX_N];
 int maxScore4[100] = {};
+
+int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
+int ui_tei_maxScore = -1;
 
 inline void multiStart()
 {
@@ -1672,7 +1668,6 @@ int solve(int teisyutu, int fileNum)
       best_best_rects[i] = rects[i];
     }
   }
-
 
   // real_real_real_maxScore戻す
   maxScore = real_real_real_maxScore;

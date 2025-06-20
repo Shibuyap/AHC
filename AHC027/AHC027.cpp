@@ -74,8 +74,7 @@ vector<int> V[2000];
 void SetUp()
 {
   ans.clear();
-  for (int i = 0; i < 2000; ++i)
-  {
+  for (int i = 0; i < 2000; ++i) {
     G[i].clear();
     V[i].clear();
   }
@@ -91,24 +90,20 @@ void Input(int case_num)
   // 標準入力する
   if (!ifs.is_open()) {
     cin >> N;
-    for (int i = 0; i < N - 1; ++i)
-    {
+    for (int i = 0; i < N - 1; ++i) {
       string s;
       cin >> s;
-      for (int j = 0; j < N; ++j)
-      {
+      for (int j = 0; j < N; ++j) {
         if (s[j] == '0') {
           G[i * N + j].push_back((i + 1) * N + j);
           G[(i + 1) * N + j].push_back(i * N + j);
         }
       }
     }
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       string s;
       cin >> s;
-      for (int j = 0; j < N - 1; ++j)
-      {
+      for (int j = 0; j < N - 1; ++j) {
         if (s[j] == '0') {
           G[i * N + j].push_back(i * N + j + 1);
           G[i * N + j + 1].push_back(i * N + j);
@@ -120,24 +115,20 @@ void Input(int case_num)
   // ファイル入力する
   else {
     ifs >> N;
-    for (int i = 0; i < N - 1; ++i)
-    {
+    for (int i = 0; i < N - 1; ++i) {
       string s;
       ifs >> s;
-      for (int j = 0; j < N; ++j)
-      {
+      for (int j = 0; j < N; ++j) {
         if (s[j] == '0') {
           G[i * N + j].push_back((i + 1) * N + j);
           G[(i + 1) * N + j].push_back(i * N + j);
         }
       }
     }
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
       string s;
       ifs >> s;
-      for (int j = 0; j < N - 1; ++j)
-      {
+      for (int j = 0; j < N - 1; ++j) {
         if (s[j] == '0') {
           G[i * N + j].push_back(i * N + j + 1);
           G[i * N + j + 1].push_back(i * N + j);
@@ -154,8 +145,7 @@ void OpenOfs(int case_num, ofstream& ofs)
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       strNum += (char)(case_num % 10 + '0');
       case_num /= 10;
     }
@@ -177,8 +167,7 @@ ll CalcScore()
 void Output(ofstream& ofs)
 {
   string ansString;
-  for (int i = 0; i < ans.size() - 1; ++i)
-  {
+  for (int i = 0; i < ans.size() - 1; ++i) {
     int diff = ans[i + 1] - ans[i];
     if (diff == N) {
       ansString += 'D';
@@ -260,8 +249,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       ll score = Solve(i);
       sum += score;
       cout << "num = " << i << ", ";

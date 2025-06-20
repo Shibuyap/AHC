@@ -312,8 +312,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; ++i)
-    {
+    for (int i = 0; i < 15; ++i) {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
@@ -341,8 +340,7 @@ int main()
       new_annealingParams.operation_thresholds[0] = rand() % 101;
 
       ll sum_score = 0;
-      for (int i = 0; i < 15; ++i)
-      {
+      for (int i = 0; i < 15; ++i) {
         ll score = solve_case(i, new_annealingParams);
         sum_score += score;
 

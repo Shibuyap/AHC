@@ -6,8 +6,8 @@
 #include <iomanip>
 #include <iosfwd>
 #include <iostream>
-#include <sstream>
 #include <math.h>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>

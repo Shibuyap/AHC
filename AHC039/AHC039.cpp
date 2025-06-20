@@ -132,10 +132,8 @@ int best_f[510][510];
 void CopyToBest(int blockSize)
 {
   best_ansScore = ansScore;
-  for (int i = 0; i < blockSize + 2; ++i)
-  {
-    for (int j = 0; j < blockSize + 2; ++j)
-    {
+  for (int i = 0; i < blockSize + 2; ++i) {
+    for (int j = 0; j < blockSize + 2; ++j) {
       best_f[i][j] = f[i][j];
     }
   }
@@ -145,10 +143,8 @@ void CopyToBest(int blockSize)
 void CopyToAns(int blockSize)
 {
   ansScore = best_ansScore;
-  for (int i = 0; i < blockSize + 2; ++i)
-  {
-    for (int j = 0; j < blockSize + 2; ++j)
-    {
+  for (int i = 0; i < blockSize + 2; ++i) {
+    for (int j = 0; j < blockSize + 2; ++j) {
       f[i][j] = best_f[i][j];
     }
   }
@@ -229,8 +225,7 @@ bool IsLengthOK(vector<Point> vp)
 {
   int len = 0;
   // 各辺の長さを計算
-  for (int i = 0; i < vp.size() - 1; ++i)
-  {
+  for (int i = 0; i < vp.size() - 1; ++i) {
     len += abs(vp[i + 1].x - vp[i].x);  // x座標の差の絶対値を加算
     len += abs(vp[i + 1].y - vp[i].y);  // y座標の差の絶対値を加算
   }
@@ -256,8 +251,7 @@ void InitBlock(const int blockSize)
   for (int i = 0; i < blockSize; ++i) for (int j = 0; j < blockSize; ++j) block[i][j] = 0;  // 初期化
 
   // サバとイワシの位置から、各セルのスコアを計算
-  for (int i = 0; i < n; ++i)
-  {
+  for (int i = 0; i < n; ++i) {
     {
       // サバの座標をセルに割り当て、スコアを加算
       int xx = saba[i].x / (100000 / blockSize);
@@ -301,8 +295,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
     int randY = Rand() % blockSize;  // ランダムなセルのyインデックス
 
     int ng = 1;  // 変更が可能かどうかのフラグ
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       int nx = randX + dx[i];
       int ny = randY + dy[i];
       if (IsNG(nx, ny, blockSize)) { continue; }  // 範囲外は無視
@@ -332,10 +325,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       for (int i = 0; i < blockSize + 2; ++i) for (int j = 0; j < blockSize + 2; ++j) haba[i][j] = 0;  // 初期化
       int now = 1;
       upd = 1;
-      for (int i = 1; i < blockSize + 1; ++i)
-      {
-        for (int j = 1; j < blockSize + 1; ++j)
-        {
+      for (int i = 1; i < blockSize + 1; ++i) {
+        for (int j = 1; j < blockSize + 1; ++j) {
           if (haba[i][j] != 0) { continue; }  // 既に探索済みならスキップ
           if (now == 3) {
             upd = 0;  // 連結成分が2つを超える場合は更新不可
@@ -348,8 +339,7 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
             int x = que.front().first;
             int y = que.front().second;
             que.pop();
-            for (int k = 0; k < 4; ++k)
-            {
+            for (int k = 0; k < 4; ++k) {
               int nx = x + dx[k];
               int ny = y + dy[k];
               if (IsNG(nx - 1, ny - 1, blockSize)) { continue; }
@@ -375,10 +365,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
       int sx = -1, sy = -1;
       int befx = -1, befy = -1;
       // 境界の始点を探す
-      for (int i = 1; i < blockSize + 1; ++i)
-      {
-        for (int j = 1; j < blockSize + 1; ++j)
-        {
+      for (int i = 1; i < blockSize + 1; ++i) {
+        for (int j = 1; j < blockSize + 1; ++j) {
           if (f[i][j] == 1 && f[i][j - 1] == 0) {
             sx = i;
             sy = j;
@@ -448,10 +436,8 @@ void Method3_SA(const int xx1, const int xx2, const int yy1, const int yy2, cons
           assert(false);  // 次の点が見つからない場合はエラー
           for (auto p : vp) cout << p.first << ' ' << p.second << endl;
           cout << sx << ' ' << sy << ' ' << befx << ' ' << befy << endl;
-          for (int i = 1; i < blockSize + 1; ++i)
-          {
-            for (int j = 1; j < blockSize + 1; ++j)
-            {
+          for (int i = 1; i < blockSize + 1; ++i) {
+            for (int j = 1; j < blockSize + 1; ++j) {
               cout << f[i][j];
             }
             cout << endl;
@@ -521,10 +507,8 @@ void Method3()
     if (y1 > y2) swap(y1, y2);  // y1とy2を小さい順に並べ替え
 
     int cnt = 0;  // 選択した領域のスコア
-    for (int i = x1; i < x2 + 1; ++i)
-    {
-      for (int j = y1; j < y2 + 1; ++j)
-      {
+    for (int i = x1; i < x2 + 1; ++i) {
+      for (int j = y1; j < y2 + 1; ++j) {
         cnt += block[i][j];  // 選択したセルのスコアを合計
       }
     }
@@ -547,19 +531,15 @@ void Method3()
   }
 
 
-  for (int i = 0; i < blockSize + 2; ++i)
-  {
-    for (int j = 0; j < blockSize + 2; ++j)
-    {
+  for (int i = 0; i < blockSize + 2; ++i) {
+    for (int j = 0; j < blockSize + 2; ++j) {
       f[i][j] = 0;  // 初期化
     }
   }
 
   // 最良の矩形領域をf配列に設定
-  for (int i = xx1; i < xx2 + 1; ++i)
-  {
-    for (int j = yy1; j < yy2 + 1; ++j)
-    {
+  for (int i = xx1; i < xx2 + 1; ++i) {
+    for (int j = yy1; j < yy2 + 1; ++j) {
       f[i + 1][j + 1] = 1;  // 選択した領域を1とする
     }
   }
@@ -571,24 +551,18 @@ void Method3()
 
   int loop3 = 0;
   int blockSize40 = 40;
-  for (int i = 0; i < blockSize + 2; ++i)
-  {
-    for (int j = 0; j < blockSize + 2; ++j)
-    {
+  for (int i = 0; i < blockSize + 2; ++i) {
+    for (int j = 0; j < blockSize + 2; ++j) {
       ff[i][j] = f[i][j];
     }
   }
-  for (int i = 0; i < blockSize40 + 2; ++i)
-  {
-    for (int j = 0; j < blockSize40 + 2; ++j)
-    {
+  for (int i = 0; i < blockSize40 + 2; ++i) {
+    for (int j = 0; j < blockSize40 + 2; ++j) {
       f[i][j] = 0;
     }
   }
-  for (int i = 0; i < blockSize + 2; ++i)
-  {
-    for (int j = 0; j < blockSize + 2; ++j)
-    {
+  for (int i = 0; i < blockSize + 2; ++i) {
+    for (int j = 0; j < blockSize + 2; ++j) {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;
         f[i * 2 - 1][j * 2] = 1;
@@ -604,24 +578,18 @@ void Method3()
 
   int loop4 = 0;
   int blockSize80 = 80;
-  for (int i = 0; i < blockSize40 + 2; ++i)
-  {
-    for (int j = 0; j < blockSize40 + 2; ++j)
-    {
+  for (int i = 0; i < blockSize40 + 2; ++i) {
+    for (int j = 0; j < blockSize40 + 2; ++j) {
       ff[i][j] = f[i][j];
     }
   }
-  for (int i = 0; i < blockSize80 + 2; ++i)
-  {
-    for (int j = 0; j < blockSize80 + 2; ++j)
-    {
+  for (int i = 0; i < blockSize80 + 2; ++i) {
+    for (int j = 0; j < blockSize80 + 2; ++j) {
       f[i][j] = 0;
     }
   }
-  for (int i = 0; i < blockSize40 + 2; ++i)
-  {
-    for (int j = 0; j < blockSize40 + 2; ++j)
-    {
+  for (int i = 0; i < blockSize40 + 2; ++i) {
+    for (int j = 0; j < blockSize40 + 2; ++j) {
       if (ff[i][j] == 1) {
         f[i * 2 - 1][j * 2 - 1] = 1;
         f[i * 2 - 1][j * 2] = 1;
@@ -678,8 +646,7 @@ int main()
   }
   else {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       ll score = Solve(i);  // 問題番号iを解く
       sum += score;         // スコアの合計を更新
       if (mode == 1) {

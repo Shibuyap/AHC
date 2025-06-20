@@ -415,15 +415,13 @@ int Solve(string inputFileNum)
     }
     sx = ksx; sy = ksy;
     for (int j = 0; j < n; ++j) {
-      for (int i = 1; i < n; ++i)
-      {
+      for (int i = 1; i < n; ++i) {
         vsum[turn][i][j] = vsum[turn][i - 1][j] + vpath[i][j];
       }
       if (vsum[turn][n - 1][j]) turn_v[j].push_back(turn);
     }
     for (int i = 0; i < n; ++i) {
-      for (int j = 1; j < n; ++j)
-      {
+      for (int j = 1; j < n; ++j) {
         hsum[turn][i][j] = hsum[turn][i][j - 1] + hpath[i][j];
       }
       if (hsum[turn][i][n - 1]) turn_h[i].push_back(turn);
@@ -726,8 +724,7 @@ int Solve(string inputFileNum)
             maxDiff += (abs(amari[i]) - std::abs(dist_res[turnID] - dist_est[turnID])) * (40000.0 / dist_res[turnID]);
           }
           double keep_diff = maxDiff;
-          for (int cut = 3; cut < 27; ++cut)
-          {
+          for (int cut = 3; cut < 27; ++cut) {
             for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
               double rA = Rand() % 8001 + 1000;
 
@@ -819,8 +816,7 @@ int Solve(string inputFileNum)
             maxDiff += (abs(amari[i]) - std::abs(dist_res[turnID] - dist_est[turnID])) * (40000.0 / dist_res[turnID]);
           }
           double keep_diff = maxDiff;
-          for (int cut = 3; cut < 27; ++cut)
-          {
+          for (int cut = 3; cut < 27; ++cut) {
             for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
               double rA = Rand() % 8001 + 1000;
               double countSum = 0;
@@ -1036,8 +1032,7 @@ int main()
   else if (mode == 1) { // サンプル0‾99でチェック
     vector<P> ranking;
     ll allScore = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       string inputFileNum;
       inputFileNum += (char)((i % 10000) / 1000 + '0');
       inputFileNum += (char)((i % 1000) / 100 + '0');

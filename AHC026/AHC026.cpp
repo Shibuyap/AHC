@@ -123,8 +123,7 @@ struct Problem
 // 複数のケースを処理する際に、内部状態を初期化する関数
 void set_up()
 {
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     init_stacks[i].clear();
   }
   init_positions.clear();
@@ -137,8 +136,7 @@ void input(int case_num)
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     init_stacks[i].resize(n / m); // 各山のサイズを設定
   }
   init_positions.resize(n); // 箱の位置情報のサイズを設定
@@ -147,10 +145,8 @@ void input(int case_num)
   if (!ifs.is_open()) {
     int _n, _m;
     cin >> _n >> _m;
-    for (int i = 0; i < m; ++i)
-    {
-      for (int j = 0; j < n / m; ++j)
-      {
+    for (int i = 0; i < m; ++i) {
+      for (int j = 0; j < n / m; ++j) {
         cin >> init_stacks[i][j];
         init_stacks[i][j]--; // 0-indexedに変換
       }
@@ -160,10 +156,8 @@ void input(int case_num)
   else {
     int _n, _m;
     ifs >> _n >> _m;
-    for (int i = 0; i < m; ++i)
-    {
-      for (int j = 0; j < n / m; ++j)
-      {
+    for (int i = 0; i < m; ++i) {
+      for (int j = 0; j < n / m; ++j) {
         ifs >> init_stacks[i][j];
         init_stacks[i][j]--; // 0-indexedに変換
       }
@@ -171,10 +165,8 @@ void input(int case_num)
   }
 
   // 各箱の位置情報を設定
-  for (int i = 0; i < m; ++i)
-  {
-    for (int j = 0; j < n / m; ++j)
-    {
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < n / m; ++j) {
       init_positions[init_stacks[i][j]].x = i; // 山の番号
       init_positions[init_stacks[i][j]].y = j; // 高さ
     }
@@ -198,14 +190,12 @@ int calc_score(const vector<P>& ans)
   vector<Point> tmp_positions = init_positions; // 一時的な箱の位置情報
 
   int cnt = 0; // 運び出した箱の数
-  for (int i = 0; i < m; ++i)
-  {
+  for (int i = 0; i < m; ++i) {
     tmp_stacks[i] = init_stacks[i]; // 初期状態をコピー
   }
 
   int res = 10000; // 初期スコア
-  for (int i = 0; i < ans.size(); ++i)
-  {
+  for (int i = 0; i < ans.size(); ++i) {
     int num = ans[i].first;         // 操作する箱の番号
     int x = tmp_positions[num].x;   // 箱の現在の山の番号
     int y = tmp_positions[num].y;   // 箱の現在の高さ
@@ -220,8 +210,7 @@ int calc_score(const vector<P>& ans)
       int k = tmp_stacks[x].size() - y;
       res -= (k + 1); // 消費体力を計算
 
-      for (int j = 0; j < tmp_stacks[x].size() - y; ++j)
-      {
+      for (int j = 0; j < tmp_stacks[x].size() - y; ++j) {
         int num2 = tmp_stacks[x][y + j];
         tmp_positions[num2].x = nx;                     // 箱の新しい山の番号を設定
         tmp_positions[num2].y = tmp_stacks[nx].size();  // 新しい高さを設定
@@ -258,8 +247,7 @@ void execute_turn(Problem& problem, int current_box, int from_stack, const vecto
     while (k - 1 >= 0 && move_targets[k - 1] == to_stack) k--; // 同じ移動先の箱をまとめる
 
     // 箱を移動
-    for (int l = k; l < problem.stacks[from_stack].size(); ++l)
-    {
+    for (int l = k; l < problem.stacks[from_stack].size(); ++l) {
       int num = problem.stacks[from_stack][l];
       problem.positions[num].x = to_stack;                    // 新しい山の番号
       problem.positions[num].y = problem.stacks[to_stack].size(); // 新しい高さ
@@ -292,22 +280,18 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 {
   int current_y = problem.positions[current_box].y;
   // 移動先を決定
-  for (int i = position + 1; i < problem.stacks[from_stack].size(); ++i)
-  {
+  for (int i = position + 1; i < problem.stacks[from_stack].size(); ++i) {
     decide_move_destination(problem, move_targets, min_box_per_stack, from_stack, i);
   }
   // 1ターン分の操作を実行
   execute_turn(problem, current_box, from_stack, move_targets);
 
   // 残りのターンを順次実行
-  for (int turn = current_box + 1; turn < n; ++turn)
-  {
+  for (int turn = current_box + 1; turn < n; ++turn) {
     vector<P> min_boxes_in_stacks(m);
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
       int min_i = INT_INF;
-      for (int j = 0; j < problem.stacks[i].size(); ++j)
-      {
+      for (int j = 0; j < problem.stacks[i].size(); ++j) {
         min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
       min_boxes_in_stacks[i] = P(min_i, i);
@@ -320,8 +304,7 @@ int simulate_remaining_moves(Problem problem, int current_box, int position, vec
 
     vector<int> next_move_targets(problem.stacks[next_from_stack].size(), -1);
     // 箱の移動先を決定
-    for (int k = next_y + 1; k < problem.stacks[next_from_stack].size(); ++k)
-    {
+    for (int k = next_y + 1; k < problem.stacks[next_from_stack].size(); ++k) {
       decide_move_destination(problem, next_move_targets, min_boxes_in_stacks, next_from_stack, k);
     }
 
@@ -339,14 +322,11 @@ Problem greedy_solution()
   for (int i = 0; i < m; ++i) problem.stacks[i] = init_stacks[i]; // 初期状態をコピー
   problem.positions = init_positions;
 
-  for (int current_box = 0; current_box < n; ++current_box)
-  { // 各ターン（各箱）について
+  for (int current_box = 0; current_box < n; ++current_box) { // 各ターン（各箱）について
     vector<P> min_box_per_stack(m);
-    for (int i = 0; i < m; ++i)
-    {
+    for (int i = 0; i < m; ++i) {
       int min_i = INT_INF;
-      for (int j = 0; j < problem.stacks[i].size(); ++j)
-      {
+      for (int j = 0; j < problem.stacks[i].size(); ++j) {
         min_i = min(min_i, problem.stacks[i][j]); // 各山の最小の箱の番号を取得
       }
       min_box_per_stack[i] = P(min_i, i);
@@ -360,14 +340,12 @@ Problem greedy_solution()
     vector<int> move_targets(problem.stacks[from_stack].size(), -1);
 
     // 各箱について最適な移動先を探索
-    for (int position = current_y + 1; position < problem.stacks[from_stack].size(); ++position)
-    {
+    for (int position = current_y + 1; position < problem.stacks[from_stack].size(); ++position) {
       int max_score = -1;
       int max_id = -1;
 
       // 各可能な移動先についてプレイアウト
-      for (int l = 1; l < m; ++l)
-      {
+      for (int l = 1; l < m; ++l) {
         move_targets[position] = min_box_per_stack[l].second;
         int tmp_score = simulate_remaining_moves(problem, current_box, position, move_targets, min_box_per_stack, from_stack);
         if (tmp_score > max_score) {
@@ -384,8 +362,7 @@ Problem greedy_solution()
 
     // ランダムに移動先を変更して探索（焼きなまし的な手法）
     if (problem.stacks[from_stack].size() - (current_y + 1) >= 2 && get_elapsed_time() < TL) {
-      for (int iteration = 0; iteration < 500; ++iteration)
-      {
+      for (int iteration = 0; iteration < 500; ++iteration) {
         int random_position = rand_xorshift() % (problem.stacks[from_stack].size() - (current_y + 1)) + current_y + 1;
         int keep = move_targets[random_position];
 
@@ -466,8 +443,7 @@ int main()
   }
   else {
     ll sum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 100; ++i) {
       ll score = solve(i); // 複数のケースを解く
       sum += score;
       if (mode == 1) {

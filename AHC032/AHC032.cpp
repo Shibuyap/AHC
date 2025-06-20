@@ -1,14 +1,14 @@
-﻿#include <array>
+﻿#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <fstream>
+#include <iomanip>
 #include <iosfwd>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <time.h>
 #include <utility>
-#include <iomanip>
-#include <sstream>
-#include <algorithm>
 
 using namespace std;
 typedef long long int ll;

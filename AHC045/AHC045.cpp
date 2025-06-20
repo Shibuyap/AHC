@@ -393,8 +393,7 @@ vector<P> BuildMST(const vector<int>& nums, bool isTrue = false)
 
   int edgeCount = 0;
   for (int i = 0; i < nums.size(); ++i) {
-    for (int j = i + 1; j < nums.size(); ++j)
-    {
+    for (int j = i + 1; j < nums.size(); ++j) {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
       buildMST_edges[edgeCount].v = j;
@@ -442,8 +441,7 @@ vector<P> BuildMSTWithOnePoint(const vector<int>& _nums, vector<int>& newNums, b
 
   int edgeCount = 0;
   for (int i = 0; i < nums.size(); ++i) {
-    for (int j = i + 1; j < nums.size(); ++j)
-    {
+    for (int j = i + 1; j < nums.size(); ++j) {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
       buildMST_edges[edgeCount].v = j;
@@ -563,8 +561,7 @@ vector<P> BuildMSTWithEdgeCompare(const vector<int>& nums, bool isTrue = false)
 
   int edgeCount = 0;
   for (int i = 0; i < nums.size(); ++i) {
-    for (int j = i + 1; j < nums.size(); ++j)
-    {
+    for (int j = i + 1; j < nums.size(); ++j) {
       buildMST_edges[edgeCount].dist = Distance(buildMST_points[i], buildMST_points[j]);
       buildMST_edges[edgeCount].u = i;
       buildMST_edges[edgeCount].v = j;
@@ -994,8 +991,7 @@ void Method1_Query(int start, int queryEnd)
   }
   sort(vp.begin(), vp.end(), greater<P>());
 
-  for (int i = start; i < n; ++i)
-  {
+  for (int i = start; i < n; ++i) {
     int num = vp[i].second;
     auto po = GetPoint(num);
     vector<P> dists;
@@ -1702,8 +1698,7 @@ int main()
   }
   else if (mode <= 2) {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       ll score = Solve(5, HYPERS);
       sum += score;
       if (mode == 1) {
@@ -1731,8 +1726,7 @@ int main()
       hypers.Partition[0] = Rand() % 101;
 
       ll sum = 0;
-      for (int i = 0; i < 10; ++i)
-      {
+      for (int i = 0; i < 10; ++i) {
         ll score = Solve(i, hypers);
         sum += score;
 

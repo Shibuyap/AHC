@@ -248,8 +248,7 @@ int attack_cell(int x, int y, int power)
     is_broken[x][y] = 1;
 
     // 周囲マスがすでに壊れていれば Union-Find でつなぐ
-    for (int i = 0; i < 4; ++i)
-    {
+    for (int i = 0; i < 4; ++i) {
       int nx = x + DELTA_X[i];
       int ny = y + DELTA_Y[i];
       if (is_out_of_bounds(nx, ny)) { continue; }
@@ -259,8 +258,7 @@ int attack_cell(int x, int y, int power)
     }
 
     // もし水源マスだったら、UF_MAX-1 とつなぐ
-    for (int i = 0; i < w; ++i)
-    {
+    for (int i = 0; i < w; ++i) {
       if (x == water_x[i] && y == water_y[i]) {
         uf_unite(x * n + y, UNION_FIND_MAX - 1);
       }
@@ -268,8 +266,7 @@ int attack_cell(int x, int y, int power)
 
     // ここで再度「全ての家が繋がったかどうか」を判定しているらしい
     res = 2;
-    for (int i = 0; i < k; ++i)
-    {
+    for (int i = 0; i < k; ++i) {
       if (!is_united_with_water(house_x[i], house_y[i])) {
         res = 1; // まだ未接続の家がある
       }
@@ -308,10 +305,8 @@ void init(int problem_num)
   health_points = 0;
 
   // 状態クリア
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       is_broken[i][j] = 0;
       min_strength[i][j] = 0;
       max_strength[i][j] = 0;
@@ -319,8 +314,7 @@ void init(int problem_num)
   }
 
   // 攻撃コストCに応じて攻撃力を選択
-  for (int i = 0; i < 8; ++i)
-  {
+  for (int i = 0; i < 8; ++i) {
     if (attack_cost == C_OPTIONS[i]) {
       attack_power_global = ATTACK_POWER_VALUES[i];
     }
@@ -333,8 +327,7 @@ void init(int problem_num)
       // problem_numを4桁化してファイル名を作る
       int tmp = problem_num;
       string str_num;
-      for (int i = 0; i < 4; ++i)
-      {
+      for (int i = 0; i < 4; ++i) {
         str_num += char((tmp % 10) + '0');
         tmp /= 10;
       }
@@ -358,31 +351,25 @@ void read_input(int problem_num)
   // 実行モード=0またはファイルが開けなかったら標準入力から読む
   if (mode == 0 || !ifs.is_open()) {
     cin >> n >> w >> k >> attack_cost;
-    for (int i = 0; i < w; ++i)
-    {
+    for (int i = 0; i < w; ++i) {
       cin >> water_x[i] >> water_y[i];
     }
-    for (int i = 0; i < k; ++i)
-    {
+    for (int i = 0; i < k; ++i) {
       cin >> house_x[i] >> house_y[i];
     }
   }
   else {
     // ローカル時はファイル入力
     ifs >> n >> w >> k >> attack_cost;
-    for (int i = 0; i < n; ++i)
-    {
-      for (int j = 0; j < n; ++j)
-      {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
         ifs >> rock_strength[i][j];
       }
     }
-    for (int i = 0; i < w; ++i)
-    {
+    for (int i = 0; i < w; ++i) {
       ifs >> water_x[i] >> water_y[i];
     }
-    for (int i = 0; i < k; ++i)
-    {
+    for (int i = 0; i < k; ++i) {
       ifs >> house_x[i] >> house_y[i];
     }
   }
@@ -413,11 +400,9 @@ int solve_problem(int problem_num = 0)
   init(problem_num);
 
   // 各家の一番近い水源を探す
-  for (int i = 0; i < k; ++i)
-  {
+  for (int i = 0; i < k; ++i) {
     int dist = INF;
-    for (int j = 0; j < w; ++j)
-    {
+    for (int j = 0; j < w; ++j) {
       int mdist = manhattan_distance(house_x[i], house_y[i], water_x[j], water_y[j]);
       if (mdist < dist) {
         dist = mdist;
@@ -428,8 +413,7 @@ int solve_problem(int problem_num = 0)
   }
 
   // 家を水源につなげる
-  for (int i = 0; i < k; ++i)
-  {
+  for (int i = 0; i < k; ++i) {
     int phase = 0;
     int now_x = house_x[i], now_y = house_y[i];
     int next_x = -1, next_y = -1;
@@ -455,11 +439,9 @@ int solve_problem(int problem_num = 0)
 
         // 既に壊れて水路が通っているマスが近くにあれば、そちらを優先
         int diff_sum = abs(diff_x) + abs(diff_y);
-        for (int k = 1; k < diff_sum; ++k)
-        {
+        for (int k = 1; k < diff_sum; ++k) {
           bool found = false;
-          for (int j = 0; j < 4; ++j)
-          {
+          for (int j = 0; j < 4; ++j) {
             int nx = now_x + DELTA_X[j] * k;
             int ny = now_y + DELTA_Y[j] * k;
             if (!is_out_of_bounds(nx, ny) && is_united_with_water(nx, ny)) {
@@ -595,8 +577,7 @@ int main()
   else if (mode == 2) {
     // 複数ケース
     ll score_sum = 0;
-    for (int i = 0; i < 100; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       score_sum += solve_outer(i);
       clear_all_multicase();
     }

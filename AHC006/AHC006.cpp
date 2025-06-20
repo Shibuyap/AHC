@@ -141,8 +141,7 @@ public:
   int compute_path_time()
   {
     length = 0;
-    for (int i = 1; i < path.size(); ++i)
-    {
+    for (int i = 1; i < path.size(); ++i) {
       length += manhattan(path[i], path[i - 1]);
     }
     return length;
@@ -581,8 +580,7 @@ int main()
     solve_case(0);
   }
   else if (mode == 1) {
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       solve_case(i);
     }
   }

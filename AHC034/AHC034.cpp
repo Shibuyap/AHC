@@ -715,8 +715,7 @@ void Method1(int threshold1 = 300, int threshold2 = 300)
     }
   }
 
-  for (int i = route.size() - 1; i >= 0; --i)
-  {
+  for (int i = route.size() - 1; i >= 0; --i) {
     int x = route[i].first;
     int y = route[i].second;
     if (spot[x][y].size() > 0) {
@@ -765,8 +764,7 @@ void Method1(int threshold1 = 300, int threshold2 = 300)
 
     if (d == 0) {
       int ok = 1;
-      for (int j = i; j >= 0; --j)
-      {
+      for (int j = i; j >= 0; --j) {
         int x = route[j].first;
         int y = route[j].second;
         if (h[x][y] != 0) {
@@ -912,8 +910,7 @@ int main()
   }
   else if (mode == 1) {
     ll sum = 0;
-    for (int i = 0; i < 10; ++i)
-    {
+    for (int i = 0; i < 10; ++i) {
       ll score = Solve(i);
       sum += score;
       cout << "num = " << i << ", ";
