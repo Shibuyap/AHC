@@ -241,65 +241,65 @@ void FinalAdjustment()
     }
   }
 
-  for (int _ = 0; _ < 20000; ++_) {
-    int rv = Rand() % 2;
-    int rx = 0, ry = 0;
-    if (rv == 0) {
-      rx = Rand() % 29 + 1;
-      ry = Rand() % 30;
+  for (int iter = 0; iter < 20000; ++iter) {
+    int dir = Rand() % 2;
+    int x = 0, y = 0;
+    if (dir == 0) {
+      x = Rand() % 29 + 1;
+      y = Rand() % 30;
     }
     else {
-      rx = Rand() % 30;
-      ry = Rand() % 29 + 1;
+      x = Rand() % 30;
+      y = Rand() % 29 + 1;
     }
-    double ra = Rand01() * 200.0 - 100.0;
-    if (rv == 0) {
-      if (rx <= cut_v[ry]) {
-        if (up[ry] + ra < 1000 || 9000 < up[ry] + ra) { continue; }
+    double delta = Rand01() * 200.0 - 100.0;
+    if (dir == 0) {
+      if (x <= cut_v[y]) {
+        if (up[y] + delta < 1000 || 9000 < up[y] + delta) { continue; }
       }
       else {
-        if (down[ry] + ra < 1000 || 9000 < down[ry] + ra) { continue; }
+        if (down[y] + delta < 1000 || 9000 < down[y] + delta) { continue; }
       }
     }
     else {
-      if (ry <= cut_h[rx]) {
-        if (l[rx] + ra < 1000 || 9000 < l[rx] + ra) { continue; }
+      if (y <= cut_h[x]) {
+        if (l[x] + delta < 1000 || 9000 < l[x] + delta) { continue; }
       }
       else {
-        if (r[rx] + ra < 1000 || 9000 < r[rx] + ra) { continue; }
+        if (r[x] + delta < 1000 || 9000 < r[x] + delta) { continue; }
       }
     }
 
     double diff = 0;
 
-    if (rv == 0) {
-      for (int i = 0; i < PathIDVectorUD[rx][ry].size(); ++i) {
-        int pathID = PathIDVectorUD[rx][ry][i];
-        diff += (std::abs(dist_res[pathID] - dist_est[pathID]) - std::abs(dist_res[pathID] - (dist_est[pathID] + ra))) * (40000.0 / dist_res[pathID]);
+    if (dir == 0) {
+      for (int i = 0; i < PathIDVectorUD[x][y].size(); ++i) {
+        int t = PathIDVectorUD[x][y][i];
+        diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + delta))) * (40000.0 / dist_res[t]);
       }
     }
     else {
-      for (int i = 0; i < PathIDVectorLR[rx][ry].size(); ++i) {
-        int pathID = PathIDVectorLR[rx][ry][i];
-        diff += (std::abs(dist_res[pathID] - dist_est[pathID]) - std::abs(dist_res[pathID] - (dist_est[pathID] + ra))) * (40000.0 / dist_res[pathID]);
+      for (int i = 0; i < PathIDVectorLR[x][y].size(); ++i) {
+        int t = PathIDVectorLR[x][y][i];
+        diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + delta))) * (40000.0 / dist_res[t]);
       }
     }
 
     if (diff > 0) {
-      if (rv == 0) {
-        for (int i = 0; i < PathIDVectorUD[rx][ry].size(); ++i) {
-          int pathID = PathIDVectorUD[rx][ry][i];
-          dist_est[pathID] += ra;
+      if (dir == 0) {
+        for (int i = 0; i < PathIDVectorUD[x][y].size(); ++i) {
+          int t = PathIDVectorUD[x][y][i];
+          dist_est[t] += delta;
         }
       }
       else {
-        for (int i = 0; i < PathIDVectorLR[rx][ry].size(); ++i) {
-          int pathID = PathIDVectorLR[rx][ry][i];
-          dist_est[pathID] += ra;
+        for (int i = 0; i < PathIDVectorLR[x][y].size(); ++i) {
+          int t = PathIDVectorLR[x][y][i];
+          dist_est[t] += delta;
         }
       }
-      if (rv == 0) dUD[rx][ry] += ra;
-      else dLR[rx][ry] += ra;
+      if (dir == 0) dUD[x][y] += delta;
+      else dLR[x][y] += delta;
       diff_sum -= diff;
     }
   }
@@ -375,10 +375,10 @@ string ConstructPath(int sx, int sy, int gx, int gy, vector<int>& v)
   while (gx != sx || gy != sy) {
     v.push_back(nxt[gx][gy]);
     ans += ULDR[nxt[gx][gy]];
-    int ggx = gx - dx[nxt[gx][gy]];
-    int ggy = gy - dy[nxt[gx][gy]];
-    gx = ggx;
-    gy = ggy;
+    int nx = gx - dx[nxt[gx][gy]];
+    int ny = gy - dy[nxt[gx][gy]];
+    gx = nx;
+    gy = ny;
   }
   reverse(ans.begin(), ans.end());
   reverse(v.begin(), v.end());
@@ -396,20 +396,19 @@ void UpdatePathInfo(int turn, int sx, int sy, const vector<int>& v)
     }
   }
 
-  int ksx = sx, ksy = sy;
   for (int i = 0; i < v.size(); ++i) {
-    int nsx = sx;
-    int nsy = sy;
-    if (v[i] == 2) nsx += 1;
-    if (v[i] == 3) nsy += 1;
+    int x = sx;
+    int y = sy;
+    if (v[i] == 2) x += 1;
+    if (v[i] == 3) y += 1;
 
     if (v[i] % 2 == 0) {
-      vpath[nsx][nsy] = 1;
-      PathIDVectorUD[nsx][nsy].push_back(turn);
+      vpath[x][y] = 1;
+      PathIDVectorUD[x][y].push_back(turn);
     }
     else {
-      hpath[nsx][nsy] = 1;
-      PathIDVectorLR[nsx][nsy].push_back(turn);
+      hpath[x][y] = 1;
+      PathIDVectorLR[x][y].push_back(turn);
     }
 
     sx += dx[v[i]];
@@ -437,14 +436,14 @@ void UpdateDiffSum(int turn)
 
   for (int j = 0; j < n; ++j) {
     for (int i = 0; i < turn_v[j].size(); ++i) {
-      int turnID = turn_v[j][i];
-      dist_est[turnID] += up[j] * vsum[turnID][cut_v[j]][j] + down[j] * (vsum[turnID][n - 1][j] - vsum[turnID][cut_v[j]][j]);
+      int t = turn_v[j][i];
+      dist_est[t] += up[j] * vsum[t][cut_v[j]][j] + down[j] * (vsum[t][n - 1][j] - vsum[t][cut_v[j]][j]);
     }
   }
   for (int j = 0; j < n; ++j) {
     for (int i = 0; i < turn_h[j].size(); ++i) {
-      int turnID = turn_h[j][i];
-      dist_est[turnID] += l[j] * hsum[turnID][j][cut_h[j]] + r[j] * (hsum[turnID][j][n - 1] - hsum[turnID][j][cut_h[j]]);
+      int t = turn_h[j][i];
+      dist_est[t] += l[j] * hsum[t][j][cut_h[j]] + r[j] * (hsum[t][j][n - 1] - hsum[t][j][cut_h[j]]);
     }
   }
   for (int i = 0; i < turn + 1; ++i) {
@@ -667,413 +666,418 @@ int Solve(string inputFileNum)
 
 void AnnealingMode0(double temp)
 {
-  int rULDR = Rand() % 4;
-  int rN = Rand() % n;
-  double rA = Rand01() * 20 - 10;
+  int dir = Rand() % 4;
+  int idx = Rand() % n;
+  double delta = Rand01() * 20 - 10;
 
-  if (rULDR == 0) if (up[rN] + rA < 1000 || 9000 < up[rN] + rA) { return; }
-  if (rULDR == 1) if (l[rN] + rA < 1000 || 9000 < l[rN] + rA) { return; }
-  if (rULDR == 2) if (down[rN] + rA < 1000 || 9000 < down[rN] + rA) { return; }
-  if (rULDR == 3) if (r[rN] + rA < 1000 || 9000 < r[rN] + rA) { return; }
+  if (dir == 0) if (up[idx] + delta < 1000 || 9000 < up[idx] + delta) { return; }
+  if (dir == 1) if (l[idx] + delta < 1000 || 9000 < l[idx] + delta) { return; }
+  if (dir == 2) if (down[idx] + delta < 1000 || 9000 < down[idx] + delta) { return; }
+  if (dir == 3) if (r[idx] + delta < 1000 || 9000 < r[idx] + delta) { return; }
 
   double diff = 0;
 
-  if (rULDR == 0) {
-    for (int i = 0; i < turn_v[rN].size(); ++i) {
-      int turnID = turn_v[rN][i];
-      double d = rA * vsum[turnID][cut_v[rN]][rN];
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+  if (dir == 0) {
+    for (int i = 0; i < turn_v[idx].size(); ++i) {
+      int t = turn_v[idx][i];
+      double d = delta * vsum[t][cut_v[idx]][idx];
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(up[rN] - down[rN]) * SabunCostMultiple - std::abs((up[rN] + rA) - down[rN]) * SabunCostMultiple;
+    diff += std::abs(up[idx] - down[idx]) * SabunCostMultiple - std::abs((up[idx] + delta) - down[idx]) * SabunCostMultiple;
   }
-  if (rULDR == 1) {
-    for (int i = 0; i < turn_h[rN].size(); ++i) {
-      int turnID = turn_h[rN][i];
-      double d = rA * hsum[turnID][rN][cut_h[rN]];
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+  if (dir == 1) {
+    for (int i = 0; i < turn_h[idx].size(); ++i) {
+      int t = turn_h[idx][i];
+      double d = delta * hsum[t][idx][cut_h[idx]];
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(l[rN] - r[rN]) * SabunCostMultiple - std::abs((l[rN] + rA) - r[rN]) * SabunCostMultiple;
+    diff += std::abs(l[idx] - r[idx]) * SabunCostMultiple - std::abs((l[idx] + delta) - r[idx]) * SabunCostMultiple;
   }
-  if (rULDR == 2) {
-    for (int i = 0; i < turn_v[rN].size(); ++i) {
-      int turnID = turn_v[rN][i];
-      double d = rA * (vsum[turnID][n - 1][rN] - vsum[turnID][cut_v[rN]][rN]);
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+  if (dir == 2) {
+    for (int i = 0; i < turn_v[idx].size(); ++i) {
+      int t = turn_v[idx][i];
+      double d = delta * (vsum[t][n - 1][idx] - vsum[t][cut_v[idx]][idx]);
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(up[rN] - down[rN]) * SabunCostMultiple - std::abs(up[rN] - (down[rN] + rA)) * SabunCostMultiple;
+    diff += std::abs(up[idx] - down[idx]) * SabunCostMultiple - std::abs(up[idx] - (down[idx] + delta)) * SabunCostMultiple;
   }
-  if (rULDR == 3) {
-    for (int i = 0; i < turn_h[rN].size(); ++i) {
-      int turnID = turn_h[rN][i];
-      double d = rA * (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut_h[rN]]);
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+  if (dir == 3) {
+    for (int i = 0; i < turn_h[idx].size(); ++i) {
+      int t = turn_h[idx][i];
+      double d = delta * (hsum[t][idx][n - 1] - hsum[t][idx][cut_h[idx]]);
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(l[rN] - r[rN]) * SabunCostMultiple - std::abs(l[rN] - (r[rN] + rA)) * SabunCostMultiple;
+    diff += std::abs(l[idx] - r[idx]) * SabunCostMultiple - std::abs(l[idx] - (r[idx] + delta)) * SabunCostMultiple;
   }
 
   double prob = exp((double)diff / temp);
 
   if (prob > Rand01()) {
-    if (rULDR == 0) {
-      for (int i = 0; i < turn_v[rN].size(); ++i) {
-        int turnID = turn_v[rN][i];
-        double d = rA * vsum[turnID][cut_v[rN]][rN];
-        dist_est[turnID] += d;
+    if (dir == 0) {
+      for (int i = 0; i < turn_v[idx].size(); ++i) {
+        int t = turn_v[idx][i];
+        double d = delta * vsum[t][cut_v[idx]][idx];
+        dist_est[t] += d;
       }
+      up[idx] += delta;
     }
-    if (rULDR == 1) {
-      for (int i = 0; i < turn_h[rN].size(); ++i) {
-        int turnID = turn_h[rN][i];
-        double d = rA * hsum[turnID][rN][cut_h[rN]];
-        dist_est[turnID] += d;
+    if (dir == 1) {
+      for (int i = 0; i < turn_h[idx].size(); ++i) {
+        int t = turn_h[idx][i];
+        double d = delta * hsum[t][idx][cut_h[idx]];
+        dist_est[t] += d;
       }
+      l[idx] += delta;
     }
-    if (rULDR == 2) {
-      for (int i = 0; i < turn_v[rN].size(); ++i) {
-        int turnID = turn_v[rN][i];
-        double d = rA * (vsum[turnID][n - 1][rN] - vsum[turnID][cut_v[rN]][rN]);
-        dist_est[turnID] += d;
+    if (dir == 2) {
+      for (int i = 0; i < turn_v[idx].size(); ++i) {
+        int t = turn_v[idx][i];
+        double d = delta * (vsum[t][n - 1][idx] - vsum[t][cut_v[idx]][idx]);
+        dist_est[t] += d;
       }
+      down[idx] += delta;
     }
-    if (rULDR == 3) {
-      for (int i = 0; i < turn_h[rN].size(); ++i) {
-        int turnID = turn_h[rN][i];
-        double d = rA * (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut_h[rN]]);
-        dist_est[turnID] += d;
+    if (dir == 3) {
+      for (int i = 0; i < turn_h[idx].size(); ++i) {
+        int t = turn_h[idx][i];
+        double d = delta * (hsum[t][idx][n - 1] - hsum[t][idx][cut_h[idx]]);
+        dist_est[t] += d;
       }
+      r[idx] += delta;
     }
-    if (rULDR == 0) up[rN] += rA;
-    if (rULDR == 1) l[rN] += rA;
-    if (rULDR == 2) down[rN] += rA;
-    if (rULDR == 3) r[rN] += rA;
+
     diff_sum -= diff;
   }
 }
 
 void AnnealingMode1(double temp)
 {
-  int rUL = Rand() % 2;
-  int rN = Rand() % n;
-  double rA = Rand01() * 20 - 10;
+  int dir = Rand() % 2;
+  int idx = Rand() % n;
+  double delta = Rand01() * 20 - 10;
 
-  if (rUL == 0) if (up[rN] + rA < 1000 || 9000 < up[rN] + rA) { return; }
-  if (rUL == 1) if (l[rN] + rA < 1000 || 9000 < l[rN] + rA) { return; }
-  if (rUL == 0) if (down[rN] + rA < 1000 || 9000 < down[rN] + rA) { return; }
-  if (rUL == 1) if (r[rN] + rA < 1000 || 9000 < r[rN] + rA) { return; }
+  if (dir == 0) {
+    if (up[idx] + delta < 1000 || 9000 < up[idx] + delta) { return; }
+    if (down[idx] + delta < 1000 || 9000 < down[idx] + delta) { return; }
+  }
+  if (dir == 1) {
+    if (l[idx] + delta < 1000 || 9000 < l[idx] + delta) { return; }
+    if (r[idx] + delta < 1000 || 9000 < r[idx] + delta) { return; }
+  }
 
   double diff = 0;
 
-  if (rUL == 0) {
-    for (int i = 0; i < turn_v[rN].size(); ++i) {
-      int turnID = turn_v[rN][i];
-      double d = rA * vsum[turnID][n - 1][rN];
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+  if (dir == 0) {
+    for (int i = 0; i < turn_v[idx].size(); ++i) {
+      int t = turn_v[idx][i];
+      double d = delta * vsum[t][n - 1][idx];
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
   }
-  if (rUL == 1) {
-    for (int i = 0; i < turn_h[rN].size(); ++i) {
-      int turnID = turn_h[rN][i];
-      double d = rA * hsum[turnID][rN][n - 1];
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+  if (dir == 1) {
+    for (int i = 0; i < turn_h[idx].size(); ++i) {
+      int t = turn_h[idx][i];
+      double d = delta * hsum[t][idx][n - 1];
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
   }
 
   double prob = exp((double)diff / temp);
 
   if (prob > Rand01()) {
-    if (rUL == 0) {
-      for (int i = 0; i < turn_v[rN].size(); ++i) {
-        int turnID = turn_v[rN][i];
-        double d = rA * vsum[turnID][n - 1][rN];
-        dist_est[turnID] += d;
+    if (dir == 0) {
+      for (int i = 0; i < turn_v[idx].size(); ++i) {
+        int t = turn_v[idx][i];
+        double d = delta * vsum[t][n - 1][idx];
+        dist_est[t] += d;
       }
+      up[idx] += delta;
+      down[idx] += delta;
     }
-    if (rUL == 1) {
-      for (int i = 0; i < turn_h[rN].size(); ++i) {
-        int turnID = turn_h[rN][i];
-        double d = rA * hsum[turnID][rN][n - 1];
-        dist_est[turnID] += d;
+    if (dir == 1) {
+      for (int i = 0; i < turn_h[idx].size(); ++i) {
+        int t = turn_h[idx][i];
+        double d = delta * hsum[t][idx][n - 1];
+        dist_est[t] += d;
       }
+      l[idx] += delta;
+      r[idx] += delta;
     }
-    if (rUL == 0) up[rN] += rA;
-    if (rUL == 1) l[rN] += rA;
-    if (rUL == 0) down[rN] += rA;
-    if (rUL == 1) r[rN] += rA;
+
     diff_sum -= diff;
   }
 }
 
 void AnnealingMode2(double temp)
 {
-  int rUL = Rand() % 2;
-  int rN = Rand() % 30;
-  int rA = Rand() % 30 + 1;
-  if (Rand() % 2 == 1) rA *= -1;
-  if (rUL == 0) if (cut_v[rN] + rA < 3 || 27 <= cut_v[rN] + rA) { return; }
-  if (rUL == 1) if (cut_h[rN] + rA < 3 || 27 <= cut_h[rN] + rA) { return; }
+  int dir = Rand() % 2;
+  int idx = Rand() % 30;
+  int delta = Rand() % 30 + 1;
+  if (Rand() % 2 == 1) delta *= -1;
+  if (dir == 0) if (cut_v[idx] + delta < 3 || 27 <= cut_v[idx] + delta) { return; }
+  if (dir == 1) if (cut_h[idx] + delta < 3 || 27 <= cut_h[idx] + delta) { return; }
 
   double diff = 0;
 
-  if (rUL == 0) {
-    for (int i = 0; i < turn_v[rN].size(); ++i) {
-      int turnID = turn_v[rN][i];
+  if (dir == 0) {
+    for (int i = 0; i < turn_v[idx].size(); ++i) {
+      int t = turn_v[idx][i];
       double d = 0;
-      if (rA > 0) {
-        d = (up[rN] - down[rN]) * (vsum[turnID][cut_v[rN] + rA][rN] - vsum[turnID][cut_v[rN]][rN]);
+      if (delta > 0) {
+        d = (up[idx] - down[idx]) * (vsum[t][cut_v[idx] + delta][idx] - vsum[t][cut_v[idx]][idx]);
       }
       else {
-        d = (down[rN] - up[rN]) * (vsum[turnID][cut_v[rN]][rN] - vsum[turnID][cut_v[rN] + rA][rN]);
+        d = (down[idx] - up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + delta][idx]);
       }
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
   }
-  if (rUL == 1) {
-    for (int i = 0; i < turn_h[rN].size(); ++i) {
-      int turnID = turn_h[rN][i];
+  if (dir == 1) {
+    for (int i = 0; i < turn_h[idx].size(); ++i) {
+      int t = turn_h[idx][i];
       double d = 0;
-      if (rA > 0) {
-        d = (l[rN] - r[rN]) * (hsum[turnID][rN][cut_h[rN] + rA] - hsum[turnID][rN][cut_h[rN]]);
+      if (delta > 0) {
+        d = (l[idx] - r[idx]) * (hsum[t][idx][cut_h[idx] + delta] - hsum[t][idx][cut_h[idx]]);
       }
       else {
-        d = (r[rN] - l[rN]) * (hsum[turnID][rN][cut_h[rN]] - hsum[turnID][rN][cut_h[rN] + rA]);
+        d = (r[idx] - l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + delta]);
       }
-      diff += (std::abs(dist_res[turnID] - dist_est[turnID]) - std::abs(dist_res[turnID] - (dist_est[turnID] + d))) * (40000.0 / dist_res[turnID]);
+      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
   }
 
   double prob = exp((double)diff / temp);
 
   if (prob > Rand01()) {
-    if (rUL == 0) {
-      for (int i = 0; i < turn_v[rN].size(); ++i) {
-        int turnID = turn_v[rN][i];
+    if (dir == 0) {
+      for (int i = 0; i < turn_v[idx].size(); ++i) {
+        int t = turn_v[idx][i];
         double d = 0;
-        if (rA > 0) {
-          d = (up[rN] - down[rN]) * (vsum[turnID][cut_v[rN] + rA][rN] - vsum[turnID][cut_v[rN]][rN]);
+        if (delta > 0) {
+          d = (up[idx] - down[idx]) * (vsum[t][cut_v[idx] + delta][idx] - vsum[t][cut_v[idx]][idx]);
         }
         else {
-          d = (down[rN] - up[rN]) * (vsum[turnID][cut_v[rN]][rN] - vsum[turnID][cut_v[rN] + rA][rN]);
+          d = (down[idx] - up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + delta][idx]);
         }
-        dist_est[turnID] += d;
+        dist_est[t] += d;
       }
+      cut_v[idx] += delta;
     }
-    if (rUL == 1) {
-      for (int i = 0; i < turn_h[rN].size(); ++i) {
-        int turnID = turn_h[rN][i];
+    if (dir == 1) {
+      for (int i = 0; i < turn_h[idx].size(); ++i) {
+        int t = turn_h[idx][i];
         double d = 0;
-        if (rA > 0) {
-          d = (l[rN] - r[rN]) * (hsum[turnID][rN][cut_h[rN] + rA] - hsum[turnID][rN][cut_h[rN]]);
+        if (delta > 0) {
+          d = (l[idx] - r[idx]) * (hsum[t][idx][cut_h[idx] + delta] - hsum[t][idx][cut_h[idx]]);
         }
         else {
-          d = (r[rN] - l[rN]) * (hsum[turnID][rN][cut_h[rN]] - hsum[turnID][rN][cut_h[rN] + rA]);
+          d = (r[idx] - l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + delta]);
         }
-        dist_est[turnID] += d;
+        dist_est[t] += d;
       }
+      cut_h[idx] += delta;
     }
-
-    if (rUL == 0) cut_v[rN] += rA;
-    if (rUL == 1) cut_h[rN] += rA;
 
     diff_sum -= diff;
   }
 }
 
-void AnnealingMode3Vertical(int rN)
+void AnnealingMode3Vertical(int idx)
 {
-  vector<double> amari;
-  for (int i = 0; i < turn_v[rN].size(); ++i) {
-    int turnID = turn_v[rN][i];
-    amari.push_back(dist_res[turnID] - (dist_est[turnID] - (up[rN] * vsum[turnID][cut_v[rN]][rN] + down[rN] * (vsum[turnID][n - 1][rN] - vsum[turnID][cut_v[rN]][rN]))));
+  vector<double> rem;
+  for (int i = 0; i < turn_v[idx].size(); ++i) {
+    int t = turn_v[idx][i];
+    rem.push_back(dist_res[t] - (dist_est[t] - (up[idx] * vsum[t][cut_v[idx]][idx] + down[idx] * (vsum[t][n - 1][idx] - vsum[t][cut_v[idx]][idx]))));
   }
-  double arg_up = up[rN], arg_down = down[rN];
-  int arg_cut_v = cut_v[rN];
+  double best_up = up[idx], best_down = down[idx];
+  int best_cut = cut_v[idx];
   double maxDiff = 0;
   int changed = 0;
-  for (int i = 0; i < turn_v[rN].size(); ++i) {
-    int turnID = turn_v[rN][i];
-    maxDiff += (abs(amari[i]) - std::abs(dist_res[turnID] - dist_est[turnID])) * (40000.0 / dist_res[turnID]);
+  for (int i = 0; i < turn_v[idx].size(); ++i) {
+    int t = turn_v[idx][i];
+    maxDiff += (abs(rem[i]) - std::abs(dist_res[t] - dist_est[t])) * (40000.0 / dist_res[t]);
   }
   double keep_diff = maxDiff;
   for (int cut = 3; cut < 27; ++cut) {
-    for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
-      double rA = Rand() % 8001 + 1000;
+    for (int trial = 0; trial < 20; ++trial) {
+      double u = Rand() % 8001 + 1000;
 
-      double countSum = 0;
-      for (int i = 0; i < turn_v[rN].size(); ++i) {
-        int turnID = turn_v[rN][i];
-        if (vsum[turnID][n - 1][rN] - vsum[turnID][cut][rN] == 0) vec[i].first = 1001001;
-        else vec[i].first = (amari[i] - rA * vsum[turnID][cut][rN]) / (vsum[turnID][n - 1][rN] - vsum[turnID][cut][rN]);
-        vec[i].second = (vsum[turnID][n - 1][rN] - vsum[turnID][cut][rN]) * (40000.0 / dist_res[turnID]);
-        countSum += vec[i].second;
+      double sum = 0;
+      for (int i = 0; i < turn_v[idx].size(); ++i) {
+        int t = turn_v[idx][i];
+        if (vsum[t][n - 1][idx] - vsum[t][cut][idx] == 0) vec[i].first = 1001001;
+        else vec[i].first = (rem[i] - u * vsum[t][cut][idx]) / (vsum[t][n - 1][idx] - vsum[t][cut][idx]);
+        vec[i].second = (vsum[t][n - 1][idx] - vsum[t][cut][idx]) * (40000.0 / dist_res[t]);
+        sum += vec[i].second;
       }
-      if (countSum == 0) { continue; }
-      vec[turn_v[rN].size()].first = rA;
-      vec[turn_v[rN].size()].second = SabunCostMultiple;
-      countSum += SabunCostMultiple;
-      sort(vec.begin(), vec.begin() + turn_v[rN].size() + 1);
+      if (sum == 0) { continue; }
+      vec[turn_v[idx].size()].first = u;
+      vec[turn_v[idx].size()].second = SabunCostMultiple;
+      sum += SabunCostMultiple;
+      sort(vec.begin(), vec.begin() + turn_v[idx].size() + 1);
       int ite = 0;
-      double countNow = vec[ite].second;
-      while (ite < turn_v[rN].size() + 1) {
-        if (countNow < countSum - countNow) {
+      double cnt = vec[ite].second;
+      while (ite < turn_v[idx].size() + 1) {
+        if (cnt < sum - cnt) {
           ite++;
-          countNow += vec[ite].second;
+          cnt += vec[ite].second;
         }
         else {
           break;
         }
       }
       double d = 0;
-      double DownValue = vec[ite].first;
-      DownValue = max(DownValue, 1000.0);
-      DownValue = min(DownValue, 9000.0);
-      for (int i = 0; i < turn_v[rN].size(); ++i) {
-        int turnID = turn_v[rN][i];
-        d += (abs(amari[i]) - std::abs(amari[i] - (vsum[turnID][n - 1][rN] - vsum[turnID][cut][rN]) * DownValue)) * (40000.0 / dist_res[turnID]);
+      double dval = vec[ite].first;
+      dval = max(dval, 1000.0);
+      dval = min(dval, 9000.0);
+      for (int i = 0; i < turn_v[idx].size(); ++i) {
+        int t = turn_v[idx][i];
+        d += (abs(rem[i]) - std::abs(rem[i] - (vsum[t][n - 1][idx] - vsum[t][cut][idx]) * dval)) * (40000.0 / dist_res[t]);
       }
-      d += std::abs(up[rN] - down[rN]) * SabunCostMultiple - std::abs(rA - DownValue) * SabunCostMultiple;
+      d += std::abs(up[idx] - down[idx]) * SabunCostMultiple - std::abs(u - dval) * SabunCostMultiple;
 
       if (d > maxDiff) {
         maxDiff = d;
-        arg_up = rA;
-        arg_down = DownValue;
-        arg_cut_v = cut;
+        best_up = u;
+        best_down = dval;
+        best_cut = cut;
         changed = 1;
       }
     }
   }
   if (changed == 0) { return; }
-  int cutDiff = arg_cut_v - cut_v[rN];
-  for (int i = 0; i < turn_v[rN].size(); ++i) {
-    int turnID = turn_v[rN][i];
+  int cdiff = best_cut - cut_v[idx];
+  for (int i = 0; i < turn_v[idx].size(); ++i) {
+    int t = turn_v[idx][i];
     double d = 0;
-    if (cutDiff > 0) {
-      d = (up[rN] - down[rN]) * (vsum[turnID][cut_v[rN] + cutDiff][rN] - vsum[turnID][cut_v[rN]][rN]);
+    if (cdiff > 0) {
+      d = (up[idx] - down[idx]) * (vsum[t][cut_v[idx] + cdiff][idx] - vsum[t][cut_v[idx]][idx]);
     }
     else {
-      d = (down[rN] - up[rN]) * (vsum[turnID][cut_v[rN]][rN] - vsum[turnID][cut_v[rN] + cutDiff][rN]);
+      d = (down[idx] - up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + cdiff][idx]);
     }
-    dist_est[turnID] += d;
+    dist_est[t] += d;
   }
-  cut_v[rN] = arg_cut_v;
-  double upDiff = arg_up - up[rN];
-  for (int i = 0; i < turn_v[rN].size(); ++i) {
-    int turnID = turn_v[rN][i];
-    double d = upDiff * vsum[turnID][cut_v[rN]][rN];
-    dist_est[turnID] += d;
+  cut_v[idx] = best_cut;
+  double udiff = best_up - up[idx];
+  for (int i = 0; i < turn_v[idx].size(); ++i) {
+    int t = turn_v[idx][i];
+    double d = udiff * vsum[t][cut_v[idx]][idx];
+    dist_est[t] += d;
   }
-  up[rN] = arg_up;
-  double downDiff = arg_down - down[rN];
-  for (int i = 0; i < turn_v[rN].size(); ++i) {
-    int turnID = turn_v[rN][i];
-    double d = downDiff * (vsum[turnID][n - 1][rN] - vsum[turnID][cut_v[rN]][rN]);
-    dist_est[turnID] += d;
+  up[idx] = best_up;
+  double ddiff = best_down - down[idx];
+  for (int i = 0; i < turn_v[idx].size(); ++i) {
+    int t = turn_v[idx][i];
+    double d = ddiff * (vsum[t][n - 1][idx] - vsum[t][cut_v[idx]][idx]);
+    dist_est[t] += d;
   }
-  down[rN] = arg_down;
+  down[idx] = best_down;
   diff_sum -= (maxDiff - keep_diff);
 }
 
-void AnnealingMode3Horizontal(int rN)
+void AnnealingMode3Horizontal(int idx)
 {
-  vector<double> amari;
-  for (int i = 0; i < turn_h[rN].size(); ++i) {
-    int turnID = turn_h[rN][i];
-    amari.push_back(dist_res[turnID] - (dist_est[turnID] - (l[rN] * hsum[turnID][rN][cut_h[rN]] + r[rN] * (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut_h[rN]]))));
+  vector<double> rem;
+  for (int i = 0; i < turn_h[idx].size(); ++i) {
+    int t = turn_h[idx][i];
+    rem.push_back(dist_res[t] - (dist_est[t] - (l[idx] * hsum[t][idx][cut_h[idx]] + r[idx] * (hsum[t][idx][n - 1] - hsum[t][idx][cut_h[idx]]))));
   }
-  double argmax_l = l[rN], argmax_r = r[rN];
-  int arg_cut_h = cut_h[rN];
+  double best_l = l[idx], best_r = r[idx];
+  int best_cut = cut_h[idx];
   double maxDiff = 0;
   int changed = 0;
-  for (int i = 0; i < turn_h[rN].size(); ++i) {
-    int turnID = turn_h[rN][i];
-    maxDiff += (abs(amari[i]) - std::abs(dist_res[turnID] - dist_est[turnID])) * (40000.0 / dist_res[turnID]);
+  for (int i = 0; i < turn_h[idx].size(); ++i) {
+    int t = turn_h[idx][i];
+    maxDiff += (abs(rem[i]) - std::abs(dist_res[t] - dist_est[t])) * (40000.0 / dist_res[t]);
   }
   double keep_diff = maxDiff;
   for (int cut = 3; cut < 27; ++cut) {
-    for (int randomChallenge = 0; randomChallenge < 20; ++randomChallenge) {
-      double rA = Rand() % 8001 + 1000;
-      double countSum = 0;
-      for (int i = 0; i < turn_h[rN].size(); ++i) {
-        int turnID = turn_h[rN][i];
-        if (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut] == 0) vec[i].first = 1001001;
-        else vec[i].first = (amari[i] - rA * hsum[turnID][rN][cut]) / (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut]);
-        vec[i].second = (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut]) * (40000.0 / dist_res[turnID]);
-        countSum += vec[i].second;
+    for (int trial = 0; trial < 20; ++trial) {
+      double lval = Rand() % 8001 + 1000;
+      double sum = 0;
+      for (int i = 0; i < turn_h[idx].size(); ++i) {
+        int t = turn_h[idx][i];
+        if (hsum[t][idx][n - 1] - hsum[t][idx][cut] == 0) vec[i].first = 1001001;
+        else vec[i].first = (rem[i] - lval * hsum[t][idx][cut]) / (hsum[t][idx][n - 1] - hsum[t][idx][cut]);
+        vec[i].second = (hsum[t][idx][n - 1] - hsum[t][idx][cut]) * (40000.0 / dist_res[t]);
+        sum += vec[i].second;
       }
-      if (countSum == 0) { continue; }
-      vec[turn_h[rN].size()].first = rA;
-      vec[turn_h[rN].size()].second = SabunCostMultiple;
-      countSum += SabunCostMultiple;
-      sort(vec.begin(), vec.begin() + turn_h[rN].size() + 1);
+      if (sum == 0) { continue; }
+      vec[turn_h[idx].size()].first = lval;
+      vec[turn_h[idx].size()].second = SabunCostMultiple;
+      sum += SabunCostMultiple;
+      sort(vec.begin(), vec.begin() + turn_h[idx].size() + 1);
       int ite = 0;
-      double countNow = vec[ite].second;
-      while (ite < turn_h[rN].size() + 1) {
-        if (countNow < countSum - countNow) {
+      double cnt = vec[ite].second;
+      while (ite < turn_h[idx].size() + 1) {
+        if (cnt < sum - cnt) {
           ite++;
-          countNow += vec[ite].second;
+          cnt += vec[ite].second;
         }
         else {
           break;
         }
       }
       double d = 0;
-      double RightValue = vec[ite].first;
-      RightValue = max(RightValue, 1000.0);
-      RightValue = min(RightValue, 9000.0);
-      for (int i = 0; i < turn_h[rN].size(); ++i) {
-        int turnID = turn_h[rN][i];
-        d += (abs(amari[i]) - std::abs(amari[i] - (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut]) * RightValue)) * (40000.0 / dist_res[turnID]);
+      double rval = vec[ite].first;
+      rval = max(rval, 1000.0);
+      rval = min(rval, 9000.0);
+      for (int i = 0; i < turn_h[idx].size(); ++i) {
+        int t = turn_h[idx][i];
+        d += (abs(rem[i]) - std::abs(rem[i] - (hsum[t][idx][n - 1] - hsum[t][idx][cut]) * rval)) * (40000.0 / dist_res[t]);
       }
-      d += std::abs(l[rN] - r[rN]) * SabunCostMultiple - std::abs(rA - RightValue) * SabunCostMultiple;
+      d += std::abs(l[idx] - r[idx]) * SabunCostMultiple - std::abs(lval - rval) * SabunCostMultiple;
 
       if (d > maxDiff) {
         maxDiff = d;
-        argmax_l = rA;
-        argmax_r = RightValue;
-        arg_cut_h = cut;
+        best_l = lval;
+        best_r = rval;
+        best_cut = cut;
         changed = 1;
       }
     }
   }
   if (changed == 0) { return; }
-  int cutDiff = arg_cut_h - cut_h[rN];
-  for (int i = 0; i < turn_h[rN].size(); ++i) {
-    int turnID = turn_h[rN][i];
+  int cdiff = best_cut - cut_h[idx];
+  for (int i = 0; i < turn_h[idx].size(); ++i) {
+    int t = turn_h[idx][i];
     double d = 0;
-    if (cutDiff > 0) {
-      d = (l[rN] - r[rN]) * (hsum[turnID][rN][cut_h[rN] + cutDiff] - hsum[turnID][rN][cut_h[rN]]);
+    if (cdiff > 0) {
+      d = (l[idx] - r[idx]) * (hsum[t][idx][cut_h[idx] + cdiff] - hsum[t][idx][cut_h[idx]]);
     }
     else {
-      d = (r[rN] - l[rN]) * (hsum[turnID][rN][cut_h[rN]] - hsum[turnID][rN][cut_h[rN] + cutDiff]);
+      d = (r[idx] - l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + cdiff]);
     }
-    dist_est[turnID] += d;
+    dist_est[t] += d;
   }
-  cut_h[rN] = arg_cut_h;
-  double leftDiff = argmax_l - l[rN];
-  for (int i = 0; i < turn_h[rN].size(); ++i) {
-    int turnID = turn_h[rN][i];
-    double d = leftDiff * hsum[turnID][rN][cut_h[rN]];
-    dist_est[turnID] += d;
+  cut_h[idx] = best_cut;
+  double ldiff = best_l - l[idx];
+  for (int i = 0; i < turn_h[idx].size(); ++i) {
+    int t = turn_h[idx][i];
+    double d = ldiff * hsum[t][idx][cut_h[idx]];
+    dist_est[t] += d;
   }
-  l[rN] = argmax_l;
-  double rightDiff = argmax_r - r[rN];
-  for (int i = 0; i < turn_h[rN].size(); ++i) {
-    int turnID = turn_h[rN][i];
-    double d = rightDiff * (hsum[turnID][rN][n - 1] - hsum[turnID][rN][cut_h[rN]]);
-    dist_est[turnID] += d;
+  l[idx] = best_l;
+  double rdiff = best_r - r[idx];
+  for (int i = 0; i < turn_h[idx].size(); ++i) {
+    int t = turn_h[idx][i];
+    double d = rdiff * (hsum[t][idx][n - 1] - hsum[t][idx][cut_h[idx]]);
+    dist_est[t] += d;
   }
-  r[rN] = argmax_r;
+  r[idx] = best_r;
   diff_sum -= (maxDiff - keep_diff);
 }
 
 void AnnealingMode3()
 {
-  int rUL = Rand() % 2;
-  int rN = Rand() % n;
-  if (rUL == 0) {
-    AnnealingMode3Vertical(rN);
+  int dir = Rand() % 2;
+  int idx = Rand() % n;
+  if (dir == 0) {
+    AnnealingMode3Vertical(idx);
   }
   else {
-    AnnealingMode3Horizontal(rN);
+    AnnealingMode3Horizontal(idx);
   }
 }
 

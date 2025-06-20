@@ -578,8 +578,8 @@ inline void extendWithTemp(int ite, double temp)
   }
 }
 
-Rect best_best_rects[MAX_N];
-int real_real_maxScore = -1;
+Rect secondBestRects[MAX_N];
+int secondBestScore = -1;
 
 inline void resetRects(int numToReset)
 {
@@ -1274,20 +1274,20 @@ inline void initSolution()
   }
 }
 
-Rect best_best_best_rects[MAX_N];
-int real_real_real_maxScore = -1;
+Rect finalBestRects[MAX_N];
+int finalBestScore = -1;
 
 Rect rects2[100][MAX_N];
 Rect rects4[100][MAX_N];
-int maxScore4[100] = {};
+int beamScores[100] = {};
 
-Rect ui_tei_rects[MAX_N];
-int ui_tei_maxScore = -1;
+Rect multiStartBestRects[MAX_N];
+int multiStartBestScore = -1;
 
 inline void multiStartSearch()
 {
   clock_t start, end;
-  for (int ui_tei = 0; ui_tei < (5); ++ui_tei) {
+  for (int multiStartIter = 0; multiStartIter < (5); ++multiStartIter) {
 
     // 初期解
     // 左上(x,y)、右下(x+1,y+1)
@@ -1295,8 +1295,8 @@ inline void multiStartSearch()
       initRect(rectangles[i], points[i]);
     }
 
-    int T = 5;
-    for (int _ = 0; _ < (T); ++_) {
+    int innerIterations = 5;
+    for (int innerIter = 0; innerIter < (innerIterations); ++innerIter) {
       start = clock();
 
       // 初期スコア計算
@@ -1306,19 +1306,19 @@ inline void multiStartSearch()
       // 焼きなまし
       start = clock();
       end = clock();
-      double now_time = ((double)end - start) / CLOCKS_PER_SEC;
-      double TL = (0.10 / (double)T) / allLoopTimes;
-      double start_temp = 2048;
-      double end_temp = 0.1;
-      double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+      double elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+      double localTimeLimit = (0.10 / (double)innerIterations) / allLoopTimes;
+      double startTemp = 2048;
+      double endTemp = 0.1;
+      double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
       int loop = 0;
       while (true) {
         loop++;
         if (loop % 100 == 1) {
           end = clock();
-          now_time = ((double)end - start) / CLOCKS_PER_SEC;
-          if (now_time > TL)break;
-          temp = start_temp + (end_temp - start_temp) * now_time / TL;
+          elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+          if (elapsedTime > localTimeLimit)break;
+          temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
         }
 
         int mode = loop % 4;
@@ -1330,7 +1330,7 @@ inline void multiStartSearch()
           int ite = xorshift() % numRects;
           slideRect(ite, temp);
         }
-        else if (now_time > 2.0 / T && mode == 2) {
+        else if (elapsedTime > 2.0 / innerIterations && mode == 2) {
           int ite = xorshift() % numRects;
           changeAspectRatio(ite, temp);
         }
@@ -1347,19 +1347,19 @@ inline void multiStartSearch()
       }
       calcScore(-1);
 
-      if (currentScore > real_real_maxScore) {
-        real_real_maxScore = currentScore;
+      if (currentScore > secondBestScore) {
+        secondBestScore = currentScore;
         for (int i = 0; i < numRects; ++i) {
-          best_best_rects[i] = rectangles[i];
+          secondBestRects[i] = rectangles[i];
         }
       }
     }
 
-    // real_real_maxScore戻す
-    currentScore = real_real_maxScore;
-    real_real_maxScore = 0;
+    // secondBestScore戻す
+    currentScore = secondBestScore;
+    secondBestScore = 0;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = best_best_rects[i];
+      rectangles[i] = secondBestRects[i];
     }
     calcScore(-1);
 
@@ -1376,20 +1376,20 @@ inline void multiStartSearch()
     clock_t start, end;
     start = clock();
     end = clock();
-    double now_time = ((double)end - start) / CLOCKS_PER_SEC;
-    double TL = 0.02 / allLoopTimes;
-    double start_temp = 50048;
-    double end_temp = 0.1;
-    double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+    double elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+    double localTimeLimit = 0.02 / allLoopTimes;
+    double startTemp = 50048;
+    double endTemp = 0.1;
+    double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
     int loop = 0;
-    int kouhan = ui_tei % 2;
+    int useSecondPhase = multiStartIter % 2;
     while (true) {
       loop++;
       if (loop % 100 == 1) {
         end = clock();
-        now_time = ((double)end - start) / CLOCKS_PER_SEC;
-        if (now_time > TL)break;
-        temp = start_temp + (end_temp - start_temp) * now_time / TL;
+        elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+        if (elapsedTime > localTimeLimit)break;
+        temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
       }
 
       int mode = loop % 5;
@@ -1397,11 +1397,11 @@ inline void multiStartSearch()
         int ite = xorshift() % numRects;
         changeSingleEdge(ite, temp);
       }
-      else if (kouhan && mode == 1) { // 位置をスライド
+      else if (useSecondPhase && mode == 1) { // 位置をスライド
         int ite = xorshift() % numRects;
         slideRect(ite, temp);
       }
-      else if (mode == 2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
+      else if (mode == 2 && useSecondPhase && elapsedTime > 2.0 / innerIterations) { // ランダムにアスペクト比を変更
         int ite = xorshift() % numRects;
         changeAspectRatio(ite, temp);
       }
@@ -1422,10 +1422,10 @@ inline void multiStartSearch()
     }
     calcScore(-1);
 
-    if (currentScore > ui_tei_maxScore) {
-      ui_tei_maxScore = currentScore;
+    if (currentScore > multiStartBestScore) {
+      multiStartBestScore = currentScore;
       for (int i = 0; i < numRects; ++i) {
-        ui_tei_rects[i] = rectangles[i];
+        multiStartBestRects[i] = rectangles[i];
       }
     }
   }
@@ -1433,19 +1433,19 @@ inline void multiStartSearch()
   // 元に戻しておく
   currentScore = 0;
   bestScore = 0;
-  real_real_maxScore = 0;
+  secondBestScore = 0;
   for (int i = 0; i < numRects; ++i) {
     initRect(rectangles[i], points[i]);
     bestRects[i] = rectangles[i];
-    best_best_rects[i] = rectangles[i];
+    secondBestRects[i] = rectangles[i];
   }
 }
 
-int solve(int teisyutu, int fileNum)
+int solve(int isSubmission, int fileNum)
 {
   auto startClock = system_clock::now();
   clock_t start, end;
-  clock_t real_start = clock();
+  clock_t overallStart = clock();
 
   readInput(fileNum);
 
@@ -1456,10 +1456,10 @@ int solve(int teisyutu, int fileNum)
 
     multiStartSearch();
 
-    // ui_tei_maxScore戻す
-    currentScore = ui_tei_maxScore;
+    // multiStartBestScore戻す
+    currentScore = multiStartBestScore;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = ui_tei_rects[i];
+      rectangles[i] = multiStartBestRects[i];
     }
     calcScore(-1);
 
@@ -1472,23 +1472,23 @@ int solve(int teisyutu, int fileNum)
     }
 
 
-    int oya = 1;
+    int parentCount = 1;
 
-    for (int asai = 0; asai < (oya); ++asai) {
+    for (int beamIdx = 0; beamIdx < (parentCount); ++beamIdx) {
       for (int j = 0; j < numRects; ++j) {
-        rects2[asai][j] = rectangles[j];
+        rects2[beamIdx][j] = rectangles[j];
       }
     }
 
     // 焼きなまし2
     // 筋のいいやつを追う
-    int T = 250 / allLoopTimes;
-    for (int _ = 0; _ < (T); ++_) {
+    int mainIterations = 250 / allLoopTimes;
+    for (int mainIter = 0; mainIter < (mainIterations); ++mainIter) {
       for (int i = 0; i < (6); ++i) modeCount[i] = 0;
 
-      int TT = 1;
-      for (int asai = 0; asai < (TT); ++asai) {
-        int idx = asai % oya;
+      int innerLoopCount = 1;
+      for (int beamIdx = 0; beamIdx < (innerLoopCount); ++beamIdx) {
+        int idx = beamIdx % parentCount;
         for (int i = 0; i < numRects; ++i) {
           rectangles[i] = rects2[idx][i];
         }
@@ -1505,21 +1505,21 @@ int solve(int teisyutu, int fileNum)
         start = clock();
         end = clock();
         startClock = system_clock::now();
-        double now_time = ((double)end - start) / CLOCKS_PER_SEC;
-        double TL = (((timeLimit - 0.7) / T) / TT) / allLoopTimes;
-        double start_temp = 20048.0;
-        double end_temp = 0.1;
-        double temp = start_temp + (end_temp - start_temp) * now_time / TL;
+        double elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+        double localTimeLimit = (((timeLimit - 0.7) / mainIterations) / innerLoopCount) / allLoopTimes;
+        double startTemp = 20048.0;
+        double endTemp = 0.1;
+        double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
         int loop = 0;
-        int kouhan = _ % 2;
+        int useSecondPhase = mainIter % 2;
 
         while (true) {
           loop++;
           if (loop % 100 == 1) {
             const double time = duration_cast<microseconds>(system_clock::now() - startClock).count() * 1e-6;
-            if (time > TL) { break; }
-            const double progressRatio = time / TL;   // 進捗。開始時が0.0、終了時が1.0
-            temp = start_temp + (end_temp - start_temp) * progressRatio;
+            if (time > localTimeLimit) { break; }
+            const double progressRatio = time / localTimeLimit;   // 進捗。開始時が0.0、終了時が1.0
+            temp = startTemp + (endTemp - startTemp) * progressRatio;
           }
 
 
@@ -1533,7 +1533,7 @@ int solve(int teisyutu, int fileNum)
             int ite = xorshift() % numRects;
             slideRect(ite, temp);
           }
-          else if (mode == -2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
+          else if (mode == -2 && useSecondPhase && elapsedTime > 2.0 / mainIterations) { // ランダムにアスペクト比を変更
             int ite = xorshift() % numRects;
             changeAspectRatio(ite, temp);
           }
@@ -1567,27 +1567,27 @@ int solve(int teisyutu, int fileNum)
           rectangles[i] = bestRects[i];
         }
         calcScore(-1);
-        if (currentScore > real_real_maxScore) {
-          real_real_maxScore = currentScore;
+        if (currentScore > secondBestScore) {
+          secondBestScore = currentScore;
           for (int i = 0; i < numRects; ++i) {
-            best_best_rects[i] = rectangles[i];
+            secondBestRects[i] = rectangles[i];
           }
         }
 
         // ビームサーチの次の種にする
-        maxScore4[asai] = currentScore;
+        beamScores[beamIdx] = currentScore;
         for (int i = 0; i < numRects; ++i) {
-          rects4[asai][i] = rectangles[i];
+          rects4[beamIdx][i] = rectangles[i];
         }
       }
 
       // 次の世代に継承
       vector<P> vBeam;
-      for (int asai = 0; asai < (TT); ++asai) vBeam.emplace_back(P(maxScore4[asai], asai));
+      for (int beamIdx = 0; beamIdx < (innerLoopCount); ++beamIdx) vBeam.emplace_back(P(beamScores[beamIdx], beamIdx));
       sort(vBeam.begin(), vBeam.end(), greater<P>());
 
 
-      for (int ii = 0; ii < (oya); ++ii) {
+      for (int ii = 0; ii < (parentCount); ++ii) {
         int i = vBeam[ii].second;
         for (int j = 0; j < numRects; ++j) {
           rects2[ii][j] = rects4[i][j];
@@ -1595,38 +1595,38 @@ int solve(int teisyutu, int fileNum)
       }
 
       // 提出時以下は消す
-      if (teisyutu == 0 && _ % 10 == 0) {
-        cout << "_ = " << _;
+      if (isSubmission == 0 && mainIter % 10 == 0) {
+        cout << "mainIter = " << mainIter;
         cout << ", vBeam[0] = (" << vBeam[0].first << ", " << vBeam[0].second << ")" << endl;
       }
 
       // エスケープ
       end = clock();
-      if (((double)end - real_start) / CLOCKS_PER_SEC > timeLimit) { break; }
+      if (((double)end - overallStart) / CLOCKS_PER_SEC > timeLimit) { break; }
     }
 
-    // real_real_maxScore戻す
-    currentScore = real_real_maxScore;
+    // secondBestScore戻す
+    currentScore = secondBestScore;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = best_best_rects[i];
+      rectangles[i] = secondBestRects[i];
     }
     calcScore(-1);
 
-    if (teisyutu == 0) {
+    if (isSubmission == 0) {
       cout << "currentScore = " << currentScore << endl;
     }
 
     const int MOD = 1000000007;
-    if (teisyutu == 0 && currentScore > MOD) {
+    if (isSubmission == 0 && currentScore > MOD) {
       cout << "ERROR" << endl;
       writeErrorLog(fileNum);
     }
 
     // real_real_real入れる
-    if (currentScore > real_real_real_maxScore && currentScore < 1000000007) {
-      real_real_real_maxScore = currentScore;
+    if (currentScore > finalBestScore && currentScore < 1000000007) {
+      finalBestScore = currentScore;
       for (int i = 0; i < numRects; ++i) {
-        best_best_best_rects[i] = rectangles[i];
+        finalBestRects[i] = rectangles[i];
       }
     }
 
@@ -1634,23 +1634,23 @@ int solve(int teisyutu, int fileNum)
     // すべて白紙にリセットする
     currentScore = 0;
     bestScore = 0;
-    real_real_maxScore = 0;
+    secondBestScore = 0;
     for (int i = 0; i < numRects; ++i) {
       initRect(rectangles[i], points[i]);
       bestRects[i] = rectangles[i];
-      best_best_rects[i] = rectangles[i];
+      secondBestRects[i] = rectangles[i];
     }
   }
 
-  // real_real_real_maxScore戻す
-  currentScore = real_real_real_maxScore;
+  // finalBestScore戻す
+  currentScore = finalBestScore;
   for (int i = 0; i < numRects; ++i) {
-    rectangles[i] = best_best_best_rects[i];
+    rectangles[i] = finalBestRects[i];
   }
   calcScore(-1);
 
   // 最終出力
-  if (teisyutu) {
+  if (isSubmission) {
     for (int i = 0; i < numRects; ++i) {
       cout << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
     }
@@ -1660,11 +1660,11 @@ int solve(int teisyutu, int fileNum)
   }
 
   // 提出時以下は消す
-  if (teisyutu == 0) {
+  if (isSubmission == 0) {
     cout << "file No. = " << fileNum << ", currentScore = " << currentScore << endl;
   }
 
-  if (teisyutu == 0 && currentScore > 1000000007) {
+  if (isSubmission == 0 && currentScore > 1000000007) {
     writeErrorLog(fileNum);
   }
 
@@ -1685,9 +1685,9 @@ inline void clearAll()
   currentScore = -1;
   bestScore = -1;
   totalScore = 0;
-  real_real_maxScore = -1;
-  ui_tei_maxScore = -1;
-  real_real_real_maxScore = -1;
+  secondBestScore = -1;
+  multiStartBestScore = -1;
+  finalBestScore = -1;
   for (int i = 0; i < (MAX_N); ++i) {
     points[i].x = 0, points[i].y = 0, targetSizes[i] = 0;
     rectangles[i].topLeft.x = 0, rectangles[i].topLeft.y = 0, rectangles[i].bottomRight.x = 0, rectangles[i].bottomRight.y = 0;
@@ -1697,9 +1697,9 @@ inline void clearAll()
     rectScores[i] = 0;
     sortedByX[i] = 0, sortedByY[i] = 0;
     indexInSortedX[i] = 0, indexInSortedY[i] = 0;
-    clearRect(best_best_rects[i]);
-    clearRect(ui_tei_rects[i]);
-    clearRect(best_best_best_rects[i]);
+    clearRect(secondBestRects[i]);
+    clearRect(multiStartBestRects[i]);
+    clearRect(finalBestRects[i]);
   }
 }
 
