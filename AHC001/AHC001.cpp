@@ -21,7 +21,7 @@ typedef pair<int, int> P;
 
 #define MAX_N 205
 
-static uint32_t Rand()
+static uint32_t xorshift()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -35,9 +35,9 @@ static uint32_t Rand()
 }
 
 // 0以上1未満の小数をとる乱数
-static double Rand01()
+static double rand01()
 {
-  return (Rand() + 0.5) * (1.0 / UINT_MAX);
+  return (xorshift() + 0.5) * (1.0 / UINT_MAX);
 }
 
 // ハイパラはここにおく
@@ -73,12 +73,12 @@ Rect rects[MAX_N];
 int area[MAX_N];
 Rect best_rects[MAX_N];
 
-inline void calc_area(int idx)
+inline void calcArea(int idx)
 {
   area[idx] = (rects[idx].p2.x - rects[idx].p1.x) * (rects[idx].p2.y - rects[idx].p1.y);
 }
 
-inline void input(int fileNum)
+inline void readInput(int fileNum)
 {
   // 入力
   std::ostringstream oss;
@@ -95,7 +95,7 @@ inline void input(int fileNum)
 }
 
 // ファイル出力
-void output_data(int case_num)
+void writeOutput(int case_num)
 {
   std::ostringstream oss;
   oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
@@ -110,7 +110,7 @@ void output_data(int case_num)
   }
 }
 
-inline void FileKakikomiERROR(int fileNum)
+inline void writeErrorLog(int fileNum)
 {
   string fileName = to_string(fileNum);
   fileName += "_out_ERROR.txt";
@@ -127,12 +127,12 @@ int real_maxScore = -1;
 
 double p[MAX_N];
 double pSum;
-inline int calc(int ite)
+inline int calcScore(int ite)
 {
   if (ite == -1) {
     double sum = 0;
     for (int i = 0; i < n; ++i) {
-      calc_area(i);
+      calcArea(i);
       p[i] = 1.0 - (1.0 - (double)min(sz[i], area[i]) / (double)max(sz[i], area[i])) * (1.0 - (double)min(sz[i], area[i]) / (double)max(sz[i], area[i]));
       sum += p[i];
     }
@@ -144,7 +144,7 @@ inline int calc(int ite)
   else {
     double sum = pSum;
     sum -= p[ite];
-    calc_area(ite);
+    calcArea(ite);
     p[ite] = 1.0 - (1.0 - (double)min(sz[ite], area[ite]) / (double)max(sz[ite], area[ite])) * (1.0 - (double)min(sz[ite], area[ite]) / (double)max(sz[ite], area[ite]));
     sum += p[ite];
     pSum = sum;
@@ -154,7 +154,7 @@ inline int calc(int ite)
   }
 }
 
-inline int overlap(int i, int j)
+inline int checkOverlap(int i, int j)
 {
   int cnt = 0;
   if (rects[i].p1.x <= rects[j].p1.x && rects[j].p1.x < rects[i].p2.x) cnt++;
@@ -166,7 +166,7 @@ inline int overlap(int i, int j)
 
 int sort_x[MAX_N], sort_y[MAX_N];
 int arg_sort_x[MAX_N], arg_sort_y[MAX_N];
-inline void sortInit()
+inline void initSortArrays()
 {
   vector<P> v;
   for (int i = 0; i < n; ++i) {
@@ -193,7 +193,7 @@ inline void sortInit()
 // 面積は1以上か
 // (x[i]+0.5,y[i]+0.5)を含んでいるか
 // 重なりがないか
-inline int isOK2(int ite)
+inline int isValid2(int ite)
 {
   if (ite == -1) {
     for (int i = 0; i < n; ++i) {
@@ -212,7 +212,7 @@ inline int isOK2(int ite)
     }
     for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
-        if (overlap(i, j)) return 0;
+        if (checkOverlap(i, j)) return 0;
       }
     }
   }
@@ -227,13 +227,13 @@ inline int isOK2(int ite)
     if (pt[ite].y < rects[ite].p1.y || rects[ite].p2.y <= pt[ite].y) return 0;
     for (int i = 0; i < n; ++i) {
       if (i == ite) { continue; }
-      if (overlap(i, ite)) return 0;
+      if (checkOverlap(i, ite)) return 0;
     }
   }
   return 1;
 }
 
-inline int isOK(int ite)
+inline int isValid(int ite)
 {
   if (ite == -1) {
     for (int i = 0; i < n; ++i) {
@@ -252,7 +252,7 @@ inline int isOK(int ite)
     }
     for (int i = 0; i < n; ++i) {
       for (int j = i + 1; j < n; ++j) {
-        if (overlap(i, j)) return 0;
+        if (checkOverlap(i, j)) return 0;
       }
     }
   }
@@ -269,7 +269,7 @@ inline int isOK(int ite)
     int nowLeft = rects[ite].p1.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
-      if (overlap(i, ite)) return 0;
+      if (checkOverlap(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.y);
         if (nowLeft >= rects[ite].p2.y) { break; }
@@ -278,7 +278,7 @@ inline int isOK(int ite)
     nowLeft = rects[ite].p1.y;
     for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
-      if (overlap(i, ite)) return 0;
+      if (checkOverlap(i, ite)) return 0;
       if (rects[i].p1.y <= nowLeft) {
         nowLeft = max(nowLeft, rects[i].p2.y);
         if (nowLeft >= rects[ite].p2.y) { break; }
@@ -288,7 +288,7 @@ inline int isOK(int ite)
   return 1;
 }
 
-inline void init_rect(Rect& rect, Point& point)
+inline void initRect(Rect& rect, Point& point)
 {
   rect.p1.x = point.x;
   rect.p1.y = point.y;
@@ -297,11 +297,11 @@ inline void init_rect(Rect& rect, Point& point)
 }
 
 Rect vExtend;
-inline void expand(int ite)
+inline void expandRect(int ite)
 {
-  init_rect(vExtend, pt[ite]);
+  initRect(vExtend, pt[ite]);
 
-  int flagTateYoko = Rand() % 2;
+  int flagTateYoko = xorshift() % 2;
   if (flagTateYoko == 0) {
     vExtend.p1.x = 0;
     vExtend.p2.x = 10000;
@@ -459,10 +459,10 @@ inline void expand(int ite)
   }
 
   int shuf[4] = {};
-  int shuffleSeed = Rand() % 24;
+  int shuffleSeed = xorshift() % 24;
   for (int j = 0; j < (4); ++j) shuf[j] = shuffles[shuffleSeed][j];
 
-  int yure = Rand() % 2;
+  int yure = xorshift() % 2;
 
   for (int i = 0; i < (4); ++i) {
     int S = (vExtend.p2.x - vExtend.p1.x) * (vExtend.p2.y - vExtend.p1.y);
@@ -524,11 +524,11 @@ inline void expand(int ite)
   if (pt[ite].y < vExtend.p1.y || vExtend.p2.y <= pt[ite].y) ng = 1;
 
   if (ng) {
-    init_rect(vExtend, pt[ite]);
+    initRect(vExtend, pt[ite]);
   }
 }
 
-inline void store_best()
+inline void saveBest()
 {
   real_maxScore = maxScore;
   for (int i = 0; i < n; ++i) {
@@ -536,50 +536,50 @@ inline void store_best()
   }
 }
 
-inline void Extend(int ite, double temp)
+inline void extendWithTemp(int ite, double temp)
 {
   Rect keep = rects[ite];
 
-  expand(ite);
+  expandRect(ite);
   rects[ite] = vExtend;
 
-  int tmpScore = calc(ite);
+  int tmpScore = calcScore(ite);
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
 
-  if (prob > Rand01()) {
+  if (prob > rand01()) {
     modeCount[4]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      store_best();
+      saveBest();
     }
   }
   else {
     // 元に戻す
     rects[ite] = keep;
-    calc(ite);
+    calcScore(ite);
   }
 }
 
 Rect best_best_rects[MAX_N];
 int real_real_maxScore = -1;
 
-inline void crush(int n_crush)
+inline void resetRects(int n_crush)
 {
   // n_crush個つぶす
   for (int i = 0; i < (n_crush); ++i) {
-    int ite = Rand() % n;
-    init_rect(rects[ite], pt[ite]);
+    int ite = xorshift() % n;
+    initRect(rects[ite], pt[ite]);
   }
 
-  maxScore = calc(-1);
+  maxScore = calcScore(-1);
   if (maxScore > real_maxScore) {
-    store_best();
+    saveBest();
   }
 }
 
-inline void crushWorst(int n_worst)
+inline void resetWorstRects(int n_worst)
 {
   vector<pair<double, int>> v;
   for (int i = 0; i < n; ++i) {
@@ -588,18 +588,18 @@ inline void crushWorst(int n_worst)
   sort(v.begin(), v.end());
   for (int i = 0; i < (n_worst); ++i) {
     int ite = v[i].second;
-    init_rect(rects[ite], pt[ite]);
+    initRect(rects[ite], pt[ite]);
   }
 
-  maxScore = calc(-1);
+  maxScore = calcScore(-1);
   if (maxScore > real_maxScore) {
-    store_best();
+    saveBest();
   }
 }
 
-inline void makeHole(int hole = 100)
+inline void createHole(int hole = 100)
 {
-  int ite = Rand() % n;
+  int ite = xorshift() % n;
   vector<int> keep;
   keep.emplace_back(ite);
   rects[ite].p1.x -= hole;
@@ -608,28 +608,28 @@ inline void makeHole(int hole = 100)
   rects[ite].p2.y += hole;
   for (int i = 0; i < n; ++i) {
     if (i == ite) { continue; }
-    if (overlap(i, ite)) keep.emplace_back(i);
+    if (checkOverlap(i, ite)) keep.emplace_back(i);
   }
   int keepSize = keep.size();
   for (int i = 0; i < (keepSize); ++i) {
-    init_rect(rects[keep[i]], pt[keep[i]]);
+    initRect(rects[keep[i]], pt[keep[i]]);
   }
 
-  maxScore = calc(-1);
+  maxScore = calcScore(-1);
   if (maxScore > real_maxScore) {
-    store_best();
+    saveBest();
   }
 }
 
 Rect vExtendKing;
-inline void expandKing(int ite)
+inline void expandRectLarge(int ite)
 {
-  vExtendKing.p1.x = max(0, (int)(pt[ite].x - Rand() % 1000));
-  vExtendKing.p1.y = max(0, (int)(pt[ite].y - Rand() % 1000));
-  vExtendKing.p2.x = min(10000, (int)(pt[ite].x + 1 + Rand() % 1000));
-  vExtendKing.p2.y = min(10000, (int)(pt[ite].y + 1 + Rand() % 1000));
+  vExtendKing.p1.x = max(0, (int)(pt[ite].x - xorshift() % 1000));
+  vExtendKing.p1.y = max(0, (int)(pt[ite].y - xorshift() % 1000));
+  vExtendKing.p2.x = min(10000, (int)(pt[ite].x + 1 + xorshift() % 1000));
+  vExtendKing.p2.y = min(10000, (int)(pt[ite].y + 1 + xorshift() % 1000));
 
-  int tateyoko = Rand() % 2;
+  int tateyoko = xorshift() % 2;
 
   if (tateyoko == 0) {
     int argX = arg_sort_x[ite];
@@ -763,10 +763,10 @@ inline void expandKing(int ite)
   }
 
   int shuf[4] = {};
-  int shuffleSeed = Rand() % 24;
+  int shuffleSeed = xorshift() % 24;
   for (int j = 0; j < (4); ++j) shuf[j] = shuffles[shuffleSeed][j];
 
-  int yure = Rand() % 2;
+  int yure = xorshift() % 2;
 
   for (int i = 0; i < (4); ++i) {
     int S = (vExtendKing.p2.x - vExtendKing.p1.x) * (vExtendKing.p2.y - vExtendKing.p1.y);
@@ -832,41 +832,41 @@ inline void expandKing(int ite)
   if (pt[ite].y < vExtendKing.p1.y || vExtendKing.p2.y <= pt[ite].y) ng = 1;
 
   if (ng) {
-    init_rect(vExtendKing, pt[ite]);
+    initRect(vExtendKing, pt[ite]);
   }
 
 }
 
-inline void ExtendKing(int ite)
+inline void extendLarge(int ite)
 {
-  expandKing(ite);
+  expandRectLarge(ite);
   rects[ite] = vExtendKing;
 
   for (int i = 0; i < n; ++i) {
     if (i == ite) { continue; }
-    if (overlap(i, ite)) {
-      init_rect(rects[i], pt[i]);
+    if (checkOverlap(i, ite)) {
+      initRect(rects[i], pt[i]);
     }
   }
 
-  maxScore = calc(-1);
+  maxScore = calcScore(-1);
   if (maxScore > real_maxScore) {
-    store_best();
+    saveBest();
   }
 }
 
-inline void oneChange(int ite, double temp)
+inline void changeSingleEdge(int ite, double temp)
 {
   int diff = 0;
-  while (diff == 0) diff = Rand() % 101 - 50;
-  int abcd = Rand() % 4;
+  while (diff == 0) diff = xorshift() % 101 - 50;
+  int abcd = xorshift() % 4;
 
   if (abcd == 0) rects[ite].p1.x += diff;
   if (abcd == 1) rects[ite].p1.y += diff;
   if (abcd == 2) rects[ite].p2.x += diff;
   if (abcd == 3) rects[ite].p2.y += diff;
 
-  if (isOK(ite) == 0) {
+  if (isValid(ite) == 0) {
     if (abcd == 0) rects[ite].p1.x -= diff;
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
@@ -874,15 +874,15 @@ inline void oneChange(int ite, double temp)
     return;
   }
 
-  int tmpScore = calc(ite);
+  int tmpScore = calcScore(ite);
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-  if (prob > Rand01()) {
+  if (prob > rand01()) {
     modeCount[0]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      store_best();
+      saveBest();
     }
   }
   else {
@@ -891,23 +891,23 @@ inline void oneChange(int ite, double temp)
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
     if (abcd == 3) rects[ite].p2.y -= diff;
-    calc(ite);
+    calcScore(ite);
   }
 }
 
-inline void fourChange(int ite, double temp)
+inline void changeAllEdges(int ite, double temp)
 {
-  int diffA = Rand() % 101 - 50;
-  int diffB = Rand() % 101 - 50;
-  int diffC = Rand() % 101 - 50;
-  int diffD = Rand() % 101 - 50;
+  int diffA = xorshift() % 101 - 50;
+  int diffB = xorshift() % 101 - 50;
+  int diffC = xorshift() % 101 - 50;
+  int diffD = xorshift() % 101 - 50;
 
   rects[ite].p1.x += diffA;
   rects[ite].p1.y += diffB;
   rects[ite].p2.x += diffC;
   rects[ite].p2.y += diffD;
 
-  if (isOK(ite) == 0) {
+  if (isValid(ite) == 0) {
     rects[ite].p1.x -= diffA;
     rects[ite].p1.y -= diffB;
     rects[ite].p2.x -= diffC;
@@ -915,15 +915,15 @@ inline void fourChange(int ite, double temp)
     return;
   }
 
-  int tmpScore = calc(ite);
+  int tmpScore = calcScore(ite);
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
-  if (prob > Rand01()) {
+  if (prob > rand01()) {
     modeCount[3]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      store_best();
+      saveBest();
     }
   }
   else {
@@ -932,15 +932,15 @@ inline void fourChange(int ite, double temp)
     rects[ite].p1.y -= diffB;
     rects[ite].p2.x -= diffC;
     rects[ite].p2.y -= diffD;
-    calc(ite);
+    calcScore(ite);
   }
 }
 
-inline void Slide(int ite, double temp)
+inline void slideRect(int ite, double temp)
 {
   int diff = 0;
-  while (diff == 0) diff = Rand() % 101 - 50;
-  int ab = Rand() % 2;
+  while (diff == 0) diff = xorshift() % 101 - 50;
+  int ab = xorshift() % 2;
 
   if (ab == 0) {
     rects[ite].p1.x += diff;
@@ -951,7 +951,7 @@ inline void Slide(int ite, double temp)
     rects[ite].p2.y += diff;
   }
 
-  if (isOK(ite) == 0) {
+  if (isValid(ite) == 0) {
     if (ab == 0) {
       rects[ite].p1.x -= diff;
       rects[ite].p2.x -= diff;
@@ -963,7 +963,7 @@ inline void Slide(int ite, double temp)
     return;
   }
 
-  int tmpScore = calc(ite);
+  int tmpScore = calcScore(ite);
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
@@ -971,7 +971,7 @@ inline void Slide(int ite, double temp)
     modeCount[1]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      store_best();
+      saveBest();
     }
   }
   else {
@@ -984,13 +984,13 @@ inline void Slide(int ite, double temp)
       rects[ite].p1.y -= diff;
       rects[ite].p2.y -= diff;
     }
-    calc(ite);
+    calcScore(ite);
   }
 }
 
-inline void aspectChange(int ite, double temp)
+inline void changeAspectRatio(int ite, double temp)
 {
-  int yokoRatio = Rand() % 9 + 1; // 1 ~ 9;
+  int yokoRatio = xorshift() % 9 + 1; // 1 ~ 9;
   int tateRatio = 10 - yokoRatio;
 
   int S = yokoRatio * tateRatio;
@@ -1012,17 +1012,17 @@ inline void aspectChange(int ite, double temp)
   int rangeB = rightB - leftB + 1;
   if (rangeB < 1) { return; }
 
-  rects[ite].p1.x = Rand() % rangeA + leftA;
+  rects[ite].p1.x = xorshift() % rangeA + leftA;
   rects[ite].p2.x = rects[ite].p1.x + rangeA;
-  rects[ite].p1.y = Rand() % rangeB + leftB;
+  rects[ite].p1.y = xorshift() % rangeB + leftB;
   rects[ite].p2.y = rects[ite].p1.y + rangeB;
 
-  if (isOK(ite) == 0) {
+  if (isValid(ite) == 0) {
     rects[ite] = keep;
     return;
   }
 
-  int tmpScore = calc(ite);
+  int tmpScore = calcScore(ite);
 
   int tmp = tmpScore - maxScore;
   const double prob = exp((double)tmp / temp);
@@ -1030,17 +1030,17 @@ inline void aspectChange(int ite, double temp)
     modeCount[2]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      store_best();
+      saveBest();
     }
   }
   else {
     // 元に戻す
     rects[ite] = keep;
-    calc(ite);
+    calcScore(ite);
   }
 }
 
-inline int selfNg(int ite)
+inline int isSelfInvalid(int ite)
 {
   if (rects[ite].p1.x < 0 || 10000 < rects[ite].p1.x) return 1;
   if (rects[ite].p1.y < 0 || 10000 < rects[ite].p1.y) return 1;
@@ -1053,17 +1053,17 @@ inline int selfNg(int ite)
   return 0;
 }
 
-inline int dokasuOK(int ite, int abcd)
+inline int canShiftBoundary(int ite, int abcd)
 {
   for (int i = 0; i < n; ++i) {
     if (i == ite) { continue; }
-    if (overlap(i, ite)) {
+    if (checkOverlap(i, ite)) {
       if (abcd == 0) rects[i].p2.x = rects[ite].p1.x;
       if (abcd == 1) rects[i].p2.y = rects[ite].p1.y;
       if (abcd == 2) rects[i].p1.x = rects[ite].p2.x;
       if (abcd == 3) rects[i].p1.y = rects[ite].p2.y;
 
-      if (selfNg(i)) return 0;
+      if (isSelfInvalid(i)) return 0;
     }
   }
   return 1;
@@ -1071,7 +1071,7 @@ inline int dokasuOK(int ite, int abcd)
 
 int arrKasanari[MAX_N];
 int kasanariCount;
-inline void kasanaritati(int ite, int abcd)
+inline void findOverlaps(int ite, int abcd)
 {
   kasanariCount = 0;
   if (abcd == 0) {
@@ -1080,7 +1080,7 @@ inline void kasanaritati(int ite, int abcd)
     int nowRight = rects[ite].p2.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sort_x[ii];
-      if (overlap(i, ite)) {
+      if (checkOverlap(i, ite)) {
         if (rects[ite].p1.x <= pt[i].x) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
@@ -1105,7 +1105,7 @@ inline void kasanaritati(int ite, int abcd)
     int nowRight = rects[ite].p2.x;
     for (int ii = argY - 1; ii >= 0; --ii) {
       int i = sort_y[ii];
-      if (overlap(i, ite)) {
+      if (checkOverlap(i, ite)) {
         if (rects[ite].p1.y <= pt[i].y) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
@@ -1130,7 +1130,7 @@ inline void kasanaritati(int ite, int abcd)
     int nowRight = rects[ite].p2.y;
     for (int ii = argX + 1; ii < n; ++ii) {
       int i = sort_x[ii];
-      if (overlap(i, ite)) {
+      if (checkOverlap(i, ite)) {
         if (pt[i].x < rects[ite].p2.x) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
@@ -1155,7 +1155,7 @@ inline void kasanaritati(int ite, int abcd)
     int nowRight = rects[ite].p2.x;
     for (int ii = argY + 1; ii < n; ++ii) {
       int i = sort_y[ii];
-      if (overlap(i, ite)) {
+      if (checkOverlap(i, ite)) {
         if (pt[i].y < rects[ite].p2.y) {
           arrKasanari[0] = -1;
           kasanariCount = 1;
@@ -1177,11 +1177,11 @@ inline void kasanaritati(int ite, int abcd)
 }
 
 int keepvA[MAX_N], keepvB[MAX_N], keepvC[MAX_N], keepvD[MAX_N];
-inline void zurasi2(int ite, double temp)
+inline void shiftBoundary(int ite, double temp)
 {
   int diff = 0;
-  while (diff == 0) diff = Rand() % 50 + 1;
-  int abcd = Rand() % 4;
+  while (diff == 0) diff = xorshift() % 50 + 1;
+  int abcd = xorshift() % 4;
 
   if (abcd < 2) diff *= -1;
 
@@ -1190,7 +1190,7 @@ inline void zurasi2(int ite, double temp)
   if (abcd == 2) rects[ite].p2.x += diff;
   if (abcd == 3) rects[ite].p2.y += diff;
 
-  if (selfNg(ite)) {
+  if (isSelfInvalid(ite)) {
     if (abcd == 0) rects[ite].p1.x -= diff;
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
@@ -1198,7 +1198,7 @@ inline void zurasi2(int ite, double temp)
     return;
   }
 
-  kasanaritati(ite, abcd);
+  findOverlaps(ite, abcd);
   int vn = kasanariCount;
 
   if (vn > 0 && arrKasanari[0] == -1) {
@@ -1223,7 +1223,7 @@ inline void zurasi2(int ite, double temp)
     if (abcd == 1) rects[arrKasanari[i]].p2.y = rects[ite].p1.y;
     if (abcd == 2) rects[arrKasanari[i]].p1.x = rects[ite].p2.x;
     if (abcd == 3) rects[arrKasanari[i]].p1.y = rects[ite].p2.y;
-    if (selfNg(arrKasanari[i])) ok = 0;
+    if (isSelfInvalid(arrKasanari[i])) ok = 0;
   }
 
   if (ok == 0) {
@@ -1241,17 +1241,17 @@ inline void zurasi2(int ite, double temp)
     return;
   }
 
-  for (int i = 0; i < (vn); ++i) calc(arrKasanari[i]);
-  int tmpScore = calc(ite);
+  for (int i = 0; i < (vn); ++i) calcScore(arrKasanari[i]);
+  int tmpScore = calcScore(ite);
 
   int tmp = tmpScore - maxScore;
   double prob = exp((double)tmp / temp);
 
-  if (prob > Rand01()) {
+  if (prob > rand01()) {
     modeCount[5]++;
     maxScore = tmpScore;
     if (maxScore > real_maxScore) {
-      store_best();
+      saveBest();
     }
   }
   else {
@@ -1260,26 +1260,26 @@ inline void zurasi2(int ite, double temp)
       rects[arrKasanari[i]].p1.y = keepvB[i];
       rects[arrKasanari[i]].p2.x = keepvC[i];
       rects[arrKasanari[i]].p2.y = keepvD[i];
-      calc(arrKasanari[i]);
+      calcScore(arrKasanari[i]);
     }
     // 元に戻す
     if (abcd == 0) rects[ite].p1.x -= diff;
     if (abcd == 1) rects[ite].p1.y -= diff;
     if (abcd == 2) rects[ite].p2.x -= diff;
     if (abcd == 3) rects[ite].p2.y -= diff;
-    calc(ite);
+    calcScore(ite);
   }
 }
 
-inline void shokiInit()
+inline void initSolution()
 {
   for (int i = 0; i < n; ++i) {
-    init_rect(rects[i], pt[i]);
+    initRect(rects[i], pt[i]);
   }
 
-  maxScore = calc(-1);
+  maxScore = calcScore(-1);
   if (maxScore > real_maxScore) {
-    store_best();
+    saveBest();
   }
 }
 
@@ -1293,7 +1293,7 @@ int maxScore4[100] = {};
 int ui_tei_a[MAX_N], ui_tei_b[MAX_N], ui_tei_c[MAX_N], ui_tei_d[MAX_N];
 int ui_tei_maxScore = -1;
 
-inline void multiStart()
+inline void multiStartSearch()
 {
   clock_t start, end;
   for (int ui_tei = 0; ui_tei < (5); ++ui_tei) {
@@ -1301,7 +1301,7 @@ inline void multiStart()
     // 初期解
     // 左上(x,y)、右下(x+1,y+1)
     for (int i = 0; i < n; ++i) {
-      init_rect(rects[i], pt[i]);
+      initRect(rects[i], pt[i]);
     }
 
     int T = 5;
@@ -1309,8 +1309,8 @@ inline void multiStart()
       start = clock();
 
       // 初期スコア計算
-      maxScore = calc(-1);
-      store_best();
+      maxScore = calcScore(-1);
+      saveBest();
 
       // 焼きなまし
       start = clock();
@@ -1332,20 +1332,20 @@ inline void multiStart()
 
         int mode = loop % 4;
         if (mode == 0) {
-          int ite = Rand() % n;
-          oneChange(ite, temp);
+          int ite = xorshift() % n;
+          changeSingleEdge(ite, temp);
         }
         else if (mode == 1) {
-          int ite = Rand() % n;
-          Slide(ite, temp);
+          int ite = xorshift() % n;
+          slideRect(ite, temp);
         }
         else if (now_time > 2.0 / T && mode == 2) {
-          int ite = Rand() % n;
-          aspectChange(ite, temp);
+          int ite = xorshift() % n;
+          changeAspectRatio(ite, temp);
         }
         else if (mode == -3) {
-          int ite = Rand() % n;
-          fourChange(ite, temp);
+          int ite = xorshift() % n;
+          changeAllEdges(ite, temp);
         }
       }
 
@@ -1354,7 +1354,7 @@ inline void multiStart()
       for (int i = 0; i < n; ++i) {
         rects[i] = best_rects[i];
       }
-      calc(-1);
+      calcScore(-1);
 
       if (maxScore > real_real_maxScore) {
         real_real_maxScore = maxScore;
@@ -1370,10 +1370,10 @@ inline void multiStart()
     for (int i = 0; i < n; ++i) {
       rects[i] = best_best_rects[i];
     }
-    calc(-1);
+    calcScore(-1);
 
     // 初期スコア計算
-    maxScore = calc(-1);
+    maxScore = calcScore(-1);
     real_maxScore = maxScore;
 
     for (int i = 0; i < n; ++i) {
@@ -1403,24 +1403,24 @@ inline void multiStart()
 
       int mode = loop % 5;
       if (mode == 0) { // a,b,c,dのうち1つ変更
-        int ite = Rand() % n;
-        oneChange(ite, temp);
+        int ite = xorshift() % n;
+        changeSingleEdge(ite, temp);
       }
       else if (kouhan && mode == 1) { // 位置をスライド
-        int ite = Rand() % n;
-        Slide(ite, temp);
+        int ite = xorshift() % n;
+        slideRect(ite, temp);
       }
       else if (mode == 2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
-        int ite = Rand() % n;
-        aspectChange(ite, temp);
+        int ite = xorshift() % n;
+        changeAspectRatio(ite, temp);
       }
       else if (mode == -3) { // a,b,c,dを4つ同時に変更
-        int ite = Rand() % n;
-        fourChange(ite, temp);
+        int ite = xorshift() % n;
+        changeAllEdges(ite, temp);
       }
       else if (mode == 4) { // 膨らまして縮める
-        int ite = Rand() % n;
-        Extend(ite, temp);
+        int ite = xorshift() % n;
+        extendWithTemp(ite, temp);
       }
     }
 
@@ -1429,7 +1429,7 @@ inline void multiStart()
     for (int i = 0; i < n; ++i) {
       rects[i] = best_rects[i];
     }
-    calc(-1);
+    calcScore(-1);
 
     if (maxScore > ui_tei_maxScore) {
       ui_tei_maxScore = maxScore;
@@ -1447,7 +1447,7 @@ inline void multiStart()
   real_maxScore = 0;
   real_real_maxScore = 0;
   for (int i = 0; i < n; ++i) {
-    init_rect(rects[i], pt[i]);
+    initRect(rects[i], pt[i]);
     best_rects[i] = rects[i];
     best_best_rects[i] = rects[i];
   }
@@ -1459,14 +1459,14 @@ int solve(int teisyutu, int fileNum)
   clock_t start, end;
   clock_t real_start = clock();
 
-  input(fileNum);
+  readInput(fileNum);
 
-  sortInit();
+  initSortArrays();
 
 
   for (int allLoop = 0; allLoop < (allLoopTimes); ++allLoop) {
 
-    multiStart();
+    multiStartSearch();
 
     // ui_tei_maxScore戻す
     maxScore = ui_tei_maxScore;
@@ -1476,10 +1476,10 @@ int solve(int teisyutu, int fileNum)
       rects[i].p2.x = ui_tei_c[i];
       rects[i].p2.y = ui_tei_d[i];
     }
-    calc(-1);
+    calcScore(-1);
 
     // 初期スコア計算
-    maxScore = calc(-1);
+    maxScore = calcScore(-1);
     real_maxScore = maxScore;
 
     for (int i = 0; i < n; ++i) {
@@ -1515,7 +1515,7 @@ int solve(int teisyutu, int fileNum)
         }
 
         // 初期スコア計算
-        maxScore = calc(-1);
+        maxScore = calcScore(-1);
         real_maxScore = maxScore;
 
         for (int i = 0; i < n; ++i) {
@@ -1547,38 +1547,38 @@ int solve(int teisyutu, int fileNum)
           int mode = loop % 6;
 
           if (mode == -1) { // a,b,c,dのうち1つ変更
-            int ite = Rand() % n;
-            oneChange(ite, temp);
+            int ite = xorshift() % n;
+            changeSingleEdge(ite, temp);
           }
           else if (mode == 1) { // 位置をスライド
-            int ite = Rand() % n;
-            Slide(ite, temp);
+            int ite = xorshift() % n;
+            slideRect(ite, temp);
           }
           else if (mode == -2 && kouhan && now_time > 2.0 / T) { // ランダムにアスペクト比を変更
-            int ite = Rand() % n;
-            aspectChange(ite, temp);
+            int ite = xorshift() % n;
+            changeAspectRatio(ite, temp);
           }
           else if (mode == -3) { // a,b,c,dを4つ同時に変更
-            int ite = Rand() % n;
-            fourChange(ite, temp);
+            int ite = xorshift() % n;
+            changeAllEdges(ite, temp);
           }
           else if (mode == 4) { // 膨らまして縮める
-            int ite = Rand() % n;
-            Extend(ite, temp);
+            int ite = xorshift() % n;
+            extendWithTemp(ite, temp);
           }
           else if (mode == 5) { // 境界をずらす
-            int ite = Rand() % n;
-            zurasi2(ite, temp);
+            int ite = xorshift() % n;
+            shiftBoundary(ite, temp);
           }
 
           if (loop % 34567 == 1120) {
-            int ite = Rand() % n;
-            ExtendKing(ite);
+            int ite = xorshift() % n;
+            extendLarge(ite);
           }
 
           // 計算誤差解消?
           if (loop % 10000 == 1) {
-            maxScore = calc(-1);
+            maxScore = calcScore(-1);
           }
         }
 
@@ -1587,7 +1587,7 @@ int solve(int teisyutu, int fileNum)
         for (int i = 0; i < n; ++i) {
           rects[i] = best_rects[i];
         }
-        calc(-1);
+        calcScore(-1);
         if (maxScore > real_real_maxScore) {
           real_real_maxScore = maxScore;
           for (int i = 0; i < n; ++i) {
@@ -1637,7 +1637,7 @@ int solve(int teisyutu, int fileNum)
     for (int i = 0; i < n; ++i) {
       rects[i] = best_best_rects[i];
     }
-    calc(-1);
+    calcScore(-1);
 
     if (teisyutu == 0) {
       cout << "maxScore = " << maxScore << endl;
@@ -1646,7 +1646,7 @@ int solve(int teisyutu, int fileNum)
     const int MOD = 1000000007;
     if (teisyutu == 0 && maxScore > MOD) {
       cout << "ERROR" << endl;
-      FileKakikomiERROR(fileNum);
+      writeErrorLog(fileNum);
     }
 
     // real_real_real入れる
@@ -1663,7 +1663,7 @@ int solve(int teisyutu, int fileNum)
     real_maxScore = 0;
     real_real_maxScore = 0;
     for (int i = 0; i < n; ++i) {
-      init_rect(rects[i], pt[i]);
+      initRect(rects[i], pt[i]);
       best_rects[i] = rects[i];
       best_best_rects[i] = rects[i];
     }
@@ -1674,7 +1674,7 @@ int solve(int teisyutu, int fileNum)
   for (int i = 0; i < n; ++i) {
     rects[i] = best_best_best_rects[i];
   }
-  calc(-1);
+  calcScore(-1);
 
   // 最終出力
   if (teisyutu) {
@@ -1683,7 +1683,7 @@ int solve(int teisyutu, int fileNum)
     }
   }
   else {
-    output_data(fileNum);
+    writeOutput(fileNum);
   }
 
   // 提出時以下は消す
@@ -1692,13 +1692,13 @@ int solve(int teisyutu, int fileNum)
   }
 
   if (teisyutu == 0 && maxScore > 1000000007) {
-    FileKakikomiERROR(fileNum);
+    writeErrorLog(fileNum);
   }
 
   return maxScore;
 }
 
-inline void clear_rect(Rect& r)
+inline void clearRect(Rect& r)
 {
   r.p1.x = 0;
   r.p1.y = 0;
@@ -1706,7 +1706,7 @@ inline void clear_rect(Rect& r)
   r.p2.y = 0;
 }
 
-inline void AllClear()
+inline void clearAll()
 {
   n = 0;
   maxScore = -1;
@@ -1718,15 +1718,15 @@ inline void AllClear()
   for (int i = 0; i < (MAX_N); ++i) {
     pt[i].x = 0, pt[i].y = 0, sz[i] = 0;
     rects[i].p1.x = 0, rects[i].p1.y = 0, rects[i].p2.x = 0, rects[i].p2.y = 0;
-    clear_rect(rects[i]);
+    clearRect(rects[i]);
     area[i] = 0;
-    clear_rect(best_rects[i]);
+    clearRect(best_rects[i]);
     p[i] = 0;
     sort_x[i] = 0, sort_y[i] = 0;
     arg_sort_x[i] = 0, arg_sort_y[i] = 0;
-    clear_rect(best_best_rects[i]);
+    clearRect(best_best_rects[i]);
     ui_tei_a[i] = 0, ui_tei_b[i] = 0, ui_tei_c[i] = 0, ui_tei_d[i] = 0;
-    clear_rect(best_best_best_rects[i]);
+    clearRect(best_best_best_rects[i]);
   }
 }
 
@@ -1743,7 +1743,7 @@ int main()
   else if (mode == 2) {
     // スコア確認用
     for (int i = 0; i < 10; ++i) {
-      AllClear();
+      clearAll();
       solve(0, i);
     }
   }

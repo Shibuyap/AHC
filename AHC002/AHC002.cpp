@@ -496,25 +496,18 @@ void anneal_path_segment(const AnnealParam& param)
     double accept_prob = exp(diff_score / temp);
 
     if (accept_prob > rand_unit_double()) {
-      /* accept */
       current_path.copy(before_keep_path);
       for (int i = 0; i < (keep_path.length - 1); ++i) current_path.add(keep_path.direction[i]);
       for (int i = 0; i < (after_keep_path.length - 1); ++i) current_path.add(after_keep_path.direction[i]);
-
-      //for (int i = 0; i < (current_path.length); ++i) {
-      //  int x = current_path.x[i];
-      //  int y = current_path.y[i];
-      //  if (is_out_of_bounds(x, y)) {
-      //    cerr << "out of bounds " << seg_left << ' ' << seg_right << ' ' << current_path.length << endl;
-      //  }
-      //}
 
       if (current_path.score > best_path.score) {
         best_path.copy(current_path);
       }
     }
 
-    if (now_time > param.time_limit) { break; }
+    if (now_time > param.time_limit) {
+      break;
+    }
   }
   if (show_log) {
     cerr << "anneal_path_segment : iter = " << iteration_cnt << endl;
