@@ -393,8 +393,8 @@ void build_initial_solution()
 
     // 目標位置の箱を拾う
     if (current_state.grid[current_state.x][current_state.y].exist) {
-      current_state.pickup();
       min_d = current_state.grid[current_state.x][current_state.y].d;
+      current_state.pickup();
     }
 
     // 出入り口へ戻る（途中で箱を拾いながら）
@@ -568,7 +568,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 150; ++i) {
+    for (int i = 1; i < 150; ++i) {
       ll score = solve_case(i, annealingParams);
       sum_score += score;
       if (exec_mode == 1) {
