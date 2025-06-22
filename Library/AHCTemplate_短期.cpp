@@ -38,11 +38,13 @@ typedef pair<int, int> P;
 typedef pair<P, P> PP;
 
 // タイマー
-namespace
+class Timer
 {
+private:
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
+public:
+  void start()
   {
     start_time_clock = std::chrono::steady_clock::now();
   }
@@ -52,7 +54,9 @@ namespace
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
-}
+};
+
+Timer timer;
 
 // 乱数
 namespace
@@ -188,7 +192,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
 {
   store_best_score();
 
-  double now_time = get_elapsed_time();
+  double now_time = timer.get_elapsed_time();
   const double START_TEMP = annealingParams.start_temperature[0];
   const double END_TEMP = annealingParams.end_temperature;
 
@@ -197,7 +201,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
     loop++;
 
     if (loop % 100 == 0) {
-      now_time = get_elapsed_time();
+      now_time = timer.get_elapsed_time();
       if (now_time > TIME_LIMIT) { break; }
     }
 
@@ -251,7 +255,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
 
 ll solve_case(int case_num, AnnealingParams annealingParams)
 {
-  start_timer();
+  timer.start();
 
   initialize_state();
 
@@ -322,7 +326,7 @@ int main()
         cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
           << "sum = " << setw(5) << sum_score << ", "
-          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << "time = " << setw(5) << timer.get_elapsed_time() << ", "
           << endl;
       }
     }

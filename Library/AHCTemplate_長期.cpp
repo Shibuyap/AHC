@@ -34,11 +34,13 @@ using namespace std;
 typedef long long int ll;
 
 // タイマー
-namespace
+class Timer
 {
+private:
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
+public:
+  void start()
   {
     start_time_clock = std::chrono::steady_clock::now();
   }
@@ -48,7 +50,9 @@ namespace
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
-}
+};
+
+Timer timer;
 
 // 乱数
 namespace
@@ -135,7 +139,7 @@ ll calculate_score()
 
 ll solve_case(int case_num)
 {
-  start_timer();
+  timer.start();
 
   input_data(case_num);
 
@@ -167,7 +171,7 @@ int main_new()
         cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
           << "sum = " << setw(5) << sum_score << ", "
-          << "time = " << setw(5) << get_elapsed_time() << ", "
+          << "time = " << setw(5) << timer.get_elapsed_time() << ", "
           << endl;
       }
     }
