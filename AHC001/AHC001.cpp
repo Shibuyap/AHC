@@ -514,6 +514,55 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir) {
   }
 }
 
+// 矩形サイズ調整ヘルパー関数
+inline void adjustRectEdge(Rect& rect, int edgeType, int targetSize, int pointCoord, int adjustAmount, bool clampDiff = false) {
+  bool isHorizontal = (edgeType == 0 || edgeType == 2);
+  bool isTopLeft = (edgeType == 0 || edgeType == 1);
+  
+  // 目標サイズの計算
+  int currentOtherDim = isHorizontal ? 
+    (rect.bottomRight.y - rect.topLeft.y) : 
+    (rect.bottomRight.x - rect.topLeft.x);
+  int maxDim = targetSize / currentOtherDim + adjustAmount;
+  
+  // 現在の寸法と差分
+  int currentDim = isHorizontal ?
+    (rect.bottomRight.x - rect.topLeft.x) :
+    (rect.bottomRight.y - rect.topLeft.y);
+  int diff = currentDim - maxDim;
+  if (clampDiff && diff < 0) diff = 0;
+  
+  // 調整可能な容量
+  int capacity;
+  if (isTopLeft) {
+    capacity = isHorizontal ? 
+      (pointCoord - rect.topLeft.x) : 
+      (pointCoord - rect.topLeft.y);
+  } else {
+    capacity = isHorizontal ?
+      (rect.bottomRight.x - (pointCoord + 1)) :
+      (rect.bottomRight.y - (pointCoord + 1));
+  }
+  
+  // 実際の調整量
+  int adjustment = (capacity >= diff) ? diff : capacity;
+  
+  // 座標の更新
+  if (isTopLeft) {
+    if (isHorizontal) {
+      rect.topLeft.x += adjustment;
+    } else {
+      rect.topLeft.y += adjustment;
+    }
+  } else {
+    if (isHorizontal) {
+      rect.bottomRight.x -= adjustment;
+    } else {
+      rect.bottomRight.y -= adjustment;
+    }
+  }
+}
+
 Rect expandedRect;
 inline void expandRect(int ite)
 {
@@ -538,50 +587,9 @@ inline void expandRect(int ite)
   for (int i = 0; i < (4); ++i) {
     int area = (expandedRect.bottomRight.x - expandedRect.topLeft.x) * (expandedRect.bottomRight.y - expandedRect.topLeft.y);
     if (area <= targetSizes[ite]) { break; }
-    if (edgeOrder[i] == 0) {
-      int maxWidth = targetSizes[ite] / (expandedRect.bottomRight.y - expandedRect.topLeft.y) + adjustAmount;
-      int diff = (expandedRect.bottomRight.x - expandedRect.topLeft.x) - maxWidth;
-      int capacity = points[ite].x - expandedRect.topLeft.x;
-      if (capacity >= diff) {
-        expandedRect.topLeft.x += diff;
-      }
-      else {
-        expandedRect.topLeft.x += capacity;
-      }
-    }
-    else if (edgeOrder[i] == 1) {
-      int maxHeight = targetSizes[ite] / (expandedRect.bottomRight.x - expandedRect.topLeft.x) + adjustAmount;
-      int diff = (expandedRect.bottomRight.y - expandedRect.topLeft.y) - maxHeight;
-      int capacity = points[ite].y - expandedRect.topLeft.y;
-      if (capacity >= diff) {
-        expandedRect.topLeft.y += diff;
-      }
-      else {
-        expandedRect.topLeft.y += capacity;
-      }
-    }
-    else if (edgeOrder[i] == 2) {
-      int maxWidth = targetSizes[ite] / (expandedRect.bottomRight.y - expandedRect.topLeft.y) + adjustAmount;
-      int diff = (expandedRect.bottomRight.x - expandedRect.topLeft.x) - maxWidth;
-      int capacity = expandedRect.bottomRight.x - (points[ite].x + 1);
-      if (capacity >= diff) {
-        expandedRect.bottomRight.x -= diff;
-      }
-      else {
-        expandedRect.bottomRight.x -= capacity;
-      }
-    }
-    else if (edgeOrder[i] == 3) {
-      int maxHeight = targetSizes[ite] / (expandedRect.bottomRight.x - expandedRect.topLeft.x) + adjustAmount;
-      int diff = (expandedRect.bottomRight.y - expandedRect.topLeft.y) - maxHeight;
-      int capacity = expandedRect.bottomRight.y - (points[ite].y + 1);
-      if (capacity >= diff) {
-        expandedRect.bottomRight.y -= diff;
-      }
-      else {
-        expandedRect.bottomRight.y -= capacity;
-      }
-    }
+    
+    int pointCoord = (edgeOrder[i] == 0 || edgeOrder[i] == 2) ? points[ite].x : points[ite].y;
+    adjustRectEdge(expandedRect, edgeOrder[i], targetSizes[ite], pointCoord, adjustAmount);
   }
 
   int isInvalid = 0;
@@ -713,54 +721,9 @@ inline void expandRectLarge(int ite)
   for (int i = 0; i < (4); ++i) {
     int area = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) * (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y);
     if (area <= targetSizes[ite]) { break; }
-    if (edgeOrder[i] == 0) {
-      int maxWidth = targetSizes[ite] / (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) + adjustAmount;
-      int diff = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) - maxWidth;
-      if (diff < 0) diff = 0;
-      int capacity = points[ite].x - largeExpandedRect.topLeft.x;
-      if (capacity >= diff) {
-        largeExpandedRect.topLeft.x += diff;
-      }
-      else {
-        largeExpandedRect.topLeft.x += capacity;
-      }
-    }
-    else if (edgeOrder[i] == 1) {
-      int maxHeight = targetSizes[ite] / (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) + adjustAmount;
-      int diff = (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) - maxHeight;
-      if (diff < 0) diff = 0;
-      int capacity = points[ite].y - largeExpandedRect.topLeft.y;
-      if (capacity >= diff) {
-        largeExpandedRect.topLeft.y += diff;
-      }
-      else {
-        largeExpandedRect.topLeft.y += capacity;
-      }
-    }
-    else if (edgeOrder[i] == 2) {
-      int maxWidth = targetSizes[ite] / (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) + adjustAmount;
-      int diff = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) - maxWidth;
-      if (diff < 0) diff = 0;
-      int capacity = largeExpandedRect.bottomRight.x - (points[ite].x + 1);
-      if (capacity >= diff) {
-        largeExpandedRect.bottomRight.x -= diff;
-      }
-      else {
-        largeExpandedRect.bottomRight.x -= capacity;
-      }
-    }
-    else if (edgeOrder[i] == 3) {
-      int maxHeight = targetSizes[ite] / (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) + adjustAmount;
-      int diff = (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y) - maxHeight;
-      if (diff < 0) diff = 0;
-      int capacity = largeExpandedRect.bottomRight.y - (points[ite].y + 1);
-      if (capacity >= diff) {
-        largeExpandedRect.bottomRight.y -= diff;
-      }
-      else {
-        largeExpandedRect.bottomRight.y -= capacity;
-      }
-    }
+    
+    int pointCoord = (edgeOrder[i] == 0 || edgeOrder[i] == 2) ? points[ite].x : points[ite].y;
+    adjustRectEdge(largeExpandedRect, edgeOrder[i], targetSizes[ite], pointCoord, adjustAmount, true);
   }
 
   int isInvalid = 0;

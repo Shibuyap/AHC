@@ -621,82 +621,57 @@ void AnnealingMode0(double temp)
   int idx = Rand() % N;
   double delta = Rand01() * 20 - 10;
 
-  if (dir == 0) if (edge.up[idx] + delta < 1000 || 9000 < edge.up[idx] + delta) { return; }
-  if (dir == 1) if (edge.l[idx] + delta < 1000 || 9000 < edge.l[idx] + delta) { return; }
-  if (dir == 2) if (edge.down[idx] + delta < 1000 || 9000 < edge.down[idx] + delta) { return; }
-  if (dir == 3) if (edge.r[idx] + delta < 1000 || 9000 < edge.r[idx] + delta) { return; }
+  // 方向に応じた参照を取得
+  auto& targetEdge = (dir == 0) ? edge.up[idx] : 
+                     (dir == 1) ? edge.l[idx] : 
+                     (dir == 2) ? edge.down[idx] : edge.r[idx];
+  
+  // 範囲チェック
+  if (targetEdge + delta < 1000 || 9000 < targetEdge + delta) { return; }
 
   double diff = 0;
-
-  if (dir == 0) {
-    for (int i = 0; i < turn_v[idx].size(); ++i) {
-      int t = turn_v[idx][i];
-      double d = delta * vsum[t][edge.cut_v[idx]][idx];
-      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
+  
+  // 方向に応じた処理を共通化
+  bool isVertical = (dir == 0 || dir == 2);
+  bool isFirst = (dir == 0 || dir == 1);
+  
+  auto& turns = isVertical ? turn_v[idx] : turn_h[idx];
+  auto& edge1 = isVertical ? edge.up[idx] : edge.l[idx];
+  auto& edge2 = isVertical ? edge.down[idx] : edge.r[idx];
+  auto& cut = isVertical ? edge.cut_v[idx] : edge.cut_h[idx];
+  
+  auto getMultiplier = [&](int t) {
+    if (isVertical) {
+      return isFirst ? vsum[t][cut][idx] : (vsum[t][N - 1][idx] - vsum[t][cut][idx]);
+    } else {
+      return isFirst ? hsum[t][idx][cut] : (hsum[t][idx][N - 1] - hsum[t][idx][cut]);
     }
-    diff += std::abs(edge.up[idx] - edge.down[idx]) * SabunCostMultiple - std::abs((edge.up[idx] + delta) - edge.down[idx]) * SabunCostMultiple;
+  };
+  
+  // diff計算
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
+    double d = delta * getMultiplier(t);
+    diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
   }
-  if (dir == 1) {
-    for (int i = 0; i < turn_h[idx].size(); ++i) {
-      int t = turn_h[idx][i];
-      double d = delta * hsum[t][idx][edge.cut_h[idx]];
-      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
-    }
-    diff += std::abs(edge.l[idx] - edge.r[idx]) * SabunCostMultiple - std::abs((edge.l[idx] + delta) - edge.r[idx]) * SabunCostMultiple;
-  }
-  if (dir == 2) {
-    for (int i = 0; i < turn_v[idx].size(); ++i) {
-      int t = turn_v[idx][i];
-      double d = delta * (vsum[t][N - 1][idx] - vsum[t][edge.cut_v[idx]][idx]);
-      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
-    }
-    diff += std::abs(edge.up[idx] - edge.down[idx]) * SabunCostMultiple - std::abs(edge.up[idx] - (edge.down[idx] + delta)) * SabunCostMultiple;
-  }
-  if (dir == 3) {
-    for (int i = 0; i < turn_h[idx].size(); ++i) {
-      int t = turn_h[idx][i];
-      double d = delta * (hsum[t][idx][N - 1] - hsum[t][idx][edge.cut_h[idx]]);
-      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
-    }
-    diff += std::abs(edge.l[idx] - edge.r[idx]) * SabunCostMultiple - std::abs(edge.l[idx] - (edge.r[idx] + delta)) * SabunCostMultiple;
+  
+  // 隣接エッジとの差分コスト計算
+  if (isFirst) {
+    diff += std::abs(edge1 - edge2) * SabunCostMultiple - std::abs((edge1 + delta) - edge2) * SabunCostMultiple;
+  } else {
+    diff += std::abs(edge1 - edge2) * SabunCostMultiple - std::abs(edge1 - (edge2 + delta)) * SabunCostMultiple;
   }
 
   double prob = exp((double)diff / temp);
 
   if (prob > Rand01()) {
-    if (dir == 0) {
-      for (int i = 0; i < turn_v[idx].size(); ++i) {
-        int t = turn_v[idx][i];
-        double d = delta * vsum[t][edge.cut_v[idx]][idx];
-        dist_est[t] += d;
-      }
-      edge.up[idx] += delta;
+    // 更新処理も共通化
+    for (int i = 0; i < turns.size(); ++i) {
+      int t = turns[i];
+      double d = delta * getMultiplier(t);
+      dist_est[t] += d;
     }
-    if (dir == 1) {
-      for (int i = 0; i < turn_h[idx].size(); ++i) {
-        int t = turn_h[idx][i];
-        double d = delta * hsum[t][idx][edge.cut_h[idx]];
-        dist_est[t] += d;
-      }
-      edge.l[idx] += delta;
-    }
-    if (dir == 2) {
-      for (int i = 0; i < turn_v[idx].size(); ++i) {
-        int t = turn_v[idx][i];
-        double d = delta * (vsum[t][N - 1][idx] - vsum[t][edge.cut_v[idx]][idx]);
-        dist_est[t] += d;
-      }
-      edge.down[idx] += delta;
-    }
-    if (dir == 3) {
-      for (int i = 0; i < turn_h[idx].size(); ++i) {
-        int t = turn_h[idx][i];
-        double d = delta * (hsum[t][idx][N - 1] - hsum[t][idx][edge.cut_h[idx]]);
-        dist_est[t] += d;
-      }
-      edge.r[idx] += delta;
-    }
-
+    targetEdge += delta;
     diff_sum -= diff;
   }
 }
