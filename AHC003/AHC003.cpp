@@ -93,13 +93,19 @@ namespace /* 焼きなまし用変数 */
 
 namespace /* 行、列、切れ目の構造 */
 {
-  array<double, N> up = {}, down = {}, l = {}, r = {};
+  struct Edge {
+    array<double, N> up = {};
+    array<double, N> down = {};
+    array<double, N> l = {};
+    array<double, N> r = {};
+  };
+  Edge edge;
   array<int, N> cut_v = {}, cut_h = {}; // 0‾30をとる半開区間
   int vsum[Q][N + 1][N + 1];
   int hsum[Q][N + 1][N + 1];
   vector<int> turn_v[N], turn_h[N];
 
-  array<double, N> best_up, best_down, best_l, best_r;
+  Edge best_edge;
   array<int, N> best_cut_v, best_cut_h;
 
   double diff_sum = 0;
@@ -203,20 +209,20 @@ void Dijkstra(int sx, int sy, int gx, int gy)
       if (IsOutOfBounds(nx, ny)) { continue; }
       double dd = 0;
       if (i == 0) {
-        if (x <= cut_v[y]) dd = up[y];
-        else dd = down[y];
+        if (x <= cut_v[y]) dd = edge.up[y];
+        else dd = edge.down[y];
       }
       if (i == 1) {
-        if (y <= cut_h[x]) dd = l[x];
-        else dd = r[x];
+        if (y <= cut_h[x]) dd = edge.l[x];
+        else dd = edge.r[x];
       }
       if (i == 2) {
-        if (x + 1 <= cut_v[y]) dd = up[y];
-        else dd = down[y];
+        if (x + 1 <= cut_v[y]) dd = edge.up[y];
+        else dd = edge.down[y];
       }
       if (i == 3) {
-        if (y + 1 <= cut_h[x]) dd = l[x];
-        else dd = r[x];
+        if (y + 1 <= cut_h[x]) dd = edge.l[x];
+        else dd = edge.r[x];
       }
       if (dp[nx][ny] > dp[x][y] + dd) {
         dp[nx][ny] = dp[x][y] + dd;
@@ -253,18 +259,18 @@ void FinalAdjustment()
     double delta = Rand01() * 200.0 - 100.0;
     if (dir == 0) {
       if (x <= cut_v[y]) {
-        if (up[y] + delta < 1000 || 9000 < up[y] + delta) { continue; }
+        if (edge.up[y] + delta < 1000 || 9000 < edge.up[y] + delta) { continue; }
       }
       else {
-        if (down[y] + delta < 1000 || 9000 < down[y] + delta) { continue; }
+        if (edge.down[y] + delta < 1000 || 9000 < edge.down[y] + delta) { continue; }
       }
     }
     else {
       if (y <= cut_h[x]) {
-        if (l[x] + delta < 1000 || 9000 < l[x] + delta) { continue; }
+        if (edge.l[x] + delta < 1000 || 9000 < edge.l[x] + delta) { continue; }
       }
       else {
-        if (r[x] + delta < 1000 || 9000 < r[x] + delta) { continue; }
+        if (edge.r[x] + delta < 1000 || 9000 < edge.r[x] + delta) { continue; }
       }
     }
 
@@ -326,23 +332,23 @@ void Dijkstra2(int sx, int sy, int gx, int gy)
       if (IsOutOfBounds(nx, ny)) { continue; }
       double dd = 0;
       if (i == 0) {
-        if (x <= cut_v[y]) dd = up[y];
-        else dd = down[y];
+        if (x <= cut_v[y]) dd = edge.up[y];
+        else dd = edge.down[y];
         dd += dUD[x][y];
       }
       if (i == 1) {
-        if (y <= cut_h[x]) dd = l[x];
-        else dd = r[x];
+        if (y <= cut_h[x]) dd = edge.l[x];
+        else dd = edge.r[x];
         dd += dLR[x][y];
       }
       if (i == 2) {
-        if (x + 1 <= cut_v[y]) dd = up[y];
-        else dd = down[y];
+        if (x + 1 <= cut_v[y]) dd = edge.up[y];
+        else dd = edge.down[y];
         dd += dUD[x + 1][y];
       }
       if (i == 3) {
-        if (y + 1 <= cut_h[x]) dd = l[x];
-        else dd = r[x];
+        if (y + 1 <= cut_h[x]) dd = edge.l[x];
+        else dd = edge.r[x];
         dd += dLR[x][y + 1];
       }
 
@@ -435,13 +441,13 @@ void UpdateDiffSum(int turn)
   for (int j = 0; j < N; ++j) {
     for (int i = 0; i < turn_v[j].size(); ++i) {
       int t = turn_v[j][i];
-      dist_est[t] += up[j] * vsum[t][cut_v[j]][j] + down[j] * (vsum[t][N - 1][j] - vsum[t][cut_v[j]][j]);
+      dist_est[t] += edge.up[j] * vsum[t][cut_v[j]][j] + edge.down[j] * (vsum[t][N - 1][j] - vsum[t][cut_v[j]][j]);
     }
   }
   for (int j = 0; j < N; ++j) {
     for (int i = 0; i < turn_h[j].size(); ++i) {
       int t = turn_h[j][i];
-      dist_est[t] += l[j] * hsum[t][j][cut_h[j]] + r[j] * (hsum[t][j][N - 1] - hsum[t][j][cut_h[j]]);
+      dist_est[t] += edge.l[j] * hsum[t][j][cut_h[j]] + edge.r[j] * (hsum[t][j][N - 1] - hsum[t][j][cut_h[j]]);
     }
   }
   for (int i = 0; i < turn + 1; ++i) {
@@ -449,18 +455,18 @@ void UpdateDiffSum(int turn)
   }
 
   for (int i = 0; i < N; ++i) {
-    diff_sum += std::abs(up[i] - down[i]) * SabunCostMultiple;
-    diff_sum += std::abs(l[i] - r[i]) * SabunCostMultiple;
+    diff_sum += std::abs(edge.up[i] - edge.down[i]) * SabunCostMultiple;
+    diff_sum += std::abs(edge.l[i] - edge.r[i]) * SabunCostMultiple;
   }
 }
 
 void SaveBestParams()
 {
   for (int i = 0; i < N; ++i) {
-    best_up[i] = up[i];
-    best_down[i] = down[i];
-    best_l[i] = l[i];
-    best_r[i] = r[i];
+    best_edge.up[i] = edge.up[i];
+    best_edge.down[i] = edge.down[i];
+    best_edge.l[i] = edge.l[i];
+    best_edge.r[i] = edge.r[i];
     best_cut_v[i] = cut_v[i];
     best_cut_h[i] = cut_h[i];
   }
@@ -469,10 +475,10 @@ void SaveBestParams()
 void RestoreBestParams()
 {
   for (int i = 0; i < N; ++i) {
-    up[i] = best_up[i];
-    down[i] = best_down[i];
-    l[i] = best_l[i];
-    r[i] = best_r[i];
+    edge.up[i] = best_edge.up[i];
+    edge.down[i] = best_edge.down[i];
+    edge.l[i] = best_edge.l[i];
+    edge.r[i] = best_edge.r[i];
     cut_v[i] = best_cut_v[i];
     cut_h[i] = best_cut_h[i];
   }
@@ -501,10 +507,10 @@ int Solve(string inputFileNum)
   ofstream ofs(cstr);
 
   for (int i = 0; i < N; ++i) {
-    up[i] = initialD;
-    down[i] = initialD;
-    l[i] = initialD;
-    r[i] = initialD;
+    edge.up[i] = initialD;
+    edge.down[i] = initialD;
+    edge.l[i] = initialD;
+    edge.r[i] = initialD;
     cut_v[i] = 15;
     cut_h[i] = 15;
   }
@@ -635,9 +641,9 @@ int Solve(string inputFileNum)
     const char* cstrParam = fileNameParam.c_str();
     ofstream ofsParam(cstrParam);
     ofsParam << "up / down" << endl;
-    for (int i = 0; i < N; ++i) ofsParam << i << ' ' << cut_v[i] << ' ' << up[i] << ' ' << down[i] << endl;
+    for (int i = 0; i < N; ++i) ofsParam << i << ' ' << cut_v[i] << ' ' << edge.up[i] << ' ' << edge.down[i] << endl;
     ofsParam << "left / right" << endl;
-    for (int i = 0; i < N; ++i) ofsParam << i << ' ' << cut_h[i] << ' ' << l[i] << ' ' << r[i] << endl;
+    for (int i = 0; i < N; ++i) ofsParam << i << ' ' << cut_h[i] << ' ' << edge.l[i] << ' ' << edge.r[i] << endl;
 
     ofsParam << "dUD" << endl;
     for (int i = 0; i < N; ++i) {
@@ -668,10 +674,10 @@ void AnnealingMode0(double temp)
   int idx = Rand() % N;
   double delta = Rand01() * 20 - 10;
 
-  if (dir == 0) if (up[idx] + delta < 1000 || 9000 < up[idx] + delta) { return; }
-  if (dir == 1) if (l[idx] + delta < 1000 || 9000 < l[idx] + delta) { return; }
-  if (dir == 2) if (down[idx] + delta < 1000 || 9000 < down[idx] + delta) { return; }
-  if (dir == 3) if (r[idx] + delta < 1000 || 9000 < r[idx] + delta) { return; }
+  if (dir == 0) if (edge.up[idx] + delta < 1000 || 9000 < edge.up[idx] + delta) { return; }
+  if (dir == 1) if (edge.l[idx] + delta < 1000 || 9000 < edge.l[idx] + delta) { return; }
+  if (dir == 2) if (edge.down[idx] + delta < 1000 || 9000 < edge.down[idx] + delta) { return; }
+  if (dir == 3) if (edge.r[idx] + delta < 1000 || 9000 < edge.r[idx] + delta) { return; }
 
   double diff = 0;
 
@@ -681,7 +687,7 @@ void AnnealingMode0(double temp)
       double d = delta * vsum[t][cut_v[idx]][idx];
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(up[idx] - down[idx]) * SabunCostMultiple - std::abs((up[idx] + delta) - down[idx]) * SabunCostMultiple;
+    diff += std::abs(edge.up[idx] - edge.down[idx]) * SabunCostMultiple - std::abs((edge.up[idx] + delta) - edge.down[idx]) * SabunCostMultiple;
   }
   if (dir == 1) {
     for (int i = 0; i < turn_h[idx].size(); ++i) {
@@ -689,7 +695,7 @@ void AnnealingMode0(double temp)
       double d = delta * hsum[t][idx][cut_h[idx]];
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(l[idx] - r[idx]) * SabunCostMultiple - std::abs((l[idx] + delta) - r[idx]) * SabunCostMultiple;
+    diff += std::abs(edge.l[idx] - edge.r[idx]) * SabunCostMultiple - std::abs((edge.l[idx] + delta) - edge.r[idx]) * SabunCostMultiple;
   }
   if (dir == 2) {
     for (int i = 0; i < turn_v[idx].size(); ++i) {
@@ -697,7 +703,7 @@ void AnnealingMode0(double temp)
       double d = delta * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]);
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(up[idx] - down[idx]) * SabunCostMultiple - std::abs(up[idx] - (down[idx] + delta)) * SabunCostMultiple;
+    diff += std::abs(edge.up[idx] - edge.down[idx]) * SabunCostMultiple - std::abs(edge.up[idx] - (edge.down[idx] + delta)) * SabunCostMultiple;
   }
   if (dir == 3) {
     for (int i = 0; i < turn_h[idx].size(); ++i) {
@@ -705,7 +711,7 @@ void AnnealingMode0(double temp)
       double d = delta * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]);
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
-    diff += std::abs(l[idx] - r[idx]) * SabunCostMultiple - std::abs(l[idx] - (r[idx] + delta)) * SabunCostMultiple;
+    diff += std::abs(edge.l[idx] - edge.r[idx]) * SabunCostMultiple - std::abs(edge.l[idx] - (edge.r[idx] + delta)) * SabunCostMultiple;
   }
 
   double prob = exp((double)diff / temp);
@@ -717,7 +723,7 @@ void AnnealingMode0(double temp)
         double d = delta * vsum[t][cut_v[idx]][idx];
         dist_est[t] += d;
       }
-      up[idx] += delta;
+      edge.up[idx] += delta;
     }
     if (dir == 1) {
       for (int i = 0; i < turn_h[idx].size(); ++i) {
@@ -725,7 +731,7 @@ void AnnealingMode0(double temp)
         double d = delta * hsum[t][idx][cut_h[idx]];
         dist_est[t] += d;
       }
-      l[idx] += delta;
+      edge.l[idx] += delta;
     }
     if (dir == 2) {
       for (int i = 0; i < turn_v[idx].size(); ++i) {
@@ -733,7 +739,7 @@ void AnnealingMode0(double temp)
         double d = delta * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]);
         dist_est[t] += d;
       }
-      down[idx] += delta;
+      edge.down[idx] += delta;
     }
     if (dir == 3) {
       for (int i = 0; i < turn_h[idx].size(); ++i) {
@@ -741,7 +747,7 @@ void AnnealingMode0(double temp)
         double d = delta * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]);
         dist_est[t] += d;
       }
-      r[idx] += delta;
+      edge.r[idx] += delta;
     }
 
     diff_sum -= diff;
@@ -755,12 +761,12 @@ void AnnealingMode1(double temp)
   double delta = Rand01() * 20 - 10;
 
   if (dir == 0) {
-    if (up[idx] + delta < 1000 || 9000 < up[idx] + delta) { return; }
-    if (down[idx] + delta < 1000 || 9000 < down[idx] + delta) { return; }
+    if (edge.up[idx] + delta < 1000 || 9000 < edge.up[idx] + delta) { return; }
+    if (edge.down[idx] + delta < 1000 || 9000 < edge.down[idx] + delta) { return; }
   }
   if (dir == 1) {
-    if (l[idx] + delta < 1000 || 9000 < l[idx] + delta) { return; }
-    if (r[idx] + delta < 1000 || 9000 < r[idx] + delta) { return; }
+    if (edge.l[idx] + delta < 1000 || 9000 < edge.l[idx] + delta) { return; }
+    if (edge.r[idx] + delta < 1000 || 9000 < edge.r[idx] + delta) { return; }
   }
 
   double diff = 0;
@@ -789,8 +795,8 @@ void AnnealingMode1(double temp)
         double d = delta * vsum[t][N - 1][idx];
         dist_est[t] += d;
       }
-      up[idx] += delta;
-      down[idx] += delta;
+      edge.up[idx] += delta;
+      edge.down[idx] += delta;
     }
     if (dir == 1) {
       for (int i = 0; i < turn_h[idx].size(); ++i) {
@@ -798,8 +804,8 @@ void AnnealingMode1(double temp)
         double d = delta * hsum[t][idx][N - 1];
         dist_est[t] += d;
       }
-      l[idx] += delta;
-      r[idx] += delta;
+      edge.l[idx] += delta;
+      edge.r[idx] += delta;
     }
 
     diff_sum -= diff;
@@ -822,10 +828,10 @@ void AnnealingMode2(double temp)
       int t = turn_v[idx][i];
       double d = 0;
       if (delta > 0) {
-        d = (up[idx] - down[idx]) * (vsum[t][cut_v[idx] + delta][idx] - vsum[t][cut_v[idx]][idx]);
+        d = (edge.up[idx] - edge.down[idx]) * (vsum[t][cut_v[idx] + delta][idx] - vsum[t][cut_v[idx]][idx]);
       }
       else {
-        d = (down[idx] - up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + delta][idx]);
+        d = (edge.down[idx] - edge.up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + delta][idx]);
       }
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
@@ -835,10 +841,10 @@ void AnnealingMode2(double temp)
       int t = turn_h[idx][i];
       double d = 0;
       if (delta > 0) {
-        d = (l[idx] - r[idx]) * (hsum[t][idx][cut_h[idx] + delta] - hsum[t][idx][cut_h[idx]]);
+        d = (edge.l[idx] - edge.r[idx]) * (hsum[t][idx][cut_h[idx] + delta] - hsum[t][idx][cut_h[idx]]);
       }
       else {
-        d = (r[idx] - l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + delta]);
+        d = (edge.r[idx] - edge.l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + delta]);
       }
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
@@ -852,10 +858,10 @@ void AnnealingMode2(double temp)
         int t = turn_v[idx][i];
         double d = 0;
         if (delta > 0) {
-          d = (up[idx] - down[idx]) * (vsum[t][cut_v[idx] + delta][idx] - vsum[t][cut_v[idx]][idx]);
+          d = (edge.up[idx] - edge.down[idx]) * (vsum[t][cut_v[idx] + delta][idx] - vsum[t][cut_v[idx]][idx]);
         }
         else {
-          d = (down[idx] - up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + delta][idx]);
+          d = (edge.down[idx] - edge.up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + delta][idx]);
         }
         dist_est[t] += d;
       }
@@ -866,10 +872,10 @@ void AnnealingMode2(double temp)
         int t = turn_h[idx][i];
         double d = 0;
         if (delta > 0) {
-          d = (l[idx] - r[idx]) * (hsum[t][idx][cut_h[idx] + delta] - hsum[t][idx][cut_h[idx]]);
+          d = (edge.l[idx] - edge.r[idx]) * (hsum[t][idx][cut_h[idx] + delta] - hsum[t][idx][cut_h[idx]]);
         }
         else {
-          d = (r[idx] - l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + delta]);
+          d = (edge.r[idx] - edge.l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + delta]);
         }
         dist_est[t] += d;
       }
@@ -885,9 +891,9 @@ void AnnealingMode3Vertical(int idx)
   vector<double> rem;
   for (int i = 0; i < turn_v[idx].size(); ++i) {
     int t = turn_v[idx][i];
-    rem.push_back(dist_res[t] - (dist_est[t] - (up[idx] * vsum[t][cut_v[idx]][idx] + down[idx] * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]))));
+    rem.push_back(dist_res[t] - (dist_est[t] - (edge.up[idx] * vsum[t][cut_v[idx]][idx] + edge.down[idx] * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]))));
   }
-  double best_up_m3 = up[idx], best_down_m3 = down[idx];
+  double best_up_m3 = edge.up[idx], best_down_m3 = edge.down[idx];
   int best_cut = cut_v[idx];
   double maxDiff = 0;
   int changed = 0;
@@ -932,7 +938,7 @@ void AnnealingMode3Vertical(int idx)
         int t = turn_v[idx][i];
         d += (abs(rem[i]) - std::abs(rem[i] - (vsum[t][N - 1][idx] - vsum[t][cut][idx]) * dval)) * (40000.0 / dist_res[t]);
       }
-      d += std::abs(up[idx] - down[idx]) * SabunCostMultiple - std::abs(u - dval) * SabunCostMultiple;
+      d += std::abs(edge.up[idx] - edge.down[idx]) * SabunCostMultiple - std::abs(u - dval) * SabunCostMultiple;
 
       if (d > maxDiff) {
         maxDiff = d;
@@ -949,28 +955,28 @@ void AnnealingMode3Vertical(int idx)
     int t = turn_v[idx][i];
     double d = 0;
     if (cdiff > 0) {
-      d = (up[idx] - down[idx]) * (vsum[t][cut_v[idx] + cdiff][idx] - vsum[t][cut_v[idx]][idx]);
+      d = (edge.up[idx] - edge.down[idx]) * (vsum[t][cut_v[idx] + cdiff][idx] - vsum[t][cut_v[idx]][idx]);
     }
     else {
-      d = (down[idx] - up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + cdiff][idx]);
+      d = (edge.down[idx] - edge.up[idx]) * (vsum[t][cut_v[idx]][idx] - vsum[t][cut_v[idx] + cdiff][idx]);
     }
     dist_est[t] += d;
   }
   cut_v[idx] = best_cut;
-  double udiff = best_up_m3 - up[idx];
+  double udiff = best_up_m3 - edge.up[idx];
   for (int i = 0; i < turn_v[idx].size(); ++i) {
     int t = turn_v[idx][i];
     double d = udiff * vsum[t][cut_v[idx]][idx];
     dist_est[t] += d;
   }
-  up[idx] = best_up_m3;
-  double ddiff = best_down_m3 - down[idx];
+  edge.up[idx] = best_up_m3;
+  double ddiff = best_down_m3 - edge.down[idx];
   for (int i = 0; i < turn_v[idx].size(); ++i) {
     int t = turn_v[idx][i];
     double d = ddiff * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]);
     dist_est[t] += d;
   }
-  down[idx] = best_down_m3;
+  edge.down[idx] = best_down_m3;
   diff_sum -= (maxDiff - keep_diff);
 }
 
@@ -979,9 +985,9 @@ void AnnealingMode3Horizontal(int idx)
   vector<double> rem;
   for (int i = 0; i < turn_h[idx].size(); ++i) {
     int t = turn_h[idx][i];
-    rem.push_back(dist_res[t] - (dist_est[t] - (l[idx] * hsum[t][idx][cut_h[idx]] + r[idx] * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]))));
+    rem.push_back(dist_res[t] - (dist_est[t] - (edge.l[idx] * hsum[t][idx][cut_h[idx]] + edge.r[idx] * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]))));
   }
-  double best_l_m3 = l[idx], best_r_m3 = r[idx];
+  double best_l_m3 = edge.l[idx], best_r_m3 = edge.r[idx];
   int best_cut = cut_h[idx];
   double maxDiff = 0;
   int changed = 0;
@@ -1025,7 +1031,7 @@ void AnnealingMode3Horizontal(int idx)
         int t = turn_h[idx][i];
         d += (abs(rem[i]) - std::abs(rem[i] - (hsum[t][idx][N - 1] - hsum[t][idx][cut]) * rval)) * (40000.0 / dist_res[t]);
       }
-      d += std::abs(l[idx] - r[idx]) * SabunCostMultiple - std::abs(lval - rval) * SabunCostMultiple;
+      d += std::abs(edge.l[idx] - edge.r[idx]) * SabunCostMultiple - std::abs(lval - rval) * SabunCostMultiple;
 
       if (d > maxDiff) {
         maxDiff = d;
@@ -1042,28 +1048,28 @@ void AnnealingMode3Horizontal(int idx)
     int t = turn_h[idx][i];
     double d = 0;
     if (cdiff > 0) {
-      d = (l[idx] - r[idx]) * (hsum[t][idx][cut_h[idx] + cdiff] - hsum[t][idx][cut_h[idx]]);
+      d = (edge.l[idx] - edge.r[idx]) * (hsum[t][idx][cut_h[idx] + cdiff] - hsum[t][idx][cut_h[idx]]);
     }
     else {
-      d = (r[idx] - l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + cdiff]);
+      d = (edge.r[idx] - edge.l[idx]) * (hsum[t][idx][cut_h[idx]] - hsum[t][idx][cut_h[idx] + cdiff]);
     }
     dist_est[t] += d;
   }
   cut_h[idx] = best_cut;
-  double ldiff = best_l_m3 - l[idx];
+  double ldiff = best_l_m3 - edge.l[idx];
   for (int i = 0; i < turn_h[idx].size(); ++i) {
     int t = turn_h[idx][i];
     double d = ldiff * hsum[t][idx][cut_h[idx]];
     dist_est[t] += d;
   }
-  l[idx] = best_l_m3;
-  double rdiff = best_r_m3 - r[idx];
+  edge.l[idx] = best_l_m3;
+  double rdiff = best_r_m3 - edge.r[idx];
   for (int i = 0; i < turn_h[idx].size(); ++i) {
     int t = turn_h[idx][i];
     double d = rdiff * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]);
     dist_est[t] += d;
   }
-  r[idx] = best_r_m3;
+  edge.r[idx] = best_r_m3;
   diff_sum -= (maxDiff - keep_diff);
 }
 
