@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <array>
 #include <climits>
 #include <cmath>
 #include <cstdint>
@@ -87,22 +88,22 @@ namespace /* 変数 */
 
 namespace /* 焼きなまし用変数 */
 {
-  double dist_res[Q] = {};				// 受け取った長さ
+  array<double, Q> dist_res = {};				// 受け取った長さ
 }
 
 namespace /* 行、列、切れ目の構造 */
 {
-  double up[N] = {}, down[N] = {}, l[N] = {}, r[N] = {};
-  int cut_v[N] = {}, cut_h[N] = {}; // 0‾30をとる半開区間
+  array<double, N> up = {}, down = {}, l = {}, r = {};
+  array<int, N> cut_v = {}, cut_h = {}; // 0‾30をとる半開区間
   int vsum[Q][N + 1][N + 1];
   int hsum[Q][N + 1][N + 1];
   vector<int> turn_v[N], turn_h[N];
 
-  double best_up[N], best_down[N], best_l[N], best_r[N];
-  int best_cut_v[N], best_cut_h[N];
+  array<double, N> best_up, best_down, best_l, best_r;
+  array<int, N> best_cut_v, best_cut_h;
 
   double diff_sum = 0;
-  double dist_est[Q] = {};
+  array<double, Q> dist_est = {};
 
   vector<pair<double, double>> vec(1100);
 
@@ -886,7 +887,7 @@ void AnnealingMode3Vertical(int idx)
     int t = turn_v[idx][i];
     rem.push_back(dist_res[t] - (dist_est[t] - (up[idx] * vsum[t][cut_v[idx]][idx] + down[idx] * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]))));
   }
-  double best_up = up[idx], best_down = down[idx];
+  double best_up_m3 = up[idx], best_down_m3 = down[idx];
   int best_cut = cut_v[idx];
   double maxDiff = 0;
   int changed = 0;
@@ -935,8 +936,8 @@ void AnnealingMode3Vertical(int idx)
 
       if (d > maxDiff) {
         maxDiff = d;
-        best_up = u;
-        best_down = dval;
+        best_up_m3 = u;
+        best_down_m3 = dval;
         best_cut = cut;
         changed = 1;
       }
@@ -956,20 +957,20 @@ void AnnealingMode3Vertical(int idx)
     dist_est[t] += d;
   }
   cut_v[idx] = best_cut;
-  double udiff = best_up - up[idx];
+  double udiff = best_up_m3 - up[idx];
   for (int i = 0; i < turn_v[idx].size(); ++i) {
     int t = turn_v[idx][i];
     double d = udiff * vsum[t][cut_v[idx]][idx];
     dist_est[t] += d;
   }
-  up[idx] = best_up;
-  double ddiff = best_down - down[idx];
+  up[idx] = best_up_m3;
+  double ddiff = best_down_m3 - down[idx];
   for (int i = 0; i < turn_v[idx].size(); ++i) {
     int t = turn_v[idx][i];
     double d = ddiff * (vsum[t][N - 1][idx] - vsum[t][cut_v[idx]][idx]);
     dist_est[t] += d;
   }
-  down[idx] = best_down;
+  down[idx] = best_down_m3;
   diff_sum -= (maxDiff - keep_diff);
 }
 
@@ -980,7 +981,7 @@ void AnnealingMode3Horizontal(int idx)
     int t = turn_h[idx][i];
     rem.push_back(dist_res[t] - (dist_est[t] - (l[idx] * hsum[t][idx][cut_h[idx]] + r[idx] * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]))));
   }
-  double best_l = l[idx], best_r = r[idx];
+  double best_l_m3 = l[idx], best_r_m3 = r[idx];
   int best_cut = cut_h[idx];
   double maxDiff = 0;
   int changed = 0;
@@ -1028,8 +1029,8 @@ void AnnealingMode3Horizontal(int idx)
 
       if (d > maxDiff) {
         maxDiff = d;
-        best_l = lval;
-        best_r = rval;
+        best_l_m3 = lval;
+        best_r_m3 = rval;
         best_cut = cut;
         changed = 1;
       }
@@ -1049,20 +1050,20 @@ void AnnealingMode3Horizontal(int idx)
     dist_est[t] += d;
   }
   cut_h[idx] = best_cut;
-  double ldiff = best_l - l[idx];
+  double ldiff = best_l_m3 - l[idx];
   for (int i = 0; i < turn_h[idx].size(); ++i) {
     int t = turn_h[idx][i];
     double d = ldiff * hsum[t][idx][cut_h[idx]];
     dist_est[t] += d;
   }
-  l[idx] = best_l;
-  double rdiff = best_r - r[idx];
+  l[idx] = best_l_m3;
+  double rdiff = best_r_m3 - r[idx];
   for (int i = 0; i < turn_h[idx].size(); ++i) {
     int t = turn_h[idx][i];
     double d = rdiff * (hsum[t][idx][N - 1] - hsum[t][idx][cut_h[idx]]);
     dist_est[t] += d;
   }
-  r[idx] = best_r;
+  r[idx] = best_r_m3;
   diff_sum -= (maxDiff - keep_diff);
 }
 
