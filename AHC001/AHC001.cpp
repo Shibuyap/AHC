@@ -357,6 +357,19 @@ inline int getSortedRect(int idx, Direction dir) {
   return dir == HORIZONTAL ? sortedByX[idx] : sortedByY[idx];
 }
 
+// ポイント座標による更新ヘルパー関数
+inline void updateRectBoundsFromPoint(Rect& rect, int i, int ite, Direction dir) {
+  if (getCoord(points[i], dir) <= getCoord(points[ite], dir)) {
+    getCoordRef(rect.topLeft, dir) = max(
+      getCoord(rect.topLeft, dir), 
+      getCoord(points[i], dir) + 1);
+  } else {
+    getCoordRef(rect.bottomRight, dir) = min(
+      getCoord(rect.bottomRight, dir), 
+      getCoord(points[i], dir));
+  }
+}
+
 // 一方向の拡張処理を共通化（ポイント版）
 inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir) {
   int argIdx = getSortedIndex(ite, primaryDir);
@@ -371,15 +384,7 @@ inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir) {
       checkPointXOverlap(points[i].x, rect.topLeft.x, rect.bottomRight.x);
     
     if (hasOverlap) {
-      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
-        getCoordRef(rect.topLeft, primaryDir) = max(
-          getCoord(rect.topLeft, primaryDir), 
-          getCoord(points[i], primaryDir) + 1);
-      } else {
-        getCoordRef(rect.bottomRight, primaryDir) = min(
-          getCoord(rect.bottomRight, primaryDir), 
-          getCoord(points[i], primaryDir));
-      }
+      updateRectBoundsFromPoint(rect, i, ite, primaryDir);
     }
   }
   
@@ -393,16 +398,21 @@ inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir) {
       checkPointXOverlap(points[i].x, rect.topLeft.x, rect.bottomRight.x);
     
     if (hasOverlap) {
-      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
-        getCoordRef(rect.topLeft, primaryDir) = max(
-          getCoord(rect.topLeft, primaryDir), 
-          getCoord(points[i], primaryDir) + 1);
-      } else {
-        getCoordRef(rect.bottomRight, primaryDir) = min(
-          getCoord(rect.bottomRight, primaryDir), 
-          getCoord(points[i], primaryDir));
-      }
+      updateRectBoundsFromPoint(rect, i, ite, primaryDir);
     }
+  }
+}
+
+// 座標更新ヘルパー関数
+inline void updateRectBounds(Rect& rect, int i, int ite, Direction dir) {
+  if (getCoord(points[i], dir) <= getCoord(points[ite], dir)) {
+    getCoordRef(rect.topLeft, dir) = max(
+      getCoord(rect.topLeft, dir), 
+      getCoord(rectangles[i].bottomRight, dir));
+  } else {
+    getCoordRef(rect.bottomRight, dir) = min(
+      getCoord(rect.bottomRight, dir), 
+      getCoord(rectangles[i].topLeft, dir));
   }
 }
 
@@ -423,15 +433,7 @@ inline void expandInDirection(Rect& rect, int ite, Direction primaryDir) {
       checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
     
     if (hasOverlap) {
-      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
-        getCoordRef(rect.topLeft, primaryDir) = max(
-          getCoord(rect.topLeft, primaryDir), 
-          getCoord(rectangles[i].bottomRight, primaryDir));
-      } else {
-        getCoordRef(rect.bottomRight, primaryDir) = min(
-          getCoord(rect.bottomRight, primaryDir), 
-          getCoord(rectangles[i].topLeft, primaryDir));
-      }
+      updateRectBounds(rect, i, ite, primaryDir);
       break;
     }
   }
@@ -443,15 +445,7 @@ inline void expandInDirection(Rect& rect, int ite, Direction primaryDir) {
       checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
     
     if (hasOverlap) {
-      if (getCoord(points[i], primaryDir) <= getCoord(points[ite], primaryDir)) {
-        getCoordRef(rect.topLeft, primaryDir) = max(
-          getCoord(rect.topLeft, primaryDir), 
-          getCoord(rectangles[i].bottomRight, primaryDir));
-      } else {
-        getCoordRef(rect.bottomRight, primaryDir) = min(
-          getCoord(rect.bottomRight, primaryDir), 
-          getCoord(rectangles[i].topLeft, primaryDir));
-      }
+      updateRectBounds(rect, i, ite, primaryDir);
       break;
     }
   }
@@ -475,15 +469,7 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir) {
       checkXOverlap(rectangles[i], rect) : checkYOverlap(rectangles[i], rect);
     
     if (hasOverlap) {
-      if (getCoord(points[i], secondaryDir) <= getCoord(points[ite], secondaryDir)) {
-        getCoordRef(rect.topLeft, secondaryDir) = max(
-          getCoord(rect.topLeft, secondaryDir), 
-          getCoord(rectangles[i].bottomRight, secondaryDir));
-      } else {
-        getCoordRef(rect.bottomRight, secondaryDir) = min(
-          getCoord(rect.bottomRight, secondaryDir), 
-          getCoord(rectangles[i].topLeft, secondaryDir));
-      }
+      updateRectBounds(rect, i, ite, secondaryDir);
       
       if (getCoord(rectangles[i].topLeft, primaryDir) <= nowLeft) {
         nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, primaryDir));
@@ -500,15 +486,7 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir) {
       checkXOverlap(rectangles[i], rect) : checkYOverlap(rectangles[i], rect);
     
     if (hasOverlap) {
-      if (getCoord(points[i], secondaryDir) <= getCoord(points[ite], secondaryDir)) {
-        getCoordRef(rect.topLeft, secondaryDir) = max(
-          getCoord(rect.topLeft, secondaryDir), 
-          getCoord(rectangles[i].bottomRight, secondaryDir));
-      } else {
-        getCoordRef(rect.bottomRight, secondaryDir) = min(
-          getCoord(rect.bottomRight, secondaryDir), 
-          getCoord(rectangles[i].topLeft, secondaryDir));
-      }
+      updateRectBounds(rect, i, ite, secondaryDir);
       
       if (getCoord(rectangles[i].topLeft, primaryDir) <= nowLeft) {
         nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, primaryDir));
