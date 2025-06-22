@@ -223,6 +223,17 @@ inline void initSortArrays()
   }
 }
 
+// 座標が範囲内かチェックする共通関数
+inline int isInRange(int coord) {
+  return 0 <= coord && coord <= 10000;
+}
+
+// 矩形の座標が範囲内かチェック
+inline int isRectInRange(const Rect& rect) {
+  return isInRange(rect.topLeft.x) && isInRange(rect.topLeft.y) &&
+         isInRange(rect.bottomRight.x) && isInRange(rect.bottomRight.y);
+}
+
 // 0~10000を出ていないか
 // 面積は1以上か
 // (x[i]+0.5,y[i]+0.5)を含んでいるか
@@ -231,10 +242,7 @@ inline int isValid2(int ite)
 {
   if (ite == -1) {
     for (int i = 0; i < numRects; ++i) {
-      if (rectangles[i].topLeft.x < 0 || 10000 < rectangles[i].topLeft.x) return 0;
-      if (rectangles[i].topLeft.y < 0 || 10000 < rectangles[i].topLeft.y) return 0;
-      if (rectangles[i].bottomRight.x < 0 || 10000 < rectangles[i].bottomRight.x) return 0;
-      if (rectangles[i].bottomRight.y < 0 || 10000 < rectangles[i].bottomRight.y) return 0;
+      if (!isRectInRange(rectangles[i])) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
       if (rectangles[i].bottomRight.x <= rectangles[i].topLeft.x) return 0;
@@ -251,10 +259,7 @@ inline int isValid2(int ite)
     }
   }
   else {
-    if (rectangles[ite].topLeft.x < 0 || 10000 < rectangles[ite].topLeft.x) return 0;
-    if (rectangles[ite].topLeft.y < 0 || 10000 < rectangles[ite].topLeft.y) return 0;
-    if (rectangles[ite].bottomRight.x < 0 || 10000 < rectangles[ite].bottomRight.x) return 0;
-    if (rectangles[ite].bottomRight.y < 0 || 10000 < rectangles[ite].bottomRight.y) return 0;
+    if (!isRectInRange(rectangles[ite])) return 0;
     if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 0;
     if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 0;
     if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 0;
@@ -271,10 +276,7 @@ inline int isValid(int ite)
 {
   if (ite == -1) {
     for (int i = 0; i < numRects; ++i) {
-      if (rectangles[i].topLeft.x < 0 || 10000 < rectangles[i].topLeft.x) return 0;
-      if (rectangles[i].topLeft.y < 0 || 10000 < rectangles[i].topLeft.y) return 0;
-      if (rectangles[i].bottomRight.x < 0 || 10000 < rectangles[i].bottomRight.x) return 0;
-      if (rectangles[i].bottomRight.y < 0 || 10000 < rectangles[i].bottomRight.y) return 0;
+      if (!isRectInRange(rectangles[i])) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
       if (rectangles[i].bottomRight.x <= rectangles[i].topLeft.x) return 0;
@@ -291,10 +293,7 @@ inline int isValid(int ite)
     }
   }
   else {
-    if (rectangles[ite].topLeft.x < 0 || 10000 < rectangles[ite].topLeft.x) return 0;
-    if (rectangles[ite].topLeft.y < 0 || 10000 < rectangles[ite].topLeft.y) return 0;
-    if (rectangles[ite].bottomRight.x < 0 || 10000 < rectangles[ite].bottomRight.x) return 0;
-    if (rectangles[ite].bottomRight.y < 0 || 10000 < rectangles[ite].bottomRight.y) return 0;
+    if (!isRectInRange(rectangles[ite])) return 0;
     if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 0;
     if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 0;
     if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 0;
@@ -666,10 +665,7 @@ inline void expandRect(int ite)
   }
 
   int isInvalid = 0;
-  if (expandedRect.topLeft.x < 0 || 10000 < expandedRect.topLeft.x) isInvalid = 1;
-  if (expandedRect.topLeft.y < 0 || 10000 < expandedRect.topLeft.y) isInvalid = 1;
-  if (expandedRect.bottomRight.x < 0 || 10000 < expandedRect.bottomRight.x) isInvalid = 1;
-  if (expandedRect.bottomRight.y < 0 || 10000 < expandedRect.bottomRight.y) isInvalid = 1;
+  if (!isRectInRange(expandedRect)) isInvalid = 1;
   if (expandedRect.bottomRight.x <= expandedRect.topLeft.x) isInvalid = 1;
   if (expandedRect.bottomRight.y <= expandedRect.topLeft.y) isInvalid = 1;
   if (points[ite].x < expandedRect.topLeft.x || expandedRect.bottomRight.x <= points[ite].x) isInvalid = 1;
@@ -848,10 +844,7 @@ inline void expandRectLarge(int ite)
   }
 
   int isInvalid = 0;
-  if (largeExpandedRect.topLeft.x < 0 || 10000 < largeExpandedRect.topLeft.x) isInvalid = 1;
-  if (largeExpandedRect.topLeft.y < 0 || 10000 < largeExpandedRect.topLeft.y) isInvalid = 1;
-  if (largeExpandedRect.bottomRight.x < 0 || 10000 < largeExpandedRect.bottomRight.x) isInvalid = 1;
-  if (largeExpandedRect.bottomRight.y < 0 || 10000 < largeExpandedRect.bottomRight.y) isInvalid = 1;
+  if (!isRectInRange(largeExpandedRect)) isInvalid = 1;
   if (largeExpandedRect.bottomRight.x <= largeExpandedRect.topLeft.x) isInvalid = 1;
   if (largeExpandedRect.bottomRight.y <= largeExpandedRect.topLeft.y) isInvalid = 1;
   if (points[ite].x < largeExpandedRect.topLeft.x || largeExpandedRect.bottomRight.x <= points[ite].x) isInvalid = 1;
@@ -1037,10 +1030,7 @@ inline void changeAspectRatio(int ite, double temp)
 
 inline int isSelfInvalid(int ite)
 {
-  if (rectangles[ite].topLeft.x < 0 || 10000 < rectangles[ite].topLeft.x) return 1;
-  if (rectangles[ite].topLeft.y < 0 || 10000 < rectangles[ite].topLeft.y) return 1;
-  if (rectangles[ite].bottomRight.x < 0 || 10000 < rectangles[ite].bottomRight.x) return 1;
-  if (rectangles[ite].bottomRight.y < 0 || 10000 < rectangles[ite].bottomRight.y) return 1;
+  if (!isRectInRange(rectangles[ite])) return 1;
   if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 1;
   if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 1;
   if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 1;
