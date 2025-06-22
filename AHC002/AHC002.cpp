@@ -72,13 +72,13 @@ char next_char[4] = { 'U','L','D','R' };
 int mode = 0;
 bool show_log = true;
 
-const int GRID_SIZE = 50;
-const int MAX_PATH_LENGTH = GRID_SIZE * GRID_SIZE;
+const int N = 50;
+const int MAX_PATH_LENGTH = N * N;
 int sx, sy;
-int tile_id[GRID_SIZE][GRID_SIZE];
-int cell_value[GRID_SIZE][GRID_SIZE];
+int tile_id[N][N];
+int cell_value[N][N];
 
-int visited[GRID_SIZE * GRID_SIZE];
+int visited[N * N];
 int visited_version;
 
 class Path
@@ -174,7 +174,7 @@ Path best_path;
 
 bool is_out_of_bounds(int x, int y)
 {
-  if (x < 0 || GRID_SIZE <= x || y < 0 || GRID_SIZE <= y) return true;
+  if (x < 0 || N <= x || y < 0 || N <= y) return true;
   return false;
 }
 
@@ -186,26 +186,26 @@ static void read_input(int case_num)
 
   if (!ifs.is_open()) { // 標準入力する
     cin >> sx >> sy;
-    for (int i = 0; i < (GRID_SIZE); ++i) {
-      for (int j = 0; j < (GRID_SIZE); ++j) {
+    for (int i = 0; i < (N); ++i) {
+      for (int j = 0; j < (N); ++j) {
         cin >> tile_id[i][j];
       }
     }
-    for (int i = 0; i < (GRID_SIZE); ++i) {
-      for (int j = 0; j < (GRID_SIZE); ++j) {
+    for (int i = 0; i < (N); ++i) {
+      for (int j = 0; j < (N); ++j) {
         cin >> cell_value[i][j];
       }
     }
   }
   else { // ファイル入力する
     ifs >> sx >> sy;
-    for (int i = 0; i < (GRID_SIZE); ++i) {
-      for (int j = 0; j < (GRID_SIZE); ++j) {
+    for (int i = 0; i < (N); ++i) {
+      for (int j = 0; j < (N); ++j) {
         ifs >> tile_id[i][j];
       }
     }
-    for (int i = 0; i < (GRID_SIZE); ++i) {
-      for (int j = 0; j < (GRID_SIZE); ++j) {
+    for (int i = 0; i < (N); ++i) {
+      for (int j = 0; j < (N); ++j) {
         ifs >> cell_value[i][j];
       }
     }

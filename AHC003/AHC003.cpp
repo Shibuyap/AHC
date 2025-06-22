@@ -833,42 +833,55 @@ void AnnealingMode2(double temp)
   }
 }
 
-void AnnealingMode3Vertical(int idx)
+template<bool IsVertical>
+void AnnealingMode3Common(int idx)
 {
   vector<double> rem;
-  for (int i = 0; i < turn_v[idx].size(); ++i) {
-    int t = turn_v[idx][i];
-    rem.push_back(dist_res[t] - (dist_est[t] - (edge.up[idx] * vsum[t][edge.cut_v[idx]][idx] + edge.down[idx] * (vsum[t][N - 1][idx] - vsum[t][edge.cut_v[idx]][idx]))));
+  auto& turns = IsVertical ? turn_v[idx] : turn_h[idx];
+  auto& edge1 = IsVertical ? edge.up : edge.l;
+  auto& edge2 = IsVertical ? edge.down : edge.r;
+  auto& cut = IsVertical ? edge.cut_v : edge.cut_h;
+  
+  auto getSum1 = [&](int t, int cutPos) {
+    return IsVertical ? vsum[t][cutPos][idx] : hsum[t][idx][cutPos];
+  };
+  auto getSum2 = [&](int t) {
+    return IsVertical ? vsum[t][N - 1][idx] : hsum[t][idx][N - 1];
+  };
+  
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
+    rem.push_back(dist_res[t] - (dist_est[t] - (edge1[idx] * getSum1(t, cut[idx]) + edge2[idx] * (getSum2(t) - getSum1(t, cut[idx])))));
   }
-  double best_up_m3 = edge.up[idx], best_down_m3 = edge.down[idx];
-  int best_cut = edge.cut_v[idx];
+  double best_edge1 = edge1[idx], best_edge2 = edge2[idx];
+  int best_cut = cut[idx];
   double maxDiff = 0;
   int changed = 0;
-  for (int i = 0; i < turn_v[idx].size(); ++i) {
-    int t = turn_v[idx][i];
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
     maxDiff += (abs(rem[i]) - std::abs(dist_res[t] - dist_est[t])) * (40000.0 / dist_res[t]);
   }
   double keep_diff = maxDiff;
-  for (int cut = 3; cut < 27; ++cut) {
+  for (int cutPos = 3; cutPos < 27; ++cutPos) {
     for (int trial = 0; trial < 20; ++trial) {
-      double u = Rand() % 8001 + 1000;
+      double val1 = Rand() % 8001 + 1000;
 
       double sum = 0;
-      for (int i = 0; i < turn_v[idx].size(); ++i) {
-        int t = turn_v[idx][i];
-        if (vsum[t][N - 1][idx] - vsum[t][cut][idx] == 0) vec[i].first = 1001001;
-        else vec[i].first = (rem[i] - u * vsum[t][cut][idx]) / (vsum[t][N - 1][idx] - vsum[t][cut][idx]);
-        vec[i].second = (vsum[t][N - 1][idx] - vsum[t][cut][idx]) * (40000.0 / dist_res[t]);
+      for (int i = 0; i < turns.size(); ++i) {
+        int t = turns[i];
+        if (getSum2(t) - getSum1(t, cutPos) == 0) vec[i].first = 1001001;
+        else vec[i].first = (rem[i] - val1 * getSum1(t, cutPos)) / (getSum2(t) - getSum1(t, cutPos));
+        vec[i].second = (getSum2(t) - getSum1(t, cutPos)) * (40000.0 / dist_res[t]);
         sum += vec[i].second;
       }
       if (sum == 0) { continue; }
-      vec[turn_v[idx].size()].first = u;
-      vec[turn_v[idx].size()].second = SabunCostMultiple;
+      vec[turns.size()].first = val1;
+      vec[turns.size()].second = SabunCostMultiple;
       sum += SabunCostMultiple;
-      sort(vec.begin(), vec.begin() + turn_v[idx].size() + 1);
+      sort(vec.begin(), vec.begin() + turns.size() + 1);
       int ite = 0;
       double cnt = vec[ite].second;
-      while (ite < turn_v[idx].size() + 1) {
+      while (ite < turns.size() + 1) {
         if (cnt < sum - cnt) {
           ite++;
           cnt += vec[ite].second;
@@ -878,146 +891,63 @@ void AnnealingMode3Vertical(int idx)
         }
       }
       double d = 0;
-      double dval = vec[ite].first;
-      dval = max(dval, 1000.0);
-      dval = min(dval, 9000.0);
-      for (int i = 0; i < turn_v[idx].size(); ++i) {
-        int t = turn_v[idx][i];
-        d += (abs(rem[i]) - std::abs(rem[i] - (vsum[t][N - 1][idx] - vsum[t][cut][idx]) * dval)) * (40000.0 / dist_res[t]);
+      double val2 = vec[ite].first;
+      val2 = max(val2, 1000.0);
+      val2 = min(val2, 9000.0);
+      for (int i = 0; i < turns.size(); ++i) {
+        int t = turns[i];
+        d += (abs(rem[i]) - std::abs(rem[i] - (getSum2(t) - getSum1(t, cutPos)) * val2)) * (40000.0 / dist_res[t]);
       }
-      d += std::abs(edge.up[idx] - edge.down[idx]) * SabunCostMultiple - std::abs(u - dval) * SabunCostMultiple;
+      d += std::abs(edge1[idx] - edge2[idx]) * SabunCostMultiple - std::abs(val1 - val2) * SabunCostMultiple;
 
       if (d > maxDiff) {
         maxDiff = d;
-        best_up_m3 = u;
-        best_down_m3 = dval;
-        best_cut = cut;
+        best_edge1 = val1;
+        best_edge2 = val2;
+        best_cut = cutPos;
         changed = 1;
       }
     }
   }
   if (changed == 0) { return; }
-  int cdiff = best_cut - edge.cut_v[idx];
-  for (int i = 0; i < turn_v[idx].size(); ++i) {
-    int t = turn_v[idx][i];
+  int cdiff = best_cut - cut[idx];
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
     double d = 0;
     if (cdiff > 0) {
-      d = (edge.up[idx] - edge.down[idx]) * (vsum[t][edge.cut_v[idx] + cdiff][idx] - vsum[t][edge.cut_v[idx]][idx]);
+      d = (edge1[idx] - edge2[idx]) * (getSum1(t, cut[idx] + cdiff) - getSum1(t, cut[idx]));
     }
     else {
-      d = (edge.down[idx] - edge.up[idx]) * (vsum[t][edge.cut_v[idx]][idx] - vsum[t][edge.cut_v[idx] + cdiff][idx]);
+      d = (edge2[idx] - edge1[idx]) * (getSum1(t, cut[idx]) - getSum1(t, cut[idx] + cdiff));
     }
     dist_est[t] += d;
   }
-  edge.cut_v[idx] = best_cut;
-  double udiff = best_up_m3 - edge.up[idx];
-  for (int i = 0; i < turn_v[idx].size(); ++i) {
-    int t = turn_v[idx][i];
-    double d = udiff * vsum[t][edge.cut_v[idx]][idx];
+  cut[idx] = best_cut;
+  double diff1 = best_edge1 - edge1[idx];
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
+    double d = diff1 * getSum1(t, cut[idx]);
     dist_est[t] += d;
   }
-  edge.up[idx] = best_up_m3;
-  double ddiff = best_down_m3 - edge.down[idx];
-  for (int i = 0; i < turn_v[idx].size(); ++i) {
-    int t = turn_v[idx][i];
-    double d = ddiff * (vsum[t][N - 1][idx] - vsum[t][edge.cut_v[idx]][idx]);
+  edge1[idx] = best_edge1;
+  double diff2 = best_edge2 - edge2[idx];
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
+    double d = diff2 * (getSum2(t) - getSum1(t, cut[idx]));
     dist_est[t] += d;
   }
-  edge.down[idx] = best_down_m3;
+  edge2[idx] = best_edge2;
   diff_sum -= (maxDiff - keep_diff);
+}
+
+void AnnealingMode3Vertical(int idx)
+{
+  AnnealingMode3Common<true>(idx);
 }
 
 void AnnealingMode3Horizontal(int idx)
 {
-  vector<double> rem;
-  for (int i = 0; i < turn_h[idx].size(); ++i) {
-    int t = turn_h[idx][i];
-    rem.push_back(dist_res[t] - (dist_est[t] - (edge.l[idx] * hsum[t][idx][edge.cut_h[idx]] + edge.r[idx] * (hsum[t][idx][N - 1] - hsum[t][idx][edge.cut_h[idx]]))));
-  }
-  double best_l_m3 = edge.l[idx], best_r_m3 = edge.r[idx];
-  int best_cut = edge.cut_h[idx];
-  double maxDiff = 0;
-  int changed = 0;
-  for (int i = 0; i < turn_h[idx].size(); ++i) {
-    int t = turn_h[idx][i];
-    maxDiff += (abs(rem[i]) - std::abs(dist_res[t] - dist_est[t])) * (40000.0 / dist_res[t]);
-  }
-  double keep_diff = maxDiff;
-  for (int cut = 3; cut < 27; ++cut) {
-    for (int trial = 0; trial < 20; ++trial) {
-      double lval = Rand() % 8001 + 1000;
-      double sum = 0;
-      for (int i = 0; i < turn_h[idx].size(); ++i) {
-        int t = turn_h[idx][i];
-        if (hsum[t][idx][N - 1] - hsum[t][idx][cut] == 0) vec[i].first = 1001001;
-        else vec[i].first = (rem[i] - lval * hsum[t][idx][cut]) / (hsum[t][idx][N - 1] - hsum[t][idx][cut]);
-        vec[i].second = (hsum[t][idx][N - 1] - hsum[t][idx][cut]) * (40000.0 / dist_res[t]);
-        sum += vec[i].second;
-      }
-      if (sum == 0) { continue; }
-      vec[turn_h[idx].size()].first = lval;
-      vec[turn_h[idx].size()].second = SabunCostMultiple;
-      sum += SabunCostMultiple;
-      sort(vec.begin(), vec.begin() + turn_h[idx].size() + 1);
-      int ite = 0;
-      double cnt = vec[ite].second;
-      while (ite < turn_h[idx].size() + 1) {
-        if (cnt < sum - cnt) {
-          ite++;
-          cnt += vec[ite].second;
-        }
-        else {
-          break;
-        }
-      }
-      double d = 0;
-      double rval = vec[ite].first;
-      rval = max(rval, 1000.0);
-      rval = min(rval, 9000.0);
-      for (int i = 0; i < turn_h[idx].size(); ++i) {
-        int t = turn_h[idx][i];
-        d += (abs(rem[i]) - std::abs(rem[i] - (hsum[t][idx][N - 1] - hsum[t][idx][cut]) * rval)) * (40000.0 / dist_res[t]);
-      }
-      d += std::abs(edge.l[idx] - edge.r[idx]) * SabunCostMultiple - std::abs(lval - rval) * SabunCostMultiple;
-
-      if (d > maxDiff) {
-        maxDiff = d;
-        best_l_m3 = lval;
-        best_r_m3 = rval;
-        best_cut = cut;
-        changed = 1;
-      }
-    }
-  }
-  if (changed == 0) { return; }
-  int cdiff = best_cut - edge.cut_h[idx];
-  for (int i = 0; i < turn_h[idx].size(); ++i) {
-    int t = turn_h[idx][i];
-    double d = 0;
-    if (cdiff > 0) {
-      d = (edge.l[idx] - edge.r[idx]) * (hsum[t][idx][edge.cut_h[idx] + cdiff] - hsum[t][idx][edge.cut_h[idx]]);
-    }
-    else {
-      d = (edge.r[idx] - edge.l[idx]) * (hsum[t][idx][edge.cut_h[idx]] - hsum[t][idx][edge.cut_h[idx] + cdiff]);
-    }
-    dist_est[t] += d;
-  }
-  edge.cut_h[idx] = best_cut;
-  double ldiff = best_l_m3 - edge.l[idx];
-  for (int i = 0; i < turn_h[idx].size(); ++i) {
-    int t = turn_h[idx][i];
-    double d = ldiff * hsum[t][idx][edge.cut_h[idx]];
-    dist_est[t] += d;
-  }
-  edge.l[idx] = best_l_m3;
-  double rdiff = best_r_m3 - edge.r[idx];
-  for (int i = 0; i < turn_h[idx].size(); ++i) {
-    int t = turn_h[idx][i];
-    double d = rdiff * (hsum[t][idx][N - 1] - hsum[t][idx][edge.cut_h[idx]]);
-    dist_est[t] += d;
-  }
-  edge.r[idx] = best_r_m3;
-  diff_sum -= (maxDiff - keep_diff);
+  AnnealingMode3Common<false>(idx);
 }
 
 void AnnealingMode3()

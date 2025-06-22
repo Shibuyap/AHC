@@ -1144,7 +1144,7 @@ int multiStartBestScore = -1;
 
 inline void multiStartSearch()
 {
-  clock_t start, end;
+  Timer timer;
   for (int multiStartIter = 0; multiStartIter < (5); ++multiStartIter) {
 
     // 初期解
@@ -1155,16 +1155,15 @@ inline void multiStartSearch()
 
     int innerIterations = 5;
     for (int innerIter = 0; innerIter < (innerIterations); ++innerIter) {
-      start = clock();
+      timer.start();
 
       // 初期スコア計算
       currentScore = calcScore(-1);
       saveBest();
 
       // 焼きなまし
-      start = clock();
-      end = clock();
-      double elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+      timer.start();
+      double elapsedTime = timer.get_elapsed_time();
       double localTimeLimit = (0.10 / (double)innerIterations) / allLoopTimes;
       double startTemp = 2048;
       double endTemp = 0.1;
@@ -1173,8 +1172,7 @@ inline void multiStartSearch()
       while (true) {
         loop++;
         if (loop % 100 == 1) {
-          end = clock();
-          elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+          elapsedTime = timer.get_elapsed_time();
           if (elapsedTime > localTimeLimit)break;
           temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
         }
@@ -1231,10 +1229,9 @@ inline void multiStartSearch()
 
 
     // 焼きなまし(2回目)
-    clock_t start, end;
-    start = clock();
-    end = clock();
-    double elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+    Timer timer2;
+    timer2.start();
+    double elapsedTime = timer2.get_elapsed_time();
     double localTimeLimit = 0.02 / allLoopTimes;
     double startTemp = 50048;
     double endTemp = 0.1;
@@ -1244,8 +1241,7 @@ inline void multiStartSearch()
     while (true) {
       loop++;
       if (loop % 100 == 1) {
-        end = clock();
-        elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+        elapsedTime = timer2.get_elapsed_time();
         if (elapsedTime > localTimeLimit)break;
         temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
       }
@@ -1302,8 +1298,9 @@ inline void multiStartSearch()
 int solve(int isSubmission, int fileNum)
 {
   auto startClock = system_clock::now();
-  clock_t start, end;
-  clock_t overallStart = clock();
+  Timer mainTimer;
+  Timer loopTimer;
+  mainTimer.start();
 
   readInput(fileNum);
 
@@ -1360,10 +1357,9 @@ int solve(int isSubmission, int fileNum)
         }
 
         // 焼きなまし(2回目)
-        start = clock();
-        end = clock();
+        loopTimer.start();
         startClock = system_clock::now();
-        double elapsedTime = ((double)end - start) / CLOCKS_PER_SEC;
+        double elapsedTime = loopTimer.get_elapsed_time();
         double localTimeLimit = (((timeLimit - 0.7) / mainIterations) / innerLoopCount) / allLoopTimes;
         double startTemp = 20048.0;
         double endTemp = 0.1;
@@ -1459,8 +1455,7 @@ int solve(int isSubmission, int fileNum)
       }
 
       // エスケープ
-      end = clock();
-      if (((double)end - overallStart) / CLOCKS_PER_SEC > timeLimit) { break; }
+      if (mainTimer.get_elapsed_time() > timeLimit) { break; }
     }
 
     // secondBestScore戻す
