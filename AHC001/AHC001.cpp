@@ -958,109 +958,75 @@ inline int canShiftBoundary(int ite, int edgeType)
 
 int overlappingRects[MAX_N];
 int overlapCount;
+
+// エッジタイプから方向情報を取得
+inline Direction getEdgePrimaryDir(int edgeType) {
+  return (edgeType == 0 || edgeType == 2) ? HORIZONTAL : VERTICAL;
+}
+
+inline Direction getEdgeSecondaryDir(int edgeType) {
+  return (edgeType == 0 || edgeType == 2) ? VERTICAL : HORIZONTAL;
+}
+
+inline bool isBackwardSearch(int edgeType) {
+  return edgeType < 2;
+}
+
+// 重なり探索の共通処理
+inline void findOverlapsInDirection(int ite, int edgeType) {
+  Direction primaryDir = getEdgePrimaryDir(edgeType);
+  Direction secondaryDir = getEdgeSecondaryDir(edgeType);
+  bool backward = isBackwardSearch(edgeType);
+  
+  int argIdx = getSortedIndex(ite, primaryDir);
+  int nowLeft = getCoord(rectangles[ite].topLeft, secondaryDir);
+  int nowRight = getCoord(rectangles[ite].bottomRight, secondaryDir);
+  
+  int startIdx = backward ? argIdx - 1 : argIdx + 1;
+  int endIdx = backward ? -1 : numRects;
+  int step = backward ? -1 : 1;
+  
+  for (int ii = startIdx; ii != endIdx; ii += step) {
+    int i = getSortedRect(ii, primaryDir);
+    if (checkOverlap(i, ite)) {
+      // 無効な重なりチェック
+      bool invalidOverlap = false;
+      if (edgeType == 0 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
+        invalidOverlap = true;
+      } else if (edgeType == 1 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
+        invalidOverlap = true;
+      } else if (edgeType == 2 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+        invalidOverlap = true;
+      } else if (edgeType == 3 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+        invalidOverlap = true;
+      }
+      
+      if (invalidOverlap) {
+        overlappingRects[0] = -1;
+        overlapCount = 1;
+        return;
+      }
+      
+      overlappingRects[overlapCount] = i;
+      overlapCount++;
+    }
+    
+    // nowLeft/nowRightの更新
+    if (getCoord(rectangles[i].topLeft, secondaryDir) <= nowLeft) {
+      nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, secondaryDir));
+      if (nowLeft >= nowRight) { break; }
+    }
+    if (nowRight <= getCoord(rectangles[i].bottomRight, secondaryDir)) {
+      nowRight = min(nowRight, getCoord(rectangles[i].topLeft, secondaryDir));
+      if (nowLeft >= nowRight) { break; }
+    }
+  }
+}
+
 inline void findOverlaps(int ite, int edgeType)
 {
   overlapCount = 0;
-  if (edgeType == 0) {
-    int argX = indexInSortedX[ite];
-    int nowLeft = rectangles[ite].topLeft.y;
-    int nowRight = rectangles[ite].bottomRight.y;
-    for (int ii = argX - 1; ii >= 0; --ii) {
-      int i = sortedByX[ii];
-      if (checkOverlap(i, ite)) {
-        if (rectangles[ite].topLeft.x <= points[i].x) {
-          overlappingRects[0] = -1;
-          overlapCount = 1;
-          return;
-        }
-        overlappingRects[overlapCount] = i;
-        overlapCount++;
-      }
-      if (rectangles[i].topLeft.y <= nowLeft) {
-        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
-        if (nowLeft >= nowRight) { break; }
-      }
-      if (nowRight <= rectangles[i].bottomRight.y) {
-        nowRight = min(nowRight, rectangles[i].topLeft.y);
-        if (nowLeft >= nowRight) { break; }
-      }
-    }
-  }
-  if (edgeType == 1) {
-    int argY = indexInSortedY[ite];
-    int nowLeft = rectangles[ite].topLeft.x;
-    int nowRight = rectangles[ite].bottomRight.x;
-    for (int ii = argY - 1; ii >= 0; --ii) {
-      int i = sortedByY[ii];
-      if (checkOverlap(i, ite)) {
-        if (rectangles[ite].topLeft.y <= points[i].y) {
-          overlappingRects[0] = -1;
-          overlapCount = 1;
-          return;
-        }
-        overlappingRects[overlapCount] = i;
-        overlapCount++;
-      }
-      if (rectangles[i].topLeft.x <= nowLeft) {
-        nowLeft = max(nowLeft, rectangles[i].bottomRight.x);
-        if (nowLeft >= nowRight) { break; }
-      }
-      if (nowRight <= rectangles[i].bottomRight.x) {
-        nowRight = min(nowRight, rectangles[i].topLeft.x);
-        if (nowLeft >= nowRight) { break; }
-      }
-    }
-  }
-  if (edgeType == 2) {
-    int argX = indexInSortedX[ite];
-    int nowLeft = rectangles[ite].topLeft.y;
-    int nowRight = rectangles[ite].bottomRight.y;
-    for (int ii = argX + 1; ii < numRects; ++ii) {
-      int i = sortedByX[ii];
-      if (checkOverlap(i, ite)) {
-        if (points[i].x < rectangles[ite].bottomRight.x) {
-          overlappingRects[0] = -1;
-          overlapCount = 1;
-          return;
-        }
-        overlappingRects[overlapCount] = i;
-        overlapCount++;
-      }
-      if (rectangles[i].topLeft.y <= nowLeft) {
-        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
-        if (nowLeft >= nowRight) { break; }
-      }
-      if (nowRight <= rectangles[i].bottomRight.y) {
-        nowRight = min(nowRight, rectangles[i].topLeft.y);
-        if (nowLeft >= nowRight) { break; }
-      }
-    }
-  }
-  if (edgeType == 3) {
-    int argY = indexInSortedY[ite];
-    int nowLeft = rectangles[ite].topLeft.x;
-    int nowRight = rectangles[ite].bottomRight.x;
-    for (int ii = argY + 1; ii < numRects; ++ii) {
-      int i = sortedByY[ii];
-      if (checkOverlap(i, ite)) {
-        if (points[i].y < rectangles[ite].bottomRight.y) {
-          overlappingRects[0] = -1;
-          overlapCount = 1;
-          return;
-        }
-        overlappingRects[overlapCount] = i;
-        overlapCount++;
-      }
-      if (rectangles[i].topLeft.x <= nowLeft) {
-        nowLeft = max(nowLeft, rectangles[i].bottomRight.x);
-        if (nowLeft >= nowRight) { break; }
-      }
-      if (nowRight <= rectangles[i].bottomRight.x) {
-        nowRight = min(nowRight, rectangles[i].topLeft.x);
-        if (nowLeft >= nowRight) { break; }
-      }
-    }
-  }
+  findOverlapsInDirection(ite, edgeType);
 }
 
 Rect prevRects[MAX_N];
