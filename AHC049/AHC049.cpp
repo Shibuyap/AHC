@@ -682,8 +682,9 @@ void remake_state(bool modoraaa = false)
   }
 }
 
-void next_move(int& x, int& y, int& min_d, int& move_count, int target_x, int target_y, bool aaa = true)
+int next_move(int& x, int& y, int& min_d, int& move_count, int target_x, int target_y, bool aaa = true)
 {
+  int res = 0;
   if (aaa && (target_x > x || target_y > y)) {
     // まず(0,0)に行く
     move_count += x + y;  // (0,0)までの距離
@@ -694,6 +695,7 @@ void next_move(int& x, int& y, int& min_d, int& move_count, int target_x, int ta
     move_count += target_x + target_y;  // (target_x, target_y)までの距離
     x = target_x;
     y = target_y;
+    res = 0;
   }
   else {
     if (min_d > (target_x + target_y) * current_state.grid[target_x][target_y].w) {
@@ -701,6 +703,7 @@ void next_move(int& x, int& y, int& min_d, int& move_count, int target_x, int ta
       move_count += (x - target_x) + (y - target_y);
       x = target_x;
       y = target_y;
+      res = 1;
     }
     else {
       // まず(0,0)に行く
@@ -717,6 +720,7 @@ void next_move(int& x, int& y, int& min_d, int& move_count, int target_x, int ta
 
   min_d -= (target_x + target_y) * current_state.grid[x][y].w;
   min_d = min(min_d, current_state.grid[x][y].d);
+  return res;
 }
 
 int b[MAX_N][MAX_N];
@@ -915,6 +919,7 @@ P can_pick(int gx, int gy, int need_d)
 
 vector<P> after_method2(bool aaa = false)
 {
+  current_state.init(input);
   auto vv = calc_score_with_pick_order2();
 
   vector<P> new_pick_order;
@@ -951,24 +956,99 @@ vector<P> after_method2(bool aaa = false)
       p = can_pick(first_x, first_y, need_d);
     }
     if(p.first != -1) {
+      while (current_state.x != p.first || current_state.y != p.second) {
+        if (current_state.x < p.first) {
+          current_state.move(2);  // Down
+        }
+        else if (current_state.x > p.first) {
+          current_state.move(0);  // Up
+        }
+        else if (current_state.y < p.second) {
+          current_state.move(3);  // Right
+        }
+        else if (current_state.y > p.second) {
+          current_state.move(1);  // Left
+        }
+      }
       next_move(x, y, min_d, move_count, p.first, p.second);
       modoru.push_back(1);
       new_pick_order.push_back(P(x, y));
       b[x][y] = 0;
+      current_state.pickup();
     }
 
     for (int j = 0; j < v.size(); j++) {
       if (b[v[j].first][v[j].second] == 0) continue;  // 既に拾われた箱はスキップ
       if (p.first != -1) {
+        while (current_state.x != v[j].first || current_state.y != v[j].second) {
+          if (current_state.x < v[j].first) {
+            current_state.move(2);  // Down
+          }
+          else if (current_state.x > v[j].first) {
+            current_state.move(0);  // Up
+          }
+          else if (current_state.y < v[j].second) {
+            current_state.move(3);  // Right
+          }
+          else if (current_state.y > v[j].second) {
+            current_state.move(1);  // Left
+          }
+        }
         next_move(x, y, min_d, move_count, v[j].first, v[j].second, false);
         modoru.push_back(0);
         p.first = -1;
       }
       else {
+
+        if (min_d > (v[j].first + v[j].second) * current_state.grid[v[j].first][v[j].second].w) {
+          // 目的地へ直接移動
+          while (current_state.x != v[j].first || current_state.y != v[j].second) {
+            if (current_state.x < v[j].first) {
+              current_state.move(2);  // Down
+            }
+            else if (current_state.x > v[j].first) {
+              current_state.move(0);  // Up
+            }
+            else if (current_state.y < v[j].second) {
+              current_state.move(3);  // Right
+            }
+            else if (current_state.y > v[j].second) {
+              current_state.move(1);  // Left
+            }
+          }
+        }
+        else {
+          // まず(0,0)に行く
+          while (current_state.x != 0 || current_state.y != 0) {
+            if (current_state.x > 0) {
+              current_state.move(0);  // Up
+            }
+            else if (current_state.y > 0) {
+              current_state.move(1);  // Left
+            }
+          }
+          // 次に目的地へ移動
+          while (current_state.x != v[j].first || current_state.y != v[j].second) {
+            if (current_state.x < v[j].first) {
+              current_state.move(2);  // Down
+            }
+            else if (current_state.x > v[j].first) {
+              current_state.move(0);  // Up
+            }
+            else if (current_state.y < v[j].second) {
+              current_state.move(3);  // Right
+            }
+            else if (current_state.y > v[j].second) {
+              current_state.move(1);  // Left
+            }
+          }
+        }
+
         next_move(x, y, min_d, move_count, v[j].first, v[j].second);
         modoru.push_back(1);
       }
       
+      current_state.pickup();
       new_pick_order.push_back(P(x, y));
       b[x][y] = 0;
 
@@ -1003,8 +1083,24 @@ vector<P> after_method2(bool aaa = false)
               }
             }
 
+            while (current_state.x != closest_box.first || current_state.y != closest_box.second) {
+              if (current_state.x < closest_box.first) {
+                current_state.move(2);  // Down
+              }
+              else if (current_state.x > closest_box.first) {
+                current_state.move(0);  // Up
+              }
+              else if (current_state.y < closest_box.second) {
+                current_state.move(3);  // Right
+              }
+              else if (current_state.y > closest_box.second) {
+                current_state.move(1);  // Left
+              }
+            }
             next_move(x, y, min_d, move_count, closest_box.first, closest_box.second);
             modoru.push_back(1);
+
+            current_state.pickup();
             new_pick_order.push_back(P(x, y));
             b[x][y] = 0;
           }
@@ -1015,10 +1111,30 @@ vector<P> after_method2(bool aaa = false)
       }
     }
 
+    while (current_state.x != 0 || current_state.y != 0) {
+      if (current_state.x > 0) {
+        current_state.move(0);  // Up
+      }
+      else if (current_state.y > 0) {
+        current_state.move(1);  // Left
+      }
+    }
     next_move(x, y, min_d, move_count, 0, 0);
     min_d = INT_MAX;
   }
 
+  while (current_state.x != 0 || current_state.y != 0) {
+    if (current_state.x > 0) {
+      current_state.move(0);  // Up
+    }
+    else if (current_state.y > 0) {
+      current_state.move(1);  // Left
+    }
+  }
+  int n = 20;
+  int score = n * n + 2 * n * n * n - move_count;
+  cerr << "after2 = " << score << endl;
+  cerr << modoru.size() << endl;
   return new_pick_order;
 }
 
@@ -1164,9 +1280,9 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
   run_simulated_annealing(annealingParams);
 
   modoru.clear();
-  pick_order = after_method();
+  pick_order = after_method2();
 
-  remake_state(true);
+  //remake_state(true);
   // 最終的な状態をベスト状態に更新
   store_best_state();
 
