@@ -114,8 +114,8 @@ namespace /* 行、列、切れ目の構造 */
     }
   };
   Edge edge;
-  int vsum[Q][N + 1][N + 1];
-  int hsum[Q][N + 1][N + 1];
+  array<array<array<int, N + 1>, N + 1>, Q> vsum;
+  array<array<array<int, N + 1>, N + 1>, Q> hsum;
   vector<int> turn_v[N], turn_h[N];
 
   Edge best_edge;
@@ -125,7 +125,7 @@ namespace /* 行、列、切れ目の構造 */
 
   vector<pair<double, double>> vec(1100);
 
-  double dUD[N + 1][N + 1], dLR[N + 1][N + 1];
+  array<array<double, N + 1>, N + 1> dUD, dLR;
   vector<int> PathIDVectorUD[N][N], PathIDVectorLR[N][N];
 }
 
