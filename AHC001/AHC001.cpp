@@ -563,9 +563,9 @@ inline void adjustRectEdge(Rect& rect, int edgeType, int targetSize, int pointCo
   }
 }
 
-Rect expandedRect;
-inline void expandRect(int ite)
+inline Rect expandRect(int ite)
 {
+  Rect expandedRect;
   initRect(expandedRect, points[ite]);
 
   Direction firstDir = (Direction)(xorshift() % 2);
@@ -602,6 +602,7 @@ inline void expandRect(int ite)
   if (isInvalid) {
     initRect(expandedRect, points[ite]);
   }
+  return expandedRect;
 }
 
 inline void saveBest()
@@ -616,7 +617,7 @@ inline void extendWithTemp(int ite, double temp)
 {
   Rect prevRect = rectangles[ite];
 
-  expandRect(ite);
+  Rect expandedRect = expandRect(ite);
   rectangles[ite] = expandedRect;
 
   int newScore = calcScore(ite);
@@ -697,9 +698,9 @@ inline void createHole(int hole = 100)
   }
 }
 
-Rect largeExpandedRect;
-inline void expandRectLarge(int ite)
+inline Rect expandRectLarge(int ite)
 {
+  Rect largeExpandedRect;
   largeExpandedRect.topLeft.x = max(0, (int)(points[ite].x - xorshift() % 1000));
   largeExpandedRect.topLeft.y = max(0, (int)(points[ite].y - xorshift() % 1000));
   largeExpandedRect.bottomRight.x = min(10000, (int)(points[ite].x + 1 + xorshift() % 1000));
@@ -736,12 +737,12 @@ inline void expandRectLarge(int ite)
   if (isInvalid) {
     initRect(largeExpandedRect, points[ite]);
   }
-
+  return largeExpandedRect;
 }
 
 inline void extendLarge(int ite)
 {
-  expandRectLarge(ite);
+  Rect largeExpandedRect = expandRectLarge(ite);
   rectangles[ite] = largeExpandedRect;
 
   for (int i = 0; i < numRects; ++i) {

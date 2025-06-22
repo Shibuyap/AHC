@@ -740,70 +740,51 @@ void AnnealingMode2(double temp)
   int idx = Rand() % 30;
   int delta = Rand() % 30 + 1;
   if (Rand() % 2 == 1) delta *= -1;
-  if (dir == 0) if (edge.cut_v[idx] + delta < 3 || 27 <= edge.cut_v[idx] + delta) { return; }
-  if (dir == 1) if (edge.cut_h[idx] + delta < 3 || 27 <= edge.cut_h[idx] + delta) { return; }
+  
+  // 方向に応じた参照を取得
+  bool isVertical = (dir == 0);
+  auto& targetCut = isVertical ? edge.cut_v[idx] : edge.cut_h[idx];
+  
+  // 範囲チェック
+  if (targetCut + delta < 3 || 27 <= targetCut + delta) { return; }
+  
+  // 方向に応じた処理を共通化
+  auto& turns = isVertical ? turn_v[idx] : turn_h[idx];
+  auto& edge1 = isVertical ? edge.up[idx] : edge.l[idx];
+  auto& edge2 = isVertical ? edge.down[idx] : edge.r[idx];
+  
+  auto getSum = [&](int t, int cutPos) {
+    return isVertical ? vsum[t][cutPos][idx] : hsum[t][idx][cutPos];
+  };
+  
+  // 差分計算を共通化
+  auto calcDelta = [&](int t) {
+    if (delta > 0) {
+      return (edge1 - edge2) * (getSum(t, targetCut + delta) - getSum(t, targetCut));
+    } else {
+      return (edge2 - edge1) * (getSum(t, targetCut) - getSum(t, targetCut + delta));
+    }
+  };
 
   double diff = 0;
-
-  if (dir == 0) {
-    for (int i = 0; i < turn_v[idx].size(); ++i) {
-      int t = turn_v[idx][i];
-      double d = 0;
-      if (delta > 0) {
-        d = (edge.up[idx] - edge.down[idx]) * (vsum[t][edge.cut_v[idx] + delta][idx] - vsum[t][edge.cut_v[idx]][idx]);
-      }
-      else {
-        d = (edge.down[idx] - edge.up[idx]) * (vsum[t][edge.cut_v[idx]][idx] - vsum[t][edge.cut_v[idx] + delta][idx]);
-      }
-      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
-    }
-  }
-  if (dir == 1) {
-    for (int i = 0; i < turn_h[idx].size(); ++i) {
-      int t = turn_h[idx][i];
-      double d = 0;
-      if (delta > 0) {
-        d = (edge.l[idx] - edge.r[idx]) * (hsum[t][idx][edge.cut_h[idx] + delta] - hsum[t][idx][edge.cut_h[idx]]);
-      }
-      else {
-        d = (edge.r[idx] - edge.l[idx]) * (hsum[t][idx][edge.cut_h[idx]] - hsum[t][idx][edge.cut_h[idx] + delta]);
-      }
-      diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
-    }
+  
+  // diff計算
+  for (int i = 0; i < turns.size(); ++i) {
+    int t = turns[i];
+    double d = calcDelta(t);
+    diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
   }
 
   double prob = exp((double)diff / temp);
 
   if (prob > Rand01()) {
-    if (dir == 0) {
-      for (int i = 0; i < turn_v[idx].size(); ++i) {
-        int t = turn_v[idx][i];
-        double d = 0;
-        if (delta > 0) {
-          d = (edge.up[idx] - edge.down[idx]) * (vsum[t][edge.cut_v[idx] + delta][idx] - vsum[t][edge.cut_v[idx]][idx]);
-        }
-        else {
-          d = (edge.down[idx] - edge.up[idx]) * (vsum[t][edge.cut_v[idx]][idx] - vsum[t][edge.cut_v[idx] + delta][idx]);
-        }
-        dist_est[t] += d;
-      }
-      edge.cut_v[idx] += delta;
+    // 更新処理も共通化
+    for (int i = 0; i < turns.size(); ++i) {
+      int t = turns[i];
+      double d = calcDelta(t);
+      dist_est[t] += d;
     }
-    if (dir == 1) {
-      for (int i = 0; i < turn_h[idx].size(); ++i) {
-        int t = turn_h[idx][i];
-        double d = 0;
-        if (delta > 0) {
-          d = (edge.l[idx] - edge.r[idx]) * (hsum[t][idx][edge.cut_h[idx] + delta] - hsum[t][idx][edge.cut_h[idx]]);
-        }
-        else {
-          d = (edge.r[idx] - edge.l[idx]) * (hsum[t][idx][edge.cut_h[idx]] - hsum[t][idx][edge.cut_h[idx] + delta]);
-        }
-        dist_est[t] += d;
-      }
-      edge.cut_h[idx] += delta;
-    }
-
+    targetCut += delta;
     diff_sum -= diff;
   }
 }
