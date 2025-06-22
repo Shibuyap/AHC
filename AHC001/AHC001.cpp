@@ -514,6 +514,31 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir) {
   }
 }
 
+// エッジ順序を取得
+inline void getShuffledEdgeOrder(int edgeOrder[4]) {
+  int shuffleIndex = xorshift() % 24;
+  for (int j = 0; j < 4; ++j) {
+    edgeOrder[j] = shuffles[shuffleIndex][j];
+  }
+}
+
+// 矩形の妥当性チェックとリセット
+inline bool validateAndResetRect(Rect& rect, int ite) {
+  bool isInvalid = false;
+  
+  if (!isRectInRange(rect)) isInvalid = true;
+  if (rect.bottomRight.x <= rect.topLeft.x) isInvalid = true;
+  if (rect.bottomRight.y <= rect.topLeft.y) isInvalid = true;
+  if (points[ite].x < rect.topLeft.x || rect.bottomRight.x <= points[ite].x) isInvalid = true;
+  if (points[ite].y < rect.topLeft.y || rect.bottomRight.y <= points[ite].y) isInvalid = true;
+  
+  if (isInvalid) {
+    initRect(rect, points[ite]);
+  }
+  
+  return !isInvalid;
+}
+
 // 矩形サイズ調整ヘルパー関数
 inline void adjustRectEdge(Rect& rect, int edgeType, int targetSize, int pointCoord, int adjustAmount, bool clampDiff = false) {
   bool isHorizontal = (edgeType == 0 || edgeType == 2);
@@ -563,6 +588,22 @@ inline void adjustRectEdge(Rect& rect, int edgeType, int targetSize, int pointCo
   }
 }
 
+// 矩形をターゲットサイズに調整
+inline void adjustRectToTargetSize(Rect& rect, int ite, bool clampDiff = false) {
+  int edgeOrder[4];
+  getShuffledEdgeOrder(edgeOrder);
+  
+  int adjustAmount = xorshift() % 2;
+  
+  for (int i = 0; i < 4; ++i) {
+    int area = (rect.bottomRight.x - rect.topLeft.x) * (rect.bottomRight.y - rect.topLeft.y);
+    if (area <= targetSizes[ite]) break;
+    
+    int pointCoord = (edgeOrder[i] == 0 || edgeOrder[i] == 2) ? points[ite].x : points[ite].y;
+    adjustRectEdge(rect, edgeOrder[i], targetSizes[ite], pointCoord, adjustAmount, clampDiff);
+  }
+}
+
 inline Rect expandRect(int ite)
 {
   Rect expandedRect;
@@ -578,30 +619,11 @@ inline Rect expandRect(int ite)
   expandInDirection(expandedRect, ite, secondDir);
   expandSecondDirection(expandedRect, ite, firstDir);
 
-  int edgeOrder[4] = {};
-  int shuffleIndex = xorshift() % 24;
-  for (int j = 0; j < (4); ++j) edgeOrder[j] = shuffles[shuffleIndex][j];
-
-  int adjustAmount = xorshift() % 2;
-
-  for (int i = 0; i < (4); ++i) {
-    int area = (expandedRect.bottomRight.x - expandedRect.topLeft.x) * (expandedRect.bottomRight.y - expandedRect.topLeft.y);
-    if (area <= targetSizes[ite]) { break; }
-    
-    int pointCoord = (edgeOrder[i] == 0 || edgeOrder[i] == 2) ? points[ite].x : points[ite].y;
-    adjustRectEdge(expandedRect, edgeOrder[i], targetSizes[ite], pointCoord, adjustAmount);
-  }
-
-  int isInvalid = 0;
-  if (!isRectInRange(expandedRect)) isInvalid = 1;
-  if (expandedRect.bottomRight.x <= expandedRect.topLeft.x) isInvalid = 1;
-  if (expandedRect.bottomRight.y <= expandedRect.topLeft.y) isInvalid = 1;
-  if (points[ite].x < expandedRect.topLeft.x || expandedRect.bottomRight.x <= points[ite].x) isInvalid = 1;
-  if (points[ite].y < expandedRect.topLeft.y || expandedRect.bottomRight.y <= points[ite].y) isInvalid = 1;
-
-  if (isInvalid) {
-    initRect(expandedRect, points[ite]);
-  }
+  // サイズ調整
+  adjustRectToTargetSize(expandedRect, ite, false);
+  
+  // 妥当性チェック
+  validateAndResetRect(expandedRect, ite);
   return expandedRect;
 }
 
@@ -713,30 +735,18 @@ inline Rect expandRectLarge(int ite)
   expandLargeInDirection(largeExpandedRect, ite, firstDir);
   expandLargeInDirection(largeExpandedRect, ite, secondDir);
 
-  int edgeOrder[4] = {};
-  int shuffleIndex = xorshift() % 24;
-  for (int j = 0; j < (4); ++j) edgeOrder[j] = shuffles[shuffleIndex][j];
+  // 共通のエッジ順序取得
+  int edgeOrder[4];
+  getShuffledEdgeOrder(edgeOrder);
 
-  int adjustAmount = xorshift() % 2;
+  // 共通のサイズ調整
+  adjustRectToTargetSize(largeExpandedRect, ite, true);
 
-  for (int i = 0; i < (4); ++i) {
-    int area = (largeExpandedRect.bottomRight.x - largeExpandedRect.topLeft.x) * (largeExpandedRect.bottomRight.y - largeExpandedRect.topLeft.y);
-    if (area <= targetSizes[ite]) { break; }
-    
-    int pointCoord = (edgeOrder[i] == 0 || edgeOrder[i] == 2) ? points[ite].x : points[ite].y;
-    adjustRectEdge(largeExpandedRect, edgeOrder[i], targetSizes[ite], pointCoord, adjustAmount, true);
-  }
-
-  int isInvalid = 0;
-  if (!isRectInRange(largeExpandedRect)) isInvalid = 1;
-  if (largeExpandedRect.bottomRight.x <= largeExpandedRect.topLeft.x) isInvalid = 1;
-  if (largeExpandedRect.bottomRight.y <= largeExpandedRect.topLeft.y) isInvalid = 1;
-  if (points[ite].x < largeExpandedRect.topLeft.x || largeExpandedRect.bottomRight.x <= points[ite].x) isInvalid = 1;
-  if (points[ite].y < largeExpandedRect.topLeft.y || largeExpandedRect.bottomRight.y <= points[ite].y) isInvalid = 1;
-
-  if (isInvalid) {
+  // 共通の検証とリセット
+  if (validateAndResetRect(largeExpandedRect, ite)) {
     initRect(largeExpandedRect, points[ite]);
   }
+  
   return largeExpandedRect;
 }
 
