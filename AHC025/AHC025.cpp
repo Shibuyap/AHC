@@ -3846,13 +3846,13 @@ void SetUp()
   real_minScore = INF;
 }
 
-ll Solve(int probNum, ll hai2 = D18)
+ll Solve(int case_num, ll hai2 = D18)
 {
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(case_num);
 
   GeneratePseudoItems();
 
@@ -3862,7 +3862,7 @@ ll Solve(int probNum, ll hai2 = D18)
     hai2 = haipara2[NN][QQ][DD];
   }
   else {
-    hai = probNum;
+    hai = case_num;
   }
   hai %= 1000000;
 
@@ -4012,7 +4012,7 @@ ll Solve(int probNum, ll hai2 = D18)
   // 出力ファイルストリームオープン
   ofstream ofs;
   if (mode == 0 || mode == 1) {
-    OpenOfs(probNum, ofs);
+    OpenOfs(case_num, ofs);
     PrintAns(ofs);
   }
 

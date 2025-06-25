@@ -523,14 +523,14 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
     for (int i = 0; i < 4; ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
+      strNum += (char)(case_num % 10 + '0');
+      case_num /= 10;
     }
     reverse(strNum.begin(), strNum.end());
     fileNameOfs += strNum + ".txt";
@@ -4589,7 +4589,7 @@ void Method5()
   CopyFromBestAns();
 }
 
-ll Solve(int probNum)
+ll Solve(int case_num)
 {
   startTime = clock();
   endTime = clock();
@@ -4598,11 +4598,11 @@ ll Solve(int probNum)
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(case_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
 
   // 初期解生成
   Initialize();

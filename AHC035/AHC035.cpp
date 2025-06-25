@@ -187,14 +187,14 @@ void read_input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void open_output_file(int probNum, ofstream& ofs)
+void open_output_file(int case_num, ofstream& ofs)
 {
   if (exec_mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
     for (int i = 0; i < 4; ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
+      strNum += (char)(case_num % 10 + '0');
+      case_num /= 10;
     }
     reverse(strNum.begin(), strNum.end());
     fileNameOfs += strNum + ".txt";
@@ -386,7 +386,7 @@ void anneal_spiral_placement()
   }
 }
 
-ll solve_case(int probNum)
+ll solve_case(int case_num)
 {
   // 複数ケース回すときに内部状態を初期値に戻す
   reset_state();
@@ -394,11 +394,11 @@ ll solve_case(int probNum)
   init_spiral_order();
 
   // 入力受け取り
-  read_input(probNum);
+  read_input(case_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  open_output_file(probNum, ofs);
+  open_output_file(case_num, ofs);
 
   for (int t = 0; t < TURN_COUNT; t++) {
     for (int i = 0; i < BOARD_SIZE; i++) {

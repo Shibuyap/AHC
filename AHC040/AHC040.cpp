@@ -388,11 +388,11 @@ void LoadInputData(int problemNum)
   }
 }
 
-void OpenOutputStream(int probNum, ofstream& ofs)
+void OpenOutputStream(int case_num, ofstream& ofs)
 {
   if (executionMode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }

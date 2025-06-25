@@ -183,11 +183,11 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }
@@ -294,7 +294,7 @@ void Method23()
   }
 }
 
-ll Solve(int probNum)
+ll Solve(int case_num)
 {
   ResetTime();
 
@@ -302,11 +302,11 @@ ll Solve(int probNum)
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(case_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
 
   Method23();
 

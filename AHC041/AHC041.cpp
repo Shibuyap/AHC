@@ -80,14 +80,6 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.8;
 int mode;
-clock_t startTime, endTime;
-
-double GetNowTime()
-{
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  return nowTime;
-}
 
 const int N = 1000;
 const int H = 10;
@@ -103,9 +95,7 @@ public:
   Answer()
   {
     parent.resize(N);
-    for (int i = 0; i < N; ++i) {
-      parent[i] = -1;
-    }
+    Init();
   }
 
   void Init()
@@ -124,9 +114,7 @@ public:
   Heights()
   {
     height.resize(N);
-    for (int i = 0; i < N; ++i) {
-      height[i] = -1;
-    }
+    Init();
   }
 
   void Init()
@@ -201,9 +189,6 @@ void output(int case_num, const Answer& ans)
 Answer heights_to_ans(const Heights& heights)
 {
   Answer ans;
-  for (int i = 0; i < N; ++i) {
-    ans.parent[i] = -1;
-  }
   for (int i = 0; i < N; ++i) {
     if (heights.height[i] == 0) {
       ans.parent[i] = -1;
@@ -294,23 +279,20 @@ void greedy_assign(Heights& heights)
   }
 }
 
-ll Solve(int num)
+int Solve(int num)
 {
-  startTime = clock();
-
   SetUp();
 
   Input(num);
 
   Heights heights;
-  heights.Init();
   greedy_assign(heights);
 
   Answer ans = heights_to_ans(heights);
 
   output(num, ans);
 
-  ll score = 0;
+  int score = 0;
   if (mode != 0) {
     score = heights.calc_score();
   }

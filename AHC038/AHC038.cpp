@@ -278,11 +278,11 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }
@@ -1770,7 +1770,7 @@ void CreateTreeByMethod(int method)
   }
 }
 
-void Method100(double timeLimit, int probNum, ofstream& ofs)
+void Method100(double timeLimit, int case_num, ofstream& ofs)
 {
   ResetTime();
 
@@ -1895,7 +1895,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
         if (ofs.is_open()) {
           ofs.close();
         }
-        OpenOfs(probNum, ofs);
+        OpenOfs(case_num, ofs);
         Output(ofs);
       }
     }
@@ -1989,7 +1989,7 @@ void Method100(double timeLimit, int probNum, ofstream& ofs)
   }
 }
 
-ll Solve(int probNum)
+ll Solve(int case_num)
 {
   ResetTime();
 
@@ -1997,18 +1997,18 @@ ll Solve(int probNum)
   SetUp();
 
   // 入力受け取り
-  Input(probNum);
+  Input(case_num);
 
   // 出力ファイルストリームオープン
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
 
   Method = 0;
   ansCount = 99999;
 
   CopyToBest();
 
-  Method100(TL, probNum, ofs);
+  Method100(TL, case_num, ofs);
 
   CopyFromBest();
 
@@ -2016,7 +2016,7 @@ ll Solve(int probNum)
   if (ofs.is_open()) {
     ofs.close();
   }
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
   Output(ofs);
 
   if (ofs.is_open()) {

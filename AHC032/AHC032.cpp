@@ -154,14 +154,14 @@ State Input(int problemNum)
 }
 
 // 出力ファイルストリームオープン
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     string fileNameOfs = "./out/";
     string strNum;
     for (int i = 0; i < 4; ++i) {
-      strNum += (char)(probNum % 10 + '0');
-      probNum /= 10;
+      strNum += (char)(case_num % 10 + '0');
+      case_num /= 10;
     }
     reverse(strNum.begin(), strNum.end());
     fileNameOfs += strNum + ".txt";
@@ -171,10 +171,10 @@ void OpenOfs(int probNum, ofstream& ofs)
 }
 
 // 解答出力
-void Output(int probNum, const State& current)
+void Output(int case_num, const State& current)
 {
   ofstream ofs;
-  OpenOfs(probNum, ofs);
+  OpenOfs(case_num, ofs);
 
   int L = 0;
   for (int i = 0; i < T; ++i) {
@@ -623,17 +623,17 @@ void heuristicSweep(double timeLimit, State& current)
   if (mode != 0) cout << "Method 4 : " << loopCount << endl;
 }
 
-ll solveOneProblem(int probNum)
+ll solveOneProblem(int case_num)
 {
   startTime = clock();
   endTime = clock();
 
-  State current = Input(probNum);
+  State current = Input(case_num);
 
   current.reset();
   heuristicSweep(TL, current);
 
-  Output(probNum, current);
+  Output(case_num, current);
 
   ll score = 0;
   if (mode != 0) {

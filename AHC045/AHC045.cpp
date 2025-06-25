@@ -808,7 +808,7 @@ void Input(int problemNum)
 }
 
 // 出力ファイルストリームを開く関数
-void OpenOfs(int probNum, ofstream& ofs)
+void OpenOfs(int case_num, ofstream& ofs)
 {
   if (ofs.is_open()) {
     ofs.close();
@@ -816,7 +816,7 @@ void OpenOfs(int probNum, ofstream& ofs)
 
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << probNum << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }

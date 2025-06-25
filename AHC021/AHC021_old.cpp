@@ -707,9 +707,9 @@ void write_output(int mode, int problemNum)
   }
 }
 
-int solve_single_problem(int mode, int probNum)
+int solve_single_problem(int mode, int case_num)
 {
-  load_input(probNum);
+  load_input(case_num);
 
   move_cnt = MAX_LOOP;
   best_move_cnt = MAX_LOOP;
@@ -751,10 +751,10 @@ int solve_single_problem(int mode, int probNum)
   restore_best();
 
   if (mode != 0) {
-    cout << probNum << ' ' << loopCount << ' ' << move_cnt << endl;
+    cout << case_num << ' ' << loopCount << ' ' << move_cnt << endl;
   }
 
-  write_output(mode, probNum);
+  write_output(mode, case_num);
   return 100000 - 5 * move_cnt;
 }
 
@@ -766,9 +766,9 @@ int main_old()
     solve_single_problem(mode, 0);
   }
   else if (mode == 1) {
-    int probNum;
-    cin >> probNum;
-    solve_single_problem(mode, probNum);
+    int case_num;
+    cin >> case_num;
+    solve_single_problem(mode, case_num);
   }
   else {
     int sum = 0;
