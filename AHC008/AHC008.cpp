@@ -1800,10 +1800,10 @@ public:
 };
 
 // 入力受け取り
-void Input()
+void Input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << 0 << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
   if (!ifs.is_open()) { // 標準入力する
     cin >> n;
@@ -1851,14 +1851,14 @@ void Input()
   }
 }
 
-int Solve(int mode)
+int Solve(int mode, int case_num)
 {
   clock_t start_time, end_time;
   start_time = clock();
   end_time = clock();
 
   // 入力受け取り
-  Input();
+  Input(case_num);
 
   if (dog_cnt == 0) {
     SolveVer1 solve1;
@@ -1877,7 +1877,7 @@ int main()
   int mode = 0;
 
   if (mode == 0) {
-    Solve(mode);
+    Solve(mode, 0);
   }
   else if (mode == 1) {
   }

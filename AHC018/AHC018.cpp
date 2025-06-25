@@ -299,7 +299,7 @@ void clear_all_multicase()
 //------------------------------------------------------------------------------
 // (10) 初期状態作成 (旧: Init)
 //------------------------------------------------------------------------------
-void init(int problem_num)
+void init(int case_num)
 {
   uf_init();
   health_points = 0;
@@ -322,30 +322,19 @@ void init(int problem_num)
 
   // ローカル実行時はファイル出力をオープン
   if (mode != 0) {
-    string file_name_ofs = "./out/";
-    {
-      // problem_numを4桁化してファイル名を作る
-      int tmp = problem_num;
-      string str_num;
-      for (int i = 0; i < 4; ++i) {
-        str_num += char((tmp % 10) + '0');
-        tmp /= 10;
-      }
-      reverse(str_num.begin(), str_num.end());
-      file_name_ofs += str_num + ".txt";
-    }
-
-    ofs.open(file_name_ofs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofs.open(oss.str());
   }
 }
 
 //------------------------------------------------------------------------------
 // (11) 入力受け取り (旧: Input)
 //------------------------------------------------------------------------------
-void read_input(int problem_num)
+void read_input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   // 実行モード=0またはファイルが開けなかったら標準入力から読む

@@ -147,10 +147,10 @@ public:
   int flavor_total[4];
   int flavor_at_turn[N];
 
-  void load_testcase(int problemNum)
+  void load_testcase(int case_num)
   {
     std::ostringstream oss;
-    oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+    oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ifstream ifs(oss.str());
 
     for (int i = 0; i < N; ++i) {
@@ -365,18 +365,11 @@ const double TL = 1.8;
 int mode = 0;
 
 // 解答出力
-void save_output(int problemNum)
+void save_output(int case_num)
 {
-  string fileNameOfs = "./out/";
-  string strNum;
-  for (int i = 0; i < 4; ++i) {
-    strNum += (char)(problemNum % 10 + '0');
-    problemNum /= 10;
-  }
-  reverse(strNum.begin(), strNum.end());
-  fileNameOfs += strNum + ".txt";
-
-  ofstream ofs(fileNameOfs);
+  std::ostringstream oss;
+  oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ofstream ofs(oss.str());
 
   for (int i = 0; i < N; ++i) {
     ofs << output_dir_list[i] << endl;

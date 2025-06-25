@@ -153,7 +153,7 @@ namespace
 namespace
 {
   std::array<int, 100> judgeArr;
-  void Input(int mode, int problemNum = 0)
+  void Input(int mode, int case_num = 0)
   {
     if (mode == 0) {
       cin >> m;
@@ -163,9 +163,7 @@ namespace
       eps = (double)i_eps / 100.0;
     }
     else if (mode == SPECIAL_MODE) {
-      string fileNameIfs = "./in/";
-      fileNameIfs += numberToString(problemNum) + ".txt";
-
+      string fileNameIfs = "./in/" + numberToString(case_num) + ".txt";
       ifstream ifs(fileNameIfs);
 
       ifs >> m;
@@ -183,7 +181,7 @@ namespace
       for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
     }
     else if (mode == 333) {
-      m = problemNum * 10;
+      m = case_num * 10;
       i_eps = 40;
       eps = i_eps / 100.0;
       for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
@@ -195,10 +193,9 @@ namespace
 namespace
 {
   ofstream ofs1000Out;
-  void OpenOfs1000Out(int problemNum)
+  void OpenOfs1000Out(int case_num)
   {
-    string fileNameOfs = "./out/";
-    fileNameOfs += numberToString(problemNum) + ".txt";
+    string fileNameOfs = "./out/" + numberToString(case_num) + ".txt";
     ofs1000Out.open(fileNameOfs);
   }
 

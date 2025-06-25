@@ -317,10 +317,10 @@ void SetUp()
 }
 
 // 入力を受け取る関数
-void Input(int problemNum)
+void Input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {

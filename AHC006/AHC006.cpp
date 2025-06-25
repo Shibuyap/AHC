@@ -148,10 +148,10 @@ public:
   }
 };
 
-void input_data(int cn)
+void input_data(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << cn << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
@@ -168,7 +168,7 @@ void input_data(int cn)
   }
 }
 
-void output_data(const Answer& answer, int cn)
+void output_data(const Answer& answer, int case_num)
 {
   if (mode == 0) {
     // 標準出力
@@ -188,7 +188,7 @@ void output_data(const Answer& answer, int cn)
   else {
     // ファイル出力
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << cn << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
     ofs << 50;

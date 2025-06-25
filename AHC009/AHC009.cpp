@@ -98,10 +98,10 @@ namespace /* 変数 */
 
 } // namespace
 
-void input_data(int cn)
+void input_data(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << cn << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
@@ -142,7 +142,7 @@ void input_data(int cn)
   }
 }
 
-void output_data(int cn)
+void output_data(int case_num)
 {
   if (mode == 0) {
     // 標準出力
@@ -154,7 +154,7 @@ void output_data(int cn)
   else {
     // ファイル出力
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << cn << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
     for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {

@@ -93,7 +93,8 @@ namespace /* 焼きなまし用変数 */
 
 namespace /* 行、列、切れ目の構造 */
 {
-  class Edge {
+  class Edge
+  {
   public:
     array<double, N> up = {};
     array<double, N> down = {};
@@ -101,8 +102,9 @@ namespace /* 行、列、切れ目の構造 */
     array<double, N> r = {};
     array<int, N> cut_v = {};
     array<int, N> cut_h = {}; // 0‾30をとる半開区間
-    
-    void copyFrom(const Edge& other) {
+
+    void copyFrom(const Edge& other)
+    {
       for (int i = 0; i < N; ++i) {
         up[i] = other.up[i];
         down[i] = other.down[i];
@@ -431,14 +433,14 @@ void RestoreBestParams()
   edge.copyFrom(best_edge);
 }
 
-int Solve(string inputFileNum)
+int Solve(string case_num)
 {
   // 時間計測
   clock_t start, end;
   start = clock();
 
   int inputMode = 1;
-  string fileNameIfs = (string)"./in/" + inputFileNum + ".txt";
+  string fileNameIfs = "./in/" + case_num + ".txt";
   const char* cstrIfs = fileNameIfs.c_str();
   ifstream ifs(cstrIfs);
   if (!ifs) { // 標準入力する
@@ -449,7 +451,7 @@ int Solve(string inputFileNum)
     for (int i = 1; i < N; ++i) for (int j = 0; j < N; ++j) ifs >> dReal[0][i][j];
   }
 
-  string fileName = (string)"./out/" + inputFileNum + "_out.txt";
+  string fileName = "./out/" + case_num + "_out.txt";
   const char* cstr = fileName.c_str();
   ofstream ofs(cstr);
 
@@ -584,7 +586,7 @@ int Solve(string inputFileNum)
   scoreSumGlobal *= 2312311;
 
   if (inputMode == 1) {
-    string fileNameParam = (string)"./parameter/" + inputFileNum + "_param.txt";
+    string fileNameParam = (string)"./parameter/" + case_num + "_param.txt";
     const char* cstrParam = fileNameParam.c_str();
     ofstream ofsParam(cstrParam);
     ofsParam << "up / down" << endl;
@@ -622,43 +624,45 @@ void AnnealingMode0(double temp)
   double delta = Rand01() * 20 - 10;
 
   // 方向に応じた参照を取得
-  auto& targetEdge = (dir == 0) ? edge.up[idx] : 
-                     (dir == 1) ? edge.l[idx] : 
-                     (dir == 2) ? edge.down[idx] : edge.r[idx];
-  
+  auto& targetEdge = (dir == 0) ? edge.up[idx] :
+    (dir == 1) ? edge.l[idx] :
+    (dir == 2) ? edge.down[idx] : edge.r[idx];
+
   // 範囲チェック
   if (targetEdge + delta < 1000 || 9000 < targetEdge + delta) { return; }
 
   double diff = 0;
-  
+
   // 方向に応じた処理を共通化
   bool isVertical = (dir == 0 || dir == 2);
   bool isFirst = (dir == 0 || dir == 1);
-  
+
   auto& turns = isVertical ? turn_v[idx] : turn_h[idx];
   auto& edge1 = isVertical ? edge.up[idx] : edge.l[idx];
   auto& edge2 = isVertical ? edge.down[idx] : edge.r[idx];
   auto& cut = isVertical ? edge.cut_v[idx] : edge.cut_h[idx];
-  
+
   auto getMultiplier = [&](int t) {
     if (isVertical) {
       return isFirst ? vsum[t][cut][idx] : (vsum[t][N - 1][idx] - vsum[t][cut][idx]);
-    } else {
+    }
+    else {
       return isFirst ? hsum[t][idx][cut] : (hsum[t][idx][N - 1] - hsum[t][idx][cut]);
     }
-  };
-  
+    };
+
   // diff計算
   for (int i = 0; i < turns.size(); ++i) {
     int t = turns[i];
     double d = delta * getMultiplier(t);
     diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
   }
-  
+
   // 隣接エッジとの差分コスト計算
   if (isFirst) {
     diff += std::abs(edge1 - edge2) * SabunCostMultiple - std::abs((edge1 + delta) - edge2) * SabunCostMultiple;
-  } else {
+  }
+  else {
     diff += std::abs(edge1 - edge2) * SabunCostMultiple - std::abs(edge1 - (edge2 + delta)) * SabunCostMultiple;
   }
 
@@ -740,34 +744,35 @@ void AnnealingMode2(double temp)
   int idx = Rand() % 30;
   int delta = Rand() % 30 + 1;
   if (Rand() % 2 == 1) delta *= -1;
-  
+
   // 方向に応じた参照を取得
   bool isVertical = (dir == 0);
   auto& targetCut = isVertical ? edge.cut_v[idx] : edge.cut_h[idx];
-  
+
   // 範囲チェック
   if (targetCut + delta < 3 || 27 <= targetCut + delta) { return; }
-  
+
   // 方向に応じた処理を共通化
   auto& turns = isVertical ? turn_v[idx] : turn_h[idx];
   auto& edge1 = isVertical ? edge.up[idx] : edge.l[idx];
   auto& edge2 = isVertical ? edge.down[idx] : edge.r[idx];
-  
+
   auto getSum = [&](int t, int cutPos) {
     return isVertical ? vsum[t][cutPos][idx] : hsum[t][idx][cutPos];
-  };
-  
+    };
+
   // 差分計算を共通化
   auto calcDelta = [&](int t) {
     if (delta > 0) {
       return (edge1 - edge2) * (getSum(t, targetCut + delta) - getSum(t, targetCut));
-    } else {
+    }
+    else {
       return (edge2 - edge1) * (getSum(t, targetCut) - getSum(t, targetCut + delta));
     }
-  };
+    };
 
   double diff = 0;
-  
+
   // diff計算
   for (int i = 0; i < turns.size(); ++i) {
     int t = turns[i];
@@ -797,14 +802,14 @@ void AnnealingMode3Common(int idx)
   auto& edge1 = IsVertical ? edge.up : edge.l;
   auto& edge2 = IsVertical ? edge.down : edge.r;
   auto& cut = IsVertical ? edge.cut_v : edge.cut_h;
-  
+
   auto getSum1 = [&](int t, int cutPos) {
     return IsVertical ? vsum[t][cutPos][idx] : hsum[t][idx][cutPos];
-  };
+    };
   auto getSum2 = [&](int t) {
     return IsVertical ? vsum[t][N - 1][idx] : hsum[t][idx][N - 1];
-  };
-  
+    };
+
   for (int i = 0; i < turns.size(); ++i) {
     int t = turns[i];
     rem.push_back(dist_res[t] - (dist_est[t] - (edge1[idx] * getSum1(t, cut[idx]) + edge2[idx] * (getSum2(t) - getSum1(t, cut[idx])))));
@@ -925,7 +930,7 @@ int main()
 
   int mode = 1;
 
-  if (mode == 0) { 
+  if (mode == 0) {
     Solve("noinput");
   }
   else if (mode == 1) {

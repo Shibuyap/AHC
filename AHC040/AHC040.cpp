@@ -345,7 +345,7 @@ void InitializeGlobalState()
   queryCounter = 0;
 }
 
-void LoadInputData(int problemNum)
+void LoadInputData(int case_num)
 {
   if (executionMode == 0) {
     cin >> n >> t >> sigma;
@@ -355,7 +355,7 @@ void LoadInputData(int problemNum)
   }
   else {
     std::ostringstream oss;
-    oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+    oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ifstream ifs(oss.str());
     ifs >> n >> t >> sigma;
     for (int i = 0; i < n; ++i) {

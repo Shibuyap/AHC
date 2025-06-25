@@ -625,10 +625,10 @@ void init()
   }
 }
 
-void input_data(int problemNum)
+void input_data(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {  // 標準入力する
@@ -645,7 +645,7 @@ void input_data(int problemNum)
   init();
 }
 
-void output_data(int mode, int problemNum)
+void output_data(int mode, int case_num)
 {
   if (mode == 0) {
     cout << gameState.ope1 << endl;
@@ -663,16 +663,9 @@ void output_data(int mode, int problemNum)
 
   // ファイル出力
   if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < 4; ++i) {
-      strNum += (char)(problemNum % 10 + '0');
-      problemNum /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofstream ofs(fileNameOfs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
 
     ofs << gameState.ope1 << endl;
     for (int i = 0; i < gameState.ope1; ++i) {

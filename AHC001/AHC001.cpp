@@ -98,11 +98,11 @@ inline void calcArea(int idx)
   rectAreas[idx] = (rectangles[idx].bottomRight.x - rectangles[idx].topLeft.x) * (rectangles[idx].bottomRight.y - rectangles[idx].topLeft.y);
 }
 
-inline void readInput(int fileNum)
+inline void readInput(int case_num)
 {
   // 入力
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << fileNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
   if (!ifs.is_open()) { // 標準入力する
     cin >> numRects;
@@ -242,14 +242,16 @@ inline void initSortArrays()
 }
 
 // 座標が範囲内かチェックする共通関数
-inline int isInRange(int coord) {
+inline int isInRange(int coord)
+{
   return 0 <= coord && coord <= 10000;
 }
 
 // 矩形の座標が範囲内かチェック
-inline int isRectInRange(const Rect& rect) {
+inline int isRectInRange(const Rect& rect)
+{
   return isInRange(rect.topLeft.x) && isInRange(rect.topLeft.y) &&
-         isInRange(rect.bottomRight.x) && isInRange(rect.bottomRight.y);
+    isInRange(rect.bottomRight.x) && isInRange(rect.bottomRight.y);
 }
 
 // 0~10000を出ていないか
@@ -348,17 +350,20 @@ inline void initRect(Rect& rect, Point& point)
 }
 
 // 方向に応じて座標を取得するヘルパー関数
-inline int getCoord(const Point& p, Direction dir) {
+inline int getCoord(const Point& p, Direction dir)
+{
   return dir == HORIZONTAL ? p.x : p.y;
 }
 
-inline int& getCoordRef(Point& p, Direction dir) {
+inline int& getCoordRef(Point& p, Direction dir)
+{
   return dir == HORIZONTAL ? p.x : p.y;
 }
 
 // エッジタイプから矩形の座標への参照を取得
-inline int& getRectCoordByEdge(Rect& rect, int edgeType) {
-  switch(edgeType) {
+inline int& getRectCoordByEdge(Rect& rect, int edgeType)
+{
+  switch (edgeType) {
     case 0: return rect.topLeft.x;
     case 1: return rect.topLeft.y;
     case 2: return rect.bottomRight.x;
@@ -367,54 +372,59 @@ inline int& getRectCoordByEdge(Rect& rect, int edgeType) {
   }
 }
 
-inline int getSortedIndex(int ite, Direction dir) {
+inline int getSortedIndex(int ite, Direction dir)
+{
   return dir == HORIZONTAL ? indexInSortedX[ite] : indexInSortedY[ite];
 }
 
-inline int getSortedRect(int idx, Direction dir) {
+inline int getSortedRect(int idx, Direction dir)
+{
   return dir == HORIZONTAL ? sortedByX[idx] : sortedByY[idx];
 }
 
 // ポイント座標による更新ヘルパー関数
-inline void updateRectBoundsFromPoint(Rect& rect, int i, int ite, Direction dir) {
+inline void updateRectBoundsFromPoint(Rect& rect, int i, int ite, Direction dir)
+{
   if (getCoord(points[i], dir) <= getCoord(points[ite], dir)) {
     getCoordRef(rect.topLeft, dir) = max(
-      getCoord(rect.topLeft, dir), 
+      getCoord(rect.topLeft, dir),
       getCoord(points[i], dir) + 1);
-  } else {
+  }
+  else {
     getCoordRef(rect.bottomRight, dir) = min(
-      getCoord(rect.bottomRight, dir), 
+      getCoord(rect.bottomRight, dir),
       getCoord(points[i], dir));
   }
 }
 
 // 一方向の拡張処理を共通化（ポイント版）
-inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir) {
+inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir)
+{
   int argIdx = getSortedIndex(ite, primaryDir);
-  
+
   // 後方探索
   for (int ii = argIdx - 1; ii >= 0; --ii) {
     int i = getSortedRect(ii, primaryDir);
     if (getCoord(points[i], primaryDir) == getCoord(points[ite], primaryDir)) continue;
-    
+
     int hasOverlap = (primaryDir == HORIZONTAL) ?
       checkPointYOverlap(points[i].y, rect.topLeft.y, rect.bottomRight.y) :
       checkPointXOverlap(points[i].x, rect.topLeft.x, rect.bottomRight.x);
-    
+
     if (hasOverlap) {
       updateRectBoundsFromPoint(rect, i, ite, primaryDir);
     }
   }
-  
+
   // 前方探索
   for (int ii = argIdx + 1; ii < numRects; ++ii) {
     int i = getSortedRect(ii, primaryDir);
     if (getCoord(points[i], primaryDir) == getCoord(points[ite], primaryDir)) continue;
-    
+
     int hasOverlap = (primaryDir == HORIZONTAL) ?
       checkPointYOverlap(points[i].y, rect.topLeft.y, rect.bottomRight.y) :
       checkPointXOverlap(points[i].x, rect.topLeft.x, rect.bottomRight.x);
-    
+
     if (hasOverlap) {
       updateRectBoundsFromPoint(rect, i, ite, primaryDir);
     }
@@ -422,46 +432,49 @@ inline void expandLargeInDirection(Rect& rect, int ite, Direction primaryDir) {
 }
 
 // 座標更新ヘルパー関数
-inline void updateRectBounds(Rect& rect, int i, int ite, Direction dir) {
+inline void updateRectBounds(Rect& rect, int i, int ite, Direction dir)
+{
   if (getCoord(points[i], dir) <= getCoord(points[ite], dir)) {
     getCoordRef(rect.topLeft, dir) = max(
-      getCoord(rect.topLeft, dir), 
+      getCoord(rect.topLeft, dir),
       getCoord(rectangles[i].bottomRight, dir));
-  } else {
+  }
+  else {
     getCoordRef(rect.bottomRight, dir) = min(
-      getCoord(rect.bottomRight, dir), 
+      getCoord(rect.bottomRight, dir),
       getCoord(rectangles[i].topLeft, dir));
   }
 }
 
 // 一方向の拡張処理を共通化
-inline void expandInDirection(Rect& rect, int ite, Direction primaryDir) {
+inline void expandInDirection(Rect& rect, int ite, Direction primaryDir)
+{
   Direction secondaryDir = (primaryDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
-  
+
   // 主方向の初期化
   getCoordRef(rect.topLeft, primaryDir) = 0;
   getCoordRef(rect.bottomRight, primaryDir) = 10000;
-  
+
   int argIdx = getSortedIndex(ite, primaryDir);
-  
+
   // 後方探索
   for (int ii = argIdx - 1; ii >= 0; --ii) {
     int i = getSortedRect(ii, primaryDir);
-    int hasOverlap = (primaryDir == HORIZONTAL) ? 
+    int hasOverlap = (primaryDir == HORIZONTAL) ?
       checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
-    
+
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, primaryDir);
       break;
     }
   }
-  
+
   // 前方探索
   for (int ii = argIdx + 1; ii < numRects; ++ii) {
     int i = getSortedRect(ii, primaryDir);
-    int hasOverlap = (primaryDir == HORIZONTAL) ? 
+    int hasOverlap = (primaryDir == HORIZONTAL) ?
       checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
-    
+
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, primaryDir);
       break;
@@ -470,42 +483,43 @@ inline void expandInDirection(Rect& rect, int ite, Direction primaryDir) {
 }
 
 // 第2方向の拡張処理を共通化（nowLeft追跡あり）
-inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir) {
+inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir)
+{
   Direction secondaryDir = (primaryDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
-  
+
   // 副方向の初期化
   getCoordRef(rect.topLeft, secondaryDir) = 0;
   getCoordRef(rect.bottomRight, secondaryDir) = 10000;
-  
+
   int argIdx = getSortedIndex(ite, secondaryDir);
   int nowLeft = getCoord(rect.topLeft, primaryDir);
-  
+
   // 後方探索
   for (int ii = argIdx - 1; ii >= 0; --ii) {
     int i = getSortedRect(ii, secondaryDir);
-    int hasOverlap = (secondaryDir == VERTICAL) ? 
+    int hasOverlap = (secondaryDir == VERTICAL) ?
       checkXOverlap(rectangles[i], rect) : checkYOverlap(rectangles[i], rect);
-    
+
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, secondaryDir);
-      
+
       if (getCoord(rectangles[i].topLeft, primaryDir) <= nowLeft) {
         nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, primaryDir));
         if (getCoord(rect.bottomRight, primaryDir) <= nowLeft) { break; }
       }
     }
   }
-  
+
   // 前方探索
   nowLeft = getCoord(rect.topLeft, primaryDir);
   for (int ii = argIdx + 1; ii < numRects; ++ii) {
     int i = getSortedRect(ii, secondaryDir);
-    int hasOverlap = (secondaryDir == VERTICAL) ? 
+    int hasOverlap = (secondaryDir == VERTICAL) ?
       checkXOverlap(rectangles[i], rect) : checkYOverlap(rectangles[i], rect);
-    
+
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, secondaryDir);
-      
+
       if (getCoord(rectangles[i].topLeft, primaryDir) <= nowLeft) {
         nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, primaryDir));
         if (getCoord(rect.bottomRight, primaryDir) <= nowLeft) { break; }
@@ -515,7 +529,8 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir) {
 }
 
 // エッジ順序を取得
-inline void getShuffledEdgeOrder(int edgeOrder[4]) {
+inline void getShuffledEdgeOrder(int edgeOrder[4])
+{
   int shuffleIndex = xorshift() % 24;
   for (int j = 0; j < 4; ++j) {
     edgeOrder[j] = shuffles[shuffleIndex][j];
@@ -523,82 +538,89 @@ inline void getShuffledEdgeOrder(int edgeOrder[4]) {
 }
 
 // 矩形の妥当性チェックとリセット
-inline bool validateAndResetRect(Rect& rect, int ite) {
+inline bool validateAndResetRect(Rect& rect, int ite)
+{
   bool isInvalid = false;
-  
+
   if (!isRectInRange(rect)) isInvalid = true;
   if (rect.bottomRight.x <= rect.topLeft.x) isInvalid = true;
   if (rect.bottomRight.y <= rect.topLeft.y) isInvalid = true;
   if (points[ite].x < rect.topLeft.x || rect.bottomRight.x <= points[ite].x) isInvalid = true;
   if (points[ite].y < rect.topLeft.y || rect.bottomRight.y <= points[ite].y) isInvalid = true;
-  
+
   if (isInvalid) {
     initRect(rect, points[ite]);
   }
-  
+
   return !isInvalid;
 }
 
 // 矩形サイズ調整ヘルパー関数
-inline void adjustRectEdge(Rect& rect, int edgeType, int targetSize, int pointCoord, int adjustAmount, bool clampDiff = false) {
+inline void adjustRectEdge(Rect& rect, int edgeType, int targetSize, int pointCoord, int adjustAmount, bool clampDiff = false)
+{
   bool isHorizontal = (edgeType == 0 || edgeType == 2);
   bool isTopLeft = (edgeType == 0 || edgeType == 1);
-  
+
   // 目標サイズの計算
-  int currentOtherDim = isHorizontal ? 
-    (rect.bottomRight.y - rect.topLeft.y) : 
+  int currentOtherDim = isHorizontal ?
+    (rect.bottomRight.y - rect.topLeft.y) :
     (rect.bottomRight.x - rect.topLeft.x);
   int maxDim = targetSize / currentOtherDim + adjustAmount;
-  
+
   // 現在の寸法と差分
   int currentDim = isHorizontal ?
     (rect.bottomRight.x - rect.topLeft.x) :
     (rect.bottomRight.y - rect.topLeft.y);
   int diff = currentDim - maxDim;
   if (clampDiff && diff < 0) diff = 0;
-  
+
   // 調整可能な容量
   int capacity;
   if (isTopLeft) {
-    capacity = isHorizontal ? 
-      (pointCoord - rect.topLeft.x) : 
+    capacity = isHorizontal ?
+      (pointCoord - rect.topLeft.x) :
       (pointCoord - rect.topLeft.y);
-  } else {
+  }
+  else {
     capacity = isHorizontal ?
       (rect.bottomRight.x - (pointCoord + 1)) :
       (rect.bottomRight.y - (pointCoord + 1));
   }
-  
+
   // 実際の調整量
   int adjustment = (capacity >= diff) ? diff : capacity;
-  
+
   // 座標の更新
   if (isTopLeft) {
     if (isHorizontal) {
       rect.topLeft.x += adjustment;
-    } else {
+    }
+    else {
       rect.topLeft.y += adjustment;
     }
-  } else {
+  }
+  else {
     if (isHorizontal) {
       rect.bottomRight.x -= adjustment;
-    } else {
+    }
+    else {
       rect.bottomRight.y -= adjustment;
     }
   }
 }
 
 // 矩形をターゲットサイズに調整
-inline void adjustRectToTargetSize(Rect& rect, int ite, bool clampDiff = false) {
+inline void adjustRectToTargetSize(Rect& rect, int ite, bool clampDiff = false)
+{
   int edgeOrder[4];
   getShuffledEdgeOrder(edgeOrder);
-  
+
   int adjustAmount = xorshift() % 2;
-  
+
   for (int i = 0; i < 4; ++i) {
     int area = (rect.bottomRight.x - rect.topLeft.x) * (rect.bottomRight.y - rect.topLeft.y);
     if (area <= targetSizes[ite]) break;
-    
+
     int pointCoord = (edgeOrder[i] == 0 || edgeOrder[i] == 2) ? points[ite].x : points[ite].y;
     adjustRectEdge(rect, edgeOrder[i], targetSizes[ite], pointCoord, adjustAmount, clampDiff);
   }
@@ -611,17 +633,17 @@ inline Rect expandRect(int ite)
 
   Direction firstDir = (Direction)(xorshift() % 2);
   Direction secondDir = (firstDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
-  
+
   // 第1方向の拡張
   expandInDirection(expandedRect, ite, firstDir);
-  
+
   // 第2方向の拡張
   expandInDirection(expandedRect, ite, secondDir);
   expandSecondDirection(expandedRect, ite, firstDir);
 
   // サイズ調整
   adjustRectToTargetSize(expandedRect, ite, false);
-  
+
   // 妥当性チェック
   validateAndResetRect(expandedRect, ite);
   return expandedRect;
@@ -730,7 +752,7 @@ inline Rect expandRectLarge(int ite)
 
   Direction firstDir = (Direction)(xorshift() % 2);
   Direction secondDir = (firstDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
-  
+
   // 両方向に拡張
   expandLargeInDirection(largeExpandedRect, ite, firstDir);
   expandLargeInDirection(largeExpandedRect, ite, secondDir);
@@ -746,7 +768,7 @@ inline Rect expandRectLarge(int ite)
   if (validateAndResetRect(largeExpandedRect, ite)) {
     initRect(largeExpandedRect, points[ite]);
   }
-  
+
   return largeExpandedRect;
 }
 
@@ -952,32 +974,36 @@ int overlappingRects[MAX_N];
 int overlapCount;
 
 // エッジタイプから方向情報を取得
-inline Direction getEdgePrimaryDir(int edgeType) {
+inline Direction getEdgePrimaryDir(int edgeType)
+{
   return (edgeType == 0 || edgeType == 2) ? HORIZONTAL : VERTICAL;
 }
 
-inline Direction getEdgeSecondaryDir(int edgeType) {
+inline Direction getEdgeSecondaryDir(int edgeType)
+{
   return (edgeType == 0 || edgeType == 2) ? VERTICAL : HORIZONTAL;
 }
 
-inline bool isBackwardSearch(int edgeType) {
+inline bool isBackwardSearch(int edgeType)
+{
   return edgeType < 2;
 }
 
 // 重なり探索の共通処理
-inline void findOverlapsInDirection(int ite, int edgeType) {
+inline void findOverlapsInDirection(int ite, int edgeType)
+{
   Direction primaryDir = getEdgePrimaryDir(edgeType);
   Direction secondaryDir = getEdgeSecondaryDir(edgeType);
   bool backward = isBackwardSearch(edgeType);
-  
+
   int argIdx = getSortedIndex(ite, primaryDir);
   int nowLeft = getCoord(rectangles[ite].topLeft, secondaryDir);
   int nowRight = getCoord(rectangles[ite].bottomRight, secondaryDir);
-  
+
   int startIdx = backward ? argIdx - 1 : argIdx + 1;
   int endIdx = backward ? -1 : numRects;
   int step = backward ? -1 : 1;
-  
+
   for (int ii = startIdx; ii != endIdx; ii += step) {
     int i = getSortedRect(ii, primaryDir);
     if (checkOverlap(i, ite)) {
@@ -985,24 +1011,27 @@ inline void findOverlapsInDirection(int ite, int edgeType) {
       bool invalidOverlap = false;
       if (edgeType == 0 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
         invalidOverlap = true;
-      } else if (edgeType == 1 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
-        invalidOverlap = true;
-      } else if (edgeType == 2 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
-        invalidOverlap = true;
-      } else if (edgeType == 3 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+      }
+      else if (edgeType == 1 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
         invalidOverlap = true;
       }
-      
+      else if (edgeType == 2 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+        invalidOverlap = true;
+      }
+      else if (edgeType == 3 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+        invalidOverlap = true;
+      }
+
       if (invalidOverlap) {
         overlappingRects[0] = -1;
         overlapCount = 1;
         return;
       }
-      
+
       overlappingRects[overlapCount] = i;
       overlapCount++;
     }
-    
+
     // nowLeft/nowRightの更新
     if (getCoord(rectangles[i].topLeft, secondaryDir) <= nowLeft) {
       nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, secondaryDir));
@@ -1055,7 +1084,8 @@ inline void shiftBoundary(int ite, double temp)
     // 隣接する矩形の境界を調整
     if (edgeType < 2) {
       getRectCoordByEdge(rectangles[overlappingRects[i]], edgeType + 2) = getRectCoordByEdge(rectangles[ite], edgeType);
-    } else {
+    }
+    else {
       getRectCoordByEdge(rectangles[overlappingRects[i]], edgeType - 2) = getRectCoordByEdge(rectangles[ite], edgeType);
     }
     if (isSelfInvalid(overlappingRects[i])) isValidShift = 0;

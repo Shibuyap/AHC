@@ -356,10 +356,10 @@ public:
   }
 };
 
-Board input_data(int cn)
+Board input_data(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << cn << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   Board board;
@@ -435,7 +435,7 @@ Path build_complete_path(const Board& board, const Answer& ans)
   return path;
 }
 
-void output_data(int cn, const Board& board, const Answer& ans)
+void output_data(int case_num, const Board& board, const Answer& ans)
 {
   Path path = build_complete_path(board, ans);
   string directions = path_to_directions(path, board.n);
@@ -447,7 +447,7 @@ void output_data(int cn, const Board& board, const Answer& ans)
   else {
     // ファイル出力
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << cn << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
     ofs << directions << endl;

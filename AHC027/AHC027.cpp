@@ -143,16 +143,9 @@ void Input(int case_num)
 void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < 4; ++i) {
-      strNum += (char)(case_num % 10 + '0');
-      case_num /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofs.open(fileNameOfs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofs.open(oss.str());
   }
 }
 

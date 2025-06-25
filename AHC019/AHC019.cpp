@@ -205,10 +205,10 @@ void init_state()
 //------------------------------------------------------------------------------
 // (5) 入力受け取り (旧: Input)
 //------------------------------------------------------------------------------
-void read_input(int problem_num)
+void read_input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problem_num << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
@@ -259,7 +259,7 @@ void read_input(int problem_num)
 //------------------------------------------------------------------------------
 // (6) 解答出力 (旧: Output)
 //------------------------------------------------------------------------------
-void write_output(int run_mode, int problem_num)
+void write_output(int run_mode, int case_num)
 {
   int ans_n[100] = {};
   int ans_sum[100] = {};
@@ -329,18 +329,9 @@ void write_output(int run_mode, int problem_num)
   }
   else {
     // ファイル出力
-    string file_name_ofs = "./out/";
-    {
-      string str_num;
-      for (int i = 0; i < 4; ++i) {
-        str_num += char((problem_num % 10) + '0');
-        problem_num /= 10;
-      }
-      reverse(str_num.begin(), str_num.end());
-      file_name_ofs += str_num + ".txt";
-    }
-
-    ofstream ofs(file_name_ofs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
 
     ofs << ans_sum[99] << endl;
     for (int i = 0; i < 2; ++i) {

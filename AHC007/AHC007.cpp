@@ -171,11 +171,11 @@ int get_dist(int i, int j)
 }
 
 // 入力ファイルストリームオープン
-void open_ifs(int pn, ifstream& ifs)
+void open_ifs(int case_num, ifstream& ifs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./in/" << std::setw(4) << std::setfill('0') << pn << ".txt";
+    oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ifs.open(oss.str());
   }
 }
@@ -200,11 +200,11 @@ void input(int pn, ifstream& ifs)
 }
 
 // 出力ファイルストリームオープン
-void open_ofs(int pn, ofstream& ofs)
+void open_ofs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << pn << ".txt";
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofs.open(oss.str());
   }
 }

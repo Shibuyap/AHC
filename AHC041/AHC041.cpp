@@ -141,14 +141,12 @@ void SetUp()
 }
 
 // 入力受け取り
-void Input(int num)
+void Input(int case_num)
 {
-  // ファイルパス生成
-  string filePath = "./in/" + to_string(num / 1000) + to_string((num / 100) % 10) +
-    to_string((num / 10) % 10) + to_string(num % 10) + ".txt";
-
   // 入力ストリーム選択（ファイルか標準入力）
-  ifstream ifs(filePath);
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ifstream ifs(oss.str());
   istream& input = ifs.is_open() ? ifs : cin;
 
   // データ読み込み
@@ -178,8 +176,9 @@ void output(int case_num, const Answer& ans)
     output_answer(cout);
   }
   else {
-    ofstream ofs("./out/" + to_string(case_num / 1000) + to_string((case_num / 100) % 10) +
-      to_string((case_num / 10) % 10) + to_string(case_num % 10) + ".txt");
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofstream ofs(oss.str());
     if (ofs.is_open()) {
       output_answer(ofs);
     }

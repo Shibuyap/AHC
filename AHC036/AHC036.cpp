@@ -177,10 +177,10 @@ void InitRoutes()
 }
 
 // 入力受け取り
-void Input(int problemNum)
+void Input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   // 標準入力する
@@ -222,16 +222,9 @@ void Input(int problemNum)
 void OpenOfs(int case_num, ofstream& ofs)
 {
   if (mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < 4; ++i) {
-      strNum += (char)(case_num % 10 + '0');
-      case_num /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofs.open(fileNameOfs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofs.open(oss.str());
   }
 }
 

@@ -129,10 +129,10 @@ int vertical_edge_block[TURN_COUNT][BOARD_SIZE][BOARD_SIZE][ITEM_KIND];
 void reset_state() {}
 
 // 入力受け取り
-void read_input(int problemNum)
+void read_input(int case_num)
 {
   std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << problemNum << ".txt";
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   // 標準入力する
@@ -190,16 +190,9 @@ void read_input(int problemNum)
 void open_output_file(int case_num, ofstream& ofs)
 {
   if (exec_mode != 0) {
-    string fileNameOfs = "./out/";
-    string strNum;
-    for (int i = 0; i < 4; ++i) {
-      strNum += (char)(case_num % 10 + '0');
-      case_num /= 10;
-    }
-    reverse(strNum.begin(), strNum.end());
-    fileNameOfs += strNum + ".txt";
-
-    ofs.open(fileNameOfs);
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    ofs.open(oss.str());
   }
 }
 
