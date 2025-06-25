@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="二次元座標.h" />
     <ClInclude Include="自作キュー.h" />
   </ItemGroup>

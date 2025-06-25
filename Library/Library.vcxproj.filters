@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClInclude Include="二次元座標.h" />
     <ClInclude Include="自作キュー.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AHCTemplate_短期.cpp" />
