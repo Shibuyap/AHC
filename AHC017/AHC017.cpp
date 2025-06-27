@@ -34,6 +34,24 @@ typedef pair<int, int> P;
 const int INF = 1000000000;
 const ll LLINF = 1001001001001001001;
 
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t rand32()
@@ -720,9 +738,8 @@ void calc_idea()
 
 int solve(int mode, int problemNum)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  Timer timer;
+  timer.start();
 
   // 入力
   input_data(problemNum);
@@ -787,8 +804,7 @@ int solve(int mode, int problemNum)
   for (int i = 0; i < M; ++i) { day_count[ans[i]]++; }
 
   // 焼きなまし
-  endTime = clock();
-  current_time = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+  current_time = timer.get_elapsed_time();
   double TL = 5.8;
   double nowProgress = current_time / TL;
   int loop = 0;
@@ -797,11 +813,12 @@ int solve(int mode, int problemNum)
   while (true) {
     loop++;
     if (loop % 1 == 0) {
-      endTime = clock();
-      current_time = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+      current_time = timer.get_elapsed_time();
       nowProgress = current_time / TL;
     }
-    if (nowProgress > 1.0) { break; }
+    if (nowProgress > 1.0) {
+      break;
+    }
 
 #if 0
     if (rand32() % 2 == 0) {

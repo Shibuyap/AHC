@@ -2552,16 +2552,7 @@ int solver_14()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 4) { continue; }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
@@ -2619,16 +2610,7 @@ int solver_15()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 4) { continue; }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
@@ -2712,16 +2694,7 @@ int solver_16()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 4) { continue; }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
@@ -2800,16 +2773,7 @@ int solver_17()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 4) { continue; }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
@@ -2941,16 +2905,7 @@ int solver_19()
     // コア2を作る
     vector<int> cores2;
     vector<int> kouho;
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 4) { continue; }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique4(kouho, f, cores2, 2);
       if (cores2.size() > 0) {
@@ -3189,21 +3144,7 @@ int solver_22()
 
     // コア2を作る
     vector<int> cores2;
-    kouho.clear();
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) {
-        continue;
-      }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 2) {
-        continue;
-      }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 2);
     if (kouho.size() >= 3) {
       for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
@@ -3334,21 +3275,7 @@ int solver_23()
 
     // コア2を作る
     vector<int> cores2;
-    kouho.clear();
-    for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) {
-        continue;
-      }
-      int cnt = 0;
-      for (int j = 0; j < n; ++j) {
-        if (f[j] == 0) cnt += b[i][j];
-      }
-
-      if (cnt <= 2) {
-        continue;
-      }
-      kouho.push_back(i);
-    }
+    collectCandidates(kouho, f, 2);
     if (kouho.size() >= 3) {
       for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[3] = {};

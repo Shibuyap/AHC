@@ -33,6 +33,24 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+
 //------------------------------------------------------------------------------
 // 定数 (UPPER_SNAKE_CASE)
 //------------------------------------------------------------------------------
@@ -613,9 +631,8 @@ void method_4(double temperature)
 //------------------------------------------------------------------------------
 double solve_problem(int run_mode, int problem_num)
 {
-  clock_t start_time, end_time;
-  start_time = clock();
-  end_time = clock();
+  Timer timer;
+  timer.start();
 
   // 初期状態 (init_state は read_input内で呼ばれた後にも呼ばれるが念のため)
   init_state();
@@ -628,14 +645,13 @@ double solve_problem(int run_mode, int problem_num)
   //--- シード作成用 (初段階) ---
   int seed_count = 100;
   for (int tei = 0; tei < seed_count; ++tei) {
-    start_time = clock();
+    timer.start();
     // 初期化し直す
     init_state();
     min_score = calc_score();
 
     // 焼きなまし
-    end_time = clock();
-    double now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
+    double now_time = timer.get_elapsed_time();
     double time_limit = 4.0 / seed_count; // 旧: TL
     double now_progress = now_time / time_limit;
     double start_temperature = 20;
@@ -646,11 +662,12 @@ double solve_problem(int run_mode, int problem_num)
     while (true) {
       loop_count++;
       if (loop_count % 100 == 1) {
-        end_time = clock();
-        now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
+        now_time = timer.get_elapsed_time();
         now_progress = now_time / time_limit;
       }
-      if (now_progress > 1.0) { break; }
+      if (now_progress > 1.0) {
+        break;
+      }
 
       // もしスコアが大きく悪化していればロールバック (コメントアウト原文通り)
       if (min_score > real_min_score * 10) {
@@ -689,9 +706,8 @@ double solve_problem(int run_mode, int problem_num)
   copy_to_real();
 
   //--- メイン焼きなまし ---
-  start_time = clock();
-  end_time = clock();
-  double now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
+  timer.start();
+  double now_time = timer.get_elapsed_time();
   double time_limit = 0.9;  // 旧: TL
   double now_progress = now_time / time_limit;
   double start_temperature = 2;
@@ -702,14 +718,14 @@ double solve_problem(int run_mode, int problem_num)
   while (true) {
     loop_count++;
     if (loop_count % 100 == 1) {
-      end_time = clock();
-      now_time = ((double)end_time - start_time) / CLOCKS_PER_SEC;
+      now_time = timer.get_elapsed_time();
       now_progress = now_time / time_limit;
     }
-    if (now_progress > 1.0) { break; }
+    if (now_progress > 1.0) {
+      break;
+    }
 
-    double temperature =
-      start_temperature + (end_temperature - start_temperature) * now_progress;
+    double temperature = start_temperature + (end_temperature - start_temperature) * now_progress;
 
     int ra = rand32() % 100;
     if (ra < 20) {
@@ -733,11 +749,9 @@ double solve_problem(int run_mode, int problem_num)
   if (run_mode != 0) {
     cout << "problem_num = " << problem_num << ", D = " << dimension << endl;
     cout << "min_score = " << min_score << endl;
-    cout << "loop_count = " << loop_count
-      << ", rollback_count = " << rollback_count << endl;
+    cout << "loop_count = " << loop_count << ", rollback_count = " << rollback_count << endl;
     for (int i = 1; i < 5; ++i) {
-      cout << "method_" << i << " = "
-        << method_count[i][0] << " / " << method_count[i][1] << endl;
+      cout << "method_" << i << " = " << method_count[i][0] << " / " << method_count[i][1] << endl;
     }
     cout << endl;
   }

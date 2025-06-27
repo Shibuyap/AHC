@@ -33,6 +33,24 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+
 //------------------------------------------------------------------------------
 // (1) Union-Find関連：unnamed namespace
 //------------------------------------------------------------------------------
@@ -380,11 +398,6 @@ void write_output(int /*problem_num*/)
 //------------------------------------------------------------------------------
 int solve_problem(int problem_num = 0)
 {
-  clock_t start_time = clock();
-  clock_t end_time = clock();
-  (void)start_time; // 使わないならvoidキャストで消す
-  (void)end_time;
-
   // 初期化
   init(problem_num);
 

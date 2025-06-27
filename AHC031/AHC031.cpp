@@ -33,6 +33,25 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+Timer timer;
+
 const int MAX_D = 55;
 const int MAX_N = 56;
 const int MAX_LINECOUNT = 60;
@@ -315,14 +334,6 @@ int calculateSwapDiffScore(int day, int elem1, int elem2);
 const double TIME_LIMIT = 2.8;
 double TL = TIME_LIMIT;
 int mode;
-clock_t startTime, endTime;
-
-double GetNowTime()
-{
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  return nowTime;
-}
 
 // Constants are already defined in Solution.hpp
 int lineMaxLimit = 100;
@@ -2899,7 +2910,7 @@ void Method4_3_9()
 
 void Method4_3(double timeLimit)
 {
-  swap_startTime = GetNowTime();
+  swap_startTime = timer.get_elapsed_time();
   swap_timeLimit = timeLimit;
   swapCount = 0;
 
@@ -2961,17 +2972,20 @@ void Method4_3(double timeLimit)
   CopyToBest_M42();
 
   int loopCount = 0;
-  endTime = clock();
   while (true) {
     loopCount++;
     if (loopCount % 100 == 0) {
-      swap_nowTime = GetNowTime();
-      if (swap_nowTime > timeLimit) { break; }
+      swap_nowTime = timer.get_elapsed_time();
+      if (swap_nowTime > timeLimit) {
+        break;
+      }
     }
 
     int ra = Rand() % 101;
     if (ra < 0) {
-      if (swap_nowTime < (swap_startTime + timeLimit) / 2) { continue; }
+      if (swap_nowTime < (swap_startTime + timeLimit) / 2) {
+        continue;
+      }
       Method4_3_2();
     }
     else if (ra < 69) {
@@ -3483,13 +3497,21 @@ int Method3_Normal(int loopCount)
   }
   else if (loopCount >= 100000 && best_ans.ansBaseLineCount != -1) {
     ans.ansBaseLineCount = min(ans.ansBaseLineCount, best_ans.ansBaseLineCount + 1);
-    if (Rand() % 10 != 0) { ans.ansBaseLineCount = max(ans.ansBaseLineCount, best_ans.ansBaseLineCount - 1); }
+    if (Rand() % 10 != 0) {
+      ans.ansBaseLineCount = max(ans.ansBaseLineCount, best_ans.ansBaseLineCount - 1);
+    }
   }
-  if (loopCount >= 100000 && best_ans.ansBaseLineCount == -1) { ans.ansBaseLineCount = Rand() % 3 + MIN_LINECOUNT; }
+  if (loopCount >= 100000 && best_ans.ansBaseLineCount == -1) {
+    ans.ansBaseLineCount = Rand() % 3 + MIN_LINECOUNT;
+  }
 
-  if (ans.ansBaseLineCount <= M3_alreadyCount) return 0;
+  if (ans.ansBaseLineCount <= M3_alreadyCount) {
+    return 0;
+  }
 
-  if (ans.ansBaseLineCount > lineMaxLimit) return 0;
+  if (ans.ansBaseLineCount > lineMaxLimit) {
+    return 0;
+  }
 
   int startW = ans.ansLinePos[0][M3_alreadyCount];
   int nokoriW = w - startW;
@@ -3500,7 +3522,9 @@ int Method3_Normal(int loopCount)
     int ra = Rand() % 100;
     if (ra < 25) {
       int hosyouWidth = Rand() % 21;
-      if (startW + nokoriLine * hosyouWidth > 800) return 0;
+      if (startW + nokoriLine * hosyouWidth > 800) {
+        return 0;
+      }
       int ok2 = 0;
       for (int _ = 0; _ < 10; ++_) {
         ans.ansLinePos[0][ans.ansBaseLineCount] = (startW + nokoriW - nokoriLine * hosyouWidth);
@@ -3520,7 +3544,9 @@ int Method3_Normal(int loopCount)
           break;
         }
       }
-      if (ok2 == 0) return 0;
+      if (ok2 == 0) {
+        return 0;
+      }
       for (int i = startLine; i < ans.ansBaseLineCount; ++i) {
         ans.ansLinePos[0][i + 1] += hosyouWidth * (i + 1 - startLine);
       }
@@ -3531,7 +3557,9 @@ int Method3_Normal(int loopCount)
         ans.ansLinePos[0][ans.ansBaseLineCount] = w;
         int maxNeed = (maxElementSize[elementCount - 1] - 1) / w + 1;
         ans.ansLinePos[0][ans.ansBaseLineCount - 1] = w - maxNeed;
-        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) { break; }
+        if (ans.ansLinePos[0][ans.ansBaseLineCount - 1] <= ans.ansLinePos[0][startLine]) {
+          break;
+        }
         int ng = 0;
         for (int i = startLine + 1; i < ans.ansBaseLineCount - 1; ++i) {
           ans.ansLinePos[0][i] = startW + (w - maxNeed - startW) * i / (ans.ansBaseLineCount - 1 - startLine);
@@ -3541,7 +3569,9 @@ int Method3_Normal(int loopCount)
             break;
           }
         }
-        if (ng) { continue; }
+        if (ng) {
+          continue;
+        }
         sort(ans.ansLinePos[0] + startLine, ans.ansLinePos[0] + ans.ansBaseLineCount);
         int ok = 1;
         for (int i = 0; i < ans.ansBaseLineCount; ++i) {
@@ -3555,7 +3585,9 @@ int Method3_Normal(int loopCount)
           break;
         }
       }
-      if (ok2 == 0) return 0;
+      if (ok2 == 0) {
+        return 0;
+      }
     }
     else if (ra < 50) {
       int ok2 = 0;
@@ -3581,7 +3613,9 @@ int Method3_Normal(int loopCount)
           break;
         }
       }
-      if (ok2 == 0) return 0;
+      if (ok2 == 0) {
+        return 0;
+      }
     }
     else {
       int ok2 = 0;
@@ -3608,9 +3642,13 @@ int Method3_Normal(int loopCount)
   }
 
   for (int i = 0; i < ans.ansBaseLineCount; ++i) {
-    if (ans.ansLinePos[0][i] >= ans.ansLinePos[0][i + 1]) { return 0; }
+    if (ans.ansLinePos[0][i] >= ans.ansLinePos[0][i + 1]) {
+      return 0;
+    }
   }
-  if (ans.ansBaseLineCount < best_ans.ansBaseLineCount - 1) { return 0; }
+  if (ans.ansBaseLineCount < best_ans.ansBaseLineCount - 1) {
+    return 0;
+  }
 
   {
     std::array<int, MAX_LINECOUNT> widths = {};
@@ -3618,7 +3656,9 @@ int Method3_Normal(int loopCount)
       widths[i] = ans.ansLinePos[0][startLine + i + 1] - ans.ansLinePos[0][startLine + i];
     }
     sort(widths.begin(), widths.begin() + nokoriLine);
-    if (widths[nokoriLine - 1] * w < maxElementSize[elementCount - 1]) { return 0; }
+    if (widths[nokoriLine - 1] * w < maxElementSize[elementCount - 1]) {
+      return 0;
+    }
     for (int i = 0; i < nokoriLine; ++i) {
       ans.ansLinePos[0][startLine + i + 1] = ans.ansLinePos[0][startLine + i] + widths[i];
     }
@@ -3666,7 +3706,9 @@ int Method3_Normal(int loopCount)
       int tmpNeed = 0;
       for (int k = ans.ansLineCount[i] - 1; k >= startLine; --k) {
         int width = ans.ansLinePos[i][k + 1] - ans.ansLinePos[i][k];
-        if (!canFitInColumn(i, j, width)) { break; }
+        if (!canFitInColumn(i, j, width)) {
+          break;
+        }
         int need = (elementSizes[i][j] - 1) / width + 1;
         int over = 0;
         int amari = need * width - elementSizes[i][j];
@@ -3722,10 +3764,14 @@ int Method3_Normal(int loopCount)
         }
       }
     }
-    if (ng == 1) { break; }
+    if (ng == 1) {
+      break;
+    }
 
     for (int j = startLine; j < ans.ansLineCount[i]; ++j) {
-      if (lastNum[j] == -1) { continue; }
+      if (lastNum[j] == -1) {
+        continue;
+      }
       ans.ans[i][lastNum[j]][2] = w;
     }
 
@@ -3809,7 +3855,9 @@ void Method3_1(double timeLimit)
   while (true) {
     loopCount++;
     if (loopCount % 100 == 0) {
-      if (GetNowTime() > timeLimit) { break; }
+      if (timer.get_elapsed_time() > timeLimit) {
+        break;
+      }
     }
 
     // already更新
@@ -3833,7 +3881,9 @@ void Method3_1(double timeLimit)
         }
       }
 
-      if (M3_alreadyCount == 0) { continue; }
+      if (M3_alreadyCount == 0) {
+        continue;
+      }
       for (int blackpink = 0; blackpink < M3_alreadyCount; ++blackpink) {
         int baseWidth = Rand() % 100 + 50;
         if (M3_alreadyCount >= 5) { baseWidth = Rand() % 100 + 20; }
@@ -3867,7 +3917,9 @@ void Method3_1(double timeLimit)
               break;
             }
           }
-          if (ng) { continue; }
+          if (ng) {
+            continue;
+          }
           double tmpValue = (double)minValue / (width * w);
           if (tmpValue > maxValue) {
             maxValue = tmpValue;
@@ -3941,20 +3993,23 @@ void Method3_2(double timeLimit)
   {
     for (int i = 0; i < dayCount - 1; ++i) {
       for (int j = 0; j < ans.ansLineCount[i]; ++j) {
-        if (ans.ansLinePos[i][j] != ans.ansLinePos[i + 1][j]) { return; }
+        if (ans.ansLinePos[i][j] != ans.ansLinePos[i + 1][j]) {
+          return;
+        }
       }
     }
   }
 
   int loopCount = 0;
-  endTime = clock();
   double start_temp = 100.1;
   double end_temp = 0.0;
 
   while (true) {
     loopCount++;
     if (loopCount % 100 == 0) {
-      if (GetNowTime() > timeLimit) { break; }
+      if (timer.get_elapsed_time() > timeLimit) {
+        break;
+      }
     }
 
     int ra = Rand() % (ans.ansBaseLineCount - 1) + 1;
@@ -3995,9 +4050,13 @@ void Method3_2(double timeLimit)
         int tmpNeed = 0;
         for (int k = ans.ansBaseLineCount - 1; k >= 0; --k) {
           int width = ans.ansLinePos[0][k + 1] - ans.ansLinePos[0][k];
-          if (!canFitInColumn(i, j, width)) { break; }
+          if (!canFitInColumn(i, j, width)) {
+            break;
+          }
           int need = calculateRequiredSize(elementSizes[i][j], width);
-          if (now[k] + need > w) { continue; }
+          if (now[k] + need > w) {
+            continue;
+          }
           int amari = need * width - elementSizes[i][j];
           if (amari <= minAmari) {
             minAmari = amari;
@@ -4018,10 +4077,14 @@ void Method3_2(double timeLimit)
         now[posNum] += tmpNeed;
         lastNum[posNum] = j;
       }
-      if (ng) { break; }
+      if (ng) {
+        break;
+      }
 
       for (int j = 0; j < ans.ansBaseLineCount; ++j) {
-        if (lastNum[j] == -1) { continue; }
+        if (lastNum[j] == -1) {
+          continue;
+        }
         ans.ans[i][lastNum[j]][2] = w;
       }
     }
@@ -4035,7 +4098,7 @@ void Method3_2(double timeLimit)
     ans.ansScore = CalcScoreForMethod3();
     int diffScore = beforeScore - ans.ansScore;
 
-    double temp = (start_temp + (end_temp - start_temp) * GetNowTime() / timeLimit);
+    double temp = (start_temp + (end_temp - start_temp) * timer.get_elapsed_time() / timeLimit);
     const double prob = exp((double)diffScore / temp);
 
     if (prob > Rand01()) {
@@ -4092,7 +4155,9 @@ void Method6_ColumnShuffle(double timeLimit)
     }
     ans.ansScore = CalcScore();
     if (ans.ansScore < best_ans.ansScore) { CopyToBestAns(); }
-    if (ningning % 10 == 9 && GetNowTime() > timeLimit) { break; }
+    if (ningning % 10 == 9 && timer.get_elapsed_time() > timeLimit) {
+      break;
+    }
   }
   CopyFromBestAns();
 }
@@ -4133,15 +4198,21 @@ void Method7()
       if (line1 == line2) {
         continue;
       }
-      if (yokoLineCount[line1] <= yokoLineCount[line2]) { continue; }
+      if (yokoLineCount[line1] <= yokoLineCount[line2]) {
+        continue;
+      }
       int margin = widths[line1] - 1;
       for (int i = 0; i < dayCount; ++i) {
         for (int j = 0; j < columnSchedule.schedulesCount[i][line1]; ++j) {
           int num = columnSchedule.schedules[i][line1][j];
           int height = columnSchedule.schedulesPosition[i][line1][j + 1] - columnSchedule.schedulesPosition[i][line1][j];
           for (int k = 0; k < elementCount; ++k) {
-            if (k == num) { break; }
-            if (columnSchedule.columnNum[i][k] == line1) { continue; }
+            if (k == num) {
+              break;
+            }
+            if (columnSchedule.columnNum[i][k] == line1) {
+              continue;
+            }
             if (preCalcScheduleSizes[i][k][line1] <= height) {
               int nextLine = columnSchedule.columnNum[i][k];
               int nextLineIndex = -1;
@@ -4151,7 +4222,9 @@ void Method7()
                   break;
                 }
               }
-              if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) { continue; }
+              if (preCalcScheduleSizes[i][num][nextLine] > columnSchedule.schedulesPosition[i][nextLine][nextLineIndex + 1] - columnSchedule.schedulesPosition[i][nextLine][nextLineIndex]) {
+                continue;
+              }
               swap(columnSchedule.schedules[i][line1][j], columnSchedule.schedules[i][nextLine][nextLineIndex]);
               swap(columnSchedule.columnNum[i][num], columnSchedule.columnNum[i][k]);
               break;
@@ -4163,7 +4236,9 @@ void Method7()
         }
       }
 
-      if (margin == 0) { continue; }
+      if (margin == 0) {
+        continue;
+      }
       int diffScore = margin * (yokoLineCount[line1] - yokoLineCount[line2]);
 
       // ansLinePosとpreCalcScheduleSizesとwidthsを更新
@@ -4232,14 +4307,16 @@ void Method8(double timeLimit)
     }
   }
 
-  double M8_startTime = GetNowTime();
-  double M8_NowTime = GetNowTime();
+  const double M8_startTime = timer.get_elapsed_time();
+  double M8_NowTime = timer.get_elapsed_time();
   int loopCount = 0;
   while (M8ansansCount < 1000) {
     loopCount++;
     if (loopCount % 25 == 0) {
-      M8_NowTime = GetNowTime();
-      if (M8_NowTime > M8_startTime + (timeLimit - M8_startTime) / 2) { break; }
+      M8_NowTime = timer.get_elapsed_time();
+      if (M8_NowTime > M8_startTime + (timeLimit - M8_startTime) / 2) {
+        break;
+      }
     }
 
     // 縦線作成
@@ -4263,7 +4340,9 @@ void Method8(double timeLimit)
         break;
       }
     }
-    if (ok2 == 0) { continue; }
+    if (ok2 == 0) {
+      continue;
+    }
 
     {
       std::array<int, MAX_LINECOUNT> widths = {};
@@ -4385,14 +4464,16 @@ void Method8(double timeLimit)
     }
   }
 
-  double M8_startTime2 = GetNowTime();
+  double M8_startTime2 = timer.get_elapsed_time();
   loopCount = 0;
-  M8_NowTime = GetNowTime();
+  M8_NowTime = timer.get_elapsed_time();
   while (true) {
     loopCount++;
     if (loopCount % 100 == 0) {
-      M8_NowTime = GetNowTime();
-      if (M8_NowTime > timeLimit) { break; }
+      M8_NowTime = timer.get_elapsed_time();
+      if (M8_NowTime > timeLimit) {
+        break;
+      }
     }
 
     if (loopCount % 12345 == 0) {
@@ -4508,11 +4589,11 @@ void Method4(int setCount)
   CopyToTemp();
 
   double outerTL = TL;
-  double m4StartTime = GetNowTime();
+  double m4StartTime = timer.get_elapsed_time();
   for (int twice = 0; twice < setCount; ++twice) {
     CopyFromTemp();
     CopyToBestAns();
-    double nowTime = GetNowTime();
+    double nowTime = timer.get_elapsed_time();
     double innerTL = (outerTL - m4StartTime) * (twice + 1) / setCount + m4StartTime;
     Method3_1(nowTime + (innerTL - nowTime) * 0.5);
 
@@ -4525,11 +4606,15 @@ void Method4(int setCount)
       isFind = 1;
     }
 
-    if (ans.ansScore == 1) { return; }
+    if (ans.ansScore == 1) {
+      return;
+    }
 
     if (ans.ansBaseLineCount == -1) {
       Method8(nowTime + (innerTL - nowTime) * 0.98);
-      if (best_ans.ansScore < backup_ans.ansScore) { CopyToBackupAns(); }
+      if (best_ans.ansScore < backup_ans.ansScore) {
+        CopyToBackupAns();
+      }
     }
     else {
       Method3_2(nowTime + (innerTL - nowTime) * 0.6);
@@ -4541,7 +4626,9 @@ void Method4(int setCount)
       CopyFromBestAns();
       Method6_ColumnShuffle(nowTime + (innerTL - nowTime) * 1.0);
 
-      if (best_ans.ansScore < backup_ans.ansScore) { CopyToBackupAns(); }
+      if (best_ans.ansScore < backup_ans.ansScore) {
+        CopyToBackupAns();
+      }
     }
   }
 
@@ -4554,14 +4641,16 @@ void Method5()
   double TL31 = TL * 0.5;
   Method3_1(TL31);
 
-  if (ans.ansBaseLineCount == -1) { return; }
+  if (ans.ansBaseLineCount == -1) {
+    return;
+  }
 
   CopyToBackupAns();
 
   keep31Count = min(keep31KeepSize, keep31Count);
   double TL2 = TL * 0.7;
   for (int tzuyu = 0; tzuyu < keep31Count; ++tzuyu) {
-    double nowTime = GetNowTime();
+    double nowTime = timer.get_elapsed_time();
     double innerTL = (TL2 - nowTime) * (tzuyu + 1) / keep31KeepSize + nowTime;
     double innerTL32 = (innerTL - nowTime) / 5.0 + nowTime;
     CopyFromKeep31(tzuyu);
@@ -4569,14 +4658,18 @@ void Method5()
     Method3_2(innerTL32);
     CopyFromBestAns();
     Method4_3(innerTL);
-    if (best_ans.ansScore < backup_ans.ansScore) { CopyToBackupAns(); }
+    if (best_ans.ansScore < backup_ans.ansScore) {
+      CopyToBackupAns();
+    }
   }
 
   CopyFromBackupAns();
 
   CopyFromBestAns();
   Method4_3(TL);
-  if (best_ans.ansScore < backup_ans.ansScore) { CopyToBackupAns(); }
+  if (best_ans.ansScore < backup_ans.ansScore) {
+    CopyToBackupAns();
+  }
 
   CopyFromBackupAns();
   CopyFromBestAns();
@@ -4584,8 +4677,8 @@ void Method5()
 
 ll Solve(int case_num)
 {
-  startTime = clock();
-  endTime = clock();
+  timer.start();
+  timer.get_elapsed_time();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -4648,7 +4741,7 @@ int main()
           << ans.ansBaseLineCount << ", "
           << score << ", "
           << sum << ' '
-          << GetNowTime() << endl;
+          << timer.get_elapsed_time() << endl;
       }
       scores.push_back(score);
     }

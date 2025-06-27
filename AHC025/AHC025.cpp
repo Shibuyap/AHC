@@ -84,13 +84,30 @@ std::default_random_engine engine(seed_gen());
 std::exponential_distribution<> dist(1e-5);
 std::mt19937 engine_mt19937(seed_gen());
 
-clock_t startTime, endTime;
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+Timer timer;
+double elapsed;
 
 const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 1.3;
-double nowTime;
 int mode;
 
 const int MAX_Q = 3232;
@@ -265,13 +282,13 @@ int binarySearchGroupPosition(int gId, const vector<int>& groups, int initialLef
 // Check if time limit is approaching
 bool isTimeLimitApproaching(double threshold = 0.0)
 {
-  return nowTime > TL + threshold;
+  return elapsed > TL + threshold;
 }
 
 // Check if time limit fraction is exceeded
 bool isTimeLimitFractionExceeded(double fraction)
 {
-  return nowTime > TL * fraction;
+  return elapsed > TL * fraction;
 }
 
 // Check if we're near query limit
@@ -289,7 +306,9 @@ int getRandomPercentage()
 // Initialize answer array with default pattern
 void initializeAnswerWithDefault()
 {
-  for (int i = 0; i < N; ++i) { ans[i] = i % D; }
+  for (int i = 0; i < N; ++i) {
+    ans[i] = i % D;
+  }
 }
 
 // Complete remaining queries with dummy
@@ -311,7 +330,9 @@ int adjustHirituByTime(int baseHiritu, double timeFraction = 1.0 / 3.0)
 void performStandardMoveSwap(int& countQ, int hiritu)
 {
   if (isNearQueryLimit(countQ)) {
-    if (hiritu < 10) { return; }
+    if (hiritu < 10) {
+      return;
+    }
     return;
   }
 
@@ -358,27 +379,37 @@ void collectItemsFromGroup(int groupId, vector<int>& items)
 
 void copyAnswersArray(int turn)
 {
-  for (int i = 0; i < N; ++i) { answers[turn][i] = ans[i]; }
+  for (int i = 0; i < N; ++i) {
+    answers[turn][i] = ans[i];
+  }
 }
 
 void initializeGroups(vector<int>& groups)
 {
-  for (int i = 0; i < D; ++i) { groups.push_back(i); }
+  for (int i = 0; i < D; ++i) {
+    groups.push_back(i);
+  }
 }
 
 void initializeItems(vector<int>& items)
 {
-  for (int i = 0; i < N; ++i) { items.push_back(i); }
+  for (int i = 0; i < N; ++i) {
+    items.push_back(i);
+  }
 }
 
 void updateKarusaArray(const vector<int>& items)
 {
-  for (int i = 0; i < N; ++i) { karusa[items[i]] = i; }
+  for (int i = 0; i < N; ++i) {
+    karusa[items[i]] = i;
+  }
 }
 
 void populateAnsItems(vector<int> ansItems[])
 {
-  for (int i = 0; i < N; ++i) { ansItems[ans[i]].push_back(i); }
+  for (int i = 0; i < N; ++i) {
+    ansItems[ans[i]].push_back(i);
+  }
 }
 
 void moveGroupToPosition(vector<int>& groups, int from, int to)
@@ -566,10 +597,9 @@ char Query(int& turn)
   bool isUse = false;
   if (mode < 1000000) {
     if (queryCount % 100 == 0) {
-      endTime = clock();
+      elapsed = timer.get_elapsed_time();
     }
-    nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime < TL) {
+    if (elapsed < TL) {
       isUse = true;
     }
   }
@@ -595,7 +625,7 @@ char Query(int& turn)
     return '>';
   }
 
-  if (nowTime > TL) {
+  if (elapsed > TL) {
     if (l[turn].empty()) {
       l[turn].clear();
       r[turn].clear();
@@ -703,13 +733,12 @@ char Query1(int& turn, int lhs, int rhs)
 {
   query1Count++;
   if (query1Count % 100 == 0) {
-    endTime = clock();
-    nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+    elapsed = timer.get_elapsed_time();
   }
-  if (nowTime > TL - 0.1) {
+  if (elapsed > TL - 0.1) {
     cerr << "Assert Query1" << endl;
   }
-  if (hikaku[lhs][rhs] != -2 && nowTime < TL - 0.1) {
+  if (hikaku[lhs][rhs] != -2 && elapsed < TL - 0.1) {
     if (hikaku[lhs][rhs] == -1) {
       return '<';
     }
@@ -1619,7 +1648,6 @@ void Method14()
     else {
       if (Q - 1 <= countQ) {
         break;
-        ;
       }
       Swap1(countQ, 1);
     }
@@ -1885,7 +1913,10 @@ int CountMaxMergeSortDfs(int left, int right)
   cnt += right - left - 1;
   return cnt;
 }
-int CountMaxMergeSort() { return CountMaxMergeSortDfs(0, N); }
+int CountMaxMergeSort()
+{
+  return CountMaxMergeSortDfs(0, N);
+}
 
 void MergeDfs_Group(vector<int>& groups, int& countQ, int left, int right)
 {
@@ -2398,7 +2429,7 @@ bool runOptimizationWithRestarts(vector<int>& items, int& countQ, int hiritu, in
 
   while (countQ < Q - D) {
     if (checkTime && isTimeLimitApproaching(0.1)) {
-      cerr << "TLE : Method226 " << "time = " << nowTime << endl;
+      cerr << "TLE : Method226 " << "time = " << elapsed << endl;
       break;
     }
 
@@ -2707,7 +2738,7 @@ void Method226(int hiritu = 100, int minDiff = 10)
 
     if (isTimeLimitApproaching()) {
       if (mode != 0) {
-        cout << "Assert Method226 : N = " << N << ", Q = " << Q << ", setCount = " << setCount << ", time = " << nowTime << endl;
+        cout << "Assert Method226 : N = " << N << ", Q = " << Q << ", setCount = " << setCount << ", time = " << elapsed << endl;
       }
       break;
     }
@@ -2776,7 +2807,7 @@ void Method706(int hiritu1, int minDiff, int hiritu2)
     hiritu1 = 10;
   }
   while (countQ < Q) {
-    if (nowTime > TL / 3) {
+    if (elapsed > TL / 3) {
       hiritu1 = 33;
       hiritu2 = 66;
       minDiff = 999;
@@ -2887,7 +2918,7 @@ void Method206(int hiritu1, int hiritu2, int timing, int blockSize)
     }
     else {
       int hiritu = hiritu2;
-      if (hiritu >= 100 && nowTime > TL / 3) {
+      if (hiritu >= 100 && elapsed > TL / 3) {
         hiritu = 90;
       }
       int qu = rand_xorshift() % 100;
@@ -3049,7 +3080,7 @@ void runOptimizationLoop(vector<vector<int>>& blocks, vector<int>& items, int M2
     }
     else {
       int hiritu = hiritu2;
-      if (hiritu >= 100 && nowTime > TL / 3) {
+      if (hiritu >= 100 && elapsed > TL / 3) {
         hiritu = 90;
       }
       int qu = rand_xorshift() % 100;
@@ -3815,9 +3846,8 @@ void PrintAns(ofstream& ofs)
 // 複数ケース回すときに内部状態を初期値に戻す
 void SetUp()
 {
-  startTime = clock();
-  endTime = clock();
-  nowTime = 0.0;
+  timer.start();
+  elapsed = timer.get_elapsed_time();
 
   for (int i = 0; i < MAX_Q; ++i) {
     l[i].clear();
@@ -3993,9 +4023,8 @@ ll Solve(int case_num, ll hai2 = D18)
   }
 
   if (mode != 0) {
-    endTime = clock();
-    nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-    if (nowTime > 1.95) {
+    elapsed = timer.get_elapsed_time();
+    if (elapsed > 1.95) {
       cerr << "!!!TLE!!! << endl";
       cerr << "NN = " << NN << ", QQ = " << QQ << ", DD = " << DD << endl;
       cerr << "haipara = " << haipara[NN][QQ][DD] << ", haiapara2 = " << haipara2[NN][QQ][DD] << endl;
@@ -4109,7 +4138,7 @@ int main()
         if (score == 0) { continue; }
         cout << "num = " << setw(2) << i << ", ";
         cout << "N = " << N << ", Q = " << Q << ", D = " << D << ", queryCount = " << queryCount << ", ";
-        cout << "nowTime = " << nowTime << ", ";
+        cout << "nowTime = " << elapsed << ", ";
         cout << "haipara = " << haipara[NN][QQ][DD] << ", ";
         cout << "score = " << setw(7) << score << ", ";
         cout << "sum = " << setw(9) << sum << endl;
@@ -4138,8 +4167,7 @@ int main()
       GeneratecaseFromNNDDQQ();
 
       Solve(2, hai2);
-      endTime = clock();
-      nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
+      elapsed = timer.get_elapsed_time();
 
       if (loop % 100 == 0) cout << "loop = " << loop << endl;
     }

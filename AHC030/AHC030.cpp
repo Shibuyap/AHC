@@ -52,6 +52,25 @@ const ll D16 = 10000000000000000LL;
 const ll D17 = 100000000000000000LL;
 const ll D18 = 1000000000000000000LL;
 
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+Timer timer;
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t rand_xorshift()
@@ -89,7 +108,6 @@ double TL = 2.5;
 int mode;
 double g_cost;
 int g_query2Count;
-clock_t start_time_clock, end_time_clock;
 
 const int MAX_N = 20;
 const int MAX_M = 20;
@@ -122,13 +140,6 @@ int di[MAX_M], dj[MAX_M];
 int localAnsGrid[MAX_N][MAX_N];
 vector<P> localAns;
 double sampleEs[3 * MAX_N * MAX_N];
-
-double get_elapsed_time()
-{
-  end_time_clock = clock();
-  double nowTime = (double)(end_time_clock - start_time_clock) / CLOCKS_PER_SEC;
-  return nowTime;
-}
 
 bool IsNG(int x, int y)
 {
@@ -1213,7 +1224,7 @@ bool Method3_CheckUniquePattern(const vector<P>& ones, ofstream& ofs, int& cellC
     int x = p.first;
     int y = p.second;
     vector<P> allKouho;
-    if (get_elapsed_time() < 1.0) {
+    if (timer.get_elapsed_time() < 1.0) {
       allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
     }
     else {
@@ -1289,7 +1300,7 @@ void Method3_QueryBestPosition(const vector<P>& ones, ofstream& ofs, int& cellCo
     vector<vector<int>> nums(n, vector<int>(n, 0));
 
     vector<P> allKouho;
-    if (get_elapsed_time() < 1.0) {
+    if (timer.get_elapsed_time() < 1.0) {
       allKouho = Method3_GetAllKouhoSpecificPoint2(x, y);
     }
     else {
@@ -1529,8 +1540,7 @@ void Method4(int kakuteiCount, ofstream& ofs)
 
 ll Solve(int case_num)
 {
-  start_time_clock = clock();
-  end_time_clock = clock();
+  timer.start();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
