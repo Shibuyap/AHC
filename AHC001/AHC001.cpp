@@ -723,7 +723,7 @@ inline void resetWorstRects(int numWorstToReset)
     v.emplace_back(pair<double, int>(rectScores[i], i));
   }
   sort(v.begin(), v.end());
-  for (int i = 0; i < (numWorstToReset); ++i) {
+  for (int i = 0; i < numWorstToReset; ++i) {
     int ite = v[i].second;
     initRect(currentState.rects[ite], points[ite]);
   }
@@ -1112,7 +1112,7 @@ inline void shiftBoundary(int ite, double temp)
     return;
   }
 
-  for (int i = 0; i < (numOverlaps); ++i) calcScore(overlappingRects[i]);
+  for (int i = 0; i < numOverlaps; ++i) calcScore(overlappingRects[i]);
   int newScore = calcScore(ite);
 
   int scoreDiff = newScore - currentState.score;

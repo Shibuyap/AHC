@@ -211,7 +211,7 @@ void Input(int case_num)
     }
   }
 
-  for (int i = 0; i < (m + 1); ++i) {
+  for (int i = 0; i < m + 1; ++i) {
     for (int j = 0; j < (m + 1); ++j) {
       g[i][j] = 0;
     }
@@ -283,7 +283,7 @@ int checkVisited2[m + 1];
 
 bool Check()
 {
-  for (int i = 0; i < (m + 1); ++i) {
+  for (int i = 0; i < m + 1; ++i) {
     for (int j = 0; j < (m + 1); ++j) {
       checkG[i][j] = 0;
     }
@@ -307,7 +307,7 @@ bool Check()
     }
   }
 
-  for (int i = 0; i < (m + 1); ++i) {
+  for (int i = 0; i < m + 1; ++i) {
     for (int j = i + 1; j < m + 1; ++j) {
       if (checkG[i][j] != g[i][j])return false;
     }
@@ -318,7 +318,7 @@ bool Check()
       checkVisited[i][j] = 0;
     }
   }
-  for (int i = 0; i < (m + 1); ++i) {
+  for (int i = 0; i < m + 1; ++i) {
     checkVisited2[i] = 0;
   }
   ClearQueue();

@@ -257,7 +257,7 @@ public:
     ny = y;
     if (dir == 0) {
       int ma = 0;
-      for (int i = 0; i < (rock_col_count[y]); ++i) {
+      for (int i = 0; i < rock_col_count[y]; ++i) {
         if (ma < rock_col[y][i] && rock_col[y][i] < x) {
           ma = rock_col[y][i];
         }
@@ -266,7 +266,7 @@ public:
     }
     else if (dir == 1) {
       int ma = 0;
-      for (int i = 0; i < (rock_row_count[x]); ++i) {
+      for (int i = 0; i < rock_row_count[x]; ++i) {
         if (ma < rock_row[x][i] && rock_row[x][i] < y) {
           ma = rock_row[x][i];
         }
@@ -275,7 +275,7 @@ public:
     }
     else if (dir == 2) {
       int mi = n + 1;
-      for (int i = 0; i < (rock_col_count[y]); ++i) {
+      for (int i = 0; i < rock_col_count[y]; ++i) {
         if (x < rock_col[y][i] && rock_col[y][i] < mi) {
           mi = rock_col[y][i];
         }
@@ -284,7 +284,7 @@ public:
     }
     else if (dir == 3) {
       int mi = n + 1;
-      for (int i = 0; i < (rock_row_count[x]); ++i) {
+      for (int i = 0; i < rock_row_count[x]; ++i) {
         if (y < rock_row[x][i] && rock_row[x][i] < mi) {
           mi = rock_row[x][i];
         }
@@ -351,7 +351,7 @@ static void output_data(int case_num, const Answer& answer)
 {
   if (exec_mode == 0) {
     // 標準出力
-    for (int i = 0; i < (answer.ans_count); ++i) {
+    for (int i = 0; i < answer.ans_count; ++i) {
       cout << C[answer.ans[i][0]] << ' ' << MOVE[answer.ans[i][1]] << endl;
     }
   }
@@ -361,7 +361,7 @@ static void output_data(int case_num, const Answer& answer)
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    for (int i = 0; i < (answer.ans_count); ++i) {
+    for (int i = 0; i < answer.ans_count; ++i) {
       ofs << C[answer.ans[i][0]] << ' ' << MOVE[answer.ans[i][1]] << endl;
     }
 
@@ -579,7 +579,7 @@ private:
     lastRockX = -1;
     lastRockY = -1;
     board.init_board();
-    for (int i = 0; i < (turn); ++i) {
+    for (int i = 0; i < turn; ++i) {
       if (mm < m && x == board.X[mm] && y == board.Y[mm]) {
         mm++;
       }

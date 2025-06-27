@@ -296,7 +296,7 @@ void readInput(int case_num)
     harvestableCrops[harvestMonth[i]].push_back(crop);
   }
 
-  for (int i = 0; i < (T); ++i) {
+  for (int i = 0; i < T; ++i) {
     sort(plantableCrops[i].begin(), plantableCrops[i].end(), compareByHarvestMonth);
     sort(harvestableCrops[i].begin(), harvestableCrops[i].end(), compareByPlantingMonth);
   }
@@ -315,7 +315,7 @@ void openOutputFile(int case_num, ofstream& ofs)
 ll calculateScore()
 {
   ll sum = 0;
-  for (int i = 0; i < (totalPlantedCrops); ++i) {
+  for (int i = 0; i < totalPlantedCrops; ++i) {
     sum += harvestMonth[plantedCropId[i] - 1] - plantingMonth[plantedCropId[i] - 1] + 1;
   }
   ll res = SCORE_BASE * sum / HWT;
@@ -404,7 +404,7 @@ bool isFieldAccessible(const vector<vector<int>>& fieldStatus)
 bool canReachAllPlotsFromEntrance(const vector<vector<int>>& fieldStatus)
 {
   int f[H][W];
-  for (int i = 0; i < (H); ++i) {
+  for (int i = 0; i < H; ++i) {
     for (int j = 0; j < (W); ++j) {
       f[i][j] = INF;
     }
@@ -454,7 +454,7 @@ bool canReachAllPlotsFromEntrance(const vector<vector<int>>& fieldStatus)
 double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<vector<int>>& fieldStatus, const int walkCount)
 {
   int f[H][W];
-  for (int i = 0; i < (H); ++i) {
+  for (int i = 0; i < H; ++i) {
     for (int j = 0; j < (W); ++j) {
       f[i][j] = INF;
     }
@@ -500,7 +500,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
   }
 
   double score = 1e9;
-  for (int i = 0; i < (days.size()); ++i) {
+  for (int i = 0; i < (int)days.size(); ++i) {
     int day = days[i];
     if (d == day) {
       score += 1e5 / ((i + 1) * (i + 1));
@@ -522,7 +522,7 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& fie
   double score = 100;
   fieldStatus[sx][sy] = d;
 
-  for (int i = 0; i < (H); ++i) {
+  for (int i = 0; i < H; ++i) {
     for (int j = 0; j < (W); ++j) {
       if (fieldStatus[i][j] != -1) {
         for (int k = 0; k < 4; ++k) {
@@ -742,14 +742,14 @@ void outputSolution(ofstream& ofs)
 {
   if (mode == 0) {
     cout << totalPlantedCrops << endl;
-    for (int i = 0; i < (totalPlantedCrops); ++i) {
+    for (int i = 0; i < totalPlantedCrops; ++i) {
       cout << plantedCropId[i] << ' ' << plantedX[i] << ' ' << plantedY[i] << ' ' << plantedMonth[i] + 1
         << endl;
     }
   }
   else {
     ofs << totalPlantedCrops << endl;
-    for (int i = 0; i < (totalPlantedCrops); ++i) {
+    for (int i = 0; i < totalPlantedCrops; ++i) {
       ofs << plantedCropId[i] << ' ' << plantedX[i] << ' ' << plantedY[i] << ' ' << plantedMonth[i] + 1
         << endl;
     }

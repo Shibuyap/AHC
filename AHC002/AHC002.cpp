@@ -1,14 +1,11 @@
-﻿#pragma GCC target("avx2")
-#pragma GCC optimize("O3")
-#pragma GCC optimize("unroll-loops")
-#include <chrono>
+﻿#include <chrono>
 #include <climits>
+#include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iosfwd>
 #include <iostream>
-#include <cmath>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -125,11 +122,11 @@ public:
 
   void reverse()
   {
-    for (int i = 0; i < (length / 2); ++i) {
+    for (int i = 0; i < length / 2; ++i) {
       swap(x[i], x[length - 1 - i]);
       swap(y[i], y[length - 1 - i]);
     }
-    for (int i = 0; i < (length - 1); ++i) {
+    for (int i = 0; i < length - 1; ++i) {
       for (int j = 0; j < 4; ++j) {
         int nx = x[i] + dx[j];
         int ny = y[i] + dy[j];
@@ -145,7 +142,7 @@ public:
   {
     length = a.length;
     score = a.score;
-    for (int i = 0; i < (length); ++i) {
+    for (int i = 0; i < length; ++i) {
       direction[i] = a.direction[i];
       x[i] = a.x[i];
       y[i] = a.y[i];
@@ -157,7 +154,7 @@ public:
     if (this == &a) return *this;
     length = a.length;
     score = a.score;
-    for (int i = 0; i < (length); ++i) {
+    for (int i = 0; i < length; ++i) {
       direction[i] = a.direction[i];
       x[i] = a.x[i];
       y[i] = a.y[i];
@@ -221,7 +218,7 @@ static void read_input(int case_num)
 void write_output(int case_num)
 {
   string best_string;
-  for (int i = 0; i < (best_path.length - 1); ++i) {
+  for (int i = 0; i < best_path.length - 1; ++i) {
     best_string += next_char[best_path.direction[i]];
   }
 
@@ -252,7 +249,7 @@ void reset_visited()
 void mark_path_as_visited(const Path& path)
 {
   visited_version++;
-  for (int i = 0; i < (path.length); ++i) {
+  for (int i = 0; i < path.length; ++i) {
     visited[tile_id[path.x[i]][path.y[i]]] = visited_version;
   }
 }
@@ -321,7 +318,7 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2)
 
     if (iter > 100000 || timer.get_elapsed_time() > time_limit_1) {
       int prefix_len = rand_xorshift() % best_path.length;
-      for (int i = 0; i < (prefix_len); ++i) {
+      for (int i = 0; i < prefix_len; ++i) {
         current_path.add(best_path.direction[i]);
         int x = current_path.x[current_path.length - 1];
         int y = current_path.y[current_path.length - 1];
@@ -399,7 +396,7 @@ public:
     }
 
     shuffle_array(legal_dir, cnt);
-    for (int ii = 0; ii < (cnt); ++ii) {
+    for (int ii = 0; ii < cnt; ++ii) {
       int i = legal_dir[ii];
       int nx = x + dx[i];
       int ny = y + dy[i];
@@ -464,7 +461,7 @@ void anneal_path_segment(const AnnealParam& param)
 
     /* ─ before_keep_path ─ */
     before_keep_path.init(sx, sy);
-    for (int i = 0; i < (seg_left); ++i) {
+    for (int i = 0; i < seg_left; ++i) {
       before_keep_path.add(current_path.direction[i]);
       int x = before_keep_path.x[before_keep_path.length - 1];
       int y = before_keep_path.y[before_keep_path.length - 1];
@@ -506,10 +503,10 @@ void anneal_path_segment(const AnnealParam& param)
 
     if (accept_prob > rand_unit_double()) {
       current_path.copy(before_keep_path);
-      for (int i = 0; i < (keep_path.length - 1); ++i) {
+      for (int i = 0; i < keep_path.length - 1; ++i) {
         current_path.add(keep_path.direction[i]);
       }
-      for (int i = 0; i < (after_keep_path.length - 1); ++i) {
+      for (int i = 0; i < after_keep_path.length - 1; ++i) {
         current_path.add(after_keep_path.direction[i]);
       }
 
@@ -570,7 +567,7 @@ int main()
   }
   else if (mode == 1) {
     int sum = 0;
-    for (int i = 0; i < (10); ++i) {
+    for (int i = 0; i < 10; ++i) {
       sum += solve(i, param);
       cout << i << ' ' << sum << endl;
     }
@@ -608,7 +605,7 @@ int main()
         }
       }
 
-      for (int i = 0; i < (1); ++i) {
+      for (int i = 0; i < 1; ++i) {
         new_score += solve(i, new_param);
       }
 
