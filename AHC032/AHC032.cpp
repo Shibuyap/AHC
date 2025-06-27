@@ -1,5 +1,6 @@
 ﻿#include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -34,14 +35,25 @@ namespace /* 乱数ライブラリ */
 
 double TL = 1.9;
 int mode;
-clock_t startTime, endTime;
 
-double GetNowTime()
+class Timer
 {
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  return nowTime;
-}
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+Timer timer;
 
 const int n = 9;
 const int m = 20;
@@ -314,8 +326,7 @@ void heuristicSweep(double timeLimit, State& current)
   int loopCount = 0;
   while (true) {
     loopCount++;
-    double nowTime = GetNowTime();
-    if (nowTime > timeLimit) {
+    if (timer.get_elapsed_time() > timeLimit) {
       break;
     }
 
@@ -618,8 +629,7 @@ void heuristicSweep(double timeLimit, State& current)
 
 ll solveOneProblem(int case_num)
 {
-  startTime = clock();
-  endTime = clock();
+  timer.start();
 
   State current = Input(case_num);
 

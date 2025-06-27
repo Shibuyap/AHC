@@ -79,7 +79,25 @@ const int dy[4] = { 0, -1, 0, 1 };
 
 double TL = 2.8;
 int mode;
-clock_t startTime, endTime;
+
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+Timer timer;
 
 const int N = 600;
 const int MAX_LB = 24;
@@ -119,13 +137,6 @@ void CopyToAns()
       ans[i][j] = best_ans[i][j];
     }
   }
-}
-
-double GetNowTime()
-{
-  endTime = clock();
-  double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-  return nowTime;
 }
 
 // 複数ケース回すときに内部状態を初期値に戻す
@@ -548,7 +559,7 @@ void MakeA1()
 
 ll Solve(int case_num)
 {
-  startTime = clock();
+  timer.start();
 
   // 複数ケース回すときに内部状態を初期値に戻す
   SetUp();
@@ -574,7 +585,7 @@ ll Solve(int case_num)
 
   int iterCount = 0;
   int acceptCount = 0;
-  while (GetNowTime() < TL) {
+  while (timer.get_elapsed_time() < TL) {
     iterCount++;
     int mode = Rand() % 2;
     int idx1 = Rand() % LA;
