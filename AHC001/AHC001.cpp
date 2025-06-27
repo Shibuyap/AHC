@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <array>
 #include <chrono>
 #include <climits>
 #include <cmath>
@@ -62,7 +63,7 @@ static double rand01()
 int hyperParam1;
 int beamWidth = 1;
 int innerLoops = 1;
-int modeCount[20];
+array<int, 20> modeCount;
 
 int shuffles[24][4] = { {0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2}, {0, 3, 2, 1},
                    {1, 0, 2, 3}, {1, 0, 3, 2}, {1, 2, 0, 3}, {1, 2, 3, 0}, {1, 3, 0, 2}, {1, 3, 2, 0},
@@ -87,11 +88,11 @@ enum Direction { HORIZONTAL = 0, VERTICAL = 1 };
 
 int allLoopTimes = 1;
 int numRects;
-Point points[MAX_N];
-int targetSizes[MAX_N];
-Rect rectangles[MAX_N];
-int rectAreas[MAX_N];
-Rect bestRects[MAX_N];
+array<Point, MAX_N> points;
+array<int, MAX_N> targetSizes;
+array<Rect, MAX_N> rectangles;
+array<int, MAX_N> rectAreas;
+array<Rect, MAX_N> bestRects;
 
 inline void calcArea(int idx)
 {
@@ -145,7 +146,7 @@ inline void writeErrorLog(int fileNum)
 int currentScore = -1;
 int bestScore = -1;
 
-double rectScores[MAX_N];
+array<double, MAX_N> rectScores;
 double totalScore;
 inline int calcScore(int ite)
 {
@@ -157,8 +158,8 @@ inline int calcScore(int ite)
       scoreSum += rectScores[i];
     }
     totalScore = scoreSum;
-    scoreSum /= (double)numRects;
-    scoreSum *= 1000000000.0;
+    scoreSum /= numRects;
+    scoreSum *= 1e9;
     return round(scoreSum);
   }
   else {
@@ -168,8 +169,8 @@ inline int calcScore(int ite)
     rectScores[ite] = 1.0 - (1.0 - (double)min(targetSizes[ite], rectAreas[ite]) / (double)max(targetSizes[ite], rectAreas[ite])) * (1.0 - (double)min(targetSizes[ite], rectAreas[ite]) / (double)max(targetSizes[ite], rectAreas[ite]));
     scoreSum += rectScores[ite];
     totalScore = scoreSum;
-    scoreSum /= (double)numRects;
-    scoreSum *= 1000000000.0;
+    scoreSum /= numRects;
+    scoreSum *= 1e9;
     return round(scoreSum);
   }
 }
@@ -216,8 +217,8 @@ inline int checkPointXOverlap(int x, int leftX, int rightX)
   return 0;
 }
 
-int sortedByX[MAX_N], sortedByY[MAX_N];
-int indexInSortedX[MAX_N], indexInSortedY[MAX_N];
+array<int, MAX_N> sortedByX, sortedByY;
+array<int, MAX_N> indexInSortedX, indexInSortedY;
 inline void initSortArrays()
 {
   vector<P> sortPairs;
@@ -683,7 +684,7 @@ inline void extendWithTemp(int ite, double temp)
   }
 }
 
-Rect secondBestRects[MAX_N];
+array<Rect, MAX_N> secondBestRects;
 int secondBestScore = -1;
 
 inline void resetRects(int numToReset)
@@ -970,7 +971,7 @@ inline int canShiftBoundary(int ite, int edgeType)
   return 1;
 }
 
-int overlappingRects[MAX_N];
+array<int, MAX_N> overlappingRects;
 int overlapCount;
 
 // エッジタイプから方向情報を取得
@@ -1050,7 +1051,7 @@ inline void findOverlaps(int ite, int edgeType)
   findOverlapsInDirection(ite, edgeType);
 }
 
-Rect prevRects[MAX_N];
+array<Rect, MAX_N> prevRects;
 inline void shiftBoundary(int ite, double temp)
 {
   int diff = 0;
@@ -1136,14 +1137,14 @@ inline void initSolution()
   }
 }
 
-Rect finalBestRects[MAX_N];
+array<Rect, MAX_N> finalBestRects;
 int finalBestScore = -1;
 
 Rect rects2[100][MAX_N];
 Rect rects4[100][MAX_N];
-int beamScores[100] = {};
+array<int, 100> beamScores = {};
 
-Rect multiStartBestRects[MAX_N];
+array<Rect, MAX_N> multiStartBestRects;
 int multiStartBestScore = -1;
 
 inline void multiStartSearch()
@@ -1225,12 +1226,7 @@ inline void multiStartSearch()
 
     // 初期スコア計算
     currentScore = calcScore(-1);
-    bestScore = currentScore;
-
-    for (int i = 0; i < numRects; ++i) {
-      bestRects[i] = rectangles[i];
-    }
-
+    saveBest();
 
     // 焼きなまし(2回目)
     Timer timer2;
@@ -1324,12 +1320,7 @@ int solve(int isSubmission, int fileNum)
 
     // 初期スコア計算
     currentScore = calcScore(-1);
-    bestScore = currentScore;
-
-    for (int i = 0; i < numRects; ++i) {
-      bestRects[i] = rectangles[i];
-    }
-
+    saveBest();
 
     int parentCount = 1;
 
@@ -1354,11 +1345,7 @@ int solve(int isSubmission, int fileNum)
 
         // 初期スコア計算
         currentScore = calcScore(-1);
-        bestScore = currentScore;
-
-        for (int i = 0; i < numRects; ++i) {
-          bestRects[i] = rectangles[i];
-        }
+        saveBest();
 
         // 焼きなまし(2回目)
         loopTimer.start();
