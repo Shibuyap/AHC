@@ -322,8 +322,7 @@ int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vecto
   const std::vector<int>& omoteArr, int tei, int& real_score, int& real_argRes);
 int evaluateAndOptimizeCoresSimple(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2);
 void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
-                              int& res1, int& res2, int& argRes);
-void createCore2(std::array<int, 100>& f, vector<int>& cores2, int candidateThreshold, int cliqueSize);
+  int& res1, int& res2, int& argRes);
 void createCoreGeneric(std::array<int, 100>& f, vector<int>& cores, int candidateThreshold, int cliqueSize, int markValue);
 
 // グラフにノイズを適用（確率epsで各辺を反転）
@@ -2309,7 +2308,7 @@ int evaluateAndOptimizeCoresSimple(std::array<int, 100>& f, vector<int>& cores1,
 
 // 最適化とベストマッチング検索の共通関数（汎用版）
 void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
-                              int& res1, int& res2, int& argRes)
+  int& res1, int& res2, int& argRes)
 {
   res1 = cores1.size();
   res2 = cores2.size();
@@ -2325,7 +2324,7 @@ void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vect
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   if (res2 > res1) swap(res1, res2);
-  
+
   int diff = INITIAL_DIFF;
   argRes = 0;
   for (int i = 0; i < m; ++i) {
@@ -2334,20 +2333,6 @@ void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vect
     if (abs(num1 - res1) + abs(num2 - res2) < diff) {
       diff = abs(num1 - res1) + abs(num2 - res2);
       argRes = i;
-    }
-  }
-}
-
-// コア2を作成する共通関数
-void createCore2(std::array<int, 100>& f, vector<int>& cores2, int candidateThreshold, int cliqueSize)
-{
-  vector<int> kouho;
-  collectCandidates(kouho, f, candidateThreshold);
-  if (kouho.size() >= cliqueSize) {
-    findClique(kouho, f, cores2, cliqueSize, 2);
-    if (cores2.size() > 0) {
-      // コア2を大きくしていく
-      expandCore(cores2, f, 2);
     }
   }
 }
@@ -2435,7 +2420,7 @@ int solver_11()
 
   // コア2を作る
   vector<int> cores2;
-  createCore2(f, cores2, 4, 4);
+  createCoreGeneric(f, cores2, 4, 4, 2);
 
   return evaluateAndOptimizeCoresSimple(f, cores1, cores2);
 }
@@ -2452,7 +2437,7 @@ int solver_12()
 
   // コア2を作る
   vector<int> cores2;
-  createCore2(f, cores2, 4, 4);
+  createCoreGeneric(f, cores2, 4, 4, 2);
 
   // コア3を作る
   vector<int> cores3;
@@ -2519,7 +2504,7 @@ int solver_13()
 
   // コア2を作る
   vector<int> cores2;
-  createCore2(f, cores2, 4, 4);
+  createCoreGeneric(f, cores2, 4, 4, 2);
 
   // コア3を作る
   vector<int> cores3;
@@ -2599,7 +2584,7 @@ int solver_14()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 4);
+    createCoreGeneric(f, cores2, 4, 4, 2);
 
     int res1, res2, argRes;
     optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
@@ -2632,7 +2617,7 @@ int solver_15()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 4);
+    createCoreGeneric(f, cores2, 4, 4, 2);
 
     int res1, res2, argRes;
     optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
@@ -2688,7 +2673,7 @@ int solver_16()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 4);
+    createCoreGeneric(f, cores2, 4, 4, 2);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
@@ -2720,7 +2705,7 @@ int solver_17()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 4);
+    createCoreGeneric(f, cores2, 4, 4, 2);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
@@ -2805,17 +2790,17 @@ int solver_19()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 4);
+    createCoreGeneric(f, cores2, 4, 4, 2);
 
     int score_tmp = 0;
     int argRes_tmp = 0;
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, wataruoop % 2, score_tmp, argRes_tmp);
-    
+
     int res1 = cores1.size();
     int res2 = cores2.size();
     if (res2 > res1) swap(res1, res2);
     int diff = abs(numPairArr[argRes_tmp][0] - res1) + abs(numPairArr[argRes_tmp][1] - res2);
-    
+
     if (diff < real_minDiff[wataruoop % 2]) {
       real_minDiff[wataruoop % 2] = diff;
       real_argRes[wataruoop % 2] = argRes_tmp;
@@ -2915,7 +2900,7 @@ int solver_21()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 5);
+    createCoreGeneric(f, cores2, 4, 5, 2);
 
     int res1, res2, argRes;
     optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
@@ -2950,7 +2935,7 @@ int solver_22()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 2, 3);
+    createCoreGeneric(f, cores2, 2, 3, 2);
 
     int res1, res2, argRes;
     optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
@@ -2992,7 +2977,7 @@ int solver_23()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 2, 3);
+    createCoreGeneric(f, cores2, 2, 3, 2);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
@@ -3024,7 +3009,7 @@ int solver_24()
 
     // コア2を作る
     vector<int> cores2;
-    createCore2(f, cores2, 4, 5);
+    createCoreGeneric(f, cores2, 4, 5, 2);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
