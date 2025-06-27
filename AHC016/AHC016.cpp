@@ -1808,7 +1808,9 @@ int solver_8()
 {
   int cnt = 0;
   for (int i = 0; i < n; ++i) {
-    for (int j = i + 1; j < n; ++j) { cnt += b[i][j]; }
+    for (int j = i + 1; j < n; ++j) {
+      cnt += b[i][j];
+    }
   }
   cnt = min(cnt, m - 1);
   return cnt;
@@ -1843,29 +1845,45 @@ int solver_common_statistical(int loop_count, bool use_bitset_optimization)
 
     int res1 = res;
     res = n - res;
-    for (int i = 0; i < n; ++i) { f[i] = 1 - f[i]; }
     for (int i = 0; i < n; ++i) {
-      if (f[i] == 0) ff[i] = 1;
+      f[i] = 1 - f[i];
     }
-    for (int i = 0; i < n; ++i) { cnt[i] = 0; }
+    for (int i = 0; i < n; ++i) {
+      if (f[i] == 0) {
+        ff[i] = 1;
+      }
+    }
+    for (int i = 0; i < n; ++i) {
+      cnt[i] = 0;
+    }
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
-        if (f[i] && f[j]) cnt[i] += b[i][j];
+        if (f[i] && f[j]) {
+          cnt[i] += b[i][j];
+        }
       }
     }
     res = performRandomizedGreedyElimination(f, cnt, res);
     int res2 = res;
     if (res2 <= hyperMaxRound) {
       res2 = 0;
-      for (int i = 0; i < n; ++i) f[i] = 0;
+      for (int i = 0; i < n; ++i) {
+        f[i] = 0;
+      }
     }
     for (int i = 0; i < n; ++i) {
-      if (f[i]) ff[i] = 2;
+      if (f[i]) {
+        ff[i] = 2;
+      }
     }
 
-    for (int i = 0; i < n; ++i) f[i] = ff[i];
+    for (int i = 0; i < n; ++i) {
+      f[i] = ff[i];
+    }
 
-    for (int i = 0; i < n; ++i) { fff[_][i] = f[i]; }
+    for (int i = 0; i < n; ++i) {
+      fff[_][i] = f[i];
+    }
     mp[P(res1, res2)]++;
     kp[_] = P(res1, res2);
   }
@@ -1885,7 +1903,9 @@ int solver_common_statistical(int loop_count, bool use_bitset_optimization)
   res2 = maxP.second;
   for (int i = 0; i < loop_count; ++i) {
     if (maxP == kp[i]) {
-      for (int j = 0; j < 100; ++j) { f[j] = fff[i][j]; }
+      for (int j = 0; j < 100; ++j) {
+        f[j] = fff[i][j];
+      }
     }
   }
 
