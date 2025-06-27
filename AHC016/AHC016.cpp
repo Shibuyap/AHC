@@ -2027,11 +2027,6 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
   return false;
 }
 
-// 4-クリークを見つける関数（後方互換性のため）
-bool findClique4(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& cores, int markValue)
-{
-  return findClique(kouho, f, cores, 4, markValue);
-}
 
 // コアを大きくしていく共通関数
 void expandCore(vector<int>& cores, std::array<int, 100>& f, int markValue)
@@ -2231,7 +2226,7 @@ int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useR
     return useReturn ? -1 : 0;
   }
 
-  if (!findClique4(kouho, f, cores1, 1)) {
+  if (!findClique(kouho, f, cores1, 4, 1)) {
     return useReturn ? -1 : 0;
   }
 
@@ -2317,7 +2312,7 @@ int solver_11()
   vector<int> kouho;
   collectCandidates(kouho, f, 4);
   if (kouho.size() >= 4) {
-    findClique4(kouho, f, cores2, 2);
+    findClique(kouho, f, cores2, 4, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
       expandCore(cores2, f, 2);
@@ -2356,7 +2351,7 @@ int solver_12()
   vector<int> kouho;
   collectCandidates(kouho, f, 4);
   if (kouho.size() >= 4) {
-    findClique4(kouho, f, cores2, 2);
+    findClique(kouho, f, cores2, 4, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
       expandCore(cores2, f, 2);
@@ -2368,7 +2363,7 @@ int solver_12()
   if (cores2.size() > 0) {
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores3, 3);
+      findClique(kouho, f, cores3, 4, 3);
       if (cores3.size() > 0) {
         // コア3を大きくしていく
         expandCore(cores3, f, 3);
@@ -2438,7 +2433,7 @@ int solver_13()
   vector<int> kouho;
   collectCandidates(kouho, f, 4);
   if (kouho.size() >= 4) {
-    findClique4(kouho, f, cores2, 2);
+    findClique(kouho, f, cores2, 4, 2);
     if (cores2.size() > 0) {
       // コア2を大きくしていく
       expandCore(cores2, f, 2);
@@ -2450,7 +2445,7 @@ int solver_13()
   if (cores2.size() > 0) {
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores3, 3);
+      findClique(kouho, f, cores3, 4, 3);
       if (cores3.size() > 0) {
         // コア3を大きくしていく
         expandCore(cores3, f, 3);
@@ -2463,7 +2458,7 @@ int solver_13()
   if (cores3.size() > 0) {
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores4, 4);
+      findClique(kouho, f, cores4, 4, 4);
       if (cores4.size() > 0) {
         // コア4を大きくしていく
         expandCore(cores4, f, 4);
@@ -2538,7 +2533,7 @@ int solver_14()
     vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores2, 2);
+      findClique(kouho, f, cores2, 4, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
@@ -2598,7 +2593,7 @@ int solver_15()
     vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores2, 2);
+      findClique(kouho, f, cores2, 4, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
@@ -2682,7 +2677,7 @@ int solver_16()
     vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores2, 2);
+      findClique(kouho, f, cores2, 4, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
@@ -2751,7 +2746,7 @@ int solver_17()
     vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores2, 2);
+      findClique(kouho, f, cores2, 4, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
@@ -2873,7 +2868,7 @@ int solver_19()
     vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
-      findClique4(kouho, f, cores2, 2);
+      findClique(kouho, f, cores2, 4, 2);
       if (cores2.size() > 0) {
         // コア2を大きくしていく
         expandCore(cores2, f, 2);
