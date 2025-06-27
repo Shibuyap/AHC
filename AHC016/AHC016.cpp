@@ -310,6 +310,8 @@ int performRandomizedGreedyElimination(std::array<int, 100>& f, std::array<int, 
 void collectCandidates(vector<int>& kouho, const std::array<int, 100>& f, int minConnectivity);
 void sortResultsDescending(int& res1, int& res2, int& res3);
 void sortResultsDescending(int& res1, int& res2, int& res3, int& res4);
+int findBestMatchingPairCores(int res1, int res2, const std::vector<std::array<int, 2>>& numPairArr);
+int findBestMatchingPairCoresWithFilter(int res1, int res2, const std::vector<std::array<int, 2>>& numPairArr, const std::vector<int>& omoteArr, int tei);
 template<size_t N>
 void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione);
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
@@ -1464,6 +1466,25 @@ int findBestMatchingPairCores(int res1, int res2, const std::vector<std::array<i
   return argRes;
 }
 
+// 2つのコアのベストマッチを見つける（omoteArrフィルタ付き）
+int findBestMatchingPairCoresWithFilter(int res1, int res2, const std::vector<std::array<int, 2>>& numPairArr, const std::vector<int>& omoteArr, int tei)
+{
+  int diff = INITIAL_DIFF;
+  int argRes = 0;
+  for (int i = 0; i < m; ++i) {
+    if (omoteArr[i] != tei % 2) {
+      continue;
+    }
+    int num1 = numPairArr[i][0];
+    int num2 = numPairArr[i][1];
+    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
+      diff = abs(num1 - res1) + abs(num2 - res2);
+      argRes = i;
+    }
+  }
+  return argRes;
+}
+
 // f[]で指定された頂点集合に対してcnt[]を再計算
 void recountForSubset(std::array<int, 100>& cnt, const std::array<int, 100>& f)
 {
@@ -1783,18 +1804,7 @@ int solver_7()
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
-  int diff = INITIAL_DIFF;
-  int argRes = 0;
-  for (int i = 0; i < m; ++i) {
-    int num1 = numPairArr[i][0];
-    int num2 = numPairArr[i][1];
-    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-      diff = abs(num1 - res1) + abs(num2 - res2);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
 int solver_8()
@@ -1892,18 +1902,7 @@ int solver_9()
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
 
-  int diff = INITIAL_DIFF;
-  int argRes = 0;
-  for (int i = 0; i < m; ++i) {
-    int num1 = numPairArr[i][0];
-    int num2 = numPairArr[i][1];
-    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-      diff = abs(num1 - res1) + abs(num2 - res2);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
 int solver_10()
@@ -1980,18 +1979,7 @@ int solver_10()
     }
   }
 
-  int diff = INITIAL_DIFF;
-  int argRes = 0;
-  for (int i = 0; i < m; ++i) {
-    int num1 = numPairArr[i][0];
-    int num2 = numPairArr[i][1];
-    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-      diff = abs(num1 - res1) + abs(num2 - res2);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
 // 指定サイズのクリークを見つける汎用関数
@@ -2350,18 +2338,7 @@ int solver_11()
   if (MODE == 0) flipLoop = 10000;
   flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
   if (res2 > res1) swap(res1, res2);
-  int diff = INITIAL_DIFF;
-  int argRes = 0;
-  for (int i = 0; i < m; ++i) {
-    int num1 = numPairArr[i][0];
-    int num2 = numPairArr[i][1];
-    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-      diff = abs(num1 - res1) + abs(num2 - res2);
-      argRes = i;
-    }
-  }
-
-  return argRes;
+  return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
 int solver_12()
@@ -2726,19 +2703,7 @@ int solver_16()
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) {
-        continue;
-      }
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
+    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
 
     // スコア計算
     int tmpScore = 0;
@@ -2807,19 +2772,7 @@ int solver_17()
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) {
-        continue;
-      }
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
+    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
 
     // スコア計算
     int tmpScore = 0;
@@ -3234,19 +3187,7 @@ int solver_23()
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) {
-        continue;
-      }
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
+    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
 
     // スコア計算
     int tmpScore = 0;
@@ -3324,19 +3265,7 @@ int solver_24()
     if (MODE == 0) flipLoop = 10000;
     flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) {
-        continue;
-      }
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
+    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
 
     // スコア計算
     int tmpScore = 0;
