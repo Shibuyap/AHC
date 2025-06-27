@@ -62,7 +62,8 @@
       "Bash(./AHC001)",
       "Bash(./AHC003)",
       "Bash(./AHC049)",
-      "Bash(time:*)"
+      "Bash(time:*)",
+      "Bash(./AHC001_test)"
     ],
     "deny": []
   }
