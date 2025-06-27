@@ -190,19 +190,19 @@ namespace
       i_eps = parseEpsilon(sEps);
       eps = (double)i_eps / 100.0;
 
-      for (int i = 0; i < (100); ++i) ifs >> judgeArr[i];
+      for (int i = 0; i < 100; ++i) ifs >> judgeArr[i];
     }
     else if (mode == 100 || mode == 110) {
       m = rand32() % 91 + 10;
       i_eps = rand32() % 41;
       eps = i_eps / 100.0;
-      for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
+      for (int i = 0; i < 100; ++i) judgeArr[i] = rand32() % m;
     }
     else if (mode == 333) {
       m = case_num * 10;
       i_eps = 40;
       eps = i_eps / 100.0;
-      for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
+      for (int i = 0; i < 100; ++i) judgeArr[i] = rand32() % m;
     }
   }
 }  // namespace
@@ -254,7 +254,7 @@ namespace
   std::array<int, TURN> answersFor1000Out;
   void output_ans_to_ofs_1000_out()
   {
-    for (int i = 0; i < (100); ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
+    for (int i = 0; i < 100; ++i) { ofs1000Out << answersFor1000Out[i] << endl; }
   }
 
   // ハイパーパラメータ配列を出力する共通関数
@@ -262,9 +262,9 @@ namespace
   void OutputHyperArray(ofstream& ofs, const string& typeName, const string& arrayName, const std::array<std::array<T, 41>, 101>& arr)
   {
     ofs << typeName << " " << arrayName << "[101][41] = {" << endl;
-    for (int i = 0; i < (101); ++i) {
+    for (int i = 0; i < 101; ++i) {
       ofs << "{";
-      for (int j = 0; j < (41); ++j) {
+      for (int j = 0; j < 41; ++j) {
         ofs << arr[i][j];
         if (j == 40)
           ofs << "}";
@@ -283,8 +283,8 @@ namespace
 
   void output_hyper_params()
   {
-    for (int i = 0; i < (101); ++i) {
-      for (int j = 0; j < (41); ++j) {
+    for (int i = 0; i < 101; ++i) {
+      for (int j = 0; j < 41; ++j) {
         if (hyperSolver[i][j] / 10 == 10 || hyperSolver[i][j] / 10 == 12) {
           hyperStep2Arr[i][j] = hyperStep1Arr[i][j];
         }
@@ -503,22 +503,22 @@ namespace
 
   void InitNumArray2()
   {
-    for (int i = 0; i < (100); ++i) { numArr[i] = maxNumArray[i]; }
+    for (int i = 0; i < 100; ++i) { numArr[i] = maxNumArray[i]; }
 
     set_graph_from_num_array();
   }
 
   void InitNumArray3()
   {
-    for (int i = 0; i < (100); ++i) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
+    for (int i = 0; i < 100; ++i) { numArr[i] = real_real_maxNumArray[(m + 9) / 10][i]; }
 
     set_graph_from_num_array();
   }
 
   void InitNumArray4()
   {
-    for (int i = 0; i < (100); ++i) numArr[i] = 0;
-    for (int i = 0; i < (20); ++i) { numArr[i] = (i + 1) * 5; }
+    for (int i = 0; i < 100; ++i) numArr[i] = 0;
+    for (int i = 0; i < 20; ++i) { numArr[i] = (i + 1) * 5; }
     set_graph_from_num_array();
   }
 
@@ -568,7 +568,7 @@ namespace
   {
     if (n % 2 == 0) {
       int cnt = 0;
-      for (int j = 0; j < (3); ++j) {
+      for (int j = 0; j < 3; ++j) {
         for (int i = (n / 2) - 1; i >= 0; --i) {
           if (i % 3 != j) { continue; }
           numArr[cnt] = i + 1;
@@ -881,7 +881,7 @@ namespace
       }
     }
 
-    for (int i = 0; i < (cnt / 2); ++i) {
+    for (int i = 0; i < cnt / 2; ++i) {
       swap(numThreeArr[i][0], numThreeArr[cnt - 1 - i][0]);
       swap(numThreeArr[i][1], numThreeArr[cnt - 1 - i][1]);
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
@@ -954,7 +954,7 @@ namespace
       }
     }
 
-    for (int i = 0; i < (cnt / 2); ++i) {
+    for (int i = 0; i < cnt / 2; ++i) {
       swap(numThreeArr[i][0], numThreeArr[cnt - 1 - i][0]);
       swap(numThreeArr[i][1], numThreeArr[cnt - 1 - i][1]);
       swap(numThreeArr[i][2], numThreeArr[cnt - 1 - i][2]);
@@ -1105,7 +1105,7 @@ namespace
       }
     }
 
-    for (int i = 0; i < (cnt / 2); ++i) {
+    for (int i = 0; i < cnt / 2; ++i) {
       swap(numFourArr[i][0], numFourArr[cnt - 1 - i][0]);
       swap(numFourArr[i][1], numFourArr[cnt - 1 - i][1]);
       swap(numFourArr[i][2], numFourArr[cnt - 1 - i][2]);
@@ -1119,7 +1119,7 @@ namespace
   std::vector<int> omoteArr(ARRAY_SIZE);
   void InitNumArray18()
   {
-    for (int i = 0; i < (ARRAY_SIZE); ++i)omoteArr[i] = 0;
+    for (int i = 0; i < ARRAY_SIZE; ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     int one = 1;
@@ -1181,7 +1181,7 @@ namespace
   // 10表裏
   void InitNumArray19()
   {
-    for (int i = 0; i < (ARRAY_SIZE); ++i)omoteArr[i] = 0;
+    for (int i = 0; i < ARRAY_SIZE; ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1282,7 +1282,7 @@ namespace
       numPairArrOK = 1;
       for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
-          for (int k = 0; k < (n); ++k) {
+          for (int k = 0; k < n; ++k) {
             a[i][j][k] = 0;
           }
         }
@@ -1291,7 +1291,7 @@ namespace
         vector<P> vp = zeroPairs[i];
         int sz = vp.size();
         int sum = 0;
-        for (int j = 0; j < (sz); ++j) {
+        for (int j = 0; j < sz; ++j) {
           int sq = vp[j].first;
           int hon = vp[j].second;
           int cnt = 0;
@@ -1313,7 +1313,7 @@ namespace
   // 1コア
   void InitNumArray21()
   {
-    for (int i = 0; i < (ARRAY_SIZE); ++i)omoteArr[i] = 0;
+    for (int i = 0; i < ARRAY_SIZE; ++i)omoteArr[i] = 0;
     numPairArrOK = 1;
     int cnt = 0;
     for (int i = n; i > 0; i -= hyperStep1) {
@@ -1557,7 +1557,7 @@ int solver_1()
     double e1 = ((double)num - 1) + ((double)n - num) * eps - ((double)num - 1) * eps;
     int kijun = round(e0 + (e1 - e0) / 2.0);
     int count = 0;
-    for (int j = 0; j < (100); ++j) {
+    for (int j = 0; j < 100; ++j) {
       if (cnt[j] >= kijun) {
         count++;
       }
@@ -1612,10 +1612,10 @@ int solver_3()
       }
     }
   }
-  for (int _ = 0; _ < (100); ++_) {
+  for (int _ = 0; _ < 100; ++_) {
     if (vec[0].empty() || vec[1].empty()) { break; }
     std::array<std::array<double, 2>, 100> cnt;
-    for (int i = 0; i < n; ++i) for (int j = 0; j < (2); ++j) cnt[i][j] = 0;
+    for (int i = 0; i < n; ++i) for (int j = 0; j < 2; ++j) cnt[i][j] = 0;
     std::array<vector<int>, 2> nxt;
     for (int i = 0; i < n; ++i) {
       for (int j = 0; j < n; ++j) {
@@ -1640,7 +1640,7 @@ int solver_3()
       }
     }
 
-    for (int i = 0; i < (2); ++i) vec[i] = nxt[i];
+    for (int i = 0; i < 2; ++i) vec[i] = nxt[i];
   }
   int res = min(vec[0].size(), vec[1].size());
   int diff = INITIAL_DIFF;
@@ -1679,7 +1679,7 @@ int solver_4()
     double kijun = (eps * eps + (1.0 - eps) * (1.0 - eps)) / 2.0;
     for (int i = 0; i < n; ++i) {
       std::array<int, 2> tri = {};
-      for (int j = 0; j < (res); ++j) {
+      for (int j = 0; j < res; ++j) {
         int jj = vec[j];
         if (jj == i) { continue; }
         for (int k = j + 1; k < res; ++k) {
@@ -1827,7 +1827,7 @@ int solver_9()
     }
   }
 
-  for (int _ = 0; _ < (10); ++_) {
+  for (int _ = 0; _ < 10; ++_) {
     std::array<int, 100> cnt = {};
     std::array<int, 100> f = {};
     std::array<int, 100> ff = {};
@@ -1882,9 +1882,9 @@ int solver_9()
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
-  for (int i = 0; i < (10); ++i) {
+  for (int i = 0; i < 10; ++i) {
     if (maxP == kp[i]) {
-      for (int j = 0; j < (100); ++j) { f[j] = fff[i][j]; }
+      for (int j = 0; j < 100; ++j) { f[j] = fff[i][j]; }
     }
   }
 
@@ -1906,7 +1906,7 @@ int solver_10()
     }
   }
 
-  for (int _ = 0; _ < (31); ++_) {
+  for (int _ = 0; _ < 31; ++_) {
     std::array<int, 100> cnt = {};
     std::array<int, 100> f = {};
     std::array<int, 100> ff = {};
@@ -1961,9 +1961,9 @@ int solver_10()
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
-  for (int i = 0; i < (10); ++i) {
+  for (int i = 0; i < 10; ++i) {
     if (maxP == kp[i]) {
-      for (int j = 0; j < (100); ++j) { f[j] = fff[i][j]; }
+      for (int j = 0; j < 100; ++j) { f[j] = fff[i][j]; }
     }
   }
 
@@ -2026,7 +2026,7 @@ void expandCore(vector<int>& cores, std::array<int, 100>& f, int markValue)
     for (int i = 0; i < n; ++i) {
       if (f[i] != 0) { continue; }
       int cnt = 0;
-      for (int j = 0; j < (sz); ++j) {
+      for (int j = 0; j < sz; ++j) {
         if (b[i][cores[j]]) cnt++;
       }
       if (ma < cnt && cnt >= (sz + 2) / 2) {
@@ -2311,7 +2311,7 @@ template<size_t N>
 void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop)
 {
-  for (int _ = 0; _ < (flipLoop); ++_) {
+  for (int _ = 0; _ < flipLoop; ++_) {
     int x = rand32() % n;
     int ra = rand32() % 3;
     while (ra == f[x]) {
@@ -2485,23 +2485,24 @@ int solver_13()
   return argRes;
 }
 
-int solver_14()
+// 共通solver関数（最小diff探索版）
+int solver_common_mindiff(int core1_size, int core2_param1, int core2_param2)
 {
   int real_argRes = 0;
   int real_minDiff = 1000;
 
-  for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
+  for (int tei = 0; tei < 15; ++tei) {
     std::array<int, 100> f = {};
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+    if (createAndExpandCore(f, cores1, core1_size, 1, false) == 0) {
       continue;
     }
 
     // コア2を作る
     vector<int> cores2;
-    createCoreGeneric(f, cores2, 4, 4, 2);
+    createCoreGeneric(f, cores2, core2_param1, core2_param2, 2);
 
     int res1, res2, argRes;
     optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
@@ -2519,11 +2520,16 @@ int solver_14()
   return real_argRes;
 }
 
+int solver_14()
+{
+  return solver_common_mindiff(4, 4, 4);
+}
+
 int solver_15()
 {
   map<int, int> argMap;
 
-  for (int wataruoop = 0; wataruoop < (5); ++wataruoop) {
+  for (int tei = 0; tei < 5; ++tei) {
     std::array<int, 100> f = {};
 
     // コア1を作る
@@ -2696,10 +2702,10 @@ int solver_19()
   int real_minDiff[2] = { 1000,1000 };
   std::array<std::array<int, 100>, 100> keepB = b;
 
-  for (int wataruoop = 0; wataruoop < (10); ++wataruoop) {
+  for (int tei = 0; tei < 10; ++tei) {
     b = keepB;
 
-    if (wataruoop % 2 == 1) {
+    if (tei % 2 == 1) {
       reverse_b();
     }
 
@@ -2717,16 +2723,16 @@ int solver_19()
 
     int score_tmp = 0;
     int argRes_tmp = 0;
-    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, wataruoop % 2, score_tmp, argRes_tmp);
+    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei % 2, score_tmp, argRes_tmp);
 
     int res1 = cores1.size();
     int res2 = cores2.size();
     if (res2 > res1) swap(res1, res2);
     int diff = abs(numPairArr[argRes_tmp][0] - res1) + abs(numPairArr[argRes_tmp][1] - res2);
 
-    if (diff < real_minDiff[wataruoop % 2]) {
-      real_minDiff[wataruoop % 2] = diff;
-      real_argRes[wataruoop % 2] = argRes_tmp;
+    if (diff < real_minDiff[tei % 2]) {
+      real_minDiff[tei % 2] = diff;
+      real_argRes[tei % 2] = argRes_tmp;
     }
   }
 
@@ -2802,71 +2808,13 @@ int solver_20()
 // 14亜種
 int solver_21()
 {
-  int real_argRes = 0;
-  int real_minDiff = 1000;
-
-  for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    std::array<int, 100> f = {};
-
-    // コア1を作る
-    vector<int> cores1;
-    if (createAndExpandCore(f, cores1, 5, 1, false) == 0) {
-      continue;
-    }
-
-    // コア2を作る
-    vector<int> cores2;
-    createCoreGeneric(f, cores2, 4, 5, 2);
-
-    int res1, res2, argRes;
-    optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
-
-    int diff = abs(numPairArr[argRes][0] - res1) + abs(numPairArr[argRes][1] - res2);
-    if (diff < real_minDiff) {
-      real_minDiff = diff;
-      real_argRes = argRes;
-      if (real_minDiff == 0) {
-        break;
-      }
-    }
-  }
-
-  return real_argRes;
+  return solver_common_mindiff(5, 4, 5);
 }
 
 // 14亜種
 int solver_22()
 {
-  int real_argRes = 0;
-  int real_minDiff = 1000;
-
-  for (int wataruoop = 0; wataruoop < (15); ++wataruoop) {
-    std::array<int, 100> f = {};
-
-    // コア1を作る
-    vector<int> cores1;
-    if (createAndExpandCore(f, cores1, 3, 1, false) == 0) {
-      continue;
-    }
-
-    // コア2を作る
-    vector<int> cores2;
-    createCoreGeneric(f, cores2, 2, 3, 2);
-
-    int res1, res2, argRes;
-    optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
-
-    int diff = abs(numPairArr[argRes][0] - res1) + abs(numPairArr[argRes][1] - res2);
-    if (diff < real_minDiff) {
-      real_minDiff = diff;
-      real_argRes = argRes;
-      if (real_minDiff == 0) {
-        break;
-      }
-    }
-  }
-
-  return real_argRes;
+  return solver_common_mindiff(3, 2, 3);
 }
 
 // 16亜種
@@ -2913,7 +2861,7 @@ int DecodeGraphIndex(int mode, int turn = 0)
 double Simulate(int mode)
 {
   double res = 1e9 / n;
-  for (int turn = 0; turn < (100); ++turn) {
+  for (int turn = 0; turn < 100; ++turn) {
     receive_noisy_graph(mode, turn);
     int ans = DecodeGraphIndex(mode, turn);
     answersFor1000Out[turn] = ans;
@@ -2983,7 +2931,7 @@ void solve(int mode)
         double sumScore = 0;
         ofstream ofsScore("Score.txt");
         double hi = 0;
-        for (int _ = 0; _ < (1000); ++_) {
+        for (int _ = 0; _ < 1000; ++_) {
           if (_ < 100) {
             OpenOfs1000Out(_);
           }
@@ -3030,7 +2978,7 @@ void solve(int mode)
       m = rand32() % 91 + 10;
       i_eps = rand32() % 41;
       eps = i_eps / 100.0;
-      for (int i = 0; i < (100); ++i) judgeArr[i] = rand32() % m;
+      for (int i = 0; i < 100; ++i) judgeArr[i] = rand32() % m;
 
       int initMode = loop % 2;
 
@@ -3185,9 +3133,9 @@ void solve(int mode)
       int CHAMP = 17;
       int LOSE = 3;
       int loseCount = 0;
-      for (int i = 0; i < (CHAMP + LOSE + 100); ++i) {
+      for (int i = 0; i < CHAMP + LOSE + 100; ++i) {
         matchCount++;
-        for (int j = 0; j < (100); ++j) judgeArr[j] = rand32() % m;
+        for (int j = 0; j < 100; ++j) judgeArr[j] = rand32() % m;
 
         n = nown;
         hyperSolverNum = nowhyperSolverNum;
@@ -3260,7 +3208,7 @@ void solve(int mode)
     double sumScore = 0;
     ofstream ofsScore("Score.txt");
     double hi = 0;
-    for (int _ = 0; _ < (1000); ++_) {
+    for (int _ = 0; _ < 1000; ++_) {
       if (_ % 100 == 0) {
         cout << _ << endl;
       }
@@ -3309,7 +3257,7 @@ void solve(int mode)
     double sumScore = 0;
     ofstream ofsScore("Score.txt");
     double hi = 0;
-    for (int looop = 0; looop < (100); ++looop) {
+    for (int looop = 0; looop < 100; ++looop) {
       for (int _ = 19; _ < 20; ++_) {
         if (_ % 100 == 0) {
           cout << _ << endl;
@@ -3360,7 +3308,7 @@ int main()
     for (int j = 0; j < 105; ++j) {
       com[i][j] = 0;
       if (j > i) { continue; }
-      for (int k = 0; k < (j); ++k) {
+      for (int k = 0; k < j; ++k) {
         com[i][j] += log(i - k);
         com[i][j] -= log(j - k);
       }
