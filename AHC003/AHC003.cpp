@@ -117,8 +117,8 @@ namespace /* 行、列、切れ目の構造 */
   public:
     array<double, N> up = {};
     array<double, N> down = {};
-    array<double, N> l = {};
-    array<double, N> r = {};
+    array<double, N> left = {};
+    array<double, N> right = {};
     array<int, N> cut_v = {};
     array<int, N> cut_h = {}; // 0‾30をとる半開区間
 
@@ -127,8 +127,8 @@ namespace /* 行、列、切れ目の構造 */
       for (int i = 0; i < N; ++i) {
         up[i] = other.up[i];
         down[i] = other.down[i];
-        l[i] = other.l[i];
-        r[i] = other.r[i];
+        left[i] = other.left[i];
+        right[i] = other.right[i];
         cut_v[i] = other.cut_v[i];
         cut_h[i] = other.cut_h[i];
       }
@@ -250,10 +250,10 @@ void FinalAdjustment()
     }
     else {
       if (y <= edge.cut_h[x]) {
-        if (edge.l[x] + delta < 1000 || 9000 < edge.l[x] + delta) { continue; }
+        if (edge.left[x] + delta < 1000 || 9000 < edge.left[x] + delta) { continue; }
       }
       else {
-        if (edge.r[x] + delta < 1000 || 9000 < edge.r[x] + delta) { continue; }
+        if (edge.right[x] + delta < 1000 || 9000 < edge.right[x] + delta) { continue; }
       }
     }
 
@@ -320,8 +320,8 @@ void Dijkstra2(int sx, int sy, int gx, int gy)
         dd += dUD[x][y];
       }
       if (i == 1) {
-        if (y <= edge.cut_h[x]) dd = edge.l[x];
-        else dd = edge.r[x];
+        if (y <= edge.cut_h[x]) dd = edge.left[x];
+        else dd = edge.right[x];
         dd += dLR[x][y];
       }
       if (i == 2) {
@@ -330,8 +330,8 @@ void Dijkstra2(int sx, int sy, int gx, int gy)
         dd += dUD[x + 1][y];
       }
       if (i == 3) {
-        if (y + 1 <= edge.cut_h[x]) dd = edge.l[x];
-        else dd = edge.r[x];
+        if (y + 1 <= edge.cut_h[x]) dd = edge.left[x];
+        else dd = edge.right[x];
         dd += dLR[x][y + 1];
       }
 
@@ -429,7 +429,7 @@ void UpdateDiffSum(int turn)
   for (int j = 0; j < N; ++j) {
     for (int i = 0; i < turn_h[j].size(); ++i) {
       int t = turn_h[j][i];
-      dist_est[t] += edge.l[j] * hsum[t][j][edge.cut_h[j]] + edge.r[j] * (hsum[t][j][N - 1] - hsum[t][j][edge.cut_h[j]]);
+      dist_est[t] += edge.left[j] * hsum[t][j][edge.cut_h[j]] + edge.right[j] * (hsum[t][j][N - 1] - hsum[t][j][edge.cut_h[j]]);
     }
   }
   for (int i = 0; i < turn + 1; ++i) {
@@ -438,7 +438,7 @@ void UpdateDiffSum(int turn)
 
   for (int i = 0; i < N; ++i) {
     diff_sum += std::abs(edge.up[i] - edge.down[i]) * SabunCostMultiple;
-    diff_sum += std::abs(edge.l[i] - edge.r[i]) * SabunCostMultiple;
+    diff_sum += std::abs(edge.left[i] - edge.right[i]) * SabunCostMultiple;
   }
 }
 
@@ -477,8 +477,8 @@ int Solve(string case_num)
   for (int i = 0; i < N; ++i) {
     edge.up[i] = initialD;
     edge.down[i] = initialD;
-    edge.l[i] = initialD;
-    edge.r[i] = initialD;
+    edge.left[i] = initialD;
+    edge.right[i] = initialD;
     edge.cut_v[i] = 15;
     edge.cut_h[i] = 15;
   }
@@ -608,7 +608,7 @@ int Solve(string case_num)
     ofsParam << "up / down" << endl;
     for (int i = 0; i < N; ++i) ofsParam << i << ' ' << edge.cut_v[i] << ' ' << edge.up[i] << ' ' << edge.down[i] << endl;
     ofsParam << "left / right" << endl;
-    for (int i = 0; i < N; ++i) ofsParam << i << ' ' << edge.cut_h[i] << ' ' << edge.l[i] << ' ' << edge.r[i] << endl;
+    for (int i = 0; i < N; ++i) ofsParam << i << ' ' << edge.cut_h[i] << ' ' << edge.left[i] << ' ' << edge.right[i] << endl;
 
     ofsParam << "dUD" << endl;
     for (int i = 0; i < N; ++i) {
@@ -641,8 +641,8 @@ void AnnealingMode0(double temp)
 
   // 方向に応じた参照を取得
   auto& targetEdge = (dir == 0) ? edge.up[idx] :
-    (dir == 1) ? edge.l[idx] :
-    (dir == 2) ? edge.down[idx] : edge.r[idx];
+    (dir == 1) ? edge.left[idx] :
+    (dir == 2) ? edge.down[idx] : edge.right[idx];
 
   // 範囲チェック
   if (targetEdge + delta < 1000 || 9000 < targetEdge + delta) { return; }
@@ -654,8 +654,8 @@ void AnnealingMode0(double temp)
   bool isFirst = (dir == 0 || dir == 1);
 
   auto& turns = isVertical ? turn_v[idx] : turn_h[idx];
-  auto& edge1 = isVertical ? edge.up[idx] : edge.l[idx];
-  auto& edge2 = isVertical ? edge.down[idx] : edge.r[idx];
+  auto& edge1 = isVertical ? edge.up[idx] : edge.left[idx];
+  auto& edge2 = isVertical ? edge.down[idx] : edge.right[idx];
   auto& cut = isVertical ? edge.cut_v[idx] : edge.cut_h[idx];
 
   auto getMultiplier = [&](int t) {
@@ -707,8 +707,8 @@ void AnnealingMode1(double temp)
     if (edge.down[idx] + delta < 1000 || 9000 < edge.down[idx] + delta) { return; }
   }
   if (dir == 1) {
-    if (edge.l[idx] + delta < 1000 || 9000 < edge.l[idx] + delta) { return; }
-    if (edge.r[idx] + delta < 1000 || 9000 < edge.r[idx] + delta) { return; }
+    if (edge.left[idx] + delta < 1000 || 9000 < edge.left[idx] + delta) { return; }
+    if (edge.right[idx] + delta < 1000 || 9000 < edge.right[idx] + delta) { return; }
   }
 
   double diff = 0;
@@ -746,8 +746,8 @@ void AnnealingMode1(double temp)
         double d = delta * hsum[t][idx][N - 1];
         dist_est[t] += d;
       }
-      edge.l[idx] += delta;
-      edge.r[idx] += delta;
+      edge.left[idx] += delta;
+      edge.right[idx] += delta;
     }
 
     diff_sum -= diff;
@@ -770,8 +770,8 @@ void AnnealingMode2(double temp)
 
   // 方向に応じた処理を共通化
   auto& turns = isVertical ? turn_v[idx] : turn_h[idx];
-  auto& edge1 = isVertical ? edge.up[idx] : edge.l[idx];
-  auto& edge2 = isVertical ? edge.down[idx] : edge.r[idx];
+  auto& edge1 = isVertical ? edge.up[idx] : edge.left[idx];
+  auto& edge2 = isVertical ? edge.down[idx] : edge.right[idx];
 
   auto getSum = [&](int t, int cutPos) {
     return isVertical ? vsum[t][cutPos][idx] : hsum[t][idx][cutPos];
@@ -815,8 +815,8 @@ void AnnealingMode3Common(int idx)
 {
   vector<double> rem;
   auto& turns = IsVertical ? turn_v[idx] : turn_h[idx];
-  auto& edge1 = IsVertical ? edge.up : edge.l;
-  auto& edge2 = IsVertical ? edge.down : edge.r;
+  auto& edge1 = IsVertical ? edge.up : edge.left;
+  auto& edge2 = IsVertical ? edge.down : edge.right;
   auto& cut = IsVertical ? edge.cut_v : edge.cut_h;
 
   auto getSum1 = [&](int t, int cutPos) {

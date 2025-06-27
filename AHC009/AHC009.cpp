@@ -81,12 +81,12 @@ int mode;
 namespace /* 変数 */
 {
   // 入力用変数
-  const int BOARD_SIZE = 20;
-  const int MAX_ROUTE_LEN = 200;
+  const int n = 20;
+  const int MAX_LEN = 200;
   int sx, sy, tx, ty;
   double forget_prob;
-  int h_wall[BOARD_SIZE][BOARD_SIZE];
-  int v_wall[BOARD_SIZE][BOARD_SIZE];
+  int h_wall[n][n];
+  int v_wall[n][n];
 
   // 解答用変数
   ll score;
@@ -107,15 +107,15 @@ void input_data(int case_num)
   if (!ifs.is_open()) {
     // 標準入力
     cin >> sx >> sy >> tx >> ty >> forget_prob;
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-      for (int j = 0; j < BOARD_SIZE - 1; ++j) {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n - 1; ++j) {
         char c;
         cin >> c;
         h_wall[i][j] = c - '0';
       }
     }
-    for (int i = 0; i < BOARD_SIZE - 1; ++i) {
-      for (int j = 0; j < BOARD_SIZE; ++j) {
+    for (int i = 0; i < n - 1; ++i) {
+      for (int j = 0; j < n; ++j) {
         char c;
         cin >> c;
         v_wall[i][j] = c - '0';
@@ -125,15 +125,15 @@ void input_data(int case_num)
   else {
     // ファイル入力
     ifs >> sx >> sy >> tx >> ty >> forget_prob;
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-      for (int j = 0; j < BOARD_SIZE - 1; ++j) {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n - 1; ++j) {
         char c;
         ifs >> c;
         h_wall[i][j] = c - '0';
       }
     }
-    for (int i = 0; i < BOARD_SIZE - 1; ++i) {
-      for (int j = 0; j < BOARD_SIZE; ++j) {
+    for (int i = 0; i < n - 1; ++i) {
+      for (int j = 0; j < n; ++j) {
         char c;
         ifs >> c;
         v_wall[i][j] = c - '0';
@@ -146,7 +146,7 @@ void output_data(int case_num)
 {
   if (mode == 0) {
     // 標準出力
-    for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {
+    for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_LEN))); ++i) {
       cout << DC[route[i]];
     }
     cout << '\n';
@@ -157,7 +157,7 @@ void output_data(int case_num)
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-    for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_ROUTE_LEN))); ++i) {
+    for (int i = 0; i < static_cast<int>(min(route.size(), static_cast<size_t>(MAX_LEN))); ++i) {
       ofs << DC[route[i]];
     }
     ofs << '\n';
@@ -182,20 +182,24 @@ ll simulate_score(vector<int>& vec)
         int dir = vec[step];
 
         if (dir == 0) {
-          if (row == 0 || v_wall[row - 1][col])
+          if (row == 0 || v_wall[row - 1][col]) {
             continue;
+          }
         }
         if (dir == 1) {
-          if (col == 0 || h_wall[row][col - 1])
+          if (col == 0 || h_wall[row][col - 1]) {
             continue;
+          }
         }
         if (dir == 2) {
-          if (row == 19 || v_wall[row][col])
+          if (row == 19 || v_wall[row][col]) {
             continue;
+          }
         }
         if (dir == 3) {
-          if (col == 19 || h_wall[row][col])
+          if (col == 19 || h_wall[row][col]) {
             continue;
+          }
         }
 
         row += dx[dir];
@@ -217,19 +221,18 @@ int Solve(int cn)
   input_data(cn);
 
   route.clear();
-  for (int i = 0; i < MAX_ROUTE_LEN; ++i) {
+  for (int i = 0; i < MAX_LEN; ++i) {
     route.push_back(Rand() % 4);
   }
   score = simulate_score(route);
 
-  /* ──────────────────────  Dijkstra 前処理  ────────────────────── */
-  int cost[BOARD_SIZE][BOARD_SIZE];
-  int prev_dir[21][21];
-  int seg_len[BOARD_SIZE][BOARD_SIZE];
-  for (int r = 0; r < BOARD_SIZE; ++r) {
-    for (int c = 0; c < BOARD_SIZE; ++c) {
+  int cost[n][n];
+  int prev_dir[n + 1][n + 1];
+  int seg_len[n][n];
+  for (int r = 0; r < n; ++r) {
+    for (int c = 0; c < n; ++c) {
       cost[r][c] = INF;
-      prev_dir[20][20] = -1;
+      prev_dir[n][n] = -1;
       seg_len[r][c] = -1;
     }
   }
@@ -244,10 +247,12 @@ int Solve(int cn)
     pq.pop();
     int row = node.second.first;
     int col = node.second.second;
-    if (node.first > cost[row][col])
+    if (node.first > cost[row][col]) {
       continue;
-    if (cost[row][col] > 250)
+    }
+    if (cost[row][col] > 250) {
       continue;
+    }
 
     for (int d = 0; d < 4; ++d) {
       int nr = row, nc = col;
@@ -257,36 +262,41 @@ int Solve(int cn)
         while (nr != 0 && v_wall[nr - 1][nc] == 0) {
           --nr;
           ++steps;
-          if (nr == tx && nc == ty)
+          if (nr == tx && nc == ty) {
             break;
+          }
         }
       }
       if (d == 1) {
         while (nc != 0 && h_wall[nr][nc - 1] == 0) {
           --nc;
           ++steps;
-          if (nr == tx && nc == ty)
+          if (nr == tx && nc == ty) {
             break;
+          }
         }
       }
       if (d == 2) {
-        while (nr != 19 && v_wall[nr][nc] == 0) {
+        while (nr != n - 1 && v_wall[nr][nc] == 0) {
           ++nr;
           ++steps;
-          if (nr == tx && nc == ty)
+          if (nr == tx && nc == ty) {
             break;
+          }
         }
       }
       if (d == 3) {
-        while (nc != 19 && h_wall[nr][nc] == 0) {
+        while (nc != n - 1 && h_wall[nr][nc] == 0) {
           ++nc;
           ++steps;
-          if (nr == tx && nc == ty)
+          if (nr == tx && nc == ty) {
             break;
+          }
         }
       }
-      if (nr == row && nc == col)
+      if (nr == row && nc == col) {
         continue;
+      }
 
       int newCost = cost[row][col] + steps + forget_prob * 15;
       if (cost[nr][nc] > newCost) {
@@ -298,12 +308,11 @@ int Solve(int cn)
     }
   }
 
-  for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) {
+  for (int i = 0; i < MAX_LEN + 10; ++i) {
     route.push_back(rand() % 4);
   }
 
-  /* ──────────────────────  最短経路ベース経路生成  ────────────────────── */
-  if (cost[tx][ty] <= MAX_ROUTE_LEN) {
+  if (cost[tx][ty] <= MAX_LEN) {
     route.clear();
     int row = tx, col = ty;
     while (row != sx || col != sy) {
@@ -312,27 +321,29 @@ int Solve(int cn)
       int nr = row - dx[d] * steps;
       int nc = col - dy[d] * steps;
 
-      for (int k = 0; k < static_cast<int>(steps / (1.0 - forget_prob) + forget_prob * 15); ++k)
+      for (int k = 0; k < static_cast<int>(steps / (1.0 - forget_prob) + forget_prob * 15); ++k) {
         route.push_back(d);
+      }
 
       row = nr;
       col = nc;
     }
     reverse(route.begin(), route.end());
-    while (route.size() < MAX_ROUTE_LEN)
+    while (route.size() < MAX_LEN) {
       route.push_back(rand() % 4);
+    }
     score = simulate_score(route);
   }
 
   bool need_random = false;
   best_score = -1;
-  if (route.size() > MAX_ROUTE_LEN) {
+  if (route.size() > MAX_LEN) {
     bool found = false;
     for (int di = 0; di < 10; ++di) {
       for (int dj = 0; dj < 10; ++dj) {
         route.clear();
         int row = tx - di, col = ty - dj;
-        if (cost[row][col] >= MAX_ROUTE_LEN) {
+        if (cost[row][col] >= MAX_LEN) {
           continue;
         }
 
@@ -350,11 +361,11 @@ int Solve(int cn)
           col = nc;
         }
         reverse(route.begin(), route.end());
-        while (route.size() < MAX_ROUTE_LEN) {
+        while (route.size() < MAX_LEN) {
           route.push_back(rand() % 4);
         }
 
-        if (route.size() == MAX_ROUTE_LEN) {
+        if (route.size() == MAX_LEN) {
           found = true;
           need_random = true;
           score = simulate_score(route);
@@ -367,22 +378,27 @@ int Solve(int cn)
     }
     if (!found) {
       route.clear();
-      for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) route.push_back(rand() % 4);
+      for (int i = 0; i < MAX_LEN + 10; ++i) {
+        route.push_back(rand() % 4);
+      }
     }
     else {
       route = best_route;
       score = best_score;
-      if (score == -1)
-        for (int i = 0; i < MAX_ROUTE_LEN + 10; ++i) route.push_back(rand() % 4);
+      if (score == -1) {
+        for (int i = 0; i < MAX_LEN + 10; ++i) {
+          route.push_back(rand() % 4);
+        }
+      }
     }
   }
 
-  /* ──────────────────────  焼きなまし  ────────────────────── */
+
   int iter = 0;
-  if (need_random || route.size() > MAX_ROUTE_LEN) {
+  if (need_random || route.size() > MAX_LEN) {
     if (!need_random) {
       route.clear();
-      for (int i = 0; i < MAX_ROUTE_LEN; ++i) route.push_back(Rand() % 4);
+      for (int i = 0; i < MAX_LEN; ++i) route.push_back(Rand() % 4);
     }
     score = simulate_score(route);
     best_route = route;
@@ -395,12 +411,14 @@ int Solve(int cn)
 
     while (true) {
       ++iter;
-      if (iter % 100 == 1)
+      if (iter % 100 == 1) {
         elapsed = get_elapsed_time();
-      if (elapsed > timeLimit)
+      }
+      if (elapsed > timeLimit) {
         break;
+      }
 
-      int pos = Rand() % MAX_ROUTE_LEN;
+      int pos = Rand() % MAX_LEN;
       int newDir = Rand() % 4;
       int backup = route[pos];
       route[pos] = newDir;
