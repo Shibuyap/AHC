@@ -82,7 +82,7 @@ struct Rect
 {
   Point topLeft;
   Point bottomRight;
-  
+
   inline void clear()
   {
     topLeft.x = 0;
@@ -107,7 +107,7 @@ public:
       rects[i] = other.rects[i];
     }
   }
-  
+
   inline void clear()
   {
     score = -1;
@@ -119,7 +119,6 @@ public:
 
 enum Direction { HORIZONTAL = 0, VERTICAL = 1 };
 
-int allLoopTimes = 1;
 array<Point, MAX_N> points;
 array<int, MAX_N> targetSizes;
 State currentState;
@@ -1159,16 +1158,12 @@ inline void initSolution()
 
 State finalBestState;
 
-Rect rects2[100][MAX_N];
-Rect rects4[100][MAX_N];
-array<int, 100> beamScores = {};
-
 State multiStartBestState;
 
 inline void multiStartSearch()
 {
   Timer timer;
-  for (int multiStartIter = 0; multiStartIter < (5); ++multiStartIter) {
+  for (int multiStartIter = 0; multiStartIter < 5; ++multiStartIter) {
 
     // 初期解
     // 左上(x,y)、右下(x+1,y+1)
@@ -1176,8 +1171,8 @@ inline void multiStartSearch()
       initRect(currentState.rects[i], points[i]);
     }
 
-    int innerIterations = 5;
-    for (int innerIter = 0; innerIter < (innerIterations); ++innerIter) {
+    const int innerIterations = 5;
+    for (int innerIter = 0; innerIter < innerIterations; ++innerIter) {
       timer.start();
 
       // 初期スコア計算
@@ -1187,9 +1182,9 @@ inline void multiStartSearch()
       // 焼きなまし
       timer.start();
       double elapsedTime = timer.get_elapsed_time();
-      double localTimeLimit = (0.10 / (double)innerIterations) / allLoopTimes;
-      double startTemp = 2048;
-      double endTemp = 0.1;
+      double localTimeLimit = 0.10 / innerIterations;
+      const double startTemp = 2048;
+      const double endTemp = 0.1;
       double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
       int loop = 0;
       while (true) {
@@ -1241,9 +1236,9 @@ inline void multiStartSearch()
     Timer timer2;
     timer2.start();
     double elapsedTime = timer2.get_elapsed_time();
-    double localTimeLimit = 0.02 / allLoopTimes;
-    double startTemp = 50048;
-    double endTemp = 0.1;
+    double localTimeLimit = 0.02;
+    const double startTemp = 50048;
+    const double endTemp = 0.1;
     double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
     int loop = 0;
     int useSecondPhase = multiStartIter % 2;
@@ -1298,9 +1293,9 @@ inline void multiStartSearch()
   secondBestState.copyFrom(currentState);
 }
 
+
 int solve(int isSubmission, int fileNum)
 {
-  auto startClock = system_clock::now();
   Timer mainTimer;
   Timer loopTimer;
   mainTimer.start();
@@ -1309,170 +1304,134 @@ int solve(int isSubmission, int fileNum)
 
   initSortArrays();
 
+  multiStartSearch();
 
-  for (int allLoop = 0; allLoop < (allLoopTimes); ++allLoop) {
+  // multiStartBestState.score戻す
+  currentState.copyFrom(multiStartBestState);
+  calcScore(-1);
 
-    multiStartSearch();
+  // 初期スコア計算
+  currentState.score = calcScore(-1);
+  bestState.copyFrom(currentState);
 
-    // multiStartBestState.score戻す
-    currentState.copyFrom(multiStartBestState);
-    calcScore(-1);
+  // 焼きなまし2
+  // 筋のいいやつを追う
+  const int mainIterations = 250;
+  for (int mainIter = 0; mainIter < mainIterations; ++mainIter) {
+    for (int i = 0; i < 6; ++i) {
+      modeCount[i] = 0;
+    }
 
     // 初期スコア計算
     currentState.score = calcScore(-1);
     bestState.copyFrom(currentState);
 
-    int parentCount = 1;
+    // 焼きなまし(2回目)
+    loopTimer.start();
+    double elapsedTime = loopTimer.get_elapsed_time();
+    double localTimeLimit = (timeLimit - 0.7) / mainIterations;
+    const double startTemp = 20048.0;
+    const double endTemp = 0.1;
+    double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
+    int loop = 0;
+    int useSecondPhase = mainIter % 2;
 
-    for (int beamIdx = 0; beamIdx < (parentCount); ++beamIdx) {
-      for (int j = 0; j < numRects; ++j) {
-        rects2[beamIdx][j] = currentState.rects[j];
-      }
-    }
-
-    // 焼きなまし2
-    // 筋のいいやつを追う
-    int mainIterations = 250 / allLoopTimes;
-    for (int mainIter = 0; mainIter < (mainIterations); ++mainIter) {
-      for (int i = 0; i < (6); ++i) modeCount[i] = 0;
-
-      int innerLoopCount = 1;
-      for (int beamIdx = 0; beamIdx < (innerLoopCount); ++beamIdx) {
-        int idx = beamIdx % parentCount;
-        for (int i = 0; i < numRects; ++i) {
-          currentState.rects[i] = rects2[idx][i];
+    while (true) {
+      loop++;
+      if (loop % 100 == 1) {
+        const double time = loopTimer.get_elapsed_time();
+        if (time > localTimeLimit) {
+          break;
         }
+        const double progressRatio = time / localTimeLimit;   // 進捗。開始時が0.0、終了時が1.0
+        temp = startTemp + (endTemp - startTemp) * progressRatio;
+      }
 
-        // 初期スコア計算
+      int mode = loop % 6;
+
+      if (mode == -1) { // a,b,c,dのうち1つ変更
+        int ite = xorshift() % numRects;
+        changeSingleEdge(ite, temp);
+      }
+      else if (mode == 1) { // 位置をスライド
+        int ite = xorshift() % numRects;
+        slideRect(ite, temp);
+      }
+      else if (mode == -2 && useSecondPhase && elapsedTime > 2.0 / mainIterations) { // ランダムにアスペクト比を変更
+        int ite = xorshift() % numRects;
+        changeAspectRatio(ite, temp);
+      }
+      else if (mode == -3) { // a,b,c,dを4つ同時に変更
+        int ite = xorshift() % numRects;
+        changeAllEdges(ite, temp);
+      }
+      else if (mode == 4) { // 膨らまして縮める
+        int ite = xorshift() % numRects;
+        extendWithTemp(ite, temp);
+      }
+      else if (mode == 5) { // 境界をずらす
+        int ite = xorshift() % numRects;
+        shiftBoundary(ite, temp);
+      }
+
+      if (loop % 34567 == 1120) {
+        int ite = xorshift() % numRects;
+        extendLarge(ite);
+      }
+
+      // 計算誤差解消?
+      if (loop % 10000 == 1) {
         currentState.score = calcScore(-1);
-        bestState.copyFrom(currentState);
-
-        // 焼きなまし(2回目)
-        loopTimer.start();
-        startClock = system_clock::now();
-        double elapsedTime = loopTimer.get_elapsed_time();
-        double localTimeLimit = (((timeLimit - 0.7) / mainIterations) / innerLoopCount) / allLoopTimes;
-        double startTemp = 20048.0;
-        double endTemp = 0.1;
-        double temp = startTemp + (endTemp - startTemp) * elapsedTime / localTimeLimit;
-        int loop = 0;
-        int useSecondPhase = mainIter % 2;
-
-        while (true) {
-          loop++;
-          if (loop % 100 == 1) {
-            const double time = duration_cast<microseconds>(system_clock::now() - startClock).count() * 1e-6;
-            if (time > localTimeLimit) { break; }
-            const double progressRatio = time / localTimeLimit;   // 進捗。開始時が0.0、終了時が1.0
-            temp = startTemp + (endTemp - startTemp) * progressRatio;
-          }
-
-
-          int mode = loop % 6;
-
-          if (mode == -1) { // a,b,c,dのうち1つ変更
-            int ite = xorshift() % numRects;
-            changeSingleEdge(ite, temp);
-          }
-          else if (mode == 1) { // 位置をスライド
-            int ite = xorshift() % numRects;
-            slideRect(ite, temp);
-          }
-          else if (mode == -2 && useSecondPhase && elapsedTime > 2.0 / mainIterations) { // ランダムにアスペクト比を変更
-            int ite = xorshift() % numRects;
-            changeAspectRatio(ite, temp);
-          }
-          else if (mode == -3) { // a,b,c,dを4つ同時に変更
-            int ite = xorshift() % numRects;
-            changeAllEdges(ite, temp);
-          }
-          else if (mode == 4) { // 膨らまして縮める
-            int ite = xorshift() % numRects;
-            extendWithTemp(ite, temp);
-          }
-          else if (mode == 5) { // 境界をずらす
-            int ite = xorshift() % numRects;
-            shiftBoundary(ite, temp);
-          }
-
-          if (loop % 34567 == 1120) {
-            int ite = xorshift() % numRects;
-            extendLarge(ite);
-          }
-
-          // 計算誤差解消?
-          if (loop % 10000 == 1) {
-            currentState.score = calcScore(-1);
-          }
-        }
-
-        // 焼きなまし戻す
-        currentState.copyFrom(bestState);
-        calcScore(-1);
-        if (currentState.score > secondBestState.score) {
-          secondBestState.copyFrom(currentState);
-        }
-
-        // ビームサーチの次の種にする
-        beamScores[beamIdx] = currentState.score;
-        for (int i = 0; i < numRects; ++i) {
-          rects4[beamIdx][i] = currentState.rects[i];
-        }
       }
-
-      // 次の世代に継承
-      vector<P> vBeam;
-      for (int beamIdx = 0; beamIdx < (innerLoopCount); ++beamIdx) vBeam.emplace_back(P(beamScores[beamIdx], beamIdx));
-      sort(vBeam.begin(), vBeam.end(), greater<P>());
-
-
-      for (int ii = 0; ii < (parentCount); ++ii) {
-        int i = vBeam[ii].second;
-        for (int j = 0; j < numRects; ++j) {
-          rects2[ii][j] = rects4[i][j];
-        }
-      }
-
-      // 提出時以下は消す
-      if (isSubmission == 0 && mainIter % 10 == 0) {
-        cout << "mainIter = " << mainIter;
-        cout << ", vBeam[0] = (" << vBeam[0].first << ", " << vBeam[0].second << ")" << endl;
-      }
-
-      // エスケープ
-      if (mainTimer.get_elapsed_time() > timeLimit) { break; }
     }
 
-    // secondBestState.score戻す
-    currentState.copyFrom(secondBestState);
+    // 焼きなまし戻す
+    currentState.copyFrom(bestState);
     calcScore(-1);
-
-    if (isSubmission == 0) {
-      cout << "currentState.score = " << currentState.score << endl;
+    if (currentState.score > secondBestState.score) {
+      secondBestState.copyFrom(currentState);
     }
 
-    const int MOD = 1000000007;
-    if (isSubmission == 0 && currentState.score > MOD) {
-      cout << "ERROR" << endl;
-      writeErrorLog(fileNum);
+    // 提出時以下は消す
+    if (isSubmission == 0 && mainIter % 10 == 0) {
+      cout << "mainIter = " << mainIter;
+      cout << ", vBeam[0] = (" << currentState.score << ", " << 0 << ")" << endl;
     }
 
-    // real_real_real入れる
-    if (currentState.score > finalBestState.score && currentState.score < 1000000007) {
-      finalBestState.copyFrom(currentState);
+    // エスケープ
+    if (mainTimer.get_elapsed_time() > timeLimit) {
+      break;
     }
-
-
-    // すべて白紙にリセットする
-    currentState.score = 0;
-    bestState.score = 0;
-    secondBestState.score = 0;
-    for (int i = 0; i < numRects; ++i) {
-      initRect(currentState.rects[i], points[i]);
-    }
-    bestState.copyFrom(currentState);
-    secondBestState.copyFrom(currentState);
   }
+
+  // secondBestState.score戻す
+  currentState.copyFrom(secondBestState);
+  calcScore(-1);
+
+  if (isSubmission == 0) {
+    cout << "currentState.score = " << currentState.score << endl;
+  }
+
+  const int MOD = 1000000007;
+  if (isSubmission == 0 && currentState.score > MOD) {
+    cout << "ERROR" << endl;
+    writeErrorLog(fileNum);
+  }
+
+  // real_real_real入れる
+  if (currentState.score > finalBestState.score && currentState.score < 1000000007) {
+    finalBestState.copyFrom(currentState);
+  }
+
+  // すべて白紙にリセットする
+  currentState.score = 0;
+  bestState.score = 0;
+  secondBestState.score = 0;
+  for (int i = 0; i < numRects; ++i) {
+    initRect(currentState.rects[i], points[i]);
+  }
+  bestState.copyFrom(currentState);
+  secondBestState.copyFrom(currentState);
 
   // finalBestState.score戻す
   currentState.copyFrom(finalBestState);
@@ -1504,14 +1463,14 @@ inline void clearAll()
 {
   numRects = 0;
   totalScore = 0;
-  
+
   // Clear all states
   currentState.clear();
   bestState.clear();
   secondBestState.clear();
   multiStartBestState.clear();
   finalBestState.clear();
-  
+
   // Clear other arrays
   for (int i = 0; i < MAX_N; ++i) {
     points[i].x = 0;
