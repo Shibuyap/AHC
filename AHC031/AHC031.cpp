@@ -1219,6 +1219,13 @@ inline void advanceSum(int& sum, int& ite1, int day, int lineNum) {
   shuffle2TmpPosition[ite1] = sum;
 }
 
+inline void updateSumAndMargin(int& tmpMargin, int& sum, int& ite1, int pos, int day, int lineNum) {
+  tmpMargin -= pos - sum;
+  sum = pos;
+  shuffle2TmpPosition[ite1] = sum;
+  advanceSum(sum, ite1, day, lineNum);
+}
+
 inline void updatePos3Common(int& diffScore3, int& tmpMargin, int& sum, int& ite1, int& ite3, int pos3, int day, int lineNum)
 {
   shuffle2NeighborNewPos2[ite3] = pos3;
@@ -1375,10 +1382,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             // nPos = pos22 = pos32
             if (isConnect1) diffScore3 += widths[lineNum] * 2;
             if (isConnect2) diffScore3 += widths[lineNum] * 2;
-            tmpMargin -= pos22 - sum;
-            sum = pos22;
-            shuffle2TmpPosition[ite1] = sum;
-            advanceSum(sum, ite1, day, lineNum);
+            updateSumAndMargin(tmpMargin, sum, ite1, pos22, day, lineNum);
             ite2++;
             ite3++;
           }
@@ -1410,10 +1414,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           if (pos22 <= sum + tmpMargin && isConnect) {
             // nPos = pos22
             if (isConnect) diffScore3 += widths[lineNum] * 2;
-            tmpMargin -= pos22 - sum;
-            sum = pos22;
-            shuffle2TmpPosition[ite1] = sum;
-            advanceSum(sum, ite1, day, lineNum);
+            updateSumAndMargin(tmpMargin, sum, ite1, pos22, day, lineNum);
           }
           else {
             // nPos = pos2
@@ -1435,10 +1436,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           if (pos32 <= sum + tmpMargin && isConnect) {
             // nPos = pos32
             if (isConnect) diffScore3 += widths[lineNum] * 2;
-            tmpMargin -= pos32 - sum;
-            sum = pos32;
-            shuffle2TmpPosition[ite1] = sum;
-            advanceSum(sum, ite1, day, lineNum);
+            updateSumAndMargin(tmpMargin, sum, ite1, pos32, day, lineNum);
           }
           else {
             // nPos = pos3
@@ -1469,10 +1467,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         if (isConnect) {
           if (pos22 <= sum + tmpMargin) {
             diffScore3 += widths[lineNum] * 2;
-            tmpMargin -= pos22 - sum;
-            sum = pos22;
-            shuffle2TmpPosition[ite1] = sum;
-            advanceSum(sum, ite1, day, lineNum);
+            updateSumAndMargin(tmpMargin, sum, ite1, pos22, day, lineNum);
           }
           else {
             updatePos2Common(diffScore3, tmpMargin, sum, ite1, ite2, pos2, day, lineNum);
@@ -1505,10 +1500,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         if (isConnect) {
           if (pos32 <= sum + tmpMargin) {
             diffScore3 += widths[lineNum] * 2;
-            tmpMargin -= pos32 - sum;
-            sum = pos32;
-            shuffle2TmpPosition[ite1] = sum;
-            advanceSum(sum, ite1, day, lineNum);
+            updateSumAndMargin(tmpMargin, sum, ite1, pos32, day, lineNum);
           }
           else {
             updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
@@ -1541,10 +1533,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
       }
       if (isConnect && pos22 <= sum + tmpMargin) {
         diffScore3 += widths[lineNum] * 2;
-        tmpMargin -= pos22 - sum;
-        sum = pos22;
-        shuffle2TmpPosition[ite1] = sum;
-        advanceSum(sum, ite1, day, lineNum);
+        updateSumAndMargin(tmpMargin, sum, ite1, pos22, day, lineNum);
       }
       else {
         updatePos2Common(diffScore3, tmpMargin, sum, ite1, ite2, pos2, day, lineNum);
@@ -1577,10 +1566,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
       }
       else {
         if (isConnect) diffScore3 += widths[lineNum] * 2;
-        tmpMargin -= pos32 - sum;
-        sum = pos32;
-        shuffle2TmpPosition[ite1] = sum;
-        advanceSum(sum, ite1, day, lineNum);
+        updateSumAndMargin(tmpMargin, sum, ite1, pos32, day, lineNum);
       }
 
       ite3++;

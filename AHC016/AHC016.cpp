@@ -320,6 +320,9 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
   int& score, int& res1, int& res2, int flipLoop);
 int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
   const std::vector<int>& omoteArr, int tei, int& real_score, int& real_argRes);
+int evaluateAndOptimizeCoresSimple(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2);
+void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
+                              int& res1, int& res2, int& argRes);
 void createCore2(std::array<int, 100>& f, vector<int>& cores2, int candidateThreshold, int cliqueSize);
 void createCoreGeneric(std::array<int, 100>& f, vector<int>& cores, int candidateThreshold, int cliqueSize, int markValue);
 
@@ -2284,6 +2287,57 @@ int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vecto
   return tmpScore;
 }
 
+// 最適化とスコア評価の共通関数（omoteArrフィルタなし）
+int evaluateAndOptimizeCoresSimple(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2)
+{
+  int res1 = cores1.size();
+  int res2 = cores2.size();
+
+  int score = calculateScore(f);
+
+  std::array<bitset<100>, 3> bif = {};
+  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bione(0);
+  initializeBitsets(f, bif, bib, bione);
+
+  int flipLoop = FLIP_ITERATIONS;
+  if (MODE == 0) flipLoop = 10000;
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  if (res2 > res1) swap(res1, res2);
+  return findBestMatchingPairCores(res1, res2, numPairArr);
+}
+
+// 最適化とベストマッチング検索の共通関数（汎用版）
+void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
+                              int& res1, int& res2, int& argRes)
+{
+  res1 = cores1.size();
+  res2 = cores2.size();
+
+  int score = calculateScore(f);
+
+  std::array<bitset<100>, 3> bif = {};
+  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bione(0);
+  initializeBitsets(f, bif, bib, bione);
+
+  int flipLoop = FLIP_ITERATIONS;
+  if (MODE == 0) flipLoop = 10000;
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  if (res2 > res1) swap(res1, res2);
+  
+  int diff = INITIAL_DIFF;
+  argRes = 0;
+  for (int i = 0; i < m; ++i) {
+    int num1 = numPairArr[i][0];
+    int num2 = numPairArr[i][1];
+    if (abs(num1 - res1) + abs(num2 - res2) < diff) {
+      diff = abs(num1 - res1) + abs(num2 - res2);
+      argRes = i;
+    }
+  }
+}
+
 // コア2を作成する共通関数
 void createCore2(std::array<int, 100>& f, vector<int>& cores2, int candidateThreshold, int cliqueSize)
 {
@@ -2383,21 +2437,7 @@ int solver_11()
   vector<int> cores2;
   createCore2(f, cores2, 4, 4);
 
-  int res1 = cores1.size();
-  int res2 = cores2.size();
-
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-  if (res2 > res1) swap(res1, res2);
-  return findBestMatchingPairCores(res1, res2, numPairArr);
+  return evaluateAndOptimizeCoresSimple(f, cores1, cores2);
 }
 
 int solver_12()
@@ -2561,31 +2601,10 @@ int solver_14()
     vector<int> cores2;
     createCore2(f, cores2, 4, 4);
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
+    int res1, res2, argRes;
+    optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
 
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
-
+    int diff = abs(numPairArr[argRes][0] - res1) + abs(numPairArr[argRes][1] - res2);
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
@@ -2615,30 +2634,8 @@ int solver_15()
     vector<int> cores2;
     createCore2(f, cores2, 4, 4);
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
-
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
+    int res1, res2, argRes;
+    optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
 
     argMap[argRes]++;
   }
@@ -2810,37 +2807,18 @@ int solver_19()
     vector<int> cores2;
     createCore2(f, cores2, 4, 4);
 
+    int score_tmp = 0;
+    int argRes_tmp = 0;
+    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, wataruoop % 2, score_tmp, argRes_tmp);
+    
     int res1 = cores1.size();
     int res2 = cores2.size();
-
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
     if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != wataruoop % 2) {
-        continue;
-      }
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
-
+    int diff = abs(numPairArr[argRes_tmp][0] - res1) + abs(numPairArr[argRes_tmp][1] - res2);
+    
     if (diff < real_minDiff[wataruoop % 2]) {
       real_minDiff[wataruoop % 2] = diff;
-      real_argRes[wataruoop % 2] = argRes;
+      real_argRes[wataruoop % 2] = argRes_tmp;
     }
   }
 
@@ -2939,31 +2917,10 @@ int solver_21()
     vector<int> cores2;
     createCore2(f, cores2, 4, 5);
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
+    int res1, res2, argRes;
+    optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
 
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
-
+    int diff = abs(numPairArr[argRes][0] - res1) + abs(numPairArr[argRes][1] - res2);
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
@@ -2995,31 +2952,10 @@ int solver_22()
     vector<int> cores2;
     createCore2(f, cores2, 2, 3);
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
+    int res1, res2, argRes;
+    optimizeAndFindBestMatch(f, cores1, cores2, res1, res2, argRes);
 
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int diff = INITIAL_DIFF;
-    int argRes = 0;
-    for (int i = 0; i < m; ++i) {
-      int num1 = numPairArr[i][0];
-      int num2 = numPairArr[i][1];
-      if (abs(num1 - res1) + abs(num2 - res2) < diff) {
-        diff = abs(num1 - res1) + abs(num2 - res2);
-        argRes = i;
-      }
-    }
-
+    int diff = abs(numPairArr[argRes][0] - res1) + abs(numPairArr[argRes][1] - res2);
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
