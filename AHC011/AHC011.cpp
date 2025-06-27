@@ -31,12 +31,13 @@ typedef long long int ll;
 typedef pair<int, int> P;
 #define MAX_N 100
 
-// タイマー
-namespace
+class Timer
 {
+private:
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
+public:
+  void start()
   {
     start_time_clock = std::chrono::steady_clock::now();
   }
@@ -46,7 +47,7 @@ namespace
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
-}
+};
 
 ///////////////////////////////////////////
 // 上：2
@@ -443,11 +444,10 @@ int calc_tree_score()
 
 bool find_tree_anneal(bool isReset = false)
 {
-  clock_t start_time, end_time;
+  Timer timer;
+  timer.start();
   const double ANNEAL_TIME_LIMIT = 0.1;
-  start_time = clock();
-  end_time = clock();
-  double elapsed = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+  double elapsed = timer.get_elapsed_time();
   int loop = 0;
   double start_temp_anneal = 0.1;
   double end_temp_anneal = 0.0;
@@ -473,9 +473,10 @@ bool find_tree_anneal(bool isReset = false)
 
   while (true) {
     if (loop % 100 == 1) {
-      end_time = clock();
-      elapsed = (double)(end_time - start_time) / CLOCKS_PER_SEC;
-      if (elapsed > ANNEAL_TIME_LIMIT) { break; }
+      elapsed = timer.get_elapsed_time();
+      if (elapsed > ANNEAL_TIME_LIMIT) {
+        break;
+      }
     }
 
     int x1 = rand32() % board_size;
@@ -1247,7 +1248,8 @@ void output_data(int case_num)
 
 int solve_case(int mode, int case_num = 0)
 {
-  start_timer();
+  Timer timer;
+  timer.start();
 
   // 入力部
   read_input(case_num);
@@ -1283,11 +1285,13 @@ int solve_case(int mode, int case_num = 0)
     best_score = cur_score;
 
     int loop = 0;
-    double now_time = get_elapsed_time();
+    double now_time = timer.get_elapsed_time();
     while (true) {
       if (loop % 10 == 1) {
-        now_time = get_elapsed_time();
-        if (now_time > TIME_LIMIT) { break; }
+        now_time = timer.get_elapsed_time();
+        if (now_time > TIME_LIMIT) {
+          break;
+        }
       }
       pair<P, P> swap_pairs[2];
       for (int i = 0; i < 2; ++i) {
@@ -1341,12 +1345,14 @@ int solve_case(int mode, int case_num = 0)
     best_score = cur_score;
 
     // 山登り解、焼きなまし解
-    double now_time = get_elapsed_time();
+    double now_time = timer.get_elapsed_time();
     int loop = 0;
     while (true) {
       if (loop % 100 == 1) {
-        now_time = get_elapsed_time();
-        if (now_time > TIME_LIMIT) { break; }
+        now_time = timer.get_elapsed_time();
+        if (now_time > TIME_LIMIT) {
+          break;
+        }
       }
 
       double temp = start_temp + (end_temp - start_temp) * now_time / TIME_LIMIT;
@@ -1368,7 +1374,7 @@ int solve_case(int mode, int case_num = 0)
   // デバッグ用
   if (mode != 0) {
     cout << cur_score << endl;
-    cout << get_elapsed_time() << "sec." << endl;
+    cout << timer.get_elapsed_time() << "sec." << endl;
   }
 
   output_data(case_num);

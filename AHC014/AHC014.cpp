@@ -32,12 +32,13 @@ using namespace std;
 typedef long long int ll;
 typedef pair<int, int> P;
 
-// タイマー
-namespace
+class Timer
 {
+private:
   std::chrono::steady_clock::time_point start_time_clock;
 
-  void start_timer()
+public:
+  void start()
   {
     start_time_clock = std::chrono::steady_clock::now();
   }
@@ -47,7 +48,8 @@ namespace
     std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
     return elapsed.count();
   }
-}
+};
+Timer globalTimer;
 
 // U, L, D, R, UL, LD, DR, RU
 const int dx[8] = { -1, 0, 1, 0, -1, 1, 1, -1 };
@@ -846,7 +848,7 @@ void tryDel(double temperature)
 // 戻り値: pair<loop, rollbackCount>
 pair<int, int> SimulatedAnnealing(double timeLimit, double startTemp, double endTemp, const char* debugLabel = "")
 {
-  double nowTime = get_elapsed_time();
+  double nowTime = globalTimer.get_elapsed_time();
   double nowProgress = nowTime / timeLimit;
   int loop = 0;
   int rollbackCount = 0;
@@ -854,7 +856,7 @@ pair<int, int> SimulatedAnnealing(double timeLimit, double startTemp, double end
   while (true) {
     loop++;
     if (loop % 100 == 1) {
-      nowTime = get_elapsed_time();
+      nowTime = globalTimer.get_elapsed_time();
       nowProgress = nowTime / timeLimit;
     }
     if (nowProgress > 1.0) {
@@ -890,7 +892,7 @@ pair<int, int> SimulatedAnnealing(double timeLimit, double startTemp, double end
 
 int Solve(int mode, int problemNum = 0)
 {
-  start_timer();
+  globalTimer.start();
 
   // 初期状態作成
   current_state.init();
@@ -903,7 +905,7 @@ int Solve(int mode, int problemNum = 0)
   // シード作り
   int seedCount = 20;  // 0にするとシード作成を行わない
   for (int seed = 0; seed < seedCount; ++seed) {
-    start_timer();
+    globalTimer.start();
 
     // 初期状態に戻す
     current_state.init();
@@ -923,7 +925,7 @@ int Solve(int mode, int problemNum = 0)
   best_state.copyFrom(current_state);
 
   // 焼きなまし
-  start_timer();
+  globalTimer.start();
   pair<int, int> mainResult = SimulatedAnnealing(0.5, 20048, 0, "main");
   int loop = mainResult.first;
   int rollbackCount = mainResult.second;
@@ -966,9 +968,8 @@ int SolveOuter(int mode, int problemNum = 0)
 
 int main()
 {
-  clock_t mainStart, mainEnd;
-  mainStart = clock();
-  mainEnd = clock();
+  Timer mainTimer;
+  mainTimer.start();
 
   int mode = 2;
 
@@ -993,7 +994,6 @@ int main()
     cout << "scoreSum = " << scoreSum << endl;
   }
 
-  mainEnd = clock();
-  cerr << (double)(mainEnd - mainStart) / CLOCKS_PER_SEC;
+  cerr << mainTimer.get_elapsed_time() / CLOCKS_PER_SEC;
   return 0;
 }

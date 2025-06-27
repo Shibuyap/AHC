@@ -37,21 +37,23 @@ typedef pair<int, int> P;
 const std::array<int, 4> dx = { -1, 1, 0, 0 };
 const std::array<int, 4> dy = { 0, 0, -1, 1 };
 
-// 定数定義
-const int MAX_N = 100;
-const int MAX_M = 101;
-const int MIN_M = 10;
-const int MAX_TURN = 100;
-const int MAX_IEPS = 41;
-const int MAX_ATTEMPTS = 5000;
-const int MAX_KOUHO_LIMIT = 200;
-const int FILE_NUM_DIGITS = 4;
-const int ARRAY_SIZE = 1000;
-const int SPECIAL_MODE = 1000;
-const int INITIAL_DIFF = 1000;
-const int FLIP_ITERATIONS = 1000;
-const double TIME_LIMIT_MS = 360000.0;
-const double MISMATCH_PENALTY = 0.9;
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
 
 namespace /* 乱数ライブラリ */
 {
@@ -76,6 +78,22 @@ namespace /* 乱数ライブラリ */
     return (rand32() + 0.5) * (1.0 / UINT_MAX);
   }
 }  // namespace
+
+// 定数定義
+const int MAX_N = 100;
+const int MAX_M = 101;
+const int MIN_M = 10;
+const int MAX_TURN = 100;
+const int MAX_IEPS = 41;
+const int MAX_ATTEMPTS = 5000;
+const int MAX_KOUHO_LIMIT = 200;
+const int FILE_NUM_DIGITS = 4;
+const int ARRAY_SIZE = 1000;
+const int SPECIAL_MODE = 1000;
+const int INITIAL_DIFF = 1000;
+const int FLIP_ITERATIONS = 1000;
+const double TIME_LIMIT_MS = 360000.0;
+const double MISMATCH_PENALTY = 0.9;
 
 namespace
 {
@@ -2146,12 +2164,18 @@ void collectCandidates(vector<int>& kouho, const std::array<int, 100>& f, int mi
 {
   kouho.clear();
   for (int i = 0; i < n; ++i) {
-    if (f[i] != 0) { continue; }
+    if (f[i] != 0) {
+      continue;
+    }
     int cnt = 0;
     for (int j = 0; j < n; ++j) {
-      if (f[j] == 0) cnt += b[i][j];
+      if (f[j] == 0) {
+        cnt += b[i][j];
+      }
     }
-    if (cnt <= minConnectivity) { continue; }
+    if (cnt <= minConnectivity) {
+      continue;
+    }
     kouho.push_back(i);
   }
 }
@@ -2992,7 +3016,9 @@ int solver_20()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
+    if (createAndExpandCore1(f, cores1, false) == 0) {
+      continue;
+    }
 
     int res1 = cores1.size();
     int res2 = 0;
@@ -3010,7 +3036,9 @@ int solver_20()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) { continue; }
+      if (omoteArr[i] != tei % 2) {
+        continue;
+      }
       int num1 = numSingleArr[i];
       if (abs(num1 - res1) < diff) {
         diff = abs(num1 - res1);
@@ -3052,8 +3080,12 @@ int solver_21()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 5) { continue; }
-    if (!findClique(kouho, f, cores1, 5, 1)) { continue; }
+    if (kouho.size() < 5) {
+      continue;
+    }
+    if (!findClique(kouho, f, cores1, 5, 1)) {
+      continue;
+    }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3070,7 +3102,9 @@ int solver_21()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) { break; }
+            if (core[i] != -1) {
+              break;
+            }
           }
         }
         int mitu = 1;
@@ -3121,7 +3155,9 @@ int solver_21()
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
-      if (real_minDiff == 0) { break; }
+      if (real_minDiff == 0) {
+        break;
+      }
     }
   }
 
@@ -3141,8 +3177,12 @@ int solver_22()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 3) { continue; }
-    if (!findClique(kouho, f, cores1, 3, 1)) { continue; }
+    if (kouho.size() < 3) {
+      continue;
+    }
+    if (!findClique(kouho, f, cores1, 3, 1)) {
+      continue;
+    }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3151,13 +3191,17 @@ int solver_22()
     vector<int> cores2;
     kouho.clear();
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
+      if (f[i] != 0) {
+        continue;
+      }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 2) { continue; }
+      if (cnt <= 2) {
+        continue;
+      }
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
@@ -3169,7 +3213,9 @@ int solver_22()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) { break; }
+            if (core[i] != -1) {
+              break;
+            }
           }
         }
         int mitu = 1;
@@ -3220,7 +3266,9 @@ int solver_22()
     if (diff < real_minDiff) {
       real_minDiff = diff;
       real_argRes = argRes;
-      if (real_minDiff == 0) { break; }
+      if (real_minDiff == 0) {
+        break;
+      }
     }
   }
 
@@ -3247,7 +3295,9 @@ int solver_23()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 3) { continue; }
+    if (kouho.size() < 3) {
+      continue;
+    }
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[4] = {};
       for (int i = 0; i < (3); ++i) {
@@ -3256,7 +3306,9 @@ int solver_23()
           for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
-          if (core[i] != -1) { break; }
+          if (core[i] != -1) {
+            break;
+          }
         }
       }
       int mitu = 1;
@@ -3273,7 +3325,9 @@ int solver_23()
         break;
       }
     }
-    if (cores1.size() == 0) { continue; }
+    if (cores1.size() == 0) {
+      continue;
+    }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3282,13 +3336,17 @@ int solver_23()
     vector<int> cores2;
     kouho.clear();
     for (int i = 0; i < n; ++i) {
-      if (f[i] != 0) { continue; }
+      if (f[i] != 0) {
+        continue;
+      }
       int cnt = 0;
       for (int j = 0; j < n; ++j) {
         if (f[j] == 0) cnt += b[i][j];
       }
 
-      if (cnt <= 2) { continue; }
+      if (cnt <= 2) {
+        continue;
+      }
       kouho.push_back(i);
     }
     if (kouho.size() >= 3) {
@@ -3300,7 +3358,9 @@ int solver_23()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) { break; }
+            if (core[i] != -1) {
+              break;
+            }
           }
         }
         int mitu = 1;
@@ -3340,7 +3400,9 @@ int solver_23()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) { continue; }
+      if (omoteArr[i] != tei % 2) {
+        continue;
+      }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3390,7 +3452,9 @@ int solver_24()
     vector<int> cores1;
     vector<int> kouho;
     for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 5) { continue; }
+    if (kouho.size() < 5) {
+      continue;
+    }
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
       for (int i = 0; i < (5); ++i) {
@@ -3399,7 +3463,9 @@ int solver_24()
           for (int j = 0; j < (i); ++j) {
             if (core[j] == core[i]) core[i] = -1;
           }
-          if (core[i] != -1) { break; }
+          if (core[i] != -1) {
+            break;
+          }
         }
       }
       int mitu = 1;
@@ -3416,7 +3482,9 @@ int solver_24()
         break;
       }
     }
-    if (cores1.size() == 0) { continue; }
+    if (cores1.size() == 0) {
+      continue;
+    }
 
     // コア1を大きくしていく
     expandCore(cores1, f, 1);
@@ -3433,7 +3501,9 @@ int solver_24()
             for (int j = 0; j < (i); ++j) {
               if (core[j] == core[i]) core[i] = -1;
             }
-            if (core[i] != -1) { break; }
+            if (core[i] != -1) {
+              break;
+            }
           }
         }
         int mitu = 1;
@@ -3473,7 +3543,9 @@ int solver_24()
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
-      if (omoteArr[i] != tei % 2) { continue; }
+      if (omoteArr[i] != tei % 2) {
+        continue;
+      }
       int num1 = numPairArr[i][0];
       int num2 = numPairArr[i][1];
       if (abs(num1 - res1) + abs(num2 - res2) < diff) {
@@ -3552,9 +3624,8 @@ double Simulate(int mode)
 
 void solve(int mode)
 {
-  clock_t startTime, endTime;
-  startTime = clock();
-  endTime = clock();
+  Timer timer;
+  timer.start();
 
   // 提出用
   if (mode == 0) {
@@ -3588,9 +3659,10 @@ void solve(int mode)
     while (true) {
       loop++;
       if (loop % 10 == 1) {
-        endTime = clock();
-        double nowTime = ((double)endTime - startTime) / CLOCKS_PER_SEC;
-        if (nowTime > TIME_LIMIT_MS) { break; }
+        double nowTime = timer.get_elapsed_time();
+        if (nowTime > TIME_LIMIT_MS) {
+          break;
+        }
       }
 
       if (loop % 200 == 77) {
@@ -3619,7 +3691,9 @@ void solve(int mode)
           hyperStep2 = hyperStep2Arr[m][i_eps];
 
           InitNumArray(mode);
-          if (!numPairArrOK) { continue; }
+          if (!numPairArrOK) {
+            continue;
+          }
 
           if (_ < 100) {
             output_array_as_string(mode);
@@ -3662,7 +3736,9 @@ void solve(int mode)
           int ra = rand32() % 4;
           nm = m + dx[ra];
           ni_eps = i_eps + dy[ra];
-          if (10 <= nm && nm <= 100 && 0 <= ni_eps && ni_eps <= 40) { break; }
+          if (10 <= nm && nm <= 100 && 0 <= ni_eps && ni_eps <= 40) {
+            break;
+          }
         }
         if (!winners.empty()) {
           winners.top().winLife--;
@@ -3675,7 +3751,9 @@ void solve(int mode)
             int ra = rand32() % 4;
             nm = m + dx[ra];
             ni_eps = i_eps + dy[ra];
-            if (10 <= nm && nm <= 100 && 0 <= ni_eps && ni_eps <= 40) { break; }
+            if (10 <= nm && nm <= 100 && 0 <= ni_eps && ni_eps <= 40) {
+              break;
+            }
           }
           swap(m, nm);
           swap(i_eps, ni_eps);
@@ -3766,7 +3844,9 @@ void solve(int mode)
       }
 
       InitNumArray(mode);
-      if (!numPairArrOK) { continue; }
+      if (!numPairArrOK) {
+        continue;
+      }
 
       int nown = hyperN[m][i_eps];
       int nowhyperSolverNum = hyperSolver[m][i_eps];
@@ -3789,7 +3869,9 @@ void solve(int mode)
       if (nowhyperMaxRound != chahyperMaxRound) same = 0;
       if (nowhyperStep1 != chahyperStep1) same = 0;
       if (nowhyperStep2 != chahyperStep2) same = 0;
-      if (same) { continue; }
+      if (same) {
+        continue;
+      }
 
       int winCount = 0;
       double score = 0;
@@ -3830,7 +3912,9 @@ void solve(int mode)
           winCount = 0;
           break;
         }
-        if (winCount == CHAMP) { break; }
+        if (winCount == CHAMP) {
+          break;
+        }
       }
       score /= matchCount;
 

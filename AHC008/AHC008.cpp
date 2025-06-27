@@ -1,4 +1,5 @@
-﻿#include <climits>
+﻿#include <chrono>
+#include <climits>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -25,6 +26,24 @@ const int dx[4] = { -1, 0, 1, 0 };
 const int dy[4] = { 0, -1, 0, 1 };
 const char cc[4] = { 'U', 'L', 'D', 'R' };
 const char c_pet[4] = { 'u', 'l', 'd', 'r' };
+
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
 
 namespace /* 乱数ライブラリ */
 {
@@ -1853,10 +1872,6 @@ void Input(int case_num)
 
 int Solve(int mode, int case_num)
 {
-  clock_t start_time, end_time;
-  start_time = clock();
-  end_time = clock();
-
   // 入力受け取り
   Input(case_num);
 

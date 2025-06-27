@@ -48,6 +48,24 @@ const array<int, 4> dx = { -1, 0, 1, 0 };
 const array<int, 4> dy = { 0, -1, 0, 1 };
 const array<char, 4> DIR_CHARS = { 'U', 'L', 'D', 'R' };
 
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+
 namespace /* 乱数ライブラリ */
 {
   static uint32_t rand32()
@@ -1931,9 +1949,8 @@ void Method7(double start_temp, double end_temp, double now_progress)
 
 int solve(int mode, int problemNum = 0)
 {
-  clock_t start_time, end_time;
-  start_time = clock();
-  end_time = clock();
+  Timer timer;
+  timer.start();
 
   init();
 
@@ -1945,15 +1962,14 @@ int solve(int mode, int problemNum = 0)
   // シード作り
   int seedCount = 10;
   for (int tei = 0; tei < seedCount; ++tei) {
-    start_time = clock();
+    timer.start();
 
     init();
     gameState.viewOrder = tei % 2;
     gameState.maxScore = gameState.calcScore(K100, true);
 
     // 焼きなまし
-    end_time = clock();
-    double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+    double now_time = timer.get_elapsed_time();
     double TL = 1.0 / seedCount;
     double now_progress = now_time / TL;
     double start_temp = 10.0 + 10.0 * K100 / (n * n - K100);
@@ -1963,11 +1979,12 @@ int solve(int mode, int problemNum = 0)
     while (true) {
       loop++;
       if (getServerIndex(loop) == 1) {
-        end_time = clock();
-        now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+        now_time = timer.get_elapsed_time();
         now_progress = now_time / TL;
       }
-      if (now_progress > 1.0) { break; }
+      if (now_progress > 1.0) {
+        break;
+      }
 
       // 現在のスコアが悪いときは元に戻す
       if (gameState.maxScore * 1.2 < real_GameState.maxScore || rand32() % 123456 == 0) {
@@ -2037,9 +2054,8 @@ int solve(int mode, int problemNum = 0)
   gameState.copyTo(real_GameState);
 
   // 焼きなまし
-  start_time = clock();
-  end_time = clock();
-  double now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+  timer.start();
+  double now_time = timer.get_elapsed_time();
   double TL = 1.9 / outer_Split;
   double now_progress = now_time / TL;
   double start_temp = 20.0 + 10.0 * K100 / (n * n - K100);
@@ -2049,11 +2065,12 @@ int solve(int mode, int problemNum = 0)
   while (true) {
     loop++;
     if (getServerIndex(loop) == 1) {
-      end_time = clock();
-      now_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+      now_time = timer.get_elapsed_time();
       now_progress = now_time / TL;
     }
-    if (now_progress > 1.0) { break; }
+    if (now_progress > 1.0) {
+      break;
+    }
 
     // 現在のスコアが悪いときは元に戻す
     if (gameState.maxScore * 1.2 < real_GameState.maxScore || rand32() % 123456 == 0) {

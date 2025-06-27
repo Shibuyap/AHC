@@ -1,5 +1,6 @@
 ﻿#include <algorithm>
 #include <array>
+#include <chrono>
 #include <climits>
 #include <cmath>
 #include <cstdint>
@@ -23,6 +24,24 @@ typedef pair<double, P> PDP;
 
 #define MAX_N 200005
 const int INF = 1001001001;
+
+class Timer
+{
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
+
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
 
 namespace /* 乱数 */
 {
@@ -436,8 +455,8 @@ void RestoreBestParams()
 int Solve(string case_num)
 {
   // 時間計測
-  clock_t start, end;
-  start = clock();
+  Timer timer;
+  timer.start();
 
   int inputMode = 1;
   string fileNameIfs = "./in/" + case_num + ".txt";
@@ -513,8 +532,7 @@ int Solve(string case_num)
     if (turn < 0) {
       continue;
     }
-    end = clock();
-    if ((double)(end - start) / CLOCKS_PER_SEC > 1.8) {
+    if (timer.get_elapsed_time() > 1.8) {
       if (time_over == 0 && ifs) {
         cout << "TIME OVER" << ' ' << turn << endl;
         time_over = 1;
@@ -532,15 +550,13 @@ int Solve(string case_num)
     SaveBestParams();
 
     // 焼きなましで予測値をさらに調整
-    end = clock();
-    double now_time = (double)(end - start) / CLOCKS_PER_SEC;
+    double now_time = timer.get_elapsed_time();
     double TL = 1.8;
 
     for (int loop = 0; loop < loopTimes; ++loop) {
       all_loop++;
       if (loop % 100 == 1) {
-        end = clock();
-        now_time = (double)(end - start) / CLOCKS_PER_SEC;
+        now_time = timer.get_elapsed_time();
       }
       if (now_time > TL) {
         break;
@@ -925,8 +941,8 @@ void AnnealingMode3()
 
 int main()
 {
-  clock_t start, end;
-  start = clock();
+  Timer timer;
+  timer.start();
 
   int mode = 1;
 
@@ -953,6 +969,5 @@ int main()
     cout << allScore << endl;
   }
 
-  end = clock();
-  if (mode != 0) cout << (double)(end - start) / CLOCKS_PER_SEC << endl;
+  if (mode != 0) cout << timer.get_elapsed_time() << endl;
 }
