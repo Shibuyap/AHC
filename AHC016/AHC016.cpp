@@ -1814,11 +1814,12 @@ int solver_8()
   return cnt;
 }
 
-int solver_9()
+// 共通solver関数（統計的最頻出解探索版）
+int solver_common_statistical(int loop_count, bool use_bitset_optimization)
 {
   map<P, int> mp;
-  int fff[10][100];
-  P kp[10];
+  vector<vector<int>> fff(loop_count, vector<int>(100));
+  vector<P> kp(loop_count);
 
   int kcnt[100] = {};
   for (int i = 0; i < n; ++i) {
@@ -1827,7 +1828,7 @@ int solver_9()
     }
   }
 
-  for (int _ = 0; _ < 10; ++_) {
+  for (int _ = 0; _ < loop_count; ++_) {
     std::array<int, 100> cnt = {};
     std::array<int, 100> f = {};
     std::array<int, 100> ff = {};
@@ -1882,92 +1883,27 @@ int solver_9()
   int res1, res2;
   res1 = maxP.first;
   res2 = maxP.second;
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < loop_count; ++i) {
     if (maxP == kp[i]) {
       for (int j = 0; j < 100; ++j) { f[j] = fff[i][j]; }
     }
   }
 
-  performBitsetOptimization<3>(f, res1, res2);
+  if (use_bitset_optimization) {
+    performBitsetOptimization<3>(f, res1, res2);
+  }
 
   return findBestMatchingPairCores(res1, res2, numPairArr);
 }
 
+int solver_9()
+{
+  return solver_common_statistical(10, true);
+}
+
 int solver_10()
 {
-  map<P, int> mp;
-  int fff[31][100];
-  P kp[31];
-
-  int kcnt[100] = {};
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      kcnt[i] += b[i][j];
-    }
-  }
-
-  for (int _ = 0; _ < 31; ++_) {
-    std::array<int, 100> cnt = {};
-    std::array<int, 100> f = {};
-    std::array<int, 100> ff = {};
-    int res = n;
-
-    for (int i = 0; i < n; ++i) {
-      cnt[i] = kcnt[i];
-      f[i] = 1;
-    }
-
-    res = performRandomizedGreedyElimination(f, cnt, res);
-
-    int res1 = res;
-    res = n - res;
-    for (int i = 0; i < n; ++i) { f[i] = 1 - f[i]; }
-    for (int i = 0; i < n; ++i) {
-      if (f[i] == 0) ff[i] = 1;
-    }
-    for (int i = 0; i < n; ++i) { cnt[i] = 0; }
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
-        if (f[i] && f[j]) cnt[i] += b[i][j];
-      }
-    }
-    res = performRandomizedGreedyElimination(f, cnt, res);
-    int res2 = res;
-    if (res2 <= hyperMaxRound) {
-      res2 = 0;
-      for (int i = 0; i < n; ++i) f[i] = 0;
-    }
-    for (int i = 0; i < n; ++i) {
-      if (f[i]) ff[i] = 2;
-    }
-
-    for (int i = 0; i < n; ++i) f[i] = ff[i];
-
-    for (int i = 0; i < n; ++i) { fff[_][i] = f[i]; }
-    mp[P(res1, res2)]++;
-    kp[_] = P(res1, res2);
-  }
-
-  int ma = 0;
-  P maxP;
-  for (auto elem : mp) {
-    if (elem.second > ma) {
-      ma = elem.second;
-      maxP = elem.first;
-    }
-  }
-
-  std::array<int, 100> f = {};
-  int res1, res2;
-  res1 = maxP.first;
-  res2 = maxP.second;
-  for (int i = 0; i < 10; ++i) {
-    if (maxP == kp[i]) {
-      for (int j = 0; j < 100; ++j) { f[j] = fff[i][j]; }
-    }
-  }
-
-  return findBestMatchingPairCores(res1, res2, numPairArr);
+  return solver_common_statistical(31, false);
 }
 
 // 指定サイズのクリークを見つける汎用関数
