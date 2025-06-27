@@ -1226,6 +1226,40 @@ inline void updateSumAndMargin(int& tmpMargin, int& sum, int& ite1, int pos, int
   advanceSum(sum, ite1, day, lineNum);
 }
 
+inline bool checkDayMinus2Connection(int day, int lineNum, int pos, int& diffScore3) {
+  if (1 < day) {
+    for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
+      if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos) {
+        diffScore3 -= widths[lineNum] * 2;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+inline void setPos2IfDayMinus2Connected(int day, int lineNum, int& pos2, int pos22) {
+  if (1 < day) {
+    for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
+      if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
+        pos2 = pos22;
+        break;
+      }
+    }
+  }
+}
+
+inline void addScoreIfDayMinus2Connected(int day, int lineNum, int pos, int& diffScore3) {
+  if (1 < day) {
+    for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
+      if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos) {
+        diffScore3 += widths[lineNum] * 2;
+        break;
+      }
+    }
+  }
+}
+
 inline void updatePos3Common(int& diffScore3, int& tmpMargin, int& sum, int& ite1, int& ite3, int pos3, int day, int lineNum)
 {
   shuffle2NeighborNewPos2[ite3] = pos3;
@@ -1245,14 +1279,7 @@ inline void updatePos3Common(int& diffScore3, int& tmpMargin, int& sum, int& ite
 
 inline void updatePos2Common(int& diffScore3, int& tmpMargin, int& sum, int& ite1, int& ite2, int pos2, int day, int lineNum) {
   shuffle2NeighborNewPos1[ite2] = pos2;
-  if (1 < day) {
-    for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
-      if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos2) {
-        diffScore3 += widths[lineNum] * 2;
-        break;
-      }
-    }
-  }
+  addScoreIfDayMinus2Connected(day, lineNum, pos2, diffScore3);
   tmpMargin -= pos2 - sum;
   sum = pos2;
   shuffle2TmpPosition[ite1] = sum;
@@ -1318,14 +1345,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
       pos22 = columnSchedule.schedulesPosition[day - 1][lineNum][ite2];
       pos2 = min(pos22, max(pos2, sum + 1));
       pos2 = pos22;
-      if (1 < day) {
-        for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
-          if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
-            pos2 = pos22;
-            break;
-          }
-        }
-      }
+      setPos2IfDayMinus2Connected(day, lineNum, pos2, pos22);
     }
     int num3 = 0, pos3 = 0, pos32 = 0;
     if (ite3 < afterCount) {
@@ -1358,16 +1378,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
       }
       if (pos2 <= sum + tmpMargin && pos3 <= sum + tmpMargin) {
         if (pos22 == pos32) {
-          bool isConnect1 = false;
-          if (1 < day) {
-            for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
-              if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
-                diffScore3 -= widths[lineNum] * 2;
-                isConnect1 = true;
-                break;
-              }
-            }
-          }
+          bool isConnect1 = checkDayMinus2Connection(day, lineNum, pos22, diffScore3);
           bool isConnect2 = false;
           if (day < elementCount - 2) {
             for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
@@ -1401,16 +1412,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           }
         }
         else if (pos22 < pos32) {
-          bool isConnect = false;
-          if (1 < day) {
-            for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
-              if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
-                diffScore3 -= widths[lineNum] * 2;
-                isConnect = true;
-                break;
-              }
-            }
-          }
+          bool isConnect = checkDayMinus2Connection(day, lineNum, pos22, diffScore3);
           if (pos22 <= sum + tmpMargin && isConnect) {
             // nPos = pos22
             if (isConnect) diffScore3 += widths[lineNum] * 2;
@@ -1454,16 +1456,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           advanceSum(sum, ite1, day, lineNum);
           continue;
         }
-        bool isConnect = false;
-        if (1 < day) {
-          for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
-            if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
-              diffScore3 -= widths[lineNum] * 2;
-              isConnect = true;
-              break;
-            }
-          }
-        }
+        bool isConnect = checkDayMinus2Connection(day, lineNum, pos22, diffScore3);
         if (isConnect) {
           if (pos22 <= sum + tmpMargin) {
             diffScore3 += widths[lineNum] * 2;
@@ -1521,16 +1514,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         advanceSum(sum, ite1, day, lineNum);
         continue;
       }
-      bool isConnect = false;
-      if (1 < day) {
-        for (int k = 0; k < columnSchedule.schedulesCount[day - 2][lineNum]; ++k) {
-          if (columnSchedule.schedulesPosition[day - 2][lineNum][k] == pos22) {
-            diffScore3 -= widths[lineNum] * 2;
-            isConnect = true;
-            break;
-          }
-        }
-      }
+      bool isConnect = checkDayMinus2Connection(day, lineNum, pos22, diffScore3);
       if (isConnect && pos22 <= sum + tmpMargin) {
         diffScore3 += widths[lineNum] * 2;
         updateSumAndMargin(tmpMargin, sum, ite1, pos22, day, lineNum);
