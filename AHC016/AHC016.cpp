@@ -2009,7 +2009,9 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
             break;
           }
         }
-        if (!duplicate) { break; }
+        if (!duplicate) {
+          break;
+        }
       }
     }
 
@@ -2021,7 +2023,9 @@ bool findClique(const vector<int>& kouho, std::array<int, 100>& f, vector<int>& 
           break;
         }
       }
-      if (!isClique) { break; }
+      if (!isClique) {
+        break;
+      }
     }
 
     if (isClique) {
@@ -2316,7 +2320,9 @@ int solver_11()
 
   // コア1を作る
   vector<int> cores1;
-  if (createAndExpandCore1(f, cores1, true) == -1) return 0;
+  if (createAndExpandCore1(f, cores1, true) == -1) {
+    return 0;
+  }
 
   // コア2を作る
   vector<int> cores2;
@@ -2364,7 +2370,9 @@ int solver_12()
 
   // コア1を作る
   vector<int> cores1;
-  if (createAndExpandCore1(f, cores1, true) == -1) return 0;
+  if (createAndExpandCore1(f, cores1, true) == -1) {
+    return 0;
+  }
 
   // コア2を作る
   vector<int> cores2;
@@ -2444,7 +2452,9 @@ int solver_13()
 
   // コア1を作る
   vector<int> cores1;
-  if (createAndExpandCore1(f, cores1, true) == -1) return 0;
+  if (createAndExpandCore1(f, cores1, true) == -1) {
+    return 0;
+  }
 
   // コア2を作る
   vector<int> cores2;
@@ -3051,7 +3061,7 @@ int solver_21()
     if (kouho.size() >= 5) {
       for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
-        for (int i = 0; i < (5); ++i) {
+        for (int i = 0; i < 5; ++i) {
           while (true) {
             core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
@@ -3063,13 +3073,13 @@ int solver_21()
           }
         }
         int mitu = 1;
-        for (int i = 0; i < (5); ++i) {
+        for (int i = 0; i < 5; ++i) {
           for (int j = i + 1; j < 5; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          for (int i = 0; i < (5); ++i) {
+          for (int i = 0; i < 5; ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -3148,7 +3158,7 @@ int solver_22()
     if (kouho.size() >= 3) {
       for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
-        for (int i = 0; i < (3); ++i) {
+        for (int i = 0; i < 3; ++i) {
           while (true) {
             core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
@@ -3160,13 +3170,13 @@ int solver_22()
           }
         }
         int mitu = 1;
-        for (int i = 0; i < (3); ++i) {
+        for (int i = 0; i < 3; ++i) {
           for (int j = i + 1; j < 3; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          for (int i = 0; i < (3); ++i) {
+          for (int i = 0; i < 3; ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -3241,7 +3251,7 @@ int solver_23()
     }
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[4] = {};
-      for (int i = 0; i < (3); ++i) {
+      for (int i = 0; i < 3; ++i) {
         while (true) {
           core[i] = kouho[rand32() % kouho.size()];
           for (int j = 0; j < (i); ++j) {
@@ -3253,13 +3263,13 @@ int solver_23()
         }
       }
       int mitu = 1;
-      for (int i = 0; i < (3); ++i) {
+      for (int i = 0; i < 3; ++i) {
         for (int j = i + 1; j < 3; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        for (int i = 0; i < (3); ++i) {
+        for (int i = 0; i < 3; ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -3279,7 +3289,7 @@ int solver_23()
     if (kouho.size() >= 3) {
       for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[3] = {};
-        for (int i = 0; i < (3); ++i) {
+        for (int i = 0; i < 3; ++i) {
           while (true) {
             core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
@@ -3291,13 +3301,13 @@ int solver_23()
           }
         }
         int mitu = 1;
-        for (int i = 0; i < (3); ++i) {
+        for (int i = 0; i < 3; ++i) {
           for (int j = i + 1; j < 3; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          for (int i = 0; i < (3); ++i) {
+          for (int i = 0; i < 3; ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
@@ -3384,7 +3394,7 @@ int solver_24()
     }
     for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
       int core[5] = {};
-      for (int i = 0; i < (5); ++i) {
+      for (int i = 0; i < 5; ++i) {
         while (true) {
           core[i] = kouho[rand32() % kouho.size()];
           for (int j = 0; j < (i); ++j) {
@@ -3396,13 +3406,13 @@ int solver_24()
         }
       }
       int mitu = 1;
-      for (int i = 0; i < (5); ++i) {
+      for (int i = 0; i < 5; ++i) {
         for (int j = i + 1; j < 5; ++j) {
           if (!b[core[i]][core[j]]) mitu = 0;
         }
       }
       if (mitu) {
-        for (int i = 0; i < (5); ++i) {
+        for (int i = 0; i < 5; ++i) {
           f[core[i]] = 1;
           cores1.push_back(core[i]);
         }
@@ -3422,7 +3432,7 @@ int solver_24()
     if (kouho.size() >= 5) {
       for (int loop1 = 0; loop1 < MAX_ATTEMPTS; ++loop1) {
         int core[5] = {};
-        for (int i = 0; i < (5); ++i) {
+        for (int i = 0; i < 5; ++i) {
           while (true) {
             core[i] = kouho[rand32() % kouho.size()];
             for (int j = 0; j < (i); ++j) {
@@ -3434,13 +3444,13 @@ int solver_24()
           }
         }
         int mitu = 1;
-        for (int i = 0; i < (5); ++i) {
+        for (int i = 0; i < 5; ++i) {
           for (int j = i + 1; j < 5; ++j) {
             if (!b[core[i]][core[j]]) mitu = 0;
           }
         }
         if (mitu) {
-          for (int i = 0; i < (5); ++i) {
+          for (int i = 0; i < 5; ++i) {
             f[core[i]] = 2;
             cores2.push_back(core[i]);
           }
