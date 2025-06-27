@@ -82,6 +82,14 @@ struct Rect
 {
   Point topLeft;
   Point bottomRight;
+  
+  inline void clear()
+  {
+    topLeft.x = 0;
+    topLeft.y = 0;
+    bottomRight.x = 0;
+    bottomRight.y = 0;
+  }
 };
 
 int numRects;
@@ -97,6 +105,14 @@ public:
     score = other.score;
     for (int i = 0; i < numRects; ++i) {
       rects[i] = other.rects[i];
+    }
+  }
+  
+  inline void clear()
+  {
+    score = -1;
+    for (int i = 0; i < MAX_N; ++i) {
+      rects[i].clear();
     }
   }
 };
@@ -663,11 +679,6 @@ inline Rect expandRect(int ite)
   return expandedRect;
 }
 
-inline void saveBest()
-{
-  bestState.copyFrom(currentState);
-}
-
 inline void extendWithTemp(int ite, double temp)
 {
   Rect prevRect = currentState.rects[ite];
@@ -684,7 +695,7 @@ inline void extendWithTemp(int ite, double temp)
     modeCount[4]++;
     currentState.score = newScore;
     if (currentState.score > bestState.score) {
-      saveBest();
+      bestState.copyFrom(currentState);
     }
   }
   else {
@@ -706,7 +717,7 @@ inline void resetRects(int numToReset)
 
   currentState.score = calcScore(-1);
   if (currentState.score > bestState.score) {
-    saveBest();
+    bestState.copyFrom(currentState);
   }
 }
 
@@ -724,7 +735,7 @@ inline void resetWorstRects(int numWorstToReset)
 
   currentState.score = calcScore(-1);
   if (currentState.score > bestState.score) {
-    saveBest();
+    bestState.copyFrom(currentState);
   }
 }
 
@@ -748,7 +759,7 @@ inline void createHole(int hole = 100)
 
   currentState.score = calcScore(-1);
   if (currentState.score > bestState.score) {
-    saveBest();
+    bestState.copyFrom(currentState);
   }
 }
 
@@ -796,7 +807,7 @@ inline void extendLarge(int ite)
 
   currentState.score = calcScore(-1);
   if (currentState.score > bestState.score) {
-    saveBest();
+    bestState.copyFrom(currentState);
   }
 }
 
@@ -822,7 +833,7 @@ inline void changeSingleEdge(int ite, double temp)
     modeCount[0]++;
     currentState.score = newScore;
     if (currentState.score > bestState.score) {
-      saveBest();
+      bestState.copyFrom(currentState);
     }
   }
   else {
@@ -855,7 +866,7 @@ inline void changeAllEdges(int ite, double temp)
     modeCount[3]++;
     currentState.score = newScore;
     if (currentState.score > bestState.score) {
-      saveBest();
+      bestState.copyFrom(currentState);
     }
   }
   else {
@@ -891,7 +902,7 @@ inline void slideRect(int ite, double temp)
     modeCount[1]++;
     currentState.score = newScore;
     if (currentState.score > bestState.score) {
-      saveBest();
+      bestState.copyFrom(currentState);
     }
   }
   else {
@@ -944,7 +955,7 @@ inline void changeAspectRatio(int ite, double temp)
     modeCount[2]++;
     currentState.score = newScore;
     if (currentState.score > bestState.score) {
-      saveBest();
+      bestState.copyFrom(currentState);
     }
   }
   else {
@@ -1120,7 +1131,7 @@ inline void shiftBoundary(int ite, double temp)
     modeCount[5]++;
     currentState.score = newScore;
     if (currentState.score > bestState.score) {
-      saveBest();
+      bestState.copyFrom(currentState);
     }
   }
   else {
@@ -1142,7 +1153,7 @@ inline void initSolution()
 
   currentState.score = calcScore(-1);
   if (currentState.score > bestState.score) {
-    saveBest();
+    bestState.copyFrom(currentState);
   }
 }
 
@@ -1171,7 +1182,7 @@ inline void multiStartSearch()
 
       // 初期スコア計算
       currentState.score = calcScore(-1);
-      saveBest();
+      bestState.copyFrom(currentState);
 
       // 焼きなまし
       timer.start();
@@ -1224,7 +1235,7 @@ inline void multiStartSearch()
 
     // 初期スコア計算
     currentState.score = calcScore(-1);
-    saveBest();
+    bestState.copyFrom(currentState);
 
     // 焼きなまし(2回目)
     Timer timer2;
@@ -1309,7 +1320,7 @@ int solve(int isSubmission, int fileNum)
 
     // 初期スコア計算
     currentState.score = calcScore(-1);
-    saveBest();
+    bestState.copyFrom(currentState);
 
     int parentCount = 1;
 
@@ -1334,7 +1345,7 @@ int solve(int isSubmission, int fileNum)
 
         // 初期スコア計算
         currentState.score = calcScore(-1);
-        saveBest();
+        bestState.copyFrom(currentState);
 
         // 焼きなまし(2回目)
         loopTimer.start();
@@ -1489,35 +1500,29 @@ int solve(int isSubmission, int fileNum)
   return currentState.score;
 }
 
-inline void clearRect(Rect& r)
-{
-  r.topLeft.x = 0;
-  r.topLeft.y = 0;
-  r.bottomRight.x = 0;
-  r.bottomRight.y = 0;
-}
-
 inline void clearAll()
 {
   numRects = 0;
-  currentState.score = -1;
-  bestState.score = -1;
   totalScore = 0;
-  secondBestState.score = -1;
-  multiStartBestState.score = -1;
-  finalBestState.score = -1;
-  for (int i = 0; i < (MAX_N); ++i) {
-    points[i].x = 0, points[i].y = 0, targetSizes[i] = 0;
-    currentState.rects[i].topLeft.x = 0, currentState.rects[i].topLeft.y = 0, currentState.rects[i].bottomRight.x = 0, currentState.rects[i].bottomRight.y = 0;
-    clearRect(currentState.rects[i]);
+  
+  // Clear all states
+  currentState.clear();
+  bestState.clear();
+  secondBestState.clear();
+  multiStartBestState.clear();
+  finalBestState.clear();
+  
+  // Clear other arrays
+  for (int i = 0; i < MAX_N; ++i) {
+    points[i].x = 0;
+    points[i].y = 0;
+    targetSizes[i] = 0;
     rectAreas[i] = 0;
-    clearRect(bestState.rects[i]);
     rectScores[i] = 0;
-    sortedByX[i] = 0, sortedByY[i] = 0;
-    indexInSortedX[i] = 0, indexInSortedY[i] = 0;
-    clearRect(secondBestState.rects[i]);
-    clearRect(multiStartBestState.rects[i]);
-    clearRect(finalBestState.rects[i]);
+    sortedByX[i] = 0;
+    sortedByY[i] = 0;
+    indexInSortedX[i] = 0;
+    indexInSortedY[i] = 0;
   }
 }
 
