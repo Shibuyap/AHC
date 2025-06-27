@@ -320,6 +320,7 @@ void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, 
   int& score, int& res1, int& res2, int flipLoop);
 int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
   const std::vector<int>& omoteArr, int tei, int& real_score, int& real_argRes);
+void createCore2(std::array<int, 100>& f, vector<int>& cores2, int candidateThreshold, int cliqueSize);
 
 // グラフにノイズを適用（確率epsで各辺を反転）
 void apply_noise_to_graph(int x)
@@ -2282,6 +2283,20 @@ int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vecto
   return tmpScore;
 }
 
+// コア2を作成する共通関数
+void createCore2(std::array<int, 100>& f, vector<int>& cores2, int candidateThreshold, int cliqueSize)
+{
+  vector<int> kouho;
+  collectCandidates(kouho, f, candidateThreshold);
+  if (kouho.size() >= cliqueSize) {
+    findClique(kouho, f, cores2, cliqueSize, 2);
+    if (cores2.size() > 0) {
+      // コア2を大きくしていく
+      expandCore(cores2, f, 2);
+    }
+  }
+}
+
 // フリップ最適化の共通関数
 template<size_t N>
 void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
@@ -2351,15 +2366,7 @@ int solver_11()
 
   // コア2を作る
   vector<int> cores2;
-  vector<int> kouho;
-  collectCandidates(kouho, f, 4);
-  if (kouho.size() >= 4) {
-    findClique(kouho, f, cores2, 4, 2);
-    if (cores2.size() > 0) {
-      // コア2を大きくしていく
-      expandCore(cores2, f, 2);
-    }
-  }
+  createCore2(f, cores2, 4, 4);
 
   int res1 = cores1.size();
   int res2 = cores2.size();
@@ -2390,19 +2397,12 @@ int solver_12()
 
   // コア2を作る
   vector<int> cores2;
-  vector<int> kouho;
-  collectCandidates(kouho, f, 4);
-  if (kouho.size() >= 4) {
-    findClique(kouho, f, cores2, 4, 2);
-    if (cores2.size() > 0) {
-      // コア2を大きくしていく
-      expandCore(cores2, f, 2);
-    }
-  }
+  createCore2(f, cores2, 4, 4);
 
   // コア3を作る
   vector<int> cores3;
   if (cores2.size() > 0) {
+    vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique(kouho, f, cores3, 4, 3);
@@ -2472,19 +2472,12 @@ int solver_13()
 
   // コア2を作る
   vector<int> cores2;
-  vector<int> kouho;
-  collectCandidates(kouho, f, 4);
-  if (kouho.size() >= 4) {
-    findClique(kouho, f, cores2, 4, 2);
-    if (cores2.size() > 0) {
-      // コア2を大きくしていく
-      expandCore(cores2, f, 2);
-    }
-  }
+  createCore2(f, cores2, 4, 4);
 
   // コア3を作る
   vector<int> cores3;
   if (cores2.size() > 0) {
+    vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique(kouho, f, cores3, 4, 3);
@@ -2498,6 +2491,7 @@ int solver_13()
   // コア4を作る
   vector<int> cores4;
   if (cores3.size() > 0) {
+    vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 4) {
       findClique(kouho, f, cores4, 4, 4);
@@ -2992,15 +2986,7 @@ int solver_21()
 
     // コア2を作る
     vector<int> cores2;
-    vector<int> kouho;
-    collectCandidates(kouho, f, 4);
-    if (kouho.size() >= 5) {
-      findClique(kouho, f, cores2, 5, 2);
-      if (cores2.size() > 0) {
-        // コア2を大きくしていく
-        expandCore(cores2, f, 2);
-      }
-    }
+    createCore2(f, cores2, 4, 5);
 
     int res1 = cores1.size();
     int res2 = cores2.size();
@@ -3056,15 +3042,7 @@ int solver_22()
 
     // コア2を作る
     vector<int> cores2;
-    vector<int> kouho;
-    collectCandidates(kouho, f, 2);
-    if (kouho.size() >= 3) {
-      findClique(kouho, f, cores2, 3, 2);
-      if (cores2.size() > 0) {
-        // コア2を大きくしていく
-        expandCore(cores2, f, 2);
-      }
-    }
+    createCore2(f, cores2, 2, 3);
 
     int res1 = cores1.size();
     int res2 = cores2.size();
@@ -3127,15 +3105,7 @@ int solver_23()
 
     // コア2を作る
     vector<int> cores2;
-    vector<int> kouho;
-    collectCandidates(kouho, f, 2);
-    if (kouho.size() >= 3) {
-      findClique(kouho, f, cores2, 3, 2);
-      if (cores2.size() > 0) {
-        // コア2を大きくしていく
-        expandCore(cores2, f, 2);
-      }
-    }
+    createCore2(f, cores2, 2, 3);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
@@ -3167,15 +3137,7 @@ int solver_24()
 
     // コア2を作る
     vector<int> cores2;
-    vector<int> kouho;
-    collectCandidates(kouho, f, 4);
-    if (kouho.size() >= 5) {
-      findClique(kouho, f, cores2, 5, 2);
-      if (cores2.size() > 0) {
-        // コア2を大きくしていく
-        expandCore(cores2, f, 2);
-      }
-    }
+    createCore2(f, cores2, 4, 5);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
