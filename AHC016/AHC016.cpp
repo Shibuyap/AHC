@@ -2567,7 +2567,8 @@ void reverse_b()
 }
 
 // 11表裏
-int solver_16()
+// 共通solver関数
+int solver_common(int core1_size, int core2_param1, int core2_param2)
 {
   int real_argRes = 0;
   int real_score = 0;
@@ -2584,18 +2585,23 @@ int solver_16()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+    if (createAndExpandCore(f, cores1, core1_size, 1, false) == 0) {
       continue;
     }
 
     // コア2を作る
     vector<int> cores2;
-    createCoreGeneric(f, cores2, 4, 4, 2);
+    createCoreGeneric(f, cores2, core2_param1, core2_param2, 2);
 
     evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
 
   return real_argRes;
+}
+
+int solver_16()
+{
+  return solver_common(4, 4, 4);
 }
 
 // 11表裏5セット
@@ -2866,65 +2872,13 @@ int solver_22()
 // 16亜種
 int solver_23()
 {
-  int real_argRes = 0;
-  int real_score = 0;
-  std::array<std::array<int, 100>, 100> keepB = b;
-
-  for (int tei = 0; tei < 2; ++tei) {
-    b = keepB;
-
-    if (tei % 2 == 1) {
-      reverse_b();
-    }
-
-    std::array<int, 100> f = {};
-
-    // コア1を作る
-    vector<int> cores1;
-    if (createAndExpandCore(f, cores1, 3, 1, false) == 0) {
-      continue;
-    }
-
-    // コア2を作る
-    vector<int> cores2;
-    createCoreGeneric(f, cores2, 2, 3, 2);
-
-    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
-  }
-
-  return real_argRes;
+  return solver_common(3, 2, 3);
 }
 
 // 16亜種
 int solver_24()
 {
-  int real_argRes = 0;
-  int real_score = 0;
-  std::array<std::array<int, 100>, 100> keepB = b;
-
-  for (int tei = 0; tei < 2; ++tei) {
-    b = keepB;
-
-    if (tei % 2 == 1) {
-      reverse_b();
-    }
-
-    std::array<int, 100> f = {};
-
-    // コア1を作る
-    vector<int> cores1;
-    if (createAndExpandCore(f, cores1, 5, 1, false) == 0) {
-      continue;
-    }
-
-    // コア2を作る
-    vector<int> cores2;
-    createCoreGeneric(f, cores2, 4, 5, 2);
-
-    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
-  }
-
-  return real_argRes;
+  return solver_common(5, 4, 5);
 }
 
 // Solver関数ポインタ型の定義
