@@ -1213,6 +1213,12 @@ int shuffle2TmpPosition[MAX_N];
 int shuffle2NeighborNewPos1[MAX_N];
 int shuffle2NeighborNewPos2[MAX_N];
 
+inline void advanceSum(int& sum, int& ite1, int day, int lineNum) {
+  sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
+  ite1++;
+  shuffle2TmpPosition[ite1] = sum;
+}
+
 inline void updatePos3Common(int& diffScore3, int& tmpMargin, int& sum, int& ite1, int& ite3, int pos3, int day, int lineNum)
 {
   shuffle2NeighborNewPos2[ite3] = pos3;
@@ -1227,9 +1233,7 @@ inline void updatePos3Common(int& diffScore3, int& tmpMargin, int& sum, int& ite
   tmpMargin -= pos3 - sum;
   sum = pos3;
   shuffle2TmpPosition[ite1] = sum;
-  sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-  ite1++;
-  shuffle2TmpPosition[ite1] = sum;
+  advanceSum(sum, ite1, day, lineNum);
 }
 
 inline void updatePos2Common(int& diffScore3, int& tmpMargin, int& sum, int& ite1, int& ite2, int pos2, int day, int lineNum) {
@@ -1245,9 +1249,7 @@ inline void updatePos2Common(int& diffScore3, int& tmpMargin, int& sum, int& ite
   tmpMargin -= pos2 - sum;
   sum = pos2;
   shuffle2TmpPosition[ite1] = sum;
-  sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-  ite1++;
-  shuffle2TmpPosition[ite1] = sum;
+  advanceSum(sum, ite1, day, lineNum);
 }
 
 int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin)
@@ -1344,9 +1346,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         continue;
       }
       if (sum + tmpMargin < pos2 && sum + tmpMargin < pos3) {
-        sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-        ite1++;
-        shuffle2TmpPosition[ite1] = sum;
+        advanceSum(sum, ite1, day, lineNum);
         continue;
       }
       if (pos2 <= sum + tmpMargin && pos3 <= sum + tmpMargin) {
@@ -1378,9 +1378,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             tmpMargin -= pos22 - sum;
             sum = pos22;
             shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            advanceSum(sum, ite1, day, lineNum);
             ite2++;
             ite3++;
           }
@@ -1415,9 +1413,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             tmpMargin -= pos22 - sum;
             sum = pos22;
             shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            advanceSum(sum, ite1, day, lineNum);
           }
           else {
             // nPos = pos2
@@ -1442,9 +1438,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             tmpMargin -= pos32 - sum;
             sum = pos32;
             shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            advanceSum(sum, ite1, day, lineNum);
           }
           else {
             // nPos = pos3
@@ -1459,9 +1453,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           continue;
         }
         if (sum + tmpMargin < pos2) {
-          sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-          ite1++;
-          shuffle2TmpPosition[ite1] = sum;
+          advanceSum(sum, ite1, day, lineNum);
           continue;
         }
         bool isConnect = false;
@@ -1480,9 +1472,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             tmpMargin -= pos22 - sum;
             sum = pos22;
             shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            advanceSum(sum, ite1, day, lineNum);
           }
           else {
             updatePos2Common(diffScore3, tmpMargin, sum, ite1, ite2, pos2, day, lineNum);
@@ -1499,9 +1489,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           continue;
         }
         if (sum + tmpMargin < pos3) {
-          sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-          ite1++;
-          shuffle2TmpPosition[ite1] = sum;
+          advanceSum(sum, ite1, day, lineNum);
           continue;
         }
         bool isConnect = false;
@@ -1520,9 +1508,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             tmpMargin -= pos32 - sum;
             sum = pos32;
             shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            advanceSum(sum, ite1, day, lineNum);
           }
           else {
             updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
@@ -1540,9 +1526,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         continue;
       }
       if (sum + tmpMargin < pos2) {
-        sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-        ite1++;
-        shuffle2TmpPosition[ite1] = sum;
+        advanceSum(sum, ite1, day, lineNum);
         continue;
       }
       bool isConnect = false;
@@ -1560,9 +1544,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         tmpMargin -= pos22 - sum;
         sum = pos22;
         shuffle2TmpPosition[ite1] = sum;
-        sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-        ite1++;
-        shuffle2TmpPosition[ite1] = sum;
+        advanceSum(sum, ite1, day, lineNum);
       }
       else {
         updatePos2Common(diffScore3, tmpMargin, sum, ite1, ite2, pos2, day, lineNum);
@@ -1575,9 +1557,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         continue;
       }
       if (sum + tmpMargin < pos3) {
-        sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-        ite1++;
-        shuffle2TmpPosition[ite1] = sum;
+        advanceSum(sum, ite1, day, lineNum);
         continue;
       }
 
@@ -1600,17 +1580,13 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
         tmpMargin -= pos32 - sum;
         sum = pos32;
         shuffle2TmpPosition[ite1] = sum;
-        sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-        ite1++;
-        shuffle2TmpPosition[ite1] = sum;
+        advanceSum(sum, ite1, day, lineNum);
       }
 
       ite3++;
     }
     else {
-      sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-      ite1++;
-      shuffle2TmpPosition[ite1] = sum;
+      advanceSum(sum, ite1, day, lineNum);
     }
   }
 
