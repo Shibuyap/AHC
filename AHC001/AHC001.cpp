@@ -97,14 +97,13 @@ int allLoopTimes = 1;
 int numRects;
 array<Point, MAX_N> points;
 array<int, MAX_N> targetSizes;
-int currentScore = -1;
-array<Rect, MAX_N> rectangles;
+State currentState;
 array<int, MAX_N> rectAreas;
 State bestState;
 
 inline void calcArea(int idx)
 {
-  rectAreas[idx] = (rectangles[idx].bottomRight.x - rectangles[idx].topLeft.x) * (rectangles[idx].bottomRight.y - rectangles[idx].topLeft.y);
+  rectAreas[idx] = (currentState.rects[idx].bottomRight.x - currentState.rects[idx].topLeft.x) * (currentState.rects[idx].bottomRight.y - currentState.rects[idx].topLeft.y);
 }
 
 inline void readInput(int case_num)
@@ -132,7 +131,7 @@ void writeOutput(int case_num)
 
   if (ofs.is_open()) {
     for (int i = 0; i < numRects; ++i) {
-      ofs << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
+      ofs << currentState.rects[i].topLeft.x << ' ' << currentState.rects[i].topLeft.y << ' ' << currentState.rects[i].bottomRight.x << ' ' << currentState.rects[i].bottomRight.y << endl;
     }
 
     ofs.close();
@@ -146,7 +145,7 @@ inline void writeErrorLog(int fileNum)
   const char* cstr = fileName.c_str();
   ofstream ofs(cstr);
   for (int i = 0; i < numRects; ++i) {
-    ofs << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
+    ofs << currentState.rects[i].topLeft.x << ' ' << currentState.rects[i].topLeft.y << ' ' << currentState.rects[i].bottomRight.x << ' ' << currentState.rects[i].bottomRight.y << endl;
   }
   ofs.close();
 }
@@ -183,10 +182,10 @@ inline int calcScore(int ite)
 inline int checkOverlap(int i, int j)
 {
   int overlapCount = 0;
-  if (rectangles[i].topLeft.x <= rectangles[j].topLeft.x && rectangles[j].topLeft.x < rectangles[i].bottomRight.x) overlapCount++;
-  else if (rectangles[j].topLeft.x <= rectangles[i].topLeft.x && rectangles[i].topLeft.x < rectangles[j].bottomRight.x) overlapCount++;
-  if (rectangles[i].topLeft.y <= rectangles[j].topLeft.y && rectangles[j].topLeft.y < rectangles[i].bottomRight.y) overlapCount++;
-  else if (rectangles[j].topLeft.y <= rectangles[i].topLeft.y && rectangles[i].topLeft.y < rectangles[j].bottomRight.y) overlapCount++;
+  if (currentState.rects[i].topLeft.x <= currentState.rects[j].topLeft.x && currentState.rects[j].topLeft.x < currentState.rects[i].bottomRight.x) overlapCount++;
+  else if (currentState.rects[j].topLeft.x <= currentState.rects[i].topLeft.x && currentState.rects[i].topLeft.x < currentState.rects[j].bottomRight.x) overlapCount++;
+  if (currentState.rects[i].topLeft.y <= currentState.rects[j].topLeft.y && currentState.rects[j].topLeft.y < currentState.rects[i].bottomRight.y) overlapCount++;
+  else if (currentState.rects[j].topLeft.y <= currentState.rects[i].topLeft.y && currentState.rects[i].topLeft.y < currentState.rects[j].bottomRight.y) overlapCount++;
   return overlapCount == 2;
 }
 
@@ -268,15 +267,15 @@ inline int isValid2(int ite)
 {
   if (ite == -1) {
     for (int i = 0; i < numRects; ++i) {
-      if (!isRectInRange(rectangles[i])) return 0;
+      if (!isRectInRange(currentState.rects[i])) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
-      if (rectangles[i].bottomRight.x <= rectangles[i].topLeft.x) return 0;
-      if (rectangles[i].bottomRight.y <= rectangles[i].topLeft.y) return 0;
+      if (currentState.rects[i].bottomRight.x <= currentState.rects[i].topLeft.x) return 0;
+      if (currentState.rects[i].bottomRight.y <= currentState.rects[i].topLeft.y) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
-      if (points[i].x < rectangles[i].topLeft.x || rectangles[i].bottomRight.x <= points[i].x) return 0;
-      if (points[i].y < rectangles[i].topLeft.y || rectangles[i].bottomRight.y <= points[i].y) return 0;
+      if (points[i].x < currentState.rects[i].topLeft.x || currentState.rects[i].bottomRight.x <= points[i].x) return 0;
+      if (points[i].y < currentState.rects[i].topLeft.y || currentState.rects[i].bottomRight.y <= points[i].y) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
       for (int j = i + 1; j < numRects; ++j) {
@@ -285,11 +284,11 @@ inline int isValid2(int ite)
     }
   }
   else {
-    if (!isRectInRange(rectangles[ite])) return 0;
-    if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 0;
-    if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 0;
-    if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 0;
-    if (points[ite].y < rectangles[ite].topLeft.y || rectangles[ite].bottomRight.y <= points[ite].y) return 0;
+    if (!isRectInRange(currentState.rects[ite])) return 0;
+    if (currentState.rects[ite].bottomRight.x <= currentState.rects[ite].topLeft.x) return 0;
+    if (currentState.rects[ite].bottomRight.y <= currentState.rects[ite].topLeft.y) return 0;
+    if (points[ite].x < currentState.rects[ite].topLeft.x || currentState.rects[ite].bottomRight.x <= points[ite].x) return 0;
+    if (points[ite].y < currentState.rects[ite].topLeft.y || currentState.rects[ite].bottomRight.y <= points[ite].y) return 0;
     for (int i = 0; i < numRects; ++i) {
       if (i == ite) { continue; }
       if (checkOverlap(i, ite)) return 0;
@@ -302,15 +301,15 @@ inline int isValid(int ite)
 {
   if (ite == -1) {
     for (int i = 0; i < numRects; ++i) {
-      if (!isRectInRange(rectangles[i])) return 0;
+      if (!isRectInRange(currentState.rects[i])) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
-      if (rectangles[i].bottomRight.x <= rectangles[i].topLeft.x) return 0;
-      if (rectangles[i].bottomRight.y <= rectangles[i].topLeft.y) return 0;
+      if (currentState.rects[i].bottomRight.x <= currentState.rects[i].topLeft.x) return 0;
+      if (currentState.rects[i].bottomRight.y <= currentState.rects[i].topLeft.y) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
-      if (points[i].x < rectangles[i].topLeft.x || rectangles[i].bottomRight.x <= points[i].x) return 0;
-      if (points[i].y < rectangles[i].topLeft.y || rectangles[i].bottomRight.y <= points[i].y) return 0;
+      if (points[i].x < currentState.rects[i].topLeft.x || currentState.rects[i].bottomRight.x <= points[i].x) return 0;
+      if (points[i].y < currentState.rects[i].topLeft.y || currentState.rects[i].bottomRight.y <= points[i].y) return 0;
     }
     for (int i = 0; i < numRects; ++i) {
       for (int j = i + 1; j < numRects; ++j) {
@@ -319,28 +318,28 @@ inline int isValid(int ite)
     }
   }
   else {
-    if (!isRectInRange(rectangles[ite])) return 0;
-    if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 0;
-    if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 0;
-    if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 0;
-    if (points[ite].y < rectangles[ite].topLeft.y || rectangles[ite].bottomRight.y <= points[ite].y) return 0;
+    if (!isRectInRange(currentState.rects[ite])) return 0;
+    if (currentState.rects[ite].bottomRight.x <= currentState.rects[ite].topLeft.x) return 0;
+    if (currentState.rects[ite].bottomRight.y <= currentState.rects[ite].topLeft.y) return 0;
+    if (points[ite].x < currentState.rects[ite].topLeft.x || currentState.rects[ite].bottomRight.x <= points[ite].x) return 0;
+    if (points[ite].y < currentState.rects[ite].topLeft.y || currentState.rects[ite].bottomRight.y <= points[ite].y) return 0;
     int argX = indexInSortedX[ite];
-    int nowLeft = rectangles[ite].topLeft.y;
+    int nowLeft = currentState.rects[ite].topLeft.y;
     for (int ii = argX - 1; ii >= 0; --ii) {
       int i = sortedByX[ii];
       if (checkOverlap(i, ite)) return 0;
-      if (rectangles[i].topLeft.y <= nowLeft) {
-        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
-        if (nowLeft >= rectangles[ite].bottomRight.y) { break; }
+      if (currentState.rects[i].topLeft.y <= nowLeft) {
+        nowLeft = max(nowLeft, currentState.rects[i].bottomRight.y);
+        if (nowLeft >= currentState.rects[ite].bottomRight.y) { break; }
       }
     }
-    nowLeft = rectangles[ite].topLeft.y;
+    nowLeft = currentState.rects[ite].topLeft.y;
     for (int ii = argX + 1; ii < numRects; ++ii) {
       int i = sortedByX[ii];
       if (checkOverlap(i, ite)) return 0;
-      if (rectangles[i].topLeft.y <= nowLeft) {
-        nowLeft = max(nowLeft, rectangles[i].bottomRight.y);
-        if (nowLeft >= rectangles[ite].bottomRight.y) { break; }
+      if (currentState.rects[i].topLeft.y <= nowLeft) {
+        nowLeft = max(nowLeft, currentState.rects[i].bottomRight.y);
+        if (nowLeft >= currentState.rects[ite].bottomRight.y) { break; }
       }
     }
   }
@@ -443,12 +442,12 @@ inline void updateRectBounds(Rect& rect, int i, int ite, Direction dir)
   if (getCoord(points[i], dir) <= getCoord(points[ite], dir)) {
     getCoordRef(rect.topLeft, dir) = max(
       getCoord(rect.topLeft, dir),
-      getCoord(rectangles[i].bottomRight, dir));
+      getCoord(currentState.rects[i].bottomRight, dir));
   }
   else {
     getCoordRef(rect.bottomRight, dir) = min(
       getCoord(rect.bottomRight, dir),
-      getCoord(rectangles[i].topLeft, dir));
+      getCoord(currentState.rects[i].topLeft, dir));
   }
 }
 
@@ -467,7 +466,7 @@ inline void expandInDirection(Rect& rect, int ite, Direction primaryDir)
   for (int ii = argIdx - 1; ii >= 0; --ii) {
     int i = getSortedRect(ii, primaryDir);
     int hasOverlap = (primaryDir == HORIZONTAL) ?
-      checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
+      checkYOverlap(currentState.rects[i], rect) : checkXOverlap(currentState.rects[i], rect);
 
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, primaryDir);
@@ -479,7 +478,7 @@ inline void expandInDirection(Rect& rect, int ite, Direction primaryDir)
   for (int ii = argIdx + 1; ii < numRects; ++ii) {
     int i = getSortedRect(ii, primaryDir);
     int hasOverlap = (primaryDir == HORIZONTAL) ?
-      checkYOverlap(rectangles[i], rect) : checkXOverlap(rectangles[i], rect);
+      checkYOverlap(currentState.rects[i], rect) : checkXOverlap(currentState.rects[i], rect);
 
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, primaryDir);
@@ -504,13 +503,13 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir)
   for (int ii = argIdx - 1; ii >= 0; --ii) {
     int i = getSortedRect(ii, secondaryDir);
     int hasOverlap = (secondaryDir == VERTICAL) ?
-      checkXOverlap(rectangles[i], rect) : checkYOverlap(rectangles[i], rect);
+      checkXOverlap(currentState.rects[i], rect) : checkYOverlap(currentState.rects[i], rect);
 
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, secondaryDir);
 
-      if (getCoord(rectangles[i].topLeft, primaryDir) <= nowLeft) {
-        nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, primaryDir));
+      if (getCoord(currentState.rects[i].topLeft, primaryDir) <= nowLeft) {
+        nowLeft = max(nowLeft, getCoord(currentState.rects[i].bottomRight, primaryDir));
         if (getCoord(rect.bottomRight, primaryDir) <= nowLeft) { break; }
       }
     }
@@ -521,13 +520,13 @@ inline void expandSecondDirection(Rect& rect, int ite, Direction primaryDir)
   for (int ii = argIdx + 1; ii < numRects; ++ii) {
     int i = getSortedRect(ii, secondaryDir);
     int hasOverlap = (secondaryDir == VERTICAL) ?
-      checkXOverlap(rectangles[i], rect) : checkYOverlap(rectangles[i], rect);
+      checkXOverlap(currentState.rects[i], rect) : checkYOverlap(currentState.rects[i], rect);
 
     if (hasOverlap) {
       updateRectBounds(rect, i, ite, secondaryDir);
 
-      if (getCoord(rectangles[i].topLeft, primaryDir) <= nowLeft) {
-        nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, primaryDir));
+      if (getCoord(currentState.rects[i].topLeft, primaryDir) <= nowLeft) {
+        nowLeft = max(nowLeft, getCoord(currentState.rects[i].bottomRight, primaryDir));
         if (getCoord(rect.bottomRight, primaryDir) <= nowLeft) { break; }
       }
     }
@@ -657,34 +656,34 @@ inline Rect expandRect(int ite)
 
 inline void saveBest()
 {
-  bestState.score = currentScore;
+  bestState.score = currentState.score;
   for (int i = 0; i < numRects; ++i) {
-    bestState.rects[i] = rectangles[i];
+    bestState.rects[i] = currentState.rects[i];
   }
 }
 
 inline void extendWithTemp(int ite, double temp)
 {
-  Rect prevRect = rectangles[ite];
+  Rect prevRect = currentState.rects[ite];
 
   Rect expandedRect = expandRect(ite);
-  rectangles[ite] = expandedRect;
+  currentState.rects[ite] = expandedRect;
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentScore;
+  int scoreDiff = newScore - currentState.score;
   const double prob = exp((double)scoreDiff / temp);
 
   if (prob > rand01()) {
     modeCount[4]++;
-    currentScore = newScore;
-    if (currentScore > bestState.score) {
+    currentState.score = newScore;
+    if (currentState.score > bestState.score) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    rectangles[ite] = prevRect;
+    currentState.rects[ite] = prevRect;
     calcScore(ite);
   }
 }
@@ -697,11 +696,11 @@ inline void resetRects(int numToReset)
   // numToReset個つぶす
   for (int i = 0; i < (numToReset); ++i) {
     int ite = xorshift() % numRects;
-    initRect(rectangles[ite], points[ite]);
+    initRect(currentState.rects[ite], points[ite]);
   }
 
-  currentScore = calcScore(-1);
-  if (currentScore > bestState.score) {
+  currentState.score = calcScore(-1);
+  if (currentState.score > bestState.score) {
     saveBest();
   }
 }
@@ -715,11 +714,11 @@ inline void resetWorstRects(int numWorstToReset)
   sort(v.begin(), v.end());
   for (int i = 0; i < (numWorstToReset); ++i) {
     int ite = v[i].second;
-    initRect(rectangles[ite], points[ite]);
+    initRect(currentState.rects[ite], points[ite]);
   }
 
-  currentScore = calcScore(-1);
-  if (currentScore > bestState.score) {
+  currentState.score = calcScore(-1);
+  if (currentState.score > bestState.score) {
     saveBest();
   }
 }
@@ -729,21 +728,21 @@ inline void createHole(int hole = 100)
   int ite = xorshift() % numRects;
   vector<int> affectedRects;
   affectedRects.emplace_back(ite);
-  rectangles[ite].topLeft.x -= hole;
-  rectangles[ite].topLeft.y -= hole;
-  rectangles[ite].bottomRight.x += hole;
-  rectangles[ite].bottomRight.y += hole;
+  currentState.rects[ite].topLeft.x -= hole;
+  currentState.rects[ite].topLeft.y -= hole;
+  currentState.rects[ite].bottomRight.x += hole;
+  currentState.rects[ite].bottomRight.y += hole;
   for (int i = 0; i < numRects; ++i) {
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) affectedRects.emplace_back(i);
   }
   int numAffected = affectedRects.size();
   for (int i = 0; i < (numAffected); ++i) {
-    initRect(rectangles[affectedRects[i]], points[affectedRects[i]]);
+    initRect(currentState.rects[affectedRects[i]], points[affectedRects[i]]);
   }
 
-  currentScore = calcScore(-1);
-  if (currentScore > bestState.score) {
+  currentState.score = calcScore(-1);
+  if (currentState.score > bestState.score) {
     saveBest();
   }
 }
@@ -781,17 +780,17 @@ inline Rect expandRectLarge(int ite)
 inline void extendLarge(int ite)
 {
   Rect largeExpandedRect = expandRectLarge(ite);
-  rectangles[ite] = largeExpandedRect;
+  currentState.rects[ite] = largeExpandedRect;
 
   for (int i = 0; i < numRects; ++i) {
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) {
-      initRect(rectangles[i], points[i]);
+      initRect(currentState.rects[i], points[i]);
     }
   }
 
-  currentScore = calcScore(-1);
-  if (currentScore > bestState.score) {
+  currentState.score = calcScore(-1);
+  if (currentState.score > bestState.score) {
     saveBest();
   }
 }
@@ -803,27 +802,27 @@ inline void changeSingleEdge(int ite, double temp)
   int edgeType = xorshift() % 4;
 
   // 座標を変更
-  getRectCoordByEdge(rectangles[ite], edgeType) += diff;
+  getRectCoordByEdge(currentState.rects[ite], edgeType) += diff;
 
   if (isValid(ite) == 0) {
-    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
+    getRectCoordByEdge(currentState.rects[ite], edgeType) -= diff;
     return;
   }
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentScore;
+  int scoreDiff = newScore - currentState.score;
   const double prob = exp((double)scoreDiff / temp);
   if (prob > rand01()) {
     modeCount[0]++;
-    currentScore = newScore;
-    if (currentScore > bestState.score) {
+    currentState.score = newScore;
+    if (currentState.score > bestState.score) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
+    getRectCoordByEdge(currentState.rects[ite], edgeType) -= diff;
     calcScore(ite);
   }
 }
@@ -833,31 +832,31 @@ inline void changeAllEdges(int ite, double temp)
   int deltas[4];
   for (int i = 0; i < 4; ++i) {
     deltas[i] = xorshift() % 101 - 50;
-    getRectCoordByEdge(rectangles[ite], i) += deltas[i];
+    getRectCoordByEdge(currentState.rects[ite], i) += deltas[i];
   }
 
   if (isValid(ite) == 0) {
     for (int i = 0; i < 4; ++i) {
-      getRectCoordByEdge(rectangles[ite], i) -= deltas[i];
+      getRectCoordByEdge(currentState.rects[ite], i) -= deltas[i];
     }
     return;
   }
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentScore;
+  int scoreDiff = newScore - currentState.score;
   const double prob = exp((double)scoreDiff / temp);
   if (prob > rand01()) {
     modeCount[3]++;
-    currentScore = newScore;
-    if (currentScore > bestState.score) {
+    currentState.score = newScore;
+    if (currentState.score > bestState.score) {
       saveBest();
     }
   }
   else {
     // 元に戻す
     for (int i = 0; i < 4; ++i) {
-      getRectCoordByEdge(rectangles[ite], i) -= deltas[i];
+      getRectCoordByEdge(currentState.rects[ite], i) -= deltas[i];
     }
     calcScore(ite);
   }
@@ -870,30 +869,30 @@ inline void slideRect(int ite, double temp)
   Direction dir = (Direction)(xorshift() % 2);
 
   // 両端を同じ方向に移動
-  getCoordRef(rectangles[ite].topLeft, dir) += diff;
-  getCoordRef(rectangles[ite].bottomRight, dir) += diff;
+  getCoordRef(currentState.rects[ite].topLeft, dir) += diff;
+  getCoordRef(currentState.rects[ite].bottomRight, dir) += diff;
 
   if (isValid(ite) == 0) {
-    getCoordRef(rectangles[ite].topLeft, dir) -= diff;
-    getCoordRef(rectangles[ite].bottomRight, dir) -= diff;
+    getCoordRef(currentState.rects[ite].topLeft, dir) -= diff;
+    getCoordRef(currentState.rects[ite].bottomRight, dir) -= diff;
     return;
   }
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentScore;
+  int scoreDiff = newScore - currentState.score;
   const double prob = exp((double)scoreDiff / temp);
-  if (newScore >= currentScore) {
+  if (newScore >= currentState.score) {
     modeCount[1]++;
-    currentScore = newScore;
-    if (currentScore > bestState.score) {
+    currentState.score = newScore;
+    if (currentState.score > bestState.score) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    getCoordRef(rectangles[ite].topLeft, dir) -= diff;
-    getCoordRef(rectangles[ite].bottomRight, dir) -= diff;
+    getCoordRef(currentState.rects[ite].topLeft, dir) -= diff;
+    getCoordRef(currentState.rects[ite].bottomRight, dir) -= diff;
     calcScore(ite);
   }
 }
@@ -910,7 +909,7 @@ inline void changeAspectRatio(int ite, double temp)
   int width = widthRatio * scaleFactor;
   int height = heightRatio * scaleFactor;
 
-  Rect prevRect = rectangles[ite];
+  Rect prevRect = currentState.rects[ite];
 
   int minX = max(0, points[ite].x - (width - 1));
   int maxX = min(points[ite].x, 10000 - width);
@@ -922,41 +921,41 @@ inline void changeAspectRatio(int ite, double temp)
   int rangeY = maxY - minY + 1;
   if (rangeY < 1) { return; }
 
-  rectangles[ite].topLeft.x = xorshift() % rangeX + minX;
-  rectangles[ite].bottomRight.x = rectangles[ite].topLeft.x + rangeX;
-  rectangles[ite].topLeft.y = xorshift() % rangeY + minY;
-  rectangles[ite].bottomRight.y = rectangles[ite].topLeft.y + rangeY;
+  currentState.rects[ite].topLeft.x = xorshift() % rangeX + minX;
+  currentState.rects[ite].bottomRight.x = currentState.rects[ite].topLeft.x + rangeX;
+  currentState.rects[ite].topLeft.y = xorshift() % rangeY + minY;
+  currentState.rects[ite].bottomRight.y = currentState.rects[ite].topLeft.y + rangeY;
 
   if (isValid(ite) == 0) {
-    rectangles[ite] = prevRect;
+    currentState.rects[ite] = prevRect;
     return;
   }
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentScore;
+  int scoreDiff = newScore - currentState.score;
   const double prob = exp((double)scoreDiff / temp);
-  if (newScore >= currentScore) {
+  if (newScore >= currentState.score) {
     modeCount[2]++;
-    currentScore = newScore;
-    if (currentScore > bestState.score) {
+    currentState.score = newScore;
+    if (currentState.score > bestState.score) {
       saveBest();
     }
   }
   else {
     // 元に戻す
-    rectangles[ite] = prevRect;
+    currentState.rects[ite] = prevRect;
     calcScore(ite);
   }
 }
 
 inline int isSelfInvalid(int ite)
 {
-  if (!isRectInRange(rectangles[ite])) return 1;
-  if (rectangles[ite].bottomRight.x <= rectangles[ite].topLeft.x) return 1;
-  if (rectangles[ite].bottomRight.y <= rectangles[ite].topLeft.y) return 1;
-  if (points[ite].x < rectangles[ite].topLeft.x || rectangles[ite].bottomRight.x <= points[ite].x) return 1;
-  if (points[ite].y < rectangles[ite].topLeft.y || rectangles[ite].bottomRight.y <= points[ite].y) return 1;
+  if (!isRectInRange(currentState.rects[ite])) return 1;
+  if (currentState.rects[ite].bottomRight.x <= currentState.rects[ite].topLeft.x) return 1;
+  if (currentState.rects[ite].bottomRight.y <= currentState.rects[ite].topLeft.y) return 1;
+  if (points[ite].x < currentState.rects[ite].topLeft.x || currentState.rects[ite].bottomRight.x <= points[ite].x) return 1;
+  if (points[ite].y < currentState.rects[ite].topLeft.y || currentState.rects[ite].bottomRight.y <= points[ite].y) return 1;
   return 0;
 }
 
@@ -965,10 +964,10 @@ inline int canShiftBoundary(int ite, int edgeType)
   for (int i = 0; i < numRects; ++i) {
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) {
-      if (edgeType == 0) rectangles[i].bottomRight.x = rectangles[ite].topLeft.x;
-      if (edgeType == 1) rectangles[i].bottomRight.y = rectangles[ite].topLeft.y;
-      if (edgeType == 2) rectangles[i].topLeft.x = rectangles[ite].bottomRight.x;
-      if (edgeType == 3) rectangles[i].topLeft.y = rectangles[ite].bottomRight.y;
+      if (edgeType == 0) currentState.rects[i].bottomRight.x = currentState.rects[ite].topLeft.x;
+      if (edgeType == 1) currentState.rects[i].bottomRight.y = currentState.rects[ite].topLeft.y;
+      if (edgeType == 2) currentState.rects[i].topLeft.x = currentState.rects[ite].bottomRight.x;
+      if (edgeType == 3) currentState.rects[i].topLeft.y = currentState.rects[ite].bottomRight.y;
 
       if (isSelfInvalid(i)) return 0;
     }
@@ -1003,8 +1002,8 @@ inline void findOverlapsInDirection(int ite, int edgeType)
   bool backward = isBackwardSearch(edgeType);
 
   int argIdx = getSortedIndex(ite, primaryDir);
-  int nowLeft = getCoord(rectangles[ite].topLeft, secondaryDir);
-  int nowRight = getCoord(rectangles[ite].bottomRight, secondaryDir);
+  int nowLeft = getCoord(currentState.rects[ite].topLeft, secondaryDir);
+  int nowRight = getCoord(currentState.rects[ite].bottomRight, secondaryDir);
 
   int startIdx = backward ? argIdx - 1 : argIdx + 1;
   int endIdx = backward ? -1 : numRects;
@@ -1015,16 +1014,16 @@ inline void findOverlapsInDirection(int ite, int edgeType)
     if (checkOverlap(i, ite)) {
       // 無効な重なりチェック
       bool invalidOverlap = false;
-      if (edgeType == 0 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
+      if (edgeType == 0 && getCoord(currentState.rects[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
         invalidOverlap = true;
       }
-      else if (edgeType == 1 && getCoord(rectangles[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
+      else if (edgeType == 1 && getCoord(currentState.rects[ite].topLeft, primaryDir) <= getCoord(points[i], primaryDir)) {
         invalidOverlap = true;
       }
-      else if (edgeType == 2 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+      else if (edgeType == 2 && getCoord(points[i], primaryDir) < getCoord(currentState.rects[ite].bottomRight, primaryDir)) {
         invalidOverlap = true;
       }
-      else if (edgeType == 3 && getCoord(points[i], primaryDir) < getCoord(rectangles[ite].bottomRight, primaryDir)) {
+      else if (edgeType == 3 && getCoord(points[i], primaryDir) < getCoord(currentState.rects[ite].bottomRight, primaryDir)) {
         invalidOverlap = true;
       }
 
@@ -1039,12 +1038,12 @@ inline void findOverlapsInDirection(int ite, int edgeType)
     }
 
     // nowLeft/nowRightの更新
-    if (getCoord(rectangles[i].topLeft, secondaryDir) <= nowLeft) {
-      nowLeft = max(nowLeft, getCoord(rectangles[i].bottomRight, secondaryDir));
+    if (getCoord(currentState.rects[i].topLeft, secondaryDir) <= nowLeft) {
+      nowLeft = max(nowLeft, getCoord(currentState.rects[i].bottomRight, secondaryDir));
       if (nowLeft >= nowRight) { break; }
     }
-    if (nowRight <= getCoord(rectangles[i].bottomRight, secondaryDir)) {
-      nowRight = min(nowRight, getCoord(rectangles[i].topLeft, secondaryDir));
+    if (nowRight <= getCoord(currentState.rects[i].bottomRight, secondaryDir)) {
+      nowRight = min(nowRight, getCoord(currentState.rects[i].topLeft, secondaryDir));
       if (nowLeft >= nowRight) { break; }
     }
   }
@@ -1065,10 +1064,10 @@ inline void shiftBoundary(int ite, double temp)
 
   if (edgeType < 2) diff *= -1;
 
-  getRectCoordByEdge(rectangles[ite], edgeType) += diff;
+  getRectCoordByEdge(currentState.rects[ite], edgeType) += diff;
 
   if (isSelfInvalid(ite)) {
-    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
+    getRectCoordByEdge(currentState.rects[ite], edgeType) -= diff;
     return;
   }
 
@@ -1076,56 +1075,56 @@ inline void shiftBoundary(int ite, double temp)
   int numOverlaps = overlapCount;
 
   if (numOverlaps > 0 && overlappingRects[0] == -1) {
-    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
+    getRectCoordByEdge(currentState.rects[ite], edgeType) -= diff;
     return;
   }
 
 
   for (int i = 0; i < (numOverlaps); ++i) {
-    prevRects[i] = rectangles[overlappingRects[i]];
+    prevRects[i] = currentState.rects[overlappingRects[i]];
   }
 
   int isValidShift = 1;
   for (int i = 0; i < (numOverlaps); ++i) {
     // 隣接する矩形の境界を調整
     if (edgeType < 2) {
-      getRectCoordByEdge(rectangles[overlappingRects[i]], edgeType + 2) = getRectCoordByEdge(rectangles[ite], edgeType);
+      getRectCoordByEdge(currentState.rects[overlappingRects[i]], edgeType + 2) = getRectCoordByEdge(currentState.rects[ite], edgeType);
     }
     else {
-      getRectCoordByEdge(rectangles[overlappingRects[i]], edgeType - 2) = getRectCoordByEdge(rectangles[ite], edgeType);
+      getRectCoordByEdge(currentState.rects[overlappingRects[i]], edgeType - 2) = getRectCoordByEdge(currentState.rects[ite], edgeType);
     }
     if (isSelfInvalid(overlappingRects[i])) isValidShift = 0;
   }
 
   if (isValidShift == 0) {
     for (int i = 0; i < (numOverlaps); ++i) {
-      rectangles[overlappingRects[i]] = prevRects[i];
+      currentState.rects[overlappingRects[i]] = prevRects[i];
     }
     // 元に戻す
-    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
+    getRectCoordByEdge(currentState.rects[ite], edgeType) -= diff;
     return;
   }
 
   for (int i = 0; i < (numOverlaps); ++i) calcScore(overlappingRects[i]);
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentScore;
+  int scoreDiff = newScore - currentState.score;
   double prob = exp((double)scoreDiff / temp);
 
   if (prob > rand01()) {
     modeCount[5]++;
-    currentScore = newScore;
-    if (currentScore > bestState.score) {
+    currentState.score = newScore;
+    if (currentState.score > bestState.score) {
       saveBest();
     }
   }
   else {
     for (int i = 0; i < (numOverlaps); ++i) {
-      rectangles[overlappingRects[i]] = prevRects[i];
+      currentState.rects[overlappingRects[i]] = prevRects[i];
       calcScore(overlappingRects[i]);
     }
     // 元に戻す
-    getRectCoordByEdge(rectangles[ite], edgeType) -= diff;
+    getRectCoordByEdge(currentState.rects[ite], edgeType) -= diff;
     calcScore(ite);
   }
 }
@@ -1133,11 +1132,11 @@ inline void shiftBoundary(int ite, double temp)
 inline void initSolution()
 {
   for (int i = 0; i < numRects; ++i) {
-    initRect(rectangles[i], points[i]);
+    initRect(currentState.rects[i], points[i]);
   }
 
-  currentScore = calcScore(-1);
-  if (currentScore > bestState.score) {
+  currentState.score = calcScore(-1);
+  if (currentState.score > bestState.score) {
     saveBest();
   }
 }
@@ -1160,7 +1159,7 @@ inline void multiStartSearch()
     // 初期解
     // 左上(x,y)、右下(x+1,y+1)
     for (int i = 0; i < numRects; ++i) {
-      initRect(rectangles[i], points[i]);
+      initRect(currentState.rects[i], points[i]);
     }
 
     int innerIterations = 5;
@@ -1168,7 +1167,7 @@ inline void multiStartSearch()
       timer.start();
 
       // 初期スコア計算
-      currentScore = calcScore(-1);
+      currentState.score = calcScore(-1);
       saveBest();
 
       // 焼きなまし
@@ -1207,30 +1206,30 @@ inline void multiStartSearch()
       }
 
       // 焼きなまし戻す
-      currentScore = bestState.score;
+      currentState.score = bestState.score;
       for (int i = 0; i < numRects; ++i) {
-        rectangles[i] = bestState.rects[i];
+        currentState.rects[i] = bestState.rects[i];
       }
       calcScore(-1);
 
-      if (currentScore > secondBestScore) {
-        secondBestScore = currentScore;
+      if (currentState.score > secondBestScore) {
+        secondBestScore = currentState.score;
         for (int i = 0; i < numRects; ++i) {
-          secondBestRects[i] = rectangles[i];
+          secondBestRects[i] = currentState.rects[i];
         }
       }
     }
 
     // secondBestScore戻す
-    currentScore = secondBestScore;
+    currentState.score = secondBestScore;
     secondBestScore = 0;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = secondBestRects[i];
+      currentState.rects[i] = secondBestRects[i];
     }
     calcScore(-1);
 
     // 初期スコア計算
-    currentScore = calcScore(-1);
+    currentState.score = calcScore(-1);
     saveBest();
 
     // 焼きなまし(2回目)
@@ -1275,28 +1274,28 @@ inline void multiStartSearch()
     }
 
     // 焼きなまし戻す
-    currentScore = bestState.score;
+    currentState.score = bestState.score;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = bestState.rects[i];
+      currentState.rects[i] = bestState.rects[i];
     }
     calcScore(-1);
 
-    if (currentScore > multiStartBestScore) {
-      multiStartBestScore = currentScore;
+    if (currentState.score > multiStartBestScore) {
+      multiStartBestScore = currentState.score;
       for (int i = 0; i < numRects; ++i) {
-        multiStartBestRects[i] = rectangles[i];
+        multiStartBestRects[i] = currentState.rects[i];
       }
     }
   }
 
   // 元に戻しておく
-  currentScore = 0;
+  currentState.score = 0;
   bestState.score = 0;
   secondBestScore = 0;
   for (int i = 0; i < numRects; ++i) {
-    initRect(rectangles[i], points[i]);
-    bestState.rects[i] = rectangles[i];
-    secondBestRects[i] = rectangles[i];
+    initRect(currentState.rects[i], points[i]);
+    bestState.rects[i] = currentState.rects[i];
+    secondBestRects[i] = currentState.rects[i];
   }
 }
 
@@ -1317,21 +1316,21 @@ int solve(int isSubmission, int fileNum)
     multiStartSearch();
 
     // multiStartBestScore戻す
-    currentScore = multiStartBestScore;
+    currentState.score = multiStartBestScore;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = multiStartBestRects[i];
+      currentState.rects[i] = multiStartBestRects[i];
     }
     calcScore(-1);
 
     // 初期スコア計算
-    currentScore = calcScore(-1);
+    currentState.score = calcScore(-1);
     saveBest();
 
     int parentCount = 1;
 
     for (int beamIdx = 0; beamIdx < (parentCount); ++beamIdx) {
       for (int j = 0; j < numRects; ++j) {
-        rects2[beamIdx][j] = rectangles[j];
+        rects2[beamIdx][j] = currentState.rects[j];
       }
     }
 
@@ -1345,11 +1344,11 @@ int solve(int isSubmission, int fileNum)
       for (int beamIdx = 0; beamIdx < (innerLoopCount); ++beamIdx) {
         int idx = beamIdx % parentCount;
         for (int i = 0; i < numRects; ++i) {
-          rectangles[i] = rects2[idx][i];
+          currentState.rects[i] = rects2[idx][i];
         }
 
         // 初期スコア計算
-        currentScore = calcScore(-1);
+        currentState.score = calcScore(-1);
         saveBest();
 
         // 焼きなまし(2回目)
@@ -1407,27 +1406,27 @@ int solve(int isSubmission, int fileNum)
 
           // 計算誤差解消?
           if (loop % 10000 == 1) {
-            currentScore = calcScore(-1);
+            currentState.score = calcScore(-1);
           }
         }
 
         // 焼きなまし戻す
-        currentScore = bestState.score;
+        currentState.score = bestState.score;
         for (int i = 0; i < numRects; ++i) {
-          rectangles[i] = bestState.rects[i];
+          currentState.rects[i] = bestState.rects[i];
         }
         calcScore(-1);
-        if (currentScore > secondBestScore) {
-          secondBestScore = currentScore;
+        if (currentState.score > secondBestScore) {
+          secondBestScore = currentState.score;
           for (int i = 0; i < numRects; ++i) {
-            secondBestRects[i] = rectangles[i];
+            secondBestRects[i] = currentState.rects[i];
           }
         }
 
         // ビームサーチの次の種にする
-        beamScores[beamIdx] = currentScore;
+        beamScores[beamIdx] = currentState.score;
         for (int i = 0; i < numRects; ++i) {
-          rects4[beamIdx][i] = rectangles[i];
+          rects4[beamIdx][i] = currentState.rects[i];
         }
       }
 
@@ -1455,53 +1454,53 @@ int solve(int isSubmission, int fileNum)
     }
 
     // secondBestScore戻す
-    currentScore = secondBestScore;
+    currentState.score = secondBestScore;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = secondBestRects[i];
+      currentState.rects[i] = secondBestRects[i];
     }
     calcScore(-1);
 
     if (isSubmission == 0) {
-      cout << "currentScore = " << currentScore << endl;
+      cout << "currentState.score = " << currentState.score << endl;
     }
 
     const int MOD = 1000000007;
-    if (isSubmission == 0 && currentScore > MOD) {
+    if (isSubmission == 0 && currentState.score > MOD) {
       cout << "ERROR" << endl;
       writeErrorLog(fileNum);
     }
 
     // real_real_real入れる
-    if (currentScore > finalBestScore && currentScore < 1000000007) {
-      finalBestScore = currentScore;
+    if (currentState.score > finalBestScore && currentState.score < 1000000007) {
+      finalBestScore = currentState.score;
       for (int i = 0; i < numRects; ++i) {
-        finalBestRects[i] = rectangles[i];
+        finalBestRects[i] = currentState.rects[i];
       }
     }
 
 
     // すべて白紙にリセットする
-    currentScore = 0;
+    currentState.score = 0;
     bestState.score = 0;
     secondBestScore = 0;
     for (int i = 0; i < numRects; ++i) {
-      initRect(rectangles[i], points[i]);
-      bestState.rects[i] = rectangles[i];
-      secondBestRects[i] = rectangles[i];
+      initRect(currentState.rects[i], points[i]);
+      bestState.rects[i] = currentState.rects[i];
+      secondBestRects[i] = currentState.rects[i];
     }
   }
 
   // finalBestScore戻す
-  currentScore = finalBestScore;
+  currentState.score = finalBestScore;
   for (int i = 0; i < numRects; ++i) {
-    rectangles[i] = finalBestRects[i];
+    currentState.rects[i] = finalBestRects[i];
   }
   calcScore(-1);
 
   // 最終出力
   if (isSubmission) {
     for (int i = 0; i < numRects; ++i) {
-      cout << rectangles[i].topLeft.x << ' ' << rectangles[i].topLeft.y << ' ' << rectangles[i].bottomRight.x << ' ' << rectangles[i].bottomRight.y << endl;
+      cout << currentState.rects[i].topLeft.x << ' ' << currentState.rects[i].topLeft.y << ' ' << currentState.rects[i].bottomRight.x << ' ' << currentState.rects[i].bottomRight.y << endl;
     }
   }
   else {
@@ -1510,14 +1509,14 @@ int solve(int isSubmission, int fileNum)
 
   // 提出時以下は消す
   if (isSubmission == 0) {
-    cout << "file No. = " << fileNum << ", currentScore = " << currentScore << endl;
+    cout << "file No. = " << fileNum << ", currentState.score = " << currentState.score << endl;
   }
 
-  if (isSubmission == 0 && currentScore > 1000000007) {
+  if (isSubmission == 0 && currentState.score > 1000000007) {
     writeErrorLog(fileNum);
   }
 
-  return currentScore;
+  return currentState.score;
 }
 
 inline void clearRect(Rect& r)
@@ -1531,7 +1530,7 @@ inline void clearRect(Rect& r)
 inline void clearAll()
 {
   numRects = 0;
-  currentScore = -1;
+  currentState.score = -1;
   bestState.score = -1;
   totalScore = 0;
   secondBestScore = -1;
@@ -1539,8 +1538,8 @@ inline void clearAll()
   finalBestScore = -1;
   for (int i = 0; i < (MAX_N); ++i) {
     points[i].x = 0, points[i].y = 0, targetSizes[i] = 0;
-    rectangles[i].topLeft.x = 0, rectangles[i].topLeft.y = 0, rectangles[i].bottomRight.x = 0, rectangles[i].bottomRight.y = 0;
-    clearRect(rectangles[i]);
+    currentState.rects[i].topLeft.x = 0, currentState.rects[i].topLeft.y = 0, currentState.rects[i].bottomRight.x = 0, currentState.rects[i].bottomRight.y = 0;
+    clearRect(currentState.rects[i]);
     rectAreas[i] = 0;
     clearRect(bestState.rects[i]);
     rectScores[i] = 0;

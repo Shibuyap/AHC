@@ -289,7 +289,7 @@ void readInput(int case_num)
     crop.id = i + 1;
     crop.plantingMonth = plantingMonth[i];
     crop.harvestMonth = harvestMonth[i];
-    for (int l = 0; l < (1); ++l) {
+    for (int l = 0; l < 1; ++l) {
       if (plantingMonth[i] - l < 0) { break; }
       plantableCrops[plantingMonth[i] - l].push_back(crop);
     }
@@ -331,7 +331,7 @@ bool isValidPlotForCrop(const int x, const int y, const vector<vector<int>>& fie
     return false;
   }
   int blankCount = 0;
-  for (int i = 0; i < (4); ++i) {
+  for (int i = 0; i < 4; ++i) {
     if (canalsAround[x][y][i]) {
       continue;
     }
@@ -353,14 +353,14 @@ bool isValidPlotForCrop(const int x, const int y, const vector<vector<int>>& fie
 bool isFieldAccessible(const vector<vector<int>>& fieldStatus)
 {
   int f[H][W];
-  for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) {
+  for (int i = 0; i < H; ++i) {
+    for (int j = 0; j < W; ++j) {
       f[i][j] = 0;
     }
   }
   int cnt = 0;
-  for (int i = 0; i < (H); ++i) {
-    for (int j = 0; j < (W); ++j) {
+  for (int i = 0; i < H; ++i) {
+    for (int j = 0; j < W; ++j) {
       if (fieldStatus[i][j] == -1) {
         cnt++;
       }
@@ -380,7 +380,7 @@ bool isFieldAccessible(const vector<vector<int>>& fieldStatus)
     int x = bfsQueue[head][0];
     int y = bfsQueue[head][1];
     head++;
-    for (int i = 0; i < (4); ++i) {
+    for (int i = 0; i < 4; ++i) {
       if (canalsAround[x][y][i]) {
         continue;
       }
@@ -427,7 +427,7 @@ bool canReachAllPlotsFromEntrance(const vector<vector<int>>& fieldStatus)
       int y = dijkstraQueue[turn][heads[turn]][1];
       int val = turn - 1;
       heads[turn]++;
-      for (int i = 0; i < (4); ++i) {
+      for (int i = 0; i < 4; ++i) {
         if (canalsAround[x][y][i]) {
           continue;
         }
@@ -479,7 +479,7 @@ double Score_1_Dijkstra(const int sx, const int sy, const int d, const vector<ve
       int y = dijkstraQueue[turn][heads[turn]][1];
       int val = turn - 1;
       heads[turn]++;
-      for (int i = 0; i < (4); ++i) {
+      for (int i = 0; i < 4; ++i) {
         if (canalsAround[x][y][i]) {
           continue;
         }
@@ -525,7 +525,7 @@ double Score_2(const int sx, const int sy, const int d, vector<vector<int>>& fie
   for (int i = 0; i < (H); ++i) {
     for (int j = 0; j < (W); ++j) {
       if (fieldStatus[i][j] != -1) {
-        for (int k = 0; k < (4); ++k) {
+        for (int k = 0; k < 4; ++k) {
           if (canalsAround[i][j][k]) {
             continue;
           }

@@ -524,7 +524,7 @@ void init_box()
     }
   }
 
-  //for (int i = 0; i < (A); ++i) {
+  //for (int i = 0; i < A; ++i) {
   //  cout << box_a_count[i] << " ";
   //}
   //cout << endl;
@@ -1191,7 +1191,7 @@ void run_simulated_annealing_box(AnnealingParams annealingParams)
   }
 
   restore_best_score();
-  //for (int i = 0; i < (A); ++i) {
+  //for (int i = 0; i < A; ++i) {
   //  cout << nums_a[i] << " ";
   //}
   //cout << endl;

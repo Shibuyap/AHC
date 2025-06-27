@@ -173,14 +173,14 @@ public:
     current_score = 0;
     ans_count = 0;
     for (int i = 0; i < m; ++i) {
-      for (int j = 0; j < (4); ++j) {
+      for (int j = 0; j < 4; ++j) {
         add_flags[i][j] = 0;
       }
     }
-    for (int i = 0; i < (n + 2); ++i) {
-      for (int j = 0; j < (n + 2); ++j) {
-        for (int k = 0; k < (m); ++k) {
-          for (int l = 0; l < (4); ++l) {
+    for (int i = 0; i < n + 2; ++i) {
+      for (int j = 0; j < n + 2; ++j) {
+        for (int k = 0; k < m; ++k) {
+          for (int l = 0; l < 4; ++l) {
             add_flags_2[i][j][k][l] = 0;
           }
         }
@@ -192,20 +192,20 @@ public:
   {
     current_score = src.current_score;
     ans_count = src.ans_count;
-    for (int i = 0; i < (ans_count); ++i) {
-      for (int j = 0; j < (2); ++j) {
+    for (int i = 0; i < ans_count; ++i) {
+      for (int j = 0; j < 2; ++j) {
         ans[i][j] = src.ans[i][j];
       }
     }
     for (int i = 0; i < m; ++i) {
-      for (int j = 0; j < (4); ++j) {
+      for (int j = 0; j < 4; ++j) {
         add_flags[i][j] = src.add_flags[i][j];
       }
     }
-    for (int i = 0; i < (n + 2); ++i) {
-      for (int j = 0; j < (n + 2); ++j) {
-        for (int k = 0; k < (m); ++k) {
-          for (int l = 0; l < (4); ++l) {
+    for (int i = 0; i < n + 2; ++i) {
+      for (int j = 0; j < n + 2; ++j) {
+        for (int k = 0; k < m; ++k) {
+          for (int l = 0; l < 4; ++l) {
             add_flags_2[i][j][k][l] = src.add_flags_2[i][j][k][l];
           }
         }
@@ -232,8 +232,8 @@ public:
 
   void init_board()
   {
-    for (int i = 0; i < (n + 2); ++i) {
-      for (int j = 0; j < (n + 2); ++j) {
+    for (int i = 0; i < n + 2; ++i) {
+      for (int j = 0; j < n + 2; ++j) {
         if (i == 0 || i == n + 1 || j == 0 || j == n + 1) {
           board[i][j] = -1;
         }
@@ -435,8 +435,8 @@ private:
 
   vector<P> bfs(Board& board, int sx, int sy, int gx, int gy)
   {
-    for (int i = 0; i < (n + 2); ++i) {
-      for (int j = 0; j < (n + 2); ++j) {
+    for (int i = 0; i < n + 2; ++i) {
+      for (int j = 0; j < n + 2; ++j) {
         dp[i][j] = INT_INF;
       }
     }
@@ -506,7 +506,7 @@ private:
         else {
           skate_one(board, answer, p.second, x, y);
         }
-        for (int j = 0; j < (4); ++j) {
+        for (int j = 0; j < 4; ++j) {
           if (answer.add_flags_2[x][y][i][j] == 1) {
             add_one(board, answer, j, x, y);
           }
@@ -518,7 +518,7 @@ private:
       if (i == m - 1) {
         break;
       }
-      for (int j = 0; j < (4); ++j) {
+      for (int j = 0; j < 4; ++j) {
         if (answer.add_flags[i][j] == 1) {
           add_one(board, answer, j, x, y);
         }
@@ -535,7 +535,7 @@ private:
     for (int i = 0; i < m; i++) {
       int x = board.X[i];
       int y = board.Y[i];
-      for (int j = 0; j < (4); ++j) {
+      for (int j = 0; j < 4; ++j) {
         if (answer.add_flags[i][j] == 1) {
           int nx = x + DX[j];
           int ny = y + DY[j];

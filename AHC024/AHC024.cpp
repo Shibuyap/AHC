@@ -148,8 +148,8 @@ int best_d[n + 2][n + 2];
 void CopyToBest()
 {
   best_ansScore = ansScore;
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       best_d[i][j] = d[i][j];
     }
   }
@@ -158,8 +158,8 @@ void CopyToBest()
 void CopyToAns()
 {
   ansScore = best_ansScore;
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       d[i][j] = best_d[i][j];
     }
   }
@@ -205,8 +205,8 @@ void Input(int case_num)
     }
   }
 
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       d[i][j] = c[i][j];
     }
   }
@@ -216,14 +216,14 @@ void Input(int case_num)
       g[i][j] = 0;
     }
   }
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 1); ++j) {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 1; ++j) {
       g[c[i][j]][c[i][j + 1]] = 1;
       g[c[i][j + 1]][c[i][j]] = 1;
     }
   }
-  for (int i = 0; i < (n + 1); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
+  for (int i = 0; i < n + 1; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       g[c[i][j]][c[i + 1][j]] = 1;
       g[c[i + 1][j]][c[i][j]] = 1;
     }
@@ -288,8 +288,8 @@ bool Check()
       checkG[i][j] = 0;
     }
   }
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 1); ++j) {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 1; ++j) {
       if (d[i][j] == d[i][j + 1])continue;
       if (g[d[i][j]][d[i][j + 1]] == 0) return false;
       if (g[d[i][j + 1]][d[i][j]] == 0) return false;
@@ -297,8 +297,8 @@ bool Check()
       checkG[d[i][j + 1]][d[i][j]] = 1;
     }
   }
-  for (int i = 0; i < (n + 1); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
+  for (int i = 0; i < n + 1; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       if (d[i][j] == d[i + 1][j])continue;
       if (g[d[i][j]][d[i + 1][j]] == 0) return false;
       if (g[d[i + 1][j]][d[i][j]] == 0) return false;
@@ -313,8 +313,8 @@ bool Check()
     }
   }
 
-  for (int i = 0; i < (n + 2); ++i) {
-    for (int j = 0; j < (n + 2); ++j) {
+  for (int i = 0; i < n + 2; ++i) {
+    for (int j = 0; j < n + 2; ++j) {
       checkVisited[i][j] = 0;
     }
   }
@@ -334,7 +334,7 @@ bool Check()
         int x = FrontX();
         int y = FrontY();
         Pop();
-        for (int k = 0; k < (4); ++k) {
+        for (int k = 0; k < 4; ++k) {
           int nx = x + dx[k];
           int ny = y + dy[k];
           if (d[nx][ny] == num && checkVisited[nx][ny] == 0) {

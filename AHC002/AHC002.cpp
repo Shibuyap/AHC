@@ -38,7 +38,7 @@ public:
 };
 Timer timer;
 
-static uint32_t rand_xorshift32()
+static uint32_t rand_xorshift()
 {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -53,13 +53,13 @@ static uint32_t rand_xorshift32()
 
 static double rand_unit_double()
 {
-  return (rand_xorshift32() + 0.5) * (1.0 / UINT_MAX);
+  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
 }
 
 void shuffle_array(int* arr, int n)
 {
   for (int i = n - 1; i >= 0; i--) {
-    int j = rand_xorshift32() % (i + 1);
+    int j = rand_xorshift() % (i + 1);
     int tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
@@ -130,7 +130,7 @@ public:
       swap(y[i], y[length - 1 - i]);
     }
     for (int i = 0; i < (length - 1); ++i) {
-      for (int j = 0; j < (4); ++j) {
+      for (int j = 0; j < 4; ++j) {
         int nx = x[i] + dx[j];
         int ny = y[i] + dy[j];
         if (nx == x[i + 1] && ny == y[i + 1]) {
@@ -192,26 +192,26 @@ static void read_input(int case_num)
 
   if (!ifs.is_open()) { // 標準入力する
     cin >> sx >> sy;
-    for (int i = 0; i < (N); ++i) {
-      for (int j = 0; j < (N); ++j) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         cin >> tile_id[i][j];
       }
     }
-    for (int i = 0; i < (N); ++i) {
-      for (int j = 0; j < (N); ++j) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         cin >> cell_value[i][j];
       }
     }
   }
   else { // ファイル入力する
     ifs >> sx >> sy;
-    for (int i = 0; i < (N); ++i) {
-      for (int j = 0; j < (N); ++j) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         ifs >> tile_id[i][j];
       }
     }
-    for (int i = 0; i < (N); ++i) {
-      for (int j = 0; j < (N); ++j) {
+    for (int i = 0; i < N; ++i) {
+      for (int j = 0; j < N; ++j) {
         ifs >> cell_value[i][j];
       }
     }
@@ -262,9 +262,9 @@ void extend_path_randomly(Path& path)
   int x = path.x[path.length - 1];
   int y = path.y[path.length - 1];
   while (true) {
-    int rand = rand_xorshift32() % 24;
+    int rand = rand_xorshift() % 24;
     bool ok = false;
-    for (int i = 0; i < (4); ++i) {
+    for (int i = 0; i < 4; ++i) {
       int nx = x + dx[next_directions[rand][i]];
       int ny = y + dy[next_directions[rand][i]];
       if (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version) {
@@ -288,9 +288,9 @@ bool try_connect_path(Path& path, int sx, int sy, int gx, int gy)
   int x = sx;
   int y = sy;
   while (x != gx || y != gy) {
-    int rand = rand_xorshift32() % 24;
+    int rand = rand_xorshift() % 24;
     bool ok = false;
-    for (int i = 0; i < (4); ++i) {
+    for (int i = 0; i < 4; ++i) {
       int nx = x + dx[next_directions[rand][i]];
       int ny = y + dy[next_directions[rand][i]];
       if ((nx == gx && ny == gy) || (!is_out_of_bounds(nx, ny) && visited[tile_id[nx][ny]] != visited_version)) {
@@ -320,7 +320,7 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2)
     current_path.init(sx, sy);
 
     if (iter > 100000 || timer.get_elapsed_time() > time_limit_1) {
-      int prefix_len = rand_xorshift32() % best_path.length;
+      int prefix_len = rand_xorshift() % best_path.length;
       for (int i = 0; i < (prefix_len); ++i) {
         current_path.add(best_path.direction[i]);
         int x = current_path.x[current_path.length - 1];
@@ -381,7 +381,7 @@ public:
     remaining_search_cnt--;
 
     int cnt = 0;
-    for (int i = 0; i < (4); ++i) {
+    for (int i = 0; i < 4; ++i) {
       int nx = x + dx[i];
       int ny = y + dy[i];
       if (nx == goal_x && ny == goal_y) {
@@ -416,7 +416,7 @@ public:
 bool search_best_path(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param)
 {
   DfsSolver dfsSolver;
-  int rand = rand_xorshift32() % 2;
+  int rand = rand_xorshift() % 2;
   if (rand == 0) {
     dfsSolver.start(seg_start_x, seg_start_y, seg_goal_x, seg_goal_y);
   }
@@ -453,8 +453,8 @@ void anneal_path_segment(const AnnealParam& param)
     reset_visited();
 
     int path_len = current_path.length;
-    int segment_len = rand_xorshift32() % param.range_segment_len + param.min_segment_len;
-    int seg_left = rand_xorshift32() % (path_len - segment_len);
+    int segment_len = rand_xorshift() % param.range_segment_len + param.min_segment_len;
+    int seg_left = rand_xorshift() % (path_len - segment_len);
     int seg_right = seg_left + segment_len;
 
     int seg_start_x = current_path.x[seg_left];
@@ -500,15 +500,18 @@ void anneal_path_segment(const AnnealParam& param)
     double progress_ratio = (now_time - anneal_start_time) / (param.time_limit - anneal_start_time);
     double temp = param.start_temp + (param.end_temp - param.start_temp) * progress_ratio;
 
-    double new_score = before_keep_path.score + keep_path.score + after_keep_path.score
-      - (cell_value[seg_start_x][seg_start_y] + cell_value[seg_goal_x][seg_goal_y]);
+    double new_score = before_keep_path.score + keep_path.score + after_keep_path.score - (cell_value[seg_start_x][seg_start_y] + cell_value[seg_goal_x][seg_goal_y]);
     double diff_score = (new_score - current_path.score) * param.score_scale;
     double accept_prob = exp(diff_score / temp);
 
     if (accept_prob > rand_unit_double()) {
       current_path.copy(before_keep_path);
-      for (int i = 0; i < (keep_path.length - 1); ++i) current_path.add(keep_path.direction[i]);
-      for (int i = 0; i < (after_keep_path.length - 1); ++i) current_path.add(after_keep_path.direction[i]);
+      for (int i = 0; i < (keep_path.length - 1); ++i) {
+        current_path.add(keep_path.direction[i]);
+      }
+      for (int i = 0; i < (after_keep_path.length - 1); ++i) {
+        current_path.add(after_keep_path.direction[i]);
+      }
 
       if (current_path.score > best_path.score) {
         best_path.copy(current_path);
@@ -586,7 +589,7 @@ int main()
       AnnealParam new_param = best_param;
 
       if (iter > 10) {
-        int rand = rand_xorshift32() % 5;
+        int rand = rand_xorshift() % 5;
         switch (rand) {
           case 0:
             new_param.start_temp *= rand_unit_double() * 2;
