@@ -1799,16 +1799,7 @@ int solver_7()
 
   for (int i = 0; i < n; ++i) f[i] = ff[i];
 
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<3>(f, res1, res2);
 
   return findBestMatchingPairCores(res1, res2, numPairArr);
 }
@@ -1897,16 +1888,7 @@ int solver_9()
     }
   }
 
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<3>(f, res1, res2);
 
   return findBestMatchingPairCores(res1, res2, numPairArr);
 }
@@ -2253,16 +2235,7 @@ int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vecto
   int res1 = cores1.size();
   int res2 = cores2.size();
 
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<3>(f, res1, res2);
   if (res2 > res1) swap(res1, res2);
   int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
 
@@ -2292,16 +2265,7 @@ int evaluateAndOptimizeCoresSimple(std::array<int, 100>& f, vector<int>& cores1,
   int res1 = cores1.size();
   int res2 = cores2.size();
 
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<3>(f, res1, res2);
   if (res2 > res1) swap(res1, res2);
   return findBestMatchingPairCores(res1, res2, numPairArr);
 }
@@ -2313,16 +2277,7 @@ void optimizeAndFindBestMatch(std::array<int, 100>& f, vector<int>& cores1, vect
   res1 = cores1.size();
   res2 = cores2.size();
 
-  int score = calculateScore(f);
-
-  std::array<bitset<100>, 3> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  bitset<100> bione(0);
-  initializeBitsets(f, bif, bib, bione);
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<3>(f, res1, res2);
   if (res2 > res1) swap(res1, res2);
 
   int diff = INITIAL_DIFF;
@@ -2451,26 +2406,7 @@ int solver_12()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 4> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  for (int i = 0; i < n; ++i) {
-    if (f[i] > 0) {
-      bif[f[i]][i] = 1;
-    }
-  }
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      bib[i][j] = b[i][j];
-    }
-  }
-
-  bitset<100> bione(0);
-  for (int i = 0; i < n; ++i) { bione[i] = 1; }
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<4>(f, res1, res2);
   res3 = 0;
   for (int i = 0; i < n; ++i) {
     if (f[i] == 3) res3++;
@@ -2525,26 +2461,7 @@ int solver_13()
 
   int score = calculateScore(f);
 
-  std::array<bitset<100>, 5> bif = {};
-  std::array<bitset<100>, 100> bib = {};
-  for (int i = 0; i < n; ++i) {
-    if (f[i] > 0) {
-      bif[f[i]][i] = 1;
-    }
-  }
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      bib[i][j] = b[i][j];
-    }
-  }
-
-  bitset<100> bione(0);
-  for (int i = 0; i < n; ++i) { bione[i] = 1; }
-
-  int flipLoop = FLIP_ITERATIONS;
-  if (MODE == 0) flipLoop = 10000;
-  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  performBitsetOptimization<5>(f, res1, res2);
   res3 = 0;
   res4 = 0;
   for (int i = 0; i < n; ++i) {
@@ -2841,14 +2758,7 @@ int solver_20()
 
     int score = calculateScore(f);
 
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+    performBitsetOptimization<3>(f, res1, res2);
     int diff = INITIAL_DIFF;
     int argRes = 0;
     for (int i = 0; i < m; ++i) {
