@@ -315,6 +315,7 @@ int findBestMatchingPairCoresWithFilter(int res1, int res2, const std::vector<st
 template<size_t N>
 void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione);
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
+int createAndExpandCore(std::array<int, 100>& f, vector<int>& cores, int cliqueSize, int markValue, bool useReturn = true);
 template<size_t N>
 void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop);
@@ -2219,25 +2220,31 @@ void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif,
 // 戻り値: 成功時はcores1のサイズ、失敗時は-1（returnの場合）または0（continueの場合）
 int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn)
 {
+  return createAndExpandCore(f, cores1, 4, 1, useReturn);
+}
+
+// コアを作成して拡張する汎用関数
+int createAndExpandCore(std::array<int, 100>& f, vector<int>& cores, int cliqueSize, int markValue, bool useReturn)
+{
   vector<int> kouho;
   for (int i = 0; i < n; ++i) kouho.push_back(i);
 
-  if (kouho.size() < 4) {
+  if (kouho.size() < cliqueSize) {
     return useReturn ? -1 : 0;
   }
 
-  if (!findClique(kouho, f, cores1, 4, 1)) {
+  if (!findClique(kouho, f, cores, cliqueSize, markValue)) {
     return useReturn ? -1 : 0;
   }
 
-  if (cores1.size() == 0) {
+  if (cores.size() == 0) {
     return useReturn ? -1 : 0;
   }
 
-  // コア1を大きくしていく
-  expandCore(cores1, f, 1);
+  // コアを大きくしていく
+  expandCore(cores, f, markValue);
 
-  return cores1.size();
+  return cores.size();
 }
 
 // フリップ最適化の共通関数
@@ -2996,20 +3003,13 @@ int solver_21()
 
     // コア1を作る
     vector<int> cores1;
-    vector<int> kouho;
-    for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 5) {
+    if (createAndExpandCore(f, cores1, 5, 1, false) == 0) {
       continue;
     }
-    if (!findClique(kouho, f, cores1, 5, 1)) {
-      continue;
-    }
-
-    // コア1を大きくしていく
-    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
+    vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 5) {
       findClique(kouho, f, cores2, 5, 2);
@@ -3067,20 +3067,13 @@ int solver_22()
 
     // コア1を作る
     vector<int> cores1;
-    vector<int> kouho;
-    for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 3) {
+    if (createAndExpandCore(f, cores1, 3, 1, false) == 0) {
       continue;
     }
-    if (!findClique(kouho, f, cores1, 3, 1)) {
-      continue;
-    }
-
-    // コア1を大きくしていく
-    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
+    vector<int> kouho;
     collectCandidates(kouho, f, 2);
     if (kouho.size() >= 3) {
       findClique(kouho, f, cores2, 3, 2);
@@ -3145,20 +3138,13 @@ int solver_23()
 
     // コア1を作る
     vector<int> cores1;
-    vector<int> kouho;
-    for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 3) {
+    if (createAndExpandCore(f, cores1, 3, 1, false) == 0) {
       continue;
     }
-    if (!findClique(kouho, f, cores1, 3, 1)) {
-      continue;
-    }
-
-    // コア1を大きくしていく
-    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
+    vector<int> kouho;
     collectCandidates(kouho, f, 2);
     if (kouho.size() >= 3) {
       findClique(kouho, f, cores2, 3, 2);
@@ -3223,20 +3209,13 @@ int solver_24()
 
     // コア1を作る
     vector<int> cores1;
-    vector<int> kouho;
-    for (int i = 0; i < n; ++i) kouho.push_back(i);
-    if (kouho.size() < 5) {
+    if (createAndExpandCore(f, cores1, 5, 1, false) == 0) {
       continue;
     }
-    if (!findClique(kouho, f, cores1, 5, 1)) {
-      continue;
-    }
-
-    // コア1を大きくしていく
-    expandCore(cores1, f, 1);
 
     // コア2を作る
     vector<int> cores2;
+    vector<int> kouho;
     collectCandidates(kouho, f, 4);
     if (kouho.size() >= 5) {
       findClique(kouho, f, cores2, 5, 2);
