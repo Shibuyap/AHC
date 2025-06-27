@@ -95,7 +95,7 @@ public:
   inline void copyFrom(const State& other)
   {
     score = other.score;
-    for (int i = 0; i < ::numRects; ++i) {
+    for (int i = 0; i < numRects; ++i) {
       rects[i] = other.rects[i];
     }
   }
