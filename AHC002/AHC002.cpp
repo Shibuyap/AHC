@@ -19,18 +19,24 @@ typedef pair<int, int> P;
 
 #define MAX_N 200005
 
-std::chrono::steady_clock::time_point start_time_clock;
-
-void start_timer()
+class Timer
 {
-  start_time_clock = std::chrono::steady_clock::now();
-}
+private:
+  std::chrono::steady_clock::time_point start_time_clock;
 
-double get_elapsed_time()
-{
-  std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
-  return elapsed.count();
-}
+public:
+  void start()
+  {
+    start_time_clock = std::chrono::steady_clock::now();
+  }
+
+  double get_elapsed_time()
+  {
+    std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start_time_clock;
+    return elapsed.count();
+  }
+};
+Timer timer;
 
 static uint32_t rand_xorshift32()
 {
@@ -270,7 +276,9 @@ void extend_path_randomly(Path& path)
         break;
       }
     }
-    if (!ok) { break; }
+    if (!ok) {
+      break;
+    }
   }
 }
 
@@ -294,7 +302,9 @@ bool try_connect_path(Path& path, int sx, int sy, int gx, int gy)
         break;
       }
     }
-    if (!ok) { break; }
+    if (!ok) {
+      break;
+    }
   }
   return x == gx && y == gy;
 }
@@ -309,7 +319,7 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2)
     reset_visited();
     current_path.init(sx, sy);
 
-    if (iter > 100000 || get_elapsed_time() > time_limit_1) {
+    if (iter > 100000 || timer.get_elapsed_time() > time_limit_1) {
       int prefix_len = rand_xorshift32() % best_path.length;
       for (int i = 0; i < (prefix_len); ++i) {
         current_path.add(best_path.direction[i]);
@@ -325,7 +335,7 @@ void build_from_best_prefix(double time_limit_1, double time_limit_2)
       best_path.copy(current_path);
     }
 
-    if (get_elapsed_time() > time_limit_2) {
+    if (timer.get_elapsed_time() > time_limit_2) {
       break;
     }
   }
@@ -435,7 +445,7 @@ void anneal_path_segment(const AnnealParam& param)
 
   int iteration_cnt = 0;
 
-  double anneal_start_time = get_elapsed_time();
+  double anneal_start_time = timer.get_elapsed_time();
 
   while (true) {
     ++iteration_cnt;
@@ -486,7 +496,7 @@ void anneal_path_segment(const AnnealParam& param)
       continue;
     }
 
-    double now_time = get_elapsed_time();
+    double now_time = timer.get_elapsed_time();
     double progress_ratio = (now_time - anneal_start_time) / (param.time_limit - anneal_start_time);
     double temp = param.start_temp + (param.end_temp - param.start_temp) * progress_ratio;
 
@@ -516,7 +526,7 @@ void anneal_path_segment(const AnnealParam& param)
 
 int solve(int case_num, const AnnealParam& param)
 {
-  start_timer();
+  timer.start();
 
   read_input(case_num);
 
@@ -531,7 +541,7 @@ int solve(int case_num, const AnnealParam& param)
   build_from_best_prefix(0.1, 1.95);
 
   if (show_log) {
-    cerr << "best_score = " << best_path.score << ", time = " << get_elapsed_time() << "sec." << endl;
+    cerr << "best_score = " << best_path.score << ", time = " << timer.get_elapsed_time() << "sec." << endl;
   }
 
   write_output(case_num);

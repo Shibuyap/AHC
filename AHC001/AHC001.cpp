@@ -88,7 +88,7 @@ class State
 {
 public:
   array<Rect, MAX_N> rects;
-  int score;
+  int score = -1;
 };
 
 enum Direction { HORIZONTAL = 0, VERTICAL = 1 };
@@ -100,8 +100,7 @@ array<int, MAX_N> targetSizes;
 int currentScore = -1;
 array<Rect, MAX_N> rectangles;
 array<int, MAX_N> rectAreas;
-int bestScore = -1;
-array<Rect, MAX_N> bestRects;
+State bestState;
 
 inline void calcArea(int idx)
 {
@@ -658,9 +657,9 @@ inline Rect expandRect(int ite)
 
 inline void saveBest()
 {
-  bestScore = currentScore;
+  bestState.score = currentScore;
   for (int i = 0; i < numRects; ++i) {
-    bestRects[i] = rectangles[i];
+    bestState.rects[i] = rectangles[i];
   }
 }
 
@@ -679,7 +678,7 @@ inline void extendWithTemp(int ite, double temp)
   if (prob > rand01()) {
     modeCount[4]++;
     currentScore = newScore;
-    if (currentScore > bestScore) {
+    if (currentScore > bestState.score) {
       saveBest();
     }
   }
@@ -702,7 +701,7 @@ inline void resetRects(int numToReset)
   }
 
   currentScore = calcScore(-1);
-  if (currentScore > bestScore) {
+  if (currentScore > bestState.score) {
     saveBest();
   }
 }
@@ -720,7 +719,7 @@ inline void resetWorstRects(int numWorstToReset)
   }
 
   currentScore = calcScore(-1);
-  if (currentScore > bestScore) {
+  if (currentScore > bestState.score) {
     saveBest();
   }
 }
@@ -744,7 +743,7 @@ inline void createHole(int hole = 100)
   }
 
   currentScore = calcScore(-1);
-  if (currentScore > bestScore) {
+  if (currentScore > bestState.score) {
     saveBest();
   }
 }
@@ -792,7 +791,7 @@ inline void extendLarge(int ite)
   }
 
   currentScore = calcScore(-1);
-  if (currentScore > bestScore) {
+  if (currentScore > bestState.score) {
     saveBest();
   }
 }
@@ -818,7 +817,7 @@ inline void changeSingleEdge(int ite, double temp)
   if (prob > rand01()) {
     modeCount[0]++;
     currentScore = newScore;
-    if (currentScore > bestScore) {
+    if (currentScore > bestState.score) {
       saveBest();
     }
   }
@@ -851,7 +850,7 @@ inline void changeAllEdges(int ite, double temp)
   if (prob > rand01()) {
     modeCount[3]++;
     currentScore = newScore;
-    if (currentScore > bestScore) {
+    if (currentScore > bestState.score) {
       saveBest();
     }
   }
@@ -887,7 +886,7 @@ inline void slideRect(int ite, double temp)
   if (newScore >= currentScore) {
     modeCount[1]++;
     currentScore = newScore;
-    if (currentScore > bestScore) {
+    if (currentScore > bestState.score) {
       saveBest();
     }
   }
@@ -940,7 +939,7 @@ inline void changeAspectRatio(int ite, double temp)
   if (newScore >= currentScore) {
     modeCount[2]++;
     currentScore = newScore;
-    if (currentScore > bestScore) {
+    if (currentScore > bestState.score) {
       saveBest();
     }
   }
@@ -1116,7 +1115,7 @@ inline void shiftBoundary(int ite, double temp)
   if (prob > rand01()) {
     modeCount[5]++;
     currentScore = newScore;
-    if (currentScore > bestScore) {
+    if (currentScore > bestState.score) {
       saveBest();
     }
   }
@@ -1138,7 +1137,7 @@ inline void initSolution()
   }
 
   currentScore = calcScore(-1);
-  if (currentScore > bestScore) {
+  if (currentScore > bestState.score) {
     saveBest();
   }
 }
@@ -1208,9 +1207,9 @@ inline void multiStartSearch()
       }
 
       // 焼きなまし戻す
-      currentScore = bestScore;
+      currentScore = bestState.score;
       for (int i = 0; i < numRects; ++i) {
-        rectangles[i] = bestRects[i];
+        rectangles[i] = bestState.rects[i];
       }
       calcScore(-1);
 
@@ -1276,9 +1275,9 @@ inline void multiStartSearch()
     }
 
     // 焼きなまし戻す
-    currentScore = bestScore;
+    currentScore = bestState.score;
     for (int i = 0; i < numRects; ++i) {
-      rectangles[i] = bestRects[i];
+      rectangles[i] = bestState.rects[i];
     }
     calcScore(-1);
 
@@ -1292,11 +1291,11 @@ inline void multiStartSearch()
 
   // 元に戻しておく
   currentScore = 0;
-  bestScore = 0;
+  bestState.score = 0;
   secondBestScore = 0;
   for (int i = 0; i < numRects; ++i) {
     initRect(rectangles[i], points[i]);
-    bestRects[i] = rectangles[i];
+    bestState.rects[i] = rectangles[i];
     secondBestRects[i] = rectangles[i];
   }
 }
@@ -1413,9 +1412,9 @@ int solve(int isSubmission, int fileNum)
         }
 
         // 焼きなまし戻す
-        currentScore = bestScore;
+        currentScore = bestState.score;
         for (int i = 0; i < numRects; ++i) {
-          rectangles[i] = bestRects[i];
+          rectangles[i] = bestState.rects[i];
         }
         calcScore(-1);
         if (currentScore > secondBestScore) {
@@ -1483,11 +1482,11 @@ int solve(int isSubmission, int fileNum)
 
     // すべて白紙にリセットする
     currentScore = 0;
-    bestScore = 0;
+    bestState.score = 0;
     secondBestScore = 0;
     for (int i = 0; i < numRects; ++i) {
       initRect(rectangles[i], points[i]);
-      bestRects[i] = rectangles[i];
+      bestState.rects[i] = rectangles[i];
       secondBestRects[i] = rectangles[i];
     }
   }
@@ -1533,7 +1532,7 @@ inline void clearAll()
 {
   numRects = 0;
   currentScore = -1;
-  bestScore = -1;
+  bestState.score = -1;
   totalScore = 0;
   secondBestScore = -1;
   multiStartBestScore = -1;
@@ -1543,7 +1542,7 @@ inline void clearAll()
     rectangles[i].topLeft.x = 0, rectangles[i].topLeft.y = 0, rectangles[i].bottomRight.x = 0, rectangles[i].bottomRight.y = 0;
     clearRect(rectangles[i]);
     rectAreas[i] = 0;
-    clearRect(bestRects[i]);
+    clearRect(bestState.rects[i]);
     rectScores[i] = 0;
     sortedByX[i] = 0, sortedByY[i] = 0;
     indexInSortedX[i] = 0, indexInSortedY[i] = 0;
