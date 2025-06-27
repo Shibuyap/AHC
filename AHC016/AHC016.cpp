@@ -314,11 +314,12 @@ int findBestMatchingPairCores(int res1, int res2, const std::vector<std::array<i
 int findBestMatchingPairCoresWithFilter(int res1, int res2, const std::vector<std::array<int, 2>>& numPairArr, const std::vector<int>& omoteArr, int tei);
 template<size_t N>
 void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione);
-int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn = true);
 int createAndExpandCore(std::array<int, 100>& f, vector<int>& cores, int cliqueSize, int markValue, bool useReturn = true);
 template<size_t N>
 void flipOptimization(std::array<int, 100>& f, std::array<bitset<100>, N>& bif, std::array<bitset<100>, 100>& bib, bitset<100>& bione,
   int& score, int& res1, int& res2, int flipLoop);
+int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
+  const std::vector<int>& omoteArr, int tei, int& real_score, int& real_argRes);
 
 // グラフにノイズを適用（確率epsで各辺を反転）
 void apply_noise_to_graph(int x)
@@ -2216,14 +2217,8 @@ void initializeBitsets(std::array<int, 100>& f, std::array<bitset<100>, N>& bif,
   }
 }
 
-// コア1を作成して拡張する共通関数
-// 戻り値: 成功時はcores1のサイズ、失敗時は-1（returnの場合）または0（continueの場合）
-int createAndExpandCore1(std::array<int, 100>& f, vector<int>& cores1, bool useReturn)
-{
-  return createAndExpandCore(f, cores1, 4, 1, useReturn);
-}
-
 // コアを作成して拡張する汎用関数
+// 戻り値: 成功時はcores1のサイズ、失敗時は-1（returnの場合）または0（continueの場合）
 int createAndExpandCore(std::array<int, 100>& f, vector<int>& cores, int cliqueSize, int markValue, bool useReturn)
 {
   vector<int> kouho;
@@ -2245,6 +2240,46 @@ int createAndExpandCore(std::array<int, 100>& f, vector<int>& cores, int cliqueS
   expandCore(cores, f, markValue);
 
   return cores.size();
+}
+
+// 最適化とスコア評価の共通関数
+int evaluateAndOptimizeCores(std::array<int, 100>& f, vector<int>& cores1, vector<int>& cores2,
+  const std::vector<int>& omoteArr, int tei, int& real_score, int& real_argRes)
+{
+  int res1 = cores1.size();
+  int res2 = cores2.size();
+
+  int score = calculateScore(f);
+
+  std::array<bitset<100>, 3> bif = {};
+  std::array<bitset<100>, 100> bib = {};
+  bitset<100> bione(0);
+  initializeBitsets(f, bif, bib, bione);
+
+  int flipLoop = FLIP_ITERATIONS;
+  if (MODE == 0) flipLoop = 10000;
+  flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
+  if (res2 > res1) swap(res1, res2);
+  int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
+
+  // スコア計算
+  int tmpScore = 0;
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 1; j < n; ++j) {
+      if (f[i] == f[j] && f[i] != 0) {
+        if (b[i][j]) tmpScore++;
+      }
+      else {
+        if (!b[i][j]) tmpScore++;
+      }
+    }
+  }
+  if (tmpScore > real_score) {
+    real_score = tmpScore;
+    real_argRes = argRes;
+  }
+
+  return tmpScore;
 }
 
 // フリップ最適化の共通関数
@@ -2310,7 +2345,7 @@ int solver_11()
 
   // コア1を作る
   vector<int> cores1;
-  if (createAndExpandCore1(f, cores1, true) == -1) {
+  if (createAndExpandCore(f, cores1, 4, 1, true) == -1) {
     return 0;
   }
 
@@ -2349,7 +2384,7 @@ int solver_12()
 
   // コア1を作る
   vector<int> cores1;
-  if (createAndExpandCore1(f, cores1, true) == -1) {
+  if (createAndExpandCore(f, cores1, 4, 1, true) == -1) {
     return 0;
   }
 
@@ -2431,7 +2466,7 @@ int solver_13()
 
   // コア1を作る
   vector<int> cores1;
-  if (createAndExpandCore1(f, cores1, true) == -1) {
+  if (createAndExpandCore(f, cores1, 4, 1, true) == -1) {
     return 0;
   }
 
@@ -2533,7 +2568,9 @@ int solver_14()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
+    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+      continue;
+    }
 
     // コア2を作る
     vector<int> cores2;
@@ -2593,7 +2630,9 @@ int solver_15()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
+    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+      continue;
+    }
 
     // コア2を作る
     vector<int> cores2;
@@ -2677,7 +2716,9 @@ int solver_16()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
+    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+      continue;
+    }
 
     // コア2を作る
     vector<int> cores2;
@@ -2691,38 +2732,7 @@ int solver_16()
       }
     }
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
-
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
-
-    // スコア計算
-    int tmpScore = 0;
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == f[j] && f[i] != 0) {
-          if (b[i][j]) tmpScore++;
-        }
-        else {
-          if (!b[i][j]) tmpScore++;
-        }
-      }
-    }
-    if (tmpScore > real_score) {
-      real_score = tmpScore;
-      real_argRes = argRes;
-    }
+    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
 
   return real_argRes;
@@ -2746,7 +2756,9 @@ int solver_17()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
+    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+      continue;
+    }
 
     // コア2を作る
     vector<int> cores2;
@@ -2760,38 +2772,7 @@ int solver_17()
       }
     }
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
-
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
-
-    // スコア計算
-    int tmpScore = 0;
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == f[j] && f[i] != 0) {
-          if (b[i][j]) tmpScore++;
-        }
-        else {
-          if (!b[i][j]) tmpScore++;
-        }
-      }
-    }
-    if (tmpScore > real_score) {
-      real_score = tmpScore;
-      real_argRes = argRes;
-    }
+    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
 
   return real_argRes;
@@ -2868,7 +2849,9 @@ int solver_19()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) { continue; }
+    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
+      continue;
+    }
 
     // コア2を作る
     vector<int> cores2;
@@ -2941,7 +2924,7 @@ int solver_20()
 
     // コア1を作る
     vector<int> cores1;
-    if (createAndExpandCore1(f, cores1, false) == 0) {
+    if (createAndExpandCore(f, cores1, 4, 1, false) == 0) {
       continue;
     }
 
@@ -3154,38 +3137,7 @@ int solver_23()
       }
     }
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
-
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
-
-    // スコア計算
-    int tmpScore = 0;
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == f[j] && f[i] != 0) {
-          if (b[i][j]) tmpScore++;
-        }
-        else {
-          if (!b[i][j]) tmpScore++;
-        }
-      }
-    }
-    if (tmpScore > real_score) {
-      real_score = tmpScore;
-      real_argRes = argRes;
-    }
+    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
 
   return real_argRes;
@@ -3225,38 +3177,7 @@ int solver_24()
       }
     }
 
-    int res1 = cores1.size();
-    int res2 = cores2.size();
-
-    int score = calculateScore(f);
-
-    std::array<bitset<100>, 3> bif = {};
-    std::array<bitset<100>, 100> bib = {};
-    bitset<100> bione(0);
-    initializeBitsets(f, bif, bib, bione);
-
-    int flipLoop = FLIP_ITERATIONS;
-    if (MODE == 0) flipLoop = 10000;
-    flipOptimization(f, bif, bib, bione, score, res1, res2, flipLoop);
-    if (res2 > res1) swap(res1, res2);
-    int argRes = findBestMatchingPairCoresWithFilter(res1, res2, numPairArr, omoteArr, tei);
-
-    // スコア計算
-    int tmpScore = 0;
-    for (int i = 0; i < n; ++i) {
-      for (int j = i + 1; j < n; ++j) {
-        if (f[i] == f[j] && f[i] != 0) {
-          if (b[i][j]) tmpScore++;
-        }
-        else {
-          if (!b[i][j]) tmpScore++;
-        }
-      }
-    }
-    if (tmpScore > real_score) {
-      real_score = tmpScore;
-      real_argRes = argRes;
-    }
+    evaluateAndOptimizeCores(f, cores1, cores2, omoteArr, tei, real_score, real_argRes);
   }
 
   return real_argRes;
