@@ -84,14 +84,23 @@ struct Rect
   Point bottomRight;
 };
 
+class State
+{
+public:
+  array<Rect, MAX_N> rects;
+  int score;
+};
+
 enum Direction { HORIZONTAL = 0, VERTICAL = 1 };
 
 int allLoopTimes = 1;
 int numRects;
 array<Point, MAX_N> points;
 array<int, MAX_N> targetSizes;
+int currentScore = -1;
 array<Rect, MAX_N> rectangles;
 array<int, MAX_N> rectAreas;
+int bestScore = -1;
 array<Rect, MAX_N> bestRects;
 
 inline void calcArea(int idx)
@@ -142,9 +151,6 @@ inline void writeErrorLog(int fileNum)
   }
   ofs.close();
 }
-
-int currentScore = -1;
-int bestScore = -1;
 
 array<double, MAX_N> rectScores;
 double totalScore;
