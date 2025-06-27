@@ -1212,6 +1212,26 @@ int shuffle2Members[MAX_N];
 int shuffle2TmpPosition[MAX_N];
 int shuffle2NeighborNewPos1[MAX_N];
 int shuffle2NeighborNewPos2[MAX_N];
+
+inline void updatePos3Common(int& diffScore3, int& tmpMargin, int& sum, int& ite1, int& ite3, int pos3, int day, int lineNum)
+{
+  shuffle2NeighborNewPos2[ite3] = pos3;
+  if (day < elementCount - 2) {
+    for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
+      if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
+        diffScore3 += widths[lineNum] * 2;
+        break;
+      }
+    }
+  }
+  tmpMargin -= pos3 - sum;
+  sum = pos3;
+  shuffle2TmpPosition[ite1] = sum;
+  sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
+  ite1++;
+  shuffle2TmpPosition[ite1] = sum;
+}
+
 int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin)
 {
   int beforeCount = 0;
@@ -1369,21 +1389,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             }
             else {
               // nPos = pos3
-              shuffle2NeighborNewPos2[ite3] = pos3;
-              if (day < elementCount - 2) {
-                for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
-                  if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
-                    diffScore3 += widths[lineNum] * 2;
-                    break;
-                  }
-                }
-              }
-              tmpMargin -= pos3 - sum;
-              sum = pos3;
-              shuffle2TmpPosition[ite1] = sum;
-              sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-              ite1++;
-              shuffle2TmpPosition[ite1] = sum;
+              updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
               ite3++;
             }
           }
@@ -1452,21 +1458,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
           }
           else {
             // nPos = pos3
-            shuffle2NeighborNewPos2[ite3] = pos3;
-            if (day < elementCount - 2) {
-              for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
-                if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
-                  diffScore3 += widths[lineNum] * 2;
-                  break;
-                }
-              }
-            }
-            tmpMargin -= pos3 - sum;
-            sum = pos3;
-            shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
           }
           ite3++;
         }
@@ -1571,39 +1563,11 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
             shuffle2TmpPosition[ite1] = sum;
           }
           else {
-            shuffle2NeighborNewPos2[ite3] = pos3;
-            if (day < elementCount - 2) {
-              for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
-                if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
-                  diffScore3 += widths[lineNum] * 2;
-                  break;
-                }
-              }
-            }
-            tmpMargin -= pos3 - sum;
-            sum = pos3;
-            shuffle2TmpPosition[ite1] = sum;
-            sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-            ite1++;
-            shuffle2TmpPosition[ite1] = sum;
+            updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
           }
         }
         else {
-          shuffle2NeighborNewPos2[ite3] = pos3;
-          if (day < elementCount - 2) {
-            for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
-              if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
-                diffScore3 += widths[lineNum] * 2;
-                break;
-              }
-            }
-          }
-          tmpMargin -= pos3 - sum;
-          sum = pos3;
-          shuffle2TmpPosition[ite1] = sum;
-          sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-          ite1++;
-          shuffle2TmpPosition[ite1] = sum;
+          updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
         }
         ite3++;
       }
@@ -1681,21 +1645,7 @@ int CalcDiffScore3_2(int iter, int memberCount, int day, int lineNum, int margin
       }
 
       if (sum + tmpMargin < pos32 || !isConnect) {
-        shuffle2NeighborNewPos2[ite3] = pos3;
-        if (day < elementCount - 2) {
-          for (int k = 0; k < columnSchedule.schedulesCount[day + 2][lineNum]; ++k) {
-            if (columnSchedule.schedulesPosition[day + 2][lineNum][k] == pos3) {
-              diffScore3 += widths[lineNum] * 2;
-              break;
-            }
-          }
-        }
-        tmpMargin -= pos3 - sum;
-        sum = pos3;
-        shuffle2TmpPosition[ite1] = sum;
-        sum += preCalcScheduleSizes[day][shuffle2Members[ite1]][lineNum];
-        ite1++;
-        shuffle2TmpPosition[ite1] = sum;
+        updatePos3Common(diffScore3, tmpMargin, sum, ite1, ite3, pos3, day, lineNum);
       }
       else {
         if (isConnect) diffScore3 += widths[lineNum] * 2;
