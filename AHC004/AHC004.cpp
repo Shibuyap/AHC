@@ -5,9 +5,9 @@
 #include <iomanip>
 #include <iosfwd>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <sstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <utility>
 #include <vector>
@@ -54,27 +54,12 @@ namespace
 
   static double rand_01()
   {
-    return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
-  }
-
-  static double rand_range(double l, double r)
-  {
-    return l + (r - l) * rand_01();
+    return (rand_xorshift() + 0.5) * (1.0 / (double)UINT_MAX);
   }
 
   static uint32_t rand_range(uint32_t l, uint32_t r)
   {
     return l + rand_xorshift() % (r - l + 1); // [l, r]
-  }
-
-  void shuffle_array(int* arr, int n)
-  {
-    for (int i = n - 1; i >= 0; i--) {
-      int j = rand_xorshift() % (i + 1);
-      int tmp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = tmp;
-    }
   }
 }
 
@@ -152,7 +137,7 @@ public:
   {
     initial_patterns.patterns.clear();
     initial_patterns.patterns.resize(MAX_PATTERN_LENGTH + 1);
-    for (int i = 0; i < strs.size(); i++) {
+    for (int i = 0; i < (int)strs.size(); i++) {
       string s = strs[i];
       int len = s.size();
       vector<int> tmp(len);
@@ -180,9 +165,9 @@ public:
 
     {
       vector<Pattern> tmp2;
-      for (int i = 0; i < tmp.size(); ++i) {
+      for (int i = 0; i < (int)tmp.size(); ++i) {
         bool skip = false;
-        for (int j = 0; j < tmp.size(); ++j) {
+        for (int j = 0; j < (int)tmp.size(); ++j) {
           if (i == j) {
             continue;
           }
@@ -191,9 +176,9 @@ public:
           if (p1.size() > p2.size()) {
             continue;
           }
-          for (int k = 0; k < p2.size() - p1.size() + 1; ++k) {
+          for (int k = 0; k < (int)(p2.size() - p1.size() + 1); ++k) {
             bool ok = true;
-            for (int l = 0; l < p1.size(); l++) {
+            for (int l = 0; l < (int)p1.size(); l++) {
               if (p1[l] != p2[l + k]) {
                 ok = false;
                 break;
@@ -299,7 +284,7 @@ public:
         if (merged_pattern.pattern.size() >= MAX_PATTERN_LENGTH) {
           break;
         }
-        if (k + diff < merged_pattern.pattern.size()) {
+        if (k + diff < (int)merged_pattern.pattern.size()) {
           continue;
         }
         else {
@@ -419,7 +404,7 @@ public:
 
     // 置けてないパターンを長い順に置けるところに置いていく
     for (int len = MAX_PATTERN_LENGTH; len >= MIN_PATTERN_LENGTH; len--) {
-      for (int pi = 0; pi < patterns.patterns[len].size(); pi++) {
+      for (int pi = 0; pi < (int)patterns.patterns[len].size(); pi++) {
         if (matched[len][pi].get_count() > 0) {
           continue;
         }
@@ -473,7 +458,7 @@ public:
     matched.resize(MAX_PATTERN_LENGTH + 1);
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
       matched[i].resize(patterns.patterns[i].size());
-      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+      for (int j = 0; j < (int)patterns.patterns[i].size(); j++) {
         matched[i][j].clear();
       }
     }
@@ -486,7 +471,7 @@ public:
     reset_matched(patterns);
 
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+      for (int j = 0; j < (int)patterns.patterns[i].size(); j++) {
         matched[i][j].clear();
         for (int k = 0; k < N; ++k) {
           for (int l = 0; l < N; ++l) {
@@ -505,7 +490,7 @@ public:
 
     match_cnt = 0;
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+      for (int j = 0; j < (int)patterns.patterns[i].size(); j++) {
         if (matched[i][j].get_count() > 0) {
           match_cnt += patterns.patterns[i][j].merge_cnt;
         }
@@ -516,7 +501,7 @@ public:
   void update_one_point(int row, int col, const Patterns& patterns)
   {
     for (int i = MIN_PATTERN_LENGTH; i <= MAX_PATTERN_LENGTH; i++) {
-      for (int j = 0; j < patterns.patterns[i].size(); j++) {
+      for (int j = 0; j < (int)patterns.patterns[i].size(); j++) {
         if (matched[i][j].get_count() > 0) {
           match_cnt -= patterns.patterns[i][j].merge_cnt;
         }
@@ -557,14 +542,14 @@ public:
       if (i == 0) {
         continue;
       }
-      for (int j = 0; j < vv.size(); ++j) {
-        for (int k = 0; k < vv[j].size(); ++k) {
+      for (int j = 0; j < (int)vv.size(); ++j) {
+        for (int k = 0; k < (int)vv[j].size(); ++k) {
           int num = 0;
           for (int l = 0; l < i; ++l) {
             num *= CHARACTER_SIZE;
             num += vv[j][(k + l) % vv[j].size()];
           }
-          if (num >= prefixMaps[i].size()) {
+          if (num >= (int)prefixMaps[i].size()) {
             cout << "NGa" << endl;
             continue;
           }
@@ -599,8 +584,8 @@ public:
     for (int ii = 0; ii < ii_num; ++ii) {
       int no_start_count = 0;
 
-      for (int i = 0; i < vv.size(); ++i) {
-        for (int j = 0; j < vv.size(); ++j) {
+      for (int i = 0; i < (int)vv.size(); ++i) {
+        for (int j = 0; j < (int)vv.size(); ++j) {
           if (i == j || ii == i || ii == j) {
             continue;
           }
@@ -618,13 +603,13 @@ public:
                 g[1][m] = CHARACTER_SIZE;
                 g[2][m] = CHARACTER_SIZE;
               }
-              for (int j = 0; j < vv[ii].size(); ++j) {
+              for (int j = 0; j < (int)vv[ii].size(); ++j) {
                 g[0][j] = vv[ii][j];
               }
-              for (int m = 0; m < vv[i].size(); ++m) {
+              for (int m = 0; m < (int)vv[i].size(); ++m) {
                 g[1][(k + m) % N] = vv[i][m];
               }
-              for (int m = 0; m < vv[j].size(); ++m) {
+              for (int m = 0; m < (int)vv[j].size(); ++m) {
                 g[2][(l + m) % N] = vv[j][m];
               }
 
@@ -696,10 +681,10 @@ public:
 
               // 失敗したら元に戻す
               if (ng_count > NG_SAFE) {
-                for (int m = 0; m < vv[i].size(); ++m) {
+                for (int m = 0; m < (int)vv[i].size(); ++m) {
                   g[1][(k + m) % N] = CHARACTER_SIZE;
                 }
-                for (int m = 0; m < vv[j].size(); ++m) {
+                for (int m = 0; m < (int)vv[j].size(); ++m) {
                   g[2][(l + m) % N] = CHARACTER_SIZE;
                 }
                 used_version++;
@@ -727,7 +712,7 @@ public:
                   int m = (start_col + mm) % N;
                   for (int n = 0; n < N; ++n) {
                     int idx = (decided_col_2[m] + n) % N;
-                    if (idx < vv[decided_col[m]].size()) {
+                    if (idx < (int)vv[decided_col[m]].size()) {
                       g[n][m] = vv[decided_col[m]][idx];
                     }
                     else {
@@ -782,7 +767,7 @@ public:
                       if (decided_col[n] != -1) {
                         int idx_col = (decided_col_2[n] + m) % N;
                         int idx_row = (pre.second + n + N - start_col) % N;
-                        if (idx_col < vv[decided_col[n]].size() && idx_row < vv[pre.first].size()) {
+                        if (idx_col < (int)vv[decided_col[n]].size() && idx_row < (int)vv[pre.first].size()) {
                           if (vv[pre.first][idx_row] != vv[decided_col[n]][idx_col]) {
                             is_ok = false;
                             break;
@@ -836,7 +821,7 @@ public:
                     for (int m = 0; m < N; ++m) {
                       if (decided_col[m] != -1) {
                         int idx = (decided_col_2[m] + n) % N;
-                        grid[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
+                        grid[n][m] = idx < (int)vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
                       }
                       else {
                         grid[n][m] = CHARACTER_SIZE;
@@ -849,7 +834,7 @@ public:
                   if (decided_row[n] != -1) {
                     for (int m = 0; m < N; ++m) {
                       int idx = (decided_row_2[n] + m) % N;
-                      if (idx < vv[decided_row[n]].size()) {
+                      if (idx < (int)vv[decided_row[n]].size()) {
                         grid[n][(start_col + m) % N] = vv[decided_row[n]][idx];
                       }
                     }
@@ -872,7 +857,7 @@ public:
                     for (int m = 0; m < N; ++m) {
                       if (decided_col[m] != -1) {
                         int idx = (decided_col_2[m] + n) % N;
-                        best_g[n][m] = idx < vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
+                        best_g[n][m] = idx < (int)vv[decided_col[m]].size() ? vv[decided_col[m]][idx] : CHARACTER_SIZE;
                       }
                       else {
                         best_g[n][m] = CHARACTER_SIZE;
@@ -885,7 +870,7 @@ public:
                   if (decided_row[n] != -1) {
                     for (int m = 0; m < N; ++m) {
                       int idx = (decided_row_2[n] + m) % N;
-                      if (idx < vv[decided_row[n]].size()) {
+                      if (idx < (int)vv[decided_row[n]].size()) {
                         best_g[n][(start_col + m) % N] = vv[decided_row[n]][idx];
                       }
                     }
@@ -898,10 +883,10 @@ public:
               }
 
               // 後片付け
-              for (int m = 0; m < vv[i].size(); ++m) {
+              for (int m = 0; m < (int)vv[i].size(); ++m) {
                 g[1][(k + m) % N] = CHARACTER_SIZE;
               }
-              for (int m = 0; m < vv[j].size(); ++m) {
+              for (int m = 0; m < (int)vv[j].size(); ++m) {
                 g[2][(l + m) % N] = CHARACTER_SIZE;
               }
               if (start_col != -1) {
@@ -936,14 +921,14 @@ private:
   bool is_matched(int row, int col, const vector<int>& vec, int dir)
   {
     if (dir == 0) {
-      for (int i = 0; i < vec.size(); i++) {
+      for (int i = 0; i < (int)vec.size(); i++) {
         if (grid[row][(col + i) % N] != vec[i]) {
           return false;
         }
       }
     }
     else {
-      for (int i = 0; i < vec.size(); i++) {
+      for (int i = 0; i < (int)vec.size(); i++) {
         if (grid[(row + i) % N][col] != vec[i]) {
           return false;
         }
@@ -1073,8 +1058,6 @@ void run_simulated_annealing(AnnealingParams annealingParams, State& state, cons
 
     // 近傍解作成
     int ra_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
-    int ra1, ra2, ra3, ra4, ra5;
-    int keep1, keep2, keep3, keep4, keep5;
 
     ll current_score = state.get_score(patterns);
 
@@ -1209,11 +1192,11 @@ ll execute_solver(AnnealingParams annealingParams, PatternsManager& patterns_man
   }
 
   if (mode >= 3) {
-    for (int i = 0; i < patterns_manager.merged_patterns.patterns.size(); i++) {
+    for (int i = 0; i < (int)patterns_manager.merged_patterns.patterns.size(); i++) {
       cerr << setw(3) << i << " ";
     }
     cerr << endl;
-    for (int i = 0; i < patterns_manager.merged_patterns.patterns.size(); i++) {
+    for (int i = 0; i < (int)patterns_manager.merged_patterns.patterns.size(); i++) {
       cerr << setw(3) << patterns_manager.merged_patterns.patterns[i].size() << " ";
     }
     cerr << endl;

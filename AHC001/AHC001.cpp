@@ -8,10 +8,8 @@
 #include <iomanip>
 #include <iosfwd>
 #include <iostream>
-#include <math.h>
 #include <sstream>
 #include <string>
-#include <time.h>
 #include <utility>
 #include <vector>
 
@@ -56,7 +54,7 @@ static uint32_t xorshift()
 // 0以上1未満の小数をとる乱数
 static double rand01()
 {
-  return (xorshift() + 0.5) * (1.0 / UINT_MAX);
+  return (xorshift() + 0.5) * (1.0 / (double)UINT_MAX);
 }
 
 // ハイパラはここにおく
@@ -478,8 +476,6 @@ inline void updateRectBounds(Rect& rect, int i, int ite, Direction dir)
 // 一方向の拡張処理を共通化
 inline void expandInDirection(Rect& rect, int ite, Direction primaryDir)
 {
-  Direction secondaryDir = (primaryDir == HORIZONTAL) ? VERTICAL : HORIZONTAL;
-
   // 主方向の初期化
   getCoordRef(rect.topLeft, primaryDir) = 0;
   getCoordRef(rect.bottomRight, primaryDir) = 10000;
@@ -709,7 +705,7 @@ State secondBestState;
 inline void resetRects(int numToReset)
 {
   // numToReset個つぶす
-  for (int i = 0; i < (numToReset); ++i) {
+  for (int i = 0; i < numToReset; ++i) {
     int ite = xorshift() % numRects;
     initRect(currentState.rects[ite], points[ite]);
   }
@@ -751,8 +747,8 @@ inline void createHole(int hole = 100)
     if (i == ite) { continue; }
     if (checkOverlap(i, ite)) affectedRects.emplace_back(i);
   }
-  int numAffected = affectedRects.size();
-  for (int i = 0; i < (numAffected); ++i) {
+  int numAffected = (int)affectedRects.size();
+  for (int i = 0; i < numAffected; ++i) {
     initRect(currentState.rects[affectedRects[i]], points[affectedRects[i]]);
   }
 
@@ -895,8 +891,6 @@ inline void slideRect(int ite, double temp)
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentState.score;
-  const double prob = exp((double)scoreDiff / temp);
   if (newScore >= currentState.score) {
     modeCount[1]++;
     currentState.score = newScore;
@@ -918,7 +912,7 @@ inline void changeAspectRatio(int ite, double temp)
   int heightRatio = 10 - widthRatio;
 
   int totalRatio = widthRatio * heightRatio;
-  int scaleFactor = sqrt(targetSizes[ite] / totalRatio);
+  int scaleFactor = (int)sqrt(targetSizes[ite] / totalRatio);
   if (scaleFactor == 0) { return; }
 
   int width = widthRatio * scaleFactor;
@@ -948,8 +942,6 @@ inline void changeAspectRatio(int ite, double temp)
 
   int newScore = calcScore(ite);
 
-  int scoreDiff = newScore - currentState.score;
-  const double prob = exp((double)scoreDiff / temp);
   if (newScore >= currentState.score) {
     modeCount[2]++;
     currentState.score = newScore;
@@ -1095,12 +1087,12 @@ inline void shiftBoundary(int ite, double temp)
   }
 
 
-  for (int i = 0; i < (numOverlaps); ++i) {
+  for (int i = 0; i < numOverlaps; ++i) {
     prevRects[i] = currentState.rects[overlappingRects[i]];
   }
 
   int isValidShift = 1;
-  for (int i = 0; i < (numOverlaps); ++i) {
+  for (int i = 0; i < numOverlaps; ++i) {
     // 隣接する矩形の境界を調整
     if (edgeType < 2) {
       getRectCoordByEdge(currentState.rects[overlappingRects[i]], edgeType + 2) = getRectCoordByEdge(currentState.rects[ite], edgeType);
@@ -1112,7 +1104,7 @@ inline void shiftBoundary(int ite, double temp)
   }
 
   if (isValidShift == 0) {
-    for (int i = 0; i < (numOverlaps); ++i) {
+    for (int i = 0; i < numOverlaps; ++i) {
       currentState.rects[overlappingRects[i]] = prevRects[i];
     }
     // 元に戻す
@@ -1134,7 +1126,7 @@ inline void shiftBoundary(int ite, double temp)
     }
   }
   else {
-    for (int i = 0; i < (numOverlaps); ++i) {
+    for (int i = 0; i < numOverlaps; ++i) {
       currentState.rects[overlappingRects[i]] = prevRects[i];
       calcScore(overlappingRects[i]);
     }

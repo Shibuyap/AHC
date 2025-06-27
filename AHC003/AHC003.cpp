@@ -8,12 +8,8 @@
 #include <fstream>
 #include <iosfwd>
 #include <iostream>
-#include <math.h>
 #include <queue>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
-#include <time.h>
 #include <utility>
 #include <vector>
 
@@ -186,7 +182,7 @@ int CalcScore(const int sx, const int sy, const string& ans, const double aValue
 {
   int x = sx, y = sy;
   int res = 0;
-  for (int i = 0; i < ans.size(); ++i) {
+  for (int i = 0; i < (int)ans.size(); ++i) {
     if (ans[i] == 'U') {
       res += dReal[0][x][y];
       x--;
@@ -260,13 +256,13 @@ void FinalAdjustment()
     double diff = 0;
 
     if (dir == 0) {
-      for (int i = 0; i < PathIDVectorUD[x][y].size(); ++i) {
+      for (int i = 0; i < (int)PathIDVectorUD[x][y].size(); ++i) {
         int t = PathIDVectorUD[x][y][i];
         diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + delta))) * (40000.0 / dist_res[t]);
       }
     }
     else {
-      for (int i = 0; i < PathIDVectorLR[x][y].size(); ++i) {
+      for (int i = 0; i < (int)PathIDVectorLR[x][y].size(); ++i) {
         int t = PathIDVectorLR[x][y][i];
         diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + delta))) * (40000.0 / dist_res[t]);
       }
@@ -274,13 +270,13 @@ void FinalAdjustment()
 
     if (diff > 0) {
       if (dir == 0) {
-        for (int i = 0; i < PathIDVectorUD[x][y].size(); ++i) {
+        for (int i = 0; i < (int)PathIDVectorUD[x][y].size(); ++i) {
           int t = PathIDVectorUD[x][y][i];
           dist_est[t] += delta;
         }
       }
       else {
-        for (int i = 0; i < PathIDVectorLR[x][y].size(); ++i) {
+        for (int i = 0; i < (int)PathIDVectorLR[x][y].size(); ++i) {
           int t = PathIDVectorLR[x][y][i];
           dist_est[t] += delta;
         }
@@ -382,7 +378,7 @@ void UpdatePathInfo(int turn, int sx, int sy, const vector<int>& v)
     }
   }
 
-  for (int i = 0; i < v.size(); ++i) {
+  for (int i = 0; i < (int)v.size(); ++i) {
     int x = sx;
     int y = sy;
     if (v[i] == 2) x += 1;
@@ -421,13 +417,13 @@ void UpdateDiffSum(int turn)
   for (int i = 0; i < Q; ++i) dist_est[i] = 0;
 
   for (int j = 0; j < N; ++j) {
-    for (int i = 0; i < turn_v[j].size(); ++i) {
+    for (int i = 0; i < (int)turn_v[j].size(); ++i) {
       int t = turn_v[j][i];
       dist_est[t] += edge.up[j] * vsum[t][edge.cut_v[j]][j] + edge.down[j] * (vsum[t][N - 1][j] - vsum[t][edge.cut_v[j]][j]);
     }
   }
   for (int j = 0; j < N; ++j) {
-    for (int i = 0; i < turn_h[j].size(); ++i) {
+    for (int i = 0; i < (int)turn_h[j].size(); ++i) {
       int t = turn_h[j][i];
       dist_est[t] += edge.left[j] * hsum[t][j][edge.cut_h[j]] + edge.right[j] * (hsum[t][j][N - 1] - hsum[t][j][edge.cut_h[j]]);
     }
@@ -527,7 +523,7 @@ int Solve(string case_num)
     // 山登り用
     dist_res[turn] = dist;
 
-    int length = ans.size();
+    // int length = ans.size();
 
     if (turn < 0) {
       continue;
@@ -668,7 +664,7 @@ void AnnealingMode0(double temp)
     };
 
   // diff計算
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     double d = delta * getMultiplier(t);
     diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
@@ -686,7 +682,7 @@ void AnnealingMode0(double temp)
 
   if (prob > Rand01()) {
     // 更新処理も共通化
-    for (int i = 0; i < turns.size(); ++i) {
+    for (int i = 0; i < (int)turns.size(); ++i) {
       int t = turns[i];
       double d = delta * getMultiplier(t);
       dist_est[t] += d;
@@ -714,14 +710,14 @@ void AnnealingMode1(double temp)
   double diff = 0;
 
   if (dir == 0) {
-    for (int i = 0; i < turn_v[idx].size(); ++i) {
+    for (int i = 0; i < (int)turn_v[idx].size(); ++i) {
       int t = turn_v[idx][i];
       double d = delta * vsum[t][N - 1][idx];
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
     }
   }
   if (dir == 1) {
-    for (int i = 0; i < turn_h[idx].size(); ++i) {
+    for (int i = 0; i < (int)turn_h[idx].size(); ++i) {
       int t = turn_h[idx][i];
       double d = delta * hsum[t][idx][N - 1];
       diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
@@ -732,7 +728,7 @@ void AnnealingMode1(double temp)
 
   if (prob > Rand01()) {
     if (dir == 0) {
-      for (int i = 0; i < turn_v[idx].size(); ++i) {
+      for (int i = 0; i < (int)turn_v[idx].size(); ++i) {
         int t = turn_v[idx][i];
         double d = delta * vsum[t][N - 1][idx];
         dist_est[t] += d;
@@ -741,7 +737,7 @@ void AnnealingMode1(double temp)
       edge.down[idx] += delta;
     }
     if (dir == 1) {
-      for (int i = 0; i < turn_h[idx].size(); ++i) {
+      for (int i = 0; i < (int)turn_h[idx].size(); ++i) {
         int t = turn_h[idx][i];
         double d = delta * hsum[t][idx][N - 1];
         dist_est[t] += d;
@@ -790,7 +786,7 @@ void AnnealingMode2(double temp)
   double diff = 0;
 
   // diff計算
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     double d = calcDelta(t);
     diff += (std::abs(dist_res[t] - dist_est[t]) - std::abs(dist_res[t] - (dist_est[t] + d))) * (40000.0 / dist_res[t]);
@@ -800,7 +796,7 @@ void AnnealingMode2(double temp)
 
   if (prob > Rand01()) {
     // 更新処理も共通化
-    for (int i = 0; i < turns.size(); ++i) {
+    for (int i = 0; i < (int)turns.size(); ++i) {
       int t = turns[i];
       double d = calcDelta(t);
       dist_est[t] += d;
@@ -826,7 +822,7 @@ void AnnealingMode3Common(int idx)
     return IsVertical ? vsum[t][N - 1][idx] : hsum[t][idx][N - 1];
     };
 
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     rem.push_back(dist_res[t] - (dist_est[t] - (edge1[idx] * getSum1(t, cut[idx]) + edge2[idx] * (getSum2(t) - getSum1(t, cut[idx])))));
   }
@@ -834,7 +830,7 @@ void AnnealingMode3Common(int idx)
   int best_cut = cut[idx];
   double maxDiff = 0;
   int changed = 0;
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     maxDiff += (abs(rem[i]) - std::abs(dist_res[t] - dist_est[t])) * (40000.0 / dist_res[t]);
   }
@@ -844,7 +840,7 @@ void AnnealingMode3Common(int idx)
       double val1 = Rand() % 8001 + 1000;
 
       double sum = 0;
-      for (int i = 0; i < turns.size(); ++i) {
+      for (int i = 0; i < (int)turns.size(); ++i) {
         int t = turns[i];
         if (getSum2(t) - getSum1(t, cutPos) == 0) vec[i].first = 1001001;
         else vec[i].first = (rem[i] - val1 * getSum1(t, cutPos)) / (getSum2(t) - getSum1(t, cutPos));
@@ -858,7 +854,7 @@ void AnnealingMode3Common(int idx)
       sort(vec.begin(), vec.begin() + turns.size() + 1);
       int ite = 0;
       double cnt = vec[ite].second;
-      while (ite < turns.size() + 1) {
+      while (ite < (int)turns.size() + 1) {
         if (cnt < sum - cnt) {
           ite++;
           cnt += vec[ite].second;
@@ -871,7 +867,7 @@ void AnnealingMode3Common(int idx)
       double val2 = vec[ite].first;
       val2 = max(val2, 1000.0);
       val2 = min(val2, 9000.0);
-      for (int i = 0; i < turns.size(); ++i) {
+      for (int i = 0; i < (int)turns.size(); ++i) {
         int t = turns[i];
         d += (abs(rem[i]) - std::abs(rem[i] - (getSum2(t) - getSum1(t, cutPos)) * val2)) * (40000.0 / dist_res[t]);
       }
@@ -888,7 +884,7 @@ void AnnealingMode3Common(int idx)
   }
   if (changed == 0) { return; }
   int cdiff = best_cut - cut[idx];
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     double d = 0;
     if (cdiff > 0) {
@@ -901,14 +897,14 @@ void AnnealingMode3Common(int idx)
   }
   cut[idx] = best_cut;
   double diff1 = best_edge1 - edge1[idx];
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     double d = diff1 * getSum1(t, cut[idx]);
     dist_est[t] += d;
   }
   edge1[idx] = best_edge1;
   double diff2 = best_edge2 - edge2[idx];
-  for (int i = 0; i < turns.size(); ++i) {
+  for (int i = 0; i < (int)turns.size(); ++i) {
     int t = turns[i];
     double d = diff2 * (getSum2(t) - getSum1(t, cut[idx]));
     dist_est[t] += d;

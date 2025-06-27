@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <iosfwd>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -53,7 +53,7 @@ static uint32_t rand_xorshift()
 
 static double rand_unit_double()
 {
-  return (rand_xorshift() + 0.5) * (1.0 / UINT_MAX);
+  return (rand_xorshift() + 0.5) * (1.0 / (double)UINT_MAX);
 }
 
 void shuffle_array(int* arr, int n)
@@ -413,7 +413,7 @@ public:
   }
 };
 
-bool search_best_path(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam& param)
+bool search_best_path(int seg_start_x, int seg_start_y, int seg_goal_x, int seg_goal_y, Path& keep_path, const AnnealParam&)
 {
   DfsSolver dfsSolver;
   int rand = rand_xorshift() % 2;
