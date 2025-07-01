@@ -29,11 +29,6 @@
 #include <utility>
 #include <vector>
 
-#define rep(i, n) for (int i = 0; i < (n); ++i)
-#define srep(i, s, t) for (int i = s; i < t; ++i)
-#define drep(i, n) for (int i = (n) - 1; i >= 0; --i)
-#define dsrep(i, s, t) for (int i = (t) - 1; i >= s; --i)
-
 using namespace std;
 
 typedef long long int ll;
@@ -133,10 +128,8 @@ struct Input
     is >> n;
 
     // 重さを読み込み
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
         int w;
         is >> w;
         grid[i][j].w = w;
@@ -145,10 +138,8 @@ struct Input
     }
 
     // 耐久力を読み込み
-    rep(i, n)
-    {
-      rep(j, n)
-      {
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < n; ++j) {
         int d;
         is >> d;
         grid[i][j].d = d;
@@ -182,10 +173,8 @@ struct State
     move_count = 0;
     actions.clear();
 
-    rep(i, input.n)
-    {
-      rep(j, input.n)
-      {
+    for (int i = 0; i < input.n; ++i) {
+      for (int j = 0; j < input.n; ++j) {
         grid[i][j] = input.grid[i][j];
         if (grid[i][j].exist && !(i == 0 && j == 0)) {
           remaining_boxes++;
@@ -587,8 +576,7 @@ void remake_state(bool modoraaa = false)
 {
   current_state.init(input);
   int min_d = INT_MAX;
-  rep(i, pick_order.size())
-  {
+  for (int i = 0; i < pick_order.size(); ++i) {
     auto p = pick_order[i];
     int target_x = p.first;
     int target_y = p.second;
@@ -770,10 +758,8 @@ vector<P> after_method()
   int min_d = INT_MAX;
   int x = 0, y = 0;
 
-  rep(i, MAX_N)
-  {
-    rep(j, MAX_N)
-    {
+  for (int i = 0; i < MAX_N; ++i) {
+    for (int j = 0; j < MAX_N; ++j) {
       b[i][j] = 1;
     }
   }
@@ -788,8 +774,7 @@ vector<P> after_method()
       b[x][y] = 0;
 
       bool isLast = true;
-      srep(k, j + 1, v.size())
-      {
+      for (int k = j + 1; k < v.size(); ++k) {
         if (b[v[k].first][v[k].second] != 0) {
           isLast = false;
           break;
@@ -847,8 +832,7 @@ int simulate_need(vector<P>& v, int x, int y, int move_count)
     need_d += (x + y) * current_state.grid[x][y].w;  // (x,y)までの距離 × 重さ
 
     bool isLast = true;
-    srep(k, j + 1, v.size())
-    {
+    for (int k = j + 1; k < v.size(); ++k) {
       if (b[v[k].first][v[k].second] != 0) {
         isLast = false;
         break;
@@ -889,7 +873,7 @@ int simulate_need(vector<P>& v, int x, int y, int move_count)
     }
   }
 
-  for(auto& p : bbb) {
+  for (auto& p : bbb) {
     b[p.first][p.second] = 1;  // 出入り口は拾えないので、ここで拾う
   }
 
@@ -900,10 +884,8 @@ P can_pick(int gx, int gy, int need_d)
 {
   P p(-1, -1);
   int max_mul = 0;
-  rep(i, gx)
-  {
-    rep(j, gy)
-    {
+  for (int i = 0; i < gx; ++i) {
+    for (int j = 0; j < gy; ++j) {
       if (b[i][j] == 0) continue;  // 既に拾われた箱はスキップ
       if (current_state.grid[i][j].d > need_d) {
         int tmp = (i + j) * current_state.grid[i][j].w;  // (i,j)までの距離 × 重さ
@@ -928,10 +910,8 @@ vector<P> after_method2(bool aaa = false)
   int min_d = INT_MAX;
   int x = 0, y = 0;
 
-  rep(i, MAX_N)
-  {
-    rep(j, MAX_N)
-    {
+  for (int i = 0; i < MAX_N; ++i) {
+    for (int j = 0; j < MAX_N; ++j) {
       b[i][j] = 1;
     }
   }
@@ -942,7 +922,7 @@ vector<P> after_method2(bool aaa = false)
     int need_d = simulate_need(v, x, y, move_count);
 
     int first_x = -1;
-    int first_y = -1;  
+    int first_y = -1;
     for (int j = 0; j < v.size(); j++) {
       if (b[v[j].first][v[j].second] != 0) {
         first_x = v[j].first;
@@ -952,10 +932,10 @@ vector<P> after_method2(bool aaa = false)
     }
 
     P p(-1, -1);
-    if(first_x != -1 && first_y != -1) {
+    if (first_x != -1 && first_y != -1) {
       p = can_pick(first_x, first_y, need_d);
     }
-    if(p.first != -1) {
+    if (p.first != -1) {
       while (current_state.x != p.first || current_state.y != p.second) {
         if (current_state.x < p.first) {
           current_state.move(2);  // Down
@@ -1047,14 +1027,13 @@ vector<P> after_method2(bool aaa = false)
         next_move(x, y, min_d, move_count, v[j].first, v[j].second);
         modoru.push_back(1);
       }
-      
+
       current_state.pickup();
       new_pick_order.push_back(P(x, y));
       b[x][y] = 0;
 
       bool isLast = true;
-      srep(k, j + 1, v.size())
-      {
+      for (int k = j + 1; k < v.size(); ++k) {
         if (b[v[k].first][v[k].second] != 0) {
           isLast = false;
           break;

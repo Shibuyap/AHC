@@ -420,7 +420,6 @@ double calc_score()
 {
   double resd = 0;
   double ma, mi;
-  // srep(j, 1, 3)  => j=1,2
   for (int j = 1; j < 3; ++j) {
     if (block_count[0][j] >= block_count[1][j]) {
       ma = block_count[0][j];
