@@ -101,6 +101,34 @@ namespace
 const double TIME_LIMIT = 1.9;
 int exec_mode;
 
+enum class PlaceType
+{
+  PROCESSOR = 0,
+  SORTER = 1,
+  INLET = 2,
+};
+
+class Place
+{
+public:
+  PlaceType type;
+  int id;
+  int x, y;
+  int k;
+  int v1, v2;
+};
+
+
+// 入力データ
+int n, m, k;
+vector<Place> places;
+vector<vector<double>> p;
+
+// 出力データ
+vector<int> d;
+int s;
+
+// 入力データの読み込み
 void input_data(int case_num)
 {
   std::ostringstream oss;
@@ -109,9 +137,52 @@ void input_data(int case_num)
 
   if (!ifs.is_open()) {
     // 標準入力
+    cin >> n >> m >> k;
+
+    places.resize(n + m + 1);
+    for (int i = 0; i < n; i++) {
+      int x, y;
+      cin >> x >> y;
+      places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
+    }
+    for (int i = 0; i < m; i++) {
+      int x, y;
+      cin >> x >> y;
+      places[n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
+    }
+    places[n + m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
+
+    p.assign(k, vector<double>(n));
+    for (int i = 0; i < k; i++) {
+      for (int j = 0; j < n; j++) {
+        cin >> p[i][j];
+      }
+    }
   }
   else {
     // ファイル入力
+    ifs >> n >> m >> k;
+
+    places.resize(n + m + 1);
+    for (int i = 0; i < n; i++) {
+      int x, y;
+      ifs >> x >> y;
+      places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
+    }
+    for (int i = 0; i < m; i++) {
+      int x, y;
+      ifs >> x >> y;
+      places[n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
+    }
+    places[n + m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
+
+    p.assign(k, vector<double>(n));
+    for (int i = 0; i < k; i++) {
+      for (int j = 0; j < n; j++) {
+        ifs >> p[i][j];
+      }
+    }
+
     ifs.close();
   }
 }
@@ -120,6 +191,19 @@ void output_data(int case_num)
 {
   if (exec_mode == 0) {
     // 標準出力
+    for (int i = 0; i < n; i++) {
+      cout << d[i] << " ";
+    }
+    cout << endl;
+    cout << s << endl;
+    for (int i = n; i < n + m; i++) {
+      if (places[i].k == -1) {
+        cout << -1 << endl;
+      }
+      else {
+        cout << places[i].k << " " << places[i].v1 << " " << places[i].v2 << endl;
+      }
+    }
   }
   else {
     // ファイル出力
@@ -127,10 +211,37 @@ void output_data(int case_num)
     oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
     ofstream ofs(oss.str());
 
-
     if (ofs.is_open()) {
+      for (int i = 0; i < n; i++) {
+        ofs << d[i] << " ";
+      }
+      ofs << endl;
+      ofs << s << endl;
+      for (int i = n; i < n + m; i++) {
+        if (places[i].k == -1) {
+          ofs << -1 << endl;
+        }
+        else {
+          ofs << places[i].k << " " << places[i].v1 << " " << places[i].v2 << endl;
+        }
+      }
+
       ofs.close();
     }
+  }
+}
+
+void initialize()
+{
+  d.resize(n);
+  for (int i = 0; i < n; i++) {
+    d[i] = i;
+  }
+  s = n;
+  for (int i = n; i < n + k; i++) {
+    places[i].k = 0;
+    places[i].v1 = 0;
+    places[i].v2 = 1;
   }
 }
 
@@ -145,6 +256,8 @@ ll solve_case(int case_num)
   timer.start();
 
   input_data(case_num);
+
+  initialize();
 
   ll score = 0;
 
@@ -162,7 +275,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 100; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
