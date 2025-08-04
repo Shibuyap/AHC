@@ -104,6 +104,39 @@ double euclidean_distance(int x1, int y1, int x2, int y2)
   return sqrt(static_cast<double>((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
 }
 
+// 符号を返す関数
+int sign(int x)
+{
+  return (x > 0) ? 1 : ((x < 0) ? -1 : 0);
+}
+
+// 3点の向きを計算する関数（座標版）
+// a, b, cの3点に対して、aからbへの線分とaからcへの線分の外積の符号を返す
+int orientation(int ax, int ay, int bx, int by, int cx, int cy)
+{
+  int cross = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+  return sign(cross);
+}
+
+// 2つの線分が交差するかどうかを判定する関数（座標版）
+bool segments_intersect(int p1x, int p1y, int p2x, int p2y, int q1x, int q1y, int q2x, int q2y)
+{
+  // バウンディングボックスのチェック
+  if (max(p1x, p2x) < min(q1x, q2x) ||
+    max(q1x, q2x) < min(p1x, p2x) ||
+    max(p1y, p2y) < min(q1y, q2y) ||
+    max(q1y, q2y) < min(p1y, p2y)) {
+    return false;
+  }
+
+  int o1 = orientation(p1x, p1y, p2x, p2y, q1x, q1y);
+  int o2 = orientation(p1x, p1y, p2x, p2y, q2x, q2y);
+  int o3 = orientation(q1x, q1y, q2x, q2y, p1x, p1y);
+  int o4 = orientation(q1x, q1y, q2x, q2y, p2x, p2y);
+
+  return (o1 * o2 <= 0) && (o3 * o4 <= 0);
+}
+
 const double TIME_LIMIT = 1.9;
 int exec_mode;
 
@@ -123,6 +156,18 @@ public:
   int k;
   int v1, v2;
 };
+
+// Place構造体を使った向き計算のラッパー関数
+int orientation(const Place& a, const Place& b, const Place& c)
+{
+  return orientation(a.x, a.y, b.x, b.y, c.x, c.y);
+}
+
+// Place構造体を使った線分交差判定のラッパー関数
+bool segments_intersect(const Place& p1, const Place& p2, const Place& q1, const Place& q2)
+{
+  return segments_intersect(p1.x, p1.y, p2.x, p2.y, q1.x, q1.y, q2.x, q2.y);
+}
 
 
 // 入力データ
@@ -262,17 +307,20 @@ void initialize()
     d[i] = i;
   }
 
+  vector<P> edges;
+
   // s決定
   {
     vector<int> near_order = GetNearOrder(n + m);
     s = near_order[0]; // 最も近い場所をsに設定
+    edges.push_back({ n + m, s }); // sとINLETを結ぶエッジを追加
   }
 
   vector<vector<int>> parents(n + m + 1);
   queue<int> q;
   if (s >= n) {
     q.push(s);
-    parents[s].push_back(n + m);
+    //parents[s].push_back(n + m);
   }
 
   while (!q.empty()) {
@@ -284,22 +332,87 @@ void initialize()
     places[current].v2 = -1;
     for (int next : near_order) {
       if (next < n) {
+        int ok = 1;
+        for (P edge : edges) {
+          if (edge.first == current || edge.second == current) {
+            continue;
+          }
+          if (segments_intersect(places[edge.first], places[edge.second], places[current], places[next])) {
+            ok = 0;
+            break;
+          }
+        }
+        if (!ok) {
+          continue;
+        }
         if (places[current].v1 == -1) {
           places[current].v1 = next;
         }
         else {
           places[current].v2 = next;
         }
+        edges.push_back({ current, next });
+        parents[next].push_back(current);
       }
       else {
-        if (places[current].k != -1) {
+        if (places[next].k != -1) {
           continue;
         }
-
+        int ok = 1;
+        for (P edge : edges) {
+          if (edge.first == current || edge.second == current) {
+            continue;
+          }
+          if (segments_intersect(places[edge.first], places[edge.second], places[current], places[next])) {
+            ok = 0;
+            break;
+          }
+        }
+        if (!ok) {
+          continue;
+        }
+        if (places[current].v1 == -1) {
+          places[current].v1 = next;
+        }
+        else {
+          places[current].v2 = next;
+        }
+        q.push(next);
+        edges.push_back({ current, next });
+        parents[next].push_back(current);
       }
 
       if (places[current].v2 != -1) {
         break;
+      }
+    }
+
+    if (places[current].v1 == -1) {
+      places[current].k = -1;
+    }
+    else if (places[current].v2 == -1) {
+      places[current].v2 = places[current].v1;
+    }
+  }
+
+  for (int i = n; i < n + m; i++) {
+    if (places[i].k == -1) {
+      q.push(i);
+    }
+  }
+  while (!q.empty()) {
+    int current = q.front();
+    q.pop();
+    for (int parent : parents[current]) {
+      if (places[parent].v1 == current && places[parent].v2 == current) {
+        places[parent].k = -1;
+        q.push(parent);
+      }
+      else if (places[parent].v1 == current) {
+        places[parent].v1 = places[parent].v2;
+      }
+      else {
+        places[parent].v2 = places[parent].v1;
       }
     }
   }
