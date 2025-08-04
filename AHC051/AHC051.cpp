@@ -98,6 +98,12 @@ namespace
   }
 }
 
+// ユークリッド距離を計算する関数
+double euclidean_distance(int x1, int y1, int x2, int y2)
+{
+  return sqrt(static_cast<double>((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
+}
+
 const double TIME_LIMIT = 1.9;
 int exec_mode;
 
@@ -231,17 +237,71 @@ void output_data(int case_num)
   }
 }
 
+vector<int> GetNearOrder(int i)
+{
+  vector<pair<double, int>> distances;
+  for (int j = 0; j < n + m; j++) {
+    if (j == i) {
+      continue;
+    }
+    double dist = euclidean_distance(places[i].x, places[i].y, places[j].x, places[j].y);
+    distances.push_back({ dist, j });
+  }
+  sort(distances.begin(), distances.end());
+  vector<int> near_order;
+  for (const auto& p : distances) {
+    near_order.push_back(p.second);
+  }
+  return near_order;
+}
+
 void initialize()
 {
   d.resize(n);
   for (int i = 0; i < n; i++) {
     d[i] = i;
   }
-  s = n;
-  for (int i = n; i < n + k; i++) {
-    places[i].k = 0;
-    places[i].v1 = 0;
-    places[i].v2 = 1;
+
+  // s決定
+  {
+    vector<int> near_order = GetNearOrder(n + m);
+    s = near_order[0]; // 最も近い場所をsに設定
+  }
+
+  vector<vector<int>> parents(n + m + 1);
+  queue<int> q;
+  if (s >= n) {
+    q.push(s);
+    parents[s].push_back(n + m);
+  }
+
+  while (!q.empty()) {
+    int current = q.front();
+    q.pop();
+    auto near_order = GetNearOrder(current);
+    places[current].k = 0;
+    places[current].v1 = -1;
+    places[current].v2 = -1;
+    for (int next : near_order) {
+      if (next < n) {
+        if (places[current].v1 == -1) {
+          places[current].v1 = next;
+        }
+        else {
+          places[current].v2 = next;
+        }
+      }
+      else {
+        if (places[current].k != -1) {
+          continue;
+        }
+
+      }
+
+      if (places[current].v2 != -1) {
+        break;
+      }
+    }
   }
 }
 
