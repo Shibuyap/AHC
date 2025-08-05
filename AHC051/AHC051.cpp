@@ -765,6 +765,9 @@ void method1(State& s)
     }
   }
 
+  //cerr << s.score << ' ' << best_state.score << endl;
+  s = best_state; // ベスト状態を最終的な状態に設定
+
   cerr << "loop = " << loop << ", score = " << s.score << endl;
 }
 
