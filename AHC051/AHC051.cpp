@@ -606,6 +606,26 @@ void initialize(State& s)
   s.score = calculate_score(s);
 }
 
+void sample_method(State& s)
+{
+  s.d.resize(s.n);
+  for (int i = 0; i < s.n; i++) {
+    s.d[i] = i;
+  }
+
+  // s決定
+  {
+    vector<int> near_order = GetNearOrder(s.n + s.m, s);
+    s.s = near_order[0]; // 最も近い場所をsに設定
+  }
+
+  s.places[s.s].k = 0;
+  s.places[s.s].v1 = 0;
+  s.places[s.s].v2 = 1;
+
+  s.score = calculate_score(s);
+}
+
 // 山登り
 void method1(State& s)
 {
@@ -754,8 +774,9 @@ int solve_case(int case_num)
 
   State state = input_data(case_num);
 
-  initialize(state);
+  //sample_method(state);
 
+  initialize(state);
   method1(state);
 
   output_data(case_num, state);
