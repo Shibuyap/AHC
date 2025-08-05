@@ -155,6 +155,7 @@ public:
   int x, y;
   int k;
   int v1, v2;
+  int keep_v1, keep_v2;
 };
 
 class State
@@ -344,10 +345,100 @@ vector<int> GetNearOrder(int i, const State& s)
   return near_order;
 }
 
-int calculate_score(const State& s)
+/*
+ * Hungarian (Kuhn–Munkres) algorithm for ASSIGNMENT PROBLEM
+ * --------------------------------------------------------
+ * 与えられた n×n の「利益」行列 profit[i][j] (double) について、
+ * 各行・各列から 1 要素ずつ選択し、総利益を最大化する。
+ *
+ * 返り値:
+ *   pair<double, vector<int>> (最大利益, 行 i に割り当てた列 idx[i])
+ *   割当が存在しない場合 idx[i] = -1
+ *
+ * 計算量:  O(n^3)   (n ≤ 20 なら μs〜ms オーダ)
+ *
+ * 実装方針:
+ *   最大化 → 最小化へ変換:  cost[i][j] = maxP - profit[i][j]
+ *   ※ maxP は各行の最大値を取って +α した十分大きな定数で OK
+ *   double の比較誤差を避けるため EPS を使う。
+ */
+pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
 {
-  double missing = 0.0;
+  const double INF = 1e100;
+  const double EPS = 1e-12;
+  int n = (int)profit.size();
+  vector<double> u(n + 1), v(n + 1); // ポテンシャル
+  vector<int> p(n + 1), way(n + 1);  // p: col→row, way: col→prev col
+  vector<int> assignment(n, -1);     // row i に割り当てた col
+
+  /* --- 最大化 → 最小化 (cost) --- */
+  double maxP = -INF;
+  for (auto& row : profit)
+    for (double x : row)
+      maxP = max(maxP, x);
+  vector<vector<double>> cost(n, vector<double>(n));
+  for (int i = 0; i < n; ++i)
+    for (int j = 0; j < n; ++j)
+      cost[i][j] = maxP - profit[i][j];
+
+  /* --- 本体 --- */
+  for (int i = 1; i <= n; ++i) { // 行を 1-origin で管理
+    p[0] = i;
+    int j0 = 0; // 現在の空列
+    vector<double> minv(n + 1, INF);
+    vector<char> used(n + 1, false);
+    do {
+      used[j0] = true;
+      int i0 = p[j0], j1 = 0;
+      double delta = INF;
+      for (int j = 1; j <= n; ++j)
+        if (!used[j]) {
+          double cur = cost[i0 - 1][j - 1] - u[i0] - v[j];
+          if (cur < minv[j]) {
+            minv[j] = cur;
+            way[j] = j0;
+          }
+          if (minv[j] < delta) {
+            delta = minv[j];
+            j1 = j;
+          }
+        }
+      for (int j = 0; j <= n; ++j) {
+        if (used[j]) {
+          u[p[j]] += delta;
+          v[j] -= delta;
+        }
+        else
+          minv[j] -= delta;
+      }
+      j0 = j1;
+    } while (p[j0] != 0);
+
+    // 増加パスの逆辿り
+    do {
+      int j1 = way[j0];
+      p[j0] = p[j1];
+      j0 = j1;
+    } while (j0);
+  }
+
+  // 結果の取り出し
+  double maxSum = 0.0;
+  for (int j = 1; j <= n; ++j) {
+    int i = p[j];
+    if (i) {
+      assignment[i - 1] = j - 1;
+      maxSum += profit[i - 1][j - 1];
+    }
+  }
+  return { maxSum, assignment };
+}
+
+int calculate_score(State& s)
+{
   auto topo = topological_sort(s);
+
+  vector<vector<double>> dp2(s.n, vector<double>(s.n, 0.0));
 
   for (int i = 0; i < s.n; i++) {
     vector<double> dp(s.places.size(), 0.0);
@@ -364,14 +455,23 @@ int calculate_score(const State& s)
       dp[s.places[v].v2] += dp[v] * (1.0 - s.p[kk][i]);
     }
 
-    missing += 1.0;
     for (int j = 0; j < s.n; j++) {
-      if (s.d[j] == i) {
-        missing -= dp[j];
+      dp2[i][j] = dp[j];
+    }
+  }
+
+  auto hangarian_result = hungarian_max(dp2);
+
+  for (int i = 0; i < s.n; i++) {
+    for (int j = 0; j < s.n; j++) {
+      if (hangarian_result.second[j] == i) {
+        s.d[i] = j;
+        break;
       }
     }
   }
 
+  double missing = s.n - hangarian_result.first;
   int res = round(1e9 / s.n * missing);
   return res;
 }
@@ -383,6 +483,7 @@ void initialize(State& s)
     s.d[i] = i;
   }
 
+  vector<bool> visited(s.n + s.m, false);
   vector<P> edges;
 
   // s決定
@@ -396,12 +497,15 @@ void initialize(State& s)
   queue<int> q;
   if (s.s >= s.n) {
     q.push(s.s);
-    //parents[s].push_back(n + m);
   }
 
   while (!q.empty()) {
     int current = q.front();
     q.pop();
+    if (visited[current]) {
+      continue;
+    }
+    visited[current] = true;
     auto near_order = GetNearOrder(current, s);
     s.places[current].k = rand_xorshift() % s.k;
     s.places[current].v1 = -1;
@@ -411,6 +515,9 @@ void initialize(State& s)
         int ok = 1;
         for (P edge : edges) {
           if (edge.first == current || edge.second == current) {
+            continue;
+          }
+          if (edge.first == next || edge.second == next) {
             continue;
           }
           if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
@@ -437,6 +544,9 @@ void initialize(State& s)
         int ok = 1;
         for (P edge : edges) {
           if (edge.first == current || edge.second == current) {
+            continue;
+          }
+          if (edge.first == next || edge.second == next) {
             continue;
           }
           if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
@@ -499,6 +609,12 @@ void initialize(State& s)
 // 山登り
 void method1(State& s)
 {
+  for (int i = 0; i < s.n + s.m; i++) {
+    s.places[i].keep_v1 = s.places[i].v1;
+    s.places[i].keep_v2 = s.places[i].v2;
+  }
+
+  cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
   State best_state = s;
 
   vector<int> use_places;
@@ -512,7 +628,7 @@ void method1(State& s)
   }
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e9;
+  const double START_TEMP = 1e6;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
@@ -529,33 +645,8 @@ void method1(State& s)
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    int ra = rand_xorshift() % 100;
-    if (ra < 50) {
-      int n1 = rand_xorshift() % s.n;
-      int n2 = rand_xorshift() % s.n;
-      while (n1 == n2) {
-        n2 = rand_xorshift() % s.n;
-      }
-      // dを入れ替える
-      swap(s.d[n1], s.d[n2]);
-      // スコアを計算
-      int new_score = calculate_score(s);
-
-      double diff_score = (s.score - new_score) * 123.6;
-      double prob = exp(diff_score / temp);
-      if (prob > rand_01()) {
-        s.score = new_score;
-        //cerr << "New score: " << s.score << endl;
-        if (s.score < best_state.score) {
-          best_state = s; // ベスト状態を更新
-        }
-      }
-      else {
-        // 元に戻す
-        swap(s.d[n1], s.d[n2]);
-      }
-    }
-    else {
+    int ra = rand_xorshift() % 200;
+    if (ra < 95) {
       int v = rand_xorshift() % use_places.size();
       while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
         v = rand_xorshift() % use_places.size();
@@ -570,18 +661,86 @@ void method1(State& s)
       // スコアを計算
       int new_score = calculate_score(s);
 
-      double diff_score = (s.score - new_score) * 12345.6;
+      double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
       if (prob > rand_01()) {
         s.score = new_score;
-        //cerr << "New score: " << s.score << endl;
         if (s.score < best_state.score) {
+          //cerr << "New score1: " << s.score << endl;
           best_state = s; // ベスト状態を更新
         }
       }
       else {
         // 元に戻す
         s.places[place_id].k = keep_k; // 元のkに戻す
+      }
+    }
+    else if (ra < 100) {
+      int v = rand_xorshift() % use_places.size();
+      while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
+        v = rand_xorshift() % use_places.size();
+      }
+      int place_id = use_places[v];
+      swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
+
+      // スコアを計算
+      int new_score = calculate_score(s);
+
+      double diff_score = (s.score - new_score) * 123.6;
+      double prob = exp(diff_score / temp);
+      if (prob > rand_01()) {
+        s.score = new_score;
+        if (s.score < best_state.score) {
+          //cerr << "New score2: " << s.score << endl;
+          best_state = s; // ベスト状態を更新
+        }
+      }
+      else {
+        // 元に戻す
+        swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
+      }
+    }
+    else if (ra < 200) {
+      int v = rand_xorshift() % use_places.size();
+      while (s.places[use_places[v]].keep_v1 == s.places[use_places[v]].keep_v2) {
+        v = rand_xorshift() % use_places.size();
+      }
+      int place_id = use_places[v];
+      // v1とv2を入れ替える前に、元の値を保存
+      int keep_v1 = s.places[place_id].v1;
+      int keep_v2 = s.places[place_id].v2;
+      if (s.places[place_id].v1 == s.places[place_id].v2) {
+        s.places[place_id].v1 = s.places[place_id].keep_v1; // v1を元に戻す
+        s.places[place_id].v2 = s.places[place_id].keep_v2; // v2を元に戻す
+        if (rand_xorshift() % 2 == 0) {
+          swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
+        }
+      }
+      else {
+        if (rand_xorshift() % 2 == 0) {
+          s.places[place_id].v1 = s.places[place_id].v2; // v1をv2に置き換える
+        }
+        else {
+          s.places[place_id].v2 = s.places[place_id].v1; // v2をv1に置き換える
+        }
+      }
+
+      // スコアを計算
+      int new_score = calculate_score(s);
+
+      double diff_score = (s.score - new_score) * 123.6;
+      double prob = exp(diff_score / temp);
+      if (prob > rand_01()) {
+        s.score = new_score;
+        if (s.score < best_state.score) {
+          //cerr << "New score2: " << s.score << endl;
+          best_state = s; // ベスト状態を更新
+        }
+      }
+      else {
+        // 元に戻す
+        s.places[place_id].v1 = keep_v1; // 元のv1に戻す
+        s.places[place_id].v2 = keep_v2; // 元のv2に戻す
       }
     }
   }
