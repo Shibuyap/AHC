@@ -137,7 +137,7 @@ bool segments_intersect(int p1x, int p1y, int p2x, int p2y, int q1x, int q1y, in
   return (o1 * o2 <= 0) && (o3 * o4 <= 0);
 }
 
-const double TIME_LIMIT = 1.9;
+const double TIME_LIMIT = 1.8;
 int exec_mode;
 
 enum class PlaceType
@@ -157,6 +157,22 @@ public:
   int v1, v2;
 };
 
+class State
+{
+public:
+  // 入力データ
+  int n, m, k;
+  vector<Place> places;
+  vector<vector<double>> p; // k * nの行列
+
+  // 出力データ
+  vector<int> d;
+  int s;
+
+  // その他
+  int score;
+};
+
 // Place構造体を使った向き計算のラッパー関数
 int orientation(const Place& a, const Place& b, const Place& c)
 {
@@ -169,90 +185,118 @@ bool segments_intersect(const Place& p1, const Place& p2, const Place& q1, const
   return segments_intersect(p1.x, p1.y, p2.x, p2.y, q1.x, q1.y, q2.x, q2.y);
 }
 
+vector<int> topological_sort(const State& s)
+{
+  int N = (int)s.places.size();
+  vector<int> indeg(N, 0);
+  for (int i = s.n; i < s.n + s.m; ++i) {
+    if (s.places[i].k == -1) {
+      continue;
+    }
+    ++indeg[s.places[i].v1];
+    ++indeg[s.places[i].v2];
+  }
 
-// 入力データ
-int n, m, k;
-vector<Place> places;
-vector<vector<double>> p;
+  queue<int> q;
+  q.push(s.s);
 
-// 出力データ
-vector<int> d;
-int s;
+  vector<int> order;
+  order.reserve(N);
+  while (!q.empty()) {
+    int v = q.front();
+    q.pop();
+    order.push_back(v);
+    if (s.places[v].k == -1) {
+      continue;
+    }
+    if (--indeg[s.places[v].v1] == 0) {
+      q.push(s.places[v].v1);
+    }
+    if (--indeg[s.places[v].v2] == 0) {
+      q.push(s.places[v].v2);
+    }
+  }
+  return order;
+}
 
 // 入力データの読み込み
-void input_data(int case_num)
+State input_data(int case_num)
 {
+  State state;
+
   std::ostringstream oss;
   oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
   ifstream ifs(oss.str());
 
   if (!ifs.is_open()) {
     // 標準入力
-    cin >> n >> m >> k;
+    cin >> state.n >> state.m >> state.k;
 
-    places.resize(n + m + 1);
-    for (int i = 0; i < n; i++) {
+    state.places.resize(state.n + state.m + 1);
+    for (int i = 0; i < state.n; i++) {
       int x, y;
       cin >> x >> y;
-      places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
+      state.places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
     }
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < state.m; i++) {
       int x, y;
       cin >> x >> y;
-      places[n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
+      state.places[state.n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
     }
-    places[n + m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
+    state.places[state.n + state.m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
 
-    p.assign(k, vector<double>(n));
-    for (int i = 0; i < k; i++) {
-      for (int j = 0; j < n; j++) {
-        cin >> p[i][j];
+    state.p.assign(state.k, vector<double>(state.n));
+    for (int i = 0; i < state.k; i++) {
+      for (int j = 0; j < state.n; j++) {
+        cin >> state.p[i][j];
       }
     }
   }
   else {
     // ファイル入力
-    ifs >> n >> m >> k;
+    ifs >> state.n >> state.m >> state.k;
 
-    places.resize(n + m + 1);
-    for (int i = 0; i < n; i++) {
+    state.places.resize(state.n + state.m + 1);
+    for (int i = 0; i < state.n; i++) {
       int x, y;
       ifs >> x >> y;
-      places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
+      state.places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
     }
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < state.m; i++) {
       int x, y;
       ifs >> x >> y;
-      places[n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
+      state.places[state.n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
     }
-    places[n + m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
+    state.places[state.n + state.m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
 
-    p.assign(k, vector<double>(n));
-    for (int i = 0; i < k; i++) {
-      for (int j = 0; j < n; j++) {
-        ifs >> p[i][j];
+    state.p.assign(state.k, vector<double>(state.n));
+    for (int i = 0; i < state.k; i++) {
+      for (int j = 0; j < state.n; j++) {
+        ifs >> state.p[i][j];
       }
     }
 
     ifs.close();
   }
+
+  return state;
 }
 
-void output_data(int case_num)
+void output_data(int case_num, const State& state)
 {
   if (exec_mode == 0) {
     // 標準出力
-    for (int i = 0; i < n; i++) {
-      cout << d[i] << " ";
+    for (int i = 0; i < state.n; i++) {
+      cout << state.d[i] << " ";
     }
     cout << endl;
-    cout << s << endl;
-    for (int i = n; i < n + m; i++) {
-      if (places[i].k == -1) {
+    cout << state.s << endl;
+    for (int i = state.n; i < state.n + state.m; i++) {
+      if (state.places[i].k == -1) {
         cout << -1 << endl;
       }
       else {
-        cout << places[i].k << " " << places[i].v1 << " " << places[i].v2 << endl;
+        cout << state.places[i].k << " " << state.places[i].v1 << " " << state.places[i].v2 << endl;
       }
     }
   }
@@ -263,17 +307,17 @@ void output_data(int case_num)
     ofstream ofs(oss.str());
 
     if (ofs.is_open()) {
-      for (int i = 0; i < n; i++) {
-        ofs << d[i] << " ";
+      for (int i = 0; i < state.n; i++) {
+        ofs << state.d[i] << " ";
       }
       ofs << endl;
-      ofs << s << endl;
-      for (int i = n; i < n + m; i++) {
-        if (places[i].k == -1) {
+      ofs << state.s << endl;
+      for (int i = state.n; i < state.n + state.m; i++) {
+        if (state.places[i].k == -1) {
           ofs << -1 << endl;
         }
         else {
-          ofs << places[i].k << " " << places[i].v1 << " " << places[i].v2 << endl;
+          ofs << state.places[i].k << " " << state.places[i].v1 << " " << state.places[i].v2 << endl;
         }
       }
 
@@ -282,14 +326,14 @@ void output_data(int case_num)
   }
 }
 
-vector<int> GetNearOrder(int i)
+vector<int> GetNearOrder(int i, const State& s)
 {
   vector<pair<double, int>> distances;
-  for (int j = 0; j < n + m; j++) {
+  for (int j = 0; j < s.n + s.m; j++) {
     if (j == i) {
       continue;
     }
-    double dist = euclidean_distance(places[i].x, places[i].y, places[j].x, places[j].y);
+    double dist = euclidean_distance(s.places[i].x, s.places[i].y, s.places[j].x, s.places[j].y);
     distances.push_back({ dist, j });
   }
   sort(distances.begin(), distances.end());
@@ -300,44 +344,76 @@ vector<int> GetNearOrder(int i)
   return near_order;
 }
 
-void initialize()
+int calculate_score(const State& s)
 {
-  d.resize(n);
-  for (int i = 0; i < n; i++) {
-    d[i] = i;
+  double missing = 0.0;
+  auto topo = topological_sort(s);
+
+  for (int i = 0; i < s.n; i++) {
+    vector<double> dp(s.places.size(), 0.0);
+    dp[s.s] = 1.0;
+    for (int v : topo) {
+      if (s.places[v].k == -1) {
+        continue;
+      }
+      if (s.places[v].v1 == -1 || s.places[v].v2 == -1) {
+        continue;
+      }
+      int kk = s.places[v].k;
+      dp[s.places[v].v1] += dp[v] * s.p[kk][i];
+      dp[s.places[v].v2] += dp[v] * (1.0 - s.p[kk][i]);
+    }
+
+    missing += 1.0;
+    for (int j = 0; j < s.n; j++) {
+      if (s.d[j] == i) {
+        missing -= dp[j];
+      }
+    }
+  }
+
+  int res = round(1e9 / s.n * missing);
+  return res;
+}
+
+void initialize(State& s)
+{
+  s.d.resize(s.n);
+  for (int i = 0; i < s.n; i++) {
+    s.d[i] = i;
   }
 
   vector<P> edges;
 
   // s決定
   {
-    vector<int> near_order = GetNearOrder(n + m);
-    s = near_order[0]; // 最も近い場所をsに設定
-    edges.push_back({ n + m, s }); // sとINLETを結ぶエッジを追加
+    vector<int> near_order = GetNearOrder(s.n + s.m, s);
+    s.s = near_order[0]; // 最も近い場所をsに設定
+    edges.push_back({ s.n + s.m, s.s }); // sとINLETを結ぶエッジを追加
   }
 
-  vector<vector<int>> parents(n + m + 1);
+  vector<vector<int>> parents(s.n + s.m + 1);
   queue<int> q;
-  if (s >= n) {
-    q.push(s);
+  if (s.s >= s.n) {
+    q.push(s.s);
     //parents[s].push_back(n + m);
   }
 
   while (!q.empty()) {
     int current = q.front();
     q.pop();
-    auto near_order = GetNearOrder(current);
-    places[current].k = 0;
-    places[current].v1 = -1;
-    places[current].v2 = -1;
+    auto near_order = GetNearOrder(current, s);
+    s.places[current].k = rand_xorshift() % s.k;
+    s.places[current].v1 = -1;
+    s.places[current].v2 = -1;
     for (int next : near_order) {
-      if (next < n) {
+      if (next < s.n) {
         int ok = 1;
         for (P edge : edges) {
           if (edge.first == current || edge.second == current) {
             continue;
           }
-          if (segments_intersect(places[edge.first], places[edge.second], places[current], places[next])) {
+          if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
             ok = 0;
             break;
           }
@@ -345,17 +421,17 @@ void initialize()
         if (!ok) {
           continue;
         }
-        if (places[current].v1 == -1) {
-          places[current].v1 = next;
+        if (s.places[current].v1 == -1) {
+          s.places[current].v1 = next;
         }
         else {
-          places[current].v2 = next;
+          s.places[current].v2 = next;
         }
         edges.push_back({ current, next });
         parents[next].push_back(current);
       }
       else {
-        if (places[next].k != -1) {
+        if (s.places[next].k != -1) {
           continue;
         }
         int ok = 1;
@@ -363,7 +439,7 @@ void initialize()
           if (edge.first == current || edge.second == current) {
             continue;
           }
-          if (segments_intersect(places[edge.first], places[edge.second], places[current], places[next])) {
+          if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
             ok = 0;
             break;
           }
@@ -371,32 +447,32 @@ void initialize()
         if (!ok) {
           continue;
         }
-        if (places[current].v1 == -1) {
-          places[current].v1 = next;
+        if (s.places[current].v1 == -1) {
+          s.places[current].v1 = next;
         }
         else {
-          places[current].v2 = next;
+          s.places[current].v2 = next;
         }
         q.push(next);
         edges.push_back({ current, next });
         parents[next].push_back(current);
       }
 
-      if (places[current].v2 != -1) {
+      if (s.places[current].v2 != -1) {
         break;
       }
     }
 
-    if (places[current].v1 == -1) {
-      places[current].k = -1;
+    if (s.places[current].v1 == -1) {
+      s.places[current].k = -1;
     }
-    else if (places[current].v2 == -1) {
-      places[current].v2 = places[current].v1;
+    else if (s.places[current].v2 == -1) {
+      s.places[current].v2 = s.places[current].v1;
     }
   }
 
-  for (int i = n; i < n + m; i++) {
-    if (places[i].k == -1) {
+  for (int i = s.n; i < s.n + s.m; i++) {
+    if (s.places[i].k == -1) {
       q.push(i);
     }
   }
@@ -404,39 +480,128 @@ void initialize()
     int current = q.front();
     q.pop();
     for (int parent : parents[current]) {
-      if (places[parent].v1 == current && places[parent].v2 == current) {
-        places[parent].k = -1;
+      if (s.places[parent].v1 == current && s.places[parent].v2 == current) {
+        s.places[parent].k = -1;
         q.push(parent);
       }
-      else if (places[parent].v1 == current) {
-        places[parent].v1 = places[parent].v2;
+      else if (s.places[parent].v1 == current) {
+        s.places[parent].v1 = s.places[parent].v2;
       }
       else {
-        places[parent].v2 = places[parent].v1;
+        s.places[parent].v2 = s.places[parent].v1;
       }
     }
   }
+
+  s.score = calculate_score(s);
 }
 
-ll calculate_score()
+// 山登り
+void method1(State& s)
 {
-  ll res = 0;
-  return res;
+  State best_state = s;
+
+  vector<int> use_places;
+  {
+    auto topo = topological_sort(s);
+    for (auto v : topo) {
+      if (s.n <= v && v < s.n + s.m && s.places[v].k != -1) {
+        use_places.push_back(v);
+      }
+    }
+  }
+
+  double now_time = timer.get_elapsed_time();
+  const double START_TEMP = 1e9;
+  const double END_TEMP = 1e-5;
+
+  int loop = 0;
+  while (true) {
+    loop++;
+
+    if (loop % 100 == 0) {
+      now_time = timer.get_elapsed_time();
+      if (now_time > TIME_LIMIT) {
+        break;
+      }
+    }
+
+    double progress_ratio = now_time / TIME_LIMIT;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+
+    int ra = rand_xorshift() % 100;
+    if (ra < 50) {
+      int n1 = rand_xorshift() % s.n;
+      int n2 = rand_xorshift() % s.n;
+      while (n1 == n2) {
+        n2 = rand_xorshift() % s.n;
+      }
+      // dを入れ替える
+      swap(s.d[n1], s.d[n2]);
+      // スコアを計算
+      int new_score = calculate_score(s);
+
+      double diff_score = (s.score - new_score) * 123.6;
+      double prob = exp(diff_score / temp);
+      if (prob > rand_01()) {
+        s.score = new_score;
+        //cerr << "New score: " << s.score << endl;
+        if (s.score < best_state.score) {
+          best_state = s; // ベスト状態を更新
+        }
+      }
+      else {
+        // 元に戻す
+        swap(s.d[n1], s.d[n2]);
+      }
+    }
+    else {
+      int v = rand_xorshift() % use_places.size();
+      while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
+        v = rand_xorshift() % use_places.size();
+      }
+      int place_id = use_places[v];
+      int keep_k = s.places[place_id].k;
+      s.places[place_id].k = rand_xorshift() % s.k; // ランダムにkを変更
+      while (s.places[place_id].k == keep_k) {
+        s.places[place_id].k = rand_xorshift() % s.k;
+      }
+
+      // スコアを計算
+      int new_score = calculate_score(s);
+
+      double diff_score = (s.score - new_score) * 12345.6;
+      double prob = exp(diff_score / temp);
+      if (prob > rand_01()) {
+        s.score = new_score;
+        //cerr << "New score: " << s.score << endl;
+        if (s.score < best_state.score) {
+          best_state = s; // ベスト状態を更新
+        }
+      }
+      else {
+        // 元に戻す
+        s.places[place_id].k = keep_k; // 元のkに戻す
+      }
+    }
+  }
+
+  cerr << "loop = " << loop << ", score = " << s.score << endl;
 }
 
-ll solve_case(int case_num)
+int solve_case(int case_num)
 {
   timer.start();
 
-  input_data(case_num);
+  State state = input_data(case_num);
 
-  initialize();
+  initialize(state);
 
-  ll score = 0;
+  method1(state);
 
-  output_data(case_num);
+  output_data(case_num, state);
 
-  return score;
+  return state.score;
 }
 
 int main()
