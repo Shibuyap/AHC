@@ -144,7 +144,9 @@ int exec_mode;
 class Board
 {
 public:
+  int n, m, k;
   vector<vector<int>> nearest; // 各頂点から別の頂点への近い順
+  vector<vector<double>> p; // k * nの行列
 };
 
 class Place
@@ -159,17 +161,18 @@ public:
 class State
 {
 public:
-  // 入力データ
-  int n, m, k;
   vector<Place> places; // n個の処理装置、m個の分別器、1つの搬入口を含む
-  vector<vector<double>> p; // k * nの行列
 
-  // 出力データ
   vector<int> d;
   int s;
 
-  // その他
   int score;
+};
+
+struct GameData
+{
+  State state;
+  Board board;
 };
 
 // Place構造体を使った向き計算のラッパー関数
@@ -184,11 +187,11 @@ bool segments_intersect(const Place& p1, const Place& p2, const Place& q1, const
   return segments_intersect(p1.x, p1.y, p2.x, p2.y, q1.x, q1.y, q2.x, q2.y);
 }
 
-vector<int> topological_sort(const State& s)
+vector<int> topological_sort(const Board& b, const State& s)
 {
   int N = (int)s.places.size();
   vector<int> indeg(N, 0);
-  for (int i = s.n; i < s.n + s.m; ++i) {
+  for (int i = b.n; i < b.n + b.m; ++i) {
     if (s.places[i].k == -1) {
       continue;
     }
@@ -218,36 +221,41 @@ vector<int> topological_sort(const State& s)
   return order;
 }
 
-static State read_state(std::istream& is)
+static GameData read_state(std::istream& is)
 {
-  State st;
-  is >> st.n >> st.m >> st.k;
+  State s;
+  Board b;
+  is >> b.n >> b.m >> b.k;
 
-  st.places.resize(st.n + st.m + 1);
+  s.places.resize(b.n + b.m + 1);
 
   auto read_places = [&](int cnt, int offset)
     {
       for (int i = 0; i < cnt; ++i) {
         int x, y;
         is >> x >> y;
-        st.places[offset + i] = { x, y, -1, 0, 0 };
+        s.places[offset + i] = { x, y, -1, 0, 0 };
       }
     };
 
-  read_places(st.n, 0);           // 拠点
-  read_places(st.m, st.n);        // 工場
-  st.places.back() = { 0, 5000, -1, 0, 0 };   // ダミー
+  read_places(b.n, 0);           // 拠点
+  read_places(b.m, b.n);        // 工場
+  s.places.back() = { 0, 5000, -1, 0, 0 };   // ダミー
 
-  st.p.assign(st.k, std::vector<double>(st.n));
-  for (auto& row : st.p) {
+  b.p.assign(b.k, std::vector<double>(b.n));
+  for (auto& row : b.p) {
     for (auto& v : row) {
       is >> v;
     }
   }
-  return st;
+
+  GameData gd;
+  gd.state = s;
+  gd.board = b;
+  return gd;
 }
 
-State input_data(int case_num)
+GameData input_data(int case_num)
 {
   const std::string path = std::format("./in/{:04}.txt", case_num);
   if (std::ifstream ifs{ path }; ifs) {
@@ -258,15 +266,15 @@ State input_data(int case_num)
   return read_state(std::cin);
 }
 
-static void write_state(std::ostream& os, const State& st)
+static void write_state(std::ostream& os, const Board& b, const State& s)
 {
-  for (int i = 0; i < st.n; ++i) {
-    os << st.d[i] << ' ';
+  for (int i = 0; i < b.n; ++i) {
+    os << s.d[i] << ' ';
   }
-  os << '\n' << st.s << '\n';
+  os << '\n' << s.s << '\n';
 
-  for (int i = st.n; i < st.n + st.m; ++i) {
-    const auto& pl = st.places[i];
+  for (int i = b.n; i < b.n + b.m; ++i) {
+    const auto& pl = s.places[i];
     if (pl.k == -1) {
       os << -1 << '\n';
     }
@@ -276,18 +284,18 @@ static void write_state(std::ostream& os, const State& st)
   }
 }
 
-void output_data(int case_num, const State& state)
+void output_data(int case_num, const Board& b, const State& state)
 {
   // 標準出力
   if (exec_mode == 0) {
-    write_state(std::cout, state);
+    write_state(std::cout, b, state);
     return;
   }
 
   // ファイル出力
   std::ofstream ofs(std::format("./out/{:04}.txt", case_num));
   if (ofs) {
-    write_state(ofs, state);
+    write_state(ofs, b, state);
   }
 }
 
@@ -398,13 +406,13 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
   return { maxSum, assignment };
 }
 
-int calculate_score(State& s)
+int calculate_score(const Board& b, State& s)
 {
-  auto topo = topological_sort(s);
+  auto topo = topological_sort(b, s);
 
-  vector<vector<double>> dp2(s.n, vector<double>(s.n, 0.0));
+  vector<vector<double>> dp2(b.n, vector<double>(b.n, 0.0));
 
-  for (int i = 0; i < s.n; i++) {
+  for (int i = 0; i < b.n; i++) {
     vector<double> dp(s.places.size(), 0.0);
     dp[s.s] = 1.0;
     for (int v : topo) {
@@ -415,19 +423,19 @@ int calculate_score(State& s)
         continue;
       }
       int kk = s.places[v].k;
-      dp[s.places[v].v1] += dp[v] * s.p[kk][i];
-      dp[s.places[v].v2] += dp[v] * (1.0 - s.p[kk][i]);
+      dp[s.places[v].v1] += dp[v] * b.p[kk][i];
+      dp[s.places[v].v2] += dp[v] * (1.0 - b.p[kk][i]);
     }
 
-    for (int j = 0; j < s.n; j++) {
+    for (int j = 0; j < b.n; j++) {
       dp2[i][j] = dp[j];
     }
   }
 
   auto hangarian_result = hungarian_max(dp2);
 
-  for (int i = 0; i < s.n; i++) {
-    for (int j = 0; j < s.n; j++) {
+  for (int i = 0; i < b.n; i++) {
+    for (int j = 0; j < b.n; j++) {
       if (hangarian_result.second[j] == i) {
         s.d[i] = j;
         break;
@@ -435,31 +443,31 @@ int calculate_score(State& s)
     }
   }
 
-  double missing = s.n - hangarian_result.first;
-  int res = round(1e9 / s.n * missing);
+  double missing = b.n - hangarian_result.first;
+  int res = round(1e9 / b.n * missing);
   return res;
 }
 
-void initialize(State& s)
+void initialize(const Board& b, State& s)
 {
-  s.d.resize(s.n);
-  for (int i = 0; i < s.n; i++) {
+  s.d.resize(b.n);
+  for (int i = 0; i < b.n; i++) {
     s.d[i] = i;
   }
 
-  vector<bool> visited(s.n + s.m, false);
+  vector<bool> visited(b.n + b.m, false);
   vector<P> edges;
 
   // s決定
   {
-    vector<int> near_order = GetNearOrder(s.n + s.m, s);
+    vector<int> near_order = GetNearOrder(b.n + b.m, s);
     s.s = near_order[0]; // 最も近い場所をsに設定
-    edges.push_back({ s.n + s.m, s.s }); // sとINLETを結ぶエッジを追加
+    edges.push_back({ b.n + b.m, s.s }); // sとINLETを結ぶエッジを追加
   }
 
-  vector<vector<int>> parents(s.n + s.m + 1);
+  vector<vector<int>> parents(b.n + b.m + 1);
   queue<int> q;
-  if (s.s >= s.n) {
+  if (s.s >= b.n) {
     q.push(s.s);
   }
 
@@ -471,11 +479,11 @@ void initialize(State& s)
     }
     visited[current] = true;
     auto near_order = GetNearOrder(current, s);
-    s.places[current].k = rand_xorshift() % s.k;
+    s.places[current].k = rand_xorshift() % b.k;
     s.places[current].v1 = -1;
     s.places[current].v2 = -1;
     for (int next : near_order) {
-      if (next < s.n) {
+      if (next < b.n) {
         int ok = 1;
         for (P edge : edges) {
           if (edge.first == current || edge.second == current) {
@@ -545,7 +553,7 @@ void initialize(State& s)
     }
   }
 
-  for (int i = s.n; i < s.n + s.m; i++) {
+  for (int i = b.n; i < b.n + b.m; i++) {
     if (s.places[i].k == -1) {
       q.push(i);
     }
@@ -567,19 +575,19 @@ void initialize(State& s)
     }
   }
 
-  s.score = calculate_score(s);
+  s.score = calculate_score(b, s);
 }
 
-void sample_method(State& s)
+void sample_method(const Board& b, State& s)
 {
-  s.d.resize(s.n);
-  for (int i = 0; i < s.n; i++) {
+  s.d.resize(b.n);
+  for (int i = 0; i < b.n; i++) {
     s.d[i] = i;
   }
 
   // s決定
   {
-    vector<int> near_order = GetNearOrder(s.n + s.m, s);
+    vector<int> near_order = GetNearOrder(b.n + b.m, s);
     s.s = near_order[0]; // 最も近い場所をsに設定
   }
 
@@ -587,13 +595,13 @@ void sample_method(State& s)
   s.places[s.s].v1 = 0;
   s.places[s.s].v2 = 1;
 
-  s.score = calculate_score(s);
+  s.score = calculate_score(b, s);
 }
 
 // 山登り
-void method1(State& s)
+void method1(const Board& b, State& s)
 {
-  for (int i = 0; i < s.n + s.m; i++) {
+  for (int i = 0; i < b.n + b.m; i++) {
     s.places[i].keep_v1 = s.places[i].v1;
     s.places[i].keep_v2 = s.places[i].v2;
   }
@@ -601,9 +609,9 @@ void method1(State& s)
 
   vector<int> use_places;
   {
-    auto topo = topological_sort(s);
+    auto topo = topological_sort(b, s);
     for (auto v : topo) {
-      if (s.n <= v && v < s.n + s.m && s.places[v].k != -1) {
+      if (b.n <= v && v < b.n + b.m && s.places[v].k != -1) {
         use_places.push_back(v);
       }
     }
@@ -611,9 +619,9 @@ void method1(State& s)
 
   for (int _ = 0; _ < 10000; _++) {
     for (auto v : use_places) {
-      s.places[v].k = rand_xorshift() % s.k;
+      s.places[v].k = rand_xorshift() % b.k;
     }
-    s.score = calculate_score(s);
+    s.score = calculate_score(b, s);
     if (s.score < best_state.score) {
       //cerr << "New score: " << s.score << endl;
       best_state = s; // ベスト状態を更新
@@ -649,13 +657,13 @@ void method1(State& s)
       }
       int place_id = use_places[v];
       int keep_k = s.places[place_id].k;
-      s.places[place_id].k = rand_xorshift() % s.k; // ランダムにkを変更
+      s.places[place_id].k = rand_xorshift() % b.k; // ランダムにkを変更
       while (s.places[place_id].k == keep_k) {
-        s.places[place_id].k = rand_xorshift() % s.k;
+        s.places[place_id].k = rand_xorshift() % b.k;
       }
 
       // スコアを計算
-      int new_score = calculate_score(s);
+      int new_score = calculate_score(b, s);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
@@ -680,7 +688,7 @@ void method1(State& s)
       swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
 
       // スコアを計算
-      int new_score = calculate_score(s);
+      int new_score = calculate_score(b, s);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
@@ -722,7 +730,7 @@ void method1(State& s)
       }
 
       // スコアを計算
-      int new_score = calculate_score(s);
+      int new_score = calculate_score(b, s);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
@@ -751,14 +759,16 @@ int solve_case(int case_num)
 {
   timer.start();
 
-  State state = input_data(case_num);
+  GameData gameData = input_data(case_num);
+  State& state = gameData.state;
+  Board& board = gameData.board;
 
   //sample_method(state);
 
-  initialize(state);
-  method1(state);
+  initialize(board, state);
+  method1(board, state);
 
-  output_data(case_num, state);
+  output_data(case_num, board, state);
 
   return state.score;
 }
