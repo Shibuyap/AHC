@@ -841,7 +841,6 @@ void method1(const Board& b, State& s)
 
   cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
-
   double now_time = timer.get_elapsed_time();
   const double START_TEMP = 1e6;
   const double END_TEMP = 1e-5;
@@ -993,7 +992,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
