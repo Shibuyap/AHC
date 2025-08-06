@@ -310,11 +310,10 @@ vector<int> topological_sort(const Board& b, const State& s)
   int N = (int)s.places.size();
   vector<int> indeg(N, 0);
   for (int i = b.n; i < b.n + b.m; ++i) {
-    if (s.places[i].k == -1) {
-      continue;
+    if (s.places[i].v1 != -1) {
+      ++indeg[s.places[i].v1];
+      ++indeg[s.places[i].v2];
     }
-    ++indeg[s.places[i].v1];
-    ++indeg[s.places[i].v2];
   }
 
   queue<int> q;
@@ -326,7 +325,7 @@ vector<int> topological_sort(const Board& b, const State& s)
     int v = q.front();
     q.pop();
     order.push_back(v);
-    if (s.places[v].k == -1) {
+    if (s.places[v].v1 == -1) {
       continue;
     }
     if (--indeg[s.places[v].v1] == 0) {
@@ -395,7 +394,7 @@ static void write_state(std::ostream& os, const Board& b, const State& s)
 
   for (int i = b.n; i < b.n + b.m; ++i) {
     const auto& pl = s.places[i];
-    if (pl.k == -1) {
+    if (pl.v1 == -1) {
       os << -1 << '\n';
     }
     else {
@@ -570,50 +569,71 @@ int calculate_score(const Board& b, State& s)
   return res;
 }
 
-void initialize(Board& b, State& s)
+void initialize_board(Board& b, State& s)
 {
   b.nearest.clear();
   for (int i = 0; i < b.n + b.m + 1; i++) {
     b.nearest.push_back(GetNearOrder(i, s));
   }
+}
 
+void initialize_State_d(Board& b, State& s)
+{
   s.d.resize(b.n);
   for (int i = 0; i < b.n; i++) {
     s.d[i] = i;
   }
+}
 
-  vector<bool> visited(b.n + b.m, false);
-  vector<P> edges;
-
-  // s決定
+void initialize_State_s(Board& b, State& s)
+{
   for (auto v : b.nearest[b.n + b.m]) {
     if (v >= b.n) {
       s.s = v; // 最も近い場所をsに設定
       break;
     }
   }
+}
+
+void initialize_State_k(Board& b, State& s)
+{
+  for (int i = b.n; i < b.n + b.m; i++) {
+    s.places[i].k = rand_xorshift() % b.k;
+    s.places[i].v1 = -1;
+    s.places[i].v2 = -1;
+  }
+}
+
+void initialize(Board& b, State& s)
+{
+  initialize_board(b, s);
+
+  initialize_State_d(b, s);
+  initialize_State_s(b, s);
+  initialize_State_k(b, s);
+
+  vector<bool> visited(b.n + b.m + 1, false);
+  vector<bool> used(b.n + b.m + 1, false);
+  vector<P> edges;
   edges.push_back({ b.n + b.m, s.s }); // sとINLETを結ぶエッジを追加
 
   vector<vector<int>> parents(b.n + b.m + 1);
   queue<int> q;
   q.push(s.s);
-
   while (!q.empty()) {
     int current = q.front();
     q.pop();
-    if (visited[current]) {
+
+    if (used[current]) {
       continue;
     }
-    visited[current] = true;
-    auto& near_order = b.nearest[current];
-    s.places[current].k = rand_xorshift() % b.k;
-    s.places[current].v1 = -1;
-    s.places[current].v2 = -1;
-    for (int next : near_order) {
+    used[current] = true;
+
+    for (int next : b.nearest[current]) {
       if (next == b.n + b.m) {
         continue; // INLETはスキップ
       }
-      if (next < b.n) {
+      else if (next < b.n) {
         int ok = 1;
         for (P edge : edges) {
           if (edge.first == current || edge.second == current) {
@@ -640,7 +660,7 @@ void initialize(Board& b, State& s)
         parents[next].push_back(current);
       }
       else {
-        if (s.places[next].k != -1) {
+        if (used[next]) {
           continue;
         }
         int ok = 1;
@@ -665,9 +685,12 @@ void initialize(Board& b, State& s)
         else {
           s.places[current].v2 = next;
         }
-        q.push(next);
         edges.push_back({ current, next });
         parents[next].push_back(current);
+        if (!visited[next]) {
+          q.push(next);
+          visited[next] = true;
+        }
       }
 
       if (s.places[current].v2 != -1) {
@@ -675,16 +698,13 @@ void initialize(Board& b, State& s)
       }
     }
 
-    if (s.places[current].v1 == -1) {
-      s.places[current].k = -1;
-    }
-    else if (s.places[current].v2 == -1) {
+    if (s.places[current].v2 == -1) {
       s.places[current].v2 = s.places[current].v1;
     }
   }
 
   for (int i = b.n; i < b.n + b.m; i++) {
-    if (s.places[i].k == -1) {
+    if (s.places[i].v1 == -1) {
       q.push(i);
     }
   }
@@ -693,7 +713,8 @@ void initialize(Board& b, State& s)
     q.pop();
     for (int parent : parents[current]) {
       if (s.places[parent].v1 == current && s.places[parent].v2 == current) {
-        s.places[parent].k = -1;
+        s.places[parent].v1 = -1;
+        s.places[parent].v2 = -1;
         q.push(parent);
       }
       else if (s.places[parent].v1 == current) {
