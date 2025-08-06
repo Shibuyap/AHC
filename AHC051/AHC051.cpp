@@ -633,8 +633,6 @@ void method1(State& s)
     s.places[i].keep_v1 = s.places[i].v1;
     s.places[i].keep_v2 = s.places[i].v2;
   }
-
-  cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
   State best_state = s;
 
   vector<int> use_places;
@@ -646,6 +644,20 @@ void method1(State& s)
       }
     }
   }
+
+  for (int _ = 0; _ < 10000; _++) {
+    for (auto v : use_places) {
+      s.places[v].k = rand_xorshift() % s.k;
+    }
+    s.score = calculate_score(s);
+    if (s.score < best_state.score) {
+      //cerr << "New score: " << s.score << endl;
+      best_state = s; // ベスト状態を更新
+    }
+  }
+
+  cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
+
 
   double now_time = timer.get_elapsed_time();
   const double START_TEMP = 1e6;
