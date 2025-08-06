@@ -1,0 +1,13 @@
+Using evaluator: Variance (type=1)
+Initial score with evaluator: 807601500
+Starting hill climbing method...0.136264 seconds
+loop = 175900, score = 568759659
+case =  0, score = 568759659, sum = 568759659, time = 1.80508, 
+Using evaluator: Variance (type=1)
+Initial score with evaluator: 775077258
+Starting hill climbing method...0.161993 seconds
+loop = 137800, score = 485776612
+case =  1, score = 485776612, sum = 1054536271, time = 1.80703, 
+Using evaluator: Variance (type=1)
+Initial score with evaluator: 831754950
+Starting hill climbing method...0.0802578 seconds

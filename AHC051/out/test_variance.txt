@@ -1,0 +1,13 @@
+Using evaluator: EntropyReduction (type=2)
+Initial score with evaluator: 796122439
+Starting hill climbing method...0.145782 seconds
+loop = 170700, score = 568759659
+case =  0, score = 568759659, sum = 568759659, time = 1.81018, 
+Using evaluator: EntropyReduction (type=2)
+Initial score with evaluator: 737872322
+Starting hill climbing method...0.173721 seconds
+loop = 190100, score = 536426347
+case =  1, score = 536426347, sum = 1105186006, time = 1.805, 
+Using evaluator: EntropyReduction (type=2)
+Initial score with evaluator: 777525220
+Starting hill climbing method...0.0848249 seconds
