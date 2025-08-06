@@ -12,7 +12,6 @@
 #include <ctime>
 #include <deque>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -257,8 +256,10 @@ static GameData read_state(std::istream& is)
 
 GameData input_data(int case_num)
 {
-  const std::string path = std::format("./in/{:04}.txt", case_num);
-  if (std::ifstream ifs{ path }; ifs) {
+  std::ostringstream oss;
+  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ifstream ifs(oss.str());
+  if (ifs) {
     // ファイルが存在
     return read_state(ifs);
   }
@@ -293,7 +294,9 @@ void output_data(int case_num, const Board& b, const State& state)
   }
 
   // ファイル出力
-  std::ofstream ofs(std::format("./out/{:04}.txt", case_num));
+  std::ostringstream oss;
+  oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+  ofstream ofs(oss.str());
   if (ofs) {
     write_state(ofs, b, state);
   }
@@ -302,7 +305,7 @@ void output_data(int case_num, const Board& b, const State& state)
 vector<int> GetNearOrder(int i, const State& s)
 {
   vector<pair<double, int>> distances;
-  for (int j = 0; j < s.places.size() - 1; j++) {
+  for (int j = 0; j < s.places.size(); j++) {
     if (j == i) {
       continue;
     }
@@ -448,8 +451,13 @@ int calculate_score(const Board& b, State& s)
   return res;
 }
 
-void initialize(const Board& b, State& s)
+void initialize(Board& b, State& s)
 {
+  b.nearest.clear();
+  for (int i = 0; i < b.n + b.m + 1; i++) {
+    b.nearest.push_back(GetNearOrder(i, s));
+  }
+
   s.d.resize(b.n);
   for (int i = 0; i < b.n; i++) {
     s.d[i] = i;
@@ -459,17 +467,17 @@ void initialize(const Board& b, State& s)
   vector<P> edges;
 
   // s決定
-  {
-    vector<int> near_order = GetNearOrder(b.n + b.m, s);
-    s.s = near_order[0]; // 最も近い場所をsに設定
-    edges.push_back({ b.n + b.m, s.s }); // sとINLETを結ぶエッジを追加
+  for (auto v : b.nearest[b.n + b.m]) {
+    if (v >= b.n) {
+      s.s = v; // 最も近い場所をsに設定
+      break;
+    }
   }
+  edges.push_back({ b.n + b.m, s.s }); // sとINLETを結ぶエッジを追加
 
   vector<vector<int>> parents(b.n + b.m + 1);
   queue<int> q;
-  if (s.s >= b.n) {
-    q.push(s.s);
-  }
+  q.push(s.s);
 
   while (!q.empty()) {
     int current = q.front();
@@ -478,11 +486,14 @@ void initialize(const Board& b, State& s)
       continue;
     }
     visited[current] = true;
-    auto near_order = GetNearOrder(current, s);
+    auto& near_order = b.nearest[current];
     s.places[current].k = rand_xorshift() % b.k;
     s.places[current].v1 = -1;
     s.places[current].v2 = -1;
     for (int next : near_order) {
+      if (next == b.n + b.m) {
+        continue; // INLETはスキップ
+      }
       if (next < b.n) {
         int ok = 1;
         for (P edge : edges) {
