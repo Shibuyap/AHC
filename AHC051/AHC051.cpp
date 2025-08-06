@@ -154,12 +154,12 @@ class SeparatorEvaluator
 {
 public:
   virtual ~SeparatorEvaluator() = default;
-  
+
   // 分別器kを頂点vに配置した場合の評価値を計算
   // prob_dist: 頂点vに到達する各ごみ種類の確率分布
   // 返り値: 評価値（大きいほど良い）
   virtual double evaluate(const Board& b, int k, const vector<double>& prob_dist) const = 0;
-  
+
   virtual string name() const = 0;
 };
 
@@ -181,19 +181,19 @@ public:
     if (total_prob < 1e-9) return 0.0;
     original_entropy /= total_prob;
     original_entropy += log2(total_prob);
-    
+
     // 分別後の各出口でのエントロピーを計算
     double entropy_after = 0.0;
     vector<double> prob_v1(b.n, 0.0), prob_v2(b.n, 0.0);
     double total_v1 = 0.0, total_v2 = 0.0;
-    
+
     for (int i = 0; i < b.n; i++) {
       prob_v1[i] = prob_dist[i] * b.p[k][i];
       prob_v2[i] = prob_dist[i] * (1.0 - b.p[k][i]);
       total_v1 += prob_v1[i];
       total_v2 += prob_v2[i];
     }
-    
+
     // v1のエントロピー
     if (total_v1 > 1e-9) {
       double entropy_v1 = 0.0;
@@ -205,7 +205,7 @@ public:
       }
       entropy_after += (total_v1 / total_prob) * entropy_v1;
     }
-    
+
     // v2のエントロピー
     if (total_v2 > 1e-9) {
       double entropy_v2 = 0.0;
@@ -217,10 +217,10 @@ public:
       }
       entropy_after += (total_v2 / total_prob) * entropy_v2;
     }
-    
+
     return original_entropy - entropy_after;
   }
-  
+
   string name() const override { return "EntropyReduction"; }
 };
 
@@ -233,17 +233,17 @@ public:
     // 各出口での確率分布を計算
     vector<double> prob_v1(b.n, 0.0), prob_v2(b.n, 0.0);
     double total_v1 = 0.0, total_v2 = 0.0;
-    
+
     for (int i = 0; i < b.n; i++) {
       prob_v1[i] = prob_dist[i] * b.p[k][i];
       prob_v2[i] = prob_dist[i] * (1.0 - b.p[k][i]);
       total_v1 += prob_v1[i];
       total_v2 += prob_v2[i];
     }
-    
+
     // 各出口での分布の分散を計算（正規化後）
     double variance_v1 = 0.0, variance_v2 = 0.0;
-    
+
     if (total_v1 > 1e-9) {
       double mean_v1 = 1.0 / b.n; // 理想的な平均値
       for (int i = 0; i < b.n; i++) {
@@ -251,7 +251,7 @@ public:
         variance_v1 += (p - mean_v1) * (p - mean_v1);
       }
     }
-    
+
     if (total_v2 > 1e-9) {
       double mean_v2 = 1.0 / b.n; // 理想的な平均値
       for (int i = 0; i < b.n; i++) {
@@ -259,11 +259,11 @@ public:
         variance_v2 += (p - mean_v2) * (p - mean_v2);
       }
     }
-    
+
     // 分散が大きいほど分離性能が高い（特定のごみ種類に偏っている）
     return variance_v1 + variance_v2;
   }
-  
+
   string name() const override { return "Variance"; }
 };
 
@@ -733,36 +733,36 @@ void sample_method(const Board& b, State& s)
 vector<double> calculate_prob_dist_at_vertex(const Board& b, const State& s, int vertex, const vector<int>& topo)
 {
   vector<double> result(b.n, 0.0);
-  
+
   // 各ごみ種類について確率を計算
   for (int i = 0; i < b.n; i++) {
     vector<double> dp(s.places.size(), 0.0);
     dp[s.s] = 1.0;
-    
+
     for (int v : topo) {
       if (v == vertex) break; // 目的の頂点に到達
       if (s.places[v].k == -1) continue;
       if (s.places[v].v1 == -1 || s.places[v].v2 == -1) continue;
-      
+
       int kk = s.places[v].k;
       dp[s.places[v].v1] += dp[v] * b.p[kk][i];
       dp[s.places[v].v2] += dp[v] * (1.0 - b.p[kk][i]);
     }
-    
+
     result[i] = dp[vertex];
   }
-  
+
   return result;
 }
 
 // 評価関数を使って最適な分別器を選択
-int select_best_separator(const Board& b, const State& s, int vertex, 
-                         const vector<double>& prob_dist, 
-                         const SeparatorEvaluator* evaluator)
+int select_best_separator(const Board& b, const State& s, int vertex,
+  const vector<double>& prob_dist,
+  const SeparatorEvaluator* evaluator)
 {
   int best_k = 0;
   double best_score = -1e9;
-  
+
   for (int k = 0; k < b.k; k++) {
     double score = evaluator->evaluate(b, k, prob_dist);
     if (score > best_score) {
@@ -770,7 +770,7 @@ int select_best_separator(const Board& b, const State& s, int vertex,
       best_k = k;
     }
   }
-  
+
   return best_k;
 }
 
@@ -795,13 +795,13 @@ void method1(const Board& b, State& s)
   // 評価関数を選択（環境変数で指定可能）
   unique_ptr<SeparatorEvaluator> evaluator;
   int eval_type = 0; // デフォルトはエントロピー
-  
-  // 環境変数から評価関数タイプを取得
-  char* eval_env = getenv("EVAL_TYPE");
-  if (eval_env != nullptr) {
-    eval_type = atoi(eval_env);
-  }
-  
+
+  //// 環境変数から評価関数タイプを取得
+  //char* eval_env = getenv("EVAL_TYPE");
+  //if (eval_env != nullptr) {
+  //  eval_type = atoi(eval_env);
+  //}
+
   switch (eval_type) {
     case 0:
       evaluator = make_unique<EntropyReductionEvaluator>();
