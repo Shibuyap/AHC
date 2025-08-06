@@ -305,38 +305,90 @@ bool segments_intersect(const Place& p1, const Place& p2, const Place& q1, const
   return segments_intersect(p1.x, p1.y, p2.x, p2.y, q1.x, q1.y, q2.x, q2.y);
 }
 
-vector<int> topological_sort(const Board& b, const State& s)
+class DirectedAcyclicGraph
 {
-  int N = (int)s.places.size();
-  vector<int> indeg(N, 0);
-  for (int i = b.n; i < b.n + b.m; ++i) {
-    if (s.places[i].v1 != -1) {
-      ++indeg[s.places[i].v1];
-      ++indeg[s.places[i].v2];
+public:
+  // --- 1. 参照を受け取るコンストラクタ -----------------------------
+  DirectedAcyclicGraph(State& state, Board& board)
+    : state_(state), board_(board)
+  {
+  }
+
+  // --- 2. コピー禁止（参照は付け替えられないので） -----------------
+  DirectedAcyclicGraph(const DirectedAcyclicGraph&) = delete;
+  DirectedAcyclicGraph& operator=(const DirectedAcyclicGraph&) = delete;
+
+  //    ムーブは必要ならデフォルト許可
+  DirectedAcyclicGraph(DirectedAcyclicGraph&&) = default;
+  DirectedAcyclicGraph& operator=(DirectedAcyclicGraph&&) = default;
+
+  // --- 3. 必要に応じて getter ---------------------------------------
+  State& state()       noexcept { return state_; }
+  const State& state() const noexcept { return state_; }
+
+  Board& board()       noexcept { return board_; }
+  const Board& board() const noexcept { return board_; }
+
+  void RecreateTopologicalSort()
+  {
+    int N = (int)state_.places.size();
+    vector<int> indeg(N, 0);
+    for (int i = board_.n; i < board_.n + board_.m + 1; ++i) {
+      if (state_.places[i].v1 != -1) {
+        ++indeg[state_.places[i].v1];
+        ++indeg[state_.places[i].v2];
+      }
+    }
+
+    queue<int> q;
+    q.push(board_.n + board_.m);
+
+    topo_.clear();
+    topo_.reserve(N);
+    while (!q.empty()) {
+      int v = q.front();
+      q.pop();
+      topo_.push_back(v);
+      if (state_.places[v].v1 == -1) {
+        continue;
+      }
+      if (--indeg[state_.places[v].v1] == 0) {
+        q.push(state_.places[v].v1);
+      }
+      if (--indeg[state_.places[v].v2] == 0) {
+        q.push(state_.places[v].v2);
+      }
+    }
+
+    topoPos_.clear();
+    topoPos_.resize(N, -1);
+    for (int i = 0; i < (int)topo_.size(); ++i) {
+      topoPos_[topo_[i]] = i;
     }
   }
 
-  queue<int> q;
-  q.push(s.s);
-
-  vector<int> order;
-  order.reserve(N);
-  while (!q.empty()) {
-    int v = q.front();
-    q.pop();
-    order.push_back(v);
-    if (s.places[v].v1 == -1) {
-      continue;
-    }
-    if (--indeg[s.places[v].v1] == 0) {
-      q.push(s.places[v].v1);
-    }
-    if (--indeg[s.places[v].v2] == 0) {
-      q.push(s.places[v].v2);
+  void RecreateG()
+  {
+    int N = (int)state_.places.size();
+    g_.clear();
+    g_.resize(N);
+    for (int i = board_.n; i < board_.n + board_.m + 1; ++i) {
+      if (state_.places[i].v1 != -1) {
+        g_[i].push_back(state_.places[i].v1);
+        g_[i].push_back(state_.places[i].v2);
+      }
     }
   }
-  return order;
-}
+
+public:
+  vector<vector<int>> g_;
+  vector<int> topo_;
+  vector<int> topoPos_;
+
+private:
+  State& state_;
+  Board& board_;
+};
 
 static GameData read_state(std::istream& is)
 {
@@ -527,9 +579,11 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
   return { maxSum, assignment };
 }
 
-int calculate_score(const Board& b, State& s)
+int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
-  auto topo = topological_sort(b, s);
+  //dag.RecreateG();
+  //dag.RecreateTopologicalSort();
+  auto topo = dag.topo_;
 
   vector<vector<double>> dp2(b.n, vector<double>(b.n, 0.0));
 
@@ -590,6 +644,9 @@ void initialize_State_s(Board& b, State& s)
   for (auto v : b.nearest[b.n + b.m]) {
     if (v >= b.n) {
       s.s = v; // 最も近い場所をsに設定
+      s.places[b.n + b.m].k = 0;
+      s.places[b.n + b.m].v1 = v;
+      s.places[b.n + b.m].v2 = v;
       break;
     }
   }
@@ -604,7 +661,7 @@ void initialize_State_k(Board& b, State& s)
   }
 }
 
-void initialize(Board& b, State& s)
+void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   initialize_board(b, s);
 
@@ -726,10 +783,12 @@ void initialize(Board& b, State& s)
     }
   }
 
-  s.score = calculate_score(b, s);
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
+  s.score = calculate_score(b, s, dag);
 }
 
-void sample_method(const Board& b, State& s)
+void sample_method(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   s.d.resize(b.n);
   for (int i = 0; i < b.n; i++) {
@@ -746,7 +805,7 @@ void sample_method(const Board& b, State& s)
   s.places[s.s].v1 = 0;
   s.places[s.s].v2 = 1;
 
-  s.score = calculate_score(b, s);
+  s.score = calculate_score(b, s, dag);
 }
 
 // 山登り
@@ -795,7 +854,7 @@ int select_best_separator(const Board& b, const State& s, int vertex,
   return best_k;
 }
 
-void method1(const Board& b, State& s)
+void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   for (int i = 0; i < b.n + b.m; i++) {
     s.places[i].keep_v1 = s.places[i].v1;
@@ -805,7 +864,9 @@ void method1(const Board& b, State& s)
 
   vector<int> use_places;
   {
-    auto topo = topological_sort(b, s);
+    dag.RecreateG();
+    dag.RecreateTopologicalSort();
+    auto topo = dag.topo_;
     for (auto v : topo) {
       if (b.n <= v && v < b.n + b.m && s.places[v].k != -1) {
         use_places.push_back(v);
@@ -834,18 +895,20 @@ void method1(const Board& b, State& s)
       evaluator = make_unique<EntropyReductionEvaluator>();
       break;
   }
-  cerr << "Using evaluator: " << evaluator->name() << " (type=" << eval_type << ")" << endl;
+  //cerr << "Using evaluator: " << evaluator->name() << " (type=" << eval_type << ")" << endl;
 
   // 初期解を評価関数を使って生成
   {
-    auto topo = topological_sort(b, s);
+    dag.RecreateG();
+    dag.RecreateTopologicalSort();
+    auto topo = dag.topo_;
     for (auto v : use_places) {
       auto prob_dist = calculate_prob_dist_at_vertex(b, s, v, topo);
       s.places[v].k = select_best_separator(b, s, v, prob_dist, evaluator.get());
     }
-    s.score = calculate_score(b, s);
+    s.score = calculate_score(b, s, dag);
     best_state = s;
-    cerr << "Initial score with evaluator: " << s.score << endl;
+    //cerr << "Initial score with evaluator: " << s.score << endl;
   }
 
   // その後、ランダムな初期解も試す
@@ -853,7 +916,7 @@ void method1(const Board& b, State& s)
     for (auto v : use_places) {
       s.places[v].k = rand_xorshift() % b.k;
     }
-    s.score = calculate_score(b, s);
+    s.score = calculate_score(b, s, dag);
     if (s.score < best_state.score) {
       //cerr << "New score: " << s.score << endl;
       best_state = s; // ベスト状態を更新
@@ -894,7 +957,7 @@ void method1(const Board& b, State& s)
       }
 
       // スコアを計算
-      int new_score = calculate_score(b, s);
+      int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
@@ -919,7 +982,7 @@ void method1(const Board& b, State& s)
       swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
 
       // スコアを計算
-      int new_score = calculate_score(b, s);
+      int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
@@ -961,7 +1024,7 @@ void method1(const Board& b, State& s)
       }
 
       // スコアを計算
-      int new_score = calculate_score(b, s);
+      int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
@@ -993,11 +1056,12 @@ int solve_case(int case_num)
   GameData gameData = input_data(case_num);
   State& state = gameData.state;
   Board& board = gameData.board;
+  DirectedAcyclicGraph dag(state, board);
 
   //sample_method(state);
 
-  initialize(board, state);
-  method1(board, state);
+  initialize(board, state, dag);
+  method1(board, state, dag);
 
   output_data(case_num, board, state);
 
