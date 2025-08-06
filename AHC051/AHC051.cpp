@@ -701,6 +701,31 @@ void initialize_State_k(Board& b, State& s)
   }
 }
 
+bool can_use(int current, int next, const Board& b, const State& s, const vector<P>& edges, const vector<bool>& used)
+{
+  if (next == b.n + b.m) {
+    return false; // INLETはスキップ
+  }
+
+  if (b.n <= next && next < b.n + b.m && used[next]) {
+    return false;
+  }
+
+  int ok = 1;
+  for (P edge : edges) {
+    if (edge.first == current || edge.second == current) {
+      continue;
+    }
+    if (edge.first == next || edge.second == next) {
+      continue;
+    }
+    if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   initialize_board(b, s);
@@ -709,16 +734,17 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
   initialize_State_s(b, s);
   initialize_State_k(b, s);
 
-  vector<bool> visited(b.n + b.m + 1, false);
+  vector<int> visited(b.n + b.m + 1, 0);
   vector<bool> used(b.n + b.m + 1, false);
   vector<P> edges;
   edges.push_back({ b.n + b.m, s.s }); // sとINLETを結ぶエッジを追加
 
   vector<vector<int>> parents(b.n + b.m + 1);
-  queue<int> q;
-  q.push(s.s);
+  queue<P> q;
+  q.push({ s.s, 1 });
   while (!q.empty()) {
-    int current = q.front();
+    int current = q.front().first;
+    int depth = q.front().second;
     q.pop();
 
     if (used[current]) {
@@ -726,33 +752,75 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
     }
     used[current] = true;
 
+    vector<int> nexts;
+    //for (int i = 0; i < 10; i++) {
+    //  if (nexts.size() >= 2) {
+    //    break; // 2つの近い頂点を見つけたら終了
+    //  }
+    //  int next = b.nearest[current][i];
+    //  bool skip = false;
+    //  for (auto found : nexts) {
+    //    if (found == next) {
+    //      skip = true; // 既に見つけた頂点はスキップ
+    //    }
+    //  }
+    //  if (skip) {
+    //    continue;
+    //  }
+    //  if ((b.n <= next && next < b.n + b.m && visited[next] >= depth + 1)) {
+    //    if (can_use(current, next, b, s, edges, used)) {
+    //      nexts.push_back(next);
+    //    }
+    //  }
+    //}
+    //for (int i = 0; i < 10; i++) {
+    //  if (nexts.size() >= 2) {
+    //    break; // 2つの近い頂点を見つけたら終了
+    //  }
+    //  int next = b.nearest[current][i];
+    //  bool skip = false;
+    //  for (auto found : nexts) {
+    //    if (found == next) {
+    //      skip = true; // 既に見つけた頂点はスキップ
+    //    }
+    //  }
+    //  if (skip) {
+    //    continue;
+    //  }
+    //  if (next < b.n) {
+    //    if (can_use(current, next, b, s, edges, used)) {
+    //      nexts.push_back(next);
+    //    }
+    //  }
+    //}
     for (int i = 0; i < 10; i++) {
+      if (nexts.size() >= 2) {
+        break; // 2つの近い頂点を見つけたら終了
+      }
       int next = b.nearest[current][i];
-      if (next == b.n + b.m) {
-        continue; // INLETはスキップ
+      bool skip = false;
+      for (auto found : nexts) {
+        if (found == next) {
+          skip = true; // 既に見つけた頂点はスキップ
+        }
       }
-
-      if (b.n <= next && next < b.n + b.m && used[next]) {
+      if (skip) {
         continue;
       }
-
-      int ok = 1;
-      for (P edge : edges) {
-        if (edge.first == current || edge.second == current) {
-          continue;
-        }
-        if (edge.first == next || edge.second == next) {
-          continue;
-        }
-        if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
-          ok = 0;
-          break;
-        }
+      //if (visited[next] == depth) {
+      //  continue;
+      //}
+      if (can_use(current, next, b, s, edges, used)) {
+        nexts.push_back(next);
       }
-      if (!ok) {
-        continue;
-      }
+    }
 
+    for (auto next : nexts) {
+      //for (int i = 0; i < 10; i++) {
+      //  int next = b.nearest[current][i];
+      //if (!can_use(current, next, b, s, edges, used)) {
+      //  continue;
+      //}
       if (s.places[current].v1 == -1) {
         s.places[current].v1 = next;
       }
@@ -762,9 +830,9 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
       edges.push_back({ current, next });
       parents[next].push_back(current);
 
-      if (b.n <= next && next < b.n + b.m && !visited[next]) {
-        q.push(next);
-        visited[next] = true;
+      if (b.n <= next && next < b.n + b.m && visited[next] == 0) {
+        q.push({ next,depth + 1 });
+        visited[next] = depth + 1;
       }
 
       if (s.places[current].v2 != -1) {
@@ -777,19 +845,20 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
     }
   }
 
+  queue<int> q2;
   for (int i = b.n; i < b.n + b.m; i++) {
     if (s.places[i].v1 == -1) {
-      q.push(i);
+      q2.push(i);
     }
   }
-  while (!q.empty()) {
-    int current = q.front();
-    q.pop();
+  while (!q2.empty()) {
+    int current = q2.front();
+    q2.pop();
     for (int parent : parents[current]) {
       if (s.places[parent].v1 == current && s.places[parent].v2 == current) {
         s.places[parent].v1 = -1;
         s.places[parent].v2 = -1;
-        q.push(parent);
+        q2.push(parent);
       }
       else if (s.places[parent].v1 == current) {
         s.places[parent].v1 = s.places[parent].v2;
