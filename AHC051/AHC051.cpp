@@ -333,51 +333,81 @@ public:
 
   void RecreateTopologicalSort()
   {
-    int N = (int)state_.places.size();
-    vector<int> indeg(N, 0);
-    for (int i = 0; i < N; ++i) {
-      if (state_.places[i].v1 != -1) {
-        ++indeg[state_.places[i].v1];
-        ++indeg[state_.places[i].v2];
+    // g_ がまだ生成されていない場合に備えて
+    if (g_.empty()) {
+      RecreateG();
+    }
+
+    const int N = static_cast<int>(g_.size());
+
+    // ---- 1.  indegree 計算 ----
+    std::vector<int> indeg(N, 0);
+    for (int u = 0; u < N; ++u) {
+      for (int v : g_[u]) {
+        ++indeg[v];
       }
     }
 
-    queue<int> q;
-    q.push(board_.n + board_.m);
+    // ---- 2.  キュー初期化（根を先頭に）----
+    std::queue<int> q;
+    q.push(board_.n + board_.m);          // もともと root として使っていた頂点
 
+    // ---- 3.  トポロジカルソート ----
     topo_.clear();
     topo_.reserve(N);
+
     while (!q.empty()) {
       int v = q.front();
       q.pop();
       topo_.push_back(v);
-      if (state_.places[v].v1 == -1) {
-        continue;
-      }
-      if (--indeg[state_.places[v].v1] == 0) {
-        q.push(state_.places[v].v1);
-      }
-      if (--indeg[state_.places[v].v2] == 0) {
-        q.push(state_.places[v].v2);
+
+      for (int nxt : g_[v]) {
+        if (--indeg[nxt] == 0) {
+          q.push(nxt);
+        }
       }
     }
 
-    topoPos_.clear();
-    topoPos_.resize(N, -1);
-    for (int i = 0; i < (int)topo_.size(); ++i) {
+    // ---- 4.  topoPos_ を再構築 ----
+    topoPos_.assign(N, -1);
+    for (int i = 0; i < static_cast<int>(topo_.size()); ++i) {
       topoPos_[topo_[i]] = i;
     }
   }
 
   void RecreateG()
   {
-    int N = (int)state_.places.size();
-    g_.clear();
-    g_.resize(N);
-    for (int i = 0; i < N; ++i) {
-      if (state_.places[i].v1 != -1) {
-        g_[i].push_back(state_.places[i].v1);
-        g_[i].push_back(state_.places[i].v2);
+    const int N = static_cast<int>(state_.places.size());
+    g_.assign(N, {});                    // 全頂点を空で初期化
+
+    const int root = board_.n + board_.m;
+    if (root < 0 || root >= N) return;   // 念のため範囲チェック
+
+    std::vector<char> vis(N, 0);
+    std::queue<int> q;
+    q.push(root);
+    vis[root] = 1;
+
+    while (!q.empty()) {
+      const int u = q.front();
+      q.pop();
+
+      const int v1 = state_.places[u].v1;
+      if (v1 != -1) {
+        g_[u].push_back(v1);
+        if (!vis[v1]) {
+          vis[v1] = 1;
+          q.push(v1);
+        }
+      }
+
+      const int v2 = state_.places[u].v2;
+      if (v2 != -1) {
+        g_[u].push_back(v2);
+        if (!vis[v2]) {
+          vis[v2] = 1;
+          q.push(v2);
+        }
       }
     }
   }
@@ -586,7 +616,7 @@ int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   auto topo = dag.topo_;
 
-  vector<double> dp(s.places.size());
+  vector<double> dp(s.places.size(), 0.0);
   vector<vector<double>> dp2(b.n, vector<double>(b.n, 0.0));
 
   for (int i = 0; i < b.n; i++) {
@@ -627,6 +657,9 @@ int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
 
   double missing = b.n - hangarian_result.first;
   int res = round(1e9 / b.n * missing);
+  if (res == 0) {
+    res = 1; // 最低スコアは1
+  }
   return res;
 }
 
@@ -851,7 +884,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     dag.RecreateTopologicalSort();
     auto topo = dag.topo_;
     for (auto v : topo) {
-      if (b.n <= v && v < b.n + b.m && s.places[v].k != -1) {
+      if (b.n <= v && v < b.n + b.m) {
         use_places.push_back(v);
       }
     }
@@ -885,9 +918,11 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     dag.RecreateG();
     dag.RecreateTopologicalSort();
     auto topo = dag.topo_;
-    for (auto v : use_places) {
-      auto prob_dist = calculate_prob_dist_at_vertex(b, s, v, topo);
-      s.places[v].k = select_best_separator(b, s, v, prob_dist, evaluator.get());
+    for (auto v : topo) {
+      if (b.n <= v && v < b.n + b.m) {
+        auto prob_dist = calculate_prob_dist_at_vertex(b, s, v, topo);
+        s.places[v].k = select_best_separator(b, s, v, prob_dist, evaluator.get());
+      }
     }
     s.score = calculate_score(b, s, dag);
     best_state = s;
@@ -940,6 +975,8 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
 
       // スコアを計算
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
       int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
@@ -965,6 +1002,8 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
 
       // スコアを計算
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
       int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
@@ -987,7 +1026,6 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         v = rand_xorshift() % use_places.size();
       }
       int place_id = use_places[v];
-      // v1とv2を入れ替える前に、元の値を保存
       int keep_v1 = s.places[place_id].v1;
       int keep_v2 = s.places[place_id].v2;
       if (s.places[place_id].v1 == s.places[place_id].v2) {
@@ -1007,14 +1045,20 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
 
       // スコアを計算
+      int before_size = dag.topo_.size();
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
       int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
       double prob = exp(diff_score / temp);
       if (prob > rand_01()) {
         s.score = new_score;
+        //if (dag.topo_.size() != before_size) {
+        //  cerr << "Topological sort changed: " << before_size << " -> " << dag.topo_.size() << endl;
+        //  cerr << "New score2: " << s.score << endl;
+        //}
         if (s.score < best_state.score) {
-          //cerr << "New score2: " << s.score << endl;
           best_state = s; // ベスト状態を更新
         }
       }
