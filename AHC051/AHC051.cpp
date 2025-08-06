@@ -12,6 +12,7 @@
 #include <ctime>
 #include <deque>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <functional>
 #include <iomanip>
@@ -140,18 +141,15 @@ bool segments_intersect(int p1x, int p1y, int p2x, int p2y, int q1x, int q1y, in
 const double TIME_LIMIT = 1.8;
 int exec_mode;
 
-enum class PlaceType
+class Board
 {
-  PROCESSOR = 0,
-  SORTER = 1,
-  INLET = 2,
+public:
+  vector<vector<int>> nearest; // 各頂点から別の頂点への近い順
 };
 
 class Place
 {
 public:
-  PlaceType type;
-  int id;
   int x, y;
   int k;
   int v1, v2;
@@ -163,7 +161,7 @@ class State
 public:
   // 入力データ
   int n, m, k;
-  vector<Place> places;
+  vector<Place> places; // n個の処理装置、m個の分別器、1つの搬入口を含む
   vector<vector<double>> p; // k * nの行列
 
   // 出力データ
@@ -220,117 +218,83 @@ vector<int> topological_sort(const State& s)
   return order;
 }
 
-// 入力データの読み込み
+static State read_state(std::istream& is)
+{
+  State st;
+  is >> st.n >> st.m >> st.k;
+
+  st.places.resize(st.n + st.m + 1);
+
+  auto read_places = [&](int cnt, int offset)
+    {
+      for (int i = 0; i < cnt; ++i) {
+        int x, y;
+        is >> x >> y;
+        st.places[offset + i] = { x, y, -1, 0, 0 };
+      }
+    };
+
+  read_places(st.n, 0);           // 拠点
+  read_places(st.m, st.n);        // 工場
+  st.places.back() = { 0, 5000, -1, 0, 0 };   // ダミー
+
+  st.p.assign(st.k, std::vector<double>(st.n));
+  for (auto& row : st.p) {
+    for (auto& v : row) {
+      is >> v;
+    }
+  }
+  return st;
+}
+
 State input_data(int case_num)
 {
-  State state;
+  const std::string path = std::format("./in/{:04}.txt", case_num);
+  if (std::ifstream ifs{ path }; ifs) {
+    // ファイルが存在
+    return read_state(ifs);
+  }
+  // 標準入力へフォールバック
+  return read_state(std::cin);
+}
 
-  std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-  ifstream ifs(oss.str());
+static void write_state(std::ostream& os, const State& st)
+{
+  for (int i = 0; i < st.n; ++i) {
+    os << st.d[i] << ' ';
+  }
+  os << '\n' << st.s << '\n';
 
-  if (!ifs.is_open()) {
-    // 標準入力
-    cin >> state.n >> state.m >> state.k;
-
-    state.places.resize(state.n + state.m + 1);
-    for (int i = 0; i < state.n; i++) {
-      int x, y;
-      cin >> x >> y;
-      state.places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
+  for (int i = st.n; i < st.n + st.m; ++i) {
+    const auto& pl = st.places[i];
+    if (pl.k == -1) {
+      os << -1 << '\n';
     }
-    for (int i = 0; i < state.m; i++) {
-      int x, y;
-      cin >> x >> y;
-      state.places[state.n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
-    }
-    state.places[state.n + state.m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
-
-    state.p.assign(state.k, vector<double>(state.n));
-    for (int i = 0; i < state.k; i++) {
-      for (int j = 0; j < state.n; j++) {
-        cin >> state.p[i][j];
-      }
+    else {
+      os << pl.k << ' ' << pl.v1 << ' ' << pl.v2 << '\n';
     }
   }
-  else {
-    // ファイル入力
-    ifs >> state.n >> state.m >> state.k;
-
-    state.places.resize(state.n + state.m + 1);
-    for (int i = 0; i < state.n; i++) {
-      int x, y;
-      ifs >> x >> y;
-      state.places[i] = { PlaceType::PROCESSOR, i, x, y, -1, 0, 0 };
-    }
-    for (int i = 0; i < state.m; i++) {
-      int x, y;
-      ifs >> x >> y;
-      state.places[state.n + i] = { PlaceType::SORTER, i, x, y, -1, 0, 0 };
-    }
-    state.places[state.n + state.m] = { PlaceType::INLET, 0, 0, 5000, -1, 0, 0 };
-
-    state.p.assign(state.k, vector<double>(state.n));
-    for (int i = 0; i < state.k; i++) {
-      for (int j = 0; j < state.n; j++) {
-        ifs >> state.p[i][j];
-      }
-    }
-
-    ifs.close();
-  }
-
-  return state;
 }
 
 void output_data(int case_num, const State& state)
 {
+  // 標準出力
   if (exec_mode == 0) {
-    // 標準出力
-    for (int i = 0; i < state.n; i++) {
-      cout << state.d[i] << " ";
-    }
-    cout << endl;
-    cout << state.s << endl;
-    for (int i = state.n; i < state.n + state.m; i++) {
-      if (state.places[i].k == -1) {
-        cout << -1 << endl;
-      }
-      else {
-        cout << state.places[i].k << " " << state.places[i].v1 << " " << state.places[i].v2 << endl;
-      }
-    }
+    write_state(std::cout, state);
+    return;
   }
-  else {
-    // ファイル出力
-    std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-    ofstream ofs(oss.str());
 
-    if (ofs.is_open()) {
-      for (int i = 0; i < state.n; i++) {
-        ofs << state.d[i] << " ";
-      }
-      ofs << endl;
-      ofs << state.s << endl;
-      for (int i = state.n; i < state.n + state.m; i++) {
-        if (state.places[i].k == -1) {
-          ofs << -1 << endl;
-        }
-        else {
-          ofs << state.places[i].k << " " << state.places[i].v1 << " " << state.places[i].v2 << endl;
-        }
-      }
-
-      ofs.close();
-    }
+  // ファイル出力
+  std::ofstream ofs(std::format("./out/{:04}.txt", case_num));
+  if (ofs) {
+    write_state(ofs, state);
   }
 }
 
 vector<int> GetNearOrder(int i, const State& s)
 {
   vector<pair<double, int>> distances;
-  for (int j = 0; j < s.n + s.m; j++) {
+  for (int j = 0; j < s.places.size() - 1; j++) {
     if (j == i) {
       continue;
     }
