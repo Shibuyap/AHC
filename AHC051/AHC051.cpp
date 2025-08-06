@@ -726,7 +726,8 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
     }
     used[current] = true;
 
-    for (int next : b.nearest[current]) {
+    for (int i = 0; i < 10; i++) {
+      int next = b.nearest[current][i];
       if (next == b.n + b.m) {
         continue; // INLETはスキップ
       }
