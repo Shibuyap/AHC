@@ -141,6 +141,8 @@ bool segments_intersect(int p1x, int p1y, int p2x, int p2y, int q1x, int q1y, in
 const double TIME_LIMIT = 1.8;
 int exec_mode;
 
+const int MAX_V = 1100;
+
 class Board
 {
 public:
@@ -333,7 +335,7 @@ public:
   {
     int N = (int)state_.places.size();
     vector<int> indeg(N, 0);
-    for (int i = board_.n; i < board_.n + board_.m + 1; ++i) {
+    for (int i = 0; i < N; ++i) {
       if (state_.places[i].v1 != -1) {
         ++indeg[state_.places[i].v1];
         ++indeg[state_.places[i].v2];
@@ -372,7 +374,7 @@ public:
     int N = (int)state_.places.size();
     g_.clear();
     g_.resize(N);
-    for (int i = board_.n; i < board_.n + board_.m + 1; ++i) {
+    for (int i = 0; i < N; ++i) {
       if (state_.places[i].v1 != -1) {
         g_[i].push_back(state_.places[i].v1);
         g_[i].push_back(state_.places[i].v2);
@@ -403,13 +405,13 @@ static GameData read_state(std::istream& is)
       for (int i = 0; i < cnt; ++i) {
         int x, y;
         is >> x >> y;
-        s.places[offset + i] = { x, y, -1, 0, 0 };
+        s.places[offset + i] = { x, y, -1, -1, -1 };
       }
     };
 
-  read_places(b.n, 0);           // 拠点
-  read_places(b.m, b.n);        // 工場
-  s.places.back() = { 0, 5000, -1, 0, 0 };   // ダミー
+  read_places(b.n, 0);
+  read_places(b.m, b.n);
+  s.places.back() = { 0, 5000, -1, -1, -1 };
 
   b.p.assign(b.k, std::vector<double>(b.n));
   for (auto& row : b.p) {
@@ -579,17 +581,22 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
   return { maxSum, assignment };
 }
 
+
 int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
-  //dag.RecreateG();
-  //dag.RecreateTopologicalSort();
   auto topo = dag.topo_;
 
+  vector<double> dp(s.places.size());
   vector<vector<double>> dp2(b.n, vector<double>(b.n, 0.0));
 
   for (int i = 0; i < b.n; i++) {
-    vector<double> dp(s.places.size(), 0.0);
-    dp[s.s] = 1.0;
+    // 初期化
+    for (auto v : topo) {
+      dp[v] = 0.0;
+    }
+    dp[b.n + b.m] = 1.0;
+
+    // 搬入口からスタート
     for (int v : topo) {
       if (s.places[v].k == -1) {
         continue;
@@ -690,64 +697,40 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
       if (next == b.n + b.m) {
         continue; // INLETはスキップ
       }
-      else if (next < b.n) {
-        int ok = 1;
-        for (P edge : edges) {
-          if (edge.first == current || edge.second == current) {
-            continue;
-          }
-          if (edge.first == next || edge.second == next) {
-            continue;
-          }
-          if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
-            ok = 0;
-            break;
-          }
-        }
-        if (!ok) {
+
+      if (b.n <= next && next < b.n + b.m && used[next]) {
+        continue;
+      }
+
+      int ok = 1;
+      for (P edge : edges) {
+        if (edge.first == current || edge.second == current) {
           continue;
         }
-        if (s.places[current].v1 == -1) {
-          s.places[current].v1 = next;
+        if (edge.first == next || edge.second == next) {
+          continue;
         }
-        else {
-          s.places[current].v2 = next;
+        if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
+          ok = 0;
+          break;
         }
-        edges.push_back({ current, next });
-        parents[next].push_back(current);
+      }
+      if (!ok) {
+        continue;
+      }
+
+      if (s.places[current].v1 == -1) {
+        s.places[current].v1 = next;
       }
       else {
-        if (used[next]) {
-          continue;
-        }
-        int ok = 1;
-        for (P edge : edges) {
-          if (edge.first == current || edge.second == current) {
-            continue;
-          }
-          if (edge.first == next || edge.second == next) {
-            continue;
-          }
-          if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
-            ok = 0;
-            break;
-          }
-        }
-        if (!ok) {
-          continue;
-        }
-        if (s.places[current].v1 == -1) {
-          s.places[current].v1 = next;
-        }
-        else {
-          s.places[current].v2 = next;
-        }
-        edges.push_back({ current, next });
-        parents[next].push_back(current);
-        if (!visited[next]) {
-          q.push(next);
-          visited[next] = true;
-        }
+        s.places[current].v2 = next;
+      }
+      edges.push_back({ current, next });
+      parents[next].push_back(current);
+
+      if (b.n <= next && next < b.n + b.m && !visited[next]) {
+        q.push(next);
+        visited[next] = true;
       }
 
       if (s.places[current].v2 != -1) {
