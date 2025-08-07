@@ -1259,7 +1259,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を元に戻す
       }
     }
-    else if (ra < 200) {
+    else if (ra < 100) {
       //State before_state = s; // 元の状態を保存
       ////cerr << calculate_score(b, s, dag) << endl;
       //auto keep_dp2 = dp2; // dp2を保存
@@ -1400,8 +1400,8 @@ double graph_distance_sum(const Board& b, const State& s, const vector<int>& ind
 
   vector<bool> visited(N, false);
   queue<int> q;
-  q.push(indices[b.n + b.m]);
-  visited[indices[b.n + b.m]] = true;
+  q.push(b.n + b.m);
+  visited[b.n + b.m] = true;
   double total_distance = 0.0;
 
   while (!q.empty()) {
@@ -1411,10 +1411,14 @@ double graph_distance_sum(const Board& b, const State& s, const vector<int>& ind
       continue;
     }
 
-    int v1 = indices[s.places[current].v1];
-    int v2 = indices[s.places[current].v2];
+    int v1 = s.places[current].v1;
+    int v2 = s.places[current].v2;
 
-    double dist1 = euclidean_distance(b.x[current], b.y[current], b.x[v1], b.y[v1]);
+    int conver_current = indices[current];
+    int conver_v1 = indices[v1];
+    int conver_v2 = indices[v2];
+
+    double dist1 = euclidean_distance(b.x[conver_current], b.y[conver_current], b.x[conver_v1], b.y[conver_v1]);
     total_distance += dist1;
     if (!visited[v1]) {
       q.push(v1);
@@ -1422,7 +1426,7 @@ double graph_distance_sum(const Board& b, const State& s, const vector<int>& ind
     }
 
     if (v1 != v2) {
-      double dist2 = euclidean_distance(b.x[current], b.y[current], b.x[v2], b.y[v2]);
+      double dist2 = euclidean_distance(b.x[conver_current], b.y[conver_current], b.x[conver_v2], b.y[conver_v2]);
       total_distance += dist2;
       if (!visited[v2]) {
         q.push(v2);
@@ -1431,6 +1435,37 @@ double graph_distance_sum(const Board& b, const State& s, const vector<int>& ind
     }
   }
   return total_distance;
+}
+
+void erase_edges(const Board& b, State& s, DirectedAcyclicGraph& dag)
+{
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
+  vector<int> parent_count(b.n + b.m + 1, 0);
+  for (int i = 0; i < b.n + b.m + 1; i++) {
+    for (int j : dag.g_[i]) {
+      parent_count[j]++;
+    }
+  }
+  queue<int> q;
+  for (int i = b.n; i < b.n + b.m; i++) {
+    if (parent_count[i] == 0) {
+      q.push(i);
+    }
+  }
+
+  while (!q.empty()) {
+    int current = q.front();
+    q.pop();
+    for (int j : dag.g_[current]) {
+      parent_count[j]--;
+      if (parent_count[j] == 0) {
+        q.push(j);
+      }
+    }
+    s.places[current].v1 = -1; // エッジを削除
+    s.places[current].v2 = -1; // エッジを削除
+  }
 }
 
 void optimize_vertex(const Board& b, State& s, DirectedAcyclicGraph& dag)
@@ -1520,6 +1555,10 @@ int solve_case(int case_num)
 
   initialize(board, state, dag);
   method1(board, state, dag);
+
+  erase_edges(board, state, dag);
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
 
   optimize_vertex(board, state, dag);
 
