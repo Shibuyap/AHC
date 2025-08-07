@@ -815,6 +815,63 @@ void initialize_State_k(Board& b, State& s)
   }
 }
 
+void initialize_State_k_and_DAG_pylamid(Board& b, State& s, DirectedAcyclicGraph& dag)
+{
+  for (int i = b.n; i < b.n + b.m; i++) {
+    s.places[i].k = rand_xorshift() % b.k;
+    s.places[i].v1 = -1;
+    s.places[i].v2 = -1;
+  }
+
+  // ピラミッド型に配置
+  int cnt = b.n;
+  s.s = cnt;
+  s.places[b.n + b.m].k = 0;
+  s.places[b.n + b.m].v1 = s.s;
+  s.places[b.n + b.m].v2 = s.s;
+  cnt++;
+
+  vector<int> row;
+  row.push_back(s.s);
+  while (cnt + row.size() * 4 + 1 <= b.n + b.m) {
+    vector<int> next_row;
+    for (int i = 0; i < row.size(); i++) {
+      int current = row[i];
+      if (i == 0) {
+        s.places[current].k = 0;
+        s.places[current].v1 = cnt;
+        next_row.push_back(cnt);
+        cnt++;
+        s.places[current].v2 = cnt;
+        next_row.push_back(cnt);
+        cnt++;
+      }
+      else {
+        s.places[current].k = 0;
+        s.places[current].v1 = next_row.back();
+        s.places[current].v2 = cnt;
+        next_row.push_back(cnt);
+        cnt++;
+      }
+    }
+    row = next_row;
+  }
+
+  // 最後の行の処理
+  int cnt2 = 0;
+  for (int i = 0; i < row.size(); i++) {
+    int current = row[i];
+    s.places[current].k = 0;
+    s.places[current].v1 = cnt2 % b.n;
+    cnt2++;
+    s.places[current].v2 = cnt2 % b.n;
+    cnt2++;
+  }
+
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
+}
+
 bool can_use(int current, int next, const Board& b, const State& s, const vector<P>& edges, const vector<bool>& used)
 {
   if (next == b.n + b.m) {
@@ -987,8 +1044,9 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
   initialize_board(b, s);
   initialize_State_d(b, s);
   initialize_State_s(b, s);
-  initialize_State_k(b, s);
-  initialize_DAG(b, s, dag);
+  //initialize_State_k(b, s);
+  //initialize_DAG(b, s, dag);
+  initialize_State_k_and_DAG_pylamid(b, s, dag);
 
   s.score = calculate_score(b, s, dag);
 }
@@ -1077,6 +1135,16 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     }
   }
 
+  vector<int> goal_places;
+  {
+    auto topo = dag.topo_;
+    for (auto v : topo) {
+      if (b.n <= v && v < b.n + b.m && s.places[v].v1 < b.n) {
+        goal_places.push_back(v);
+      }
+    }
+  }
+
   // 初期解を評価関数を使って生成
   std::vector<std::unique_ptr<SeparatorEvaluator>> evaluators;
   evaluators.emplace_back(std::make_unique<EntropyReductionEvaluator>());
@@ -1092,7 +1160,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     }
     s.score = calculate_score(b, s, dag);
     if (s.score < best_state.score) {
-      cerr << "New score with " << evaluator->name() << ": " << s.score << endl;
+      //cerr << "New score with " << evaluator->name() << ": " << s.score << endl;
       best_state = s;
     }
   }
@@ -1104,17 +1172,17 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     }
     s.score = calculate_score(b, s, dag);
     if (s.score < best_state.score) {
-      cerr << "New random score: " << s.score << endl;
+      //cerr << "New random score: " << s.score << endl;
       best_state = s;
     }
   }
 
   s = best_state; // ベスト状態を適用
-  std::cerr << "Best initial score: " << s.score << endl;
-  std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
+  //std::cerr << "Best initial score: " << s.score << endl;
+  //std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e7;
+  const double START_TEMP = 1e10;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
@@ -1128,7 +1196,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
     }
 
-    if (rand_xorshift() % 123 == 0) {
+    if (rand_xorshift() % 12345 == 0) {
       s = best_state;
       dag.RecreateG();
       dag.RecreateTopologicalSort();
@@ -1137,7 +1205,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    int ra = rand_xorshift() % 100;
+    int ra = rand_xorshift() % 250;
     if (ra < 95) {
       int v = rand_xorshift() % use_places.size();
       while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
@@ -1193,6 +1261,36 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         }
         else {
           s.places[place_id].v2 = s.places[place_id].v1; // v2をv1に置き換える
+        }
+      }
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
+
+      bool is_update = try_update_state(s, best_state, b, dag, temp);
+
+      if (!is_update) {
+        // 元に戻す
+        s.places[place_id].v1 = keep_v1; // 元のv1に戻す
+        s.places[place_id].v2 = keep_v2; // 元のv2に戻す
+        dag.RecreateG();
+        dag.RecreateTopologicalSort();
+      }
+    }
+    else if (ra < 250) {
+      int v = rand_xorshift() % goal_places.size();
+      int place_id = use_places[v];
+      int keep_v1 = s.places[place_id].v1;
+      int keep_v2 = s.places[place_id].v2;
+      if (rand_xorshift() % 2 == 0) {
+        s.places[place_id].v1 = rand_xorshift() % b.n;
+        while (s.places[place_id].v1 == keep_v1) {
+          s.places[place_id].v1 = rand_xorshift() % b.n;
+        }
+      }
+      else {
+        s.places[place_id].v2 = rand_xorshift() % b.n;
+        while (s.places[place_id].v2 == keep_v2) {
+          s.places[place_id].v2 = rand_xorshift() % b.n;
         }
       }
       dag.RecreateG();
