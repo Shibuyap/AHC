@@ -412,6 +412,81 @@ public:
     }
   }
 
+  bool CanMaintainDAG(int vertex, int new_v1, int new_v2)
+  {
+    const int N = static_cast<int>(state_.places.size());
+    const int root = board_.n + board_.m;
+
+    int old_v1 = state_.places[vertex].v1;
+    int old_v2 = state_.places[vertex].v2;
+
+    state_.places[vertex].v1 = new_v1;
+    state_.places[vertex].v2 = new_v2;
+
+    vector<vector<int>> tmp_g(N);
+    vector<int> indeg(N, 0);
+    vector<char> reachable(N, 0);
+
+    queue<int> q;
+    q.push(root);
+    reachable[root] = 1;
+
+    while (!q.empty()) {
+      int u = q.front();
+      q.pop();
+
+      int v1 = state_.places[u].v1;
+      if (v1 != -1) {
+        tmp_g[u].push_back(v1);
+        indeg[v1]++;
+        if (!reachable[v1]) {
+          reachable[v1] = 1;
+          q.push(v1);
+        }
+      }
+
+      int v2 = state_.places[u].v2;
+      if (v2 != -1) {
+        tmp_g[u].push_back(v2);
+        indeg[v2]++;
+        if (!reachable[v2]) {
+          reachable[v2] = 1;
+          q.push(v2);
+        }
+      }
+    }
+
+    queue<int> topo_q;
+    for (int i = 0; i < N; i++) {
+      if (reachable[i] && indeg[i] == 0) {
+        topo_q.push(i);
+      }
+    }
+
+    int cnt = 0;
+    while (!topo_q.empty()) {
+      int u = topo_q.front();
+      topo_q.pop();
+      cnt++;
+
+      for (int v : tmp_g[u]) {
+        if (--indeg[v] == 0) {
+          topo_q.push(v);
+        }
+      }
+    }
+
+    state_.places[vertex].v1 = old_v1;
+    state_.places[vertex].v2 = old_v2;
+
+    int reachable_cnt = 0;
+    for (int i = 0; i < N; i++) {
+      if (reachable[i]) reachable_cnt++;
+    }
+
+    return cnt == reachable_cnt;
+  }
+
 public:
   vector<vector<int>> g_;
   vector<int> topo_;
@@ -758,6 +833,7 @@ bool can_use(int current, int next, const Board& b, const State& s, const vector
     if (edge.first == next || edge.second == next) {
       continue;
     }
+    continue;
     if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
       return false;
     }
@@ -826,7 +902,7 @@ void initialize_DAG(Board& b, State& s, DirectedAcyclicGraph& dag)
     //    }
     //  }
     //}
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < b.nearest[current].size(); i++) {
       if (nexts.size() >= 2) {
         break; // 2つの近い頂点を見つけたら終了
       }
@@ -1061,7 +1137,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    int ra = rand_xorshift() % 200;
+    int ra = rand_xorshift() % 100;
     if (ra < 95) {
       int v = rand_xorshift() % use_places.size();
       while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
