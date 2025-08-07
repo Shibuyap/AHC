@@ -611,7 +611,6 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
   return { maxSum, assignment };
 }
 
-
 int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   auto topo = dag.topo_;
@@ -661,6 +660,29 @@ int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
     res = 1; // 最低スコアは1
   }
   return res;
+}
+
+void sample_method(const Board& b, State& s, DirectedAcyclicGraph& dag)
+{
+  s.d.resize(b.n);
+  for (int i = 0; i < b.n; i++) {
+    s.d[i] = i;
+  }
+
+  // s決定
+  {
+    vector<int> near_order = GetNearOrder(b.n + b.m, s);
+    s.s = near_order[0]; // 最も近い場所をsに設定
+  }
+
+  s.places[s.s].k = 0;
+  s.places[s.s].v1 = 0;
+  s.places[s.s].v2 = 1;
+
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
+
+  s.score = calculate_score(b, s, dag);
 }
 
 void initialize_board(Board& b, State& s)
@@ -726,14 +748,8 @@ bool can_use(int current, int next, const Board& b, const State& s, const vector
   return true;
 }
 
-void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
+void initialize_DAG(Board& b, State& s, DirectedAcyclicGraph& dag)
 {
-  initialize_board(b, s);
-
-  initialize_State_d(b, s);
-  initialize_State_s(b, s);
-  initialize_State_k(b, s);
-
   vector<int> visited(b.n + b.m + 1, 0);
   vector<bool> used(b.n + b.m + 1, false);
   vector<P> edges;
@@ -871,30 +887,19 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
 
   dag.RecreateG();
   dag.RecreateTopologicalSort();
-  s.score = calculate_score(b, s, dag);
 }
 
-void sample_method(const Board& b, State& s, DirectedAcyclicGraph& dag)
+void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
 {
-  s.d.resize(b.n);
-  for (int i = 0; i < b.n; i++) {
-    s.d[i] = i;
-  }
-
-  // s決定
-  {
-    vector<int> near_order = GetNearOrder(b.n + b.m, s);
-    s.s = near_order[0]; // 最も近い場所をsに設定
-  }
-
-  s.places[s.s].k = 0;
-  s.places[s.s].v1 = 0;
-  s.places[s.s].v2 = 1;
+  initialize_board(b, s);
+  initialize_State_d(b, s);
+  initialize_State_s(b, s);
+  initialize_State_k(b, s);
+  initialize_DAG(b, s, dag);
 
   s.score = calculate_score(b, s, dag);
 }
 
-// 山登り
 // 特定の頂点に到達する各ごみ種類の確率分布を計算
 vector<double> calculate_prob_dist_at_vertex(const Board& b, const State& s, int vertex, const vector<int>& topo)
 {
@@ -946,12 +951,14 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     s.places[i].keep_v1 = s.places[i].v1;
     s.places[i].keep_v2 = s.places[i].v2;
   }
+
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
+
   State best_state = s;
 
   vector<int> use_places;
   {
-    dag.RecreateG();
-    dag.RecreateTopologicalSort();
     auto topo = dag.topo_;
     for (auto v : topo) {
       if (b.n <= v && v < b.n + b.m) {
@@ -960,33 +967,12 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     }
   }
 
-  // 評価関数を選択（環境変数で指定可能）
-  unique_ptr<SeparatorEvaluator> evaluator;
-  int eval_type = 0; // デフォルトはエントロピー
-
-  //// 環境変数から評価関数タイプを取得
-  //char* eval_env = getenv("EVAL_TYPE");
-  //if (eval_env != nullptr) {
-  //  eval_type = atoi(eval_env);
-  //}
-
-  switch (eval_type) {
-    case 0:
-      evaluator = make_unique<EntropyReductionEvaluator>();
-      break;
-    case 1:
-      evaluator = make_unique<VarianceEvaluator>();
-      break;
-    default:
-      evaluator = make_unique<EntropyReductionEvaluator>();
-      break;
-  }
-  //cerr << "Using evaluator: " << evaluator->name() << " (type=" << eval_type << ")" << endl;
-
   // 初期解を評価関数を使って生成
-  {
-    dag.RecreateG();
-    dag.RecreateTopologicalSort();
+  std::vector<std::unique_ptr<SeparatorEvaluator>> evaluators;
+  evaluators.emplace_back(std::make_unique<EntropyReductionEvaluator>());
+  evaluators.emplace_back(std::make_unique<VarianceEvaluator>());
+
+  for (auto& evaluator : evaluators) {
     auto topo = dag.topo_;
     for (auto v : topo) {
       if (b.n <= v && v < b.n + b.m) {
@@ -995,8 +981,10 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
     }
     s.score = calculate_score(b, s, dag);
-    best_state = s;
-    //cerr << "Initial score with evaluator: " << s.score << endl;
+    if (s.score < best_state.score) {
+      cerr << "New score with " << evaluator->name() << ": " << s.score << endl;
+      best_state = s;
+    }
   }
 
   // その後、ランダムな初期解も試す
@@ -1006,15 +994,17 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
     }
     s.score = calculate_score(b, s, dag);
     if (s.score < best_state.score) {
-      //cerr << "New score: " << s.score << endl;
-      best_state = s; // ベスト状態を更新
+      cerr << "New random score: " << s.score << endl;
+      best_state = s;
     }
   }
 
-  cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
+  s = best_state; // ベスト状態を適用
+  std::cerr << "Best initial score: " << s.score << endl;
+  std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e6;
+  const double START_TEMP = 1e7;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
@@ -1026,6 +1016,12 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       if (now_time > TIME_LIMIT) {
         break;
       }
+    }
+
+    if (rand_xorshift() % 123 == 0) {
+      s = best_state;
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
     }
 
     double progress_ratio = now_time / TIME_LIMIT;
@@ -1045,8 +1041,6 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
 
       // スコアを計算
-      dag.RecreateG();
-      dag.RecreateTopologicalSort();
       int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
@@ -1054,8 +1048,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       if (prob > rand_01()) {
         s.score = new_score;
         if (s.score < best_state.score) {
-          //cerr << "New score1: " << s.score << endl;
-          best_state = s; // ベスト状態を更新
+          best_state = s;
         }
       }
       else {
@@ -1072,8 +1065,6 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
 
       // スコアを計算
-      dag.RecreateG();
-      dag.RecreateTopologicalSort();
       int new_score = calculate_score(b, s, dag);
 
       double diff_score = (s.score - new_score) * 123.6;
@@ -1081,8 +1072,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       if (prob > rand_01()) {
         s.score = new_score;
         if (s.score < best_state.score) {
-          //cerr << "New score2: " << s.score << endl;
-          best_state = s; // ベスト状態を更新
+          best_state = s;
         }
       }
       else {
@@ -1115,7 +1105,6 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
 
       // スコアを計算
-      int before_size = dag.topo_.size();
       dag.RecreateG();
       dag.RecreateTopologicalSort();
       int new_score = calculate_score(b, s, dag);
@@ -1124,26 +1113,23 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       double prob = exp(diff_score / temp);
       if (prob > rand_01()) {
         s.score = new_score;
-        //if (dag.topo_.size() != before_size) {
-        //  cerr << "Topological sort changed: " << before_size << " -> " << dag.topo_.size() << endl;
-        //  cerr << "New score2: " << s.score << endl;
-        //}
         if (s.score < best_state.score) {
-          best_state = s; // ベスト状態を更新
+          best_state = s;
         }
       }
       else {
         // 元に戻す
         s.places[place_id].v1 = keep_v1; // 元のv1に戻す
         s.places[place_id].v2 = keep_v2; // 元のv2に戻す
+        dag.RecreateG();
+        dag.RecreateTopologicalSort();
       }
     }
   }
 
-  //cerr << s.score << ' ' << best_state.score << endl;
-  s = best_state; // ベスト状態を最終的な状態に設定
+  s = best_state;
 
-  cerr << "loop = " << loop << ", score = " << s.score << endl;
+  std::cerr << "loop = " << loop << ", score = " << s.score << endl;
 }
 
 int solve_case(int case_num)
@@ -1178,10 +1164,10 @@ int main()
       ll score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
-        cerr << score << endl;
+        std::cerr << score << endl;
       }
       else {
-        cerr << "case = " << setw(2) << i << ", "
+        std::cerr << "case = " << setw(2) << i << ", "
           << "score = " << setw(4) << score << ", "
           << "sum = " << setw(5) << sum_score << ", "
           << "time = " << setw(5) << timer.get_elapsed_time() << ", "
