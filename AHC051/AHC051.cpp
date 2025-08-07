@@ -147,8 +147,49 @@ class Board
 {
 public:
   int n, m, k;
+  vector<int> x, y; // 各頂点の座標
   vector<vector<int>> nearest; // 各頂点から別の頂点への近い順
   vector<vector<double>> p; // k * nの行列
+};
+
+class Place
+{
+public:
+  int k;
+  int v1, v2;
+  int keep_v1, keep_v2;
+  Place()
+    : k(-1), v1(-1), v2(-1), keep_v1(-1), keep_v2(-1)
+  {
+  }
+  Place(int k_, int v1_, int v2_, int keep_v1_, int keep_v2_)
+    : k(k_), v1(v1_), v2(v2_), keep_v1(keep_v1_), keep_v2(keep_v2_)
+  {
+  }
+
+  // 等価比較演算子
+  bool operator==(const Place& other) const
+  {
+    return k == other.k && v1 == other.v1 && v2 == other.v2 &&
+      keep_v1 == other.keep_v1 && keep_v2 == other.keep_v2;
+  }
+};
+
+class State
+{
+public:
+  vector<Place> places; // n個の処理装置、m個の分別器、1つの搬入口を含む
+
+  vector<int> d;
+  int s;
+
+  int score;
+};
+
+struct GameData
+{
+  State state;
+  Board board;
 };
 
 // 分別器評価関数の基底クラス
@@ -268,44 +309,6 @@ public:
 
   string name() const override { return "Variance"; }
 };
-
-class Place
-{
-public:
-  int x, y;
-  int k;
-  int v1, v2;
-  int keep_v1, keep_v2;
-};
-
-class State
-{
-public:
-  vector<Place> places; // n個の処理装置、m個の分別器、1つの搬入口を含む
-
-  vector<int> d;
-  int s;
-
-  int score;
-};
-
-struct GameData
-{
-  State state;
-  Board board;
-};
-
-// Place構造体を使った向き計算のラッパー関数
-int orientation(const Place& a, const Place& b, const Place& c)
-{
-  return orientation(a.x, a.y, b.x, b.y, c.x, c.y);
-}
-
-// Place構造体を使った線分交差判定のラッパー関数
-bool segments_intersect(const Place& p1, const Place& p2, const Place& q1, const Place& q2)
-{
-  return segments_intersect(p1.x, p1.y, p2.x, p2.y, q1.x, q1.y, q2.x, q2.y);
-}
 
 class DirectedAcyclicGraph
 {
@@ -503,6 +506,8 @@ static GameData read_state(std::istream& is)
   Board b;
   is >> b.n >> b.m >> b.k;
 
+  b.x.resize(b.n + b.m + 1);
+  b.y.resize(b.n + b.m + 1);
   s.places.resize(b.n + b.m + 1);
 
   auto read_places = [&](int cnt, int offset)
@@ -510,13 +515,15 @@ static GameData read_state(std::istream& is)
       for (int i = 0; i < cnt; ++i) {
         int x, y;
         is >> x >> y;
-        s.places[offset + i] = { x, y, -1, -1, -1 };
+        b.x[offset + i] = x;
+        b.y[offset + i] = y;
+        s.places[offset + i] = Place(0, -1, -1, -1, -1); // kは-1で初期化
       }
     };
 
   read_places(b.n, 0);
   read_places(b.m, b.n);
-  s.places.back() = { 0, 5000, -1, -1, -1 };
+  s.places.back() = Place(0, -1, -1, -1, -1);
 
   b.p.assign(b.k, std::vector<double>(b.n));
   for (auto& row : b.p) {
@@ -579,14 +586,14 @@ void output_data(int case_num, const Board& b, const State& state)
   }
 }
 
-vector<int> GetNearOrder(int i, const State& s)
+vector<int> GetNearOrder(int i, const State& s, const Board& b)
 {
   vector<pair<double, int>> distances;
   for (int j = 0; j < s.places.size(); j++) {
     if (j == i) {
       continue;
     }
-    double dist = euclidean_distance(s.places[i].x, s.places[i].y, s.places[j].x, s.places[j].y);
+    double dist = euclidean_distance(b.x[i], b.y[i], b.x[j], b.y[j]);
     distances.push_back({ dist, j });
   }
   sort(distances.begin(), distances.end());
@@ -763,7 +770,7 @@ void sample_method(const Board& b, State& s, DirectedAcyclicGraph& dag)
 
   // s決定
   {
-    vector<int> near_order = GetNearOrder(b.n + b.m, s);
+    vector<int> near_order = GetNearOrder(b.n + b.m, s, b);
     s.s = near_order[0]; // 最も近い場所をsに設定
   }
 
@@ -781,7 +788,7 @@ void initialize_board(Board& b, State& s)
 {
   b.nearest.clear();
   for (int i = 0; i < b.n + b.m + 1; i++) {
-    b.nearest.push_back(GetNearOrder(i, s));
+    b.nearest.push_back(GetNearOrder(i, s, b));
   }
 }
 
@@ -890,8 +897,8 @@ bool can_use(int current, int next, const Board& b, const State& s, const vector
     if (edge.first == next || edge.second == next) {
       continue;
     }
-    continue;
-    if (segments_intersect(s.places[edge.first], s.places[edge.second], s.places[current], s.places[next])) {
+    //continue;
+    if (segments_intersect(b.x[edge.first], b.y[edge.first], b.x[edge.second], b.y[edge.second], b.x[current], b.y[current], b.x[next], b.y[next])) {
       return false;
     }
   }
@@ -1044,9 +1051,14 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
   initialize_board(b, s);
   initialize_State_d(b, s);
   initialize_State_s(b, s);
-  //initialize_State_k(b, s);
-  //initialize_DAG(b, s, dag);
-  initialize_State_k_and_DAG_pylamid(b, s, dag);
+  if (true) {
+    initialize_State_k(b, s);
+    initialize_DAG(b, s, dag);
+  }
+  else {
+    initialize_State_k_and_DAG_pylamid(b, s, dag);
+  }
+
 
   s.score = calculate_score(b, s, dag);
 }
@@ -1115,7 +1127,7 @@ bool try_update_state(State& s, State& best_state, const Board& b, const Directe
 
 void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
-  for (int i = 0; i < b.n + b.m; i++) {
+  for (int i = 0; i < b.n + b.m + 1; i++) {
     s.places[i].keep_v1 = s.places[i].v1;
     s.places[i].keep_v2 = s.places[i].v2;
   }
@@ -1182,7 +1194,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
   //std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e10;
+  const double START_TEMP = 1e6;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
@@ -1196,17 +1208,17 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
     }
 
-    if (rand_xorshift() % 12345 == 0) {
-      s = best_state;
-      dag.RecreateG();
-      dag.RecreateTopologicalSort();
-    }
+    //if (rand_xorshift() % 12345 == 0) {
+    //  s = best_state;
+    //  dag.RecreateG();
+    //  dag.RecreateTopologicalSort();
+    //}
 
     double progress_ratio = now_time / TIME_LIMIT;
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
-    int ra = rand_xorshift() % 250;
-    if (ra < 95) {
+    int ra = rand_xorshift() % 200;
+    if (ra < 0) {
       int v = rand_xorshift() % use_places.size();
       while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
         v = rand_xorshift() % use_places.size();
@@ -1225,7 +1237,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         s.places[place_id].k = keep_k; // 元のkに戻す
       }
     }
-    else if (ra < 100) {
+    else if (ra < 0) {
       int v = rand_xorshift() % use_places.size();
       while (s.places[use_places[v]].v1 == s.places[use_places[v]].v2) {
         v = rand_xorshift() % use_places.size();
@@ -1241,6 +1253,10 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
     }
     else if (ra < 200) {
+      auto before_g = dag.g_;
+      auto before_topo = dag.topo_;
+      auto before_topoPos = dag.topoPos_;
+      auto before_places = s.places;
       int v = rand_xorshift() % use_places.size();
       while (s.places[use_places[v]].keep_v1 == s.places[use_places[v]].keep_v2) {
         v = rand_xorshift() % use_places.size();
@@ -1248,12 +1264,14 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       int place_id = use_places[v];
       int keep_v1 = s.places[place_id].v1;
       int keep_v2 = s.places[place_id].v2;
+
       if (s.places[place_id].v1 == s.places[place_id].v2) {
         s.places[place_id].v1 = s.places[place_id].keep_v1; // v1を元に戻す
         s.places[place_id].v2 = s.places[place_id].keep_v2; // v2を元に戻す
-        if (rand_xorshift() % 2 == 0) {
-          swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
-        }
+        cerr << s.places[place_id].v1 << ' ' << s.places[place_id].v2 << endl;
+        //if (rand_xorshift() % 2 == 0) {
+        //  swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
+        //}
       }
       else {
         if (rand_xorshift() % 2 == 0) {
@@ -1274,11 +1292,31 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         s.places[place_id].v2 = keep_v2; // 元のv2に戻す
         dag.RecreateG();
         dag.RecreateTopologicalSort();
+        if (dag.g_ != before_g) {
+          cerr << "Graph changed!" << endl;
+        }
+        if (dag.topo_ != before_topo) {
+          cerr << "Topological sort changed!" << endl;
+        }
+        if (dag.topoPos_ != before_topoPos) {
+          cerr << "Topological position changed!" << endl;
+        }
+        if (s.places != before_places) {
+          cerr << "Places changed!" << endl;
+        }
+        cerr << s.score << ' ' << calculate_score(b, s, dag);
+        for (int i = 0; i < b.n; i++) {
+          cerr << ' ' << s.d[i];
+        }
+        cerr << endl;
+      }
+      else {
+        //cerr << "Updated state with v1/v2 swap: " << s.score << ' ' << calculate_score(b, s, dag) << endl;
       }
     }
     else if (ra < 250) {
       int v = rand_xorshift() % goal_places.size();
-      int place_id = use_places[v];
+      int place_id = goal_places[v];
       int keep_v1 = s.places[place_id].v1;
       int keep_v2 = s.places[place_id].v2;
       if (rand_xorshift() % 2 == 0) {
@@ -1313,6 +1351,119 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
   std::cerr << "loop = " << loop << ", score = " << s.score << endl;
 }
 
+double graph_distance_sum(const Board& b, const State& s, const vector<int>& indices)
+{
+  const int N = static_cast<int>(s.places.size());
+
+  vector<bool> visited(N, false);
+  queue<int> q;
+  q.push(indices[b.n + b.m]);
+  visited[indices[b.n + b.m]] = true;
+  double total_distance = 0.0;
+
+  while (!q.empty()) {
+    int current = q.front();
+    q.pop();
+    if (s.places[current].v1 == -1 || s.places[current].v2 == -1) {
+      continue;
+    }
+
+    int v1 = indices[s.places[current].v1];
+    int v2 = indices[s.places[current].v2];
+
+    double dist1 = euclidean_distance(b.x[current], b.y[current], b.x[v1], b.y[v1]);
+    total_distance += dist1;
+    if (!visited[v1]) {
+      q.push(v1);
+      visited[v1] = true;
+    }
+
+    if (v1 != v2) {
+      double dist2 = euclidean_distance(b.x[current], b.y[current], b.x[v2], b.y[v2]);
+      total_distance += dist2;
+      if (!visited[v2]) {
+        q.push(v2);
+        visited[v2] = true;
+      }
+    }
+  }
+  return total_distance;
+}
+
+void optimize_vertex(const Board& b, State& s, DirectedAcyclicGraph& dag)
+{
+  const int N = static_cast<int>(s.places.size());
+  vector<int> indices;
+  for (int i = 0; i < N; i++) {
+    indices.push_back(i);
+  }
+
+  double distance_sum = graph_distance_sum(b, s, indices);
+  cerr << "Initial distance_sum = " << distance_sum << endl;
+
+  int loop = 0;
+  while (true) {
+    loop++;
+
+    if (loop % 100 == 0) {
+      if (timer.get_elapsed_time() > TIME_LIMIT + 1.0) {
+        break;
+      }
+    }
+
+    int ra = rand_xorshift() % 100;
+    int swa1 = -1, swa2 = -1;
+    if (ra < 90) {
+      swa1 = rand_xorshift() % b.m + b.n;
+      swa2 = rand_xorshift() % b.m + b.n;
+      while (swa1 == swa2) {
+        swa2 = rand_xorshift() % b.m + b.n;
+      }
+    }
+    else if (ra < 100) {
+      swa1 = rand_xorshift() % b.n;
+      swa2 = rand_xorshift() % b.n;
+      while (swa1 == swa2) {
+        swa2 = rand_xorshift() % b.n;
+      }
+    }
+
+    swap(indices[swa1], indices[swa2]); // インデックスを入れ替える
+
+    double new_distance_sum = graph_distance_sum(b, s, indices);
+
+    if (new_distance_sum < distance_sum) {
+      distance_sum = new_distance_sum;
+    }
+    else {
+      swap(indices[swa1], indices[swa2]); // 元に戻す
+    }
+  }
+
+  cerr << "optimize_vertex loop = " << loop << ", distance_sum = " << distance_sum << endl;
+
+  State new_s = s;
+  new_s.s = indices[s.s];
+  for (int i = 0; i < N; i++) {
+    int new_i = indices[i];
+    new_s.places[new_i] = s.places[i];
+    if (new_s.places[new_i].v1 != -1) {
+      new_s.places[new_i].v1 = indices[new_s.places[new_i].v1];
+    }
+    if (new_s.places[new_i].v2 != -1) {
+      new_s.places[new_i].v2 = indices[new_s.places[new_i].v2];
+    }
+    if (new_s.places[new_i].keep_v1 != -1) {
+      new_s.places[new_i].keep_v1 = indices[new_s.places[new_i].keep_v1];
+    }
+    if (new_s.places[new_i].keep_v2 != -1) {
+      new_s.places[new_i].keep_v2 = indices[new_s.places[new_i].keep_v2];
+    }
+  }
+
+  s = new_s;
+}
+
 int solve_case(int case_num)
 {
   timer.start();
@@ -1326,6 +1477,12 @@ int solve_case(int case_num)
 
   initialize(board, state, dag);
   method1(board, state, dag);
+
+  //optimize_vertex(board, state, dag);
+
+  dag.RecreateG();
+  dag.RecreateTopologicalSort();
+  state.score = calculate_score(board, state, dag);
 
   output_data(case_num, board, state);
 
