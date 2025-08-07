@@ -611,12 +611,23 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
   return { maxSum, assignment };
 }
 
+vector<double> dp;
+vector<vector<double>> dp2;
 int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
-  auto topo = dag.topo_;
+  if (dp.size() != s.places.size()) {
+    dp.assign(s.places.size(), 0.0);
+  }
+  if (dp2.size() != b.n) {
+    dp2.assign(b.n, vector<double>(b.n, 0.0));
+  }
+  for (int i = 0; i < b.n; i++) {
+    for (int j = 0; j < b.n; j++) {
+      dp2[i][j] = 0.0;
+    }
+  }
 
-  vector<double> dp(s.places.size(), 0.0);
-  vector<vector<double>> dp2(b.n, vector<double>(b.n, 0.0));
+  auto topo = dag.topo_;
 
   for (int i = 0; i < b.n; i++) {
     // 初期化
