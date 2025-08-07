@@ -138,7 +138,7 @@ bool segments_intersect(int p1x, int p1y, int p2x, int p2y, int q1x, int q1y, in
   return (o1 * o2 <= 0) && (o3 * o4 <= 0);
 }
 
-const double TIME_LIMIT = 1.8;
+const double TIME_LIMIT = 10.8;
 int exec_mode;
 
 const int MAX_V = 1100;
@@ -1116,17 +1116,17 @@ bool try_update_state(State& s, State& best_state, const Board& b, DirectedAcycl
   double diff_score = (s.score - new_score) * 123.6;
   double prob = exp(diff_score / temp);
   if (prob > rand_01()) {
-    if (diff_score > 0) {
-      s.score = new_score;
-      if (s.score < best_state.score) {
-        //cerr << "New score: " << s.score << endl;
-        dag.RecreateG();
-        dag.RecreateTopologicalSort();
-        //cerr << s.score << ' ' << calculate_score(b, s, dag) << endl;
-        best_state = s;
-      }
-      return true;
+
+    s.score = new_score;
+    if (s.score < best_state.score) {
+      //cerr << "New score: " << s.score << endl;
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
+      //cerr << s.score << ' ' << calculate_score(b, s, dag) << endl;
+      best_state = s;
     }
+    return true;
+
   }
   return false;
 }
@@ -1201,7 +1201,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
   //std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e1;
+  const double START_TEMP = 1e8;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
