@@ -793,7 +793,7 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
     //    }
     //  }
     //}
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 100; i++) {
       if (nexts.size() >= 2) {
         break; // 2つの近い頂点を見つけたら終了
       }
@@ -807,9 +807,9 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
       if (skip) {
         continue;
       }
-      //if (visited[next] == depth) {
-      //  continue;
-      //}
+      if (next < b.n && i < 3 && depth < 5) {
+        continue;
+      }
       if (can_use(current, next, b, s, edges, used)) {
         nexts.push_back(next);
       }
