@@ -550,13 +550,17 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
 
   /* --- 最大化 → 最小化 (cost) --- */
   double maxP = -INF;
-  for (auto& row : profit)
-    for (double x : row)
+  for (auto& row : profit) {
+    for (double x : row) {
       maxP = max(maxP, x);
+    }
+  }
   vector<vector<double>> cost(n, vector<double>(n));
-  for (int i = 0; i < n; ++i)
-    for (int j = 0; j < n; ++j)
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
       cost[i][j] = maxP - profit[i][j];
+    }
+  }
 
   /* --- 本体 --- */
   for (int i = 1; i <= n; ++i) { // 行を 1-origin で管理
@@ -568,7 +572,7 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
       used[j0] = true;
       int i0 = p[j0], j1 = 0;
       double delta = INF;
-      for (int j = 1; j <= n; ++j)
+      for (int j = 1; j <= n; ++j) {
         if (!used[j]) {
           double cur = cost[i0 - 1][j - 1] - u[i0] - v[j];
           if (cur < minv[j]) {
@@ -580,13 +584,15 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
             j1 = j;
           }
         }
+      }
       for (int j = 0; j <= n; ++j) {
         if (used[j]) {
           u[p[j]] += delta;
           v[j] -= delta;
         }
-        else
+        else {
           minv[j] -= delta;
+        }
       }
       j0 = j1;
     } while (p[j0] != 0);
@@ -613,7 +619,7 @@ pair<double, vector<int>> hungarian_max(const vector<vector<double>>& profit)
 
 vector<double> dp;
 vector<vector<double>> dp2;
-int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
+int calculate_score(const Board& b, State& s, const DirectedAcyclicGraph& dag)
 {
   if (dp.size() != s.places.size()) {
     dp.assign(s.places.size(), 0.0);
@@ -627,7 +633,7 @@ int calculate_score(const Board& b, State& s, DirectedAcyclicGraph& dag)
     }
   }
 
-  auto topo = dag.topo_;
+  const auto& topo = dag.topo_;
 
   for (int i = 0; i < b.n; i++) {
     // 初期化
@@ -956,6 +962,23 @@ int select_best_separator(const Board& b, const State& s, int vertex,
   return best_k;
 }
 
+bool try_update_state(State& s, State& best_state, const Board& b, const DirectedAcyclicGraph& dag, double temp)
+{
+  // スコアを計算
+  int new_score = calculate_score(b, s, dag);
+
+  double diff_score = (s.score - new_score) * 123.6;
+  double prob = exp(diff_score / temp);
+  if (prob > rand_01()) {
+    s.score = new_score;
+    if (s.score < best_state.score) {
+      best_state = s;
+    }
+    return true;
+  }
+  return false;
+}
+
 void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
 {
   for (int i = 0; i < b.n + b.m; i++) {
@@ -1051,18 +1074,9 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         s.places[place_id].k = rand_xorshift() % b.k;
       }
 
-      // スコアを計算
-      int new_score = calculate_score(b, s, dag);
+      bool is_update = try_update_state(s, best_state, b, dag, temp);
 
-      double diff_score = (s.score - new_score) * 123.6;
-      double prob = exp(diff_score / temp);
-      if (prob > rand_01()) {
-        s.score = new_score;
-        if (s.score < best_state.score) {
-          best_state = s;
-        }
-      }
-      else {
+      if (!is_update) {
         // 元に戻す
         s.places[place_id].k = keep_k; // 元のkに戻す
       }
@@ -1075,20 +1089,11 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       int place_id = use_places[v];
       swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
 
-      // スコアを計算
-      int new_score = calculate_score(b, s, dag);
+      bool is_update = try_update_state(s, best_state, b, dag, temp);
 
-      double diff_score = (s.score - new_score) * 123.6;
-      double prob = exp(diff_score / temp);
-      if (prob > rand_01()) {
-        s.score = new_score;
-        if (s.score < best_state.score) {
-          best_state = s;
-        }
-      }
-      else {
+      if (!is_update) {
         // 元に戻す
-        swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を入れ替える
+        swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を元に戻す
       }
     }
     else if (ra < 200) {
@@ -1114,21 +1119,12 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
           s.places[place_id].v2 = s.places[place_id].v1; // v2をv1に置き換える
         }
       }
-
-      // スコアを計算
       dag.RecreateG();
       dag.RecreateTopologicalSort();
-      int new_score = calculate_score(b, s, dag);
 
-      double diff_score = (s.score - new_score) * 123.6;
-      double prob = exp(diff_score / temp);
-      if (prob > rand_01()) {
-        s.score = new_score;
-        if (s.score < best_state.score) {
-          best_state = s;
-        }
-      }
-      else {
+      bool is_update = try_update_state(s, best_state, b, dag, temp);
+
+      if (!is_update) {
         // 元に戻す
         s.places[place_id].v1 = keep_v1; // 元のv1に戻す
         s.places[place_id].v2 = keep_v2; // 元のv2に戻す
