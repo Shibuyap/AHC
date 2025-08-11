@@ -138,7 +138,7 @@ bool segments_intersect(int p1x, int p1y, int p2x, int p2y, int q1x, int q1y, in
   return (o1 * o2 <= 0) && (o3 * o4 <= 0);
 }
 
-const double TIME_LIMIT = 10.8;
+const double TIME_LIMIT = 1.8;
 int exec_mode;
 
 const int MAX_V = 1100;
@@ -823,8 +823,12 @@ void initialize_State_k(Board& b, State& s)
   }
 }
 
+vector<vector<int>> next_pylamids;
 void initialize_State_k_and_DAG_pylamid(Board& b, State& s, DirectedAcyclicGraph& dag)
 {
+  next_pylamids.clear();
+  next_pylamids.resize(b.n + b.m + 1);
+
   for (int i = b.n; i < b.n + b.m; i++) {
     s.places[i].k = rand_xorshift() % b.k;
     s.places[i].v1 = -1;
@@ -841,7 +845,7 @@ void initialize_State_k_and_DAG_pylamid(Board& b, State& s, DirectedAcyclicGraph
 
   vector<int> row;
   row.push_back(s.s);
-  while (cnt + row.size() * 4 + 1 <= b.n + b.m) {
+  while (cnt + row.size() + 1 <= b.n + b.m) {
     vector<int> next_row;
     for (int i = 0; i < row.size(); i++) {
       int current = row[i];
@@ -862,6 +866,11 @@ void initialize_State_k_and_DAG_pylamid(Board& b, State& s, DirectedAcyclicGraph
         cnt++;
       }
     }
+
+    for (auto current : row) {
+      next_pylamids[current] = next_row;
+    }
+
     row = next_row;
   }
 
@@ -874,6 +883,10 @@ void initialize_State_k_and_DAG_pylamid(Board& b, State& s, DirectedAcyclicGraph
     cnt2++;
     s.places[current].v2 = cnt2 % b.n;
     cnt2++;
+
+    for (int j = 0; j < b.n; j++) {
+      next_pylamids[current].push_back(j);
+    }
   }
 
   dag.RecreateG();
@@ -1201,7 +1214,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
   //std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e8;
+  const double START_TEMP = 1e1;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
@@ -1357,7 +1370,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         //cerr << "Updated state with v1/v2 swap: " << s.score << ' ' << calculate_score(b, s, dag) << endl;
       }
     }
-    else if (ra < 250) {
+    else if (ra < 100) {
       int v = rand_xorshift() % goal_places.size();
       int place_id = goal_places[v];
       int keep_v1 = s.places[place_id].v1;
@@ -1381,6 +1394,37 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
 
       if (!is_update) {
         // 元に戻す
+        s.places[place_id].v1 = keep_v1; // 元のv1に戻す
+        s.places[place_id].v2 = keep_v2; // 元のv2に戻す
+        dag.RecreateG();
+        dag.RecreateTopologicalSort();
+      }
+    }
+    else if (ra < 250) {
+      int v = rand_xorshift() % use_places.size();
+      int place_id = use_places[v];
+      int keep_v1 = s.places[place_id].v1;
+      int keep_v2 = s.places[place_id].v2;
+
+      if (rand_xorshift() % 2 == 0) {
+        s.places[place_id].v1 = next_pylamids[place_id][rand_xorshift() % next_pylamids[place_id].size()];
+        while (s.places[place_id].v1 == keep_v1) {
+          s.places[place_id].v1 = next_pylamids[place_id][rand_xorshift() % next_pylamids[place_id].size()];
+        }
+      }
+      else {
+        s.places[place_id].v2 = next_pylamids[place_id][rand_xorshift() % next_pylamids[place_id].size()];
+        while (s.places[place_id].v2 == keep_v2) {
+          s.places[place_id].v2 = next_pylamids[place_id][rand_xorshift() % next_pylamids[place_id].size()];
+        }
+      }
+
+      dag.RecreateG();
+      dag.RecreateTopologicalSort();
+
+      bool is_update = try_update_state(s, best_state, b, dag, temp);
+
+      if (!is_update) {
         s.places[place_id].v1 = keep_v1; // 元のv1に戻す
         s.places[place_id].v2 = keep_v2; // 元のv2に戻す
         dag.RecreateG();
@@ -1560,10 +1604,10 @@ int solve_case(int case_num)
   dag.RecreateG();
   dag.RecreateTopologicalSort();
 
-  optimize_vertex(board, state, dag);
+  //optimize_vertex(board, state, dag);
 
-  dag.RecreateG();
-  dag.RecreateTopologicalSort();
+  //dag.RecreateG();
+  //dag.RecreateTopologicalSort();
   state.score = calculate_score(board, state, dag);
 
   output_data(case_num, board, state);
