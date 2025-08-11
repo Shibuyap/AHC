@@ -522,6 +522,8 @@ static GameData read_state(std::istream& is)
   read_places(b.n, 0);
   read_places(b.m, b.n);
   s.places.back() = Place(0, -1, -1, -1, -1);
+  b.x.back() = 0;
+  b.y.back() = 5000;
 
   b.p.assign(b.k, std::vector<double>(b.n));
   for (auto& row : b.p) {
@@ -1065,7 +1067,7 @@ void initialize(Board& b, State& s, DirectedAcyclicGraph& dag)
   initialize_board(b, s);
   initialize_State_d(b, s);
   initialize_State_s(b, s);
-  if (false) {
+  if (true) {
     initialize_State_k(b, s);
     initialize_DAG(b, s, dag);
   }
@@ -1214,7 +1216,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
   //std::cerr << "Starting hill climbing method..." << timer.get_elapsed_time() << " seconds" << endl;
 
   double now_time = timer.get_elapsed_time();
-  const double START_TEMP = 1e1;
+  const double START_TEMP = 1e7;
   const double END_TEMP = 1e-5;
 
   int loop = 0;
@@ -1228,7 +1230,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
       }
     }
 
-    if (rand_xorshift() % 12345 == 0) {
+    if (rand_xorshift() % 1234 == 0) {
       s = best_state;
       dag.RecreateG();
       dag.RecreateTopologicalSort();
@@ -1272,7 +1274,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         swap(s.places[place_id].v1, s.places[place_id].v2); // v1とv2を元に戻す
       }
     }
-    else if (ra < 100) {
+    else if (ra < 250) {
       //State before_state = s; // 元の状態を保存
       ////cerr << calculate_score(b, s, dag) << endl;
       //auto keep_dp2 = dp2; // dp2を保存
@@ -1370,7 +1372,7 @@ void method1(const Board& b, State& s, DirectedAcyclicGraph& dag)
         //cerr << "Updated state with v1/v2 swap: " << s.score << ' ' << calculate_score(b, s, dag) << endl;
       }
     }
-    else if (ra < 100) {
+    else if (ra < 250) {
       int v = rand_xorshift() % goal_places.size();
       int place_id = goal_places[v];
       int keep_v1 = s.places[place_id].v1;
