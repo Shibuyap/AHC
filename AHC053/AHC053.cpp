@@ -813,8 +813,8 @@ void build_initial_solution()
     }
     else {
       a[i] = rand_xorshift64star() % (UNIT);
-      int ra = rand_xorshift() % 24;
-      ra = max(0, ra - 6);
+      int ra = rand_xorshift() % 22;
+      ra = max(0, ra - 4);
       rep(j, ra)
       {
         a[i] /= 2;
@@ -907,27 +907,14 @@ void run_simulated_annealing(AnnealingParams annealingParams)
     double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
     // 近傍解作成
-    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[2];
+    int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
     int ra1, ra2, ra3, ra4, ra5;
     int keep1, keep2, keep3, keep4, keep5, keep6;
 
     ll now_diff;
     ll next_diff;
-    vector<ll> use1;
-    vector<ll> use2;
 
-    int ramode = 0;
-    if (now_time < 0.5 || ra_exec_mode < annealingParams.operation_thresholds[0]) {
-      ramode = 0;
-    }
-    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
-      ramode = 1;
-    }
-    else {
-      ramode = 2;
-    }
-
-    if (ramode == 0) {
+    if (now_time < 1.1 || ra_exec_mode < annealingParams.operation_thresholds[0]) {
       // 近傍操作1
       ra1 = rand_xorshift() % m;
       vector<int> candidates;
@@ -981,7 +968,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
         }
       }
     }
-    else if (ramode == 1) {
+    else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
       // 近傍操作2
       ra1 = rand_xorshift() % m;
       vector<int> candidates;
@@ -1080,75 +1067,6 @@ void run_simulated_annealing(AnnealingParams annealingParams)
         }
       }
     }
-    else if (ramode == 2) {
-      ra1 = rand_xorshift() % m;
-      ra2 = rand_xorshift() % m;
-      while (ra1 == ra2) {
-        ra2 = rand_xorshift() % m;
-      }
-
-      now_diff = abs(sums[ra1] - b[ra1]) + abs(sums[ra2] - b[ra2]);
-      next_diff = now_diff;
-
-      use1.clear();
-      use2.clear();
-
-
-      rep(i, n)
-      {
-        if (x[i] == ra1) {
-          use1.push_back(i);
-        }
-        if (x[i] == ra2) {
-          use2.push_back(i);
-        }
-      }
-      if (use1.size() == 0 || use2.size() == 0) {
-        continue;
-      }
-
-      vector<ll> candidates1;
-      rep(i, (1 << use1.size()))
-      {
-        bitset<20> bs(i);
-        ll sum1 = 0;
-        rep(j, use1.size())
-        {
-          if (bs.test(j)) {
-            sum1 += a[use1[j]];
-          }
-        }
-        candidates1.push_back(sum1);
-      }
-      vector<ll> candidates2;
-      rep(i, (1 << use2.size()))
-      {
-        bitset<20> bs(i);
-        ll sum2 = 0;
-        rep(j, use2.size())
-        {
-          if (bs.test(j)) {
-            sum2 += a[use2[j]];
-          }
-        }
-        candidates2.push_back(sum2);
-      }
-
-      keep1 = -1;
-      keep2 = -1;
-      rep(i, candidates1.size())
-      {
-        rep(j, candidates2.size())
-        {
-          ll new_diff = abs((sums[ra1] - candidates1[i] + candidates2[j]) - b[ra1]) + abs((sums[ra2] - candidates2[j] + candidates1[i]) - b[ra2]);
-          if (new_diff < next_diff) {
-            next_diff = new_diff;
-            keep1 = i;
-            keep2 = j;
-          }
-        }
-      }
-    }
 
     // スコア計算
     ll tmp_score = now_diff - next_diff;
@@ -1156,10 +1074,10 @@ void run_simulated_annealing(AnnealingParams annealingParams)
     // 焼きなましで採用判定
     double diff_score = tmp_score * annealingParams.score_scale;
     double prob = exp(diff_score / temp);
-    if (prob > rand_01()) {
-      //if (tmp_score >= 0) {
-        // 採用
-      if (ramode == 0) {
+    //if (prob > rand_01()) {
+    if (tmp_score >= 0) {
+      // 採用
+      if (now_time < 1.1 || ra_exec_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の適用
         if (keep3 != -1) {
           sums[ra1] += a[keep3];
@@ -1170,7 +1088,7 @@ void run_simulated_annealing(AnnealingParams annealingParams)
           x[keep4] = ra1;
         }
       }
-      else if (ramode == 1) {
+      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
         // 近傍操作2 の適用
         if (keep3 != -1) {
           sums[ra1] += a[keep3];
@@ -1185,48 +1103,17 @@ void run_simulated_annealing(AnnealingParams annealingParams)
           x[keep6] = ra1;
         }
       }
-      else if (ramode == 2) {
-        // 近傍操作3 の適用
-        if (keep1 != -1) {
-          //cerr << "keep1 = " << keep1 << ", keep2 = " << keep2 << endl;
-          ll sum1 = 0;
-          bitset<20> bs(keep1);
-          rep(j, use1.size())
-          {
-            if (bs.test(j)) {
-              sum1 += a[use1[j]];
-              sums[ra1] -= a[use1[j]];
-              x[use1[j]] = ra2;
-            }
-          }
-          sums[ra2] += sum1;
-        }
-        if (keep2 != -1) {
-          ll sum2 = 0;
-          bitset<20> bs(keep2);
-          rep(j, use2.size())
-          {
-            if (bs.test(j)) {
-              sum2 += a[use2[j]];
-              sums[ra2] -= a[use2[j]];
-              x[use2[j]] = ra1;
-            }
-          }
-          sums[ra1] += sum2;
-        }
-      }
     }
     else {
       // 元に戻す
-      if (ramode == 0) {
-
+      if (now_time < 1.1 || ra_exec_mode < annealingParams.operation_thresholds[0]) {
         // 近傍操作1 の巻き戻し
         sums[ra1] += a[keep1];
         sums[ra1] += a[keep2];
         x[keep1] = ra1;
         x[keep2] = ra1;
       }
-      else if (ramode == 1) {
+      else if (ra_exec_mode < annealingParams.operation_thresholds[1]) {
         // 近傍操作2 の巻き戻し
         sums[ra1] += a[keep1];
         if (keep2 != -1) {
@@ -1243,9 +1130,6 @@ void run_simulated_annealing(AnnealingParams annealingParams)
           x[keep5] = ra1;
         }
       }
-      else if (ramode == 2) {
-        // 近傍操作3 の巻き戻し
-      }
     }
     calc_sum_e();
   }
@@ -1256,6 +1140,275 @@ void run_simulated_annealing(AnnealingParams annealingParams)
 
   restore_best_score();
 }
+
+// ===== ここから追加（ファイル末尾の方に置くのが楽） =====
+namespace
+{
+
+  // DPの最大ビット長（≈状態数）。大きくすると精度↑/計算量↑
+  static const int DP_MAX_STATES = 20000;
+  // 一山あたりDPにかける候補上限（入/出）
+  static const int MAXCAND_ADD = 120;
+  static const int MAXCAND_REM = 120;
+
+  // dpベクタは 64bit ワード配列
+  struct BitDP
+  {
+    vector<uint64_t> w;
+    int bits; // 有効ビット数（0..bits）
+    BitDP() : bits(0) {}
+    BitDP(int nbits) { init(nbits); }
+    void init(int nbits)
+    {
+      bits = nbits;
+      int words = (nbits + 64) / 64;
+      w.assign(words, 0);
+    }
+    inline void set0()
+    {
+      std::fill(w.begin(), w.end(), 0);
+    }
+    inline void set_bit0()
+    {
+      set0();
+      if (!w.empty()) w[0] = 1ULL; // bit 0 = 1
+    }
+    inline bool test(int b) const
+    {
+      if (b < 0 || b > bits) return false;
+      int id = b >> 6, sh = b & 63;
+      if (id >= (int)w.size()) return false;
+      return (w[id] >> sh) & 1ULL;
+    }
+    inline void mask_tail()
+    {
+      int used = bits + 1;
+      int full = (int)w.size() * 64;
+      int extra = full - used;
+      if (extra > 0) {
+        int id = (bits >> 6);
+        int valid = (bits & 63) + 1;
+        uint64_t m = (valid == 64) ? ~0ULL : ((1ULL << valid) - 1ULL);
+        w[id] &= m;
+        for (int i = id + 1; i < (int)w.size(); ++i) w[i] = 0;
+      }
+    }
+  };
+
+  // dp |= (dp << sh)
+  static inline void shift_or(BitDP& dp, const BitDP& src, int sh)
+  {
+    if (sh <= 0) return;
+    int word_shift = sh >> 6;
+    int bit_shift = sh & 63;
+    const int W = (int)dp.w.size();
+    // 先に一時へ
+    static thread_local vector<uint64_t> tmp;
+    tmp.assign(W, 0ULL);
+    for (int i = W - 1; i >= 0; --i) {
+      uint64_t v = 0ULL;
+      int from = i - word_shift;
+      if (from >= 0 && from < W) {
+        v |= src.w[from] << bit_shift;
+        if (bit_shift && from - 1 >= 0) v |= (src.w[from - 1] >> (64 - bit_shift));
+      }
+      tmp[i] = v;
+    }
+    // OR
+    for (int i = 0; i < W; ++i) dp.w[i] |= tmp[i];
+    dp.mask_tail();
+  }
+
+  struct SubsetResult
+  {
+    ll best_sum = 0;
+    vector<int> picked; // candのindex（元のカードのindexではないことに注意）
+  };
+
+  // targetに近い部分和（0..cap）を、縮尺bitsetで近似探索して復元する
+  static SubsetResult subset_sum_approx(
+    const vector<int>& candIdx,   // カードのインデックス（a[]に対する）
+    ll target, ll cap,            // 探索目標と上限（実値）
+    int maxStates                 // 状態数上限
+  )
+  {
+    SubsetResult res;
+    if (candIdx.empty() || cap <= 0) return res;
+
+    // 縮尺幅STEPを決める（states <= maxStates）
+    ll step = max(1LL, (cap + maxStates - 1) / maxStates);
+    int states = (int)(cap / step);
+    states = min(states, maxStates);
+    if (states <= 0) return res;
+
+    // 各候補の縮尺重み（0は1に繰上げ）。cap超は除外
+    struct Item { int idx; int w; ll val; };
+    vector<Item> items;
+    items.reserve(candIdx.size());
+    for (int id : candIdx) {
+      ll v = a[id];
+      if (v <= 0) continue;
+      if (v > cap) continue; // capを超える値は不要
+      int w = (int)(v / step);
+      if (w <= 0) w = 1;
+      if (w > states) continue;
+      items.push_back({ id, w, v });
+    }
+    if (items.empty()) return res;
+
+    // DP配列とスナップショット
+    BitDP dp(states); dp.set_bit0();
+    vector<BitDP> hist; hist.reserve(items.size() + 1);
+    hist.push_back(dp);
+
+    for (auto& it : items) {
+      BitDP next = dp;
+      shift_or(next, dp, it.w);
+      dp = std::move(next);
+      hist.push_back(dp);
+    }
+
+    // 目標近辺で最良のs（縮尺）を探す（0..states）
+    ll bestDiff = (1LL << 62);
+    int bestS = 0;
+    ll tgtS_real = target / step;
+    for (int s = 0; s <= states; ++s) {
+      if (!dp.test(s)) continue;
+      ll real = (ll)s * step;
+      ll diff = llabs(real - target);
+      if (diff < bestDiff) {
+        bestDiff = diff; bestS = s;
+        if (diff == 0) break;
+      }
+    }
+    if (!dp.test(bestS)) return res;
+
+    // 復元
+    vector<int> chosenRev;
+    int s = bestS;
+    for (int k = (int)items.size(); k >= 1; --k) {
+      const auto& prev = hist[k - 1];
+      const auto& it = items[k - 1];
+      // 選ばなかった場合
+      if (prev.test(s)) {
+        continue;
+      }
+      // 選んだ場合（s>=w && prev.test(s-w)）
+      if (s >= it.w && prev.test(s - it.w)) {
+        chosenRev.push_back(it.idx);
+        s -= it.w;
+      }
+    }
+    reverse(chosenRev.begin(), chosenRev.end());
+
+    // 実和を計算（丸め誤差を吸収）
+    ll sumv = 0;
+    for (int idx : chosenRev) sumv += a[idx];
+
+    res.best_sum = sumv;
+    res.picked = std::move(chosenRev);
+    return res;
+  }
+
+} // end anonymous namespace
+
+// 仕上げ：オーバーは削り、不足は未使用から足す（改善した場合のみ適用）
+void knapsack_polish()
+{
+  // 山ごとの所属リストと未使用集合を作る
+  vector<vector<int>> inPile(m);
+  vector<int> freeList;
+  vector<char> isFree(n, 0);
+  rep(i, n)
+  {
+    if (x[i] == m) { freeList.push_back(i); isFree[i] = 1; }
+    else inPile[x[i]].push_back(i);
+  }
+
+  // 1) オーバーしている山から削る
+  rep(j, m)
+  {
+    if (sums[j] <= b[j]) continue;
+    ll overshoot = sums[j] - b[j];
+    if (overshoot <= 0) continue;
+
+    // 候補を小さい順で制限
+    auto& vec = inPile[j];
+    sort(vec.begin(), vec.end(), [&](int L, int R) { return a[L] < a[R]; });
+    vector<int> cand;
+    cand.reserve(min<int>((int)vec.size(), MAXCAND_REM));
+    // 多少のオーバーカットも許容するためcapにマージン（縮尺1〜2%程度）
+    ll cap = overshoot + max(overshoot / 16, 1LL);
+    for (int id : vec) {
+      if ((int)cand.size() >= MAXCAND_REM) break;
+      if (a[id] <= cap) cand.push_back(id);
+    }
+    if (cand.empty()) continue;
+
+    auto ans = subset_sum_approx(cand, overshoot, cap, DP_MAX_STATES);
+    if (ans.best_sum <= 0) continue;
+
+    ll before = llabs(sums[j] - b[j]);
+    ll after = llabs((sums[j] - ans.best_sum) - b[j]);
+    if (after < before) {
+      // 適用：取り除く
+      for (int id : ans.picked) {
+        x[id] = m;
+        sums[j] -= a[id];
+        isFree[id] = 1;
+        freeList.push_back(id);
+      }
+      // inPile[j] からも抜く（遅くてOK：n=500）
+      {
+        vector<int> tmp; tmp.reserve(inPile[j].size());
+        for (int id : inPile[j]) if (x[id] == j) tmp.push_back(id);
+        inPile[j].swap(tmp);
+      }
+    }
+  }
+
+  // 2) 不足している山に未使用から足す
+  // 未使用を値昇順で使いやすく
+  sort(freeList.begin(), freeList.end(), [&](int L, int R) { return a[L] < a[R]; });
+
+  rep(j, m)
+  {
+    if (sums[j] >= b[j]) continue;
+    ll deficit = b[j] - sums[j];
+    if (deficit <= 0) continue;
+
+    // 候補を小さい順に制限（cap=不足+マージン）
+    ll cap = deficit + max(deficit / 16, 1LL);
+    vector<int> cand;
+    cand.reserve(MAXCAND_ADD);
+    for (int id : freeList) {
+      if (!isFree[id]) continue;
+      if (a[id] > cap) break; // 昇順なのでbreak
+      cand.push_back(id);
+      if ((int)cand.size() >= MAXCAND_ADD) break;
+    }
+    if (cand.empty()) continue;
+
+    auto ans = subset_sum_approx(cand, deficit, cap, DP_MAX_STATES);
+    if (ans.best_sum <= 0) continue;
+
+    ll before = llabs(sums[j] - b[j]);
+    ll after = llabs((sums[j] + ans.best_sum) - b[j]);
+    if (after < before) {
+      // 適用：追加
+      for (int id : ans.picked) {
+        if (!isFree[id]) continue; // 念のため
+        x[id] = j;
+        sums[j] += a[id];
+        isFree[id] = 0;
+      }
+    }
+  }
+
+  calc_sum_e(); // 最終誤差を更新
+}
+// ===== ここまで追加 =====
+
 
 ll solve_case(int case_num, AnnealingParams annealingParams)
 {
@@ -1279,6 +1432,8 @@ ll solve_case(int case_num, AnnealingParams annealingParams)
 
   run_simulated_annealing(annealingParams);
 
+  knapsack_polish();
+
   output_data2(ofs);
 
   if (ofs.is_open()) {
@@ -1300,8 +1455,8 @@ int main()
   ll best_score = 0;
 
   AnnealingParams annealingParams;
-  annealingParams.start_temperature[0] = 2e8;
-  annealingParams.start_temperature[1] = 20.0;
+  annealingParams.start_temperature[0] = 2e6;
+  annealingParams.start_temperature[1] = 2048.0;
   annealingParams.start_temperature[2] = 2048.0;
   annealingParams.start_temperature[3] = 2048.0;
   annealingParams.start_temperature[4] = 2048.0;
@@ -1331,7 +1486,7 @@ int main()
     rep(loop, 1)
     {
       ll sum_score = 0;
-      for (int i = 62; i < 100; ++i) {
+      for (int i = 0; i < 100; ++i) {
         ll score = solve_case(i, annealingParams);
         sum_score += score;
         if (exec_mode == 1) {
