@@ -813,8 +813,8 @@ void build_initial_solution()
     }
     else {
       a[i] = rand_xorshift64star() % (UNIT);
-      int ra = rand_xorshift() % 22;
-      ra = max(0, ra - 4);
+      int ra = rand_xorshift() % 24;
+      ra = max(0, ra - 6);
       rep(j, ra)
       {
         a[i] /= 2;
