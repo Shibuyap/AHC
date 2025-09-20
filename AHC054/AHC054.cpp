@@ -95,6 +95,9 @@ namespace
       arr[j] = swa;
     }
   }
+
+  std::random_device seed_gen;
+  std::mt19937 engine(seed_gen());
 }
 
 const int DX[4] = { -1, 1, 0, 0 };
@@ -102,12 +105,14 @@ const int DY[4] = { 0, 0, -1, 1 };
 
 const double TIME_LIMIT = 1.9;
 int exec_mode;
+bool is_simulate;
 
 const int MAX_N = 40;
 
 int n;
 int ti, tj;
 int b[MAX_N][MAX_N];
+int init_b[MAX_N][MAX_N];
 
 int turn;
 int confirmed[MAX_N][MAX_N];
@@ -116,7 +121,8 @@ int pi, pj;
 
 // ローカルテスター用 入力
 int current_q;
-int qi[MAX_N * MAX_N - 1], qj[MAX_N * MAX_N - 1];
+int qi[MAX_N * MAX_N], qj[MAX_N * MAX_N];
+int init_qi[MAX_N * MAX_N], init_qj[MAX_N * MAX_N];
 int ri, rj;
 
 // 高速化用
@@ -124,6 +130,42 @@ int bfs_dp[MAX_N][MAX_N];
 int bfs_visited[MAX_N][MAX_N];
 int bfs_can_use[MAX_N][MAX_N];
 int bfs_version;
+
+void generate_q()
+{
+  vector<P> vp;
+  int cnt = 0;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      vp.push_back(P(i, j));
+    }
+  }
+
+  // シャッフル
+  std::shuffle(vp.begin(), vp.end(), engine);
+
+  for (int i = 0; i < n * n; i++) {
+    qi[i] = vp[i].first;
+    qj[i] = vp[i].second;
+  }
+}
+
+void setup_true_q()
+{
+  for (int i = 0; i < n * n - 1; i++) {
+    qi[i] = init_qi[i];
+    qj[i] = init_qj[i];
+  }
+}
+
+void reset_board()
+{
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      b[i][j] = init_b[i][j];
+    }
+  }
+}
 
 void initialize_state()
 {
@@ -147,6 +189,32 @@ void initialize_state()
       bfs_visited[i][j] = 0;
     }
   }
+}
+
+void initialize_simulate()
+{
+  current_q = 0;
+  ri = -1;
+  rj = -1;
+
+  turn = 0;
+  pi = -1;
+  pj = -1;
+  for (int i = 0; i < MAX_N; i++) {
+    for (int j = 0; j < MAX_N; j++) {
+      confirmed[i][j] = 0;
+    }
+  }
+
+  bfs_version = 0;
+  for (int i = 0; i < MAX_N; i++) {
+    for (int j = 0; j < MAX_N; j++) {
+      bfs_dp[i][j] = -1;
+      bfs_visited[i][j] = 0;
+    }
+  }
+
+  reset_board();
 }
 
 void input_data(int case_num)
@@ -193,7 +261,18 @@ void input_data(int case_num)
       ifs >> qi[i] >> qj[i];
     }
 
+    for (int i = 0; i < n * n - 1; i++) {
+      init_qi[i] = qi[i];
+      init_qj[i] = qj[i];
+    }
+
     ifs.close();
+  }
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      init_b[i][j] = b[i][j];
+    }
   }
 }
 
@@ -379,7 +458,10 @@ void get_can_use()
 
 void update_confirmed()
 {
-  if (exec_mode == 0) {
+  if(is_simulate){
+    /*　ここに処理を書く */
+  }
+  else if (exec_mode == 0) {
     // 標準入力
     cin >> pi >> pj;
     int x_size;
@@ -453,7 +535,10 @@ void update_confirmed()
 
 void put_each_turn_output(ofstream& ofs, const vector<P>& ps)
 {
-  if (exec_mode == 0) {
+  if (is_simulate) {
+    /*　ここに処理を書く */
+  }
+  else if (exec_mode == 0) {
     // 標準出力
     cout << ps.size();
     for (int i = 0; i < (int)ps.size(); i++) {
@@ -777,8 +862,13 @@ vector<P> init_4()
   return ps;
 }
 
+struct SimulateParam
+{
+  int sim_method;
+};
 
-int method1(ofstream& ofs)
+
+int method1(ofstream& ofs, const SimulateParam& param)
 {
   while (true) {
     update_confirmed();
@@ -805,43 +895,6 @@ int method1(ofstream& ofs)
   return turn;
 }
 
-struct SimurateResult
-{
-  vector<P> ps;
-  int score;
-};
-
-void initialize_simulate()
-{
-  current_q = 0;
-  ri = -1;
-  rj = -1;
-
-  turn = 0;
-  pi = -1;
-  pj = -1;
-  for (int i = 0; i < MAX_N; i++) {
-    for (int j = 0; j < MAX_N; j++) {
-      confirmed[i][j] = 0;
-    }
-  }
-
-  bfs_version = 0;
-  for (int i = 0; i < MAX_N; i++) {
-    for (int j = 0; j < MAX_N; j++) {
-      bfs_dp[i][j] = -1;
-      bfs_visited[i][j] = 0;
-    }
-  }
-}
-
-SimurateResult simurate(const vector<P>& ps)
-{
-  SimurateResult res;
-  res.ps = ps;
-  res.score = 0;
-  return res;
-}
 
 int solve_case(int case_num)
 {
@@ -854,7 +907,33 @@ int solve_case(int case_num)
   ofstream ofs;
   open_ofs(case_num, ofs);
 
-  int score = method1(ofs);
+  SimulateParam bestParam;
+  int bestScore = -1;
+
+  is_simulate = true;
+
+  int sim_loop = 0;
+  while (true) {
+    if(timer.get_elapsed_time() > TIME_LIMIT / 2) {
+      break;
+    }
+    sim_loop++;
+    initialize_simulate();
+
+    SimulateParam param;
+
+    param.sim_method = 1;
+
+    int score = method1(ofs, param);
+    if(score > bestScore) {
+      bestScore = score;
+      bestParam = param;
+    }
+  }
+
+  is_simulate = false;
+
+  int score = method1(ofs, bestParam);
 
   if (ofs.is_open()) {
     ofs.close();
