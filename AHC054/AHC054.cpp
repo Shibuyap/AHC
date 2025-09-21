@@ -157,7 +157,7 @@ namespace
 const int DX[4] = { -1, 1, 0, 0 };
 const int DY[4] = { 0, 0, -1, 1 };
 
-const double TIME_LIMIT = 1.9;
+const double TIME_LIMIT = 1.8;
 int exec_mode;
 bool is_simulate;
 
@@ -177,12 +177,13 @@ int pi, pj;
 int current_q;
 int qi[MAX_N * MAX_N], qj[MAX_N * MAX_N];
 int init_qi[MAX_N * MAX_N], init_qj[MAX_N * MAX_N];
+int generate_qi[10][MAX_N * MAX_N], generate_qj[10][MAX_N * MAX_N];
 int ri, rj;
 
 // 高速化用
 int bfs_dp[MAX_N][MAX_N];
 int bfs_visited[MAX_N][MAX_N];
-int bfs_can_use[MAX_N][MAX_N];
+int bfs_unknown_reachable[MAX_N][MAX_N];
 int bfs_version;
 
 void generate_q()
@@ -204,11 +205,40 @@ void generate_q()
   }
 }
 
+void generate_q10()
+{
+  for (int loop = 0; loop < 10; loop++) {
+    vector<P> vp;
+    int cnt = 0;
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        vp.push_back(P(i, j));
+      }
+    }
+
+    // シャッフル
+    std::shuffle(vp.begin(), vp.end(), engine);
+
+    for (int i = 0; i < n * n; i++) {
+      generate_qi[loop][i] = vp[i].first;
+      generate_qj[loop][i] = vp[i].second;
+    }
+  }
+}
+
 void setup_true_q()
 {
   for (int i = 0; i < n * n - 1; i++) {
     qi[i] = init_qi[i];
     qj[i] = init_qj[i];
+  }
+}
+
+void setup_generate_q10(int num)
+{
+  for (int i = 0; i < n * n - 1; i++) {
+    qi[i] = generate_qi[num][i];
+    qj[i] = generate_qj[num][i];
   }
 }
 
@@ -339,12 +369,6 @@ void open_ofs(int case_num, ofstream& ofs)
   }
 }
 
-int calculate_score()
-{
-  int res = 0;
-  return res;
-}
-
 // ゴールに到着可能か判定
 bool can_reach_goal()
 {
@@ -424,9 +448,9 @@ bool can_reach_all_cells(int margin)
   return margin >= 0;
 }
 
+// 未確認のマスをすべて空きマスであると仮定してBFS
 int get_next_heros_move()
 {
-  // 未確認のマスをすべて空きマスであると仮定してBFS
   bfs_version++;
   que2D.clear_queue();
   que2D.push(pi, pj);
@@ -464,14 +488,19 @@ int get_next_heros_move()
   return bfs_dp[ri][rj] % 4;
 }
 
-void get_can_use()
+bool is_reachable_unknown(int i, int j)
 {
-  // 未確認のマスをすべて空きマスであると仮定して到達可能なすべての未確認マスをBFSで求める
+  return bfs_visited[i][j] == bfs_version && bfs_unknown_reachable[i][j] == 1;
+}
+
+// 未確認のマスをすべて空きマスであると仮定して到達可能なすべての未確認マスをBFSで求める
+void update_unknown_reachability()
+{
   bfs_version++;
   que2D.clear_queue();
   que2D.push(pi, pj);
   bfs_visited[pi][pj] = bfs_version;
-  bfs_can_use[pi][pj] = 0;
+  bfs_unknown_reachable[pi][pj] = 0;
   while (!que2D.empty()) {
     int i = que2D.front_x();
     int j = que2D.front_y();
@@ -489,7 +518,7 @@ void get_can_use()
         continue;
       }
       bfs_visited[ni][nj] = bfs_version;
-      bfs_can_use[ni][nj] = 1 - confirmed[ni][nj];
+      bfs_unknown_reachable[ni][nj] = 1 - confirmed[ni][nj];
       que2D.push(ni, nj);
     }
   }
@@ -527,8 +556,8 @@ void update_confirmed_local_tester()
       rj = tj;
     }
     else {
-      get_can_use();
-      if (ri != -1 && (bfs_visited[ri][rj] != bfs_version || bfs_can_use[ri][rj] == 0)) {
+      update_unknown_reachability();
+      if (ri != -1 && !is_reachable_unknown(ri, rj)) {
         ri = -1;
         rj = -1;
       }
@@ -540,7 +569,7 @@ void update_confirmed_local_tester()
         int ni = qi[current_q];
         int nj = qj[current_q];
         current_q++;
-        if (bfs_visited[ni][nj] == bfs_version && bfs_can_use[ni][nj] == 1 && confirmed[ni][nj] == 0) {
+        if (is_reachable_unknown(ni, nj)) {
           ri = ni;
           rj = nj;
           break;
@@ -608,6 +637,7 @@ void put_each_turn_output(ofstream& ofs, const vector<P>& ps)
 
 struct SimulateParam
 {
+  int goal_guard_method = 0;
   int init_method = 0;
   int slide_i = 0;
   int slode_j = 0;
@@ -615,6 +645,10 @@ struct SimulateParam
 
 void attempt(int i, int j, vector<P>& ps, int margin)
 {
+  //if (i == 0 || i == n - 1 || j == 0 || j == n - 1) {
+  //  return;
+  //}
+
   if (i < 0 || i >= n || j < 0 || j >= n) {
     return;
   }
@@ -632,16 +666,55 @@ void attempt(int i, int j, vector<P>& ps, int margin)
   }
 }
 
-void init_make_goal_guard(vector<P>& ps)
+void init_make_goal_guard(vector<P>& ps, const SimulateParam& param)
 {
-  attempt(ti, tj + 1, ps, 5);
-  for (int k = 0; k < 100; k++) {
-    int i1 = ti - 1 - k;
-    int j1 = tj + 1 - k;
-    attempt(i1, j1, ps, 5);
-    int i2 = ti + 1 - k;
-    int j2 = tj - k;
-    attempt(i2, j2, ps, 5);
+  if (param.goal_guard_method == 0) {
+    // 左上
+    attempt(ti, tj + 1, ps, 5);
+    for (int k = 0; k < 100; k++) {
+      int i1 = ti - 1 - k;
+      int j1 = tj + 1 - k;
+      attempt(i1, j1, ps, 5);
+      int i2 = ti + 1 - k;
+      int j2 = tj - k;
+      attempt(i2, j2, ps, 5);
+    }
+  }
+  else if (param.goal_guard_method == 1) {
+    // 左下
+    attempt(ti - 1, tj, ps, 5);
+    for (int k = 0; k < 100; k++) {
+      int i1 = ti - 1 + k;
+      int j1 = tj - 1 - k;
+      attempt(i1, j1, ps, 5);
+      int i2 = ti + k;
+      int j2 = tj + 1 - k;
+      attempt(i2, j2, ps, 5);
+    }
+  }
+  else if (param.goal_guard_method == 2) {
+    // 右下
+    attempt(ti, tj - 1, ps, 5);
+    for (int k = 0; k < 100; k++) {
+      int i1 = ti + 1 + k;
+      int j1 = tj - 1 + k;
+      attempt(i1, j1, ps, 5);
+      int i2 = ti - 1 + k;
+      int j2 = tj + k;
+      attempt(i2, j2, ps, 5);
+    }
+  }
+  else if (param.goal_guard_method == 3) {
+    // 右上
+    attempt(ti + 1, tj, ps, 5);
+    for (int k = 0; k < 100; k++) {
+      int i1 = ti + 1 - k;
+      int j1 = tj + 1 + k;
+      attempt(i1, j1, ps, 5);
+      int i2 = ti - k;
+      int j2 = tj - 1 + k;
+      attempt(i2, j2, ps, 5);
+    }
   }
 }
 
@@ -783,7 +856,7 @@ vector<P> init_common(const SimulateParam& param)
 {
   vector<P> ps;
 
-  init_make_goal_guard(ps);
+  init_make_goal_guard(ps, param);
 
   vector<P> tmp_ps;
 
@@ -807,36 +880,95 @@ vector<P> init_common(const SimulateParam& param)
   return ps;
 }
 
+bool recreate_board()
+{
+  vector<P> vp;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (confirmed[i][j] == 0 && b[i][j] == 1 && init_b[i][j] == 0) {
+        b[i][j] = 0;
+        vp.emplace_back(i, j);
+      }
+    }
+  }
+
+  if (!can_reach_all_cells(99999)) {
+    for (auto p : vp) {
+      int i = p.first;
+      int j = p.second;
+      b[i][j] = 1;
+    }
+    return false;
+  }
+
+  vector<P> ps;
+  for (auto p : vp) {
+    int i = p.first;
+    int j = p.second;
+    attempt(i, j, ps, 5);
+  }
+  return true;
+}
+
 vector<P> put_this_turn()
 {
   vector<P> res;
 
   // ゴールが見つかってしまうかどうかチェック
-  bool emergencyDir = -1;
-  for (int d = 0; d < 4; d++) {
-    int ni = pi;
-    int nj = pj;
-    while (true) {
-      ni += DX[d];
-      nj += DY[d];
-      if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
-        break;
+  if (confirmed[ti][tj] == 0) {
+    int emergencyDir = -1;
+    for (int d = 0; d < 4; d++) {
+      int ni = pi;
+      int nj = pj;
+      while (true) {
+        ni += DX[d];
+        nj += DY[d];
+        if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
+          break;
+        }
+        if (b[ni][nj] == 1) {
+          break;
+        }
+        if (ni == ti && nj == tj) {
+          emergencyDir = d;
+          break;
+        }
       }
-      if (b[ni][nj] == 1) {
-        break;
-      }
-      if (ni == ti && nj == tj) {
-        emergencyDir = d;
+      if (emergencyDir != -1) {
         break;
       }
     }
-    if (emergencyDir != -1) {
-      break;
-    }
-  }
 
-  if (emergencyDir != -1) {
-    int d = emergencyDir;
+    if (emergencyDir != -1) {
+      int d = emergencyDir;
+      int ni = pi;
+      int nj = pj;
+      while (true) {
+        ni += DX[d];
+        nj += DY[d];
+        if (ni == ti && nj == tj) {
+          break;
+        }
+
+        // 確認済みの場合木は置けないのでcontinue
+        if (confirmed[ni][nj] == 1) {
+          continue;
+        }
+
+        // 木を置けるなら置く
+        confirmed[ni][nj] = 1;
+        b[ni][nj] = 1;
+        update_unknown_reachability();
+        if (is_reachable_unknown(ti, tj) && recreate_board()) {
+          confirmed[ni][nj] = 0;
+          break;
+        }
+        else {
+          confirmed[ni][nj] = 0;
+          b[ni][nj] = 0;
+        }
+      }
+    }
   }
 
   for (int d = 0; d < 4; d++) {
@@ -899,24 +1031,29 @@ int solve_case(int case_num)
   int bestScore = -1;
 
   is_simulate = true;
-  generate_q();
+  generate_q10();
 
   int sim_loop = 0;
   while (true) {
-    if (timer.get_elapsed_time() > TIME_LIMIT / 2) {
+    if (timer.get_elapsed_time() > TIME_LIMIT) {
       break;
     }
     sim_loop++;
 
     SimulateParam param;
+    param.goal_guard_method = rand_xorshift() % 4;
     param.init_method = rand_xorshift() % 2;
     param.slide_i = rand_xorshift() % 6;
     param.slode_j = rand_xorshift() % 6;
 
-    initialize_simulate();
-    int score = method1(ofs, param);
-    if (score > bestScore) {
-      bestScore = score;
+    int score_sum = 0;
+    for (int loop = 0; loop < 2; loop++) {
+      setup_generate_q10(loop);
+      initialize_simulate();
+      score_sum += method1(ofs, param);
+    }
+    if (score_sum > bestScore) {
+      bestScore = score_sum;
       bestParam = param;
     }
   }
@@ -925,6 +1062,7 @@ int solve_case(int case_num)
     << "sim_loop = " << sim_loop
     << ", bestScore = " << bestScore
     << ", init_method = " << bestParam.init_method
+    << ", goal_guard_method = " << bestParam.goal_guard_method
     << endl;
 
   is_simulate = false;
