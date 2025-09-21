@@ -456,10 +456,66 @@ void get_can_use()
   }
 }
 
+void update_confirmed_local_tester()
+{
+  if (turn == 0) {
+    pi = 0;
+    pj = n / 2;
+    confirmed[pi][pj] = 1;
+  }
+  else {
+    for (int d = 0; d < 4; d++) {
+      int ni = pi;
+      int nj = pj;
+      while (true) {
+        ni += DX[d];
+        nj += DY[d];
+        if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
+          break;
+        }
+        confirmed[ni][nj] = 1;
+        if (b[ni][nj] == 1) {
+          break;
+        }
+      }
+    }
+
+    if (confirmed[ti][tj] == 1) {
+      ri = ti;
+      rj = tj;
+    }
+    else {
+      get_can_use();
+      if (ri != -1 && (bfs_visited[ri][rj] != bfs_version || bfs_can_use[ri][rj] == 0)) {
+        ri = -1;
+        rj = -1;
+      }
+      if (ri != -1 && confirmed[ri][rj] == 1) {
+        ri = -1;
+        rj = -1;
+      }
+      while (ri == -1) {
+        int ni = qi[current_q];
+        int nj = qj[current_q];
+        current_q++;
+        if (bfs_visited[ni][nj] == bfs_version && bfs_can_use[ni][nj] == 1 && confirmed[ni][nj] == 0) {
+          ri = ni;
+          rj = nj;
+          break;
+        }
+      }
+    }
+
+    int dir = get_next_heros_move();
+    pi += DX[dir];
+    pj += DY[dir];
+  }
+}
+
 void update_confirmed()
 {
-  if(is_simulate){
-    /*　ここに処理を書く */
+  if (is_simulate) {
+    update_confirmed_local_tester();
   }
   else if (exec_mode == 0) {
     // 標準入力
@@ -477,66 +533,14 @@ void update_confirmed()
     }
   }
   else {
-    // ローカルテスター用
-    if (turn == 0) {
-      pi = 0;
-      pj = n / 2;
-      confirmed[pi][pj] = 1;
-    }
-    else {
-      for (int d = 0; d < 4; d++) {
-        int ni = pi;
-        int nj = pj;
-        while (true) {
-          ni += DX[d];
-          nj += DY[d];
-          if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
-            break;
-          }
-          confirmed[ni][nj] = 1;
-          if (b[ni][nj] == 1) {
-            break;
-          }
-        }
-      }
-
-      if (confirmed[ti][tj] == 1) {
-        ri = ti;
-        rj = tj;
-      }
-      else {
-        get_can_use();
-        if (ri != -1 && (bfs_visited[ri][rj] != bfs_version || bfs_can_use[ri][rj] == 0)) {
-          ri = -1;
-          rj = -1;
-        }
-        if (ri != -1 && confirmed[ri][rj] == 1) {
-          ri = -1;
-          rj = -1;
-        }
-        while (ri == -1) {
-          int ni = qi[current_q];
-          int nj = qj[current_q];
-          current_q++;
-          if (bfs_visited[ni][nj] == bfs_version && bfs_can_use[ni][nj] == 1 && confirmed[ni][nj] == 0) {
-            ri = ni;
-            rj = nj;
-            break;
-          }
-        }
-      }
-
-      int dir = get_next_heros_move();
-      pi += DX[dir];
-      pj += DY[dir];
-    }
+    update_confirmed_local_tester();
   }
 }
 
 void put_each_turn_output(ofstream& ofs, const vector<P>& ps)
 {
   if (is_simulate) {
-    /*　ここに処理を書く */
+    // 何もしない
   }
   else if (exec_mode == 0) {
     // 標準出力
@@ -579,7 +583,14 @@ void attempt(int i, int j, vector<P>& ps, int margin)
   }
 }
 
-vector<P> init_1()
+struct SimulateParam
+{
+  int init_method = 0;
+  int slide_i = 0;
+  int slode_j = 0;
+};
+
+vector<P> init_1(const SimulateParam& param)
 {
   vector<P> ps;
   for (int i = 0; i < n; i++) {
@@ -592,7 +603,7 @@ vector<P> init_1()
   return ps;
 }
 
-vector<P> init_2()
+vector<P> init_2(const SimulateParam& param)
 {
   vector<P> ps;
 
@@ -625,41 +636,9 @@ vector<P> init_2()
   return ps;
 }
 
-vector<P> init_3()
+vector<P> init_3(const SimulateParam& param)
 {
   vector<P> ps;
-
-  //int loop_num = n * n / 4;
-  //for (int it = 0; it < loop_num; it++) {
-  //  int i = rand_xorshift() % 5 + ti - 2;
-  //  int j = rand_xorshift() % 5 + tj - 2;
-  //  i = max(i, 0);
-  //  i = min(i, n - 1);
-  //  j = max(j, 0);
-  //  j = min(j, n - 1);
-  //  while (b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
-  //    i = rand_xorshift() % 5 + ti - 2;
-  //    j = rand_xorshift() % 5 + tj - 2;
-  //    i = max(i, 0);
-  //    i = min(i, n - 1);
-  //    j = max(j, 0);
-  //    j = min(j, n - 1);
-  //  }
-
-  //  b[i][j] = 1;
-  //  if (!can_reach_all_cells()) {
-  //    b[i][j] = 0;
-  //  }
-  //  else {
-  //    ps.emplace_back(i, j);
-  //  }
-  //}
-
-  //attempt(ti, tj + 1, ps);
-  //for (int j = tj; j >= 0; j--) {
-  //  attempt(ti - 1, j, ps);
-  //  attempt(ti + 1, j, ps);
-  //}
 
   attempt(ti, tj + 1, ps, 5);
   for (int k = 0; k < 100; k++) {
@@ -678,42 +657,52 @@ vector<P> init_3()
       if (confirmed[i][j] == 1 || b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
         continue;
       }
+
+      int ii = (i + param.slide_i + n) % n;
+      int jj = (j + param.slode_j + n) % n;
+
       bool is_put = false;
-      if (i % 6 == 0) {
-        if (j % 3 == 2) {
+      switch (ii % 6) {
+      case 0:
+        if (jj % 3 == 2) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 1) {
-        if (j % 3 == 0) {
+        break;
+      case 1:
+        if (jj % 3 == 0) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 2) {
+        break;
+      case 2:
         ;
-      }
-      else if (i % 6 == 3) {
-        if (j % 3 == 0) {
+        break;
+      case 3:
+        if (jj % 3 == 0) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 4) {
-        if (j % 3 == 2) {
+        break;
+      case 4:
+        if (jj % 3 == 2) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 5) {
-        if (i % 12 == 5) {
-          if (j != n - 1) {
+        break;
+      case 5:
+        if (ii % 12 == 5) {
+          if (jj != n - 1) {
             is_put = true;
           }
         }
         else {
-          if (j != 0) {
+          if (jj != 0) {
             is_put = true;
           }
         }
+        break;
+      default:
+        assert(false);
+        break;
       }
+
       if (is_put) {
         tmp_ps.push_back(P(i, j));
       }
@@ -749,30 +738,9 @@ vector<P> init_3()
   return ps;
 }
 
-vector<P> init_4()
+vector<P> init_4(const SimulateParam& param)
 {
   vector<P> ps;
-
-  //int loop_num = n * n / 4;
-  //int loop_num = 0;
-  //for (int it = 0; it < loop_num; it++) {
-  //  int i = rand_xorshift() % 5 + ti - 2;
-  //  int j = rand_xorshift() % 5 + tj - 2;
-  //  i = max(i, 0);
-  //  i = min(i, n - 1);
-  //  j = max(j, 0);
-  //  j = min(j, n - 1);
-  //  while (b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
-  //    i = rand_xorshift() % 5 + ti - 2;
-  //    j = rand_xorshift() % 5 + tj - 2;
-  //    i = max(i, 0);
-  //    i = min(i, n - 1);
-  //    j = max(j, 0);
-  //    j = min(j, n - 1);
-  //  }
-
-  //  attempt(i, j, ps, 5);
-  //}
 
   attempt(ti, tj + 1, ps, 5);
   for (int k = 0; k < 100; k++) {
@@ -784,12 +752,6 @@ vector<P> init_4()
     attempt(i2, j2, ps, 5);
   }
 
-  //attempt(ti, tj + 1, ps, 5);
-  //for (int j = tj; j >= 0; j--) {
-  //  attempt(ti - 1, j, ps, 5);
-  //  attempt(ti + 1, j, ps, 5);
-  //}
-
   vector<P> tmp_ps;
 
   for (int i = 0; i < n; i++) {
@@ -797,42 +759,52 @@ vector<P> init_4()
       if (confirmed[i][j] == 1 || b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
         continue;
       }
+
+      int ii = (i + param.slide_i + n) % n;
+      int jj = (j + param.slode_j + n) % n;
+
       bool is_put = false;
-      if (i % 6 == 0) {
-        if (j % 3 == 2) {
+      switch (ii % 6) {
+      case 0:
+        if (jj % 3 == 2) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 1) {
-        if (j % 3 == 0) {
+        break;
+      case 1:
+        if (jj % 3 == 0) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 2) {
-        if (j % 3 == 1) {
+        break;
+      case 2:
+        if (jj % 3 == 1) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 3) {
-        if (j % 3 == 2) {
+        break;
+      case 3:
+        if (jj % 3 == 2) {
           is_put = true;
         }
-      }
-      else if (i % 6 == 4) {
+        break;
+      case 4:
         ;
-      }
-      else if (i % 6 == 5) {
-        if (i % 12 == 5) {
-          if (j != n - 1) {
+        break;
+      case 5:
+        if (ii % 12 == 5) {
+          if (jj != n - 1) {
             is_put = true;
           }
         }
         else {
-          if (j != 0) {
+          if (jj != 0) {
             is_put = true;
           }
         }
+        break;
+      default:
+        assert(false);
+        break;
       }
+
       if (is_put) {
         tmp_ps.push_back(P(i, j));
       }
@@ -862,17 +834,10 @@ vector<P> init_4()
   return ps;
 }
 
-struct SimulateParam
-{
-  int sim_method;
-};
-
-
 int method1(ofstream& ofs, const SimulateParam& param)
 {
   while (true) {
     update_confirmed();
-    //cerr << "turn = " << turn << ", pi = " << pi << ", pj = " << pj << ", ri = " << ri << ", rj = " << rj << endl;
     if (pi == ti && pj == tj) {
       break;
     }
@@ -881,10 +846,21 @@ int method1(ofstream& ofs, const SimulateParam& param)
 
     // まずは適当に思いついたルールで配置を作ってみる
     if (turn == 0) {
-      //ps2 = init_1();
-      //ps2 = init_2();
-      ps2 = init_4();
-      //ps2 = init_4();
+      if (param.init_method == 0) {
+        ps2 = init_1(param);
+      }
+      else if (param.init_method == 1) {
+        ps2 = init_2(param);
+      }
+      else if (param.init_method == 2) {
+        ps2 = init_3(param);
+      }
+      else if (param.init_method == 3) {
+        ps2 = init_4(param);
+      }
+      else {
+        ps2 = init_1(param);
+      }
     }
 
     put_each_turn_output(ofs, ps2);
@@ -911,28 +887,34 @@ int solve_case(int case_num)
   int bestScore = -1;
 
   is_simulate = true;
+  generate_q();
 
   int sim_loop = 0;
   while (true) {
-    if(timer.get_elapsed_time() > TIME_LIMIT / 2) {
+    if (timer.get_elapsed_time() > TIME_LIMIT / 2) {
       break;
     }
     sim_loop++;
-    initialize_simulate();
 
     SimulateParam param;
+    param.init_method = rand_xorshift() % 2 + 2;
+    param.slide_i = rand_xorshift() % 6;
+    param.slode_j = rand_xorshift() % 6;
 
-    param.sim_method = 1;
-
+    initialize_simulate();
     int score = method1(ofs, param);
-    if(score > bestScore) {
+    if (score > bestScore) {
       bestScore = score;
       bestParam = param;
     }
   }
 
-  is_simulate = false;
+  cerr << "sim_loop = " << sim_loop << ", bestScore = " << bestScore << endl;
 
+  is_simulate = false;
+  setup_true_q();
+
+  initialize_simulate();
   int score = method1(ofs, bestParam);
 
   if (ofs.is_open()) {
