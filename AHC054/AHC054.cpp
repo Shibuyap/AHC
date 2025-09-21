@@ -676,39 +676,6 @@ vector<P> init_0(const SimulateParam& param)
 {
   vector<P> ps;
 
-  int loop_num = n * n / 4;
-  for (int it = 0; it < loop_num; it++) {
-    int i = rand_xorshift() % n;
-    int j = rand_xorshift() % n;
-    if (rand_xorshift() % 2 == 0) {
-      i = rand_xorshift() % 3 + ti - 1;
-      j = rand_xorshift() % 3 + tj - 1;
-      i = max(i, 0);
-      i = min(i, n - 1);
-      j = max(j, 0);
-      j = min(j, n - 1);
-    }
-    while (b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
-      i = rand_xorshift() % n;
-      j = rand_xorshift() % n;
-    }
-
-    b[i][j] = 1;
-    if (!can_reach_goal()) {
-      b[i][j] = 0;
-    }
-    else {
-      ps.emplace_back(i, j);
-    }
-  }
-
-  return ps;
-}
-
-vector<P> init_1(const SimulateParam& param)
-{
-  vector<P> ps;
-
   attempt(ti, tj + 1, ps, 5);
   for (int k = 0; k < 100; k++) {
     int i1 = ti - 1 - k;
@@ -779,18 +746,7 @@ vector<P> init_1(const SimulateParam& param)
   }
 
   // シャッフル
-  int m = tmp_ps.size();
-  int* arr = new int[m];
-  for (int i = 0; i < m; i++) {
-    arr[i] = i;
-  }
-  shuffle_array(arr, m);
-  vector<P> shuffled_tmp_ps;
-  for (int i = 0; i < m; i++) {
-    shuffled_tmp_ps.push_back(tmp_ps[arr[i]]);
-  }
-  delete[] arr;
-  tmp_ps = shuffled_tmp_ps;
+  //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
 
   for (auto p : tmp_ps) {
     int i = p.first;
@@ -807,7 +763,7 @@ vector<P> init_1(const SimulateParam& param)
   return ps;
 }
 
-vector<P> init_2(const SimulateParam& param)
+vector<P> init_1(const SimulateParam& param)
 {
   vector<P> ps;
 
@@ -881,18 +837,7 @@ vector<P> init_2(const SimulateParam& param)
   }
 
   // シャッフル
-  int m = tmp_ps.size();
-  int* arr = new int[m];
-  for (int i = 0; i < m; i++) {
-    arr[i] = i;
-  }
-  shuffle_array(arr, m);
-  vector<P> shuffled_tmp_ps;
-  for (int i = 0; i < m; i++) {
-    shuffled_tmp_ps.push_back(tmp_ps[arr[i]]);
-  }
-  delete[] arr;
-  //tmp_ps = shuffled_tmp_ps;
+  //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
 
   for (auto p : tmp_ps) {
     int i = p.first;
@@ -920,9 +865,6 @@ int method1(ofstream& ofs, const SimulateParam& param)
       }
       else if (param.init_method == 1) {
         ps2 = init_1(param);
-      }
-      else if (param.init_method == 2) {
-        ps2 = init_2(param);
       }
       else {
         cerr << "Error: param.init_method = " << param.init_method << endl;
@@ -964,7 +906,7 @@ int solve_case(int case_num)
     sim_loop++;
 
     SimulateParam param;
-    param.init_method = rand_xorshift() % 3;
+    param.init_method = rand_xorshift() % 2;
     param.slide_i = rand_xorshift() % 6;
     param.slode_j = rand_xorshift() % 6;
 
@@ -1004,7 +946,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     int sum_score = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 100; i++) {
       int score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
