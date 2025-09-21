@@ -495,46 +495,6 @@ void get_can_use()
   }
 }
 
-// (pi,pj)から到達不可能なマスをすべて木で埋める
-vector<P> fill_unreachable_with_trees()
-{
-  bfs_version++;
-  que2D.clear_queue();
-  que2D.push(pi, pj);
-  bfs_visited[pi][pj] = bfs_version;
-  while (!que2D.empty()) {
-    int i = que2D.front_x();
-    int j = que2D.front_y();
-    que2D.pop();
-    for (int d = 0; d < 4; d++) {
-      int ni = i + DX[d];
-      int nj = j + DY[d];
-      if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
-        continue;
-      }
-      if (b[ni][nj] == 1) {
-        continue;
-      }
-      if (bfs_visited[ni][nj] == bfs_version) {
-        continue;
-      }
-      bfs_visited[ni][nj] = bfs_version;
-      que2D.push(ni, nj);
-    }
-  }
-
-  vector<P> res;
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      if (b[i][j] == 0 && bfs_visited[i][j] != bfs_version) {
-        b[i][j] = 1;
-        res.push_back(P(i, j));
-      }
-    }
-  }
-  return res;
-}
-
 void update_confirmed_local_tester()
 {
   if (turn == 0) {
@@ -646,6 +606,13 @@ void put_each_turn_output(ofstream& ofs, const vector<P>& ps)
   }
 }
 
+struct SimulateParam
+{
+  int init_method = 0;
+  int slide_i = 0;
+  int slode_j = 0;
+};
+
 void attempt(int i, int j, vector<P>& ps, int margin)
 {
   if (i < 0 || i >= n || j < 0 || j >= n) {
@@ -665,17 +632,8 @@ void attempt(int i, int j, vector<P>& ps, int margin)
   }
 }
 
-struct SimulateParam
+void init_make_goal_guard(vector<P>& ps)
 {
-  int init_method = 0;
-  int slide_i = 0;
-  int slode_j = 0;
-};
-
-vector<P> init_0(const SimulateParam& param)
-{
-  vector<P> ps;
-
   attempt(ti, tj + 1, ps, 5);
   for (int k = 0; k < 100; k++) {
     int i1 = ti - 1 - k;
@@ -685,8 +643,11 @@ vector<P> init_0(const SimulateParam& param)
     int j2 = tj - k;
     attempt(i2, j2, ps, 5);
   }
+}
 
-  vector<P> tmp_ps;
+vector<P> init_0(const SimulateParam& param)
+{
+  vector<P> ps;
 
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
@@ -740,7 +701,7 @@ vector<P> init_0(const SimulateParam& param)
       }
 
       if (is_put) {
-        tmp_ps.push_back(P(i, j));
+        ps.push_back(P(i, j));
       }
     }
   }
@@ -748,36 +709,12 @@ vector<P> init_0(const SimulateParam& param)
   // シャッフル
   //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
 
-  for (auto p : tmp_ps) {
-    int i = p.first;
-    int j = p.second;
-    b[i][j] = 1;
-    if (!can_reach_all_cells(5)) {
-      b[i][j] = 0;
-    }
-    else {
-      ps.emplace_back(i, j);
-    }
-  }
-
   return ps;
 }
 
 vector<P> init_1(const SimulateParam& param)
 {
   vector<P> ps;
-
-  attempt(ti, tj + 1, ps, 5);
-  for (int k = 0; k < 100; k++) {
-    int i1 = ti - 1 - k;
-    int j1 = tj + 1 - k;
-    attempt(i1, j1, ps, 5);
-    int i2 = ti + 1 - k;
-    int j2 = tj - k;
-    attempt(i2, j2, ps, 5);
-  }
-
-  vector<P> tmp_ps;
 
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
@@ -831,13 +768,35 @@ vector<P> init_1(const SimulateParam& param)
       }
 
       if (is_put) {
-        tmp_ps.push_back(P(i, j));
+        ps.push_back(P(i, j));
       }
     }
   }
 
   // シャッフル
   //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
+
+  return ps;
+}
+
+vector<P> init_common(const SimulateParam& param)
+{
+  vector<P> ps;
+
+  init_make_goal_guard(ps);
+
+  vector<P> tmp_ps;
+
+  if (param.init_method == 0) {
+    tmp_ps = init_0(param);
+  }
+  else if (param.init_method == 1) {
+    tmp_ps = init_1(param);
+  }
+  else {
+    cerr << "Error: param.init_method = " << param.init_method << endl;
+    tmp_ps = init_0(param);
+  }
 
   for (auto p : tmp_ps) {
     int i = p.first;
@@ -860,16 +819,7 @@ int method1(ofstream& ofs, const SimulateParam& param)
 
     // まずは適当に思いついたルールで配置を作ってみる
     if (turn == 0) {
-      if (param.init_method == 0) {
-        ps2 = init_0(param);
-      }
-      else if (param.init_method == 1) {
-        ps2 = init_1(param);
-      }
-      else {
-        cerr << "Error: param.init_method = " << param.init_method << endl;
-        ps2 = init_0(param);
-      }
+      ps2 = init_common(param);
     }
 
     put_each_turn_output(ofs, ps2);
