@@ -495,6 +495,46 @@ void get_can_use()
   }
 }
 
+// (pi,pj)から到達不可能なマスをすべて木で埋める
+vector<P> fill_unreachable_with_trees()
+{
+  bfs_version++;
+  que2D.clear_queue();
+  que2D.push(pi, pj);
+  bfs_visited[pi][pj] = bfs_version;
+  while (!que2D.empty()) {
+    int i = que2D.front_x();
+    int j = que2D.front_y();
+    que2D.pop();
+    for (int d = 0; d < 4; d++) {
+      int ni = i + DX[d];
+      int nj = j + DY[d];
+      if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
+        continue;
+      }
+      if (b[ni][nj] == 1) {
+        continue;
+      }
+      if (bfs_visited[ni][nj] == bfs_version) {
+        continue;
+      }
+      bfs_visited[ni][nj] = bfs_version;
+      que2D.push(ni, nj);
+    }
+  }
+
+  vector<P> res;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (b[i][j] == 0 && bfs_visited[i][j] != bfs_version) {
+        b[i][j] = 1;
+        res.push_back(P(i, j));
+      }
+    }
+  }
+  return res;
+}
+
 void update_confirmed_local_tester()
 {
   if (turn == 0) {
@@ -519,7 +559,10 @@ void update_confirmed_local_tester()
       }
     }
 
-    if (confirmed[ti][tj] == 1) {
+    if(ri == ti && rj == tj) {
+      // 目的地イコールGoalになったら今後目的地が変更されることはない
+    }
+    else if (confirmed[ti][tj] == 1) {
       ri = ti;
       rj = tj;
     }
