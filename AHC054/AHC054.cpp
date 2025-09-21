@@ -380,6 +380,10 @@ bool can_reach_goal()
 
 bool can_reach_all_cells(int margin)
 {
+  if (b[ti][tj] == 1) {
+    return false;
+  }
+
   bfs_version++;
   que2D.clear_queue();
   que2D.push(pi, pj);
@@ -413,9 +417,6 @@ bool can_reach_all_cells(int margin)
     }
   }
 
-  if (b[ti][tj] == 1) {
-    margin = -1;
-  }
   if (bfs_visited[ti][tj] != bfs_version) {
     margin = -1;
   }
@@ -628,20 +629,7 @@ struct SimulateParam
   int slode_j = 0;
 };
 
-vector<P> init_1(const SimulateParam& param)
-{
-  vector<P> ps;
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      if (i % 2 == 0 && j % 2 == 0 && confirmed[i][j] == 0 && b[i][j] == 0 && !(i == ti && j == tj)) {
-        ps.emplace_back(i, j);
-      }
-    }
-  }
-  return ps;
-}
-
-vector<P> init_2(const SimulateParam& param)
+vector<P> init_0(const SimulateParam& param)
 {
   vector<P> ps;
 
@@ -674,7 +662,7 @@ vector<P> init_2(const SimulateParam& param)
   return ps;
 }
 
-vector<P> init_3(const SimulateParam& param)
+vector<P> init_1(const SimulateParam& param)
 {
   vector<P> ps;
 
@@ -776,7 +764,7 @@ vector<P> init_3(const SimulateParam& param)
   return ps;
 }
 
-vector<P> init_4(const SimulateParam& param)
+vector<P> init_2(const SimulateParam& param)
 {
   vector<P> ps;
 
@@ -885,19 +873,17 @@ int method1(ofstream& ofs, const SimulateParam& param)
     // まずは適当に思いついたルールで配置を作ってみる
     if (turn == 0) {
       if (param.init_method == 0) {
-        ps2 = init_1(param);
+        ps2 = init_0(param);
       }
       else if (param.init_method == 1) {
-        ps2 = init_2(param);
+        ps2 = init_1(param);
       }
       else if (param.init_method == 2) {
-        ps2 = init_3(param);
-      }
-      else if (param.init_method == 3) {
-        ps2 = init_4(param);
+        ps2 = init_2(param);
       }
       else {
-        ps2 = init_1(param);
+        cerr << "Error: param.init_method = " << param.init_method << endl;
+        ps2 = init_0(param);
       }
     }
 
@@ -935,7 +921,7 @@ int solve_case(int case_num)
     sim_loop++;
 
     SimulateParam param;
-    param.init_method = rand_xorshift() % 2 + 2;
+    param.init_method = rand_xorshift() % 3;
     param.slide_i = rand_xorshift() % 6;
     param.slode_j = rand_xorshift() % 6;
 
@@ -947,7 +933,11 @@ int solve_case(int case_num)
     }
   }
 
-  cerr << "sim_loop = " << sim_loop << ", bestScore = " << bestScore << endl;
+  cerr 
+    << "sim_loop = " << sim_loop 
+    << ", bestScore = " << bestScore 
+    << ", init_method = " << bestParam.init_method
+    << endl;
 
   is_simulate = false;
   setup_true_q();
@@ -971,7 +961,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     int sum_score = 0;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
       int score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
