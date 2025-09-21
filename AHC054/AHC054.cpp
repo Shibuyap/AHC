@@ -519,7 +519,7 @@ void update_confirmed_local_tester()
       }
     }
 
-    if(ri == ti && rj == tj) {
+    if (ri == ti && rj == tj) {
       // 目的地イコールGoalになったら今後目的地が変更されることはない
     }
     else if (confirmed[ti][tj] == 1) {
@@ -807,6 +807,59 @@ vector<P> init_common(const SimulateParam& param)
   return ps;
 }
 
+vector<P> put_this_turn()
+{
+  vector<P> res;
+
+  // ゴールが見つかってしまうかどうかチェック
+  bool emergencyDir = -1;
+  for (int d = 0; d < 4; d++) {
+    int ni = pi;
+    int nj = pj;
+    while (true) {
+      ni += DX[d];
+      nj += DY[d];
+      if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
+        break;
+      }
+      if (b[ni][nj] == 1) {
+        break;
+      }
+      if (ni == ti && nj == tj) {
+        emergencyDir = d;
+        break;
+      }
+    }
+    if (emergencyDir != -1) {
+      break;
+    }
+  }
+
+  if (emergencyDir != -1) {
+    int d = emergencyDir;
+  }
+
+  for (int d = 0; d < 4; d++) {
+    int ni = pi;
+    int nj = pj;
+    while (true) {
+      ni += DX[d];
+      nj += DY[d];
+      if (ni < 0 || ni >= n || nj < 0 || nj >= n) {
+        break;
+      }
+      if (b[ni][nj] == 1) {
+        if (confirmed[ni][nj] == 0 && init_b[ni][nj] == 0) {
+          res.emplace_back(ni, nj);
+        }
+        break;
+      }
+    }
+  }
+
+  return res;
+}
+
 int method1(ofstream& ofs, const SimulateParam& param)
 {
   while (true) {
@@ -815,12 +868,12 @@ int method1(ofstream& ofs, const SimulateParam& param)
       break;
     }
 
-    vector<P> ps2;
-
     // まずは適当に思いついたルールで配置を作ってみる
     if (turn == 0) {
-      ps2 = init_common(param);
+      init_common(param);
     }
+
+    vector<P> ps2 = put_this_turn();
 
     put_each_turn_output(ofs, ps2);
 
@@ -868,9 +921,9 @@ int solve_case(int case_num)
     }
   }
 
-  cerr 
-    << "sim_loop = " << sim_loop 
-    << ", bestScore = " << bestScore 
+  cerr
+    << "sim_loop = " << sim_loop
+    << ", bestScore = " << bestScore
     << ", init_method = " << bestParam.init_method
     << endl;
 
