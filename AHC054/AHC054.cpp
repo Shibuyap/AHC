@@ -54,6 +54,60 @@ public:
 
 Timer timer;
 
+// 2次元キューのクラス
+class Queue2D
+{
+private:
+  static const int MAX_SIZE = 10000;
+  int arr[MAX_SIZE][2];
+  int head;
+  int tail;
+
+public:
+  // コンストラクタ
+  Queue2D() : head(0), tail(0) {}
+
+  void clear_queue()
+  {
+    head = 0;
+    tail = 0;
+  }
+
+  int front_x() const
+  {
+    return arr[head][0];
+  }
+
+  int front_y() const
+  {
+    return arr[head][1];
+  }
+
+  void push(int x, int y)
+  {
+    arr[tail][0] = x;
+    arr[tail][1] = y;
+    tail++;
+  }
+
+  void pop()
+  {
+    head++;
+  }
+
+  int size() const
+  {
+    return tail - head;
+  }
+
+  bool empty() const
+  {
+    return size() == 0;
+  }
+};
+
+Queue2D que2D;
+
 // 乱数
 namespace
 {
@@ -295,14 +349,13 @@ int calculate_score()
 bool can_reach_goal()
 {
   bfs_version++;
-  queue<P> que;
-  que.push(P(pi, pj));
+  que2D.clear_queue();
+  que2D.push(pi, pj);
   bfs_visited[pi][pj] = bfs_version;
-  while (!que.empty()) {
-    P p = que.front();
-    que.pop();
-    int i = p.first;
-    int j = p.second;
+  while (!que2D.empty()) {
+    int i = que2D.front_x();
+    int j = que2D.front_y();
+    que2D.pop();
     if (i == ti && j == tj) {
       return true;
     }
@@ -319,7 +372,7 @@ bool can_reach_goal()
         continue;
       }
       bfs_visited[ni][nj] = bfs_version;
-      que.push(P(ni, nj));
+      que2D.push(ni, nj);
     }
   }
   return false;
@@ -328,14 +381,13 @@ bool can_reach_goal()
 bool can_reach_all_cells(int margin)
 {
   bfs_version++;
-  queue<P> que;
-  que.push(P(pi, pj));
+  que2D.clear_queue();
+  que2D.push(pi, pj);
   bfs_visited[pi][pj] = bfs_version;
-  while (!que.empty()) {
-    P p = que.front();
-    que.pop();
-    int i = p.first;
-    int j = p.second;
+  while (!que2D.empty()) {
+    int i = que2D.front_x();
+    int j = que2D.front_y();
+    que2D.pop();
     for (int d = 0; d < 4; d++) {
       int ni = i + DX[d];
       int nj = j + DY[d];
@@ -349,7 +401,7 @@ bool can_reach_all_cells(int margin)
         continue;
       }
       bfs_visited[ni][nj] = bfs_version;
-      que.push(P(ni, nj));
+      que2D.push(ni, nj);
     }
   }
 
@@ -373,29 +425,16 @@ bool can_reach_all_cells(int margin)
 
 int get_next_heros_move()
 {
-  //for(int i = 0; i < n; i++) {
-  //  for(int j = 0; j < n; j++) {
-  //    if(i == pi && j == pj) {
-  //      cerr << 2;
-  //    }
-  //    else {
-  //      cerr << b[i][j];
-  //    }
-  //  }
-  //  cerr << endl;
-  //}
-
   // 未確認のマスをすべて空きマスであると仮定してBFS
   bfs_version++;
-  queue<P> que;
-  que.push(P(pi, pj));
+  que2D.clear_queue();
+  que2D.push(pi, pj);
   bfs_visited[pi][pj] = bfs_version;
   bfs_dp[pi][pj] = 0;
-  while (!que.empty()) {
-    P p = que.front();
-    que.pop();
-    int i = p.first;
-    int j = p.second;
+  while (!que2D.empty()) {
+    int i = que2D.front_x();
+    int j = que2D.front_y();
+    que2D.pop();
     if (i == ri && j == rj) {
       break;
     }
@@ -417,7 +456,7 @@ int get_next_heros_move()
       }
       bfs_visited[ni][nj] = bfs_version;
       bfs_dp[ni][nj] = next_cost;
-      que.push(P(ni, nj));
+      que2D.push(ni, nj);
     }
   }
 
@@ -428,15 +467,14 @@ void get_can_use()
 {
   // 未確認のマスをすべて空きマスであると仮定して到達可能なすべての未確認マスをBFSで求める
   bfs_version++;
-  queue<P> que;
-  que.push(P(pi, pj));
+  que2D.clear_queue();
+  que2D.push(pi, pj);
   bfs_visited[pi][pj] = bfs_version;
   bfs_can_use[pi][pj] = 0;
-  while (!que.empty()) {
-    P p = que.front();
-    que.pop();
-    int i = p.first;
-    int j = p.second;
+  while (!que2D.empty()) {
+    int i = que2D.front_x();
+    int j = que2D.front_y();
+    que2D.pop();
     for (int d = 0; d < 4; d++) {
       int ni = i + DX[d];
       int nj = j + DY[d];
@@ -451,7 +489,7 @@ void get_can_use()
       }
       bfs_visited[ni][nj] = bfs_version;
       bfs_can_use[ni][nj] = 1 - confirmed[ni][nj];
-      que.push(P(ni, nj));
+      que2D.push(ni, nj);
     }
   }
 }
