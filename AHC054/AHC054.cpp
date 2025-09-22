@@ -716,6 +716,17 @@ void init_make_goal_guard(vector<P>& ps, const SimulateParam& param)
       attempt(i2, j2, ps, 5);
     }
   }
+  else if (param.goal_guard_method == 4) {
+    attempt(ti, tj + 1, ps, 5);
+    for (int j = tj; j >= 1; j--) {
+      attempt(ti - 1, j, ps, 5);
+      attempt(ti + 1, j, ps, 5);
+    }
+    attempt(ti - 1, 0, ps, 5);
+    for (int i = ti + 1; i < n; i++) {
+      attempt(i, 1, ps, 5);
+    }
+  }
 }
 
 vector<P> init_0(const SimulateParam& param)
@@ -1042,6 +1053,7 @@ int solve_case(int case_num)
 
     SimulateParam param;
     param.goal_guard_method = rand_xorshift() % 4;
+    //param.goal_guard_method = 4;
     param.init_method = rand_xorshift() % 2;
     param.slide_i = rand_xorshift() % 6;
     param.slode_j = rand_xorshift() % 6;
