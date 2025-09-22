@@ -157,7 +157,7 @@ namespace
 const int DX[4] = { -1, 1, 0, 0 };
 const int DY[4] = { 0, 0, -1, 1 };
 
-const double TIME_LIMIT = 1.8;
+const double TIME_LIMIT = 0.8;
 int exec_mode;
 bool is_simulate;
 
@@ -721,7 +721,7 @@ void init_make_goal_guard(vector<P>& ps, const SimulateParam& param)
     for (int j = tj; j >= 1; j--) {
       attempt(ti - 1, j, ps, 5);
       attempt(ti + 1, j, ps, 5);
-    }
+  }
     attempt(ti - 1, 0, ps, 5);
     for (int i = ti + 1; i < n; i++) {
       attempt(i, 1, ps, 5);
@@ -863,6 +863,63 @@ vector<P> init_1(const SimulateParam& param)
   return ps;
 }
 
+vector<P> init_2(const SimulateParam& param)
+{
+  vector<P> ps;
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (confirmed[i][j] == 1 || b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
+        continue;
+      }
+
+      int ii = (i + param.slide_i + n) % n;
+      int jj = (j + param.slode_j + n) % n;
+
+      bool is_put = false;
+      switch (ii % 4) {
+      case 0:
+        if (jj % 3 == 2) {
+          is_put = true;
+        }
+        break;
+      case 1:
+        if (jj % 3 == 0) {
+          is_put = true;
+        }
+        break;
+      case 2:
+        ;
+        break;
+      case 3:
+        if (ii % 8 == 3) {
+          if (jj != n / 2) {
+            is_put = true;
+          }
+        }
+        else {
+          if (jj != 0) {
+            is_put = true;
+          }
+        }
+        break;
+      default:
+        assert(false);
+        break;
+      }
+
+      if (is_put) {
+        ps.push_back(P(i, j));
+      }
+    }
+  }
+
+  // シャッフル
+  //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
+
+  return ps;
+}
+
 vector<P> init_common(const SimulateParam& param)
 {
   vector<P> ps;
@@ -876,6 +933,9 @@ vector<P> init_common(const SimulateParam& param)
   }
   else if (param.init_method == 1) {
     tmp_ps = init_1(param);
+  }
+  else if (param.init_method == 2) {
+    tmp_ps = init_2(param);
   }
   else {
     cerr << "Error: param.init_method = " << param.init_method << endl;
@@ -1054,9 +1114,10 @@ int solve_case(int case_num)
     SimulateParam param;
     param.goal_guard_method = rand_xorshift() % 4;
     //param.goal_guard_method = 4;
-    param.init_method = rand_xorshift() % 2;
-    param.slide_i = rand_xorshift() % 6;
-    param.slode_j = rand_xorshift() % 6;
+    param.init_method = rand_xorshift() % 3;
+    //param.init_method = 2;
+    param.slide_i = rand_xorshift() % n;
+    param.slode_j = rand_xorshift() % n;
 
     int score_sum = 0;
     for (int loop = 0; loop < 2; loop++) {
@@ -1071,8 +1132,8 @@ int solve_case(int case_num)
   }
 
   cerr
-    << "sim_loop = " << sim_loop
-    << ", bestScore = " << bestScore
+    << "sim_loop = " << setw(4) << sim_loop
+    << ", bestScore = " << setw(5) << bestScore
     << ", init_method = " << bestParam.init_method
     << ", goal_guard_method = " << bestParam.goal_guard_method
     << endl;
