@@ -140,16 +140,6 @@ namespace
     return l + rand_xorshift() % (r - l + 1); // [l, r]
   }
 
-  void shuffle_array(int* arr, int n)
-  {
-    for (int i = n - 1; i >= 0; i--) {
-      int j = rand_xorshift() % (i + 1);
-      int swa = arr[i];
-      arr[i] = arr[j];
-      arr[j] = swa;
-    }
-  }
-
   std::random_device seed_gen;
   std::mt19937 engine(seed_gen());
 }
@@ -157,7 +147,7 @@ namespace
 const int DX[4] = { -1, 1, 0, 0 };
 const int DY[4] = { 0, 0, -1, 1 };
 
-const double TIME_LIMIT = 0.8;
+const double TIME_LIMIT = 1.8;
 int exec_mode;
 bool is_simulate;
 
@@ -639,6 +629,7 @@ struct SimulateParam
 {
   int goal_guard_method = 0;
   int init_method = 0;
+  int init_transpose = 0;
   int slide_i = 0;
   int slode_j = 0;
 };
@@ -716,23 +707,60 @@ void init_make_goal_guard(vector<P>& ps, const SimulateParam& param)
       attempt(i2, j2, ps, 5);
     }
   }
-  else if (param.goal_guard_method == 4) {
-    attempt(ti, tj + 1, ps, 5);
-    for (int j = tj; j >= 1; j--) {
-      attempt(ti - 1, j, ps, 5);
-      attempt(ti + 1, j, ps, 5);
-  }
-    attempt(ti - 1, 0, ps, 5);
-    for (int i = ti + 1; i < n; i++) {
-      attempt(i, 1, ps, 5);
-    }
-  }
 }
 
-vector<P> init_0(const SimulateParam& param)
+// helper: 配置判定ロジック
+bool should_put(int ii, int jj, int n, int kind)
 {
-  vector<P> ps;
+  switch (kind) {
+  case 0: // init_0
+    switch (ii % 6) {
+    case 0: return jj % 3 == 2;
+    case 1: return jj % 3 == 0;
+    case 2: return false;
+    case 3: return jj % 3 == 0;
+    case 4: return jj % 3 == 2;
+    case 5:
+      if (ii % 12 == 5) return jj != n - 1;
+      else return jj != 0;
+    }
+    break;
+  case 1: // init_1
+    switch (ii % 6) {
+    case 0: return jj % 3 == 2;
+    case 1: return jj % 3 == 0;
+    case 2: return jj % 3 == 1;
+    case 3: return jj % 3 == 2;
+    case 4: return false;
+    case 5:
+      if (ii % 12 == 5) return jj != n - 1;
+      else return jj != 0;
+    }
+    break;
+  case 2: // init_2
+    switch (ii % 4) {
+    case 0: return jj % 3 == 2;
+    case 1: return jj % 3 == 0;
+    case 2: return false;
+    case 3:
+      if (ii % 8 == 3) return jj != n / 2;
+      else return jj != 0;
+    }
+    break;
+  default:
+    cerr << "Error: unknown init_method " << kind << endl;
+    break;
+  }
+  return false;
+}
 
+// 共通関数
+vector<P> init_pattern(const SimulateParam& param)
+{
+  bool transpose = (param.init_transpose == 1);
+  int kind = param.init_method;
+
+  vector<P> ps;
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       if (confirmed[i][j] == 1 || b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
@@ -742,180 +770,68 @@ vector<P> init_0(const SimulateParam& param)
       int ii = (i + param.slide_i + n) % n;
       int jj = (j + param.slode_j + n) % n;
 
-      bool is_put = false;
-      switch (ii % 6) {
-      case 0:
-        if (jj % 3 == 2) {
-          is_put = true;
-        }
-        break;
-      case 1:
-        if (jj % 3 == 0) {
-          is_put = true;
-        }
-        break;
-      case 2:
-        ;
-        break;
-      case 3:
-        if (jj % 3 == 0) {
-          is_put = true;
-        }
-        break;
-      case 4:
-        if (jj % 3 == 2) {
-          is_put = true;
-        }
-        break;
-      case 5:
-        if (ii % 12 == 5) {
-          if (jj != n - 1) {
-            is_put = true;
-          }
-        }
-        else {
-          if (jj != 0) {
-            is_put = true;
-          }
-        }
-        break;
-      default:
-        assert(false);
-        break;
-      }
+      // 縦横を反転させる
+      if (transpose) std::swap(ii, jj);
 
-      if (is_put) {
-        ps.push_back(P(i, j));
+      if (should_put(ii, jj, n, kind)) {
+        ps.emplace_back(i, j);
       }
     }
   }
-
-  // シャッフル
-  //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
-
   return ps;
 }
 
-vector<P> init_1(const SimulateParam& param)
+vector<P> init_pattern2(const SimulateParam& param)
 {
   vector<P> ps;
 
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      if (confirmed[i][j] == 1 || b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
-        continue;
+  int n4 = n / 4;
+  vector<int> hs(n4 + 1), ws(n4 + 1);
+  for (int i = 0; i <= n4; i++) {
+    hs[i] = i * n4;
+    ws[i] = i * n4;
+  }
+  for (int _; _ < n4 % 4; _++) {
+    int i = rand_xorshift() % n4 + 1;
+    for (int j = i; j <= n4; j++) {
+      hs[j]++;
+    }
+    i = rand_xorshift() % n4 + 1;
+    for (int j = i; j <= n4; j++) {
+      ws[j]++;
+    }
+  }
+
+  vector<vector<int>> grid(n4, vector<int>(n4, -1));
+  int si = -1;
+  int sj = -1;
+  int gi = -1;
+  int gj = -1;
+  for (int i = 0; i < n4; i++) {
+    for (int j = 0; j < n4; j++) {
+      if (hs[i] <= 0 && 0 < hs[i + 1] && ws[j] <= n / 2 && n / 2 < ws[j + 1]) {
+        si = i;
+        sj = j;
       }
-
-      int ii = (i + param.slide_i + n) % n;
-      int jj = (j + param.slode_j + n) % n;
-
-      bool is_put = false;
-      switch (ii % 6) {
-      case 0:
-        if (jj % 3 == 2) {
-          is_put = true;
-        }
-        break;
-      case 1:
-        if (jj % 3 == 0) {
-          is_put = true;
-        }
-        break;
-      case 2:
-        if (jj % 3 == 1) {
-          is_put = true;
-        }
-        break;
-      case 3:
-        if (jj % 3 == 2) {
-          is_put = true;
-        }
-        break;
-      case 4:
-        ;
-        break;
-      case 5:
-        if (ii % 12 == 5) {
-          if (jj != n - 1) {
-            is_put = true;
-          }
-        }
-        else {
-          if (jj != 0) {
-            is_put = true;
-          }
-        }
-        break;
-      default:
-        assert(false);
-        break;
-      }
-
-      if (is_put) {
-        ps.push_back(P(i, j));
+      if (hs[i] <= ti && ti < hs[i + 1] && ws[j] <= tj && tj < ws[j + 1]) {
+        gi = i;
+        gj = j;
       }
     }
   }
 
-  // シャッフル
-  //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
-
-  return ps;
-}
-
-vector<P> init_2(const SimulateParam& param)
-{
-  vector<P> ps;
-
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < n; j++) {
-      if (confirmed[i][j] == 1 || b[i][j] == 1 || (i == ti && j == tj) || (i == pi && j == pj)) {
-        continue;
-      }
-
-      int ii = (i + param.slide_i + n) % n;
-      int jj = (j + param.slode_j + n) % n;
-
-      bool is_put = false;
-      switch (ii % 4) {
-      case 0:
-        if (jj % 3 == 2) {
-          is_put = true;
-        }
-        break;
-      case 1:
-        if (jj % 3 == 0) {
-          is_put = true;
-        }
-        break;
-      case 2:
-        ;
-        break;
-      case 3:
-        if (ii % 8 == 3) {
-          if (jj != n / 2) {
-            is_put = true;
-          }
-        }
-        else {
-          if (jj != 0) {
-            is_put = true;
-          }
-        }
-        break;
-      default:
-        assert(false);
-        break;
-      }
-
-      if (is_put) {
-        ps.push_back(P(i, j));
-      }
+  // 方向をシャッフル
+  vector<int> dx, dy;
+  {
+    vector<P> dirs = { P(-1,0), P(1,0), P(0,-1), P(0,1) };
+    std::shuffle(dirs.begin(), dirs.end(), engine);
+    for (auto d : dirs) {
+      dx.push_back(d.first);
+      dy.push_back(d.second);
     }
   }
 
-  // シャッフル
-  //std::shuffle(tmp_ps.begin(), tmp_ps.end(), engine);
+
 
   return ps;
 }
@@ -926,21 +842,7 @@ vector<P> init_common(const SimulateParam& param)
 
   init_make_goal_guard(ps, param);
 
-  vector<P> tmp_ps;
-
-  if (param.init_method == 0) {
-    tmp_ps = init_0(param);
-  }
-  else if (param.init_method == 1) {
-    tmp_ps = init_1(param);
-  }
-  else if (param.init_method == 2) {
-    tmp_ps = init_2(param);
-  }
-  else {
-    cerr << "Error: param.init_method = " << param.init_method << endl;
-    tmp_ps = init_0(param);
-  }
+  vector<P> tmp_ps = init_pattern(param);
 
   for (auto p : tmp_ps) {
     int i = p.first;
@@ -1113,14 +1015,13 @@ int solve_case(int case_num)
 
     SimulateParam param;
     param.goal_guard_method = rand_xorshift() % 4;
-    //param.goal_guard_method = 4;
     param.init_method = rand_xorshift() % 3;
-    //param.init_method = 2;
+    param.init_transpose = rand_xorshift() % 2;
     param.slide_i = rand_xorshift() % n;
     param.slode_j = rand_xorshift() % n;
 
     int score_sum = 0;
-    for (int loop = 0; loop < 2; loop++) {
+    for (int loop = 0; loop < 4; loop++) {
       setup_generate_q10(loop);
       initialize_simulate();
       score_sum += method1(ofs, param);
@@ -1135,6 +1036,7 @@ int solve_case(int case_num)
     << "sim_loop = " << setw(4) << sim_loop
     << ", bestScore = " << setw(5) << bestScore
     << ", init_method = " << bestParam.init_method
+    << ", init_transpose = " << bestParam.init_transpose
     << ", goal_guard_method = " << bestParam.goal_guard_method
     << endl;
 
