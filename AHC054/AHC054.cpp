@@ -809,14 +809,14 @@ vector<P> init_pattern2(const SimulateParam& param)
     }
   }
 
-  for (int i = 0; i <= n4; i++) {
-    cerr << hs[i] << " ";
-  }
-  cerr << endl;
-  for (int i = 0; i <= n4; i++) {
-    cerr << ws[i] << " ";
-  }
-  cerr << endl;
+  //for (int i = 0; i <= n4; i++) {
+  //  cerr << hs[i] << " ";
+  //}
+  //cerr << endl;
+  //for (int i = 0; i <= n4; i++) {
+  //  cerr << ws[i] << " ";
+  //}
+  //cerr << endl;
 
   vector<vector<int>> grid(n4, vector<int>(n4, -1));
   int si = -1;
@@ -968,12 +968,12 @@ vector<P> init_pattern2(const SimulateParam& param)
     return vector<P>();
   }
 
-  for (int i = 0; i < M; i++) {
-    for (int j = 0; j < M; j++) {
-      cout << setw(2) << grid[i][j] << " ";
-    }
-    cout << endl;
-  }
+  //for (int i = 0; i < M; i++) {
+  //  for (int j = 0; j < M; j++) {
+  //    cout << setw(2) << grid[i][j] << " ";
+  //  }
+  //  cout << endl;
+  //}
 
   // -1の処理
   vector<vector<bool>> isMinusOne(M, vector<bool>(M, false));
@@ -1004,6 +1004,7 @@ vector<P> init_pattern2(const SimulateParam& param)
   }
 
   vector<P> ps;
+  vector<P> ps_toge;
 
   // 迷路のように壁を作る
   for (int idx = 0; idx < (int)order.size(); idx++) {
@@ -1020,6 +1021,10 @@ vector<P> init_pattern2(const SimulateParam& param)
       walls[2].emplace_back(i, ws[bj]);
       walls[3].emplace_back(i, ws[bj + 1] - 1);
     }
+
+    int togeDir = -1;
+    int min_toge = 99999;
+    bool is_put_wall[4] = { false,false,false,false };
 
     if (isMinusOne[bi][bj]) {
       // 自分より小さい数で一番大きい数を探す
@@ -1046,7 +1051,22 @@ vector<P> init_pattern2(const SimulateParam& param)
         int ni = bi + DX[k];
         int nj = bj + DY[k];
         if (!inside_blk(ni, nj)) {
+          if (k < 2) {
+            min_toge = -2;
+            togeDir = k;
+          }
+          else {
+            if (-1 < min_toge) {
+              min_toge = -1;
+              togeDir = k;
+            }
+          }
           continue;
+        }
+
+        if (grid[ni][nj] != -1 && grid[ni][nj] < min_toge) {
+          min_toge = grid[ni][nj];
+          togeDir = k;
         }
 
         for (auto p : walls[k]) {
@@ -1054,6 +1074,7 @@ vector<P> init_pattern2(const SimulateParam& param)
           int j = p.second;
           ps.emplace_back(i, j);
         }
+        is_put_wall[k] = true;
       }
     }
     else {
@@ -1063,12 +1084,18 @@ vector<P> init_pattern2(const SimulateParam& param)
       for (int k = 0; k < 4; k++) {
         int ni = bi + DX[k];
         int nj = bj + DY[k];
-        if (!inside_blk(ni, nj) || grid[ni][nj] != -1 || grid[ni][nj] < grid[bi][bj]) {
+
+        if (!inside_blk(ni, nj)) {
+          continue;
+        }
+
+        if (grid[ni][nj] == -1 || grid[ni][nj] < grid[bi][bj]) {
           continue;
         }
         if (isMinusOne[ni][nj]) {
           continue;
         }
+
         if (grid[ni][nj] < ref_min) {
           ref_min = grid[ni][nj];
           ref_dir = k;
@@ -1084,21 +1111,100 @@ vector<P> init_pattern2(const SimulateParam& param)
         int ni = bi + DX[k];
         int nj = bj + DY[k];
         if (!inside_blk(ni, nj)) {
+          if (k < 2) {
+            min_toge = -2;
+            togeDir = k;
+          }
+          else {
+            if (-1 < min_toge) {
+              min_toge = -1;
+              togeDir = k;
+            }
+          }
           continue;
         }
-        if (grid[ni][nj] == -1 || grid[ni][nj] < grid[bi][bj]) {
+
+        if (grid[ni][nj] == -1) {
           continue;
         }
         if (isMinusOne[ni][nj]) {
           continue;
         }
+
+        if (grid[ni][nj] < grid[bi][bj]) {
+          if (grid[ni][nj] < min_toge) {
+            min_toge = grid[ni][nj];
+            togeDir = k;
+          }
+          continue;
+        }
+
         for (auto p : walls[k]) {
           int i = p.first;
           int j = p.second;
           ps.emplace_back(i, j);
         }
+        is_put_wall[k] = true;
       }
     }
+
+    // 一方向にだけとげを付ける
+    if (togeDir == 0) {
+      for (int j = ws[bj]; j < ws[bj + 1]; j++) {
+        int ii = hs[bi];
+        int jj = j;
+        if (is_put_wall[0]) {
+          ii++;
+        }
+        if ((ii + jj) % 3 == 2) {
+          ps_toge.emplace_back(ii, jj);
+          ps_toge.emplace_back(ii + 1, jj - 1);
+        }
+      }
+    }
+    else if (togeDir == 1) {
+      for (int j = ws[bj]; j < ws[bj + 1]; j++) {
+        int ii = hs[bi + 1] - 1;
+        int jj = j;
+        if (is_put_wall[1]) {
+          ii--;
+        }
+        if ((ii + jj) % 3 == 2) {
+          ps_toge.emplace_back(ii, jj);
+          ps_toge.emplace_back(ii - 1, jj + 1);
+        }
+      }
+    }
+    else if (togeDir == 2) {
+      for (int i = hs[bi]; i < hs[bi + 1]; i++) {
+        int ii = i;
+        int jj = ws[bj];
+        if (is_put_wall[2]) {
+          jj++;
+        }
+        if ((ii + jj) % 3 == 2) {
+          ps_toge.emplace_back(ii, jj);
+          ps_toge.emplace_back(ii - 1, jj + 1);
+        }
+      }
+    }
+    else if (togeDir == 3) {
+      for (int i = hs[bi]; i < hs[bi + 1]; i++) {
+        int ii = i;
+        int jj = ws[bj + 1] - 1;
+        if (is_put_wall[3]) {
+          jj--;
+        }
+        if ((ii + jj) % 3 == 2) {
+          ps_toge.emplace_back(ii, jj);
+          ps_toge.emplace_back(ii + 1, jj - 1);
+        }
+      }
+    }
+  }
+
+  for (auto p : ps_toge) {
+    ps.emplace_back(p);
   }
 
   return ps;
@@ -1123,8 +1229,10 @@ vector<P> init_common(const SimulateParam& param)
     else {
       vector<P> tmp_ps;
 
-      while (tmp_ps.empty()) {
+      int try_count = 10;
+      while (try_count && tmp_ps.empty()) {
         tmp_ps = init_pattern2(param);
+        try_count--;
       }
 
       for (auto p : tmp_ps) {
@@ -1132,6 +1240,8 @@ vector<P> init_common(const SimulateParam& param)
         int j = p.second;
         attempt(i, j, ps, 5);
       }
+
+      init_make_goal_guard(ps, param);
     }
   }
   else {
@@ -1276,6 +1386,26 @@ SimulateResult method1(ofstream& ofs, const SimulateParam& param)
     }
   }
 
+  //for (int i = 0; i < n; i++) {
+  //  for (int j = 0; j < n; j++) {
+  //    if (b[i][j] == 1 || init_b[i][j] == 1) {
+  //      cerr << "1";
+  //    }
+  //    else {
+  //      if (i == ti && j == tj) {
+  //        cerr << "G";
+  //      }
+  //      else if (i == 0 && j == n / 2) {
+  //        cerr << "S";
+  //      }
+  //      else {
+  //        cerr << "0";
+  //      }
+  //    }
+  //  }
+  //  cerr << endl;
+  //}
+
   while (true) {
     update_confirmed();
     if (pi == ti && pj == tj) {
@@ -1397,7 +1527,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     int sum_score = 0;
-    for (int i = 9; i < 10; i++) {
+    for (int i = 0; i < 100; i++) {
       int score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
