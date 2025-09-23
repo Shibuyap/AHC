@@ -144,6 +144,7 @@ namespace
   std::mt19937 engine(seed_gen());
 }
 
+// 上下左右
 const int DX[4] = { -1, 1, 0, 0 };
 const int DY[4] = { 0, 0, -1, 1 };
 
@@ -248,8 +249,8 @@ void initialize_state()
   rj = -1;
 
   turn = 0;
-  pi = -1;
-  pj = -1;
+  pi = 0;
+  pj = n / 2;
   for (int i = 0; i < MAX_N; i++) {
     for (int j = 0; j < MAX_N; j++) {
       confirmed[i][j] = 0;
@@ -272,8 +273,8 @@ void initialize_simulate()
   rj = -1;
 
   turn = 0;
-  pi = -1;
-  pj = -1;
+  pi = 0;
+  pj = n / 2;
   for (int i = 0; i < MAX_N; i++) {
     for (int j = 0; j < MAX_N; j++) {
       confirmed[i][j] = 0;
@@ -632,6 +633,13 @@ struct SimulateParam
   int init_transpose = 0;
   int slide_i = 0;
   int slode_j = 0;
+  vector<vector<int>> placed_init_trees;
+};
+
+struct SimulateResult
+{
+  int score = 0;
+  vector<vector<int>> placed_init_trees;
 };
 
 void attempt(int i, int j, vector<P>& ps, int margin)
@@ -781,17 +789,16 @@ vector<P> init_pattern(const SimulateParam& param)
   return ps;
 }
 
+int ng_count;
 vector<P> init_pattern2(const SimulateParam& param)
 {
-  vector<P> ps;
-
   int n4 = n / 4;
   vector<int> hs(n4 + 1), ws(n4 + 1);
   for (int i = 0; i <= n4; i++) {
-    hs[i] = i * n4;
-    ws[i] = i * n4;
+    hs[i] = i * 4;
+    ws[i] = i * 4;
   }
-  for (int _; _ < n4 % 4; _++) {
+  for (int _loop = 0; _loop < n % 4; _loop++) {
     int i = rand_xorshift() % n4 + 1;
     for (int j = i; j <= n4; j++) {
       hs[j]++;
@@ -801,6 +808,15 @@ vector<P> init_pattern2(const SimulateParam& param)
       ws[j]++;
     }
   }
+
+  for (int i = 0; i <= n4; i++) {
+    cerr << hs[i] << " ";
+  }
+  cerr << endl;
+  for (int i = 0; i <= n4; i++) {
+    cerr << ws[i] << " ";
+  }
+  cerr << endl;
 
   vector<vector<int>> grid(n4, vector<int>(n4, -1));
   int si = -1;
@@ -831,7 +847,259 @@ vector<P> init_pattern2(const SimulateParam& param)
     }
   }
 
+  const int M = n4;
+  const int TOTAL = M * M;
 
+  auto inside_blk = [&](int x, int y) -> bool {
+    return (0 <= x && x < M && 0 <= y && y < M);
+    };
+  auto parity = [&](int x, int y) -> int { return (x + y) & 1; };
+
+  // Hamiltonian のパリティ条件:
+  // TOTAL が偶数 => 終端2点は異色, TOTAL が奇数 => 終端2点は同色
+  const bool hamilton_ok =
+    ((TOTAL % 2 == 0) ? (parity(si, sj) != parity(gi, gj))
+      : (parity(si, sj) == parity(gi, gj)));
+
+  const int targetLen = hamilton_ok ? TOTAL : (TOTAL - 1); // 塗る個数
+  bool found = false;
+
+  // 経路（ブロック座標の列）。grid[i][j] には訪問順を入れる（0..targetLen-1）
+  vector<P> order; order.reserve(targetLen);
+
+  double now_time = timer.get_elapsed_time();
+
+  function<void(int, int, int)> dfs = [&](int x, int y, int step) {
+    if (timer.get_elapsed_time() - now_time > 0.010) {
+      return;
+    }
+    grid[x][y] = step;
+    order.emplace_back(x, y);
+
+    if (step == targetLen - 1) {
+      // 最後のマスは gi,gj であることを要求
+      if (x == gi && y == gj) {
+        found = true;
+        return;
+      }
+    }
+    else if (step == targetLen - 2 && x == gi && y == gj) {
+      found = true;
+      return;
+    }
+    else {
+      // 未探索マスが二つ以上に分かれてたら探索する意味がないので打ち切り
+      int cnt = 0;
+      bfs_version++;
+      que2D.clear_queue();
+      que2D.push(gi, gj);
+      bfs_visited[gi][gj] = bfs_version;
+      cnt++;
+      while (!que2D.empty()) {
+        int i = que2D.front_x();
+        int j = que2D.front_y();
+        que2D.pop();
+        for (int d = 0; d < 4; d++) {
+          int ni = i + dx[d];
+          int nj = j + dy[d];
+          if (!inside_blk(ni, nj) || grid[ni][nj] != -1) {
+            continue;
+          }
+          if (bfs_visited[ni][nj] == bfs_version) {
+            continue;
+          }
+          bfs_visited[ni][nj] = bfs_version;
+          cnt++;
+          que2D.push(ni, nj);
+        }
+      }
+      if (cnt + step < targetLen - 1) {
+        // 残りマス数が足りない
+        grid[x][y] = -1;
+        order.pop_back();
+        return;
+      }
+
+      // dx,dy の優先順で貪欲に試す（基本は順序通り。解が出ないときだけバックトラック）
+      for (int k = 0; k < 4 && !found; ++k) {
+        int nx = x + dx[k], ny = y + dy[k];
+        if (!inside_blk(nx, ny) || grid[nx][ny] != -1) {
+          continue;
+        }
+
+        // ゴールには「最後の一手」でしか入らない
+        if (nx == gi && ny == gj && step + 1 != targetLen - 1) {
+          continue;
+        }
+
+        // 軽い安全策：残り 1 手未満で“袋小路”になりそうならスキップ
+        // （n4<=10なので強い剪定は不要。ここでは未訪問隣接0で、ゴールでもないなら避ける）
+        int deg = 0;
+        for (int t = 0; t < 4; ++t) {
+          int ux = nx + dx[t], uy = ny + dy[t];
+          if (inside_blk(ux, uy) && grid[ux][uy] == -1) {
+            ++deg;
+          }
+        }
+        if (deg == 0 && !(nx == gi && ny == gj && step + 1 == targetLen - 1)) {
+          continue;
+        }
+
+        dfs(nx, ny, step + 1);
+      }
+    }
+
+    if (found) {
+      return;
+    }
+    // バックトラック
+    grid[x][y] = -1;
+    order.pop_back();
+    };
+
+  fill(grid.begin(), grid.end(), vector<int>(M, -1));
+  order.clear();
+  now_time = timer.get_elapsed_time();
+  dfs(si, sj, 0);
+
+  if (!found) {
+    ng_count++;
+    //cerr << "Warning: Hamiltonian path not found." << endl;
+    return vector<P>();
+  }
+
+  for (int i = 0; i < M; i++) {
+    for (int j = 0; j < M; j++) {
+      cout << setw(2) << grid[i][j] << " ";
+    }
+    cout << endl;
+  }
+
+  // -1の処理
+  vector<vector<bool>> isMinusOne(M, vector<bool>(M, false));
+  for (int i = 0; i < M; i++) {
+    for (int j = 0; j < M; j++) {
+      if (grid[i][j] == -1) {
+        isMinusOne[i][j] = true;
+        int min_num = 99999;
+        for (int d = 0; d < 4; d++) {
+          int ni = i + DX[d];
+          int nj = j + DY[d];
+          if (inside_blk(ni, nj) && grid[ni][nj] != -1) {
+            min_num = min(min_num, grid[ni][nj]);
+          }
+        }
+        if (min_num == 99999) {
+          cerr << "Error: isolated cell in Hamiltonian path." << endl;
+          continue;
+        }
+        order.insert(order.begin() + min_num, P(i, j));
+        for (int k = min_num + 1; k < (int)order.size(); k++) {
+          int x = order[k].first;
+          int y = order[k].second;
+          grid[x][y] = k;
+        }
+      }
+    }
+  }
+
+  vector<P> ps;
+
+  // 迷路のように壁を作る
+  for (int idx = 0; idx < (int)order.size(); idx++) {
+    int bi = order[idx].first;
+    int bj = order[idx].second;
+
+    // 上下左右
+    vector<P> walls[4];
+    for (int j = ws[bj]; j < ws[bj + 1]; j++) {
+      walls[0].emplace_back(hs[bi], j);
+      walls[1].emplace_back(hs[bi + 1] - 1, j);
+    }
+    for (int i = hs[bi]; i < hs[bi + 1]; i++) {
+      walls[2].emplace_back(i, ws[bj]);
+      walls[3].emplace_back(i, ws[bj + 1] - 1);
+    }
+
+    if (isMinusOne[bi][bj]) {
+      // 自分より小さい数で一番大きい数を探す
+      int ref_dir = -1;
+      int ref_max = -1;
+      for (int k = 0; k < 4; k++) {
+        int ni = bi + DX[k];
+        int nj = bj + DY[k];
+        if (inside_blk(ni, nj) && grid[ni][nj] != -1 && grid[ni][nj] < grid[bi][bj]) {
+          if (ref_max < grid[ni][nj]) {
+            ref_max = grid[ni][nj];
+            ref_dir = k;
+          }
+        }
+      }
+
+      // ref_dir以外の方向には壁を作る
+      for (int k = 0; k < 4; k++) {
+        if (k == ref_dir) {
+          continue;
+        }
+
+        // 外側には壁を作る必要はない
+        int ni = bi + DX[k];
+        int nj = bj + DY[k];
+        if (!inside_blk(ni, nj)) {
+          continue;
+        }
+
+        for (auto p : walls[k]) {
+          int i = p.first;
+          int j = p.second;
+          ps.emplace_back(i, j);
+        }
+      }
+    }
+    else {
+      // 自分より大きい数で一番小さい数を探す
+      int ref_dir = -1;
+      int ref_min = 99999;
+      for (int k = 0; k < 4; k++) {
+        int ni = bi + DX[k];
+        int nj = bj + DY[k];
+        if (!inside_blk(ni, nj) || grid[ni][nj] != -1 || grid[ni][nj] < grid[bi][bj]) {
+          continue;
+        }
+        if (isMinusOne[ni][nj]) {
+          continue;
+        }
+        if (grid[ni][nj] < ref_min) {
+          ref_min = grid[ni][nj];
+          ref_dir = k;
+        }
+      }
+
+      // 進む方向以外の-1以外の自分より大きい数の方向には壁を作る
+      for (int k = 0; k < 4; k++) {
+        if (k == ref_dir) {
+          continue;
+        }
+        // 外側には壁を作る必要はない
+        int ni = bi + DX[k];
+        int nj = bj + DY[k];
+        if (!inside_blk(ni, nj)) {
+          continue;
+        }
+        if (grid[ni][nj] == -1 || grid[ni][nj] < grid[bi][bj]) {
+          continue;
+        }
+        if (isMinusOne[ni][nj]) {
+          continue;
+        }
+        for (auto p : walls[k]) {
+          int i = p.first;
+          int j = p.second;
+          ps.emplace_back(i, j);
+        }
+      }
+    }
+  }
 
   return ps;
 }
@@ -840,14 +1108,41 @@ vector<P> init_common(const SimulateParam& param)
 {
   vector<P> ps;
 
-  init_make_goal_guard(ps, param);
+  if (is_simulate) {
+    if (false) {
+      init_make_goal_guard(ps, param);
 
-  vector<P> tmp_ps = init_pattern(param);
+      vector<P> tmp_ps = init_pattern(param);
 
-  for (auto p : tmp_ps) {
-    int i = p.first;
-    int j = p.second;
-    attempt(i, j, ps, 5);
+      for (auto p : tmp_ps) {
+        int i = p.first;
+        int j = p.second;
+        attempt(i, j, ps, 5);
+      }
+    }
+    else {
+      vector<P> tmp_ps;
+
+      while (tmp_ps.empty()) {
+        tmp_ps = init_pattern2(param);
+      }
+
+      for (auto p : tmp_ps) {
+        int i = p.first;
+        int j = p.second;
+        attempt(i, j, ps, 5);
+      }
+    }
+  }
+  else {
+    // paramのplaced_init_treesをそのまま使う
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (param.placed_init_trees[i][j] == 1) {
+          attempt(i, j, ps, 5);
+        }
+      }
+    }
   }
 
   return ps;
@@ -965,27 +1260,37 @@ vector<P> put_this_turn()
   return res;
 }
 
-int method1(ofstream& ofs, const SimulateParam& param)
+SimulateResult method1(ofstream& ofs, const SimulateParam& param)
 {
+  SimulateResult result;
+  result.placed_init_trees.resize(n, vector<int>(n, 0));
+
+  // まずは適当に思いついたルールで配置を作ってみる
+  init_common(param);
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (b[i][j] == 1 && init_b[i][j] == 0) {
+        result.placed_init_trees[i][j] = 1;
+      }
+    }
+  }
+
   while (true) {
     update_confirmed();
     if (pi == ti && pj == tj) {
       break;
     }
 
-    // まずは適当に思いついたルールで配置を作ってみる
-    if (turn == 0) {
-      init_common(param);
-    }
+    vector<P> ps = put_this_turn();
 
-    vector<P> ps2 = put_this_turn();
-
-    put_each_turn_output(ofs, ps2);
+    put_each_turn_output(ofs, ps);
 
     turn++;
   }
 
-  return turn;
+  result.score = turn;
+  return result;
 }
 
 
@@ -1007,6 +1312,7 @@ int solve_case(int case_num)
   generate_q10();
 
   int sim_loop = 0;
+  ng_count = 0;
   while (true) {
     if (timer.get_elapsed_time() > TIME_LIMIT) {
       break;
@@ -1020,17 +1326,27 @@ int solve_case(int case_num)
     param.slide_i = rand_xorshift() % n;
     param.slode_j = rand_xorshift() % n;
 
+    //cerr << "sim_loop = " << setw(4) << sim_loop << endl;
+    //init_pattern2(param);
+    //cerr << endl;
+    //continue;
+
     int score_sum = 0;
+    SimulateResult result;
     for (int loop = 0; loop < 4; loop++) {
       setup_generate_q10(loop);
       initialize_simulate();
-      score_sum += method1(ofs, param);
+      result = method1(ofs, param);
+      score_sum += result.score;
     }
     if (score_sum > bestScore) {
       bestScore = score_sum;
       bestParam = param;
+      bestParam.placed_init_trees = result.placed_init_trees;
     }
   }
+
+  cerr << "ng_count = " << ng_count << endl;
 
   cerr
     << "sim_loop = " << setw(4) << sim_loop
@@ -1039,18 +1355,37 @@ int solve_case(int case_num)
     << ", init_transpose = " << bestParam.init_transpose
     << ", goal_guard_method = " << bestParam.goal_guard_method
     << endl;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (bestParam.placed_init_trees[i][j] == 1 || init_b[i][j] == 1) {
+        cerr << "1";
+      }
+      else {
+        if (i == ti && j == tj) {
+          cerr << "G";
+        }
+        else if (i == 0 && j == n / 2) {
+          cerr << "S";
+        }
+        else {
+          cerr << "0";
+        }
+      }
+    }
+    cerr << endl;
+  }
 
   is_simulate = false;
   setup_true_q();
 
   initialize_simulate();
-  int score = method1(ofs, bestParam);
+  auto result = method1(ofs, bestParam);
 
   if (ofs.is_open()) {
     ofs.close();
   }
 
-  return score;
+  return result.score;
 }
 
 int main()
@@ -1062,7 +1397,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     int sum_score = 0;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 9; i < 10; i++) {
       int score = solve_case(i);
       sum_score += score;
       if (exec_mode == 1) {
