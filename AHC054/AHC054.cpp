@@ -163,7 +163,6 @@ int turn;
 int confirmed[MAX_N][MAX_N];
 int pi, pj;
 
-
 // ローカルテスター用 入力
 int current_q;
 int qi[MAX_N * MAX_N], qj[MAX_N * MAX_N];
@@ -632,7 +631,7 @@ struct SimulateParam
   int init_method = 0;
   int init_transpose = 0;
   int slide_i = 0;
-  int slode_j = 0;
+  int slide_j = 0;
   vector<vector<int>> placed_init_trees;
 };
 
@@ -644,10 +643,6 @@ struct SimulateResult
 
 void attempt(int i, int j, vector<P>& ps, int margin)
 {
-  //if (i == 0 || i == n - 1 || j == 0 || j == n - 1) {
-  //  return;
-  //}
-
   if (i < 0 || i >= n || j < 0 || j >= n) {
     return;
   }
@@ -721,43 +716,43 @@ void init_make_goal_guard(vector<P>& ps, const SimulateParam& param)
 bool should_put(int ii, int jj, int n, int kind)
 {
   switch (kind) {
-  case 0: // init_0
-    switch (ii % 6) {
-    case 0: return jj % 3 == 2;
-    case 1: return jj % 3 == 0;
-    case 2: return false;
-    case 3: return jj % 3 == 0;
-    case 4: return jj % 3 == 2;
-    case 5:
-      if (ii % 12 == 5) return jj != n - 1;
-      else return jj != 0;
-    }
-    break;
-  case 1: // init_1
-    switch (ii % 6) {
-    case 0: return jj % 3 == 2;
-    case 1: return jj % 3 == 0;
-    case 2: return jj % 3 == 1;
-    case 3: return jj % 3 == 2;
-    case 4: return false;
-    case 5:
-      if (ii % 12 == 5) return jj != n - 1;
-      else return jj != 0;
-    }
-    break;
-  case 2: // init_2
-    switch (ii % 4) {
-    case 0: return jj % 3 == 2;
-    case 1: return jj % 3 == 0;
-    case 2: return false;
-    case 3:
-      if (ii % 8 == 3) return jj != n / 2;
-      else return jj != 0;
-    }
-    break;
-  default:
-    cerr << "Error: unknown init_method " << kind << endl;
-    break;
+    case 0: // init_0
+      switch (ii % 6) {
+        case 0: return jj % 3 == 2;
+        case 1: return jj % 3 == 0;
+        case 2: return false;
+        case 3: return jj % 3 == 0;
+        case 4: return jj % 3 == 2;
+        case 5:
+          if (ii % 12 == 5) return jj != n - 1;
+          else return jj != 0;
+      }
+      break;
+    case 1: // init_1
+      switch (ii % 6) {
+        case 0: return jj % 3 == 2;
+        case 1: return jj % 3 == 0;
+        case 2: return jj % 3 == 1;
+        case 3: return jj % 3 == 2;
+        case 4: return false;
+        case 5:
+          if (ii % 12 == 5) return jj != n - 1;
+          else return jj != 0;
+      }
+      break;
+    case 2: // init_2
+      switch (ii % 4) {
+        case 0: return jj % 3 == 2;
+        case 1: return jj % 3 == 0;
+        case 2: return false;
+        case 3:
+          if (ii % 8 == 3) return jj != n / 2;
+          else return jj != 0;
+      }
+      break;
+    default:
+      cerr << "Error: unknown init_method " << kind << endl;
+      break;
   }
   return false;
 }
@@ -776,7 +771,7 @@ vector<P> init_pattern(const SimulateParam& param)
       }
 
       int ii = (i + param.slide_i + n) % n;
-      int jj = (j + param.slode_j + n) % n;
+      int jj = (j + param.slide_j + n) % n;
 
       // 縦横を反転させる
       if (transpose) std::swap(ii, jj);
@@ -792,39 +787,30 @@ vector<P> init_pattern(const SimulateParam& param)
 int ng_count;
 vector<P> init_pattern2(const SimulateParam& param)
 {
-  int n4 = n / 4;
-  vector<int> hs(n4 + 1), ws(n4 + 1);
-  for (int i = 0; i <= n4; i++) {
+  const int M = n / 4;
+  vector<int> hs(M + 1), ws(M + 1);
+  for (int i = 0; i <= M; i++) {
     hs[i] = i * 4;
     ws[i] = i * 4;
   }
   for (int _loop = 0; _loop < n % 4; _loop++) {
-    int i = rand_xorshift() % n4 + 1;
-    for (int j = i; j <= n4; j++) {
+    int i = rand_xorshift() % M + 1;
+    for (int j = i; j <= M; j++) {
       hs[j]++;
     }
-    i = rand_xorshift() % n4 + 1;
-    for (int j = i; j <= n4; j++) {
+    i = rand_xorshift() % M + 1;
+    for (int j = i; j <= M; j++) {
       ws[j]++;
     }
   }
 
-  //for (int i = 0; i <= n4; i++) {
-  //  cerr << hs[i] << " ";
-  //}
-  //cerr << endl;
-  //for (int i = 0; i <= n4; i++) {
-  //  cerr << ws[i] << " ";
-  //}
-  //cerr << endl;
-
-  vector<vector<int>> grid(n4, vector<int>(n4, -1));
+  vector<vector<int>> grid(M, vector<int>(M, -1));
   int si = -1;
   int sj = -1;
   int gi = -1;
   int gj = -1;
-  for (int i = 0; i < n4; i++) {
-    for (int j = 0; j < n4; j++) {
+  for (int i = 0; i < M; i++) {
+    for (int j = 0; j < M; j++) {
       if (hs[i] <= 0 && 0 < hs[i + 1] && ws[j] <= n / 2 && n / 2 < ws[j + 1]) {
         si = i;
         sj = j;
@@ -847,7 +833,6 @@ vector<P> init_pattern2(const SimulateParam& param)
     }
   }
 
-  const int M = n4;
   const int TOTAL = M * M;
 
   auto inside_blk = [&](int x, int y) -> bool {
@@ -933,7 +918,6 @@ vector<P> init_pattern2(const SimulateParam& param)
         }
 
         // 軽い安全策：残り 1 手未満で“袋小路”になりそうならスキップ
-        // （n4<=10なので強い剪定は不要。ここでは未訪問隣接0で、ゴールでもないなら避ける）
         int deg = 0;
         for (int t = 0; t < 4; ++t) {
           int ux = nx + dx[t], uy = ny + dy[t];
@@ -1454,7 +1438,7 @@ int solve_case(int case_num)
     param.init_method = rand_xorshift() % 3;
     param.init_transpose = rand_xorshift() % 2;
     param.slide_i = rand_xorshift() % n;
-    param.slode_j = rand_xorshift() % n;
+    param.slide_j = rand_xorshift() % n;
 
     //cerr << "sim_loop = " << setw(4) << sim_loop << endl;
     //init_pattern2(param);
