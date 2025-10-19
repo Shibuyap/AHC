@@ -1199,7 +1199,7 @@ vector<P> init_common(const SimulateParam& param)
   vector<P> ps;
 
   if (is_simulate) {
-    if (false) {
+    if (true) {
       init_make_goal_guard(ps, param);
 
       vector<P> tmp_ps = init_pattern(param);
@@ -1396,7 +1396,22 @@ SimulateResult method1(ofstream& ofs, const SimulateParam& param)
       break;
     }
 
-    vector<P> ps = put_this_turn();
+    vector<P> ps;
+    if (false) {
+      ps = put_this_turn();
+    }
+    else {
+      // 最初のターンに全部置く
+      if (turn == 0) {
+        for(int i = 0; i < n; i++) {
+          for(int j = 0; j < n; j++) {
+            if (confirmed[i][j] == 0 && b[i][j] == 1 && init_b[i][j] == 0) {
+              ps.push_back(P(i, j));
+            }
+          }
+        }
+      }
+    }
 
     put_each_turn_output(ofs, ps);
 
