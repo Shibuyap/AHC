@@ -39,6 +39,11 @@ public:
   {
     return tail - head;
   }
+
+  bool empty() const
+  {
+    return head == tail;
+  }
 };
 
 // 2次元キューのクラス
@@ -85,5 +90,10 @@ public:
   int size() const
   {
     return tail - head;
+  }
+
+  bool empty() const
+  {
+    return head == tail;
   }
 };
