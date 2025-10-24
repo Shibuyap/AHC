@@ -469,7 +469,6 @@ int Sim(int sim_mode)
       if (h[target] <= 0) {
         if (sim_mode == 1) {
           mottainai += a[cur][target];
-          //cerr << "skip target already defeated: " << target << ' ' << a[cur][target] << ' ' << h[target] << ' ' << c[cur] << endl;
         }
         // 次のターゲットへ
         // sorted_a_idxを使う
@@ -480,16 +479,6 @@ int Sim(int sim_mode)
             break;
           }
         }
-
-        //while (order_itr < n) {
-        //  target = order[order_itr];
-        //  if (h[target] <= 0) {
-        //    order_itr++;
-        //  }
-        //  else {
-        //    break;
-        //  }
-        //}
       }
       if (h[target] <= 0) {
         break;
@@ -585,7 +574,6 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
 
   best_sum = current_sum;
   best_hukuzatsu = current_hukuzatsu;
-  //best_target[n][MAX_C];
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < c[i]; j++) {
       best_target[i][j] = target[i][j];
@@ -643,9 +631,9 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
         ra1 = rand_xorshift() % n;
         ra2 = rand_xorshift() % c[ra1];
         keep1 = target[ra1][ra2];
-        target[ra1][ra2] = sort_a_idx[ra1][rand_xorshift() % (n - 70)];
+        target[ra1][ra2] = sort_a_idx[ra1][rand_xorshift() % (n - 180)];
         while (target[ra1][ra2] == ra1) {
-          target[ra1][ra2] = sort_a_idx[ra1][rand_xorshift() % (n - 70)];
+          target[ra1][ra2] = sort_a_idx[ra1][rand_xorshift() % (n - 180)];
         }
 
         // current_sum更新
@@ -894,7 +882,6 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
       }
 
       int tmp_score = Sim(0);
-      //cerr << "ans_count: " << ans_count << endl;
 
       // 焼きなましで採用判定
       double diff_score = (tmp_score - score) * annealingParams2.score_scale;
@@ -1051,7 +1038,7 @@ int main()
   }
   else if (exec_mode <= 2) {
     ll sum_score = 0;
-    for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < 3; ++i) {
       ll score = solve_case(i, annealingParams, annealingParams2);
       sum_score += score;
       if (exec_mode == 1) {
