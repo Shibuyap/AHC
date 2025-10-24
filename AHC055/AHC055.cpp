@@ -236,42 +236,45 @@ void reset_state()
   }
 }
 
-void input_data(int case_num)
+std::istream& open_input_stream(int case_num, std::ifstream& fin, int exec_mode)
 {
-  std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-  ifstream ifs(oss.str());
-
-  if (!ifs.is_open()) {
-    // 標準入力
-    int _n;
-    cin >> _n;
-    for (int i = 0; i < n; i++) {
-      cin >> h[i];
-    }
-    for (int i = 0; i < n; i++) {
-      cin >> c[i];
-    }
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        cin >> a[i][j];
-      }
+  if (exec_mode != 0) {
+    std::ostringstream oss;
+    oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    fin.open(oss.str());
+    if (fin.is_open()) {
+      return fin;
     }
   }
-  else {
-    // ファイル入力
-    int _n;
-    ifs >> _n;
-    for (int i = 0; i < n; i++) {
-      ifs >> h[i];
+  return std::cin;
+}
+
+std::ostream& open_output_stream(int case_num, std::ofstream& fout, int exec_mode)
+{
+  if (exec_mode != 0) {
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    fout.open(oss.str());
+    if (fout.is_open()) {
+      return fout;
     }
-    for (int i = 0; i < n; i++) {
-      ifs >> c[i];
-    }
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        ifs >> a[i][j];
-      }
+  }
+  return std::cout;
+}
+
+void read_case(std::istream& is)
+{
+  int _n;
+  is >> _n;
+  for (int i = 0; i < n; i++) {
+    is >> h[i];
+  }
+  for (int i = 0; i < n; i++) {
+    is >> c[i];
+  }
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      is >> a[i][j];
     }
   }
 
@@ -298,28 +301,10 @@ void input_data(int case_num)
   }
 }
 
-void open_ofs(int case_num, ofstream& ofs)
+void write_solution(std::ostream& os)
 {
-  if (exec_mode != 0) {
-    std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-    ofs.open(oss.str());
-  }
-}
-
-void output_data(ofstream& ofs)
-{
-  if (exec_mode == 0) {
-    // 標準出力
-    for (int i = 0; i < ans_count; i++) {
-      cout << w[i] << " " << b[i] << endl;
-    }
-  }
-  else {
-    // ファイル出力
-    for (int i = 0; i < ans_count; i++) {
-      ofs << w[i] << " " << b[i] << endl;
-    }
+  for (int i = 0; i < ans_count; ++i) {
+    os << w[i] << ' ' << b[i] << '\n';
   }
 }
 
@@ -890,7 +875,7 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
       double diff_score = (tmp_score - score) * annealingParams2.score_scale;
       double prob = exp(diff_score / temp);
       bool update = false;
-      if(tmp_score > score) {
+      if (tmp_score > score) {
         update = true;
       }
       else if (ra_exec_mode < annealingParams2.operation_thresholds[0] && rand_01() < prob) {
@@ -963,10 +948,12 @@ ll solve_case(int case_num, AnnealingParams annealingParams, AnnealingParams ann
 
   initialize_state();
 
-  input_data(case_num);
+  std::ifstream fin;
+  std::istream& is = open_input_stream(case_num, fin, exec_mode);
+  read_case(is);
 
-  ofstream ofs;
-  open_ofs(case_num, ofs);
+  std::ofstream fout;
+  std::ostream& os = open_output_stream(case_num, fout, exec_mode);
 
   best_score = -INF;
 
@@ -996,11 +983,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams, AnnealingParams ann
   restore_best_score();
 
   // 解答を出力
-  output_data(ofs);
-
-  if (ofs.is_open()) {
-    ofs.close();
-  }
+  write_solution(os);
 
   if (exec_mode != 0) {
     score = calculate_score();
