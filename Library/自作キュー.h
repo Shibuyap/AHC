@@ -46,6 +46,8 @@ public:
   }
 };
 
+Queue1D que;
+
 // 2次元キューのクラス
 class Queue2D
 {
@@ -97,3 +99,5 @@ public:
     return head == tail;
   }
 };
+
+Queue2D que;

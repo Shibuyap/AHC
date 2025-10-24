@@ -102,6 +102,7 @@ public:
   }
 };
 
+Queue1D que;
 
 // 乱数
 namespace
@@ -152,8 +153,6 @@ const int INT_INF = 1001001001;
 const int DX[4] = { -1, 0, 1, 0 };
 const int DY[4] = { 0, -1, 0, 1 };
 
-//const double TIME_LIMIT1 = 0.9;
-//const double TIME_LIMIT2 = 1.8;
 int exec_mode;
 
 const int n = 200;
@@ -396,13 +395,11 @@ int sum_attack[n];
 
 int order[n];
 
-Queue1D que;
 int Sim(int sim_mode)
 {
   ans_count = 0;
   reset_state();
   int mottainai = 0;
-
 
   // best_targetを解に変換
   ans_count = 0;
@@ -538,6 +535,15 @@ int Sim(int sim_mode)
   return  calculate_score();
 }
 
+inline bool sa_accept_fast(double deltaScore, double temp)
+{
+  if (deltaScore >= 0) return true;
+  // u ∈ (0,1) → -log(u) は Exp(1) 乱数
+  const double y = -std::log((rand_xorshift() + 0.5) * (1.0 / UINT_MAX));
+  // 受理条件: -deltaScore <= temp * y  ≡  deltaScore > -temp*y
+  return (-deltaScore) <= (temp * y);
+}
+
 void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, double timeLimit1, double timeLimit2)
 {
   reset_state();
@@ -599,6 +605,26 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
       if (loop % 100 == 0) {
         now_time = timer.get_elapsed_time();
         if (now_time > timeLimit1) { break; }
+      }
+
+      if (rand_xorshift() % 123456 == 0) {
+        // bestに戻す
+        current_sum = best_sum;
+        current_hukuzatsu = best_hukuzatsu;
+        for (int i = 0; i < n; i++) {
+          for (int j = 0; j < c[i]; j++) {
+            target[i][j] = best_target[i][j];
+          }
+        }
+        // sum_attack初期化
+        for (int i = 0; i < n; i++) {
+          sum_attack[i] = 0;
+        }
+        for (int i = 0; i < n; i++) {
+          for (int j = 0; j < c[i]; j++) {
+            sum_attack[target[i][j]] += a[i][target[i][j]];
+          }
+        }
       }
 
       double progress_ratio = now_time / timeLimit1;
@@ -716,9 +742,9 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
       //tmp_current_sum = min(tmp_current_sum, sum_h);
 
       // 焼きなましで採用判定
-      double diff_score = (tmp_current_sum - tmp_current_hukuzatsu * 10 - (current_sum - current_hukuzatsu * 10)) * annealingParams.score_scale;
-      double prob = exp(diff_score / temp);
-      if (prob > rand_01()) {
+      const double hukuzatsu_penalty = 13.0;
+      double diff_score = (tmp_current_sum - tmp_current_hukuzatsu * hukuzatsu_penalty - (current_sum - current_hukuzatsu * hukuzatsu_penalty)) * annealingParams.score_scale;
+      if (sa_accept_fast(diff_score, temp)) {
         // 採用
         current_sum = tmp_current_sum;
         current_hukuzatsu = tmp_current_hukuzatsu;
@@ -788,7 +814,6 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
     order[i] = i;
   }
 
-  //shuffle_array(order, n);
   {
     double now_time = timer.get_elapsed_time();
     const double START_TEMP = annealingParams2.start_temperature[0];
@@ -804,18 +829,22 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
     int keep_order[n];
 
     int loop2 = 0;
+
+    now_time = timer.get_elapsed_time();
+    double progress_ratio = now_time / timeLimit2;
+    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
     while (true) {
       //reset_state();
       loop2++;
-      //cerr << "Loop2: " << loop2 << endl;
 
       if (loop2 % 100 == 0) {
         now_time = timer.get_elapsed_time();
-        if (now_time > timeLimit2) { break; }
+        progress_ratio = now_time / timeLimit2;
+        temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+        if (now_time > timeLimit2) {
+          break;
+        }
       }
-
-      double progress_ratio = now_time / timeLimit2;
-      double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
 
       // 近傍解作成
       int ra_exec_mode = rand_xorshift() % annealingParams2.operation_thresholds[0];
@@ -851,11 +880,8 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
         }
       }
       else if (ra_exec_mode < annealingParams2.operation_thresholds[2]) {
-        //cerr << "3" << endl;
         ra1 = rand_xorshift() % n;
-        //cerr << "Change target of " << ra1 << endl;
         ra2 = rand_xorshift() % initial_c[ra1];
-        //cerr << "Change target of " << ra1 << " at index " << ra2 << endl;
         keep1 = best_target[ra1][ra2];
         best_target[ra1][ra2] = sort_a_idx[ra1][rand_xorshift() % (n - 70)];
         while (best_target[ra1][ra2] == ra1) {
@@ -865,24 +891,22 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
         // sum_attack更新
         sum_attack[keep1] -= a[ra1][keep1];
         sum_attack[best_target[ra1][ra2]] += a[ra1][best_target[ra1][ra2]];
-        //cerr << "Change target of " << ra1 << " from " << keep1 << " to " << best_target[ra1][ra2] << endl;
       }
 
       int tmp_score = Sim(0);
-      //cerr << loop2 << " " << tmp_score << score << endl;
+      //cerr << "ans_count: " << ans_count << endl;
 
       // 焼きなましで採用判定
       double diff_score = (tmp_score - score) * annealingParams2.score_scale;
       double prob = exp(diff_score / temp);
       bool update = false;
-      if (tmp_score > score) {
+      if (tmp_score >= score) {
         update = true;
       }
       else if (ra_exec_mode < annealingParams2.operation_thresholds[0] && rand_01() < prob) {
         update = true;
       }
       if (update) {
-        //cerr << loop2 << " " << diff_score << " " << temp << " " << prob << endl;
         // 採用
         score = tmp_score;
 
@@ -936,9 +960,6 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
     store_best_score();
   }
 
-
-
-
   cerr << "Final Score: " << best_score << endl;
 }
 
@@ -969,7 +990,7 @@ ll solve_case(int case_num, AnnealingParams annealingParams, AnnealingParams ann
   for (int loop = 0; loop < LOOP_COUNT; loop++) {
     timer.start();
     double timeLimit2 = TIME_LIMIT / LOOP_COUNT;
-    double timeLimit1 = (timeLimit2) * 0.3;
+    double timeLimit1 = (timeLimit2) * 0.5;
     Method1(annealingParams, annealingParams2, timeLimit1, timeLimit2);
 
     if (best_score > best_best_score) {
@@ -996,7 +1017,7 @@ int main()
   exec_mode = 2;
 
   AnnealingParams annealingParams;
-  annealingParams.start_temperature[0] = 500048.0;
+  annealingParams.start_temperature[0] = 200048.0;
   annealingParams.start_temperature[1] = 2048.0;
   annealingParams.start_temperature[2] = 2048.0;
   annealingParams.start_temperature[3] = 2048.0;
@@ -1020,7 +1041,7 @@ int main()
   annealingParams.operation_thresholds[9] = 1000;
 
   AnnealingParams annealingParams2 = annealingParams;
-  annealingParams2.start_temperature[0] = 100000.0;
+  annealingParams2.start_temperature[0] = 50000.0;
   annealingParams2.operation_thresholds[0] = 100;
   annealingParams2.operation_thresholds[1] = 100;
   annealingParams2.operation_thresholds[2] = 150;
