@@ -101,37 +101,41 @@ namespace
 const double TIME_LIMIT = 1.9;
 int exec_mode;
 
-void input_data(int case_num)
+std::istream& open_input_stream(int case_num, std::ifstream& fin, int exec_mode)
 {
-  std::ostringstream oss;
-  oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-  ifstream ifs(oss.str());
-
-  if (!ifs.is_open()) {
-    // 標準入力
-  }
-  else {
-    // ファイル入力
-    ifs.close();
-  }
-}
-
-void output_data(int case_num)
-{
-  if (exec_mode == 0) {
-    // 標準出力
-  }
-  else {
-    // ファイル出力
+  if (exec_mode != 0) {
     std::ostringstream oss;
-    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
-    ofstream ofs(oss.str());
-
-
-    if (ofs.is_open()) {
-      ofs.close();
+    oss << "./in/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    fin.open(oss.str());
+    if (fin.is_open()) {
+      return fin;
     }
   }
+  return std::cin;
+}
+
+std::ostream& open_output_stream(int case_num, std::ofstream& fout, int exec_mode)
+{
+  if (exec_mode != 0) {
+    std::ostringstream oss;
+    oss << "./out/" << std::setw(4) << std::setfill('0') << case_num << ".txt";
+    fout.open(oss.str());
+    if (fout.is_open()) {
+      return fout;
+    }
+  }
+  return std::cout;
+}
+
+void read_case(std::istream& is)
+{
+  int _n;
+  is >> _n;
+}
+
+void write_solution(std::ostream& os)
+{
+  os << 0 << endl;
 }
 
 ll calculate_score()
@@ -144,11 +148,16 @@ ll solve_case(int case_num)
 {
   timer.start();
 
-  input_data(case_num);
+  std::ifstream fin;
+  std::istream& is = open_input_stream(case_num, fin, exec_mode);
+  read_case(is);
+
+  std::ofstream fout;
+  std::ostream& os = open_output_stream(case_num, fout, exec_mode);
 
   ll score = 0;
 
-  output_data(case_num);
+  write_solution(os);
 
   return score;
 }
