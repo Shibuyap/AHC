@@ -147,6 +147,82 @@ namespace
   }
 }
 
+struct CoolingParams
+{
+  double start_temp;   // START_TEMP
+  double end_temp;     // END_TEMP
+  double poly_p;       // 多項式冷却のp (例:2.0)
+  double exp_k;        // 指数冷却のk (例:5.0)
+  double phase_split;  // フェーズ切り替え割合 (例:0.7)
+};
+
+enum class CoolingType
+{
+  Linear,
+  Poly,        // 多項式 (pow)
+  Exponential, // 指数で後半ガッと冷やす
+  Cosine,
+  TwoPhase     // 前半ほぼ一定→後半で一気に落とす
+};
+
+// progress_ratio は 0.0 ～ 1.0
+inline double get_temp(double progress_ratio,
+  CoolingType type,
+  const CoolingParams& p)
+{
+  // 安全のためクランプ
+  progress_ratio = std::clamp(progress_ratio, 0.0, 1.0);
+
+  double t01 = 1.0; // 1.0→0.0 に落ちる係数をここで作って最後に補間
+
+  switch (type) {
+  case CoolingType::Linear:
+    // 線形: t01 = 1 - ratio
+    t01 = 1.0 - progress_ratio;
+    break;
+
+  case CoolingType::Poly:
+    // 多項式: t01 = (1 - ratio)^p
+    // p.poly_p >1 で後半急降下、<1で序盤急降下
+    t01 = std::pow(1.0 - progress_ratio, p.poly_p);
+    break;
+
+  case CoolingType::Exponential:
+    // 指数: t01 = exp(-k * ratio)
+    // kが大きいと最後に一気に冷える
+    t01 = std::exp(-p.exp_k * progress_ratio);
+    break;
+
+  case CoolingType::Cosine:
+    // コサイン: t01 = (1 + cos(pi * ratio)) / 2
+    // なめらかに 1→0
+    t01 = (1.0 + std::cos(3.1415926535 * progress_ratio)) * 0.5;
+    break;
+
+  case CoolingType::TwoPhase:
+    // 2フェーズ:
+    // ratio < split までは一定(=ほぼstart_temp相当の高さ)
+    // ratio >= split から線形に 1→0
+  {
+    double split = p.phase_split; // 例:0.7
+    if (progress_ratio < split) {
+      t01 = 1.0; // ずっと高温
+    }
+    else {
+      double r2 = (progress_ratio - split) / (1.0 - split); // 0→1
+      // r2=0 のとき t01=1, r2=1 のとき t01=0
+      t01 = 1.0 - r2;
+    }
+  }
+  break;
+  }
+
+  // t01 = 1.0 のとき start_temp
+  // t01 = 0.0 のとき end_temp
+  double temp = p.end_temp + (p.start_temp - p.end_temp) * t01;
+  return temp;
+}
+
 const ll INF = 1001001001001001001LL;
 const int INT_INF = 1001001001;
 
@@ -586,6 +662,13 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
     const double START_TEMP = annealingParams.start_temperature[0];
     const double END_TEMP = annealingParams.end_temperature;
 
+    CoolingParams params;
+    params.start_temp = START_TEMP;
+    params.end_temp = END_TEMP;
+    params.poly_p = 2.0;
+    params.exp_k = 5.0;
+    params.phase_split = 0.7;
+
     int loop = 0;
     while (true) {
       loop++;
@@ -616,7 +699,7 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
       }
 
       double progress_ratio = now_time / timeLimit1;
-      double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+      double temp = get_temp(progress_ratio, CoolingType::Cosine, params);
 
       // 近傍解作成
       int ra_exec_mode = rand_xorshift() % annealingParams.operation_thresholds[1];
@@ -807,6 +890,13 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
     const double START_TEMP = annealingParams2.start_temperature[0];
     const double END_TEMP = annealingParams2.end_temperature;
 
+    CoolingParams params;
+    params.start_temp = START_TEMP;
+    params.end_temp = END_TEMP;
+    params.poly_p = 2.0;
+    params.exp_k = 5.0;
+    params.phase_split = 0.7;
+
     best_score = Sim(1);
     restore_best_score();
     int best_order[n];
@@ -820,7 +910,8 @@ void Method1(AnnealingParams annealingParams, AnnealingParams annealingParams2, 
 
     now_time = timer.get_elapsed_time();
     double progress_ratio = now_time / timeLimit2;
-    double temp = START_TEMP + (END_TEMP - START_TEMP) * progress_ratio;
+    double temp = get_temp(progress_ratio, CoolingType::Poly, params);
+
     while (true) {
       //reset_state();
       loop2++;
